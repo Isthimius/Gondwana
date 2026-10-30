@@ -1,6 +1,7 @@
 using System.Drawing.Drawing2D;
 using Gondwana.Assets;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
@@ -47,6 +48,7 @@ public sealed class SceneEditorControl : UserControl
     private const int SourceFrameThumbnailSize = 32;
     private enum PaintSourceKind { Frame, Animation }
     private PaintSourceKind? _paintSourceKind;
+    private bool _restoringSourceSelection;
     private readonly ToolStripLabel _paintSourceLabel = new()
     {
         AutoSize = false,
@@ -173,21 +175,25 @@ public sealed class SceneEditorControl : UserControl
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
         _sourceTree.AfterSelect += (_, _) =>
         {
+            if (_restoringSourceSelection) return;
             _paintSourceKind = PaintSourceKind.Frame;
             UpdatePaintSourceLabel();
         };
         _sourceTree.Enter += (_, _) =>
         {
+            if (_restoringSourceSelection) return;
             _paintSourceKind = PaintSourceKind.Frame;
             UpdatePaintSourceLabel();
         };
         _animationList.Enter += (_, _) =>
         {
+            if (_restoringSourceSelection) return;
             _paintSourceKind = PaintSourceKind.Animation;
             UpdatePaintSourceLabel();
         };
         _animationList.SelectedIndexChanged += (_, _) =>
         {
+            if (_restoringSourceSelection) return;
             if (_animationList.SelectedItems.Count == 1)
                 _paintSourceKind = PaintSourceKind.Animation;
             UpdatePaintSourceLabel();
@@ -1018,7 +1024,9 @@ public sealed class SceneEditorControl : UserControl
     private FrameTag? SelectedPaintFrame()
     {
         if (_sourceTree.SelectedNode?.Tag is not FrameTag frame ||
-            !_tilesheetSources.Contains(frame.Source)) return null;
+            !_tilesheetSources.Contains(frame.Source) ||
+            string.IsNullOrWhiteSpace(frame.Source.Definition.Name) ||
+            string.IsNullOrWhiteSpace(frame.Region.Name)) return null;
         var definition = frame.Source.CreateFrame(frame.Region, frame.X, frame.Y);
         return frame.Source.TryResolve(definition, out _, out _) ? frame : null;
     }
@@ -1026,8 +1034,8 @@ public sealed class SceneEditorControl : UserControl
     private SceneAnimationSource? SelectedPaintAnimation() =>
         _animationList.SelectedItems.Count == 1 &&
         _animationList.SelectedItems[0].Tag is SceneAnimationSource source &&
-        _animationSources.Contains(source) && !string.IsNullOrWhiteSpace(source.Definition.Key) &&
-        source.Definition.Frames.Count > 0 ? source : null;
+        _animationSources.Contains(source) &&
+        AnimationDefinitionValidator.Validate(source.Definition).Count == 0 ? source : null;
 
     private void UpdatePaintSourceLabel()
     {
@@ -1037,7 +1045,7 @@ public sealed class SceneEditorControl : UserControl
                 $"Paint: GTS {frame.Source.Definition.Name}:{frame.Region.Name} ({frame.X},{frame.Y})",
             PaintSourceKind.Animation when SelectedPaintAnimation() is { } animation =>
                 $"Paint: GANI {animation.Definition.Key}",
-            _ => "Paint unavailable: select a GTS frame or GANI animation"
+            _ => "Paint unavailable: select a valid GTS frame or GANI animation"
         };
         _paintSourceLabel.ToolTipText = _paintSourceLabel.Text +
             "\nPaint uses the last-selected source pane. Select a frame or animation there to change the source.";
@@ -1757,19 +1765,29 @@ public sealed class SceneEditorControl : UserControl
                 string sources = SourceSignature();
                 if (!ReferenceEquals(_displayedDefinition, Definition) || _displayedSources != sources)
                 {
-                    var selectedSourceNode = _sourceTree.SelectedNode;
-                    while (selectedSourceNode?.Parent is { } parent) selectedSourceNode = parent;
-                    string? selectedTilesheet = (selectedSourceNode?.Tag as SceneTilesheetSource)?.Definition.Name;
-                    string? selectedAnimation = _animationList.SelectedItems.Cast<ListViewItem>().Select(item => (item.Tag as SceneAnimationSource)?.Definition.Key).FirstOrDefault();
-                    foreach (var source in _tilesheetSources) source.Dispose();
-                    foreach (var source in _animationSources) source.Dispose();
-                    _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
-                    LoadDeclaredSources(); RefreshSourceTree(); RefreshAnimationList();
-                    if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is { } selectedTilesheetSource)
-                        SelectTilesheetRoot(selectedTilesheetSource);
-                    if (selectedAnimation is not null && _animationSources.FirstOrDefault(source => source.Definition.Key == selectedAnimation) is { } selectedSource)
-                        SelectAnimation(selectedSource);
-                    _displayedDefinition = Definition; _displayedSources = sources;
+                    // Restoring pane selection must not choose a different paint source kind.
+                    _restoringSourceSelection = true;
+                    try
+                    {
+                        var selectedSourceNode = _sourceTree.SelectedNode;
+                        while (selectedSourceNode?.Parent is { } parent) selectedSourceNode = parent;
+                        string? selectedTilesheet = (selectedSourceNode?.Tag as SceneTilesheetSource)?.Definition.Name;
+                        string? selectedAnimation = _animationList.SelectedItems.Cast<ListViewItem>().Select(item => (item.Tag as SceneAnimationSource)?.Definition.Key).FirstOrDefault();
+                        foreach (var source in _tilesheetSources) source.Dispose();
+                        foreach (var source in _animationSources) source.Dispose();
+                        _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+                        LoadDeclaredSources(); RefreshSourceTree(); RefreshAnimationList();
+                        if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is { } selectedTilesheetSource)
+                            SelectTilesheetRoot(selectedTilesheetSource);
+                        if (selectedAnimation is not null && _animationSources.FirstOrDefault(source => source.Definition.Key == selectedAnimation) is { } selectedSource)
+                            SelectAnimation(selectedSource);
+                        _displayedDefinition = Definition; _displayedSources = sources;
+                    }
+                    finally
+                    {
+                        _restoringSourceSelection = false;
+                        UpdatePaintSourceLabel();
+                    }
                 }
                 if (_selectedLayer is null || !Definition.Layers.Contains(_selectedLayer)) _selectedLayer = Definition.Layers.FirstOrDefault();
                 RefreshStructure();

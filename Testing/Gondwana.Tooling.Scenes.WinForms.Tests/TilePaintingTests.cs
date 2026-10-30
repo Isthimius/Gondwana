@@ -134,6 +134,120 @@ public sealed partial class SceneEditorTests
         Assert.Empty(layer.Tiles); Assert.False(document.IsDirty);
     });
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void SaveAsDoesNotSwitchPaintSourceDuringSelectionRestoration(bool animationLast) =>
+        WithPaintingEditor((editor, preview, source, root) =>
+        {
+            string gani = Path.Combine(root, "flow.gani");
+            AnimationDefinitionSerializer.Save(gani, new AnimationDefinition
+            {
+                Key = "water.flow",
+                ThrottleTime = .1,
+                Frames = [new() { Tilesheet = "terrain", RegionName = "detail" }]
+            });
+            editor.AddAnimationSources([gani]); Application.DoEvents();
+            var animations = Descendants(editor).OfType<ListView>().Single();
+            animations.Items[0].Selected = true; animations.Focus();
+            SelectPaintFrame(source);
+            if (animationLast) animations.Focus();
+            var document = editor.Document;
+            var layer = document.Definition.Layers[0];
+            string directory = Path.Combine(root, "saved");
+            Directory.CreateDirectory(directory);
+            document.Save(Path.Combine(directory, "scene.gscn"));
+            Application.DoEvents();
+            Assert.Single(animations.SelectedItems);
+            Assert.False(document.IsDirty);
+            Tool(editor, "Paint").PerformClick();
+            ClickCell(preview, layer, 1, 1);
+            if (animationLast)
+                Assert.Equal("water.flow", Assert.Single(layer.Tiles).AnimationKey);
+            else
+            {
+                // Frame selection was reduced to its root during rebuild, so it must be unavailable.
+                Assert.Empty(layer.Tiles);
+                Assert.False(document.IsDirty);
+                Assert.Contains(Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.OfType<ToolStripLabel>()),
+                    label => label.Text?.StartsWith("Paint unavailable", StringComparison.Ordinal) == true);
+            }
+        });
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void PaintingRejectsUnnamedGtsRegions(string regionName) => WithPaintingEditor((editor, preview, source, root) =>
+    {
+        string path = Path.Combine(root, "terrain.gts");
+        var definition = TilesheetDefinitionSerializer.Load(path);
+        definition.Regions[0].Name = regionName;
+        // Imported files can deserialize without meeting the serializer's save validation rules.
+        File.WriteAllText(path, JsonConvert.SerializeObject(definition));
+        editor.ReloadSources();
+        SelectPaintFrame(source);
+        var document = editor.Document;
+        document.Save(Path.Combine(root, "scene.gscn")); Application.DoEvents();
+        string? undo = document.History.UndoDescription;
+        Tool(editor, "Paint").PerformClick();
+        ClickCell(preview, document.Definition.Layers[0], 1, 1);
+        Assert.Empty(document.Definition.Layers[0].Tiles);
+        Assert.False(document.IsDirty);
+        Assert.Equal(undo, document.History.UndoDescription);
+    });
+
+    [Theory]
+    [InlineData(-1, .1, "detail")]
+    [InlineData(0, -1, "detail")]
+    [InlineData(0, .1, "")]
+    public void PaintingRejectsStructurallyInvalidGani(int firstFrameX, double throttle, string secondRegion) =>
+        WithPaintingEditor((editor, preview, source, root) =>
+        {
+            string path = Path.Combine(root, "invalid.gani");
+            File.WriteAllText(path, JsonConvert.SerializeObject(new AnimationDefinition
+            {
+                Key = "invalid",
+                ThrottleTime = throttle,
+                Frames = [new() { Tilesheet = "terrain", RegionName = "detail", XTile = firstFrameX },
+                    new() { Tilesheet = "terrain", RegionName = secondRegion }]
+            }));
+            editor.AddAnimationSources([path]); Application.DoEvents();
+            var animations = Descendants(editor).OfType<ListView>().Single();
+            animations.Items[0].Selected = true; animations.Focus();
+            var document = editor.Document;
+            document.Save(Path.Combine(root, "scene.gscn")); Application.DoEvents();
+            string? undo = document.History.UndoDescription;
+            Tool(editor, "Paint").PerformClick();
+            ClickCell(preview, document.Definition.Layers[0], 1, 1);
+            Assert.Empty(document.Definition.Layers[0].Tiles);
+            Assert.False(document.IsDirty);
+            Assert.Equal(undo, document.History.UndoDescription);
+        });
+
+    [Fact]
+    public void GtsPaintingPreservesExistingAnimationAssignmentSemantics() => WithPaintingEditor((editor, preview, source, root) =>
+    {
+        var document = editor.Document;
+        var layer = document.Definition.Layers[0];
+        document.EditTile(layer, 1, 1, "Seed animated tile", tile =>
+        {
+            tile.AnimationKey = "water.flow"; tile.EnableAnimator = true; tile.StartAnimation = true;
+            tile.Transform = TileTransform.Rotate90; tile.Nickname = "authored";
+        });
+        var original = Assert.Single(layer.Tiles);
+        string before = JsonConvert.SerializeObject(original);
+        SelectPaintFrame(source);
+        Tool(editor, "Paint").PerformClick();
+        ClickCell(preview, layer, 1, 1);
+        Assert.Equal("water.flow", original.AnimationKey);
+        Assert.True(original.EnableAnimator); Assert.True(original.StartAnimation);
+        Assert.Equal(TileTransform.Rotate90, original.Transform); Assert.Equal("authored", original.Nickname);
+        Assert.Equal(("terrain", "detail", 1, 1),
+            (original.Frame!.Tilesheet, original.Frame.RegionName, original.Frame.XTile, original.Frame.YTile));
+        document.History.Undo(); Application.DoEvents();
+        Assert.Equal(before, JsonConvert.SerializeObject(original));
+    });
+
     public static IEnumerable<object[]> PaintingProjections =>
         from projection in Enum.GetValues<CoordinateSystemTypes>()
         from zoom in new[] { .5f, 1f, 2f }
