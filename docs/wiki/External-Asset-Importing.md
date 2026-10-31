@@ -35,7 +35,7 @@ normal activation behavior; import does not discard unsaved editor changes.
 | Godot 3.x TileSet (`format=2`) | Text .tres resources, single tiles, atlas tiles, underlying autotile atlas geometry, multiple tile IDs/textures, region offsets, tile sizes and spacing → grouped GTS | No binary .res or .tscn scenes. Autotile bitmask/priority/fallback/icon-selection semantics are not preserved. Collision, navigation, occlusion, materials, normal maps, modulation, offsets, z-index and unfamiliar metadata are diagnosed and omitted. No GANI is generated; AnimatedTexture traversal is unsupported. |
 | Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, single- and multi-cell atlas tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → grouped GTS/GANI | No `.res`, scenes or scene collections. Multi-cell tiles become named regions containing their full atlas rectangles; animation frames have distinct regions when needed. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
 | Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections, embedded image bytes, nonzero tile offsets or per-tile subrectangles. Wang/terrain, properties, collision objects and transformation metadata warn and are omitted. |
-| Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Frame dimensions must match map cells. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
+| Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets grouped into one GTS document per map, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Frame dimensions must match map cells. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
 | Aseprite `.ase` / `.aseprite` | RGBA, grayscale, indexed palettes/transparency, raw/zlib/linked cels, visibility, Normal blending, opacity, groups, cel z-order, tags and mixed timing → PNG/GTS/GANI | No tilemaps, reference layers, non-Normal blends, precise/scaled cel bounds, non-square pixel aspect ratios, external dependencies, ICC or custom gamma. Other metadata chunks are diagnosed and omitted. |
 
 TMX supports XML tile elements, CSV, uncompressed base64, base64+zlib and
@@ -65,9 +65,16 @@ Multiple tile IDs share that document with member names `terrain.tile.0`,
 `terrain.tile.3`, etc., even when they use different image textures. The
 serialized tile display name does not override these deterministic names.
 
-TSX uses its sanitized tileset name as the logical name and source basename for
-files; animated tiles share `terrain-animations.gani`, with keys such as `terrain.tile.17`.
-Embedded TMX tilesets use map basename plus firstgid for filenames.
+Standalone TSX uses its sanitized tileset name as the logical name and filename
+for its single-member GTS; animated tiles share `terrain-animations.gani`, with keys
+such as `terrain.tile.17`. A TMX import instead groups **all** referenced external
+and embedded tilesets into one `<map-basename>.gts` document, preserving each
+tileset's logical name and independent image path. GSCN sources for every tileset
+refer to the same grouped GTS path but retain distinct logical selectors. GANI
+tilesheet sources also refer to that grouped path; generated animation files
+remain grouped per tileset (`<tileset-basename>-animations.gani`). Embedded
+tilesets retain map-basename-plus-firstgid identifiers for the generated
+animation filenames. Importing a TSX by itself does not change this behavior.
 
 Definition dependencies use paths relative to the output directory whenever
 possible, with `/` separators. Existing atlas images remain source dependencies;
@@ -82,7 +89,7 @@ dummy Godot project file is not required.
 
 A physical native output file contains a `Definitions` document. Each member has its own logical identity (`Name` for GTS, `Key` for GANI/GSPR/GSND, and `ID` for GSCN). The Studio preview lists all identities beside the single output path. The shared pipeline collects typed members, validates complete documents using the core serializers, and serializes each document once before transactional staging.
 
-Grouping is chosen by each provider's output filenames. Aseprite groups tags from a sprite into one GANI document. Tiled groups tile animations from a tileset into `<tileset-basename>-animations.gani`; TMX scene references retain each animation key while sharing that path. Godot 4 groups animations per atlas source into `<source-basename>-animations.gani`. Godot 3 and 4 group all GTS members from the same source TileSet into one physical GTS document, and TMX produces one GSCN per map. The pipeline also accepts grouped GSPR, GSND, and scene or tilesheet collections from providers; the current external converters do not invent sprite, audio, or scene-collection features.
+Grouping is chosen by each provider's output filenames. Aseprite groups tags from a sprite into one GANI document. Tiled groups tile animations from a tileset into `<tileset-basename>-animations.gani`; TMX scene references retain each animation key while sharing that path. A TMX map's GTS definitions share one physical document while standalone TSX imports remain single-member. Godot 4 groups animations per atlas source into `<source-basename>-animations.gani`. Godot 3 and 4 group all GTS members from the same source TileSet into one physical GTS document, and TMX produces one GSCN per map. The pipeline also accepts grouped GSPR, GSND, and scene or tilesheet collections from providers; the current external converters do not invent sprite, audio, or scene-collection features.
 
 The plan assigns generated-source provenance to all native members and retains each serializer's existing persistence rules (GSPR and GSND load provenance is not serialized). Cross-definition references retain logical selectors and output-relative paths. Duplicate identities within or across generated documents of the same type are errors, as are conflicts with any member of other native documents directly in the output directory.
 
