@@ -78,6 +78,9 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(map, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gtsArtifact = Assert.Single(result.Analysis.Artifacts, item => item.Kind == "GTS");
+        Assert.Equal("level.gts", Path.GetFileName(gtsArtifact.OutputPath));
+        Assert.Equal(new[] { "terrain" }, gtsArtifact.LogicalKeys);
         var artifact = Assert.Single(result.Analysis.Artifacts, item => item.Kind == "GANI");
         Assert.Equal(new[] { "terrain.tile.0", "terrain.tile.1" }, artifact.LogicalKeys);
         Assert.Equal(2, AnimationDefinitionSerializer.LoadAll(artifact.OutputPath).Count);
@@ -86,8 +89,11 @@ public sealed class TiledImportTests : IDisposable
         Assert.All(scene.AnimationSources, source =>
         {
             Assert.Equal("terrain-animations.gani", source.GaniPath);
-            Assert.Equal(source.AnimationKey, AnimationDefinitionSerializer.Load(artifact.OutputPath, source.AnimationKey).Key);
+            var animation = AnimationDefinitionSerializer.Load(artifact.OutputPath, source.AnimationKey);
+            Assert.Equal(source.AnimationKey, animation.Key);
+            Assert.Equal("level.gts", Assert.Single(animation.TilesheetSources).GtsPath);
         });
+        Assert.Equal("level.gts", Assert.Single(scene.TilesheetSources).GtsPath);
     }
 
     /// <summary>
@@ -146,8 +152,24 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gtsArtifact = Assert.Single(result.Analysis.Artifacts, item => item.Kind == "GTS");
+        Assert.Equal("level.gts", Path.GetFileName(gtsArtifact.OutputPath));
+        Assert.Equal(new[] { "terrain", "second" }, gtsArtifact.LogicalKeys);
+        Assert.DoesNotContain(result.WrittenFiles, f => Path.GetFileName(f) is "terrain.gts" or "second.gts");
+        Assert.Equal(new[] { "terrain", "second" },
+            TilesheetDefinitionSerializer.LoadAll(gtsArtifact.OutputPath).Select(d => d.Name));
+        Assert.Equal("../atlas.png", TilesheetDefinitionSerializer.Load(gtsArtifact.OutputPath, "terrain").Image.FilePath);
+        Assert.Equal("../atlas.png", TilesheetDefinitionSerializer.Load(gtsArtifact.OutputPath, "second").Image.FilePath);
         var scene = Gondwana.Scenes.GSCN.SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "level.gscn"));
         Assert.Empty(Gondwana.Scenes.GSCN.SceneDefinitionValidator.Validate(scene));
+        Assert.Equal(new[] { "terrain", "second" }, scene.TilesheetSources.Select(source => source.Tilesheet));
+        Assert.All(scene.TilesheetSources, source => Assert.Equal("level.gts", source.GtsPath));
+        foreach (var animationSource in scene.AnimationSources)
+        {
+            var animation = AnimationDefinitionSerializer.Load(
+                Path.Combine(request.OutputDirectory, animationSource.GaniPath!), animationSource.AnimationKey);
+            Assert.Equal("level.gts", Assert.Single(animation.TilesheetSources).GtsPath);
+        }
         var layer = Assert.Single(scene.Layers);
         Assert.Equal(2, layer.Tiles.Count);
         Assert.False(layer.Visible);
@@ -159,6 +181,62 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(2, layer.Tiles[1].X);
         Assert.Equal(2, scene.AnimationSources.Count);
         Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.layer.unsupported");
+    }
+
+    /// <summary>
+    /// Verifies a TMX imports external and inline tilesets into one GTS while retaining
+    /// separate logical identities, image sources and animation references.
+    /// </summary>
+    [Fact]
+    public void MapGroupsExternalAndInlineTilesetsWithoutChangingStandaloneTsx()
+    {
+        string standaloneTileset = Tileset();
+        string source = Path.Combine(directory, "mixed.tmx");
+        File.WriteAllText(source, """
+            <map orientation="orthogonal" width="2" height="1" tilewidth="2" tileheight="2">
+              <tileset firstgid="1" source="terrain.tsx"/>
+              <tileset firstgid="5" name="decor" tilewidth="2" tileheight="2" tilecount="2" columns="2" margin="1" spacing="1">
+                <image source="atlas.png" width="7" height="4"/>
+                <tile id="0">
+                  <animation><frame tileid="1" duration="175"/><frame tileid="0" duration="225"/></animation>
+                </tile>
+              </tileset>
+              <layer width="2" height="1"><data encoding="csv">1,5</data></layer>
+            </map>
+            """);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gtsArtifact = Assert.Single(result.Analysis.Artifacts, artifact => artifact.Kind == "GTS");
+        Assert.Equal("mixed.gts", Path.GetFileName(gtsArtifact.OutputPath));
+        Assert.Equal(new[] { "terrain", "decor" }, gtsArtifact.LogicalKeys);
+        Assert.Equal(2, TilesheetDefinitionSerializer.LoadAll(gtsArtifact.OutputPath).Count);
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "mixed.gscn"));
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        Assert.Equal(new[] { "terrain", "decor" }, scene.TilesheetSources.Select(x => x.Tilesheet));
+        Assert.All(scene.TilesheetSources, x => Assert.Equal("mixed.gts", x.GtsPath));
+        Assert.Equal(new[] { "terrain", "decor" },
+            scene.Layers.Single().Tiles.Select(tile => tile.Frame!.Tilesheet));
+        Assert.All(scene.Layers.Single().Tiles, tile => Assert.True(tile.StartAnimation));
+        Assert.Equal(2, scene.AnimationSources.Count);
+        foreach (var animationSource in scene.AnimationSources)
+        {
+            var animation = AnimationDefinitionSerializer.Load(
+                Path.Combine(request.OutputDirectory, animationSource.GaniPath!), animationSource.AnimationKey);
+            Assert.Equal("mixed.gts", Assert.Single(animation.TilesheetSources).GtsPath);
+            Assert.All(animation.Frames, frame => Assert.Equal(
+                animationSource.AnimationKey.Split(".tile.")[0], frame.Tilesheet));
+        }
+
+        // Importing the original TSX independently still produces its own single-member GTS.
+        var standaloneRequest = new ExternalImportRequest(standaloneTileset, Path.Combine(directory, "tsx-output"));
+        var tsxResult = new TiledTilesetImporter().Import(standaloneRequest);
+        Assert.True(tsxResult.Analysis.CanImport);
+        Assert.Equal("terrain.gts", Path.GetFileName(
+            Assert.Single(tsxResult.Analysis.Artifacts, artifact => artifact.Kind == "GTS").OutputPath));
+        Assert.Equal("terrain.gts", Assert.Single(AnimationDefinitionSerializer.Load(
+            Path.Combine(standaloneRequest.OutputDirectory, "terrain-animations.gani")).TilesheetSources).GtsPath);
     }
 
     /// <summary>
@@ -229,7 +307,7 @@ public sealed class TiledImportTests : IDisposable
         var tiles = scene.Layers.Single().Tiles;
         Assert.Equal(expected, tiles.Select(tile => tile.Transform));
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance.LoadFromDefinitionFile(
-            Path.Combine(request.OutputDirectory, "terrain.gts"));
+            Path.Combine(request.OutputDirectory, "transforms.gts"), "terrain");
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         Assert.Equal(expected, Enumerable.Range(0, 8).Select(x => runtime.SceneLayers.Single()[x, 0]!.Transform));
         Assert.Equal(expected, SceneDefinitionSerializer.FromScene(runtime).Layers[0].Tiles.Select(tile => tile.Transform));
