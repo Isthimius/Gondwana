@@ -83,5 +83,18 @@ public sealed partial class CompositionTests
         Assert.False(document.History.InTransaction);
         edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Empty(layer.Tiles);
         edit.DropDownItems[1].PerformClick(); Application.DoEvents(); Assert.Equal(5, layer.Tiles.Count);
+        Tool("Rectangle Erase").PerformClick();
+        Pointer("OnMouseDown", Cell(5, 1)); Pointer("OnMouseMove", Cell(1, 1));
+        Assert.Equal(5, layer.Tiles.Count);
+        Pointer("OnMouseUp", Cell(1, 1)); Assert.Empty(layer.Tiles);
+        edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Equal(5, layer.Tiles.Count);
+        Tool("Rectangle Paint").PerformClick();
+        Pointer("OnMouseDown", Cell(1, 2)); Pointer("OnMouseUp", Cell(3, 3));
+        Assert.Equal(11, layer.Tiles.Count);
+        edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Equal(5, layer.Tiles.Count);
+        Tool("Fill").PerformClick();
+        Pointer("OnMouseDown", Cell(1, 2)); Pointer("OnMouseUp", Cell(1, 2));
+        Assert.Equal(layer.Columns * layer.Rows, layer.Tiles.Count);
+        edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Equal(5, layer.Tiles.Count);
     });
 }

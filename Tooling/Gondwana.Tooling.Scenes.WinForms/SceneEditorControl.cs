@@ -214,6 +214,9 @@ public sealed partial class SceneEditorControl : UserControl
         _animationList.Columns.Add("Frames", 60, HorizontalAlignment.Right);
         _animationList.ItemActivate += (_, _) => AssignSelectedAnimation();
 
+        _preview.NavigationKey += NavigateSelection;
+        _properties.Enter += (_, _) => _preview.CancelGesture();
+        _tileProperties.Enter += (_, _) => _preview.CancelGesture();
         _preview.GestureStarting += BeginPreviewGesture;
         _preview.TileSelected += PreviewCellClicked;
         _preview.GestureEnded += EndPreviewGesture;
@@ -509,13 +512,21 @@ public sealed partial class SceneEditorControl : UserControl
         var bar = NewToolbar();
         foreach (var tool in Enum.GetValues<SceneEditorTool>())
         {
-            var button = new ToolStripButton(tool.ToString())
+            var button = new ToolStripButton(tool switch
+            {
+                SceneEditorTool.RectanglePaint => "Rectangle Paint",
+                SceneEditorTool.RectangleErase => "Rectangle Erase",
+                _ => tool.ToString()
+            })
             {
                 Checked = tool == ActiveTool,
                 ToolTipText = tool switch
                 {
                     SceneEditorTool.Select => "Click a cell or drag to select a grid rectangle",
                     SceneEditorTool.Paint => "Drag to paint with the last-selected GTS frame or GANI animation",
+                    SceneEditorTool.RectanglePaint => "Drag a grid rectangle; release to paint the selected source",
+                    SceneEditorTool.RectangleErase => "Drag a grid rectangle; release to erase explicit tiles",
+                    SceneEditorTool.Fill => "Click to fill connected cells with matching source assignments",
                     _ => "Drag to erase complete explicit tile definitions"
                 }
             };
@@ -715,6 +726,7 @@ public sealed partial class SceneEditorControl : UserControl
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Apply to selection", null, (_, _) => EditSelectedCells(erase: false))
             .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
+        bar.Items.Add("Edit selected properties", null, (_, _) => EditSelectedProperties());
         bar.Items.Add("Erase selection", null, (_, _) => EditSelectedCells(erase: true))
             .ToolTipText = "Remove explicit tiles in the selection as one undo operation";
         bar.Items.Add(_selectionLabel);

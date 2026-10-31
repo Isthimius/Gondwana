@@ -214,7 +214,8 @@ internal sealed class TilePropertyAdapter
 
     /// <summary>Gets or sets instance collision insets in pixels; negative values expand the area.</summary>
     [Category("Collision")]
-    [Description("Collision-box insets applied when AdjustCollisionAreaByFrame is false. Positive shrinks the box; negative expands it.")]
+    [TypeConverter(typeof(CollisionAdjustConverter))]
+    [Description("Collision-box insets: top, bottom, left, right. Applied when AdjustCollisionAreaByFrame is false. Positive shrinks; negative expands.")]
     public CollisionAdjust AdjustCollisionArea
     {
         get => Tile?.AdjustCollisionArea ?? CollisionAdjust.None;

@@ -14,6 +14,9 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 /// </summary>
 internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 {
+    internal event Func<Keys, bool>? NavigationKey;
+    internal bool SampleStroke { get; set; } = true;
+    internal bool SingleCellGesture { get; set; }
     internal bool RequireSelectedLayer { get; set; }
 
     internal event Func<SceneLayerDefinition, int, int, bool>? GestureStarting;
@@ -405,10 +408,16 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             CancelGesture();
             return;
         }
+        if (SingleCellGesture) return;
         UpdateOffset();
         var world = ScreenToWorld(location);
         var start = _previousWorld;
         _previousWorld = world;
+        if (!SampleStroke)
+        {
+            if (TryHitCell(layer, world, out var target)) VisitCell(layer, target);
+            return;
+        }
         foreach (var cell in CellsAlongSegment(layer, start, world))
         {
             if (!ReferenceEquals(_gestureLayer, layer)) break;
@@ -595,6 +604,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == Keys.Escape && HasGesture) { CancelGesture(); return true; }
+        if (Focused && NavigationKey?.Invoke(keyData) == true) return true;
         return base.ProcessCmdKey(ref msg, keyData);
     }
 

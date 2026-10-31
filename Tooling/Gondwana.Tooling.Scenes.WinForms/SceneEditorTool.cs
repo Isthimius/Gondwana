@@ -4,5 +4,8 @@ internal enum SceneEditorTool
 {
     Select,
     Paint,
-    Erase
+    Erase,
+    RectanglePaint,
+    RectangleErase,
+    Fill
 }
