@@ -21,7 +21,8 @@ public sealed class DefinitionSelectionBarTests
 
         var bar = Assert.Single(editor.Controls.OfType<ToolStrip>()
             .Where(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal)));
-        Assert.Equal(new Size(32, 32), bar.ImageScalingSize);
+        int pixels = Gondwana.Tooling.WinForms.ToolbarSizing.Pixels(32, bar.DeviceDpi);
+        Assert.Equal(new Size(pixels, pixels), bar.ImageScalingSize);
         Assert.True(bar.ShowItemToolTips);
         Assert.Single(bar.Items.OfType<ToolStripComboBox>());
         Assert.Single(bar.Items.OfType<ToolStripTextBox>());
@@ -41,8 +42,8 @@ public sealed class DefinitionSelectionBarTests
         {
             Assert.Equal(ToolStripItemDisplayStyle.Image, button.DisplayStyle);
             Assert.False(button.AutoSize);
-            Assert.Equal(new Size(32, 32), button.Size);
-            Assert.Equal(new Size(32, 32), Assert.IsType<Bitmap>(button.Image).Size);
+            Assert.Equal(new Size(pixels, pixels), button.Size);
+            Assert.Equal(new Size(pixels, pixels), Assert.IsType<Bitmap>(button.Image).Size);
             Assert.False(button.AutoToolTip);
             Assert.Equal(button.ToolTipText, button.Text);
             Assert.Equal(button.ToolTipText, button.AccessibleName);

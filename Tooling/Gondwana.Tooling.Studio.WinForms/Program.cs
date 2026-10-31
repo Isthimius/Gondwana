@@ -5,9 +5,7 @@ static class Program
     [STAThread]
     static void Main()
     {
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        ApplicationConfiguration.Initialize();
         ToolingAppearance.Initialize();
         Application.Run(new MainForm());
     }

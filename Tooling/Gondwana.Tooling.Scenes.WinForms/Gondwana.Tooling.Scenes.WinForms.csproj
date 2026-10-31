@@ -7,6 +7,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- Retain SystemAware until mixed-monitor docking/canvas compatibility is verified. -->
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

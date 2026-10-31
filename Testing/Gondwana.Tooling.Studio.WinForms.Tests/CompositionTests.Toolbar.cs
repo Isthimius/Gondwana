@@ -3,6 +3,7 @@ using Gondwana.Assets;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -15,13 +16,16 @@ public sealed partial class CompositionTests
         using var studio = Host(directory);
         var bar = studio.StudioToolbar;
         Assert.Equal(DockStyle.Top, bar.Dock);
-        Assert.Equal(new Size(24, 24), bar.ImageScalingSize);
+        int imagePixels = ToolbarSizing.Pixels(24, bar.DeviceDpi);
+        int buttonPixels = ToolbarSizing.Pixels(48, bar.DeviceDpi);
+        Assert.Equal(new Size(imagePixels, imagePixels), bar.ImageScalingSize);
         // Theme application must not replace Studio's native hover tooltips.
         Assert.True(bar.ShowItemToolTips);
         Assert.All(bar.Items.OfType<ToolStripButton>(), item =>
         {
             Assert.False(item.AutoSize);
-            Assert.Equal(new Size(48, 48), item.Size);
+            Assert.Equal(new Size(buttonPixels, buttonPixels), item.Size);
+            Assert.Equal(bar.ImageScalingSize, item.Image!.Size);
             Assert.False(item.AutoToolTip);
             Assert.False(string.IsNullOrWhiteSpace(item.ToolTipText));
         });
@@ -35,7 +39,7 @@ public sealed partial class CompositionTests
         Assert.False(create.AutoToolTip);
         Assert.Equal("New document (choose a Gondwana format)", create.ToolTipText);
         Assert.False(create.AutoSize);
-        Assert.Equal(new Size(48, 48), create.Size);
+        Assert.Equal(new Size(buttonPixels, buttonPixels), create.Size);
         Assert.Equal(MainForm.NewFileFormats.Select(format => format.Label),
             create.DropDownItems.OfType<ToolStripMenuItem>().Select(item => item.Text));
 
