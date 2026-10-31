@@ -116,7 +116,11 @@ public sealed partial class SceneEditorControl
         if (direction == Point.Empty || _selectedLayer is not { Columns: > 0, Rows: > 0 } layer ||
             !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return false;
         var current = new Point((int)_tileX.Value, (int)_tileY.Value);
-        if (!extend || _selectedCells.Width * (long)_selectedCells.Height <= 1) _selectionAnchor = current;
+        _selectionAnchor = !extend || _selectedCells.Width * (long)_selectedCells.Height <= 1
+            ? current
+            : new Point(
+                current.X == _selectedCells.Left ? _selectedCells.Right - 1 : _selectedCells.Left,
+                current.Y == _selectedCells.Top ? _selectedCells.Bottom - 1 : _selectedCells.Top);
         var next = new Point(Math.Clamp(current.X + direction.X, 0, layer.Columns - 1),
             Math.Clamp(current.Y + direction.Y, 0, layer.Rows - 1));
         SetSelectedTile(layer, next.X, next.Y, preserveSelection: extend);
