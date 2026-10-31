@@ -156,6 +156,7 @@ public static class ToolingAppearance
                 grid.EditingControlShowing += (_, e) => Apply(e.Control);
                 break;
             case ToolStrip strip:
+                DpiDiagnostics.Attach(strip);
                 strip.BackColor = Palette.Surface;
                 strip.Renderer = new ThemeStripRenderer(Palette);
                 strip.ItemAdded += (_, e) => ApplyItem(e.Item);

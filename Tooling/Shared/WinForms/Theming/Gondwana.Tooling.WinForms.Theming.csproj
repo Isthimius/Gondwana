@@ -7,6 +7,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../Dpi/*.cs" Link="Dpi/%(Filename)%(Extension)" />
     <Compile Include="../Navigation/*.cs" Link="Navigation/%(Filename)%(Extension)" />
     <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />

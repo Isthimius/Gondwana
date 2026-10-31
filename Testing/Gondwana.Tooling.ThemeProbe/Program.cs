@@ -1,6 +1,7 @@
 using System.Drawing.Imaging;
 using System.Reflection;
 using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 // Run once per theme in a fresh process: dotnet run --project Testing/Gondwana.Tooling.ThemeProbe -- Light <output-directory>
@@ -18,6 +19,8 @@ internal static class Program
         Environment.CurrentDirectory = workspace;
         AppContext.SetData("Gondwana.Tooling.SettingsRoot", settings);
         new ThemePreferenceStore(settings).Write(theme);
+        // Probe-only opt-in; production apps retain SystemAware pending mixed-monitor validation.
+        Application.SetHighDpiMode(args.Contains("--per-monitor-v2") ? HighDpiMode.PerMonitorV2 : HighDpiMode.SystemAware);
         ApplicationConfiguration.Initialize();
         Run(theme, output, args.Contains("--inspect"));
     }
@@ -27,6 +30,17 @@ internal static class Program
     {
         if (ToolingAppearance.Current != theme) throw new InvalidOperationException("Preference not restored.");
         ToolingAppearance.Initialize();
+        // Reproduce the original code-first Studio strip independently of the new sizing owner.
+        using (var baseline = new Form { ShowInTaskbar = false, Opacity = 0 })
+        using (var native = new ToolStrip { ImageScalingSize = new Size(24, 24) })
+        {
+            var button = new ToolStripButton { AutoSize = false, Size = new Size(48, 48) };
+            native.Items.Add(button);
+            baseline.Controls.Add(native);
+            baseline.Show();
+            Application.DoEvents();
+            Console.WriteLine($"Native startup baseline: awareness={Application.HighDpiMode}, DPI={native.DeviceDpi}, AutoScaleMode={baseline.AutoScaleMode}, AutoScaleDimensions={baseline.AutoScaleDimensions}, button={button.Size}, ImageScalingSize={native.ImageScalingSize}");
+        }
         foreach (var app in new[] { "Studio", "Assets", "Tilesheets", "Animations", "Audio", "Scenes", "Sprites" })
         {
             var assembly = Assembly.Load(app == "Studio" ? "Gondwana.Studio.WinForms" : $"Gondwana.Tooling.{app}.WinForms");
@@ -38,7 +52,12 @@ internal static class Program
             {
                 var create = type.GetMethod("NewDocument", BindingFlags.Instance | BindingFlags.NonPublic)!;
                 foreach (var format in new[] { "gaf", "gts", "gani", "gsnd", "gscn", "gspr" })
-                    create.Invoke(form, new object?[] { format, format == "gaf" ? Path.Combine(output, theme + ".gaf") : null, null, false });
+                {
+                    var arguments = create.GetParameters().Select(p => p.DefaultValue).ToArray();
+                    arguments[0] = format;
+                    arguments[1] = format == "gaf" ? Path.Combine(output, theme + ".gaf") : null;
+                    create.Invoke(form, arguments);
+                }
             }
             else
             {
@@ -82,6 +101,21 @@ internal static class Program
             Application.DoEvents();
             floating.DockState = state;
             Application.DoEvents();
+            foreach (var strip in Descendants(form).OfType<DpiToolStrip>())
+            {
+                int buttonLogical = app == "Studio" && strip.Name == "StudioToolbar" ? 48 : 32;
+                int imageLogical = buttonLogical == 48 ? 24 : 32;
+                int buttonPixels = ToolbarSizing.Pixels(buttonLogical, strip.DeviceDpi);
+                int imagePixels = ToolbarSizing.Pixels(imageLogical, strip.DeviceDpi);
+                if (strip.ImageScalingSize != new Size(imagePixels, imagePixels))
+                    throw new InvalidOperationException("Incorrect image scaling size.");
+                foreach (var item in strip.Items.Cast<ToolStripItem>().Where(item => item.Image is not null))
+                {
+                    if (item.Size != new Size(buttonPixels, buttonPixels) || item.Image!.Size != new Size(imagePixels, imagePixels))
+                        throw new InvalidOperationException($"{app}/{item.Name}: incorrect DPI metrics.");
+                    Console.WriteLine($"DPI {app}/{item.Name}: awareness={Application.HighDpiMode}, DeviceDpi={strip.DeviceDpi}, bounds={item.Bounds}, image={item.Image.Size}");
+                }
+            }
             using var bitmap = new Bitmap(form.Width, form.Height);
             form.DrawToBitmap(bitmap, new Rectangle(Point.Empty, form.Size));
             using (var graphics = Graphics.FromImage(bitmap)) RenderDock(outer, graphics, form.Location);

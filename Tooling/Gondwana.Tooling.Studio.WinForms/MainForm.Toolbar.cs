@@ -1,13 +1,11 @@
-using System.Drawing.Drawing2D;
 using Gondwana.Tooling.Scenes.WinForms;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 
 /// <summary>Studio-wide commands only; individual editors retain their specialized toolbars.</summary>
 public sealed partial class MainForm
 {
-    private static readonly Size ToolbarButtonSize = new(48, 48);
-    private readonly List<Image> _toolbarIcons = [];
     private ToolStripMenuItem _saveAllMenuItem = null!;
     private ToolStripButton _saveButton = null!;
     private ToolStripButton _saveAllButton = null!;
@@ -20,12 +18,11 @@ public sealed partial class MainForm
 
     private ToolStrip BuildToolbar()
     {
-        var bar = new ToolStrip
+        var bar = new DpiToolStrip(48, 24)
         {
             Name = "StudioToolbar",
             Dock = DockStyle.Top,
             GripStyle = ToolStripGripStyle.Hidden,
-            ImageScalingSize = new Size(24, 24),
             // Enable native ToolStrip tooltips after theme application; the shared theme
             // otherwise replaces them with mouse-move tooltips on the whole strip.
             ShowItemToolTips = false
@@ -36,8 +33,6 @@ public sealed partial class MainForm
             Name = "New",
             AutoToolTip = false,
             AutoSize = false,
-            Size = ToolbarButtonSize,
-            Image = Glyph("new"),
             DisplayStyle = ToolStripItemDisplayStyle.Image,
             ToolTipText = "New document (choose a Gondwana format)",
             AccessibleName = "New document"
@@ -48,6 +43,7 @@ public sealed partial class MainForm
             create.DropDownItems.Add(label, null, (_, _) => TryNew(selectedFormat));
         }
         bar.Items.Add(create);
+        bar.SetGlyph(create, pixels => ToolbarGlyphs.Studio("new", pixels, ToolingAppearance.Palette));
         AddButton(bar, "Open", "Open documents (Ctrl+O)", "open", OpenFiles);
         bar.Items.Add(new ToolStripSeparator());
 
@@ -74,12 +70,6 @@ public sealed partial class MainForm
         _validateButton = AddButton(bar, "Validate", "Validate active document", "validate",
             () => ValidateActiveDocument());
 
-        bar.Disposed += (_, _) =>
-        {
-            foreach (var image in _toolbarIcons) image.Dispose();
-            _toolbarIcons.Clear();
-        };
-
         _saveButton.Enabled = false;
         _saveAllButton.Enabled = false;
         _previewButton.Enabled = false;
@@ -88,21 +78,20 @@ public sealed partial class MainForm
         return bar;
     }
 
-    private ToolStripButton AddButton(ToolStrip bar, string name, string tooltip, string glyph, Action action)
+    private ToolStripButton AddButton(DpiToolStrip bar, string name, string tooltip, string glyph, Action action)
     {
         var button = new ToolStripButton
         {
             Name = name,
             AutoToolTip = false,
             AutoSize = false,
-            Size = ToolbarButtonSize,
-            Image = Glyph(glyph),
             DisplayStyle = ToolStripItemDisplayStyle.Image,
             ToolTipText = tooltip,
             AccessibleName = tooltip
         };
         button.Click += (_, _) => action();
         bar.Items.Add(button);
+        bar.SetGlyph(button, pixels => ToolbarGlyphs.Studio(glyph, pixels, ToolingAppearance.Palette));
         return button;
     }
 
@@ -183,62 +172,5 @@ public sealed partial class MainForm
         }
     }
 
-    private Image Glyph(string kind)
-    {
-        var bitmap = new Bitmap(24, 24);
-        using (var g = Graphics.FromImage(bitmap))
-        using (var pen = new Pen(ToolingAppearance.Palette.Foreground, 2f)
-        {
-            StartCap = LineCap.Round,
-            EndCap = LineCap.Round,
-            LineJoin = LineJoin.Round
-        })
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            void Lines(params PointF[] points) => g.DrawLines(pen, points);
-            void Line(float x1, float y1, float x2, float y2) => g.DrawLine(pen, x1, y1, x2, y2);
-            switch (kind)
-            {
-                case "new":
-                    Lines(new(6, 3), new(15, 3), new(19, 7), new(19, 13));
-                    Lines(new(15, 3), new(15, 7), new(19, 7));
-                    Lines(new(6, 3), new(6, 21), new(13, 21));
-                    Line(17, 16, 17, 22);
-                    Line(14, 19, 20, 19);
-                    break;
-                case "open":
-                case "folder":
-                    Lines(new(2, 8), new(2, 5), new(9, 5), new(11, 8), new(21, 8), new(21, 19), new(3, 19), new(2, 8));
-                    if (kind == "open")
-                    {
-                        Lines(new(5, 12), new(22, 12), new(19, 21), new(3, 21), new(5, 12));
-                    }
-                    break;
-                case "save":
-                case "save-all":
-                    if (kind == "save-all")
-                    {
-                        Lines(new(3, 6), new(3, 3), new(17, 3), new(20, 6), new(20, 17));
-                        g.TranslateTransform(2, 2);
-                    }
-                    Lines(new(4, 3), new(16, 3), new(20, 7), new(20, 21), new(4, 21), new(4, 3));
-                    Lines(new(8, 3), new(8, 10), new(16, 10), new(16, 3));
-                    Lines(new(8, 21), new(8, 14), new(16, 14), new(16, 21));
-                    break;
-                case "refresh":
-                    g.DrawArc(pen, 4, 4, 16, 16, 35, 285);
-                    Lines(new(17, 3), new(21, 5), new(20, 10));
-                    break;
-                case "preview":
-                    Lines(new(8, 4), new(20, 12), new(8, 20), new(8, 4));
-                    break;
-                case "validate":
-                    g.DrawEllipse(pen, 3, 3, 18, 18);
-                    Lines(new(7, 12), new(11, 16), new(17, 9));
-                    break;
-            }
-        }
-        _toolbarIcons.Add(bitmap);
-        return bitmap;
-    }
+
 }
