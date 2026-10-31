@@ -413,9 +413,9 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         var world = ScreenToWorld(location);
         var start = _previousWorld;
         _previousWorld = world;
-        if (!SampleStroke)
+        if (!SampleStroke && TryHitCell(layer, world, out var target))
         {
-            if (TryHitCell(layer, world, out var target)) VisitCell(layer, target);
+            VisitCell(layer, target);
             return;
         }
         foreach (var cell in CellsAlongSegment(layer, start, world))
