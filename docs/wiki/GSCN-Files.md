@@ -500,6 +500,59 @@ GSCN sparse-tile semantics are preserved. Selecting a grid cell does not create 
 tile entry; editing a property or assigning GTS/GANI content does. **Clear tile**
 removes that explicit entry again.
 
+### Visual map editing
+
+The shared Scene Preview toolbar in Studio and the standalone editor provides:
+
+- **Select**: click an active cell, or drag an inclusive rectangle in layer grid coordinates.
+- **Paint / Erase**: hold the left button to brush across cells; each stroke is one Undo step.
+- **Rectangle Paint / Rectangle Erase**: drag either direction to preview projected cell outlines; release to commit the whole rectangle as one Undo step.
+- **Fill**: click to replace the connected region matching the initial cell's assignment. The operation commits on release; dragging does not change its starting cell.
+
+Select a visible layer in Scene Structure before editing. Paint, Rectangle Paint,
+Fill, and Apply to selection use the **last-selected source kind**: either a valid
+GTS frame or GANI animation. The source label identifies that choice. Missing or
+unresolved sources reject painting; tools never add dependencies automatically.
+Frame assignment retains the exact tilesheet, region and frame coordinates.
+Animation assignment sets the cycle key, enables and starts the animator, and
+assigns its first preview frame. Assigning a frame preserves existing animation
+fields, matching the source pane's assignment command.
+
+Fill compares frame identity and authored AnimationKey, EnableAnimator and
+StartAnimation, not collision, transform, visibility, fog, ID or nickname. Cells
+with different placement metadata can be filled together while retaining their
+own metadata. Empty cells and metadata-only cells with no assignment match.
+Square-derived layouts use four grid neighbors; flat-top hex columns and
+pointed-top hex rows use their six edge-sharing staggered neighbors. Filling is
+bounded by the selected layer and does not wrap.
+
+**Apply to selection** and **Erase selection** act on the highlighted set.
+**Edit selected properties** opens a small dialog for multi-cell selections:
+check each property to apply and enter its value. Mixed properties show a blank
+value labeled `(mixed)` until explicitly set. Unchecked properties, tile IDs,
+nicknames and empty cells are preserved. Tile Properties continues to edit only
+the active cell. A confirmed bulk edit is one Undo operation.
+
+With the preview focused, **Arrow keys** move the active cell and **Shift+Arrow**
+extends a grid rectangle, bounded by the layer. **Escape** cancels a pending
+gesture or collapses an expanded selection. Property editors and source inputs
+retain their own keyboard behavior. Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z use the existing
+document history routing. Capture loss, tool/layer/member changes and disposal
+cancel pending gestures; Save cancels a pending gesture before saving.
+
+Selection and previews never materialize tiles. Erasing removes the full explicit
+tile definition. Undo restores each cell's previous metadata or sparse absence;
+unchanged operations add no history. Area operations affecting more than 10,000
+cells require confirmation before mutation and may consume substantial history
+memory or evict older entries. Large edits run synchronously; cancel at the
+confirmation or before releasing a rectangle gesture.
+
+All seven coordinate projections use the existing preview mapping and cell
+outlines, including zoom, scroll offsets and layer origins. Rectangles describe
+grid membership, not overlapping screen-space image bounds. Copy/paste, Select
+All, line tools and custom patterns are not provided. Cross-editor drag-and-drop
+(#525) and external content monitoring (#465) remain separate work.
+
 For legacy GSCN documents without source metadata, the editor may recover an
 unambiguous matching GTS/GANI from the GSCN's own directory. Recovery is
 non-recursive and never chooses among multiple matches.

@@ -374,3 +374,10 @@ Malformed or unsupported raw native replacements remain opaque and replay their
 exact bytes after Save As; those opaque versions cannot promise reference rebasing.
 A failed post-commit refresh blocks saving stale buffers, but discard/close,
 shutdown, and confirmed Reload document remain available.
+
+## Visual scene authoring
+
+GSCN documents use the same Select, Paint, Erase, rectangle, Fill and bulk-property
+controls as the standalone editor. See [[GSCN Files#visual-map-editing]] for source
+selection, keyboard navigation, sparse cells and grouped Undo behavior. Studio’s
+Edit menu always targets the active document; scene edits do not affect other tabs.
