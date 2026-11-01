@@ -21,7 +21,9 @@ permissions:
   actions: read
 jobs:
   blazor-consumer:
-    runs-on: ubuntu-latest
+    # Match the pinned Playwright browser's supported OS, independent of runner image upgrades.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:

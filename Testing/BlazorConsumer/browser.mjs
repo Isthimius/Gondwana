@@ -7,6 +7,12 @@ import { chromium } from 'playwright';
 
 const [root, version] = process.argv.slice(2);
 assert(root && version, 'Usage: node browser.mjs WORK_ROOT PACKAGE_VERSION');
+// Cover browser-process/context startup too, which may hang before a page timeout exists.
+const watchdog = setTimeout(() => {
+    console.error('Browser consumer test exceeded its six-minute deadline');
+    process.exit(1);
+}, 360_000);
+watchdog.unref();
 const assets = JSON.parse(await readFile(join(root, 'app/obj/project.assets.json'), 'utf8'));
 for (const [name, metadata] of Object.entries(assets.libraries)) {
     if (name.startsWith('Gondwana')) {
@@ -34,10 +40,10 @@ async function verify(url, label) {
     await context.tracing.start({ screenshots: true, snapshots: true });
     const page = await context.newPage();
     const errors = [], responses = [], messages = [];
-    page.on('pageerror', error => errors.push(error.stack));
+    page.on('pageerror', error => { errors.push(error.stack); console.error(error.stack); });
     page.on('console', message => {
         messages.push(`${message.type()}: ${message.text()}`);
-        if (message.type() === 'error') errors.push(message.text());
+        if (message.type() === 'error') { errors.push(message.text()); console.error(message.text()); }
     });
     page.on('response', response => {
         responses.push({ url: response.url(), status: response.status() });
@@ -65,6 +71,7 @@ async function verify(url, label) {
         };
     });
     try {
+        console.log(`${label}: loading ${url}`);
         await page.goto(url, { waitUntil: 'load', timeout: 120_000 });
         await page.waitForFunction(() => {
             const canvas = document.querySelector('canvas[id^="gondwana-webgl-"]');
@@ -81,6 +88,14 @@ async function verify(url, label) {
         assert.deepEqual(errors, [], 'Browser startup errors (including native loading/host failures)');
         await page.screenshot({ path: join(root, `browser-results/${label}.png`) });
         console.log(`${label}: audio import, WASM, host startup and sustained Skia/WebGL draws passed`, await page.evaluate(() => window.__gpu));
+    } catch (error) {
+        console.error(`${label}: ${error.message}`);
+        console.error(await page.evaluate(() => ({
+            gpu: window.__gpu,
+            text: document.body.innerText,
+            canvas: [...document.querySelectorAll('canvas')].map(c => ({ id: c.id, width: c.width, height: c.height })),
+        })).catch(() => 'Page unavailable'));
+        throw error;
     } finally {
         await writeFile(join(root, `browser-results/${label}.json`), JSON.stringify({ errors, responses, messages }, null, 2));
         await context.tracing.stop({ path: join(root, `browser-results/${label}.zip`) });
@@ -135,4 +150,5 @@ try {
     }
     await browser.close();
     await new Promise(resolve => server.close(resolve));
+    clearTimeout(watchdog);
 }
