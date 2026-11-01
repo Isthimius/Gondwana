@@ -30,7 +30,11 @@
         <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
         
         <!-- For NuGet: include JS as content -->
-        <None Include="wwwroot\gondwana-audio.js" Pack="true" PackagePath="contentFiles\any\any\wwwroot\" />
+        <None Include="wwwroot\gondwana-audio.js"
+              Pack="true"
+              PackagePath="contentFiles/any/any/wwwroot/gondwana-audio.js"
+              PackageCopyToOutput="true"
+              PackageFlatten="false" />
     </ItemGroup>
 
 </Project>
