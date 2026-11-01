@@ -37,7 +37,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
         Dictionary<int, AnimationDefinition> Animations);
 
-    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token)
+    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null)
     {
         token.ThrowIfCancellationRequested();
         if (root.Name != "tileset") throw new InvalidDataException("Expected a Tiled tileset XML root.");
@@ -82,7 +82,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             throw new InvalidDataException("Per-tile atlas subrectangles are unsupported.");
         if (grid.Columns * grid.Rows > count)
             plan.Report(ExternalImportSeverity.Info, "tiled.unused", "The atlas exposes unused grid cells; generated references use only valid tile IDs.");
-        string gts = filename + ".gts";
+        string gts = sharedGtsFilename ?? filename + ".gts";
         plan.Add(gts, definition);
         var animations = new Dictionary<int, AnimationDefinition>();
         var tileIds = new HashSet<int>();
