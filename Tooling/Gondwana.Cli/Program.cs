@@ -117,7 +117,7 @@ app.Configure(config =>
         branch.AddCommand<RunBlazorCommand>("blazor")
               .WithDescription("Build and run the Blazor WebAssembly/WebGL project in the browser.")
               .WithExample("run", "blazor")
-              .WithExample("run", "blazor", "--framework", "net8.0-browser");
+              .WithExample("run", "blazor", "--framework", "net10.0-browser");
     });
 
     config.AddBranch("deploy", branch =>

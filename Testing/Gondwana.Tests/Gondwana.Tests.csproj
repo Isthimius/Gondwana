@@ -35,6 +35,7 @@
 	</ItemGroup>
 
     <ItemGroup>
+        <Compile Include="../../Gondwana.Blazor/Rendering/SkiaNativeInitializationDiagnostic.cs" Link="Blazor/SkiaNativeInitializationDiagnostic.cs" />
         <Compile Include="../../docs/examples/RuntimeTelemetryExample.cs" Link="Examples/RuntimeTelemetryExample.cs" />
         <!-- Exercise pure sample processing without a Windows audio device or platform dependency. -->
         <Compile Include="../../Gondwana.Audio.NAudio/VariableSpeedSampleProvider.cs" Link="Audio/VariableSpeedSampleProvider.cs" />

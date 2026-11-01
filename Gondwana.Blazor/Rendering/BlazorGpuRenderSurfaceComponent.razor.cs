@@ -1,6 +1,8 @@
 using System.Runtime.Versioning;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using SkiaSharp;
 using SkiaSharp.Views.Blazor;
@@ -33,6 +35,9 @@ namespace Gondwana.Blazor.Rendering;
 [SupportedOSPlatform("browser")]
 public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfaceComponentBase
 {
+    [Inject]
+    private ILogger<BlazorGpuRenderSurfaceComponent> Logger { get; set; } = null!;
+
     private readonly string _generatedCanvasId = $"gondwana-webgl-{Guid.NewGuid():N}";
     private BlazorSkiaGlView? _glView;
     private IJSObjectReference? _module;
@@ -60,9 +65,17 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        Adapter = new BlazorGpuRenderSurfaceAdapter();
-        Host = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
-        Adapter.AttachToEngine();
+        try
+        {
+            Adapter = new BlazorGpuRenderSurfaceAdapter();
+            Host = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
+            Adapter.AttachToEngine();
+        }
+        catch (Exception ex) when (SkiaNativeInitializationDiagnostic.IsMissingSkiaNativeLibrary(ex))
+        {
+            Logger.LogError(ex, "{Guidance}", SkiaNativeInitializationDiagnostic.Guidance);
+            throw;
+        }
     }
 
     /// <inheritdoc/>
