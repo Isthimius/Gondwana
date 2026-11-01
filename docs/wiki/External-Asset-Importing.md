@@ -75,6 +75,10 @@ tilesheet sources also refer to that grouped path; generated animation files
 remain grouped per tileset (`<tileset-basename>-animations.gani`). Embedded
 tilesets retain map-basename-plus-firstgid identifiers for the generated
 animation filenames. Importing a TSX by itself does not change this behavior.
+When re-importing a TMX into a directory containing legacy per-tileset GTS files,
+manually move or remove files whose logical keys are now in the map-level GTS.
+Overwrite does not bypass logical-key checks against other native files, so the
+import is blocked without changing outputs until those legacy files are cleaned up.
 
 Definition dependencies use paths relative to the output directory whenever
 possible, with `/` separators. Existing atlas images remain source dependencies;

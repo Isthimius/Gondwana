@@ -96,6 +96,43 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal("level.gts", Assert.Single(scene.TilesheetSources).GtsPath);
     }
 
+    /// <summary>Legacy per-tileset GTS files block TMX re-import until manually removed.</summary>
+    [Fact]
+    public void MapReimportRequiresCleanupOfLegacyTilesetGts()
+    {
+        string tileset = Tileset();
+        string map = Path.Combine(directory, "level.tmx");
+        File.WriteAllText(map, """
+            <map orientation="orthogonal" width="1" height="1" tilewidth="2" tileheight="2">
+              <tileset firstgid="1" source="terrain.tsx"/>
+              <layer><data encoding="csv">1</data></layer>
+            </map>
+            """);
+        string output = Path.Combine(directory, "output");
+        Assert.True(new TiledTilesetImporter().Import(new(tileset, output)).Analysis.CanImport);
+        string legacyGts = Path.Combine(output, "terrain.gts");
+        string legacyGani = Path.Combine(output, "terrain-animations.gani");
+        byte[] originalGts = File.ReadAllBytes(legacyGts);
+        byte[] originalGani = File.ReadAllBytes(legacyGani);
+
+        var importer = new TiledMapImporter();
+        var blocked = importer.Import(new ExternalImportRequest(map, output) { Overwrite = true });
+        Assert.False(blocked.Analysis.CanImport);
+        Assert.Contains(blocked.Analysis.Diagnostics,
+            diagnostic => diagnostic.Code == "key.exists" && diagnostic.Message.Contains("terrain.gts"));
+        Assert.Empty(blocked.WrittenFiles);
+        Assert.Equal(originalGts, File.ReadAllBytes(legacyGts));
+        Assert.Equal(originalGani, File.ReadAllBytes(legacyGani));
+        Assert.False(File.Exists(Path.Combine(output, "level.gscn")));
+
+        File.Delete(legacyGts);
+        var migrated = importer.Import(new ExternalImportRequest(map, output) { Overwrite = true });
+        Assert.True(migrated.Analysis.CanImport, string.Join(";", migrated.Analysis.Diagnostics));
+        Assert.Equal("level.gts", Assert.Single(SceneDefinitionSerializer.Load(
+            Path.Combine(output, "level.gscn")).TilesheetSources).GtsPath);
+        Assert.Equal("level.gts", Assert.Single(AnimationDefinitionSerializer.Load(legacyGani).TilesheetSources).GtsPath);
+    }
+
     /// <summary>
     /// Verifies collection of images produces diagnostic without writes.
     /// </summary>
