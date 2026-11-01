@@ -1,10 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFramework>net8.0-browser</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <!-- Preserve the module URL used by existing browser-audio consumers. -->
+        <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
 
         <!-- URLs / repository -->
         <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Audio.Browser</PackageProjectUrl>
@@ -29,15 +31,7 @@
 		<None Include="CHANGELOG.md" Pack="true" PackagePath="" />
         <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
         
-        <!-- Content registers the module with the consumer's static web assets.
-             Explicit build action prevents NuGet from defaulting JavaScript to Compile. -->
-        <None Remove="wwwroot\gondwana-audio.js" />
-        <Content Include="wwwroot\gondwana-audio.js"
-              Pack="true"
-              PackagePath="contentFiles/any/any/wwwroot/gondwana-audio.js"
-              BuildAction="Content"
-              PackageCopyToOutput="true"
-              PackageFlatten="false" />
+        <!-- The Razor SDK packs wwwroot as static web assets, never C# contentFiles. -->
     </ItemGroup>
 
 </Project>

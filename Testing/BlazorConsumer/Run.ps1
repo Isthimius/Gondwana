@@ -47,12 +47,11 @@ try {
     } finally { $zip.Dispose() }
     $zip = [IO.Compression.ZipFile]::OpenRead("$feed/Gondwana.Audio.Browser.$version.nupkg")
     try {
-        if (!$zip.GetEntry('contentFiles/any/any/wwwroot/gondwana-audio.js')) { throw 'Packaged JS missing' }
+        if (!$zip.GetEntry('staticwebassets/gondwana-audio.js')) { throw 'Packaged static web asset missing' }
         $reader = [IO.StreamReader]::new(($zip.Entries | Where-Object FullName -like '*.nuspec').Open())
         try { [xml] $nuspec = $reader.ReadToEnd() } finally { $reader.Dispose() }
-        $audioEntry = $nuspec.package.metadata.contentFiles.files | Where-Object include -like '*gondwana-audio.js'
-        if (!$audioEntry -or $audioEntry.buildAction -eq 'Compile' -or $audioEntry.copyToOutput -ne 'true') {
-            throw 'Invalid audio contentFiles metadata'
+        if ($nuspec.package.metadata.contentFiles.files | Where-Object { $_.include -like '*gondwana-audio.js' -and $_.buildAction -eq 'Compile' }) {
+            throw 'Audio must not be packaged as C# contentFiles'
         }
         $nuspec.Save("$WorkRoot/audio.nuspec")
     } finally { $zip.Dispose() }

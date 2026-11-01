@@ -37,9 +37,13 @@ binary logs remain in the temporary directory.
 
 - Clean .NET 10 testing found that the merged `None` audio item is copied to
   build/publish output but is absent from the static-web-assets manifest: the
-  Blazor DevServer returns 404 for `/gondwana-audio.js`. The follow-up uses
-  `Content` with an explicit `BuildAction="Content"`. The consumer test guards
-  both serving and exclusion from C# compilation; no consumer workaround is used.
+  Blazor DevServer returns 404 for `/gondwana-audio.js`. Plain `Content` registers
+  an incorrect consumer-source content root and returns an empty 200 response in
+  SDK 10 development hosting. The audio package therefore uses the Razor SDK's
+  static-web-asset pipeline (like Gondwana.Blazor), preserving the root module URL.
+  The demo's now-conflicting manual copy is removed. The consumer test guards
+  MIME type, nonempty content, actual startup import and exclusion from C#
+  compilation; no consumer workaround is used. Its library target remains .NET 8.
 - WinForms stays `net8.0-windows`; Avalonia stays `net8.0`. Neither uses the WASM
   native-link toolchain, so this issue does not justify desktop retargeting.
   Framework support lifecycle and desktop upgrades belong in a separate review.

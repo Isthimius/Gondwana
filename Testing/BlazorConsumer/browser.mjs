@@ -24,18 +24,21 @@ const targets = Object.values(assets.targets);
 const audio = targets.flatMap(target => Object.entries(target))
     .find(([name]) => name === `Gondwana.Audio.Browser/${version}`)?.[1];
 assert(audio, 'Audio package absent from assets');
-const js = Object.entries(audio.contentFiles ?? {}).find(([name]) => name.endsWith('/gondwana-audio.js'));
-assert(js, 'Audio contentFiles absent');
-assert.notEqual(js[1].buildAction, 'Compile');
-assert.equal(js[1].copyToOutput, true);
+assert(Object.keys(audio.build ?? {}).some(name => name.endsWith('Gondwana.Audio.Browser.props')),
+    'Audio static-web-asset build registration absent');
+for (const [name, metadata] of Object.entries(audio.contentFiles ?? {})) {
+    if (name.endsWith('/gondwana-audio.js')) assert.notEqual(metadata.buildAction, 'Compile');
+}
 assert(Object.keys(assets.libraries).some(name => name.startsWith('SkiaSharp.NativeAssets.WebAssembly/')),
     'Skia WebAssembly native package absent');
 await mkdir(join(root, 'browser-results'), { recursive: true });
 
+console.log('Launching Chromium with SwiftShader');
 const browser = await chromium.launch({ headless: true, args: [
     '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
 ] });
 async function verify(url, label) {
+    console.log(`${label}: creating browser context`);
     const context = await browser.newContext();
     await context.tracing.start({ screenshots: true, snapshots: true });
     const page = await context.newPage();
@@ -75,6 +78,8 @@ async function verify(url, label) {
         console.log(`${label}: loading ${url}`);
         const audioResponse = await page.request.get(new URL('gondwana-audio.js', url).href);
         assert.equal(audioResponse.status(), 200, `${label}: audio module URL`);
+        assert.match(audioResponse.headers()['content-type'] ?? '', /(?:java|ecma)script/, 'Audio module MIME type');
+        assert((await audioResponse.body()).length > 0, 'Audio response must not be empty');
         await page.goto(url, { waitUntil: 'load', timeout: 120_000 });
         await page.waitForFunction(() => {
             const canvas = document.querySelector('canvas[id^="gondwana-webgl-"]');

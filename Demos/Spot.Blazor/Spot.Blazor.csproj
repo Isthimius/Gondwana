@@ -35,16 +35,6 @@
         <Content Include="..\Spot.Shared\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Update="wwwroot\gondwana-audio.js">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
     <Import Project="..\Spot.Shared\Spot.Assets.targets" />
-
-    <Target Name="CopyAudioJS" BeforeTargets="Build">
-        <Copy SourceFiles="..\..\Gondwana.Audio.Browser\wwwroot\gondwana-audio.js" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\" SkipUnchangedFiles="true" />
-    </Target>
 
 </Project>
