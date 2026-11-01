@@ -31,7 +31,8 @@
         All wwwroot/ files are served by the Blazor WebAssembly host.
 
         NOTE: Gondwana.Audio.Browser ships gondwana-audio.js as a NuGet content file
-        so it is automatically placed here. If you are using project references instead
+        so it is served at the app-relative gondwana-audio.js URL without copying it
+        into the project's source wwwroot. If you are using project references instead
         of NuGet packages, copy the file manually from
         Gondwana.Audio.Browser/wwwroot/gondwana-audio.js.
     -->

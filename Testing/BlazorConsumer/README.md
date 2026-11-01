@@ -28,13 +28,18 @@ Compile items, Release build/publish, and absence of a manually copied audio
 module. Playwright/Chromium uses ANGLE SwiftShader and tests both the published
 output (under `/game/`) and the development server. Startup must remove the
 template loader, create a sized Gondwana canvas, load WASM and import audio,
-and continuously submit native Skia WebGL draws and texture uploads. Page errors,
+and continuously submit native Skia WebGL draws and allocate GPU textures. Page errors,
 console errors and failed asset requests fail the test. HTTP 200 or a canvas
 alone cannot pass. Browser traces, screenshots, console/network logs and MSBuild
 binary logs remain in the temporary directory.
 
 ## v2.6.2 audit
 
+- Clean .NET 10 testing found that the merged `None` audio item is copied to
+  build/publish output but is absent from the static-web-assets manifest: the
+  Blazor DevServer returns 404 for `/gondwana-audio.js`. The follow-up uses
+  `Content` with an explicit `BuildAction="Content"`. The consumer test guards
+  both serving and exclusion from C# compilation; no consumer workaround is used.
 - WinForms stays `net8.0-windows`; Avalonia stays `net8.0`. Neither uses the WASM
   native-link toolchain, so this issue does not justify desktop retargeting.
   Framework support lifecycle and desktop upgrades belong in a separate review.

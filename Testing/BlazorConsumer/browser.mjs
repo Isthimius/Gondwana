@@ -59,7 +59,8 @@ async function verify(url, label) {
             if (gl && /^webgl|^experimental-webgl/.test(type) && !gl.__observed) {
                 gl.__observed = true;
                 window.__gpu.contexts++;
-                for (const [method, counter] of [['drawElements', 'draws'], ['drawArrays', 'draws'], ['texImage2D', 'textures']]) {
+                // Skia may allocate immutable WebGL2 storage without calling texImage2D.
+                for (const [method, counter] of [['drawElements', 'draws'], ['drawArrays', 'draws'], ['createTexture', 'textures']]) {
                     const original = gl[method];
                     gl[method] = function (...values) {
                         window.__gpu[counter]++;
@@ -72,6 +73,8 @@ async function verify(url, label) {
     });
     try {
         console.log(`${label}: loading ${url}`);
+        const audioResponse = await page.request.get(new URL('gondwana-audio.js', url).href);
+        assert.equal(audioResponse.status(), 200, `${label}: audio module URL`);
         await page.goto(url, { waitUntil: 'load', timeout: 120_000 });
         await page.waitForFunction(() => {
             const canvas = document.querySelector('canvas[id^="gondwana-webgl-"]');
@@ -79,8 +82,6 @@ async function verify(url, label) {
                 !document.querySelector('.startup-loader') && window.__gpu.draws >= 3 && window.__gpu.textures > 0;
         }, null, { timeout: 120_000 });
         // Program awaits the JSHost audio import before rendering App. Also verify the asset URL itself.
-        const audioResponse = await page.request.get(new URL('gondwana-audio.js', url).href);
-        assert.equal(audioResponse.status(), 200);
         assert(responses.some(r => r.url.endsWith('/gondwana-audio.js') && r.status === 200), 'Startup audio import missing');
         assert(responses.some(r => /\.wasm(?:\?|$)/.test(r.url) && r.status === 200), 'WASM never loaded');
         const first = await page.evaluate(() => window.__gpu.draws);
