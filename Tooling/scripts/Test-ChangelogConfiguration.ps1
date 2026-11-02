@@ -183,7 +183,8 @@ try {
     Remove-Item ProjectOnly/CHANGELOG.md
     & $projects -Projects @('ProjectOnly') -Tag v3.0.0
     $preReleaseBootstrap = Get-Content ProjectOnly/CHANGELOG.md -Raw
-    Assert ($preReleaseBootstrap.Contains('v3.0.0-rc.1')) 'Full-history bootstrap lost its historical prerelease boundary'
+    Assert (-not $preReleaseBootstrap.Contains('v3.0.0-rc.1')) 'Full-history bootstrap retained a temporary prerelease boundary'
+    Assert ($preReleaseBootstrap -match '(?i)pre-release feature') 'Full-history bootstrap lost changes from a prerelease tag'
     Invoke-TestGit add CHANGELOG.md Both/CHANGELOG.md ProjectOnly/CHANGELOG.md
     Invoke-TestGit commit -qm 'docs: checkpoint v3 release [skip release notes]'
     Invoke-TestGit tag v3.0.0
