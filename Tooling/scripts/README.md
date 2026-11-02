@@ -314,7 +314,7 @@ Creates a new versioned release of Gondwana: updates the changelog, commits it, 
 ```
 ### `Prepare-PrereleaseTemplates.ps1`
 
-Called by `package-binaries.yml` before `dotnet pack`. Stable packages retain `Gondwana.*` references at `2.*`; beta/RC templates rewrite those dependencies to the exact NBGV package version in the disposable packaging checkout (leaving Avalonia and Microsoft package references untouched). The source templates in Git are not changed. Run `Test-PrereleaseTemplateReferences.ps1` to validate this behavior.
+Called by `package-binaries.yml` before `dotnet pack`. Stable packages retain `Gondwana.*` references at `2.*`; all SemVer prerelease templates (alpha, beta, RC, preview, etc.) rewrite those dependencies to the exact NBGV package version in the disposable packaging checkout (leaving Avalonia and Microsoft package references untouched). The source templates in Git are not changed. Run `Test-PrereleaseTemplateReferences.ps1` to validate this behavior.
 
 **How-to:** See [How to Release Gondwana](../../docs/wiki/How-to-Release-Gondwana.md).
 
