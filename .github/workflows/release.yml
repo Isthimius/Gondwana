@@ -82,6 +82,26 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: ./Tooling/scripts/Extract-ReleaseNotes.ps1 -Tag $env:RELEASE_TAG
 
+      - name: Add prerelease installation instructions
+        if: ${{ contains(github.ref_name, '-') }}
+        shell: pwsh
+        run: |
+          @"
+
+          ## Installing this prerelease
+
+          Prerelease packages must be requested explicitly. Replace the version below if trying a later beta or RC.
+
+          \`\`\`powershell
+          dotnet add package Gondwana --version $env:VERSION
+          dotnet tool install -g Gondwana.Cli --version $env:VERSION
+          dotnet new install Gondwana.Templates@$env:VERSION
+          \`\`\`
+
+          If the CLI is already installed, use \`dotnet tool update -g Gondwana.Cli --version $env:VERSION\`.
+          Beta/RC templates pin their Gondwana package dependencies to this matching release.
+          "@ | Add-Content -Path RELEASE_NOTES.md
+
       - name: Download validated binaries
         uses: actions/download-artifact@v4
         with:

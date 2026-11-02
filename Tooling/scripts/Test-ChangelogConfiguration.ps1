@@ -202,7 +202,61 @@ try {
         Assert ($section.Count -eq 0) 'Empty root returned release text'
         Assert ([Convert]::ToBase64String([IO.File]::ReadAllBytes("$fixture/CHANGELOG.md")) -ceq $before) 'Empty root changed bytes'
     }
-    Write-Host 'PASS: configurations, previews, bootstrap, selection, history, retries, duplicate repair, release extraction, PR links, excluded-only no-op.'
+    # Prereleases are replaceable snapshots, based on the last stable tag.
+    [IO.File]::WriteAllText("$fixture/CHANGELOG.md", $preReleaseRoot)
+    [IO.File]::WriteAllText("$fixture/Both/CHANGELOG.md", $preReleaseProject)
+    Add-Content Both/code.txt 'beta feature'
+    Add-Content ProjectOnly/code.txt 'beta feature'
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'feat: beta feature'
+    & $root -Tag v4.0.0-beta.1
+    & $projects -Tag v4.0.0-beta.1
+    foreach ($section in @((Get-Content CHANGELOG.md -Raw), (Get-Content Both/CHANGELOG.md -Raw))) {
+        Assert ($section.Contains('Beta feature')) 'Beta release lost initial changes'
+        Assert ($section.Contains('v4.0.0-beta.1')) 'Beta release heading missing'
+        Assert ($section.Contains('v3.0.0')) 'Beta release removed stable history'
+    }
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'docs: beta checkpoint [skip release notes]'
+    Invoke-TestGit tag v4.0.0-beta.1
+    Add-Content Both/code.txt 'second beta fix'
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'fix: second beta fix'
+    & $root -Tag v4.0.0-beta.2
+    & $projects -Tag v4.0.0-beta.2
+    foreach ($section in @((Get-Content CHANGELOG.md -Raw), (Get-Content Both/CHANGELOG.md -Raw))) {
+        Assert ($section.Contains('Beta feature') -and $section.Contains('Second beta fix')) 'Second beta omitted earlier changes'
+        Assert ($section.Contains('v4.0.0-beta.2')) 'Second beta heading missing'
+        Assert (-not $section.Contains('v4.0.0-beta.1')) 'Second beta retained replaced beta heading'
+    }
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'docs: second beta checkpoint [skip release notes]'
+    Invoke-TestGit tag v4.0.0-beta.2
+    & $root -Tag v4.0.0-rc.1
+    & $projects -Tag v4.0.0-rc.1
+    & $extract -Tag v4.0.0-rc.1
+    Assert ((Get-Content RELEASE_NOTES.md -Raw) -match 'Second beta fix') 'RC release-note extraction failed'
+    foreach ($section in @((Get-Content CHANGELOG.md -Raw), (Get-Content Both/CHANGELOG.md -Raw))) {
+        Assert ($section.Contains('v4.0.0-rc.1')) 'RC heading missing'
+        Assert (-not $section.Contains('v4.0.0-beta.2')) 'RC retained beta section'
+    }
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'docs: rc checkpoint [skip release notes]'
+    Invoke-TestGit tag v4.0.0-rc.1
+    & $root -Tag v4.0.0
+    & $projects -Tag v4.0.0
+    & $extract -Tag v4.0.0
+    foreach ($section in @((Get-Content CHANGELOG.md -Raw), (Get-Content Both/CHANGELOG.md -Raw))) {
+        Assert ($section.Contains('Beta feature') -and $section.Contains('Second beta fix')) 'Stable release lost beta/RC changes'
+        Assert ($section.Contains('v4.0.0')) 'Stable release heading missing'
+        Assert (-not $section.Contains('v4.0.0-rc.1')) 'Stable release retained temporary RC section'
+        Assert ($section.Contains('v3.0.0')) 'Stable release removed previous stable history'
+    }
+    & $root
+    & $projects
+    Assert ((Get-Content CHANGELOG.md -Raw) -match '\[Unreleased\]') 'Unreleased refresh omitted version'
+    Assert ((Get-Content CHANGELOG.md -Raw) -notmatch 'v4.0.0-rc.1') 'Unreleased refresh retained temporary prerelease section'
+    Write-Host 'PASS: configurations, previews, bootstrap, selection, history, retries, duplicate repair, release extraction, PR links, excluded-only no-op, beta/RC/stable lifecycle.'
 }
 finally {
     if ((Get-Location).Path -eq $fixture) { Pop-Location }
