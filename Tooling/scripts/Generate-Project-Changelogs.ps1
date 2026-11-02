@@ -266,7 +266,14 @@ foreach ($project in $Projects) {
             # For bootstrap, git-cliff already has exactly the required behavior:
             # full tagged history plus [Unreleased], or the supplied -Tag.
             $cliffArgs = @($baseCliffArgs)
-            $cliffArgs += $release.Arguments
+            if ($Tag) {
+                $cliffArgs += $release.Arguments
+            }
+            else {
+                # Full bootstrap must include earlier stable sections; --unreleased
+                # would discard them, so only ignore prerelease tag boundaries.
+                $cliffArgs += $release.BootstrapArguments
+            }
 
             $finalContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
         }
