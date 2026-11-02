@@ -6,7 +6,7 @@
 
 - Add the standalone runtime Scene Viewer with saved GSCN dependency loading, GPU rendering, camera controls, and shared GSCN editor integration.
 
-# [Unreleased]
+# v2.6.2-beta.1 - November 02, 2026
 
 
 

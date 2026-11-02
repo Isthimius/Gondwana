@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Keep DockPanelSuite document/window behavior in thin standalone-app wrappers.
 
 
-# [Unreleased]
+# v2.6.2-beta.1 - November 02, 2026
 
 
 

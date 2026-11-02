@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-# [Unreleased]
+# [v2.6.2-beta.1] - 2026-11-02
 
 ## Gondwana
 
@@ -350,11 +350,18 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Maintenance
+- Update version 2.6.2 to beta ([#536](https://github.com/Isthimius/Gondwana/pull/536))
+
+
+
 ### Other Changes
 - Revise README for clarity and updated features
 - Update AI integration description in README
 - Update release note link for Gondwana 2.6.1
 - Removed the Discussions, added FAQ link from the README ([#488](https://github.com/Isthimius/Gondwana/pull/488))
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2-beta.1
 
 # [v2.6.1] - 2026-10-08
 
