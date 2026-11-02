@@ -86,21 +86,21 @@ jobs:
         if: ${{ contains(github.ref_name, '-') }}
         shell: pwsh
         run: |
-          @"
-
+          $notes = @'
           ## Installing this prerelease
 
-          Prerelease packages must be requested explicitly. Replace the version below if trying a later beta or RC.
+          Prerelease packages must be requested explicitly.
 
-          \`\`\`powershell
-          dotnet add package Gondwana --version $env:VERSION
-          dotnet tool install -g Gondwana.Cli --version $env:VERSION
-          dotnet new install Gondwana.Templates@$env:VERSION
-          \`\`\`
+          ```powershell
+          dotnet add package Gondwana --version {0}
+          dotnet tool install -g Gondwana.Cli --version {0}
+          dotnet new install Gondwana.Templates@{0}
+          ```
 
-          If the CLI is already installed, use \`dotnet tool update -g Gondwana.Cli --version $env:VERSION\`.
+          If the CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version {0}`.
           Beta/RC templates pin their Gondwana package dependencies to this matching release.
-          "@ | Add-Content -Path RELEASE_NOTES.md
+          '@ -f $env:VERSION
+          Add-Content -Path RELEASE_NOTES.md -Value ("`n" + $notes)
 
       - name: Download validated binaries
         uses: actions/download-artifact@v4

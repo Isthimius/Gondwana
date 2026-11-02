@@ -1069,7 +1069,9 @@ flowchart TD
     PUB --> GHREL[GitHub Release with tagged changelog notes]
     PUB --> NUGET[NuGet.org]
     PUB --> GHPKG[GitHub Packages]
-    PUB --> DOXY[Generate stable API docs]
+    PUB --> CHECK{Stable tag?}
+    CHECK -->|Yes| DOXY[Generate stable API docs]
+    CHECK -->|No| SKIP[Leave stable API docs unchanged]
     DOXY --> VERSIONED[/api/vX.Y.Z/]
     DOXY --> STABLE[/api/]
 ```
@@ -1126,7 +1128,7 @@ and supplies that file to the GitHub Release action.
 
 If a usable release section cannot be extracted, the release fails.
 
-During normal development, the weekly workflow keeps `[Unreleased]` reasonably current.
+During normal development, the weekly workflow keeps `[Unreleased]` reasonably current. All prerelease changelog sections (`-alpha`, `-beta`, `-rc`) are temporary and regenerated from the preceding stable tag when releasing a new prerelease or stable version.
 
 When `release.ps1` performs a release, it runs the changelog generators with the resolved tag so the current derived section becomes the versioned release section **before the tag is created**.
 
@@ -1136,13 +1138,13 @@ The tagged commit therefore contains the release notes that `release.yml` will p
 
 ## NuGet.org
 
-Generated `.nupkg` files are pushed to NuGet.org using:
+Generated `.nupkg` files, including alpha/beta/RC packages, are pushed to NuGet.org using:
 
 ```text
 NUGET_API_KEY
 ```
 
-with duplicate versions skipped.
+with duplicate versions skipped. Prereleases are excluded from NuGet's default stable selection, but can be installed with an explicit version. The local release script blocks reusing an existing tag, because an already published package version cannot be overwritten.
 
 ---
 
@@ -1158,6 +1160,14 @@ GitHub Packages publication is treated as best effort: failures produce warnings
 
 ---
 
+## Prerelease metadata and templates
+
+A tag such as `v2.6.2-beta.1` produces a GitHub Release marked **prerelease**, without becoming the latest stable release. The workflow appends exact-version installation commands to its release notes. For beta/RC packaging, `package-binaries.yml` invokes `Prepare-PrereleaseTemplates.ps1` using the NBGV package version: in the disposable checkout, it pins only `Gondwana.*` references in the three templates, leaving third-party packages alone. Stable templates continue to use `2.*`. Release-version validation and beta/RC/stable changelog transition tests protect this flow in CI.
+
+The local orchestrator refuses to replace any existing local or remote tag. Publishing a later beta requires a new SemVer version, such as `2.6.2-beta.2`.
+
+See [[How to Release Gondwana]] for the operator checklist.
+
 ## Stable API docs during release
 
 For a stable semantic-version tag matching:
@@ -1168,7 +1178,7 @@ vX.Y.Z
 
 the release workflow validates the API publisher, generates Doxygen output, publishes the immutable versioned documentation, updates the stable `/api/` entry point, and requests a Pages build.
 
-Only proper stable `vX.Y.Z` tags publish the stable API-doc track.
+Only proper stable `vX.Y.Z` tags publish the stable API-doc track. A prerelease skips this job (rather than failing it), leaving the latest stable docs and version selector untouched.
 
 ---
 

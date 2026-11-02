@@ -85,7 +85,12 @@ function Get-ProjectBody {
         "--repository", ".",
         "--strip", "header"
     )
-    $arguments += if ($Tag) { $release.SectionArguments } else { $release.Arguments }
+    if ($Tag) {
+        $arguments += $release.SectionArguments
+    }
+    else {
+        $arguments += $release.Arguments
+    }
     foreach ($includePath in $ProjectGroup.IncludePaths) {
         # Keep the glob attached to the option so PowerShell cannot expand it.
         $arguments += "--include-path=$includePath"
