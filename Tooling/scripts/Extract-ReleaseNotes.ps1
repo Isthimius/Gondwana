@@ -12,7 +12,7 @@ param(
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Changelog-Common.ps1')
 
-if ($Tag -notmatch '^v?\d+\.\d+\.\d+$') { throw "Invalid release tag '$Tag'." }
+if ($Tag -cnotmatch $ChangelogTagPattern) { throw "Invalid release tag '$Tag'." }
 $content = Get-Content -LiteralPath $ChangelogPath -Raw
 $headings = [regex]::Matches($content, $ChangelogHeadingPattern)
 $matching = @($headings | Where-Object { $_.Groups['Version'].Value.TrimStart('v') -eq $Tag.TrimStart('v') })

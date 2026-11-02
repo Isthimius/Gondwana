@@ -80,6 +80,8 @@ jobs:
               - 'Tooling/scripts/*Changelog*.ps1'
               - 'Tooling/scripts/release.ps1'
               - 'Tooling/scripts/Extract-ReleaseNotes.ps1'
+              - 'Tooling/scripts/Prepare-PrereleaseTemplates.ps1'
+              - 'Tooling/scripts/Test-PrereleaseTemplateReferences.ps1'
               - 'cliff.toml'
               - '.github/workflows/ci-master.yml'
               - '.github/workflows/changelog-weekly.yml'
@@ -97,7 +99,9 @@ jobs:
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
       - name: Changelog generation and release retry tests
         shell: pwsh
-        run: ./Tooling/scripts/Test-ChangelogConfiguration.ps1
+        run: |
+          ./Tooling/scripts/Test-ChangelogConfiguration.ps1
+          ./Tooling/scripts/Test-PrereleaseTemplateReferences.ps1
 
   winforms-editor-tests:
     runs-on: windows-latest

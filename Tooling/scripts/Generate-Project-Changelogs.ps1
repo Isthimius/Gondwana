@@ -80,7 +80,7 @@ $Projects = @($ChangelogProjects | Where-Object {
 # Resolve the repo root from the script's location:
 # Tooling/scripts/ -> Tooling/ -> root
 $repoRoot = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
-$release = if ($Tag) { Get-ChangelogRelease -RepoRoot $repoRoot -Tag $Tag }
+$release = if ($Tag) { Get-ChangelogRelease -RepoRoot $repoRoot -Tag $Tag } else { Get-ChangelogUnreleased -RepoRoot $repoRoot }
 
 if (-not [System.IO.Path]::IsPathRooted($CliffConfigPath)) {
     $CliffConfigPath = Join-Path $repoRoot $CliffConfigPath
@@ -151,7 +151,7 @@ function Normalize-GeneratedContent {
     }
 
     $newLine = if ($Content.Contains("`r`n")) { "`r`n" } else { "`n" }
-    $releaseBoundaryPattern = '(?:\r\n|\n|\r){3,}(?=^#\s+(?:\[Unreleased\]|v?\d+\.\d+\.\d+)(?:\s|$))'
+    $releaseBoundaryPattern = '(?:\r\n|\n|\r){3,}(?=^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?\]?)(?:\s|$))'
     $normalized = [regex]::Replace(
         $Content.TrimEnd(),
         $releaseBoundaryPattern,
@@ -269,6 +269,11 @@ foreach ($project in $Projects) {
             if ($Tag) {
                 $cliffArgs += $release.Arguments
             }
+            else {
+                # Full bootstrap must include earlier stable sections; --unreleased
+                # would discard them, so only ignore prerelease tag boundaries.
+                $cliffArgs += $release.BootstrapArguments
+            }
 
             $finalContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
         }
@@ -284,7 +289,8 @@ foreach ($project in $Projects) {
                 $rangeArguments = $release.RangeArguments
             }
             else {
-                $cliffArgs += '--unreleased'
+                $cliffArgs += $release.Arguments
+                $rangeArguments = $release.RangeArguments
             }
 
             $currentSection = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project -RangeArguments $rangeArguments

@@ -321,7 +321,7 @@ The optional `-Projects` parameter is a **selection of configured project paths*
 
 For a project with no changelog yet, the script can bootstrap its complete history from Git tags plus the current untagged range.
 
-For an existing changelog, released history is treated as authoritative. The generator replaces only the leading current-development section and leaves versioned history untouched.
+For an existing changelog, **stable release history** is authoritative. The generator replaces temporary `[Unreleased]`, `-alpha`, `-beta`, and `-rc` sections, including stale duplicates. It regenerates the range since the previous stable tag even when intermediate prerelease tags exist.
 
 Without `-Tag`, current commits are generated under:
 
@@ -329,7 +329,7 @@ Without `-Tag`, current commits are generated under:
 # [Unreleased]
 ```
 
-With `-Tag vX.Y.Z`, the current range is written under that release version instead.
+With `-Tag vX.Y.Z` or `-Tag vX.Y.Z-beta.1`, the current range is written under that release version instead. The next prerelease replaces the preceding temporary section.
 
 Useful commands:
 
@@ -371,7 +371,7 @@ IncludeInRootChangelog = $true
 
 independently of whether those entries also generate their own project changelogs.
 
-It preserves existing released history and replaces only the current derived section. It deliberately does **not** bootstrap a missing root changelog; the canonical root file must already exist.
+It preserves existing **stable** released history and replaces the derived `[Unreleased]` and any previous prerelease sections. It deliberately does **not** bootstrap a missing root changelog; the canonical root file must already exist.
 
 When no configured root-visible changes exist, generation is a no-op. In that case it does not invent an empty release section or rewrite the existing file merely to remove a stale block.
 
@@ -467,7 +467,7 @@ This avoids rewriting changelogs on every pull request or every push while still
 
 # `release.ps1`
 
-A retry for the same version regenerates the complete release range after the previous reachable version tag, including the original changes and any follow-up fixes. The root and project generators replace existing sections for that version and preserve other released history. The release workflow validates that its tag matches the package version and that exactly one matching section leads the changelog before it changes the release branch or publishes packages.
+Changelog generation always uses the preceding **stable** tag as its baseline. Beta and RC changelog sections are transient and replaced by the next prerelease or stable section. Previously published stable history remains unchanged. The release orchestrator separately prevents reusing a local or remote published tag. The release workflow validates that its tag matches the package version and that exactly one matching section leads the changelog before it changes the release branch or publishes packages.
 
 `release.ps1` is the local release orchestrator.
 
@@ -480,14 +480,14 @@ The script:
 3. resolves the version with Nerdbank.GitVersioning (`nbgv`)
 4. generates a root release-notes preview with `git-cliff`
 5. requires explicit deployment confirmation for a real release
-6. runs `Generate-Root-Changelog.ps1 -Tag vX.Y.Z`
-7. runs `Generate-Project-Changelogs.ps1 -Tag vX.Y.Z`
+6. runs `Generate-Root-Changelog.ps1 -Tag vX.Y.Z[-prerelease]`
+7. runs `Generate-Project-Changelogs.ps1 -Tag vX.Y.Z[-prerelease]`
 8. commits enabled changelog outputs
 9. verifies that the NBGV version did not unexpectedly change after the changelog commit
-10. creates the version tag
+10. refuses duplicate local or remote tags, then creates the new immutable version tag
 11. atomically pushes the branch and tag so neither remote ref is updated unless both updates succeed
 
-After the tag arrives, `.github/workflows/release.yml` performs the remote build and publication, including package publishing and stable API-documentation publication.
+After the tag arrives, `.github/workflows/release.yml` performs the remote build and publication, including package publishing. Only stable releases publish versioned API documentation; alpha/beta/RC releases are marked prerelease and retain the existing stable API docs.
 
 Use preview mode before a release:
 
@@ -521,7 +521,9 @@ Parameters:
 | `-CliffConfigPath` | `cliff.toml` | `git-cliff` configuration |
 | `-PreviewOnly` | off | Validate and preview without deployment |
 
-The release flow is intentionally conservative because a published NuGet package version is immutable.
+The release flow is intentionally conservative because a published NuGet package version is immutable. Beta/RC package templates are automatically pinned to matching beta/RC Gondwana dependencies before packaging; stable templates retain floating `2.*` references. The CI suite tests the beta → RC → stable changelog lifecycle and template dependency pinning.
+
+For a short operational checklist, see [[How to Release Gondwana]].
 
 ---
 

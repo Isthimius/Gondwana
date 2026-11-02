@@ -30,6 +30,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Install NBGV
+        run: dotnet tool install -g nbgv
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
       - name: Restore workloads
         run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
 
@@ -38,6 +44,13 @@ jobs:
 
       - name: Build
         run: dotnet build -c Release --no-restore --nologo /p:EnableWindowsTargeting=true
+
+      # CI works from a disposable checkout. Never commit the template rewrites.
+      - name: Pin prerelease template dependencies
+        shell: pwsh
+        run: |
+          $version = (nbgv get-version -v NuGetPackageVersion).Trim()
+          ./Tooling/scripts/Prepare-PrereleaseTemplates.ps1 -Version $version
 
       - name: Pack
         run: dotnet pack -c Release --no-build -o ./nupkgs --nologo /p:EnableWindowsTargeting=true

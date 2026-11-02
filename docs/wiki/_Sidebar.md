@@ -147,6 +147,7 @@
 - [[Performance Tuning]]
 - [[Debugging and Instrumentation]]
 - [[Adding a New Deployable Project]]
+- [[How to Release Gondwana]]
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
 - [[Gondwana MCP Service|Gondwana MCP Service — Setup, Deployment, and Maintenance Guide]]
