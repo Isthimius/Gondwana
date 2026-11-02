@@ -6,6 +6,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<IsPackable>false</IsPackable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<!-- Link SkiaSharp into the WASM runtime for dotnet run as well as publish. -->
+		<WasmBuildNative>true</WasmBuildNative>
 	</PropertyGroup>
 
 	<ItemGroup>

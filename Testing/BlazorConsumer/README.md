@@ -35,6 +35,10 @@ binary logs remain in the temporary directory.
 
 ## v2.6.2 audit
 
+- The template explicitly enables `WasmBuildNative`. Clean SDK 10 CI passed
+  published Skia/WebGL startup but reproduced `libSkiaSharp` loading failure
+  with development hosting when native linking was left implicit. Both hosting
+  paths must pass the browser test; publish success alone is insufficient.
 - Clean .NET 10 testing found that the merged `None` audio item is copied to
   build/publish output but is absent from the static-web-assets manifest: the
   Blazor DevServer returns 404 for `/gondwana-audio.js`. Plain `Content` registers
