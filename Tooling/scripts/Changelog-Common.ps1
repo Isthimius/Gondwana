@@ -1,32 +1,55 @@
 # Shared release boundaries for the root/project generators and release publisher.
-$ChangelogHeadingPattern = '(?m)^#[ \t]+(?:\[(?<Version>Unreleased|v?\d+\.\d+\.\d+)\]|(?<Version>v?\d+\.\d+\.\d+))(?=[ \t\r\n]|$)[^\r\n]*(?:\r?\n|$)'
+# Prereleases are published artifacts but transient changelog sections. Only stable
+# vX.Y.Z tags establish permanent changelog boundaries.
+$ChangelogVersionPattern = 'v?\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?'
+$ChangelogTagPattern = '^' + $ChangelogVersionPattern + '$'
+$ChangelogPrereleaseTagPattern = '^v?\d+\.\d+\.\d+-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*$'
+$ChangelogHeadingPattern = '(?m)^#[ \t]+(?:\[(?<Version>Unreleased|' + $ChangelogVersionPattern + ')\]|(?<Version>' + $ChangelogVersionPattern + '))(?=[ \t\r\n]|$)[^\r\n]*(?:\r?\n|$)'
 
-function Get-ChangelogRelease {
-    param([string]$RepoRoot, [string]$Tag)
+function Get-ReachableStableTags {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot)
 
-    if ($Tag -notmatch '^v?\d+\.\d+\.\d+$') {
-        throw "Expected a stable release tag (vX.Y.Z), got '$Tag'."
-    }
-
-    $version = [version]$Tag.TrimStart('v')
     $tags = @(git -C $RepoRoot tag --merged HEAD --sort=-version:refname --list 'v[0-9]*')
     if ($LASTEXITCODE -ne 0) { throw 'Could not read reachable release tags.' }
-    $previousTag = $tags | Where-Object {
-        $_ -match '^v\d+\.\d+\.\d+$' -and [version]$_.Substring(1) -lt $version
+    return @($tags | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' })
+}
+
+function Get-ChangelogUnreleased {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot)
+
+    $previousTag = @(Get-ReachableStableTags -RepoRoot $RepoRoot) | Select-Object -First 1
+    $rangeArguments = @()
+    if ($previousTag) { $rangeArguments = @('--', "$previousTag..HEAD") }
+    return [pscustomobject]@{
+        PreviousTag = $previousTag
+        Arguments = @('--unreleased', '--ignore-tags', $ChangelogPrereleaseTagPattern)
+        RangeArguments = $rangeArguments
+    }
+}
+
+function Get-ChangelogRelease {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot, [Parameter(Mandatory = $true)][string]$Tag)
+
+    if ($Tag -cnotmatch $ChangelogTagPattern) {
+        throw "Expected a release tag (vX.Y.Z or vX.Y.Z-prerelease), got '$Tag'."
+    }
+
+    $version = [version](($Tag.TrimStart('v') -split '-')[0])
+    $previousTag = @(Get-ReachableStableTags -RepoRoot $RepoRoot) | Where-Object {
+        [version]$_.Substring(1) -lt $version
     } | Select-Object -First 1
     $rangeArguments = @()
     if ($previousTag) { $rangeArguments = @('--', "$previousTag..HEAD") }
 
-    # Do not let an earlier attempt at this release become its own baseline.
-    # An explicit range includes both the original changes and any retry fixes.
+    # Ignore all earlier prerelease tags and this release's tag so retries
+    # regenerate the entire range, even when the tag exists locally.
     $targetTagPattern = '^v?' + [regex]::Escape($Tag.TrimStart('v')) + '$'
-    [pscustomobject]@{
+    $ignoredTags = '(' + $targetTagPattern + '|' + $ChangelogPrereleaseTagPattern + ')'
+    $arguments = @('--tag', $Tag, '--ignore-tags', $ignoredTags)
+    return [pscustomobject]@{
         PreviousTag = $previousTag
-        Arguments = @('--tag', $Tag, '--ignore-tags', $targetTagPattern)
-        SectionArguments = @(
-            '--tag', $Tag,
-            '--ignore-tags', ('(' + $targetTagPattern + '|^v?\d+\.\d+\.\d+-.*$)')
-        )
+        Arguments = $arguments
+        SectionArguments = $arguments
         RangeArguments = $rangeArguments
     }
 }
@@ -43,16 +66,15 @@ function Split-ChangelogContent {
     for ($i = 0; $i -lt $headings.Count; $i++) {
         $heading = $headings[$i]
         $version = $heading.Groups['Version'].Value
-        if (($i -eq 0 -and $version -eq 'Unreleased') -or
-            ($Tag -and $version.TrimStart('v') -eq $Tag.TrimStart('v'))) {
-            continue
-        }
+        $isTemporary = $version -eq 'Unreleased' -or $version -match $ChangelogPrereleaseTagPattern
+        $isTarget = $Tag -and $version.TrimStart('v') -eq $Tag.TrimStart('v')
+        if ($isTemporary -or $isTarget) { continue }
 
         $end = if ($i + 1 -lt $headings.Count) { $headings[$i + 1].Index } else { $Content.Length }
         [void]$history.Append($Content.Substring($heading.Index, $end - $heading.Index))
     }
 
-    [pscustomobject]@{
+    return [pscustomobject]@{
         Prefix = $Content.Substring(0, $headings[0].Index)
         ReleasedHistory = $history.ToString()
     }

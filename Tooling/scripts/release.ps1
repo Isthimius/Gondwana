@@ -194,6 +194,19 @@ Write-Host "Resolved version: $version"
 Write-Host "Resolved tag: $tagName"
 Write-Host ""
 
+# Published tags are immutable: NuGet cannot replace a package with the same
+# version. Refuse to retarget an existing tag, even if a changelog retry is safe.
+git rev-parse -q --verify "refs/tags/$tagName" *> $null
+$localTagExists = $LASTEXITCODE -eq 0
+$remoteCheck = git ls-remote --tags $Remote "refs/tags/$tagName"
+if ($LASTEXITCODE -ne 0) { throw "Could not inspect remote release tags." }
+$remoteTagExists = -not [string]::IsNullOrWhiteSpace($remoteCheck)
+if ($localTagExists -or $remoteTagExists) {
+    $message = "Release tag $tagName already exists. Increment the prerelease identifier (e.g. beta.2) or use a new version; published package versions cannot be replaced."
+    if (-not $PreviewOnly) { throw $message }
+    Write-Warning $message
+}
+
 # ---------------------------------------------------------------------------
 # CHANGELOG PREVIEW
 # ---------------------------------------------------------------------------
@@ -303,34 +316,7 @@ else {
 # TAG HANDLING
 # ----------------------------------------
 
-# Refresh tags from remote
-Invoke-Git @("fetch", "--tags", "--force", $Remote)
-
-# Check local tag
-$localTagExists = $false
-git rev-parse -q --verify "refs/tags/$tagName" *> $null
-if ($LASTEXITCODE -eq 0) {
-    $localTagExists = $true
-}
-
-# Check remote tag
-$remoteTagExists = $false
-$remoteCheck = git ls-remote --tags $Remote "refs/tags/$tagName"
-if (-not [string]::IsNullOrWhiteSpace($remoteCheck)) {
-    $remoteTagExists = $true
-}
-
-if ($localTagExists -or $remoteTagExists) {
-    Write-Host "Tag $tagName already exists. Replacing it."
-
-    if ($localTagExists) {
-        Invoke-Git @("tag", "-d", $tagName)
-    }
-}
-else {
-    Write-Host "Tag $tagName does not exist. Creating it."
-}
-
+# A tag must remain immutable after publication; preflight rejected duplicates.
 # Create tag at current HEAD
 Invoke-Git @("tag", $tagName)
 
@@ -338,12 +324,7 @@ Invoke-Git @("tag", $tagName)
 # rejected, an atomic push leaves both remote refs unchanged, preventing a
 # versioned changelog section from reaching the branch without its Git tag.
 $branchRefSpec = "HEAD:refs/heads/$RequiredBranch"
-if ($remoteTagExists) {
-    $tagRefSpec = "+refs/tags/${tagName}:refs/tags/${tagName}"
-}
-else {
-    $tagRefSpec = "refs/tags/${tagName}:refs/tags/${tagName}"
-}
+$tagRefSpec = "refs/tags/${tagName}:refs/tags/${tagName}"
 
 Invoke-Git @("push", "--atomic", $Remote, $branchRefSpec, $tagRefSpec)
 

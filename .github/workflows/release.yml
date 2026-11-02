@@ -119,6 +119,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           body_path: RELEASE_NOTES.md
           files: Gondwana-${{ env.VERSION }}-binaries.zip
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          make_latest: ${{ !contains(github.ref_name, '-') }}
 
       # ---------------------------
       # NuGet (nuget.org)
@@ -171,6 +173,7 @@ jobs:
 
   api-docs:
     needs: release
+    if: ${{ !contains(github.ref_name, '-') }}
     concurrency:
       group: api-docs-publication
       cancel-in-progress: false

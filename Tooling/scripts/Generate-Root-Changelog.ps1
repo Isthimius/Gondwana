@@ -23,7 +23,7 @@ $repoRoot = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
 $groupsPath = Join-Path $PSScriptRoot "Changelog-ProjectGroups.ps1"
 . $groupsPath
 . (Join-Path $PSScriptRoot 'Changelog-Common.ps1')
-$release = if ($Tag) { Get-ChangelogRelease -RepoRoot $repoRoot -Tag $Tag }
+$release = if ($Tag) { Get-ChangelogRelease -RepoRoot $repoRoot -Tag $Tag } else { Get-ChangelogUnreleased -RepoRoot $repoRoot }
 
 if (-not [System.IO.Path]::IsPathRooted($ChangelogPath)) {
     $ChangelogPath = Join-Path $repoRoot $ChangelogPath
@@ -69,10 +69,7 @@ function Get-GeneratedSectionBody {
     }
 
     $bodyStart = $heading.Index + $heading.Length
-    $nextHeading = [regex]::Match(
-        $content.Substring($bodyStart),
-        '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+\]?).*$'
-    )
+    $nextHeading = [regex]::Match($content.Substring($bodyStart), $ChangelogHeadingPattern)
     $bodyLength = if ($nextHeading.Success) { $nextHeading.Index } else { $content.Length - $bodyStart }
     return $content.Substring($bodyStart, $bodyLength).Trim()
 }
@@ -88,18 +85,13 @@ function Get-ProjectBody {
         "--repository", ".",
         "--strip", "header"
     )
-    if ($Tag) {
-        $arguments += $release.SectionArguments
-    }
-    else {
-        $arguments += '--unreleased'
-    }
+    $arguments += if ($Tag) { $release.SectionArguments } else { $release.Arguments }
     foreach ($includePath in $ProjectGroup.IncludePaths) {
         # Keep the glob attached to the option so PowerShell cannot expand it.
         $arguments += "--include-path=$includePath"
     }
     $arguments += "--output", $tempPath
-    if ($Tag) { $arguments += $release.RangeArguments }
+    $arguments += $release.RangeArguments
 
     Push-Location $repoRoot
     try {
