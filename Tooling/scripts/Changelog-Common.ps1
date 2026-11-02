@@ -22,7 +22,10 @@ function Get-ChangelogUnreleased {
     if ($previousTag) { $rangeArguments = @('--', "$previousTag..HEAD") }
     return [pscustomobject]@{
         PreviousTag = $previousTag
-        Arguments = @('--unreleased', '--ignore-tags', $ChangelogPrereleaseTagPattern)
+        # With an explicit stable..HEAD range, --unreleased would exclude
+        # commits at prerelease-tagged HEAD even when those tags are ignored.
+        # git-cliff will render the untagged range as [Unreleased] by default.
+        Arguments = @('--ignore-tags', $ChangelogPrereleaseTagPattern)
         BootstrapArguments = @('--ignore-tags', $ChangelogPrereleaseTagPattern)
         RangeArguments = $rangeArguments
     }
