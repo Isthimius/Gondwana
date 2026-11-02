@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Fixed
+- Correct browser audio package contents ([#533](https://github.com/Isthimius/Gondwana/pull/533))
+
 # v2.6.1 - October 08, 2026
 
 

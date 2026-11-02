@@ -21,11 +21,14 @@ All notable changes to this project will be documented in this file.
 - Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
 - Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Complete shared undo/redo with GAF history ([#524](https://github.com/Isthimius/Gondwana/pull/524))
 
 
 
 ## Fixed
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 

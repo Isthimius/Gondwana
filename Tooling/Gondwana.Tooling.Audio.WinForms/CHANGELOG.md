@@ -18,11 +18,16 @@ All notable changes to Gondwana.Tooling.Audio.WinForms are documented here.
 - Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
 - Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
 
 
 
 ## Fixed
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 

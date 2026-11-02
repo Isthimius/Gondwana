@@ -18,11 +18,22 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
+- Add property-grid help descriptions ([#504](https://github.com/Isthimius/Gondwana/pull/504))
+
+
+
+### Refactoring
+- Group scene, audio, and sprite properties ([#510](https://github.com/Isthimius/Gondwana/pull/510))
 
 
 
 ### Documentation
 - Correct LinearDamping XML documentation ([#478](https://github.com/Isthimius/Gondwana/pull/478))
+
+## Gondwana.Audio.Browser
+
+### Fixed
+- Correct browser audio package contents ([#533](https://github.com/Isthimius/Gondwana/pull/533))
 
 ## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
 
@@ -63,11 +74,14 @@ All notable changes to this project will be documented in this file.
 - Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
 - Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Complete shared undo/redo with GAF history ([#524](https://github.com/Isthimius/Gondwana/pull/524))
 
 
 
 ### Fixed
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 
@@ -89,12 +103,18 @@ All notable changes to this project will be documented in this file.
 - Show file-type icons on document tabs ([#494](https://github.com/Isthimius/Gondwana/pull/494))
 - Show source-sized animation frame thumbnails ([#499](https://github.com/Isthimius/Gondwana/pull/499))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
 
 
 
 ### Fixed
 - Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Add property-grid help descriptions ([#504](https://github.com/Isthimius/Gondwana/pull/504))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 
@@ -109,11 +129,16 @@ All notable changes to this project will be documented in this file.
 - Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
 - Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
 
 
 
 ### Fixed
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 
@@ -124,6 +149,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
+- Color output lines by severity ([#523](https://github.com/Isthimius/Gondwana/pull/523))
 
 
 
@@ -144,12 +170,25 @@ All notable changes to this project will be documented in this file.
 - Show file-type icons on document tabs ([#494](https://github.com/Isthimius/Gondwana/pull/494))
 - Select active document in working directory tree ([#496](https://github.com/Isthimius/Gondwana/pull/496))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Add global command toolbar with Save All and validation ([#507](https://github.com/Isthimius/Gondwana/pull/507))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Add type-folder document creation ([#518](https://github.com/Isthimius/Gondwana/pull/518))
+- Add shared undo/redo foundation for GTS and GSCN ([#519](https://github.com/Isthimius/Gondwana/pull/519))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Color output lines by severity ([#523](https://github.com/Isthimius/Gondwana/pull/523))
+- Complete shared undo/redo with GAF history ([#524](https://github.com/Isthimius/Gondwana/pull/524))
 
 
 
 ### Fixed
 - Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- 48px toolbar buttons with hover tooltips ([#508](https://github.com/Isthimius/Gondwana/pull/508))
+- Make dependency query scope an explicit reversible toggle ([#516](https://github.com/Isthimius/Gondwana/pull/516))
+- Size dependency summary for wrapped text ([#522](https://github.com/Isthimius/Gondwana/pull/522))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 
@@ -167,6 +206,15 @@ All notable changes to this project will be documented in this file.
 - Launch packed scenes from temporary snapshots ([#490](https://github.com/Isthimius/Gondwana/pull/490))
 - Add preview-only per-layer visibility controls ([#495](https://github.com/Isthimius/Gondwana/pull/495))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Add global command toolbar with Save All and validation ([#507](https://github.com/Isthimius/Gondwana/pull/507))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Add shared undo/redo foundation for GTS and GSCN ([#519](https://github.com/Isthimius/Gondwana/pull/519))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Add select, paint and erase tool modes ([#527](https://github.com/Isthimius/Gondwana/pull/527))
+- Add drag painting and multi-cell selection ([#528](https://github.com/Isthimius/Gondwana/pull/528))
+- Complete visual editing with rectangle, fill and bulk tools ([#529](https://github.com/Isthimius/Gondwana/pull/529))
 
 
 
@@ -176,6 +224,10 @@ All notable changes to this project will be documented in this file.
 - Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
 - Start playback after assigning animations ([#497](https://github.com/Isthimius/Gondwana/pull/497))
+- Sync zoom selectors with preview magnification ([#502](https://github.com/Isthimius/Gondwana/pull/502))
+- Add property-grid help descriptions ([#504](https://github.com/Isthimius/Gondwana/pull/504))
+- Eliminate duplicated preview overlay text during wheel scrolling ([#517](https://github.com/Isthimius/Gondwana/pull/517))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 
@@ -209,12 +261,24 @@ All notable changes to this project will be documented in this file.
 - Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
 - Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
 
 
 
 ### Fixed
 - Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Sync zoom selectors with preview magnification ([#502](https://github.com/Isthimius/Gondwana/pull/502))
+- Add property-grid help descriptions ([#504](https://github.com/Isthimius/Gondwana/pull/504))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
+
+
+
+### Refactoring
+- Group scene, audio, and sprite properties ([#510](https://github.com/Isthimius/Gondwana/pull/510))
 
 
 
@@ -229,12 +293,25 @@ All notable changes to this project will be documented in this file.
 - Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
 - Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Add shared undo/redo foundation for GTS and GSCN ([#519](https://github.com/Isthimius/Gondwana/pull/519))
+- Group gts region geometry in property inspector ([#520](https://github.com/Isthimius/Gondwana/pull/520))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
 
 
 
 ### Fixed
 - Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Sync zoom selectors with preview magnification ([#502](https://github.com/Isthimius/Gondwana/pull/502))
+- Add property-grid help descriptions ([#504](https://github.com/Isthimius/Gondwana/pull/504))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
+
+
+
+### Refactoring
+- Group scene, audio, and sprite properties ([#510](https://github.com/Isthimius/Gondwana/pull/510))
 
 
 
@@ -247,11 +324,13 @@ All notable changes to this project will be documented in this file.
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
 - Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
 
 
 
 ### Fixed
 - Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
+- Correct browser audio package contents ([#533](https://github.com/Isthimius/Gondwana/pull/533))
 
 
 
@@ -267,6 +346,7 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Remove redundant PR pack validation step ([#501](https://github.com/Isthimius/Gondwana/pull/501))
+- Run binary packaging at 12:30 AM Eastern ([#503](https://github.com/Isthimius/Gondwana/pull/503))
 
 
 

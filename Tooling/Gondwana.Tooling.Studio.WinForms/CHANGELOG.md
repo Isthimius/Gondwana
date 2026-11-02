@@ -27,12 +27,25 @@ All notable changes to this project will be documented in this file.
 - Show file-type icons on document tabs ([#494](https://github.com/Isthimius/Gondwana/pull/494))
 - Select active document in working directory tree ([#496](https://github.com/Isthimius/Gondwana/pull/496))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+- Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Add global command toolbar with Save All and validation ([#507](https://github.com/Isthimius/Gondwana/pull/507))
+- Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
+- Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
+- Add type-folder document creation ([#518](https://github.com/Isthimius/Gondwana/pull/518))
+- Add shared undo/redo foundation for GTS and GSCN ([#519](https://github.com/Isthimius/Gondwana/pull/519))
+- Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Color output lines by severity ([#523](https://github.com/Isthimius/Gondwana/pull/523))
+- Complete shared undo/redo with GAF history ([#524](https://github.com/Isthimius/Gondwana/pull/524))
 
 
 
 ## Fixed
 - Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
 - Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- 48px toolbar buttons with hover tooltips ([#508](https://github.com/Isthimius/Gondwana/pull/508))
+- Make dependency query scope an explicit reversible toggle ([#516](https://github.com/Isthimius/Gondwana/pull/516))
+- Size dependency summary for wrapped text ([#522](https://github.com/Isthimius/Gondwana/pull/522))
+- Correct toolbar dpi scaling and glyph resolution ([#530](https://github.com/Isthimius/Gondwana/pull/530))
 
 
 

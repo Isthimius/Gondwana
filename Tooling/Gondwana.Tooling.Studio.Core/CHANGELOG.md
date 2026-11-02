@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
+- Color output lines by severity ([#523](https://github.com/Isthimius/Gondwana/pull/523))
 
 
 

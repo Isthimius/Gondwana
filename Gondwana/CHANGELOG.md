@@ -26,6 +26,12 @@ All notable changes to this project will be documented in this file.
 
 ## Fixed
 - Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
+- Add property-grid help descriptions ([#504](https://github.com/Isthimius/Gondwana/pull/504))
+
+
+
+## Refactoring
+- Group scene, audio, and sprite properties ([#510](https://github.com/Isthimius/Gondwana/pull/510))
 
 
 
