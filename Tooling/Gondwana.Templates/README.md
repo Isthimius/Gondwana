@@ -80,23 +80,32 @@ When `--Backbuffer gpu` is used:
 
 ### Blazor WebAssembly (browser-based)
 
+New Blazor projects require a **.NET 10 SDK (10.0.100 or later in the 10.0 line)**.
+Use the latest serviced .NET 10 SDK and its `wasm-tools` workload. Run these
+commands from the generated project directory, outside this repository's SDK 8
+`global.json` scope:
+
 ```bash
 dotnet new gondwana-blazor -n MyGame
 cd MyGame
+dotnet --version                             # must select 10.0.x
+dotnet workload install wasm-tools            # installed for the selected SDK
+dotnet workload list                          # must list wasm-tools
+dotnet restore
+dotnet build
 dotnet run                                    # serve locally and run in your browser
 ```
 
 Build and publish for browser:
 
 ```bash
-dotnet workload install wasm-tools            # one-time per machine
-dotnet publish -f net8.0-browser -c Release
-# Output: bin/Release/net8.0-browser/publish/wwwroot/
+dotnet publish -f net10.0-browser -c Release
+# Output: bin/Release/net10.0-browser/publish/wwwroot/
 ```
 
 This scaffolds a Blazor WebAssembly project using Gondwana's GPU-backed WebGL rendering path and containing:
 
-- `MyGame.csproj` — targets `net8.0-browser` with Blazor WebAssembly and Gondwana packages
+- `MyGame.csproj` — targets `net10.0-browser` with Blazor WebAssembly and Gondwana packages
 - `Program.cs` — Blazor WebAssembly entry point with audio module import
 - `App.razor` — Root Blazor Router component
 - `Pages/Index.razor` — Main page (routed to "/") containing the game
@@ -130,6 +139,20 @@ from an in-engine `SplashScreen`.
 The Blazor template intentionally uses WebGL as the default and expected browser rendering backend. Gondwana retains the CPU bitmap Blazor renderer as a compatibility and diagnostic path, but it is not exposed as a normal template option.
 
 **Note:** The `gondwana-audio.js` file is automatically included via the `Gondwana.Audio.Browser` NuGet package.
+
+Do not manually copy that file or exclude NuGet `contentFiles`. If native startup
+reports `DllNotFoundException: libSkiaSharp`, check the generated target framework,
+`dotnet --version`, any ancestor `global.json`, and the workload selected by that
+SDK. Check `obj/project.assets.json` for `SkiaSharp.NativeAssets.WebAssembly`,
+then clean, restore and rebuild. A .NET 10 SDK with `wasm-tools` is the tested
+configuration for this template; an installed SDK 8 workload does not substitute
+for the SDK 10 workload. See Microsoft's
+[WebAssembly build tools guidance](https://learn.microsoft.com/aspnet/core/blazor/webassembly-build-tools-and-aot?view=aspnetcore-10.0).
+
+The runtime libraries, template packaging project, WinForms template and Avalonia
+template remain on .NET 8. Desktop targets do not use the WebAssembly native-link
+toolchain and need no framework retargeting for this fix. A wider framework and
+support-lifecycle migration should be evaluated separately.
 
 Audio uses the common `Engine.Managers.AudioResources` API with a platform backend:
 

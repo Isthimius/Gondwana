@@ -149,7 +149,7 @@ return 1 and produce actionable diagnostics; successful validation returns 0.
 gondwana publish blazor
 gondwana serve
 gondwana serve --project ./src/MyGame --port 5001 --no-open
-gondwana serve --configuration Release --framework net8.0-browser
+gondwana serve --configuration Release --framework net10.0-browser
 gondwana serve --root ./artifacts/publish/wwwroot --no-open
 ```
 
@@ -292,7 +292,7 @@ gondwana new blazor MyGame -o ./projects/MyGame
 
 The scaffolded project contains:
 
-- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net8.0-browser`, with `Gondwana.Blazor`, `Gondwana.Blazor.Hosting`, `Gondwana.Audio.Browser`, and `Microsoft.AspNetCore.Components.WebAssembly` package references
+- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net10.0-browser`, with `Gondwana.Blazor`, `Gondwana.Blazor.Hosting`, `Gondwana.Audio.Browser`, and `Microsoft.AspNetCore.Components.WebAssembly` package references
 - `Program.cs` — Blazor WebAssembly entry point that imports the Gondwana browser audio module (`/gondwana-audio.js`)
 - `App.razor` — root Blazor app component
 - `Pages/Index.razor` — the default page hosting the game canvas
@@ -315,8 +315,14 @@ Build and publish for deployment:
 ```bash
 cd MyGame
 gondwana publish blazor
-# Output: bin/Release/net8.0-browser/publish/wwwroot/
+# Output: bin/Release/net10.0-browser/publish/wwwroot/
 ```
+
+New Blazor projects require a .NET 10 SDK (minimum 10.0.100; use the latest
+serviced 10.0 SDK). From the generated directory, verify `dotnet --version`, run
+`dotnet workload install wasm-tools`, and verify `dotnet workload list` before
+building or publishing. Check ancestor `global.json` files if SDK 8 is selected.
+The runtime libraries and desktop templates remain on .NET 8.
 
 The CLI checks whether `wasm-tools` is already installed and installs it only when needed. Use `--skip-workload` when the environment is already managed externally.
 
@@ -350,7 +356,7 @@ Ensures the `wasm-tools` workload is available (unless `--skip-workload`) and st
 ```bash
 gondwana run blazor
 gondwana run blazor --project ./src/MyGame
-gondwana run blazor --framework net8.0-browser
+gondwana run blazor --framework net10.0-browser
 gondwana run blazor --skip-workload
 ```
 
@@ -372,7 +378,7 @@ Builds and publishes the Blazor WebAssembly/WebGL project in the current directo
 ```bash
 gondwana publish blazor
 gondwana publish blazor --project ./src/MyGame
-gondwana publish blazor --framework net8.0-browser
+gondwana publish blazor --framework net10.0-browser
 gondwana publish blazor --base-href /games/mygame/
 gondwana publish blazor --base-href ./
 gondwana publish blazor --skip-workload
@@ -433,7 +439,7 @@ Publishes the Blazor WebAssembly/WebGL project (unless `--skip-build`) and packa
 ```bash
 gondwana publish itch
 gondwana publish itch --project ./src/MyGame
-gondwana publish itch --framework net8.0-browser
+gondwana publish itch --framework net10.0-browser
 gondwana publish itch --skip-build
 gondwana publish itch --base-href ./
 gondwana publish itch --output ./artifacts/MyGame-itch.zip

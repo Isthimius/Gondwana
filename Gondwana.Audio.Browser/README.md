@@ -14,7 +14,7 @@ The package uses .NET JavaScript interop plus HTML media and Web Audio APIs. New
 - current position, duration, and common playback state
 - URI-based loading through `AudioResourceManager.LoadFromUri`
 - compatibility `BrowserAudioManager` / `BrowserAudioPlayer` wrappers for existing code
-- ships `gondwana-audio.js` as NuGet content
+- ships `gondwana-audio.js` as a static web asset at the application root, with both NuGet and project references
 
 ## Installation
 

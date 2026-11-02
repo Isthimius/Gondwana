@@ -20,6 +20,44 @@ permissions:
   contents: read
   actions: read
 jobs:
+  blazor-consumer:
+    # Match the pinned Playwright browser's supported OS, independent of runner image upgrades.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install .NET 10 WebAssembly workload
+        working-directory: ${{ runner.temp }}
+        run: dotnet workload install wasm-tools
+      - name: Install Chromium system dependencies
+        run: npx --yes playwright@1.56.1 install-deps chromium
+      - name: Pack, generate and test Blazor NuGet consumer
+        shell: pwsh
+        run: ./Testing/BlazorConsumer/Run.ps1 -WorkRoot '${{ runner.temp }}/blazor-consumer'
+      - name: Upload consumer diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blazor-consumer-diagnostics
+          path: |
+            ${{ runner.temp }}/blazor-consumer/*.binlog
+            ${{ runner.temp }}/blazor-consumer/toolchain.txt
+            ${{ runner.temp }}/blazor-consumer/compile-items.json
+            ${{ runner.temp }}/blazor-consumer/native-items.json
+            ${{ runner.temp }}/blazor-consumer/audio.nuspec
+            ${{ runner.temp }}/blazor-consumer/app/obj/project.assets.json
+            ${{ runner.temp }}/blazor-consumer/browser-results/
+
   # Keep changelog integration tests off unrelated PRs and master pushes.
   # A separate job is necessary because workflow-level path filters affect all CI jobs.
   changes:

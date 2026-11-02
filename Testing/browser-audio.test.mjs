@@ -202,7 +202,6 @@ test("a sound bank shares one context and unloading tracks preserves other playb
     audio.unload("next-bank");
 });
 
-test("the checked-in demo module matches the backend module", async () => {
-    const demo = await readFile(new URL("../Demos/Spot.Blazor/wwwroot/gondwana-audio.js", import.meta.url), "utf8");
-    assert.equal(demo.replaceAll("\r\n", "\n"), source.replaceAll("\r\n", "\n"));
+test("the demo consumes the backend static asset without a conflicting source copy", async () => {
+    await assert.rejects(readFile(new URL("../Demos/Spot.Blazor/wwwroot/gondwana-audio.js", import.meta.url)), { code: "ENOENT" });
 });
