@@ -15,7 +15,7 @@ Edit `version.json` on a branch, review it through a PR, and merge to `master`. 
 | Release candidate | `2.6.2-rc.1` |
 | Final stable | `2.6.2` |
 
-Never reuse a published version. Older Git tags, GitHub Releases, and NuGet packages remain available even when a beta/RC changelog section is replaced.
+Never reuse a published version. Older Git tags, GitHub Releases, and NuGet packages remain available even when a prerelease changelog section is replaced.
 
 ## 2. Verify readiness
 
@@ -48,7 +48,7 @@ Type `DEPLOY` only after reviewing the preview. The script runs the core tests, 
 
 Inspect **Actions → Release** and the resulting GitHub Release, ZIP asset, and NuGet packages. Confirm the tag, package versions, and release-note body agree.
 
-- **Alpha/beta/RC:** GitHub marks it as a prerelease; the latest stable Release stays unchanged. Stable `/api/` documentation is not republished. Beta templates pin `Gondwana.*` dependencies to that exact beta package version.
+- **Alpha/beta/RC:** GitHub marks it as a prerelease; the latest stable Release stays unchanged. Stable `/api/` documentation is not republished. All prerelease templates (including alpha, beta, RC, and preview) pin `Gondwana.*` dependencies to that exact prerelease package version.
 - **Stable:** GitHub marks it as a normal release and updates the immutable versioned API documentation and stable `/api/` redirect.
 
 To install a prerelease explicitly (replace the example version):
@@ -59,7 +59,7 @@ dotnet tool install -g Gondwana.Cli --version 2.6.2-beta.1
 dotnet new install Gondwana.Templates@2.6.2-beta.1
 ```
 
-If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version 2.6.2-beta.1` instead of `install`. For generated beta projects, keep the matching pinned prerelease package references until intentionally upgrading.
+If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version 2.6.2-beta.1` instead of `install`. For generated prerelease projects, keep the matching pinned prerelease package references until intentionally upgrading.
 
 ## Changelog policy
 
