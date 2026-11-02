@@ -23,6 +23,7 @@ function Get-ChangelogUnreleased {
     return [pscustomobject]@{
         PreviousTag = $previousTag
         Arguments = @('--unreleased', '--ignore-tags', $ChangelogPrereleaseTagPattern)
+        BootstrapArguments = @('--ignore-tags', $ChangelogPrereleaseTagPattern)
         RangeArguments = $rangeArguments
     }
 }
