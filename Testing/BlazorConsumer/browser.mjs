@@ -132,7 +132,7 @@ try {
     const port = reservation.address().port;
     await new Promise(resolve => reservation.close(resolve));
     const url = `http://127.0.0.1:${port}/`;
-    dev = spawn('dotnet', ['run', '--project', 'app/Consumer.csproj', '-c', 'Release', '--no-build', '--no-launch-profile', '--urls', url],
+    dev = spawn('dotnet', ['run', '--project', 'app/Consumer.csproj', '-c', 'Debug', '--no-build', '--no-launch-profile', '--urls', url],
         { cwd: root, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
     let devLog = '';
     dev.stdout.on('data', data => { devLog += data; });

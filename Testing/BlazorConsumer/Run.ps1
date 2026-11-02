@@ -100,6 +100,8 @@ try {
         $nativeItems | Set-Content native-items.json
         Run dotnet @('build', 'app/Consumer.csproj', '-c', 'Release', '--no-restore', '-bl:build.binlog')
         Run dotnet @('publish', 'app/Consumer.csproj', '-c', 'Release', '--no-restore', '-o', 'published', '-bl:publish.binlog')
+        # Match a new user's default dotnet run configuration as well as Release publishing.
+        Run dotnet @('build', 'app/Consumer.csproj', '-c', 'Debug', '--no-restore', '-bl:debug-build.binlog')
         $compileItems = & dotnet msbuild app/Consumer.csproj -t:ResolveReferences -getItem:Compile -p:Configuration=Release
         if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect compilation items' }
         $compileItems | Set-Content compile-items.json

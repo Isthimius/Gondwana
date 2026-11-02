@@ -24,7 +24,7 @@ NuGet cache and package source mapping prevent published Gondwana packages from
 satisfying the restore. Third-party dependencies come from NuGet.org.
 
 Assertions cover package/nuspec metadata, resolved package assets, actual MSBuild
-Compile items, Release build/publish, and absence of a manually copied audio
+Compile items, Debug build, Release build/publish, and absence of a manually copied audio
 module. Playwright/Chromium uses ANGLE SwiftShader and tests both the published
 output (under `/game/`) and the development server. Startup must remove the
 template loader, create a sized Gondwana canvas, load WASM and import audio,
