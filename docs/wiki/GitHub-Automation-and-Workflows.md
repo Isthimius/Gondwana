@@ -1162,7 +1162,7 @@ GitHub Packages publication is treated as best effort: failures produce warnings
 
 ## Prerelease metadata and templates
 
-A tag such as `v2.6.2-beta.1` produces a GitHub Release marked **prerelease**, without becoming the latest stable release. The workflow appends exact-version installation commands to its release notes. For beta/RC packaging, `package-binaries.yml` invokes `Prepare-PrereleaseTemplates.ps1` using the NBGV package version: in the disposable checkout, it pins only `Gondwana.*` references in the three templates, leaving third-party packages alone. Stable templates continue to use `2.*`. Release-version validation and beta/RC/stable changelog transition tests protect this flow in CI.
+A tag such as `v2.6.2-beta.1` produces a GitHub Release marked **prerelease**, without becoming the latest stable release. The workflow appends exact-version installation commands to its release notes. For any SemVer prerelease (alpha, beta, RC, preview, etc.), `package-binaries.yml` invokes `Prepare-PrereleaseTemplates.ps1` using the NBGV package version: in the disposable checkout, it pins only `Gondwana.*` references in the three templates, leaving third-party packages alone. Stable templates continue to use `2.*`. Release-version validation and prerelease-to-stable changelog transition tests protect this flow in CI.
 
 The local orchestrator refuses to replace any existing local or remote tag. Publishing a later beta requires a new SemVer version, such as `2.6.2-beta.2`.
 
