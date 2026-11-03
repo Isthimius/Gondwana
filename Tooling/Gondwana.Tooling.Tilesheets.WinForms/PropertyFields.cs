@@ -353,7 +353,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
         {
             var properties = TypeDescriptor.GetProperties(typeof(MaskRgb), attributes ?? []);
-            return new PropertyDescriptorCollection(["Red", "Green", "Blue"].Select(name =>
+            return new PropertyDescriptorCollection(new[] { "Red", "Green", "Blue" }.Select(name =>
                 TypeDescriptor.CreateProperty(typeof(MaskRgb), properties[name]!, NotifyParentPropertyAttribute.Yes)).ToArray(), true);
         }
 
