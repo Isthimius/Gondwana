@@ -13,7 +13,7 @@
 - Live nearest-neighbor animation preview with play, restart, step and zoom controls.
 - Structural validation plus loaded-GTS resolution warnings.
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 

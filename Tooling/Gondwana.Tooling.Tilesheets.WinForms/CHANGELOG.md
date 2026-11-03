@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Keep DockPanelSuite document/window behavior in thin standalone-app wrappers.
 
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 
@@ -28,6 +28,8 @@ All notable changes to this project will be documented in this file.
 - Add shared undo/redo foundation for GTS and GSCN ([#519](https://github.com/Isthimius/Gondwana/pull/519))
 - Group gts region geometry in property inspector ([#520](https://github.com/Isthimius/Gondwana/pull/520))
 - Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Add image metadata and mask color editing ([#538](https://github.com/Isthimius/Gondwana/pull/538))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 

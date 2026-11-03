@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 

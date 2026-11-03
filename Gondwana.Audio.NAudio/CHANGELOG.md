@@ -2,7 +2,7 @@
 
 All notable changes to `Gondwana.Audio.NAudio` are recorded here by the repository changelog workflow.
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 # v2.6.1 - October 08, 2026
 

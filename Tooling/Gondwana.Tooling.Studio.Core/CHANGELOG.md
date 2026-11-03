@@ -8,13 +8,14 @@ All notable changes to this project will be documented in this file.
 
 - Retain plugin infrastructure and shell Output state while removing obsolete duplicate editor models and services with the deprecated Avalonia Studio prototype.
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 
 ## Added
 - Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
 - Color output lines by severity ([#523](https://github.com/Isthimius/Gondwana/pull/523))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 

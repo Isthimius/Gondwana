@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-# [v2.6.2-beta.1] - 2026-11-02
+# [v2.6.2] - 2026-11-03
 
 ## Gondwana
 
@@ -39,6 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 
@@ -54,6 +55,9 @@ All notable changes to this project will be documented in this file.
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
 - Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
 - Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+- Add prerelease and exact-version template installation ([#537](https://github.com/Isthimius/Gondwana/pull/537))
+- Show installed version in template listing ([#540](https://github.com/Isthimius/Gondwana/pull/540))
+- Preflight blazor scaffolding prerequisites ([#541](https://github.com/Isthimius/Gondwana/pull/541))
 
 
 
@@ -64,6 +68,11 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
+
+## Tooling / Gondwana.Templates
+
+### Added
+- Preflight blazor scaffolding prerequisites ([#541](https://github.com/Isthimius/Gondwana/pull/541))
 
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
@@ -150,6 +159,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
 - Color output lines by severity ([#523](https://github.com/Isthimius/Gondwana/pull/523))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 
@@ -215,6 +225,7 @@ All notable changes to this project will be documented in this file.
 - Add select, paint and erase tool modes ([#527](https://github.com/Isthimius/Gondwana/pull/527))
 - Add drag painting and multi-cell selection ([#528](https://github.com/Isthimius/Gondwana/pull/528))
 - Complete visual editing with rectangle, fill and bulk tools ([#529](https://github.com/Isthimius/Gondwana/pull/529))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 
@@ -265,6 +276,7 @@ All notable changes to this project will be documented in this file.
 - Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
 - Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
 - Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 
@@ -298,6 +310,8 @@ All notable changes to this project will be documented in this file.
 - Add shared undo/redo foundation for GTS and GSCN ([#519](https://github.com/Isthimius/Gondwana/pull/519))
 - Group gts region geometry in property inspector ([#520](https://github.com/Isthimius/Gondwana/pull/520))
 - Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Add image metadata and mask color editing ([#538](https://github.com/Isthimius/Gondwana/pull/538))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 
@@ -325,6 +339,7 @@ All notable changes to this project will be documented in this file.
 - Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
 - Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
 - Add shared selectable themes to editors ([#505](https://github.com/Isthimius/Gondwana/pull/505))
+- Preflight blazor scaffolding prerequisites ([#541](https://github.com/Isthimius/Gondwana/pull/541))
 
 
 
@@ -361,7 +376,7 @@ All notable changes to this project will be documented in this file.
 - Update release note link for Gondwana 2.6.1
 - Removed the Discussions, added FAQ link from the README ([#488](https://github.com/Isthimius/Gondwana/pull/488))
 
-Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2-beta.1
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2
 
 # [v2.6.1] - 2026-10-08
 

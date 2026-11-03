@@ -7,7 +7,7 @@ All notable changes to Gondwana.Tooling.Scenes.WinForms are documented here.
 ### Added
 - Standalone and hostable WinForms editor for GSCN scene definitions.
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 
@@ -29,6 +29,7 @@ All notable changes to Gondwana.Tooling.Scenes.WinForms are documented here.
 - Add select, paint and erase tool modes ([#527](https://github.com/Isthimius/Gondwana/pull/527))
 - Add drag painting and multi-cell selection ([#528](https://github.com/Isthimius/Gondwana/pull/528))
 - Complete visual editing with rectangle, fill and bulk tools ([#529](https://github.com/Isthimius/Gondwana/pull/529))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 

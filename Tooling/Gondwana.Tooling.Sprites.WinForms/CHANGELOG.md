@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 
@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Complete GAF dependency pickers across native editors ([#514](https://github.com/Isthimius/Gondwana/pull/514))
 - Add dependency explorer and cross-document navigation ([#515](https://github.com/Isthimius/Gondwana/pull/515))
 - Extend shared undo/redo to GANI, GSPR, and GSND ([#521](https://github.com/Isthimius/Gondwana/pull/521))
+- Order inspector fields and improve composite editors ([#539](https://github.com/Isthimius/Gondwana/pull/539))
 
 
 

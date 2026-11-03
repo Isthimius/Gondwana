@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-# v2.6.2-beta.1 - November 02, 2026
+# v2.6.2 - November 03, 2026
 
 
 
@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file.
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
 - Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
 - Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+- Add prerelease and exact-version template installation ([#537](https://github.com/Isthimius/Gondwana/pull/537))
+- Show installed version in template listing ([#540](https://github.com/Isthimius/Gondwana/pull/540))
+- Preflight blazor scaffolding prerequisites ([#541](https://github.com/Isthimius/Gondwana/pull/541))
 
 
 
