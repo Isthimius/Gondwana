@@ -164,7 +164,7 @@ public sealed partial class EditorInteractionTests
         Application.DoEvents();
         Assert.Same(newRegion, toolbar.SelectedItem);
 
-        var grid = Field<PropertyGrid>(editor.Editor, "_regionHeader");
+        var grid = Field<PropertyGrid>(editor.Editor, "_regionProperties");
         Edit(grid, "Name", "renamed-region");
         Application.DoEvents();
         Assert.Equal("renamed-region", newRegion.Name);
@@ -172,7 +172,7 @@ public sealed partial class EditorInteractionTests
         Assert.Equal("renamed-region", toolbar.Text);
         Assert.Same(newRegion, toolbar.SelectedItem);
 
-        var inspector = Field<PropertyGrid>(editor.Editor, "_definitionHeader");
+        var inspector = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         var dimensions = TypeDescriptor.GetProperties(inspector.SelectedObject!)["Image Size"]!;
         Assert.True(dimensions.IsReadOnly);
         Assert.Equal(editor.ImageSize ?? Size.Empty, dimensions.GetValue(inspector.SelectedObject));
@@ -180,7 +180,7 @@ public sealed partial class EditorInteractionTests
 
     /// <summary>Definition selection is shared by the toolbar and pane without causing edits.</summary>
     [Fact]
-    public void DefinitionPaneSelector_SynchronizesWithToolbarAndExposesUngroupedIdentity() => RunSta(() =>
+    public void DefinitionPaneSelector_SynchronizesWithToolbarAndPreservesCollapsibleSections() => RunSta(() =>
     {
         var document = TilesheetDocument.Create(Path.GetTempPath());
         using var editor = Show(document);
@@ -188,16 +188,15 @@ public sealed partial class EditorInteractionTests
         var selector = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
         var toolbar = selector.Items.OfType<ToolStripComboBox>().First();
-        var primary = Field<PropertyGrid>(editor.Editor, "_definitionHeader");
         var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
-        var regionPrimary = Field<PropertyGrid>(editor.Editor, "_regionHeader");
+        var regionDetails = Field<PropertyGrid>(editor.Editor, "_regionProperties");
 
-        Assert.Equal(PropertySort.NoSort, primary.PropertySort);
-        Assert.Equal(PropertySort.NoSort, regionPrimary.PropertySort);
         Assert.Equal(PropertySort.Categorized, details.PropertySort);
+        Assert.Equal(PropertySort.Categorized, regionDetails.PropertySort);
         Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
-            TypeDescriptor.GetProperties(primary.SelectedObject!).Cast<PropertyDescriptor>().Select(property => property.Name));
-        Assert.Null(TypeDescriptor.GetProperties(details.SelectedObject!)["Name"]);
+            TypeDescriptor.GetProperties(details.SelectedObject!).Cast<PropertyDescriptor>()
+                .Where(property => property.Category == "Definition").Select(property => property.Name));
+        Assert.Equal("Region", TypeDescriptor.GetProperties(regionDetails.SelectedObject!)["Name"]!.Category);
         Assert.NotNull(TypeDescriptor.GetProperties(details.SelectedObject!)["Mask enabled"]);
         Assert.Same(document.SelectedDefinition, pane.SelectedItem);
         Assert.Equal(document.SelectedDefinition.Name, toolbar.SelectedItem);
@@ -238,6 +237,9 @@ public sealed partial class EditorInteractionTests
         string[] Children(GridItem item) => item.GridItems.Cast<GridItem>()
             .Select(child => child.PropertyDescriptor?.Name).Where(name => name is not null).Select(name => name!).ToArray();
 
+        Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
+            Children(Category(details, "Definition")));
+        Assert.Equal(new[] { "Name" }, Children(Category(region, "Region")));
         Assert.Equal(new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
             Children(Category(details, "Mask")));
         var maskColor = Category(details, "Mask").GridItems.Cast<GridItem>()
@@ -316,7 +318,7 @@ public sealed partial class EditorInteractionTests
             editor.AddRegion();
         }
         var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
-        grid = Field<PropertyGrid>(editor.Editor, "_definitionHeader");
+        grid = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         Edit(grid, "Name", "Edited in the inspector");
         Assert.Equal("Edited in the inspector", document.Definition.Name);
         Edit(grid, "PremultiplyAlpha", "True");
