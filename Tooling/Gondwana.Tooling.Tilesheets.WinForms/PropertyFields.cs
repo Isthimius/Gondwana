@@ -337,4 +337,65 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         /// <inheritdoc/>
         public override bool ShouldSerializeValue(object component) => false;
     }
+
+    /// <summary>RGB components that do not expose framework named colors in the grid.</summary>
+    internal struct MaskRgb(byte red, byte green, byte blue)
+    {
+        public byte Red { get; set; } = red;
+        public byte Green { get; set; } = green;
+        public byte Blue { get; set; } = blue;
+    }
+
+    /// <summary>Reconstructs the RGB value when an expanded byte component changes.</summary>
+    internal sealed class MaskRgbConverter : ExpandableObjectConverter
+    {
+        public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
+        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+        {
+            var properties = TypeDescriptor.GetProperties(typeof(MaskRgb), attributes ?? []);
+            return new PropertyDescriptorCollection(["Red", "Green", "Blue"].Select(name =>
+                TypeDescriptor.CreateProperty(typeof(MaskRgb), properties[name]!, NotifyParentPropertyAttribute.Yes)).ToArray(), true);
+        }
+
+        public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
+        public override object CreateInstance(ITypeDescriptorContext? context, System.Collections.IDictionary values) =>
+            new MaskRgb((byte)values["Red"]!, (byte)values["Green"]!, (byte)values["Blue"]!);
+
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
+            destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture,
+            object? value, Type destinationType) =>
+            destinationType == typeof(string) && value is MaskRgb rgb
+                ? $"{rgb.Red}, {rgb.Green}, {rgb.Blue}"
+                : base.ConvertTo(context, culture, value, destinationType);
+    }
+
+    /// <summary>GTS collision insets expand in CSS order: top, right, bottom, left.</summary>
+    internal sealed class GtsCollisionAdjustConverter : ExpandableObjectConverter
+    {
+        private static readonly string[] Edges = ["Top", "Right", "Bottom", "Left"];
+
+        public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
+        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+        {
+            var properties = TypeDescriptor.GetProperties(typeof(CollisionAdjust), attributes ?? []);
+            return new PropertyDescriptorCollection(Edges.Select(edge =>
+                TypeDescriptor.CreateProperty(typeof(CollisionAdjust), properties[edge]!,
+                    new DescriptionAttribute($"Collision inset on the {edge.ToLowerInvariant()} edge; positive shrinks, negative expands."),
+                    NotifyParentPropertyAttribute.Yes)).ToArray(), true);
+        }
+
+        public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
+        public override object CreateInstance(ITypeDescriptorContext? context, System.Collections.IDictionary values) =>
+            new CollisionAdjust((int)values["Top"]!, (int)values["Bottom"]!, (int)values["Left"]!, (int)values["Right"]!);
+
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
+            destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture,
+            object? value, Type destinationType) =>
+            destinationType == typeof(string) && value is CollisionAdjust insets
+                ? $"{insets.Top}, {insets.Right}, {insets.Bottom}, {insets.Left}"
+                : base.ConvertTo(context, culture, value, destinationType);
+    }
+
 }
