@@ -145,7 +145,7 @@ internal static class TemplatePackageHelper
     }
 
     private static readonly Regex ExactVersionPattern = new(
-        @"^(?<core>\\d+\\.\\d+\\.\\d+(?:\\.\\d+)?)(?:-(?<pre>[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z.-]+)?$",
+        @"^(?<core>\d+\.\d+\.\d+(?:\.\d+)?)(?:-(?<pre>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z.-]+)?$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     /// <summary>
