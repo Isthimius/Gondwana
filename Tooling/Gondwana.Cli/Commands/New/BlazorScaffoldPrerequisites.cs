@@ -73,10 +73,31 @@ internal static class BlazorScaffoldPrerequisites
         return new(true, true, $"Compatible wasm-tools workload installed ({afterInstall.Version}).");
     }
 
+    /// <summary>
+    /// Resolves the existing directory that governs SDK selection at the intended output path.
+    /// </summary>
+    /// <remarks>
+    /// Project output paths may not exist yet. The nearest existing ancestor has the same
+    /// global.json scope as the eventual project, unless the project is later moved.
+    /// </remarks>
+    internal static string ResolveSdkWorkingDirectory(string outputDirectory)
+    {
+        var directory = Path.GetFullPath(outputDirectory);
+        while (!Directory.Exists(directory))
+        {
+            directory = Path.GetDirectoryName(directory)
+                ?? throw new DirectoryNotFoundException($"No existing ancestor found for '{outputDirectory}'.");
+        }
+
+        return directory;
+    }
+
     private static bool IsSupportedSdk(string? sdkVersion)
     {
-        if (string.IsNullOrWhiteSpace(sdkVersion) ||
-            !Version.TryParse(sdkVersion.Trim().Split('-')[0], out var parsed))
+        // A preview/RC (including 10.0.100-preview.1) is not the stable SDK advertised
+        // as the minimum. Require the serviced stable .NET 10 SDK line.
+        if (string.IsNullOrWhiteSpace(sdkVersion) || sdkVersion.Contains('-', StringComparison.Ordinal) ||
+            !Version.TryParse(sdkVersion.Trim(), out var parsed))
             return false;
 
         return parsed.Major == 10 && parsed.Minor == 0 && parsed.Build >= 100;
