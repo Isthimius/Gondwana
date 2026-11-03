@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Drawing;
 using System.Reflection;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -241,7 +242,11 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         {
             List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
             if (typeof(T) == typeof(Color))
-                attributes.Add(new EditorAttribute(typeof(MaskColorEditor), typeof(UITypeEditor)));
+                // This descriptor is also linked into the cross-platform Gondwana.Tests assembly.
+                // Keep the WinForms-only type editor out of its compile-time dependencies.
+                attributes.Add(new EditorAttribute(
+                    "Gondwana.Tooling.Tilesheets.WinForms.MaskColorEditor, Gondwana.Tooling.Tilesheets.WinForms",
+                    "System.Drawing.Design.UITypeEditor, System.Windows.Forms"));
             return [.. attributes];
         }
 
