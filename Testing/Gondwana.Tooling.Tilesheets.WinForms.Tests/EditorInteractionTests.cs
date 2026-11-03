@@ -333,7 +333,9 @@ public sealed partial class EditorInteractionTests
         Assert.Equal(-4, region.CollisionAdjust.Left);
         document.History.Undo(); Application.DoEvents();
         Assert.Equal(-3, region.CollisionAdjust.Left);
-        Assert.Equal(-3, Items(grid).Single(item => item.PropertyDescriptor?.Name == "Left").Value);
+        Assert.Equal(-3, Items(grid).Single(item =>
+            item.PropertyDescriptor?.Name == "Left" &&
+            item.Parent?.PropertyDescriptor?.Name == "CollisionAdjust").Value);
         document.History.Redo(); Application.DoEvents(); Assert.Equal(-4, region.CollisionAdjust.Left);
         Edit(grid, "Overhang.Top", "2");
         Assert.Equal(2, region.Overhang.Top);
