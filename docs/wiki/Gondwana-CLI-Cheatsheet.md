@@ -490,7 +490,7 @@ Scaffolds a `net10.0-browser` Blazor WebAssembly project using Gondwana's GPU-ba
 | `--output <dir>` | `-o` | `./<name>` | Output directory. |
 | `--skip-workload` | | `false` | Skip checking/installing `wasm-tools` (still requires .NET SDK 10). |
 
-Before scaffolding, the CLI requires SDK 10.0.100 or later in the 10.0 line and checks for a compatible .NET 10 `wasm-tools` workload. If missing or incompatible, an interactive prompt offers to install it; declining generates the project with a readiness warning. In non-interactive shells, preinstall the workload or pass `--skip-workload`. This preflight applies to `gondwana new blazor`, not direct `dotnet new gondwana-blazor` use.
+Before scaffolding, the CLI requires a stable SDK 10.0.100 or later in the 10.0 line and checks for a compatible .NET 10 `wasm-tools` workload. SDK/workload detection and installation run in the output project's `global.json` scope, including when `-o` points to a different directory. If missing or incompatible, an interactive prompt offers to install it; declining generates the project with a readiness warning. In non-interactive shells, preinstall the workload or pass `--skip-workload`. This preflight applies to `gondwana new blazor`, not direct `dotnet new gondwana-blazor` use.
 
 The project includes `Program.cs`, `App.razor`, `Pages/Index.razor`, `GameRenderSurface.razor` wrapping `BlazorGpuRenderSurfaceComponent`, a `BlazorGpuGameHost` subclass, `wwwroot/index.html`, and references to `Gondwana.Blazor`, `Gondwana.Blazor.Hosting`, and `Gondwana.Audio.Browser`.
 
