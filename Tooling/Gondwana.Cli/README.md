@@ -548,7 +548,7 @@ Manage Gondwana project templates:
 ```bash
 gondwana templates install                         # Install latest stable, or check for updates if already installed
 gondwana templates install --prerelease            # Install newest available version, including prereleases
-gondwana templates install --version 2.6.2-beta.1  # Install this exact version
+gondwana templates install --version <VERSION>       # Install an explicitly selected version
 gondwana templates update                          # Check installed templates for updates
 gondwana templates list                            # List installed Gondwana templates
 ```
@@ -558,7 +558,9 @@ Without options, `install` retains its original stable-only behavior: it install
 Use `--prerelease` to consider both stable and prerelease versions on nuget.org;
 the newest version by SemVer wins (which may be stable if it is newer).
 Use `--version <VERSION>` to select a specific stable, beta, RC, or other
-prerelease. Both options install the version-pinned package via
+prerelease. Replace `<VERSION>` with the actual published NuGet package version
+(for example, `2.6.2-beta.1`); the example is illustrative, not the current
+or recommended release. Both options install the version-pinned package via
 `dotnet new install Gondwana.Templates@<VERSION> --force`, replacing any
 previously installed template package as needed. They cannot be combined.
 Prerelease resolution works on .NET SDK 8–10; no SDK 11 requirement.
