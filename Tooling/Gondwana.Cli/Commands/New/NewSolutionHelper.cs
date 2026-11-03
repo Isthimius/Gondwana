@@ -24,7 +24,8 @@ internal static class NewSolutionHelper
     /// </summary>
     /// <param name="projectName">The project name.</param>
     /// <param name="projectDirectory">The project directory.</param>
-    public static void CreateHoldingSolution(string projectName, string projectDirectory)
+    /// <param name="dotnetWorkingDirectory">Optional SDK selection directory for solution commands.</param>
+    public static void CreateHoldingSolution(string projectName, string projectDirectory, string? dotnetWorkingDirectory = null)
     {
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);
         var projectPath = Path.Combine(fullProjectDirectory, $"{projectName}.csproj");
@@ -103,7 +104,7 @@ internal static class NewSolutionHelper
             createdNewSolution = true;
         }
 
-        var slnAddExit = ProcessHelper.RunLive("dotnet", ["sln", solutionPath, "add", projectPath]);
+        var slnAddExit = ProcessHelper.RunLive("dotnet", ["sln", solutionPath, "add", projectPath], dotnetWorkingDirectory);
         if (slnAddExit != 0)
         {
             AnsiConsole.MarkupLine($"[yellow]Warning:[/] Could not add project to solution [dim]{Markup.Escape(solutionPath)}[/] automatically.");

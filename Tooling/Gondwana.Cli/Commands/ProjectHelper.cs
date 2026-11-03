@@ -291,10 +291,11 @@ internal static class ProjectHelper
     /// <param name="workloadId">The workload id.</param>
     /// <param name="version">When this method returns, contains the version.</param>
     /// <param name="error">When this method returns, contains the error.</param>
+    /// <param name="workingDirectory">Optional SDK selection directory for the workload query.</param>
     /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetInstalledWorkloadVersion(string workloadId, out string? version, out string? error)
+    public static bool TryGetInstalledWorkloadVersion(string workloadId, out string? version, out string? error, string? workingDirectory = null)
     {
-        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode);
+        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode, workingDirectory);
         if (exitCode != 0)
         {
             version = null;

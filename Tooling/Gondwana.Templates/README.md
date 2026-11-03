@@ -80,6 +80,8 @@ When `--Backbuffer gpu` is used:
 
 ### Blazor WebAssembly (browser-based)
 
+When creating projects with `gondwana new blazor`, the CLI validates the selected .NET 10 SDK and offers to install missing `wasm-tools`; use `--skip-workload` to bypass that check. Direct `dotnet new gondwana-blazor` usage still requires manual workload setup.
+
 New Blazor projects require a **.NET 10 SDK (10.0.100 or later in the 10.0 line)**.
 Use the latest serviced .NET 10 SDK and its `wasm-tools` workload. Run these
 commands from the generated project directory, outside this repository's SDK 8
