@@ -104,7 +104,7 @@ public sealed class PropertyHelpTests
         foreach (PropertyDescriptor property in properties)
             Assert.NotEqual("Misc", property.Category);
 
-        Assert.Equal("Region", properties["Name"]!.Category);
+        Assert.Equal("Region", properties["Name"]!.Category.TrimStart());
         Assert.Equal("Geometry", properties["Area"]!.Category);
         Assert.Equal("Geometry", properties["TileSize"]!.Category);
         Assert.Equal("Geometry", properties["RegionMargin"]!.Category);
@@ -122,6 +122,8 @@ public sealed class PropertyHelpTests
 
         var frameFields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
         var frameProperties = TypeDescriptor.GetProperties(frameFields);
+        Assert.Equal(" Coordinates (read only)", frameProperties["XTile"]!.Category);
+        Assert.Equal(" Coordinates (read only)", frameProperties["YTile"]!.Category);
         Assert.Equal("Collision", frameProperties["CollisionAdjust mode"]!.Category);
         Assert.Equal("Collision", frameProperties["Left"]!.Category);
         Assert.Equal(new[] { "XTile", "YTile", "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
