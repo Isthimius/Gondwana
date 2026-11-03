@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -124,6 +125,52 @@ public sealed partial class EditorInteractionTests
                 item.PropertyDescriptor is { } descriptor &&
                 !string.IsNullOrWhiteSpace(descriptor.Description));
         }
+    });
+
+    /// <summary>Both region selectors share one selection and refresh their labels after a rename.</summary>
+    [Fact]
+    public void ToolbarRegionSelector_TracksPaneSelectionAndRenameInBothDirections() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
+        using var editor = Show(document);
+        var pane = Field<ComboBox>(editor.Editor, "_regions");
+        var toolbar = Field<ToolStripComboBox>(editor.Editor, "_toolbarRegions");
+        var definitionBar = Descendants(editor).OfType<ToolStrip>()
+            .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
+
+        Assert.Equal("Definition", definitionBar.Items[0].Text);
+        Assert.Equal("Region", definitionBar.Items[2].Text);
+        Assert.Same(toolbar, definitionBar.Items[3]);
+        Assert.Same(pane.SelectedItem, toolbar.SelectedItem);
+
+        editor.AddRegion();
+        Application.DoEvents();
+        var newRegion = document.Definition.Regions.Last();
+        Assert.Same(newRegion, pane.SelectedItem);
+        Assert.Same(newRegion, toolbar.SelectedItem);
+
+        var first = document.Definition.Regions.First();
+        toolbar.SelectedItem = first;
+        Application.DoEvents();
+        Assert.Same(first, pane.SelectedItem);
+        Assert.Same(first, Field<ImageViewport>(editor.Editor, "_viewport").SelectedRegion);
+
+        pane.SelectedItem = newRegion;
+        Application.DoEvents();
+        Assert.Same(newRegion, toolbar.SelectedItem);
+
+        var grid = Field<PropertyGrid>(editor.Editor, "_regionProperties");
+        Edit(grid, "Name", "renamed-region");
+        Application.DoEvents();
+        Assert.Equal("renamed-region", newRegion.Name);
+        Assert.Equal("renamed-region", pane.Text);
+        Assert.Equal("renamed-region", toolbar.Text);
+        Assert.Same(newRegion, toolbar.SelectedItem);
+
+        var inspector = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
+        var dimensions = TypeDescriptor.GetProperties(inspector.SelectedObject!)["Image Size"]!;
+        Assert.True(dimensions.IsReadOnly);
+        Assert.Equal(editor.ImageSize ?? Size.Empty, dimensions.GetValue(inspector.SelectedObject));
     });
 
     /// <summary>
