@@ -15,6 +15,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     [InlineData("8.0.414", 0)]
     [InlineData("9.0.305", 0)]
     [InlineData("10.0.99", 0)]
+    [InlineData("10.0.100-preview.1", 0)]
+    [InlineData("10.0.100-rc.1", 0)]
+    [InlineData("10.0.401-preview.2", 0)]
     [InlineData("11.0.100", 0)]
     [InlineData("not-a-version", 0)]
     public void RequiresNet10Sdk(string? version, int exitCode)
@@ -186,5 +189,66 @@ public sealed class BlazorScaffoldPrerequisitesTests
 
         Assert.False(result.CanCreate);
         Assert.Contains("dotnet workload list failed.", result.Message);
+    }
+
+    /// <summary>
+    /// Accepts the stable minimum SDK without requiring the optional workload probe.
+    /// </summary>
+    [Fact]
+    public void StableMinimumSdkIsAccepted()
+    {
+        var result = BlazorScaffoldPrerequisites.Prepare(
+            "10.0.100", 0, skipWorkload: true,
+            checkWorkload: () => throw new InvalidOperationException("Workload check should not run."),
+            confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
+            installWorkload: () => throw new InvalidOperationException("Install should not run."),
+            canPrompt: false);
+
+        Assert.True(result.CanCreate);
+    }
+
+    /// <summary>
+    /// When the output directory exists, its own global.json can select the SDK.
+    /// </summary>
+    [Fact]
+    public void ExistingProjectOutputUsesItsOwnSdkScope()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "GondwanaBlazorScope_" + Guid.NewGuid().ToString("N"));
+        var output = Path.Combine(root, "project");
+        Directory.CreateDirectory(output);
+        try
+        {
+            File.WriteAllText(Path.Combine(output, "global.json"), "{ \"sdk\": { \"version\": \"8.0.100\" } }");
+            Assert.Equal(output, BlazorScaffoldPrerequisites.ResolveSdkWorkingDirectory(output));
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// Nonexistent nested output paths inherit the nearest existing ancestor's SDK scope.
+    /// </summary>
+    [Fact]
+    public void NewNestedOutputUsesNearestExistingAncestorSdkScope()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "GondwanaBlazorScope_" + Guid.NewGuid().ToString("N"));
+        var parent = Path.Combine(root, "parent");
+        Directory.CreateDirectory(parent);
+        try
+        {
+            File.WriteAllText(Path.Combine(parent, "global.json"), "{ \"sdk\": { \"version\": \"8.0.100\" } }");
+            var output = Path.Combine(parent, "nested", "MyGame");
+            var relativeOutput = Path.GetRelativePath(Directory.GetCurrentDirectory(), output);
+
+            Assert.Equal(parent, BlazorScaffoldPrerequisites.ResolveSdkWorkingDirectory(output));
+            Assert.Equal(parent, BlazorScaffoldPrerequisites.ResolveSdkWorkingDirectory(relativeOutput));
+            Assert.False(Directory.Exists(output)); // The preflight must not create directories.
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
     }
 }
