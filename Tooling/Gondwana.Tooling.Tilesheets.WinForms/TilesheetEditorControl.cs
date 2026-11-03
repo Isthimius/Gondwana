@@ -22,7 +22,8 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly PropertyGrid _definitionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
-    private readonly ComboBox _regions = new() { Dock = DockStyle.Top, DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name" };
+    private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
+    private readonly ComboBox _regions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
     private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
     private readonly NumericUpDown _column = new() { Width = 80 };
     private readonly NumericUpDown _row = new() { Width = 80 };
@@ -76,12 +77,19 @@ public sealed class TilesheetEditorControl : UserControl
         regionTools.Items.Add("+ Region", null, (_, _) => AddRegion());
         regionTools.Items.Add("− Region", null, (_, _) => RemoveRegion());
         regionTools.Items.Add("Prune invalid frames…", null, (_, _) => PruneFrames());
+        regionTools.Items.Add(new ToolStripControlHost(_regions) { AutoSize = false, Width = 185 });
         var navigator = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
         navigator.Controls.AddRange([new Label { Text = "Frame X", AutoSize = true }, _column,
             new Label { Text = "Y", AutoSize = true }, _row, _gridSize]);
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
         _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
+        _paneDefinitions.SelectedIndexChanged += (_, _) =>
+        {
+            if (!_refreshing && _paneDefinitions.SelectedItem is TilesheetDefinition definition &&
+                !ReferenceEquals(Document.SelectedDefinition, definition))
+                SelectDefinition(definition);
+        };
         _toolbarRegions.ComboBox.DisplayMember = "Name";
         _toolbarRegions.SelectedIndexChanged += (_, _) =>
         {
@@ -93,8 +101,11 @@ public sealed class TilesheetEditorControl : UserControl
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
         var image = _workspace.AddPane("image", "Image", _viewport, BuildPreviewToolbar());
-        var definition = _workspace.AddPane("definition", "Definition", _definitionProperties);
-        var region = _workspace.AddPane("region", "Region", _regionProperties, _regions, regionTools);
+        var definitionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
+        definitionTools.Items.Add(new ToolStripLabel("Definition"));
+        definitionTools.Items.Add(new ToolStripControlHost(_paneDefinitions) { AutoSize = false, Width = 205 });
+        var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, definitionTools);
+        var region = _workspace.AddPane("region", "Region", _regionProperties, regionTools);
         var frame = _workspace.AddPane("frame", "Frame", _frameProperties, navigator);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
         _workspace.Place(image, () => image.Show(dock, DockState.Document));
@@ -110,6 +121,7 @@ public sealed class TilesheetEditorControl : UserControl
         definitionBar.Items.Insert(2, new ToolStripLabel("Region"));
         definitionBar.Items.Insert(3, _toolbarRegions);
         definitionBar.SetLogicalWidth(_toolbarRegions, 180);
+        definitionBar.MoveRenameToFront();
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -310,7 +322,8 @@ public sealed class TilesheetEditorControl : UserControl
     {
         Dock = DockStyle.Fill,
         ToolbarVisible = false,
-        HelpVisible = true
+        HelpVisible = true,
+        PropertySort = PropertySort.Categorized
     };
 
     private void RefreshProperties()
@@ -385,6 +398,9 @@ public sealed class TilesheetEditorControl : UserControl
     public void RefreshView()
     {
         _refreshing = true;
+        _paneDefinitions.Items.Clear();
+        _paneDefinitions.Items.AddRange(Document.Definitions.Cast<object>().ToArray());
+        _paneDefinitions.SelectedItem = Document.SelectedDefinition;
         var selected = SelectedRegion;
         var regions = Document.Definition.Regions.Cast<object>().ToArray();
         _regions.Items.Clear();
@@ -495,7 +511,8 @@ public sealed class TilesheetEditorControl : UserControl
     public bool CommitEdits()
     {
         _validation.Focus();
-        return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus && !_frameProperties.ContainsFocus && ValidateChildren();
+        return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus &&
+            !_frameProperties.ContainsFocus && ValidateChildren();
     }
 
     /// <inheritdoc/>

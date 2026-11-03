@@ -31,7 +31,7 @@ public sealed class SpriteEditorControl : UserControl
     private readonly ListBox _sprites = new() { Dock = DockStyle.Fill, DisplayMember = "Nickname" };
     private readonly TreeView _scenes = new() { Dock = DockStyle.Fill, HideSelection = false };
     private readonly TreeView _frames = new() { Dock = DockStyle.Fill, HideSelection = false };
-    private readonly PropertyGrid _properties = new() { Dock = DockStyle.Fill };
+    private readonly PropertyGrid _properties = new() { Dock = DockStyle.Fill, PropertySort = PropertySort.Categorized };
     private readonly TextBox _validation = new() { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical };
     private readonly SpritePreviewControl _preview = new();
     private readonly List<SpriteTilesheetSource> _sources = [];

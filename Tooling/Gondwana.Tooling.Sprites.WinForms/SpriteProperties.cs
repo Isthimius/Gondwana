@@ -116,6 +116,10 @@ internal sealed class SpriteProperties(SpriteInstanceDefinition entry, SpriteDoc
     [Category("Collision adjustment")]
     [Description("Pixels removed from the top of the collision area; a negative value extends it upward.")]
     public int CollisionTop { get => entry.AdjustCollisionArea.Top; set { Edit("Change sprite collision insets", () => { var adjust = entry.AdjustCollisionArea; adjust.Top = value; entry.AdjustCollisionArea = adjust; }); } }
+    /// <summary>Gets or sets the right collision inset in pixels; negative values expand the collision area.</summary>
+    [Category("Collision adjustment")]
+    [Description("Pixels removed from the right of the collision area; a negative value extends it rightward.")]
+    public int CollisionRight { get => entry.AdjustCollisionArea.Right; set { Edit("Change sprite collision insets", () => { var adjust = entry.AdjustCollisionArea; adjust.Right = value; entry.AdjustCollisionArea = adjust; }); } }
     /// <summary>Gets or sets the bottom collision inset in pixels; negative values expand the collision area.</summary>
     [Category("Collision adjustment")]
     [Description("Pixels removed from the bottom of the collision area; a negative value extends it downward.")]
@@ -124,10 +128,6 @@ internal sealed class SpriteProperties(SpriteInstanceDefinition entry, SpriteDoc
     [Category("Collision adjustment")]
     [Description("Pixels removed from the left of the collision area; a negative value extends it leftward.")]
     public int CollisionLeft { get => entry.AdjustCollisionArea.Left; set { Edit("Change sprite collision insets", () => { var adjust = entry.AdjustCollisionArea; adjust.Left = value; entry.AdjustCollisionArea = adjust; }); } }
-    /// <summary>Gets or sets the right collision inset in pixels; negative values expand the collision area.</summary>
-    [Category("Collision adjustment")]
-    [Description("Pixels removed from the right of the collision area; a negative value extends it rightward.")]
-    public int CollisionRight { get => entry.AdjustCollisionArea.Right; set { Edit("Change sprite collision insets", () => { var adjust = entry.AdjustCollisionArea; adjust.Right = value; entry.AdjustCollisionArea = adjust; }); } }
     private void Edit(string description, Action change)
     {
         if (document is null) change();

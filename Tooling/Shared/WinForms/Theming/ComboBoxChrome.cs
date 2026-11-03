@@ -48,6 +48,7 @@ internal sealed class ComboBoxChrome(ComboBox combo) : NativeWindow
         graphics.FillRectangle(background, button);
         int x = button.Left + button.Width / 2;
         int y = button.Top + button.Height / 2;
+
         graphics.FillPolygon(foreground, new Point[]
         {
             new Point(x - 3, y - 1), new Point(x + 3, y - 1), new Point(x, y + 2)

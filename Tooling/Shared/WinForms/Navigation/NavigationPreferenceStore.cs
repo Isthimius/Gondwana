@@ -7,6 +7,7 @@ public sealed class NavigationPreferenceStore
 {
     private readonly Action<string> _report;
     private readonly string _legacyPath;
+
     /// <summary>Gets the preference path, independent of the entry application and its layout.</summary>
     public string FilePath { get; }
 
@@ -18,9 +19,12 @@ public sealed class NavigationPreferenceStore
         settingsRoot ??= AppContext.GetData("Gondwana.Tooling.SettingsRoot") as string
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Hidden Worlds Games", "Gondwana", "Tooling");
+
         FilePath = Path.GetFullPath(Path.Combine(settingsRoot, "navigation-icon-size.txt"));
+
         string legacyApplication = AppContext.GetData("Gondwana.Tooling.ApplicationId") as string
             ?? "Gondwana.Studio.WinForms"; // Studio's assembly name, not its project name.
+
         _legacyPath = Path.Combine(settingsRoot, legacyApplication, "Studio", "directory-icon-size.txt");
         _report = report ?? (message => Trace.TraceWarning(message));
     }
@@ -31,8 +35,12 @@ public sealed class NavigationPreferenceStore
         try
         {
             // An invalid shared preference must not resurrect an older Studio choice.
-            if (File.Exists(FilePath)) return ReadFile(FilePath);
-            if (!File.Exists(_legacyPath)) return null;
+            if (File.Exists(FilePath))
+                return ReadFile(FilePath);
+
+            if (!File.Exists(_legacyPath))
+                return null;
+
             var size = ReadFile(_legacyPath);
             return size is { } value ? Migrate(value) : null;
         }
@@ -46,13 +54,17 @@ public sealed class NavigationPreferenceStore
     // Keep migration publication separate so another tool's explicit save can win the race.
     internal NavigationIconSize? Migrate(NavigationIconSize size)
     {
-        if (Write(size, overwrite: false)) return size;
+        if (Write(size, overwrite: false))
+            return size;
+
         return File.Exists(FilePath) ? ReadFile(FilePath) : size;
     }
 
     private static NavigationIconSize? ReadFile(string path)
     {
-        if (new FileInfo(path).Length > 4096) return null;
+        if (new FileInfo(path).Length > 4096)
+            return null;
+
         return File.ReadAllText(path).Trim() switch
         {
             nameof(NavigationIconSize.Small) => NavigationIconSize.Small,
@@ -69,13 +81,16 @@ public sealed class NavigationPreferenceStore
 
     private bool Write(NavigationIconSize size, bool overwrite)
     {
-        if (!Enum.IsDefined(size)) throw new ArgumentOutOfRangeException(nameof(size));
+        if (!Enum.IsDefined(size))
+            throw new ArgumentOutOfRangeException(nameof(size));
+
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
             File.WriteAllText(temporary, size.ToString());
             File.Move(temporary, FilePath, overwrite);
+
             return true;
         }
         catch (IOException) when (!overwrite && File.Exists(FilePath))
@@ -89,8 +104,14 @@ public sealed class NavigationPreferenceStore
         }
         finally
         {
-            try { File.Delete(temporary); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _report(ex.Message); }
+            try
+            {
+                File.Delete(temporary);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _report(ex.Message);
+            }
         }
     }
 }

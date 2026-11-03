@@ -52,13 +52,18 @@ public sealed class PropertyHelpTests
         Assert.Null(properties["Green"]);
         Assert.Null(properties["Blue"]);
         Assert.Equal("Mask", properties["Color"]!.Category);
-        Assert.Equal(typeof(Color), properties["Color"]!.PropertyType);
-        Assert.Equal(Color.FromArgb(2, 10, 22).ToArgb(), ((Color)properties["Color"]!.GetValue(fields)!).ToArgb());
+        Assert.Equal(typeof(PropertyFields.MaskRgb), properties["Color"]!.PropertyType);
+        var initialColor = (PropertyFields.MaskRgb)properties["Color"]!.GetValue(fields)!;
+        Assert.Equal(((byte)2, (byte)10, (byte)22), (initialColor.Red, initialColor.Green, initialColor.Blue));
+        var colorConverter = properties["Color"]!.Converter;
+        Assert.Equal(new[] { "Red", "Green", "Blue" },
+            colorConverter.GetProperties(initialColor)!.Cast<PropertyDescriptor>().Select(property => property.Name));
+        Assert.Equal("2, 10, 22", colorConverter.ConvertToInvariantString(initialColor));
         var editor = Assert.IsType<MaskColorEditor>(properties["Color"]!.GetEditor(typeof(UITypeEditor)));
         Assert.Equal(UITypeEditorEditStyle.Modal, editor.GetEditStyle(null));
         Assert.True(editor.GetPaintValueSupported(null));
 
-        properties["Color"]!.SetValue(fields, Color.FromArgb(80, 120, 160));
+        properties["Color"]!.SetValue(fields, new PropertyFields.MaskRgb(80, 120, 160));
         Assert.Equal((byte)80, mask.Red);
         Assert.Equal((byte)120, mask.Green);
         Assert.Equal((byte)160, mask.Blue);
@@ -99,18 +104,30 @@ public sealed class PropertyHelpTests
         foreach (PropertyDescriptor property in properties)
             Assert.NotEqual("Misc", property.Category);
 
-        Assert.Equal("Region", properties["Name"]!.Category);
+        Assert.Equal("Region", properties["Name"]!.Category.TrimStart());
         Assert.Equal("Geometry", properties["Area"]!.Category);
         Assert.Equal("Geometry", properties["TileSize"]!.Category);
         Assert.Equal("Geometry", properties["RegionMargin"]!.Category);
         Assert.Equal("Geometry", properties["TilePadding"]!.Category);
-        Assert.Equal("Collision", properties["CollisionAdjust.Left"]!.Category);
+        Assert.Equal("Collision", properties["CollisionAdjust"]!.Category);
+        var collision = properties["CollisionAdjust"]!;
+        Assert.Equal(typeof(Gondwana.Physics.Collisions.CollisionAdjust), collision.PropertyType);
+        Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" },
+            collision.Converter.GetProperties(collision.GetValue(regionFields)!)!
+                .Cast<PropertyDescriptor>().Select(property => property.Name));
+        Assert.Equal(new[] { "Name", "Area", "TileSize", "RegionMargin", "Overhang",
+            "TilePadding", "CollisionType", "CollisionAdjust" },
+            properties.Cast<PropertyDescriptor>().Select(property => property.Name));
         Assert.Equal("Collision", properties["CollisionType"]!.Category);
 
         var frameFields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
         var frameProperties = TypeDescriptor.GetProperties(frameFields);
+        Assert.Equal(" Coordinates (read only)", frameProperties["XTile"]!.Category);
+        Assert.Equal(" Coordinates (read only)", frameProperties["YTile"]!.Category);
         Assert.Equal("Collision", frameProperties["CollisionAdjust mode"]!.Category);
         Assert.Equal("Collision", frameProperties["Left"]!.Category);
+        Assert.Equal(new[] { "XTile", "YTile", "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
+            frameProperties.Cast<PropertyDescriptor>().Select(property => property.Name));
     }
 
 
@@ -132,6 +149,8 @@ public sealed class PropertyHelpTests
         Assert.Equal(typeof(Rectangle), area.PropertyType);
         Assert.Equal(typeof(Size), tileSize.PropertyType);
         AssertChildren(area, fields, "X", "Y", "Width", "Height");
+        Assert.Equal(new[] { "X", "Y", "Width", "Height" },
+            area.Converter.GetProperties(area.GetValue(fields)!)!.Cast<PropertyDescriptor>().Select(property => property.Name));
         AssertChildren(tileSize, fields, "Width", "Height");
 
         area.SetValue(fields, WithComponent(area, fields, "Width", 64));
@@ -164,7 +183,10 @@ public sealed class PropertyHelpTests
         {
             var property = properties[name]!;
             Assert.Equal(typeof(Spacing), property.PropertyType);
-            AssertChildren(property, fields, "Left", "Top", "Right", "Bottom");
+            AssertChildren(property, fields, "Top", "Right", "Bottom", "Left");
+            Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" },
+                property.Converter.GetProperties(property.GetValue(fields)!)!
+                    .Cast<PropertyDescriptor>().Select(child => child.Name));
             Assert.Null(properties[name + ".Left"]);
         }
 
@@ -177,8 +199,8 @@ public sealed class PropertyHelpTests
         Assert.Equal(3, changes);
 
         var converter = properties["Overhang"]!.Converter;
-        Assert.Equal(new Spacing(1, 2, 3, 4), converter.ConvertFromInvariantString("1, 2, 3, 4"));
-        Assert.Equal("9, 10, 23, 12", converter.ConvertToInvariantString(region.Overhang));
+        Assert.Equal(new Spacing(4, 1, 2, 3), converter.ConvertFromInvariantString("1, 2, 3, 4"));
+        Assert.Equal("10, 23, 12, 9", converter.ConvertToInvariantString(region.Overhang));
         Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("1, 2, 3"));
     }
 

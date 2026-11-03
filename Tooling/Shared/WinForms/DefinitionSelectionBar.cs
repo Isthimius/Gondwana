@@ -73,6 +73,17 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
         ShowItemToolTips = true;
     }
 
+    /// <summary>Places the identity text and rename command before the definition picker for the GTS layout.</summary>
+    internal void MoveRenameToFront()
+    {
+        var renameButton = Items.Cast<ToolStripItem>().Single(item => item.Name == "RenameDefinition");
+        Items.Remove(_identity);
+        Items.Remove(renameButton);
+        Items.Insert(0, _identity);
+        Items.Insert(1, renameButton);
+        Items.Insert(2, new ToolStripSeparator());
+    }
+
     /// <summary>Refreshes displayed identities without changing selection or document dirty state.</summary>
     /// <param name="sender">The change source.</param>
     /// <param name="e">The change event.</param>

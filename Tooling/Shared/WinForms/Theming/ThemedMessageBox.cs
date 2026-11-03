@@ -58,6 +58,7 @@ public static class ThemedMessageBox
 
         var body = new Panel { Dock = DockStyle.Fill, Padding = new Padding(18) };
         body.Controls.Add(message);
+
         Icon? symbol = icon switch
         {
             MessageBoxIcon.Error => SystemIcons.Error,

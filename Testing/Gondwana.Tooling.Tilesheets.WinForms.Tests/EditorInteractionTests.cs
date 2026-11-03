@@ -138,9 +138,14 @@ public sealed partial class EditorInteractionTests
         var definitionBar = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
 
-        Assert.Equal("Definition", definitionBar.Items[0].Text);
-        Assert.Equal("Region", definitionBar.Items[2].Text);
-        Assert.Same(toolbar, definitionBar.Items[3]);
+        Assert.IsType<ToolStripTextBox>(definitionBar.Items[0]);
+        Assert.Equal("RenameDefinition", definitionBar.Items[1].Name);
+        Assert.Equal("Definition", definitionBar.Items[3].Text);
+        Assert.Equal("Region", definitionBar.Items[5].Text);
+        Assert.Same(toolbar, definitionBar.Items[6]);
+        var regionTools = Descendants(editor).OfType<ToolStrip>()
+            .Single(strip => strip.Items.Cast<ToolStripItem>().Any(item => item.Text == "+ Region"));
+        Assert.Contains(regionTools.Items.OfType<ToolStripControlHost>(), host => ReferenceEquals(host.Control, pane));
         Assert.Same(pane.SelectedItem, toolbar.SelectedItem);
 
         editor.AddRegion();
@@ -171,6 +176,93 @@ public sealed partial class EditorInteractionTests
         var dimensions = TypeDescriptor.GetProperties(inspector.SelectedObject!)["Image Size"]!;
         Assert.True(dimensions.IsReadOnly);
         Assert.Equal(editor.ImageSize ?? Size.Empty, dimensions.GetValue(inspector.SelectedObject));
+    });
+
+    /// <summary>Definition selection is shared by the toolbar and pane without causing edits.</summary>
+    [Fact]
+    public void DefinitionPaneSelector_SynchronizesWithToolbarAndPreservesCollapsibleSections() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Create(Path.GetTempPath());
+        using var editor = Show(document);
+        var pane = Field<ComboBox>(editor.Editor, "_paneDefinitions");
+        var selector = Descendants(editor).OfType<ToolStrip>()
+            .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
+        var toolbar = selector.Items.OfType<ToolStripComboBox>().First();
+        var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
+        var regionDetails = Field<PropertyGrid>(editor.Editor, "_regionProperties");
+
+        Assert.Equal(PropertySort.Categorized, details.PropertySort);
+        Assert.Equal(PropertySort.Categorized, regionDetails.PropertySort);
+        Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
+            TypeDescriptor.GetProperties(details.SelectedObject!).Cast<PropertyDescriptor>()
+                .Where(property => property.Category == "Definition").Select(property => property.Name));
+        Assert.NotNull(TypeDescriptor.GetProperties(details.SelectedObject!)["Mask enabled"]);
+        Assert.Same(document.SelectedDefinition, pane.SelectedItem);
+        Assert.Equal(document.SelectedDefinition.Name, toolbar.SelectedItem);
+
+        var first = document.SelectedDefinition;
+        document.AddDefinition();
+        Application.DoEvents();
+        var second = document.SelectedDefinition;
+        Assert.NotSame(first, second);
+        Assert.Same(second, pane.SelectedItem);
+        Assert.Equal(second.Name, toolbar.SelectedItem);
+
+        pane.SelectedItem = first;
+        Application.DoEvents();
+        Assert.Same(first, document.SelectedDefinition);
+        Assert.Equal(first.Name, toolbar.SelectedItem);
+
+        toolbar.SelectedItem = second.Name;
+        Application.DoEvents();
+        Assert.Same(second, document.SelectedDefinition);
+        Assert.Same(second, pane.SelectedItem);
+    });
+
+    /// <summary>PropertyGrid renders the declared category and field order instead of alphabetizing it.</summary>
+    [Fact]
+    public void GtsPropertyGrids_RenderRequestedCategoryAndFieldOrder() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
+        document.Definition.Mask = new TilesheetMaskDefinition { Red = 5, Green = 10, Blue = 15 };
+        using var editor = Show(document);
+        var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
+        var region = Field<PropertyGrid>(editor.Editor, "_regionProperties");
+        var frame = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+
+        GridItem Category(PropertyGrid grid, string label) => Items(grid)
+            .Single(item => item.GridItemType == GridItemType.Category && item.Label.TrimStart() == label);
+        string[] Categories(PropertyGrid grid) => Items(grid)
+            .Where(item => item.GridItemType == GridItemType.Category)
+            .Select(item => item.Label.TrimStart()).ToArray();
+        string[] Children(GridItem item) => item.GridItems.Cast<GridItem>()
+            .Select(child => child.PropertyDescriptor?.Name).Where(name => name is not null).Select(name => name!).ToArray();
+
+        Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
+            Children(Category(details, "Definition")));
+        Assert.Equal(new[] { "Region", "Collision", "Geometry" }, Categories(region));
+        Assert.Equal(new[] { "Name" }, Children(Category(region, "Region")));
+        Assert.Equal(new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
+            Children(Category(details, "Mask")));
+        var maskColor = Category(details, "Mask").GridItems.Cast<GridItem>()
+            .Single(item => item.PropertyDescriptor?.Name == "Color");
+        maskColor.Expanded = true;
+        Assert.Equal(new[] { "Red", "Green", "Blue" }, Children(maskColor));
+
+        Assert.Equal(new[] { "CollisionType", "CollisionAdjust" },
+            Children(Category(region, "Collision")));
+        var collision = Category(region, "Collision").GridItems.Cast<GridItem>()
+            .Single(item => item.PropertyDescriptor?.Name == "CollisionAdjust");
+        collision.Expanded = true;
+        Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" }, Children(collision));
+        var geometry = Category(region, "Geometry").GridItems.Cast<GridItem>()
+            .Single(item => item.PropertyDescriptor?.Name == "Area");
+        geometry.Expanded = true;
+        Assert.Equal(new[] { "X", "Y", "Width", "Height" }, Children(geometry));
+        Assert.Equal(new[] { "Coordinates (read only)", "Collision" }, Categories(frame));
+        Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(frame, "Coordinates (read only)")));
+        Assert.Equal(new[] { "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
+            Children(Category(frame, "Collision")));
     });
 
     /// <summary>
@@ -235,12 +327,14 @@ public sealed partial class EditorInteractionTests
         var region = document.Definition.Regions[0];
         Edit(grid, "CollisionAdjust.Left", "-3");
         Assert.Equal(-3, region.CollisionAdjust.Left);
-        Assert.Equal("CollisionAdjust.Left", grid.SelectedGridItem?.PropertyDescriptor?.Name);
+        Assert.Equal("Left", grid.SelectedGridItem?.PropertyDescriptor?.Name);
         Edit(grid, "CollisionAdjust.Left", "-4", enter: false);
         Assert.Equal(-4, region.CollisionAdjust.Left);
         document.History.Undo(); Application.DoEvents();
         Assert.Equal(-3, region.CollisionAdjust.Left);
-        Assert.Equal(-3, Items(grid).Single(item => item.PropertyDescriptor?.Name == "CollisionAdjust.Left").Value);
+        Assert.Equal(-3, Items(grid).Single(item =>
+            item.PropertyDescriptor?.Name == "Left" &&
+            item.Parent?.PropertyDescriptor?.Name == "CollisionAdjust").Value);
         document.History.Redo(); Application.DoEvents(); Assert.Equal(-4, region.CollisionAdjust.Left);
         Edit(grid, "Overhang.Top", "2");
         Assert.Equal(2, region.Overhang.Top);

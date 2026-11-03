@@ -190,7 +190,10 @@ public class StudioPluginHost
             // Contracts must have host identity even when a plugin ships private copies.
             var shared = _sharedContracts.FirstOrDefault(assembly =>
                 string.Equals(assembly.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
-            if (shared is not null) return shared;
+
+            if (shared is not null)
+                return shared;
+
             var path = _resolver.ResolveAssemblyToPath(assemblyName);
             return path is not null ? LoadFromAssemblyPath(path) : null;
         }
@@ -221,10 +224,13 @@ public class StudioPluginHost
 
         /// <summary>Gets the plugin instance created during discovery.</summary>
         public IStudioPlugin Instance { get; }
+
         /// <summary>Gets the retained load context for the plugin assembly and its dependencies.</summary>
         public AssemblyLoadContext LoadContext { get; }
+
         /// <summary>Gets the path of the DLL from which the plugin was discovered.</summary>
         public string SourcePath { get; }
+
         /// <summary>Gets or sets whether the plugin participates in host queries and lifecycle notifications; initially true.</summary>
         public bool Enabled { get; set; } = true;
     }

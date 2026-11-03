@@ -77,12 +77,25 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="excluded">Top-level property names to omit, matched case-sensitively.</param>
     public void AddModel(object model, Action changed, params string[] excluded)
     {
-        foreach (var property in model.GetType().GetProperties().Where(p => p.CanWrite && !excluded.Contains(p.Name)))
+        var properties = model.GetType().GetProperties().Where(p => p.CanWrite && !excluded.Contains(p.Name));
+        if (model is TilesheetRegionDefinition)
+        {
+            string[] ordered = ["Name", "Area", "TileSize", "RegionMargin", "Overhang", "TilePadding",
+                "CollisionType", "CollisionAdjust"];
+            properties = properties.OrderBy(p =>
+            {
+                int position = Array.IndexOf(ordered, p.Name);
+                return position < 0 ? int.MaxValue : position;
+            });
+        }
+        foreach (var property in properties)
         {
             // Group the region's metadata by purpose instead of giving each field its own heading.
             string? category = model is TilesheetRegionDefinition ? property.Name switch
             {
-                nameof(TilesheetRegionDefinition.Name) => "Region",
+                // WinForms orders category headings alphabetically; a leading space puts
+                // identity first without adding a separate PropertyGrid or changing its label.
+                nameof(TilesheetRegionDefinition.Name) => " Region",
                 nameof(TilesheetRegionDefinition.Area) or nameof(TilesheetRegionDefinition.TileSize)
                     or nameof(TilesheetRegionDefinition.TilePadding) or nameof(TilesheetRegionDefinition.RegionMargin)
                     or nameof(TilesheetRegionDefinition.Overhang) => "Geometry",
@@ -94,7 +107,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 nameof(TilesheetRegionDefinition.TileSize) or
                 nameof(TilesheetRegionDefinition.TilePadding) or
                 nameof(TilesheetRegionDefinition.RegionMargin) or
-                nameof(TilesheetRegionDefinition.Overhang))
+                nameof(TilesheetRegionDefinition.Overhang) or
+                nameof(TilesheetRegionDefinition.CollisionAdjust))
             {
                 // Use editable, expandable parent values so related components stay together.
                 // The reflected setter writes the complete value type back to the model,
@@ -185,12 +199,12 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             "Enable color-key masking. Choose an RGB color below; alpha is stored but ignored during runtime matching.");
         if (model.Mask is { } mask)
         {
-            fields.Add("Color", "Mask", () => System.Drawing.Color.FromArgb(mask.Red, mask.Green, mask.Blue),
+            fields.Add("Color", "Mask", () => new MaskRgb(mask.Red, mask.Green, mask.Blue),
                 color => document.Edit(mask, "Change mask color", () =>
                 {
-                    mask.Red = color.R;
-                    mask.Green = color.G;
-                    mask.Blue = color.B;
+                    mask.Red = color.Red;
+                    mask.Green = color.Green;
+                    mask.Blue = color.Blue;
                 }),
                 "RGB color to match for transparency masking. Use the builder button to open the color picker.");
             fields.Add("Alpha", "Mask", () => mask.Alpha,
@@ -214,14 +228,15 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     {
         var fields = new PropertyFields(document);
         TilesheetFrameDefinition? Current() => document.FindFrame(region, x, y);
-        fields.Add("XTile", "Coordinates (read only)", () => x, description: "Zero-based frame column within this region; read-only.");
-        fields.Add("YTile", "Coordinates (read only)", () => y, description: "Zero-based frame row within this region; read-only.");
+        fields.Add("XTile", " Coordinates (read only)", () => x, description: "Zero-based frame column within this region; read-only.");
+        fields.Add("YTile", " Coordinates (read only)", () => y, description: "Zero-based frame row within this region; read-only.");
         fields.Add("CollisionAdjust mode", "Collision", () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
             v => document.EditFrame(region, x, y, "Change frame collision insets", frame => frame.CollisionAdjust = v == Inheritance.InheritRegion ? null : frame.CollisionAdjust ?? region.CollisionAdjust), "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
         fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
             v => document.EditFrame(region, x, y, "Change frame collision type", frame => frame.CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString())), "Choose inherited region behavior, None for no collider, Blocking, or Trigger for non-blocking contact.");
-        foreach (var property in typeof(CollisionAdjust).GetProperties().Where(p => p.CanWrite))
+        foreach (string edge in new[] { "Top", "Right", "Bottom", "Left" })
         {
+            var property = typeof(CollisionAdjust).GetProperty(edge)!;
             bool inherited = Current()?.CollisionAdjust is null;
             fields.Add(property.Name, "Collision", () => (int)property.GetValue(Current()?.CollisionAdjust ?? region.CollisionAdjust)!,
                 inherited ? null : v =>
@@ -240,7 +255,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         private static Attribute[] AttributesFor(string category, string description)
         {
             List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
-            if (typeof(T) == typeof(System.Drawing.Color))
+            if (typeof(T) == typeof(MaskRgb))
             {
                 // The property descriptors also compile into platform-neutral Gondwana.Tests.
                 // Resolve the Windows editor only when the UI assembly is available.
@@ -250,6 +265,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 if (editorType?.BaseType is { } editorBaseType)
                     attributes.Add(new EditorAttribute(editorType, editorBaseType));
             }
+            if (typeof(T) == typeof(MaskRgb))
+                attributes.Add(new TypeConverterAttribute(typeof(MaskRgbConverter)));
             return [.. attributes];
         }
 
@@ -290,6 +307,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             ];
             if (type == typeof(Spacing))
                 attributes.Add(new TypeConverterAttribute(typeof(SpacingConverter)));
+            else if (type == typeof(CollisionAdjust))
+                attributes.Add(new TypeConverterAttribute(typeof(GtsCollisionAdjustConverter)));
             else if (type == typeof(System.Drawing.Rectangle))
                 attributes.Add(new TypeConverterAttribute(typeof(RegionAreaConverter)));
             return [.. attributes];
@@ -312,4 +331,65 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         /// <inheritdoc/>
         public override bool ShouldSerializeValue(object component) => false;
     }
+
+    /// <summary>RGB components that do not expose framework named colors in the grid.</summary>
+    internal struct MaskRgb(byte red, byte green, byte blue)
+    {
+        public byte Red { get; set; } = red;
+        public byte Green { get; set; } = green;
+        public byte Blue { get; set; } = blue;
+    }
+
+    /// <summary>Reconstructs the RGB value when an expanded byte component changes.</summary>
+    internal sealed class MaskRgbConverter : ExpandableObjectConverter
+    {
+        public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
+        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+        {
+            var properties = TypeDescriptor.GetProperties(typeof(MaskRgb), attributes ?? []);
+            return new PropertyDescriptorCollection(new[] { "Red", "Green", "Blue" }.Select(name =>
+                TypeDescriptor.CreateProperty(typeof(MaskRgb), properties[name]!, NotifyParentPropertyAttribute.Yes)).ToArray(), true);
+        }
+
+        public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
+        public override object CreateInstance(ITypeDescriptorContext? context, System.Collections.IDictionary values) =>
+            new MaskRgb((byte)values["Red"]!, (byte)values["Green"]!, (byte)values["Blue"]!);
+
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
+            destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture,
+            object? value, Type destinationType) =>
+            destinationType == typeof(string) && value is MaskRgb rgb
+                ? $"{rgb.Red}, {rgb.Green}, {rgb.Blue}"
+                : base.ConvertTo(context, culture, value, destinationType);
+    }
+
+    /// <summary>GTS collision insets expand in CSS order: top, right, bottom, left.</summary>
+    internal sealed class GtsCollisionAdjustConverter : ExpandableObjectConverter
+    {
+        private static readonly string[] Edges = ["Top", "Right", "Bottom", "Left"];
+
+        public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
+        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+        {
+            var properties = TypeDescriptor.GetProperties(typeof(CollisionAdjust), attributes ?? []);
+            return new PropertyDescriptorCollection(Edges.Select(edge =>
+                TypeDescriptor.CreateProperty(typeof(CollisionAdjust), properties[edge]!,
+                    new DescriptionAttribute($"Collision inset on the {edge.ToLowerInvariant()} edge; positive shrinks, negative expands."),
+                    NotifyParentPropertyAttribute.Yes)).ToArray(), true);
+        }
+
+        public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
+        public override object CreateInstance(ITypeDescriptorContext? context, System.Collections.IDictionary values) =>
+            new CollisionAdjust((int)values["Top"]!, (int)values["Bottom"]!, (int)values["Left"]!, (int)values["Right"]!);
+
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
+            destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture,
+            object? value, Type destinationType) =>
+            destinationType == typeof(string) && value is CollisionAdjust insets
+                ? $"{insets.Top}, {insets.Right}, {insets.Bottom}, {insets.Left}"
+                : base.ConvertTo(context, culture, value, destinationType);
+    }
+
 }

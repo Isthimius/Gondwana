@@ -7,8 +7,12 @@ public static class ToolbarSizing
 {
     public static int Pixels(int logical, int dpi)
     {
-        if (logical < 0) throw new ArgumentOutOfRangeException(nameof(logical));
-        if (dpi <= 0) throw new ArgumentOutOfRangeException(nameof(dpi));
+        if (logical < 0)
+            throw new ArgumentOutOfRangeException(nameof(logical));
+
+        if (dpi <= 0)
+            throw new ArgumentOutOfRangeException(nameof(dpi));
+
         return checked((int)Math.Round(logical * (dpi / 96d)));
     }
 }
@@ -43,10 +47,15 @@ public class DpiToolStrip : ToolStrip
 
     public DpiToolStrip(int buttonSize, int imageSize)
     {
-        if (buttonSize <= 0) throw new ArgumentOutOfRangeException(nameof(buttonSize));
-        if (imageSize <= 0) throw new ArgumentOutOfRangeException(nameof(imageSize));
+        if (buttonSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(buttonSize));
+
+        if (imageSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(imageSize));
+
         _buttonSize = buttonSize;
         _imageSize = imageSize;
+
         ApplyMetrics();
     }
 
@@ -57,14 +66,18 @@ public class DpiToolStrip : ToolStrip
     public void SetGlyph(ToolStripItem item, Func<int, Bitmap> create)
     {
         ArgumentNullException.ThrowIfNull(create);
-        if (_glyphs.ContainsKey(item)) throw new ArgumentException("The item already has a glyph.", nameof(item));
+        if (_glyphs.ContainsKey(item))
+            throw new ArgumentException("The item already has a glyph.", nameof(item));
+
         _glyphs.Add(item, new Glyph(create));
         ApplyMetrics();
     }
 
     public void SetLogicalWidth(ToolStripItem item, int width)
     {
-        if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+        if (width <= 0)
+            throw new ArgumentOutOfRangeException(nameof(width));
+
         _widths[item] = width;
         ApplyMetrics();
     }
@@ -98,23 +111,31 @@ public class DpiToolStrip : ToolStrip
     private void ApplyMetrics()
     {
         // ToolStrip's constructor calls virtual layout methods before these fields exist.
-        if (_glyphs is null || _buttonSize == 0 || _applying || _disposing || IsDisposed) return;
+        if (_glyphs is null || _buttonSize == 0 || _applying || _disposing || IsDisposed)
+            return;
+
         _applying = true;
         SuspendLayout();
+
         try
         {
             int dpi = EffectiveDpi;
             int button = ToolbarSizing.Pixels(_buttonSize, dpi);
             int image = ToolbarSizing.Pixels(_imageSize, dpi);
+
             ImageScalingSize = new Size(image, image);
             Padding = new Padding(0, 0, ToolbarSizing.Pixels(1, dpi), 0);
             bool rebuild = _imageDpi != dpi || _imageColor != ForeColor;
+
             foreach (var (item, glyph) in _glyphs)
             {
-                if (item.IsDisposed) continue;
+                if (item.IsDisposed)
+                    continue;
+
                 item.AutoSize = false;
                 item.Size = new Size(button, button);
                 item.Margin = new Padding(0, ToolbarSizing.Pixels(1, dpi), 0, ToolbarSizing.Pixels(2, dpi));
+
                 if (rebuild || glyph.Image is null)
                 {
                     var next = glyph.Create(image);
@@ -124,14 +145,18 @@ public class DpiToolStrip : ToolStrip
                     previous?.Dispose();
                 }
             }
+
             foreach (var (item, width) in _widths)
             {
-                if (item.IsDisposed) continue;
+                if (item.IsDisposed)
+                    continue;
+
                 item.AutoSize = false;
                 int height = item is ToolStripControlHost host
                     ? host.Control.GetPreferredSize(Size.Empty).Height : item.Height;
                 item.Size = new Size(ToolbarSizing.Pixels(width, dpi), height);
             }
+
             _imageDpi = dpi;
             _imageColor = ForeColor;
         }
@@ -149,12 +174,16 @@ public class DpiToolStrip : ToolStrip
             _disposing = true;
             foreach (var (item, glyph) in _glyphs)
             {
-                if (!item.IsDisposed) item.Image = null;
+                if (!item.IsDisposed)
+                    item.Image = null;
+
                 glyph.Image?.Dispose();
             }
+
             _glyphs.Clear();
             _widths.Clear();
         }
+
         base.Dispose(disposing);
     }
 }

@@ -130,19 +130,19 @@ internal sealed class TilePropertyAdapter
     /// <summary>
     /// Gets the current frame's visual overhang beyond its tile bounds.
     /// </summary>
-    [Category("Geometry"), ReadOnly(true)]
+    [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Pixels of source artwork that extend past the tile footprint on each side.")]
     public Spacing Overhang => _region?.Invoke().Region?.Overhang ?? Spacing.None;
     /// <summary>Gets source overhang edges remapped by the placement orientation.</summary>
-    [Category("Geometry"), ReadOnly(true)]
+    [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Overhang edges adjusted for this placement's rotation or flip.")]
     public Spacing EffectiveOverhang => TileTransformGeometry.TransformSpacing(Overhang, Transform);
     /// <summary>Gets the source region padding in pixels, or no padding when the region cannot be resolved.</summary>
-    [Category("Geometry"), ReadOnly(true)]
+    [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Per-edge spacing around frames in the source tilesheet region, before placement transforms.")]
     public Spacing SourceTilePadding => _region?.Invoke().Region?.TilePadding ?? Spacing.None;
     /// <summary>Gets source padding edges remapped by the placement orientation.</summary>
-    [Category("Geometry"), ReadOnly(true)]
+    [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Source frame padding with its sides remapped by this tile's rotation or flip.")]
     public Spacing EffectiveTilePadding => TileTransformGeometry.TransformSpacing(SourceTilePadding, Transform);
     private CollisionAdjust SourceFrameCollisionAdjust
@@ -158,7 +158,7 @@ internal sealed class TilePropertyAdapter
     }
 
     /// <summary>Gets frame or instance collision adjustments with edges remapped by the placement orientation.</summary>
-    [Category("Collision"), ReadOnly(true)]
+    [Category("Collision"), ReadOnly(true), TypeConverter(typeof(CollisionAdjustConverter))]
     [Description("Read-only collision-box insets after the selected frame or instance settings and the tile transform are applied.")]
     public CollisionAdjust EffectiveCollisionAdjust => TileTransformGeometry.TransformCollisionAdjust(
         AdjustCollisionAreaByFrame ? SourceFrameCollisionAdjust : AdjustCollisionArea, Transform);
@@ -215,7 +215,7 @@ internal sealed class TilePropertyAdapter
     /// <summary>Gets or sets instance collision insets in pixels; negative values expand the area.</summary>
     [Category("Collision")]
     [TypeConverter(typeof(CollisionAdjustConverter))]
-    [Description("Collision-box insets: top, bottom, left, right. Applied when AdjustCollisionAreaByFrame is false. Positive shrinks; negative expands.")]
+    [Description("Collision-box insets: top, right, bottom, left. Applied when AdjustCollisionAreaByFrame is false. Positive shrinks; negative expands.")]
     public CollisionAdjust AdjustCollisionArea
     {
         get => Tile?.AdjustCollisionArea ?? CollisionAdjust.None;
