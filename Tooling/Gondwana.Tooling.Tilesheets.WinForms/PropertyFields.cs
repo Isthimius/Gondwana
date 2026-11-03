@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Drawing;
 using System.Reflection;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -167,12 +166,12 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="document">The document displayed or edited by the control.</param>
     /// <param name="changed">The callback invoked when a property changes.</param>
     /// <returns>The property descriptors for the tilesheet definition.</returns>
-    public static PropertyFields Definition(TilesheetDocument document, Action changed, Size? imageSize = null)
+    public static PropertyFields Definition(TilesheetDocument document, Action changed, System.Drawing.Size? imageSize = null)
     {
         var model = document.Definition;
         var fields = new PropertyFields(document);
         fields.Add("Name", "Definition", () => model.Name, v => document.Edit(model, "Rename tilesheet", () => model.Name = v), "Logical tilesheet name referenced by animations, scenes, and sprites.");
-        fields.Add("Image Size", "Definition", () => imageSize ?? Size.Empty,
+        fields.Add("Image Size", "Definition", () => imageSize ?? System.Drawing.Size.Empty,
             description: "Dimensions of the decoded backing bitmap in source-image pixels; read-only. Zero means no image preview is available.");
         fields.Add("PremultiplyAlpha", "Definition", () => model.PremultiplyAlpha, v => document.Edit(model, "Change alpha premultiplication", () => model.PremultiplyAlpha = v),
             "Multiply color channels by alpha when preparing tilesheet imagery for blending. Masking is configured separately and takes precedence at runtime when enabled.");
@@ -186,7 +185,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             "Enable color-key masking. Choose an RGB color below; alpha is stored but ignored during runtime matching.");
         if (model.Mask is { } mask)
         {
-            fields.Add("Color", "Mask", () => Color.FromArgb(mask.Red, mask.Green, mask.Blue),
+            fields.Add("Color", "Mask", () => System.Drawing.Color.FromArgb(mask.Red, mask.Green, mask.Blue),
                 color => document.Edit(mask, "Change mask color", () =>
                 {
                     mask.Red = color.R;
@@ -241,7 +240,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         private static Attribute[] AttributesFor(string category, string description)
         {
             List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
-            if (typeof(T) == typeof(Color))
+            if (typeof(T) == typeof(System.Drawing.Color))
             {
                 // The property descriptors also compile into platform-neutral Gondwana.Tests.
                 // Resolve the Windows editor only when the UI assembly is available.
