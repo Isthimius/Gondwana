@@ -122,7 +122,8 @@ public sealed class ExternalImportPanel : UserControl
         var body = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
-            RowCount = 2, ColumnCount = 1
+            RowCount = 2,
+            ColumnCount = 1
         };
 
         body.RowStyles.Add(new(SizeType.Percent, 45));

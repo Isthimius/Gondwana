@@ -112,7 +112,7 @@ internal sealed class UndoRedoMenu : IDisposable
 
         if (focus is ComboBox { DropDownStyle: not ComboBoxStyle.DropDownList } or UpDownBase)
             return false;
-        
+
         if (history is null)
             return false;
 
