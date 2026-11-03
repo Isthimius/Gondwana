@@ -20,9 +20,7 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly bool _ownsAssetPackages;
     private readonly ImageViewport _viewport = new();
     private readonly PropertyGrid _definitionProperties = CreatePropertyGrid();
-    private readonly PropertyGrid _definitionHeader = CreateHeaderGrid(132);
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
-    private readonly PropertyGrid _regionHeader = CreateHeaderGrid(48);
     private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
     private readonly PropertyGrid _frameCoordinates = CreateCoordinatesGrid();
     private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
@@ -107,8 +105,8 @@ public sealed class TilesheetEditorControl : UserControl
         var definitionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         definitionTools.Items.Add(new ToolStripLabel("Definition"));
         definitionTools.Items.Add(new ToolStripControlHost(_paneDefinitions) { AutoSize = false, Width = 205 });
-        var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, _definitionHeader, definitionTools);
-        var region = _workspace.AddPane("region", "Region", _regionProperties, _regionHeader, regionTools);
+        var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, definitionTools);
+        var region = _workspace.AddPane("region", "Region", _regionProperties, regionTools);
         var frame = _workspace.AddPane("frame", "Frame", _frameProperties, _frameCoordinates, navigator);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
         _workspace.Place(image, () => image.Show(dock, DockState.Document));
@@ -329,15 +327,6 @@ public sealed class TilesheetEditorControl : UserControl
         PropertySort = PropertySort.Categorized
     };
 
-    private static PropertyGrid CreateHeaderGrid(int height) => new()
-    {
-        Dock = DockStyle.Top,
-        Height = height,
-        ToolbarVisible = false,
-        HelpVisible = false,
-        PropertySort = PropertySort.NoSort
-    };
-
     private static PropertyGrid CreateCoordinatesGrid() => new()
     {
         Dock = DockStyle.Top,
@@ -349,10 +338,7 @@ public sealed class TilesheetEditorControl : UserControl
 
     private void RefreshProperties()
     {
-        var definitionFields = PropertyFields.Definition(Document, Document.MarkChanged, ImageSize);
-        var primaryNames = new HashSet<string>(["Name", "Image Size", "PremultiplyAlpha"]);
-        BindProperties(_definitionHeader, definitionFields.Filter(property => primaryNames.Contains(property.Name)));
-        BindProperties(_definitionProperties, definitionFields.Filter(property => !primaryNames.Contains(property.Name)));
+        BindProperties(_definitionProperties, PropertyFields.Definition(Document, Document.MarkChanged, ImageSize));
         PropertyFields? regionFields = null;
         PropertyFields? frameFields = null;
         if (SelectedRegion is { } region)
@@ -362,8 +348,7 @@ public sealed class TilesheetEditorControl : UserControl
             if (_column.Enabled)
                 frameFields = PropertyFields.Frame(Document, region, (int)_column.Value, (int)_row.Value, Document.MarkChanged);
         }
-        BindProperties(_regionHeader, regionFields?.Filter(property => property.Name == "Name"));
-        BindProperties(_regionProperties, regionFields?.Filter(property => property.Name != "Name"));
+        BindProperties(_regionProperties, regionFields);
         BindProperties(_frameCoordinates, frameFields?.Filter(property => property.Category == "Coordinates (read only)"));
         BindProperties(_frameProperties, frameFields?.Filter(property => property.Category != "Coordinates (read only)"));
     }
@@ -537,8 +522,7 @@ public sealed class TilesheetEditorControl : UserControl
     public bool CommitEdits()
     {
         _validation.Focus();
-        return !_definitionProperties.ContainsFocus && !_definitionHeader.ContainsFocus &&
-            !_regionProperties.ContainsFocus && !_regionHeader.ContainsFocus &&
+        return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus &&
             !_frameProperties.ContainsFocus && !_frameCoordinates.ContainsFocus && ValidateChildren();
     }
 
