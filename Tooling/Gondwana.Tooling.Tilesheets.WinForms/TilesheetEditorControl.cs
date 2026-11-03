@@ -109,6 +109,7 @@ public sealed class TilesheetEditorControl : UserControl
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gts", (path, select) => Document.ImportDefinitions(path, select));
         definitionBar.Items.Insert(2, new ToolStripLabel("Region"));
         definitionBar.Items.Insert(3, _toolbarRegions);
+        definitionBar.SetLogicalWidth(_toolbarRegions, 180);
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
