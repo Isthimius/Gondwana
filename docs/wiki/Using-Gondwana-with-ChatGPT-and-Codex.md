@@ -1,4 +1,4 @@
-Gondwana provides an official plugin for ChatGPT and Codex that helps AI tools work with the current Gondwana engine instead of relying on generic game-engine assumptions or stale examples.
+Gondwana provides an [official plugin](https://chatgpt.com/plugins/plugin_asdk_app_6a8f76cbcd248191a28416c8231a626b) for ChatGPT and Codex that helps AI tools work with the current Gondwana engine instead of relying on generic game-engine assumptions or stale examples.
 
 The plugin can help you:
 
