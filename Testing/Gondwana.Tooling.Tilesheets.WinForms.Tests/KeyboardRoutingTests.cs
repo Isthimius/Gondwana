@@ -48,7 +48,7 @@ public sealed partial class EditorInteractionTests
         {
             case "property":
             case "propertyValue":
-                var grid = Field<PropertyGrid>(host.Editor, "_definitionHeader");
+                var grid = Field<PropertyGrid>(host.Editor, "_definitionProperties");
                 grid.SelectedGridItem = Items(grid).First(item => item.PropertyDescriptor?.Name == "Name");
                 grid.Focus();
                 if (location == "propertyValue")
