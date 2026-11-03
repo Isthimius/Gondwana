@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Drawing.Design;
 using System.Reflection;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
