@@ -49,10 +49,13 @@ public sealed class ProjectDiagnosticsScanner
                         {
                             var attributes = File.GetAttributes(entry);
                             // Do not follow links/junctions outside the project or into cycles.
-                            if ((attributes & FileAttributes.ReparsePoint) != 0) continue;
+                            if ((attributes & FileAttributes.ReparsePoint) != 0)
+                                continue;
+
                             if ((attributes & FileAttributes.Directory) != 0)
                             {
-                                if (!IgnoredDirectories.Contains(Path.GetFileName(entry))) pending.Push(entry);
+                                if (!IgnoredDirectories.Contains(Path.GetFileName(entry)))
+                                    pending.Push(entry);
                             }
                             else if (Extensions.Contains(Path.GetExtension(entry)))
                                 definitions.Add(Inspect(root, entry, problems, packages, cancellationToken));
@@ -68,6 +71,7 @@ public sealed class ProjectDiagnosticsScanner
                     problems.Add(new(Path.GetRelativePath(root, directory), "Discovery", ex.Message));
                 }
             }
+
             return new(definitions.OrderBy(d => d.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray(), problems.ToArray());
         }
         finally
@@ -86,6 +90,7 @@ public sealed class ProjectDiagnosticsScanner
         var format = Path.GetExtension(path).ToLowerInvariant();
         var loaded = false;
         string? member;
+
         try
         {
             switch (format)
@@ -95,6 +100,7 @@ public sealed class ProjectDiagnosticsScanner
                     AssetsFile.Validate(path, testData: false);
                     loaded = true;
                     break;
+
                 case ".gts":
                     foreach (var tilesheet in TilesheetDefinitionSerializer.LoadAll(path))
                     {
@@ -102,20 +108,25 @@ public sealed class ProjectDiagnosticsScanner
                         loaded = true;
                         Validate(TilesheetDefinitionValidator.Validate(tilesheet));
                         var image = tilesheet.Image;
+
                         if (image is not null)
                         {
-                            if (!string.IsNullOrWhiteSpace(image.FilePath)) Reference("Image.FilePath", image.FilePath);
+                            if (!string.IsNullOrWhiteSpace(image.FilePath))
+                                Reference("Image.FilePath", image.FilePath);
+
                             if (!string.IsNullOrWhiteSpace(image.AssetsFilePath) || !string.IsNullOrWhiteSpace(image.AssetEntryName))
                                 Reference("Image.AssetsFilePath", image.AssetsFilePath, image.AssetEntryName, AssetTypes.Image);
                         }
                     }
                     break;
+
                 case ".gani":
                     foreach (var animation in AnimationDefinitionSerializer.LoadAll(path))
                     {
                         member = animation.Key;
                         loaded = true;
                         Validate(AnimationDefinitionValidator.Validate(animation));
+
                         for (int i = 0; i < animation.TilesheetSources.Count; i++)
                         {
                             var source = animation.TilesheetSources[i];
@@ -123,12 +134,14 @@ public sealed class ProjectDiagnosticsScanner
                         }
                     }
                     break;
+
                 case ".gscn":
                     foreach (var scene in SceneDefinitionSerializer.LoadAll(path))
                     {
                         member = scene.ID;
                         loaded = true;
                         Validate(SceneDefinitionValidator.Validate(scene));
+
                         for (int i = 0; i < scene.TilesheetSources.Count; i++)
                         {
                             var source = scene.TilesheetSources[i];
@@ -141,12 +154,14 @@ public sealed class ProjectDiagnosticsScanner
                         }
                     }
                     break;
+
                 case ".gspr":
                     foreach (var sprites in SpriteDefinitionSerializer.LoadAll(path))
                     {
                         member = sprites.Key;
                         loaded = true;
                         Validate(SpriteDefinitionValidator.Validate(sprites));
+
                         for (int i = 0; i < sprites.TilesheetSources.Count; i++)
                         {
                             var source = sprites.TilesheetSources[i];
@@ -159,26 +174,39 @@ public sealed class ProjectDiagnosticsScanner
                         }
                     }
                     break;
+
                 case ".gsnd":
                     foreach (var audio in AudioDefinitionSerializer.LoadAll(path))
                     {
                         member = audio.Key;
                         loaded = true;
+
                         Validate(AudioDefinitionValidator.Validate(audio));
+
                         for (int i = 0; i < audio.Resources.Count; i++)
                         {
                             var resource = audio.Resources[i];
                             var property = $"Resources[{i}]";
+
                             switch (resource.SourceKind)
                             {
-                                case AudioResourceSourceKind.LooseFile: Reference(property + ".FilePath", resource.FilePath); break;
-                                case AudioResourceSourceKind.PackedAsset: Reference(property + ".AssetsFilePath", resource.AssetsFilePath, resource.AssetEntryName, AssetTypes.Audio); break;
+                                case AudioResourceSourceKind.LooseFile:
+                                    Reference(property + ".FilePath", resource.FilePath);
+                                    break;
+
+                                case AudioResourceSourceKind.PackedAsset:
+                                    Reference(property + ".AssetsFilePath", resource.AssetsFilePath, resource.AssetEntryName, AssetTypes.Audio);
+                                    break;
+
                                 case AudioResourceSourceKind.Uri:
                                     // The public validator accepts both relative and absolute URIs.
                                     // Their resolution belongs to the audio backend, not the project filesystem.
                                     references.Add(new(member + " :: " + property + ".SourceUri", resource.SourceUri ?? "", null, null));
                                     break;
-                                default: Unsupported(property, (int)resource.SourceKind); break;
+
+                                default:
+                                    Unsupported(property, (int)resource.SourceKind);
+                                    break;
                             }
                         }
                     }
@@ -189,11 +217,13 @@ public sealed class ProjectDiagnosticsScanner
         {
             problems.Add(new(relative, loaded ? "Inspection" : "Load", ex.GetBaseException().Message));
         }
+
         return new(relative, format.TrimStart('.').ToUpperInvariant(), loaded, references.ToArray());
 
         void Validate(IReadOnlyList<string> errors)
         {
-            foreach (var error in errors) problems.Add(new(relative, member + " :: Validation", error));
+            foreach (var error in errors)
+                problems.Add(new(relative, member + " :: Validation", error));
         }
 
         void Unsupported(string property, int kind)
@@ -207,32 +237,46 @@ public sealed class ProjectDiagnosticsScanner
         void Source(string property, int kind, string? loose, string? archive, string? entry, AssetTypes type, string looseProperty)
         {
             // Each current authoring source enum uses LooseDefinitionFile=0, PackedDefinitionFile=1.
-            if (kind == 0) Reference(property + "." + looseProperty, loose);
-            else if (kind == 1) Reference(property + ".AssetsFilePath", archive, entry, type);
-            else Unsupported(property, kind);
+            if (kind == 0)
+                Reference(property + "." + looseProperty, loose);
+            else if (kind == 1)
+                Reference(property + ".AssetsFilePath", archive, entry, type);
+            else
+                Unsupported(property, kind);
         }
 
         void Reference(string property, string? value, string? entry = null, AssetTypes? assetType = null)
         {
             property = member + " :: " + property;
             token.ThrowIfCancellationRequested();
+
             string? resolved = null;
             string? error = null;
+
             try
             {
-                if (string.IsNullOrWhiteSpace(value)) throw new InvalidDataException("Reference path is empty.");
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new InvalidDataException("Reference path is empty.");
+
                 resolved = Path.GetFullPath(value, Path.GetDirectoryName(path)!);
-                if (!File.Exists(resolved)) throw new FileNotFoundException($"Referenced file not found: {resolved}");
+
+                if (!File.Exists(resolved))
+                    throw new FileNotFoundException($"Referenced file not found: {resolved}");
+
                 if (assetType is not null)
                 {
-                    if (string.IsNullOrWhiteSpace(entry)) throw new InvalidDataException("Packed reference AssetEntryName is empty.");
+                    if (string.IsNullOrWhiteSpace(entry))
+                        throw new InvalidDataException("Packed reference AssetEntryName is empty.");
+
                     if (!packages.TryGetValue(resolved, out var package))
                     {
                         package = AssetsFile.LoadOrCreate(resolved, null, false, register: false);
                         packages.Add(resolved, package);
                     }
+
                     using var stream = package.Get(assetType.Value, entry);
-                    if (stream is null) throw new FileNotFoundException($"Packed {assetType} entry not found: {entry}");
+                    if (stream is null)
+                        throw new FileNotFoundException($"Packed {assetType} entry not found: {entry}");
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
@@ -240,6 +284,7 @@ public sealed class ProjectDiagnosticsScanner
                 error = ex.GetBaseException().Message;
                 problems.Add(new(relative, property, error));
             }
+
             references.Add(new(property, assetType is null ? value ?? "" : $"{value} :: {entry}", resolved, error));
         }
     }

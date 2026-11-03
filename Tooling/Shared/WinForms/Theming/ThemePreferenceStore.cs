@@ -22,11 +22,16 @@ public sealed class ThemePreferenceStore
     {
         try
         {
-            if (!File.Exists(FilePath)) return ToolingTheme.Dark;
-            if (new FileInfo(FilePath).Length > 4096) throw new InvalidDataException("Theme preference is too large.");
+            if (!File.Exists(FilePath))
+                return ToolingTheme.Dark;
+
+            if (new FileInfo(FilePath).Length > 4096)
+                throw new InvalidDataException("Theme preference is too large.");
+
             using var json = JsonDocument.Parse(File.ReadAllText(FilePath));
             if (json.RootElement.TryGetProperty("Theme", out var value) && value.ValueKind == JsonValueKind.String &&
                 Enum.TryParse<ToolingTheme>(value.GetString(), out var theme) && Enum.IsDefined(theme)) return theme;
+
             throw new InvalidDataException("Unknown theme preference.");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or InvalidDataException)
@@ -38,7 +43,9 @@ public sealed class ThemePreferenceStore
 
     public bool Write(ToolingTheme theme)
     {
-        if (!Enum.IsDefined(theme)) return false;
+        if (!Enum.IsDefined(theme))
+            return false;
+
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
@@ -54,8 +61,14 @@ public sealed class ThemePreferenceStore
         }
         finally
         {
-            try { File.Delete(temporary); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _report(ex.Message); }
+            try
+            {
+                File.Delete(temporary);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _report(ex.Message);
+            }
         }
     }
 }

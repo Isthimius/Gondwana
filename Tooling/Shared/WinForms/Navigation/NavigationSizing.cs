@@ -22,6 +22,7 @@ public static class NavigationSizing
         var binding = Trees.GetValue(tree, key => new TreeNavigationSizing(key, createImages, defaultSize, store));
         if (store is not null && !binding.UsesStore(store))
             throw new ArgumentException("The tree is already registered with another preference source.", nameof(store));
+
         return binding;
     }
 
@@ -41,8 +42,10 @@ public static class NavigationSizing
             owner.Disposed += (_, _) => owner.Activated -= Refresh;
             return source;
         });
+
         if (store is not null && !SamePreferenceFile(registered, store))
             throw new ArgumentException("The shell is already registered with another preference source.", nameof(store));
+
         return registered;
     }
 
@@ -52,7 +55,8 @@ public static class NavigationSizing
     /// <summary>Refreshes scaled copies after a tree's original thumbnail list changes, without rebuilding its nodes.</summary>
     public static void RefreshImages(TreeView tree)
     {
-        if (Trees.TryGetValue(tree, out var binding)) binding.RefreshImages();
+        if (Trees.TryGetValue(tree, out var binding))
+            binding.RefreshImages();
     }
 
     /// <summary>Copies image keys and indices into an independent list; the caller retains ownership of the source.</summary>
@@ -67,9 +71,14 @@ public static class NavigationSizing
                 result.Images.Add(source.Images.Keys[index] ?? string.Empty, image);
                 _ = result.Handle; // Materialize native copies before releasing the source image.
             }
+
             return result;
         }
-        catch { result.Dispose(); throw; }
+        catch
+        {
+            result.Dispose();
+            throw;
+        }
     }
 
     /// <summary>Creates the shared radio-style Icon Size menu and synchronizes saved choices when the host is activated.</summary>
@@ -82,40 +91,57 @@ public static class NavigationSizing
         store = GetShellStore(owner, store);
         notify ??= message => ThemedMessageBox.Show(owner, message, "Icon Size", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         var menu = new ToolStripMenuItem("Icon Size");
+
         void RefreshChecks()
         {
             var size = store.Read() ?? NavigationIconSize.Small;
             foreach (ToolStripMenuItem item in menu.DropDownItems) item.Checked = Equals(item.Tag, size);
         }
+
         void RefreshPreference(object? sender, EventArgs e)
         {
             PreferenceChanged?.Invoke(store.FilePath);
             RefreshChecks();
         }
+
         foreach (var size in Enum.GetValues<NavigationIconSize>())
         {
             var item = new ToolStripMenuItem(size.ToString()) { Tag = size };
             item.Click += (_, _) =>
             {
-                if (!store.Write(size)) { notify("The icon size preference could not be saved. Check your settings folder permissions."); return; }
+                if (!store.Write(size))
+                {
+                    notify("The icon size preference could not be saved. Check your settings folder permissions.");
+                    return;
+                }
+
                 PreferenceChanged?.Invoke(store.FilePath);
                 RefreshChecks();
             };
+
             menu.DropDownItems.Add(item);
         }
+
         void RefreshMenuChecks(object? sender, EventArgs e) => RefreshChecks();
+
         owner.Activated += RefreshMenuChecks;
         menu.DropDownOpening += RefreshPreference;
         menu.Disposed += (_, _) => owner.Activated -= RefreshMenuChecks;
+
         RefreshChecks();
+
         return menu;
     }
 
     /// <summary>Converts logical icon pixels to device pixels, respecting ImageList's 256-pixel limit.</summary>
     public static int IconPixels(NavigationIconSize size, int dpi)
     {
-        if (!Enum.IsDefined(size)) throw new ArgumentOutOfRangeException(nameof(size));
-        if (dpi <= 0) throw new ArgumentOutOfRangeException(nameof(dpi));
+        if (!Enum.IsDefined(size))
+            throw new ArgumentOutOfRangeException(nameof(size));
+
+        if (dpi <= 0)
+            throw new ArgumentOutOfRangeException(nameof(dpi));
+
         return Math.Clamp((int)Math.Round((int)size * dpi / 96d), 1, 256);
     }
 

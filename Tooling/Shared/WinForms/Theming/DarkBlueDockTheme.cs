@@ -11,6 +11,7 @@ internal sealed class DarkBlueDockTheme : VS2015DarkTheme
     public DarkBlueDockTheme()
     {
         ToolingAppearance.ConfigureDarkBlue(this);
+
         // VS2015 constructs these bitmaps eagerly. Updating only ColorPalette leaves old-colored button rectangles.
         ReleaseGeneratedImages();
         ImageService = new ImageService(this);
@@ -23,7 +24,9 @@ internal sealed class DarkBlueDockTheme : VS2015DarkTheme
         foreach (var image in typeof(IImageService).GetProperties()
             .Where(property => property.Name is not "Dockindicator_PaneDiamond_Hotspot" and not "DockIndicator_PaneDiamond_HotspotIndex")
             .Select(property => property.GetValue(ImageService)).OfType<Image>().Distinct())
+        {
             image.Dispose();
+        }
     }
 
     protected override void Dispose(bool disposing)
@@ -34,6 +37,7 @@ internal sealed class DarkBlueDockTheme : VS2015DarkTheme
             ReleaseGeneratedImages();
             PaintingService.CleanUp();
         }
+
         base.Dispose(disposing);
     }
 }
