@@ -45,7 +45,7 @@ public sealed class PropertyHelpTests
         Assert.Equal(typeof(Size), imageSize.PropertyType);
         Assert.Equal(new Size(640, 480), imageSize.GetValue(fields));
         Assert.True(imageSize.Converter.GetPropertiesSupported());
-        Assert.Equal(["Height", "Width"], imageSize.Converter.GetProperties(imageSize.GetValue(fields)!)!
+        Assert.Equal(new[] { "Height", "Width" }, imageSize.Converter.GetProperties(imageSize.GetValue(fields)!)!
             .Cast<PropertyDescriptor>().Select(p => p.Name).Order().ToArray());
 
         Assert.Null(properties["Red"]);
