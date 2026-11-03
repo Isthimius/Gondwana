@@ -561,9 +561,11 @@ Use `--version <VERSION>` to select a specific stable, beta, RC, or other
 prerelease. Replace `<VERSION>` with the actual published NuGet package version
 (for example, `2.6.2-beta.1`); the example is illustrative, not the current
 or recommended release. Both options install the version-pinned package via
-`dotnet new install Gondwana.Templates@<VERSION> --force`, replacing any
+`dotnet new install Gondwana.Templates::<VERSION> --force`, replacing any
 previously installed template package as needed. They cannot be combined.
-Prerelease resolution works on .NET SDK 8–10; no SDK 11 requirement.
+The CLI uses the backward-compatible `::` version separator so version-pinned
+installs work on .NET SDK 8–10. The newer `@` separator requires SDK 9.0.200
+or later. Prerelease resolution does not require SDK 11.
 `templates update` remains unchanged and does not switch to a newer prerelease
 track automatically.
 
