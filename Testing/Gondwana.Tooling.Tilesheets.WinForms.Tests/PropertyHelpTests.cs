@@ -197,7 +197,7 @@ public sealed class PropertyHelpTests
         Assert.Equal(3, changes);
 
         var converter = properties["Overhang"]!.Converter;
-        Assert.Equal(new Spacing(left: 4, top: 1, right: 2, bottom: 3), converter.ConvertFromInvariantString("1, 2, 3, 4"));
+        Assert.Equal(new Spacing(4, 1, 2, 3), converter.ConvertFromInvariantString("1, 2, 3, 4"));
         Assert.Equal("10, 23, 12, 9", converter.ConvertToInvariantString(region.Overhang));
         Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("1, 2, 3"));
     }
