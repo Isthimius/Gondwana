@@ -111,7 +111,7 @@ public sealed class PropertyHelpTests
         Assert.Equal("Geometry", properties["TilePadding"]!.Category);
         Assert.Equal("Collision", properties["CollisionAdjust"]!.Category);
         var collision = properties["CollisionAdjust"]!;
-        Assert.Equal(typeof(CollisionAdjust), collision.PropertyType);
+        Assert.Equal(typeof(Gondwana.Physics.Collisions.CollisionAdjust), collision.PropertyType);
         Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" },
             collision.Converter.GetProperties(collision.GetValue(regionFields)!)!
                 .Cast<PropertyDescriptor>().Select(property => property.Name));
