@@ -2,6 +2,8 @@
 
 A pragmatic checklist for maintainers publishing alpha, beta, release-candidate (RC), or stable Gondwana versions. The implementation details live in [[Tooling Scripts]] and [[GitHub Automation and Workflows]].
 
+> **Version examples:** All version numbers in this walkthrough (including `2.6.2-beta.1`) are illustrative examples of a release sequence. They do **not** identify the latest, current, or recommended Gondwana release. Replace them with the version actually being published or tested.
+
 > **Warning:** Running the actual release script pushes a Git tag that triggers public NuGet publishing. The `-PreviewOnly` flag is the dry run. Never run a release as a test.
 
 ## 1. Choose and commit a version
@@ -51,7 +53,7 @@ Inspect **Actions → Release** and the resulting GitHub Release, ZIP asset, and
 - **Alpha/beta/RC:** GitHub marks it as a prerelease; the latest stable Release stays unchanged. Stable `/api/` documentation is not republished. All prerelease templates (including alpha, beta, RC, and preview) pin `Gondwana.*` dependencies to that exact prerelease package version.
 - **Stable:** GitHub marks it as a normal release and updates the immutable versioned API documentation and stable `/api/` redirect.
 
-To install a prerelease explicitly (replace the example version):
+To install a prerelease explicitly (the `2.6.2-beta.1` version below is an example, not a definitive or current release):
 
 ```powershell
 dotnet add package Gondwana --version 2.6.2-beta.1
@@ -63,7 +65,7 @@ If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli 
 
 ```powershell
 gondwana templates install --prerelease
-# Or pin the specific release being tested:
+# Or pin the specific release being tested (example version):
 gondwana templates install --version 2.6.2-beta.1
 ```
 
