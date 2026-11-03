@@ -764,7 +764,9 @@ want to install (for example, `2.6.2-beta.1`). The example number is illustrativ
 not a statement about the latest or recommended release.
 
 The two switches are mutually exclusive. Explicit selection uses
-`dotnet new install Gondwana.Templates@<VERSION> --force`.
+`dotnet new install Gondwana.Templates::<VERSION> --force`.
+The `::` separator supports SDK 8–10; newer SDKs (9.0.200 and later) also
+recognize `@`, but SDK 8 does not.
 The CLI resolves `--prerelease` through NuGet so it also works with .NET SDK
 8–10 (where the SDK's own `dotnet new install --prerelease` is not supported).
 For an exact prerelease version, `--version` is the reproducible choice.
