@@ -45,6 +45,14 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     private readonly TilesheetDocument? _document;
     public PropertyFields(TilesheetDocument? document = null) => _document = document;
 
+    /// <summary>Shares live descriptors between ungrouped and categorized inspectors.</summary>
+    public PropertyFields Filter(Func<PropertyDescriptor, bool> predicate)
+    {
+        var view = new PropertyFields(_document);
+        view._fields.AddRange(_fields.Where(predicate));
+        return view;
+    }
+
     private void Edit(object model, string name, Action change, Action changed)
     {
         if (_document is not null) _document.Edit(model, "Change " + name, change);
@@ -77,7 +85,18 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="excluded">Top-level property names to omit, matched case-sensitively.</param>
     public void AddModel(object model, Action changed, params string[] excluded)
     {
-        foreach (var property in model.GetType().GetProperties().Where(p => p.CanWrite && !excluded.Contains(p.Name)))
+        var properties = model.GetType().GetProperties().Where(p => p.CanWrite && !excluded.Contains(p.Name));
+        if (model is TilesheetRegionDefinition)
+        {
+            string[] ordered = ["Name", "Area", "TileSize", "RegionMargin", "Overhang", "TilePadding",
+                "CollisionType", "CollisionAdjust"];
+            properties = properties.OrderBy(p =>
+            {
+                int position = Array.IndexOf(ordered, p.Name);
+                return position < 0 ? int.MaxValue : position;
+            });
+        }
+        foreach (var property in properties)
         {
             // Group the region's metadata by purpose instead of giving each field its own heading.
             string? category = model is TilesheetRegionDefinition ? property.Name switch
@@ -94,7 +113,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 nameof(TilesheetRegionDefinition.TileSize) or
                 nameof(TilesheetRegionDefinition.TilePadding) or
                 nameof(TilesheetRegionDefinition.RegionMargin) or
-                nameof(TilesheetRegionDefinition.Overhang))
+                nameof(TilesheetRegionDefinition.Overhang) or
+                nameof(TilesheetRegionDefinition.CollisionAdjust))
             {
                 // Use editable, expandable parent values so related components stay together.
                 // The reflected setter writes the complete value type back to the model,
@@ -185,12 +205,12 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             "Enable color-key masking. Choose an RGB color below; alpha is stored but ignored during runtime matching.");
         if (model.Mask is { } mask)
         {
-            fields.Add("Color", "Mask", () => System.Drawing.Color.FromArgb(mask.Red, mask.Green, mask.Blue),
+            fields.Add("Color", "Mask", () => new MaskRgb(mask.Red, mask.Green, mask.Blue),
                 color => document.Edit(mask, "Change mask color", () =>
                 {
-                    mask.Red = color.R;
-                    mask.Green = color.G;
-                    mask.Blue = color.B;
+                    mask.Red = color.Red;
+                    mask.Green = color.Green;
+                    mask.Blue = color.Blue;
                 }),
                 "RGB color to match for transparency masking. Use the builder button to open the color picker.");
             fields.Add("Alpha", "Mask", () => mask.Alpha,
@@ -220,8 +240,9 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             v => document.EditFrame(region, x, y, "Change frame collision insets", frame => frame.CollisionAdjust = v == Inheritance.InheritRegion ? null : frame.CollisionAdjust ?? region.CollisionAdjust), "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
         fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
             v => document.EditFrame(region, x, y, "Change frame collision type", frame => frame.CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString())), "Choose inherited region behavior, None for no collider, Blocking, or Trigger for non-blocking contact.");
-        foreach (var property in typeof(CollisionAdjust).GetProperties().Where(p => p.CanWrite))
+        foreach (string edge in new[] { "Top", "Right", "Bottom", "Left" })
         {
+            var property = typeof(CollisionAdjust).GetProperty(edge)!;
             bool inherited = Current()?.CollisionAdjust is null;
             fields.Add(property.Name, "Collision", () => (int)property.GetValue(Current()?.CollisionAdjust ?? region.CollisionAdjust)!,
                 inherited ? null : v =>
@@ -240,7 +261,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         private static Attribute[] AttributesFor(string category, string description)
         {
             List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
-            if (typeof(T) == typeof(System.Drawing.Color))
+            if (typeof(T) == typeof(MaskRgb))
             {
                 // The property descriptors also compile into platform-neutral Gondwana.Tests.
                 // Resolve the Windows editor only when the UI assembly is available.
@@ -250,6 +271,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 if (editorType?.BaseType is { } editorBaseType)
                     attributes.Add(new EditorAttribute(editorType, editorBaseType));
             }
+            if (typeof(T) == typeof(MaskRgb))
+                attributes.Add(new TypeConverterAttribute(typeof(MaskRgbConverter)));
             return [.. attributes];
         }
 
@@ -290,6 +313,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             ];
             if (type == typeof(Spacing))
                 attributes.Add(new TypeConverterAttribute(typeof(SpacingConverter)));
+            else if (type == typeof(CollisionAdjust))
+                attributes.Add(new TypeConverterAttribute(typeof(GtsCollisionAdjustConverter)));
             else if (type == typeof(System.Drawing.Rectangle))
                 attributes.Add(new TypeConverterAttribute(typeof(RegionAreaConverter)));
             return [.. attributes];
