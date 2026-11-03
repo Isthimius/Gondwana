@@ -240,8 +240,21 @@ public sealed partial class EditorInteractionTests
 
         Assert.Equal(new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
             Children(Category(details, "Mask")));
+        var maskColor = Category(details, "Mask").GridItems.Cast<GridItem>()
+            .Single(item => item.PropertyDescriptor?.Name == "Color");
+        maskColor.Expanded = true;
+        Assert.Equal(new[] { "Red", "Green", "Blue" }, Children(maskColor));
+
         Assert.Equal(new[] { "CollisionType", "CollisionAdjust" },
             Children(Category(region, "Collision")));
+        var collision = Category(region, "Collision").GridItems.Cast<GridItem>()
+            .Single(item => item.PropertyDescriptor?.Name == "CollisionAdjust");
+        collision.Expanded = true;
+        Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" }, Children(collision));
+        var geometry = Category(region, "Geometry").GridItems.Cast<GridItem>()
+            .Single(item => item.PropertyDescriptor?.Name == "Area");
+        geometry.Expanded = true;
+        Assert.Equal(new[] { "X", "Y", "Width", "Height" }, Children(geometry));
         Assert.Equal(new[] { "Coordinates (read only)" }, Items(coordinates)
             .Where(item => item.GridItemType == GridItemType.Category).Select(item => item.Label));
         Assert.Equal(new[] { "Collision" }, Items(frame)
