@@ -231,6 +231,7 @@ public sealed partial class EditorInteractionTests
         var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         var region = Field<PropertyGrid>(editor.Editor, "_regionProperties");
         var frame = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+        var coordinates = Field<PropertyGrid>(editor.Editor, "_frameCoordinates");
 
         GridItem Category(PropertyGrid grid, string label) => Items(grid)
             .Single(item => item.GridItemType == GridItemType.Category && item.Label == label);
@@ -241,9 +242,11 @@ public sealed partial class EditorInteractionTests
             Children(Category(details, "Mask")));
         Assert.Equal(new[] { "CollisionType", "CollisionAdjust" },
             Children(Category(region, "Collision")));
-        Assert.Equal(new[] { "Coordinates (read only)", "Collision" }, Items(frame)
+        Assert.Equal(new[] { "Coordinates (read only)" }, Items(coordinates)
             .Where(item => item.GridItemType == GridItemType.Category).Select(item => item.Label));
-        Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(frame, "Coordinates (read only)")));
+        Assert.Equal(new[] { "Collision" }, Items(frame)
+            .Where(item => item.GridItemType == GridItemType.Category).Select(item => item.Label));
+        Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(coordinates, "Coordinates (read only)")));
         Assert.Equal(new[] { "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
             Children(Category(frame, "Collision")));
     });
@@ -276,7 +279,7 @@ public sealed partial class EditorInteractionTests
         Click(viewport, new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f));
         Assert.Same(region, viewport.SelectedRegion);
         Assert.Equal(Point.Empty, viewport.SelectedFrame);
-        var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+        var grid = Field<PropertyGrid>(editor.Editor, "_frameCoordinates");
         Assert.Contains(Items(grid), item => item.PropertyDescriptor?.Name == "XTile");
         Assert.Equal(before, TilesheetDefinitionSerializer.ToJson(document.Definition));
         Assert.False(document.IsDirty);
