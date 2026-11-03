@@ -756,8 +756,12 @@ Use `gondwana run blazor` for the development server instead.
 ```powershell
 gondwana templates install
 gondwana templates install --prerelease
-gondwana templates install --version 2.6.2-beta.1
+gondwana templates install --version <VERSION>
 ```
+
+Replace `<VERSION>` with the specific published template package version you
+want to install (for example, `2.6.2-beta.1`). The example number is illustrative,
+not a statement about the latest or recommended release.
 
 The two switches are mutually exclusive. Explicit selection uses
 `dotnet new install Gondwana.Templates@<VERSION> --force`.
