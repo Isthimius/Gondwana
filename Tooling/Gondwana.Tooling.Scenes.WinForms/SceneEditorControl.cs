@@ -116,7 +116,8 @@ public sealed partial class SceneEditorControl : UserControl
     {
         Dock = DockStyle.Fill,
         ToolbarVisible = false,
-        HelpVisible = true
+        HelpVisible = true,
+        PropertySort = PropertySort.Categorized
     };
 
     private readonly TextBox _validation = new()
