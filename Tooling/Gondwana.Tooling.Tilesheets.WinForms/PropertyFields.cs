@@ -45,14 +45,6 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     private readonly TilesheetDocument? _document;
     public PropertyFields(TilesheetDocument? document = null) => _document = document;
 
-    /// <summary>Shares live descriptors between ungrouped and categorized inspectors.</summary>
-    public PropertyFields Filter(Func<PropertyDescriptor, bool> predicate)
-    {
-        var view = new PropertyFields(_document);
-        view._fields.AddRange(_fields.Where(predicate));
-        return view;
-    }
-
     private void Edit(object model, string name, Action change, Action changed)
     {
         if (_document is not null) _document.Edit(model, "Change " + name, change);
@@ -101,7 +93,9 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             // Group the region's metadata by purpose instead of giving each field its own heading.
             string? category = model is TilesheetRegionDefinition ? property.Name switch
             {
-                nameof(TilesheetRegionDefinition.Name) => "Region",
+                // WinForms orders category headings alphabetically; a leading space puts
+                // identity first without adding a separate PropertyGrid or changing its label.
+                nameof(TilesheetRegionDefinition.Name) => " Region",
                 nameof(TilesheetRegionDefinition.Area) or nameof(TilesheetRegionDefinition.TileSize)
                     or nameof(TilesheetRegionDefinition.TilePadding) or nameof(TilesheetRegionDefinition.RegionMargin)
                     or nameof(TilesheetRegionDefinition.Overhang) => "Geometry",
@@ -234,8 +228,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     {
         var fields = new PropertyFields(document);
         TilesheetFrameDefinition? Current() => document.FindFrame(region, x, y);
-        fields.Add("XTile", "Coordinates (read only)", () => x, description: "Zero-based frame column within this region; read-only.");
-        fields.Add("YTile", "Coordinates (read only)", () => y, description: "Zero-based frame row within this region; read-only.");
+        fields.Add("XTile", " Coordinates (read only)", () => x, description: "Zero-based frame column within this region; read-only.");
+        fields.Add("YTile", " Coordinates (read only)", () => y, description: "Zero-based frame row within this region; read-only.");
         fields.Add("CollisionAdjust mode", "Collision", () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
             v => document.EditFrame(region, x, y, "Change frame collision insets", frame => frame.CollisionAdjust = v == Inheritance.InheritRegion ? null : frame.CollisionAdjust ?? region.CollisionAdjust), "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
         fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
