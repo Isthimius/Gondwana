@@ -281,7 +281,7 @@ Scaffolds a new Gondwana project that targets **browser/WASM** using Blazor WebA
 gondwana new blazor MyGame
 ```
 
-Equivalent to `dotnet new gondwana-blazor -n MyGame`.
+Uses `dotnet new gondwana-blazor -n MyGame` for scaffolding, with a CLI-only SDK/workload preflight.
 If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `MyGame.sln` and adds the project.
 
 An optional `--output` / `-o` flag can be used to specify the output directory:
@@ -319,12 +319,26 @@ gondwana publish blazor
 ```
 
 New Blazor projects require a .NET 10 SDK (minimum 10.0.100; use the latest
-serviced 10.0 SDK). From the generated directory, verify `dotnet --version`, run
-`dotnet workload install wasm-tools`, and verify `dotnet workload list` before
-building or publishing. Check ancestor `global.json` files if SDK 8 is selected.
-The runtime libraries and desktop templates remain on .NET 8.
+serviced 10.0 SDK). Before creating a project, `gondwana new blazor` checks the
+SDK selected by `dotnet --version` and looks for a compatible .NET 10
+`wasm-tools` workload. If absent, the CLI offers to run
+`dotnet workload install wasm-tools`, then verifies the installed workload.
+Declining the prompt still creates the project, with a warning that it is not
+ready to build. A failed install stops before project creation; in a
+non-interactive shell, use `--skip-workload` or preinstall the workload.
 
-The CLI checks whether `wasm-tools` is already installed and installs it only when needed. Use `--skip-workload` when the environment is already managed externally.
+`--skip-workload` skips the workload check, installation, and prompt (but
+still requires the .NET 10 SDK). It is useful for externally managed build
+environments, and the result is explicitly marked as not verified. For example:
+
+```bash
+gondwana new blazor MyGame --skip-workload
+```
+
+Direct `dotnet new gondwana-blazor` usage does not run this CLI preflight;
+verify `dotnet --version`, `dotnet workload list`, and install `wasm-tools`
+manually if needed. Check ancestor `global.json` files when an older SDK is selected.
+The runtime libraries and desktop templates remain on .NET 8.
 
 ---
 
