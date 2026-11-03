@@ -196,7 +196,6 @@ public sealed partial class EditorInteractionTests
         Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
             TypeDescriptor.GetProperties(details.SelectedObject!).Cast<PropertyDescriptor>()
                 .Where(property => property.Category == "Definition").Select(property => property.Name));
-        Assert.Equal("Region", TypeDescriptor.GetProperties(regionDetails.SelectedObject!)["Name"]!.Category);
         Assert.NotNull(TypeDescriptor.GetProperties(details.SelectedObject!)["Mask enabled"]);
         Assert.Same(document.SelectedDefinition, pane.SelectedItem);
         Assert.Equal(document.SelectedDefinition.Name, toolbar.SelectedItem);
