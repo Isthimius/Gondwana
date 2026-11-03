@@ -59,7 +59,15 @@ dotnet tool install -g Gondwana.Cli --version 2.6.2-beta.1
 dotnet new install Gondwana.Templates@2.6.2-beta.1
 ```
 
-If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version 2.6.2-beta.1` instead of `install`. For generated prerelease projects, keep the matching pinned prerelease package references until intentionally upgrading.
+If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version 2.6.2-beta.1` instead of `install`. Once running a CLI version that supports template version selection, you can also install prerelease templates with:
+
+```powershell
+gondwana templates install --prerelease
+# Or pin the specific release being tested:
+gondwana templates install --version 2.6.2-beta.1
+```
+
+The first option allows the latest NuGet prerelease to be selected; the second pins the package and is preferable for repeatable beta validation. The `gondwana templates install` command without options remains stable-only. Both switches work on SDK 8–10 and cannot be combined. For generated prerelease projects, keep the matching pinned prerelease package references until intentionally upgrading.
 
 ## Changelog policy
 
