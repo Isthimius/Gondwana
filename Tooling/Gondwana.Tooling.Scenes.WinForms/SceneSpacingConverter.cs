@@ -23,8 +23,8 @@ internal sealed class SceneSpacingConverter : ExpandableObjectConverter
 
     public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
     public override object CreateInstance(ITypeDescriptorContext? context, IDictionary values) =>
-        new Spacing(left: (int)values["Left"]!, top: (int)values["Top"]!,
-            right: (int)values["Right"]!, bottom: (int)values["Bottom"]!);
+        new Spacing((int)values["Left"]!, (int)values["Top"]!,
+            (int)values["Right"]!, (int)values["Bottom"]!);
 
     public override bool CanConvertTo(ITypeDescriptorContext? context, Type? type) =>
         type == typeof(string) || base.CanConvertTo(context, type);
@@ -43,6 +43,6 @@ internal sealed class SceneSpacingConverter : ExpandableObjectConverter
         var values = text.Split(',', StringSplitOptions.TrimEntries);
         if (values.Length != 4) throw new FormatException("Specify Top, Right, Bottom, Left.");
         var edges = values.Select(v => int.Parse(v, NumberStyles.Integer, culture ?? CultureInfo.CurrentCulture)).ToArray();
-        return new Spacing(left: edges[3], top: edges[0], right: edges[1], bottom: edges[2]);
+        return new Spacing(edges[3], edges[0], edges[1], edges[2]);
     }
 }
