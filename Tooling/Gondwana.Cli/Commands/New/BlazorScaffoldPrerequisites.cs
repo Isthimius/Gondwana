@@ -96,7 +96,7 @@ internal static class BlazorScaffoldPrerequisites
     {
         // A preview/RC (including 10.0.100-preview.1) is not the stable SDK advertised
         // as the minimum. Require the serviced stable .NET 10 SDK line.
-        if (string.IsNullOrWhiteSpace(sdkVersion) || sdkVersion.Contains('-', StringComparison.Ordinal) ||
+        if (string.IsNullOrWhiteSpace(sdkVersion) || sdkVersion.Contains('-') ||
             !Version.TryParse(sdkVersion.Trim(), out var parsed))
             return false;
 
