@@ -24,6 +24,7 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _regionHeader = CreateHeaderGrid(48);
     private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
+    private readonly PropertyGrid _frameCoordinates = CreateCoordinatesGrid();
     private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
     private readonly ComboBox _regions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
     private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
@@ -108,7 +109,7 @@ public sealed class TilesheetEditorControl : UserControl
         definitionTools.Items.Add(new ToolStripControlHost(_paneDefinitions) { AutoSize = false, Width = 205 });
         var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, _definitionHeader, definitionTools);
         var region = _workspace.AddPane("region", "Region", _regionProperties, _regionHeader, regionTools);
-        var frame = _workspace.AddPane("frame", "Frame", _frameProperties, navigator);
+        var frame = _workspace.AddPane("frame", "Frame", _frameProperties, _frameCoordinates, navigator);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
         _workspace.Place(image, () => image.Show(dock, DockState.Document));
         _workspace.Place(definition, () => definition.Show(image.Pane, DockAlignment.Right, .36));
@@ -337,6 +338,15 @@ public sealed class TilesheetEditorControl : UserControl
         PropertySort = PropertySort.NoSort
     };
 
+    private static PropertyGrid CreateCoordinatesGrid() => new()
+    {
+        Dock = DockStyle.Top,
+        Height = 90,
+        ToolbarVisible = false,
+        HelpVisible = false,
+        PropertySort = PropertySort.Categorized
+    };
+
     private void RefreshProperties()
     {
         var definitionFields = PropertyFields.Definition(Document, Document.MarkChanged, ImageSize);
@@ -354,7 +364,8 @@ public sealed class TilesheetEditorControl : UserControl
         }
         BindProperties(_regionHeader, regionFields?.Filter(property => property.Name == "Name"));
         BindProperties(_regionProperties, regionFields?.Filter(property => property.Name != "Name"));
-        BindProperties(_frameProperties, frameFields);
+        BindProperties(_frameCoordinates, frameFields?.Filter(property => property.Category == "Coordinates (read only)"));
+        BindProperties(_frameProperties, frameFields?.Filter(property => property.Category != "Coordinates (read only)"));
     }
 
     private static void BindProperties(PropertyGrid grid, PropertyFields? fields)
@@ -528,7 +539,7 @@ public sealed class TilesheetEditorControl : UserControl
         _validation.Focus();
         return !_definitionProperties.ContainsFocus && !_definitionHeader.ContainsFocus &&
             !_regionProperties.ContainsFocus && !_regionHeader.ContainsFocus &&
-            !_frameProperties.ContainsFocus && ValidateChildren();
+            !_frameProperties.ContainsFocus && !_frameCoordinates.ContainsFocus && ValidateChildren();
     }
 
     /// <inheritdoc/>
