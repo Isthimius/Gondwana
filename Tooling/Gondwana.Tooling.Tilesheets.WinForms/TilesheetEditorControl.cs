@@ -23,6 +23,7 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
     private readonly ComboBox _regions = new() { Dock = DockStyle.Top, DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name" };
+    private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
     private readonly NumericUpDown _column = new() { Width = 80 };
     private readonly NumericUpDown _row = new() { Width = 80 };
     private readonly Label _gridSize = new() { AutoSize = true };
@@ -81,6 +82,13 @@ public sealed class TilesheetEditorControl : UserControl
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
         _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
+        _toolbarRegions.ComboBox.DisplayMember = "Name";
+        _toolbarRegions.SelectedIndexChanged += (_, _) =>
+        {
+            if (!_refreshing && _toolbarRegions.SelectedItem is TilesheetRegionDefinition region &&
+                !ReferenceEquals(_regions.SelectedItem, region))
+                _regions.SelectedItem = region;
+        };
         _workspace = new EditorDockWorkspace("gts");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
@@ -99,6 +107,9 @@ public sealed class TilesheetEditorControl : UserControl
             () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Name,
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gts", (path, select) => Document.ImportDefinitions(path, select));
+        definitionBar.Items.Insert(2, new ToolStripLabel("Region"));
+        definitionBar.Items.Insert(3, _toolbarRegions);
+        definitionBar.SetLogicalWidth(_toolbarRegions, 180);
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -304,7 +315,7 @@ public sealed class TilesheetEditorControl : UserControl
 
     private void RefreshProperties()
     {
-        BindProperties(_definitionProperties, PropertyFields.Definition(Document, Document.MarkChanged));
+        BindProperties(_definitionProperties, PropertyFields.Definition(Document, Document.MarkChanged, ImageSize));
         PropertyFields? regionFields = null;
         PropertyFields? frameFields = null;
         if (SelectedRegion is { } region)
@@ -375,10 +386,14 @@ public sealed class TilesheetEditorControl : UserControl
     {
         _refreshing = true;
         var selected = SelectedRegion;
+        var regions = Document.Definition.Regions.Cast<object>().ToArray();
         _regions.Items.Clear();
-        _regions.Items.AddRange(Document.Definition.Regions.Cast<object>().ToArray());
+        _regions.Items.AddRange(regions);
         if (selected is not null && _regions.Items.Contains(selected)) _regions.SelectedItem = selected;
         else if (_regions.Items.Count > 0) _regions.SelectedIndex = 0;
+        _toolbarRegions.Items.Clear();
+        _toolbarRegions.Items.AddRange(regions);
+        _toolbarRegions.SelectedItem = _regions.SelectedItem;
         var (columns, rows) = SelectedRegion is { } r ? TilesheetDefinitionValidator.GridSize(r) : (0L, 0L);
         _column.Value = Math.Min(_column.Value, Math.Max(0, columns - 1));
         _row.Value = Math.Min(_row.Value, Math.Max(0, rows - 1));

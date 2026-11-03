@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Drawing.Design;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Tilesheets.Editing;
@@ -27,6 +28,55 @@ public sealed class PropertyHelpTests
 
         var frame = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
         AssertHelp(frame);
+    }
+
+    [Fact]
+    public void ImageSizeIsReadonlyAndMaskColorEditsRgbAsOneUndoableValue()
+    {
+        var document = TilesheetDocument.Create(Path.GetTempPath());
+        var mask = new TilesheetMaskDefinition { Red = 2, Green = 10, Blue = 22, Alpha = 117, Tolerance = 6 };
+        document.Definition.Mask = mask;
+        var fields = PropertyFields.Definition(document, document.MarkChanged, new Size(640, 480));
+        var properties = TypeDescriptor.GetProperties(fields);
+
+        var imageSize = properties["Image Size"]!;
+        Assert.Equal("Definition", imageSize.Category);
+        Assert.True(imageSize.IsReadOnly);
+        Assert.Equal(typeof(Size), imageSize.PropertyType);
+        Assert.Equal(new Size(640, 480), imageSize.GetValue(fields));
+        Assert.True(imageSize.Converter.GetPropertiesSupported());
+        Assert.Equal(new[] { "Height", "Width" }, imageSize.Converter.GetProperties(imageSize.GetValue(fields)!)!
+            .Cast<PropertyDescriptor>().Select(p => p.Name).Order().ToArray());
+
+        Assert.Null(properties["Red"]);
+        Assert.Null(properties["Green"]);
+        Assert.Null(properties["Blue"]);
+        Assert.Equal("Mask", properties["Color"]!.Category);
+        Assert.Equal(typeof(Color), properties["Color"]!.PropertyType);
+        Assert.Equal(Color.FromArgb(2, 10, 22).ToArgb(), ((Color)properties["Color"]!.GetValue(fields)!).ToArgb());
+        var editor = Assert.IsType<MaskColorEditor>(properties["Color"]!.GetEditor(typeof(UITypeEditor)));
+        Assert.Equal(UITypeEditorEditStyle.Modal, editor.GetEditStyle(null));
+        Assert.True(editor.GetPaintValueSupported(null));
+
+        properties["Color"]!.SetValue(fields, Color.FromArgb(80, 120, 160));
+        Assert.Equal((byte)80, mask.Red);
+        Assert.Equal((byte)120, mask.Green);
+        Assert.Equal((byte)160, mask.Blue);
+        Assert.Equal((byte)117, mask.Alpha);
+        Assert.Equal((byte)6, mask.Tolerance);
+        Assert.True(document.IsDirty);
+
+        document.History.Undo();
+        Assert.Equal((byte)2, mask.Red);
+        Assert.Equal((byte)10, mask.Green);
+        Assert.Equal((byte)22, mask.Blue);
+        document.History.Redo();
+        Assert.Equal((byte)80, mask.Red);
+
+        properties["Alpha"]!.SetValue(fields, (byte)210);
+        properties["Tolerance"]!.SetValue(fields, (byte)11);
+        Assert.Equal((byte)210, mask.Alpha);
+        Assert.Equal((byte)11, mask.Tolerance);
     }
 
     private static void AssertHelp(PropertyFields fields)
