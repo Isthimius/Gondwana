@@ -22,7 +22,6 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly PropertyGrid _definitionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
-    private readonly PropertyGrid _frameCoordinates = CreateCoordinatesGrid();
     private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
     private readonly ComboBox _regions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
     private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
@@ -107,7 +106,7 @@ public sealed class TilesheetEditorControl : UserControl
         definitionTools.Items.Add(new ToolStripControlHost(_paneDefinitions) { AutoSize = false, Width = 205 });
         var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, definitionTools);
         var region = _workspace.AddPane("region", "Region", _regionProperties, regionTools);
-        var frame = _workspace.AddPane("frame", "Frame", _frameProperties, _frameCoordinates, navigator);
+        var frame = _workspace.AddPane("frame", "Frame", _frameProperties, navigator);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
         _workspace.Place(image, () => image.Show(dock, DockState.Document));
         _workspace.Place(definition, () => definition.Show(image.Pane, DockAlignment.Right, .36));
@@ -327,15 +326,6 @@ public sealed class TilesheetEditorControl : UserControl
         PropertySort = PropertySort.Categorized
     };
 
-    private static PropertyGrid CreateCoordinatesGrid() => new()
-    {
-        Dock = DockStyle.Top,
-        Height = 90,
-        ToolbarVisible = false,
-        HelpVisible = false,
-        PropertySort = PropertySort.Categorized
-    };
-
     private void RefreshProperties()
     {
         BindProperties(_definitionProperties, PropertyFields.Definition(Document, Document.MarkChanged, ImageSize));
@@ -349,8 +339,7 @@ public sealed class TilesheetEditorControl : UserControl
                 frameFields = PropertyFields.Frame(Document, region, (int)_column.Value, (int)_row.Value, Document.MarkChanged);
         }
         BindProperties(_regionProperties, regionFields);
-        BindProperties(_frameCoordinates, frameFields?.Filter(property => property.Category == "Coordinates (read only)"));
-        BindProperties(_frameProperties, frameFields?.Filter(property => property.Category != "Coordinates (read only)"));
+        BindProperties(_frameProperties, frameFields);
     }
 
     private static void BindProperties(PropertyGrid grid, PropertyFields? fields)
@@ -523,7 +512,7 @@ public sealed class TilesheetEditorControl : UserControl
     {
         _validation.Focus();
         return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus &&
-            !_frameProperties.ContainsFocus && !_frameCoordinates.ContainsFocus && ValidateChildren();
+            !_frameProperties.ContainsFocus && ValidateChildren();
     }
 
     /// <inheritdoc/>
