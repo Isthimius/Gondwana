@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Reflection;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -166,11 +167,13 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="document">The document displayed or edited by the control.</param>
     /// <param name="changed">The callback invoked when a property changes.</param>
     /// <returns>The property descriptors for the tilesheet definition.</returns>
-    public static PropertyFields Definition(TilesheetDocument document, Action changed)
+    public static PropertyFields Definition(TilesheetDocument document, Action changed, Size? imageSize = null)
     {
         var model = document.Definition;
         var fields = new PropertyFields(document);
         fields.Add("Name", "Definition", () => model.Name, v => document.Edit(model, "Rename tilesheet", () => model.Name = v), "Logical tilesheet name referenced by animations, scenes, and sprites.");
+        fields.Add("Image Size", "Definition", () => imageSize ?? Size.Empty,
+            description: "Dimensions of the decoded backing bitmap in source-image pixels; read-only. Zero means no image preview is available.");
         fields.Add("PremultiplyAlpha", "Definition", () => model.PremultiplyAlpha, v => document.Edit(model, "Change alpha premultiplication", () => model.PremultiplyAlpha = v),
             "Multiply color channels by alpha when preparing tilesheet imagery for blending. Masking is configured separately and takes precedence at runtime when enabled.");
         fields.Add("Image.FilePath", "Image", () => model.Image?.FilePath ?? "", v => document.SetImage(v),
@@ -179,10 +182,25 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         fields.Add("Source.GtsFilePath", "Provenance (read only)", () => model.Source.GtsFilePath ?? "", description: "Original GTS document path, if loaded from a loose file; read-only.");
         fields.Add("Source.AssetsFilePath", "Provenance (read only)", () => model.Source.AssetsFilePath ?? "", description: "Source GAF package path when this definition was loaded from a packed entry; read-only.");
         fields.Add("Source.AssetEntryName", "Provenance (read only)", () => model.Source.AssetEntryName ?? "", description: "Name of this definition inside the source GAF package; read-only.");
-        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => document.Edit(model, "Change masking", () => model.Mask = v ? model.Mask ?? new() : null), "Enable color-key masking using the RGB components and tolerance shown below. Alpha is stored but ignored when matching colors.");
+        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => document.Edit(model, "Change masking", () => model.Mask = v ? model.Mask ?? new() : null),
+            "Enable color-key masking. Choose an RGB color below; alpha is stored but ignored during runtime matching.");
         if (model.Mask is { } mask)
-            foreach (var property in typeof(TilesheetMaskDefinition).GetProperties().Where(p => p.CanWrite))
-                fields.AddReflected(mask, [property], changed, "Mask");
+        {
+            fields.Add("Color", "Mask", () => Color.FromArgb(mask.Red, mask.Green, mask.Blue),
+                color => document.Edit(mask, "Change mask color", () =>
+                {
+                    mask.Red = color.R;
+                    mask.Green = color.G;
+                    mask.Blue = color.B;
+                }),
+                "RGB color to match for transparency masking. Use the builder button to open the color picker.");
+            fields.Add("Alpha", "Mask", () => mask.Alpha,
+                value => document.Edit(mask, "Change mask alpha", () => mask.Alpha = value),
+                "Stored alpha component (0 to 255); runtime mask matching uses only RGB and ignores alpha.");
+            fields.Add("Tolerance", "Mask", () => mask.Tolerance,
+                value => document.Edit(mask, "Change mask tolerance", () => mask.Tolerance = value),
+                "Maximum allowed difference per RGB component when matching the mask color; 0 requires an exact match.");
+        }
         return fields;
     }
 
@@ -218,8 +236,16 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     }
 
     private sealed class Field<T>(string name, string category, Func<T> get, Action<T>? set, string description)
-        : PropertyDescriptor(name, [new CategoryAttribute(category), new DescriptionAttribute(description)])
+        : PropertyDescriptor(name, AttributesFor(category, description))
     {
+        private static Attribute[] AttributesFor(string category, string description)
+        {
+            List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
+            if (typeof(T) == typeof(Color))
+                attributes.Add(new EditorAttribute(typeof(MaskColorEditor), typeof(UITypeEditor)));
+            return [.. attributes];
+        }
+
         /// <inheritdoc/>
         public override Type ComponentType => typeof(PropertyFields);
         /// <inheritdoc/>
