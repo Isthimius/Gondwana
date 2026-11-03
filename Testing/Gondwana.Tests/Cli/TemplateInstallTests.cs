@@ -10,6 +10,20 @@ namespace Gondwana.Tests.Cli;
 public sealed class TemplateInstallTests
 {
     /// <summary>
+    /// Verifies that the list command reports the locally installed template package
+    /// version, including prerelease and four-part versions, and does not show the
+    /// fallback "installed" sentinel as though it were a version.
+    /// </summary>
+    [Theory]
+    [InlineData("2.6.1", "Gondwana.Templates version: [bold]2.6.1[/]")]
+    [InlineData("2.6.2-beta.1", "Gondwana.Templates version: [bold]2.6.2-beta.1[/]")]
+    [InlineData("2.6.2.27", "Gondwana.Templates version: [bold]2.6.2.27[/]")]
+    [InlineData("installed", "[dim]Gondwana.Templates version: unavailable[/]")]
+    [InlineData(null, "[dim]Gondwana.Templates version: unavailable[/]")]
+    public void ListDisplaysInstalledTemplatePackageVersion(string? version, string expected) =>
+        Assert.Equal(expected, TemplatesListCommand.FormatInstalledVersion(version));
+
+    /// <summary>
     /// Verifies explicit NuGet versions are accepted, while invalid/ranged inputs are rejected.
     /// </summary>
     [Theory]
