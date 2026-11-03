@@ -229,15 +229,18 @@ public sealed partial class EditorInteractionTests
         var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         var region = Field<PropertyGrid>(editor.Editor, "_regionProperties");
         var frame = Field<PropertyGrid>(editor.Editor, "_frameProperties");
-        var coordinates = Field<PropertyGrid>(editor.Editor, "_frameCoordinates");
 
         GridItem Category(PropertyGrid grid, string label) => Items(grid)
-            .Single(item => item.GridItemType == GridItemType.Category && item.Label == label);
+            .Single(item => item.GridItemType == GridItemType.Category && item.Label.TrimStart() == label);
+        string[] Categories(PropertyGrid grid) => Items(grid)
+            .Where(item => item.GridItemType == GridItemType.Category)
+            .Select(item => item.Label.TrimStart()).ToArray();
         string[] Children(GridItem item) => item.GridItems.Cast<GridItem>()
             .Select(child => child.PropertyDescriptor?.Name).Where(name => name is not null).Select(name => name!).ToArray();
 
         Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
             Children(Category(details, "Definition")));
+        Assert.Equal(new[] { "Region", "Collision", "Geometry" }, Categories(region));
         Assert.Equal(new[] { "Name" }, Children(Category(region, "Region")));
         Assert.Equal(new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
             Children(Category(details, "Mask")));
@@ -256,11 +259,8 @@ public sealed partial class EditorInteractionTests
             .Single(item => item.PropertyDescriptor?.Name == "Area");
         geometry.Expanded = true;
         Assert.Equal(new[] { "X", "Y", "Width", "Height" }, Children(geometry));
-        Assert.Equal(new[] { "Coordinates (read only)" }, Items(coordinates)
-            .Where(item => item.GridItemType == GridItemType.Category).Select(item => item.Label));
-        Assert.Equal(new[] { "Collision" }, Items(frame)
-            .Where(item => item.GridItemType == GridItemType.Category).Select(item => item.Label));
-        Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(coordinates, "Coordinates (read only)")));
+        Assert.Equal(new[] { "Coordinates (read only)", "Collision" }, Categories(frame));
+        Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(frame, "Coordinates (read only)")));
         Assert.Equal(new[] { "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
             Children(Category(frame, "Collision")));
     });
@@ -293,7 +293,7 @@ public sealed partial class EditorInteractionTests
         Click(viewport, new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f));
         Assert.Same(region, viewport.SelectedRegion);
         Assert.Equal(Point.Empty, viewport.SelectedFrame);
-        var grid = Field<PropertyGrid>(editor.Editor, "_frameCoordinates");
+        var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
         Assert.Contains(Items(grid), item => item.PropertyDescriptor?.Name == "XTile");
         Assert.Equal(before, TilesheetDefinitionSerializer.ToJson(document.Definition));
         Assert.False(document.IsDirty);
