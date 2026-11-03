@@ -98,8 +98,9 @@ internal static class ProcessHelper
     /// <param name="fileName">The file name.</param>
     /// <param name="arguments">The arguments.</param>
     /// <param name="exitCode">When this method returns, contains the command exit code.</param>
+    /// <param name="workingDirectory">Optional child working directory for SDK resolution.</param>
     /// <returns>The captured process output.</returns>
-    public static string Run(string fileName, string arguments, out int exitCode)
+    public static string Run(string fileName, string arguments, out int exitCode, string? workingDirectory = null)
     {
         try
         {
@@ -115,6 +116,7 @@ internal static class ProcessHelper
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory ?? string.Empty,
                 };
             }
             else
@@ -127,6 +129,7 @@ internal static class ProcessHelper
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory ?? string.Empty,
                 };
             }
 
@@ -189,8 +192,9 @@ internal static class ProcessHelper
     /// </summary>
     /// <param name="fileName">The file name.</param>
     /// <param name="arguments">The arguments.</param>
+    /// <param name="workingDirectory">Optional child working directory for SDK resolution.</param>
     /// <returns>The process exit code.</returns>
-    public static int RunLive(string fileName, IEnumerable<string> arguments)
+    public static int RunLive(string fileName, IEnumerable<string> arguments, string? workingDirectory = null)
     {
         try
         {
@@ -200,6 +204,7 @@ internal static class ProcessHelper
                 FileName = IsWindowsScript(resolved) ? "cmd.exe" : resolved,
                 UseShellExecute = false,
                 CreateNoWindow = false,
+                WorkingDirectory = workingDirectory ?? string.Empty,
             };
 
             if (IsWindowsScript(resolved))
