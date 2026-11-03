@@ -1,3 +1,5 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 
@@ -97,6 +99,115 @@ internal static class TemplatePackageHelper
     }
 
     /// <summary>
+    /// Installs an explicitly selected template version, or retains the original stable-only
+    /// install/update behavior when no selection is supplied.
+    /// </summary>
+    public static async Task<int> EnsureInstalledOrUpdatedAsync(
+        bool prerelease, string? version, CancellationToken cancellationToken)
+    {
+        if (!prerelease && version is null)
+            return EnsureInstalledOrUpdated();
+
+        if (prerelease && version is not null)
+        {
+            AnsiConsole.MarkupLine("[red]Choose either --prerelease or --version, not both.[/]");
+            return 1;
+        }
+
+        if (version is not null && !IsValidVersion(version))
+        {
+            AnsiConsole.MarkupLine("[red]Invalid template package version.[/]");
+            return 1;
+        }
+
+        if (prerelease)
+        {
+            try
+            {
+                // --prerelease on dotnet new install requires SDK 11; resolve the exact
+                // version ourselves so the Gondwana CLI also works with SDKs 8-10.
+                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+                var index = await http.GetFromJsonAsync<JsonElement>(
+                    "https://api.nuget.org/v3-flatcontainer/gondwana.templates/index.json",
+                    cancellationToken);
+                version = LatestAvailableVersion(
+                    index.GetProperty("versions").EnumerateArray().Select(v => v.GetString()!));
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException
+                or JsonException or InvalidOperationException)
+            {
+                AnsiConsole.MarkupLine($"[red]Unable to resolve the latest Gondwana.Templates version:[/] {Markup.Escape(ex.Message)}");
+                return 1;
+            }
+        }
+
+        return InstallTemplates(version);
+    }
+
+    private static readonly Regex ExactVersionPattern = new(
+        @"^(?<core>\d+\.\d+\.\d+(?:\.\d+)?)(?:-(?<pre>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    /// <summary>
+    /// Checks that a supplied package version is an exact numeric NuGet version.
+    /// </summary>
+    internal static bool IsValidVersion(string? value) =>
+        value is not null
+        && ExactVersionPattern.Match(value) is { Success: true } match
+        && Version.TryParse(match.Groups["core"].Value, out _);
+
+    /// <summary>
+    /// Selects the highest SemVer version; prereleases are included in the candidate
+    /// set, but a newer stable release still takes precedence.
+    /// </summary>
+    internal static string LatestAvailableVersion(IEnumerable<string> versions) =>
+        versions.Where(IsValidVersion)
+            .OrderByDescending(v => v, Comparer<string>.Create(CompareVersions))
+            .FirstOrDefault()
+        ?? throw new InvalidOperationException("No valid Gondwana.Templates versions were found on nuget.org.");
+
+    private static int CompareVersions(string? left, string? right)
+    {
+        var a = ExactVersionPattern.Match(left!);
+        var b = ExactVersionPattern.Match(right!);
+        var core = Version.Parse(a.Groups["core"].Value).CompareTo(
+            Version.Parse(b.Groups["core"].Value));
+        if (core != 0) return core;
+
+        var aPre = a.Groups["pre"].Value;
+        var bPre = b.Groups["pre"].Value;
+        if (aPre.Length == 0 || bPre.Length == 0)
+            return aPre.Length == 0 ? (bPre.Length == 0 ? 0 : 1) : -1;
+
+        var aParts = aPre.Split('.');
+        var bParts = bPre.Split('.');
+        for (var i = 0; i < Math.Min(aParts.Length, bParts.Length); i++)
+        {
+            var aNumeric = long.TryParse(aParts[i], out var aNumber);
+            var bNumeric = long.TryParse(bParts[i], out var bNumber);
+            int comparison;
+            if (aNumeric && bNumeric)
+                comparison = aNumber.CompareTo(bNumber);
+            else if (aNumeric != bNumeric)
+                comparison = aNumeric ? -1 : 1;
+            else
+                comparison = string.Compare(aParts[i], bParts[i], StringComparison.OrdinalIgnoreCase);
+            if (comparison != 0) return comparison;
+        }
+        return aParts.Length.CompareTo(bParts.Length);
+    }
+
+    /// <summary>
+    /// Returns the external dotnet command arguments for stable or exact version installs.
+    /// The double-colon separator works with .NET SDK 8 through 10; @ was added
+    /// in .NET 9.0.200 and breaks on .NET 8.
+    /// </summary>
+    internal static string[] InstallArguments(string? version = null) =>
+        version is null
+            ? ["new", "install", PackageId]
+            : ["new", "install", $"{PackageId}::{version}", "--force"];
+
+    /// <summary>
     /// Updates the installed Gondwana project templates.
     /// </summary>
     /// <returns>The exit code returned by the template update command.</returns>
@@ -112,10 +223,12 @@ internal static class TemplatePackageHelper
         return UpdateInstalledTemplates(installedVersion);
     }
 
-    private static int InstallTemplates()
+    private static int InstallTemplates(string? version = null)
     {
-        AnsiConsole.MarkupLine("Installing [bold]Gondwana.Templates[/] from NuGet...");
-        var exitCode = ProcessHelper.RunLive("dotnet", ["new", "install", PackageId]);
+        AnsiConsole.MarkupLine(version is null
+            ? "Installing [bold]Gondwana.Templates[/] from NuGet..."
+            : $"Installing [bold]Gondwana.Templates[/] version [bold]{Markup.Escape(version)}[/] from NuGet...");
+        var exitCode = ProcessHelper.RunLive("dotnet", InstallArguments(version));
 
         if (exitCode == 0)
         {

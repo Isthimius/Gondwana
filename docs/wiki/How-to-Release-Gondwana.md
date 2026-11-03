@@ -2,6 +2,8 @@
 
 A pragmatic checklist for maintainers publishing alpha, beta, release-candidate (RC), or stable Gondwana versions. The implementation details live in [[Tooling Scripts]] and [[GitHub Automation and Workflows]].
 
+> **Version examples:** All version numbers in this walkthrough (including `2.6.2-beta.1`) are illustrative examples of a release sequence. They do **not** identify the latest, current, or recommended Gondwana release. Replace them with the version actually being published or tested.
+
 > **Warning:** Running the actual release script pushes a Git tag that triggers public NuGet publishing. The `-PreviewOnly` flag is the dry run. Never run a release as a test.
 
 ## 1. Choose and commit a version
@@ -51,15 +53,23 @@ Inspect **Actions → Release** and the resulting GitHub Release, ZIP asset, and
 - **Alpha/beta/RC:** GitHub marks it as a prerelease; the latest stable Release stays unchanged. Stable `/api/` documentation is not republished. All prerelease templates (including alpha, beta, RC, and preview) pin `Gondwana.*` dependencies to that exact prerelease package version.
 - **Stable:** GitHub marks it as a normal release and updates the immutable versioned API documentation and stable `/api/` redirect.
 
-To install a prerelease explicitly (replace the example version):
+To install a prerelease explicitly (the `2.6.2-beta.1` version below is an example, not a definitive or current release):
 
 ```powershell
 dotnet add package Gondwana --version 2.6.2-beta.1
 dotnet tool install -g Gondwana.Cli --version 2.6.2-beta.1
-dotnet new install Gondwana.Templates@2.6.2-beta.1
+dotnet new install Gondwana.Templates::2.6.2-beta.1
 ```
 
-If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version 2.6.2-beta.1` instead of `install`. For generated prerelease projects, keep the matching pinned prerelease package references until intentionally upgrading.
+If the global CLI is already installed, use `dotnet tool update -g Gondwana.Cli --version 2.6.2-beta.1` instead of `install`. Once running a CLI version that supports template version selection, you can also install prerelease templates with:
+
+```powershell
+gondwana templates install --prerelease
+# Or pin the specific release being tested (example version):
+gondwana templates install --version 2.6.2-beta.1
+```
+
+The first option allows the latest NuGet prerelease to be selected; the second pins the package and is preferable for repeatable beta validation. The underlying installer uses the `::` version separator for .NET SDK 8–10 compatibility (SDK 9.0.200 and later also support `@`). The `gondwana templates install` command without options remains stable-only. Both switches work on SDK 8–10 and cannot be combined. For generated prerelease projects, keep the matching pinned prerelease package references until intentionally upgrading.
 
 ## Changelog policy
 
