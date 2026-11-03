@@ -319,9 +319,10 @@ gondwana publish blazor
 ```
 
 New Blazor projects require a .NET 10 SDK (minimum 10.0.100; use the latest
-serviced 10.0 SDK). Before creating a project, `gondwana new blazor` checks the
-SDK selected by `dotnet --version` and looks for a compatible .NET 10
-`wasm-tools` workload. If absent, the CLI offers to run
+serviced stable 10.0 SDK; prerelease SDKs are not accepted). Before creating a
+project, `gondwana new blazor` checks the SDK selected by `dotnet --version`
+from the **destination project's SDK scope** (including ancestor `global.json`
+files) and looks for a compatible .NET 10 `wasm-tools` workload. If absent, the CLI offers to run
 `dotnet workload install wasm-tools`, then verifies the installed workload.
 Declining the prompt still creates the project, with a warning that it is not
 ready to build. A failed install stops before project creation; in a
