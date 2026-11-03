@@ -80,6 +80,6 @@ public sealed class SpacingConverter : ExpandableObjectConverter
             if (!int.TryParse(components[i], NumberStyles.Integer, culture ?? CultureInfo.CurrentCulture, out edges[i]))
                 throw new FormatException("Specify four comma-separated integers: Top, Right, Bottom, Left.");
         }
-        return new Spacing(left: edges[3], top: edges[0], right: edges[1], bottom: edges[2]);
+        return new Spacing(edges[3], edges[0], edges[1], edges[2]);
     }
 }
