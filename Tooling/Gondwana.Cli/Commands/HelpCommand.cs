@@ -36,7 +36,9 @@ internal sealed class HelpCommand : Command
         table.AddRow("[cyan]gondwana publish itch[/]", "Package published browser output for itch.io.");
         table.AddRow("[cyan]gondwana deploy blazor[/]", "Deploy published browser output locally or over SSH.");
         table.AddRow("[cyan]gondwana deploy itch[/]", "Upload the browser package with butler.");
-        table.AddRow("[cyan]gondwana templates install[/]", "Install Gondwana.Templates, or check for updates if already installed.");
+        table.AddRow("[cyan]gondwana templates install[/]", "Install stable Gondwana.Templates, or check for stable updates.");
+        table.AddRow("[cyan]gondwana templates install --prerelease[/]", "Install newest available templates, including prereleases.");
+        table.AddRow("[cyan]gondwana templates install --version <version>[/]", "Install an exact template version (stable or prerelease).");
         table.AddRow("[cyan]gondwana templates update[/]", "Check installed Gondwana templates for updates without downgrading newer local versions.");
         table.AddRow("[cyan]gondwana templates list[/]", "List installed Gondwana templates.");
         table.AddRow("[cyan]gondwana pack[/]", "Pack a directory of files into an asset bundle (shorthand).");
