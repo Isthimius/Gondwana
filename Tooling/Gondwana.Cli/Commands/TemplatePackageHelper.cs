@@ -145,7 +145,7 @@ internal static class TemplatePackageHelper
     }
 
     private static readonly Regex ExactVersionPattern = new(
-        @"^(?<core>\d+\.\d+\.\d+(?:\.\d+)?)(?:-(?<pre>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z.-]+)?$",
+        @"^(?<core>\d+\.\d+\.\d+(?:\.\d+)?)(?:-(?<pre>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     /// <summary>
@@ -199,11 +199,13 @@ internal static class TemplatePackageHelper
 
     /// <summary>
     /// Returns the external dotnet command arguments for stable or exact version installs.
+    /// The double-colon separator works with .NET SDK 8 through 10; @ was added
+    /// in .NET 9.0.200 and breaks on .NET 8.
     /// </summary>
     internal static string[] InstallArguments(string? version = null) =>
         version is null
             ? ["new", "install", PackageId]
-            : ["new", "install", $"{PackageId}@{version}", "--force"];
+            : ["new", "install", $"{PackageId}::{version}", "--force"];
 
     /// <summary>
     /// Updates the installed Gondwana project templates.
