@@ -779,7 +779,7 @@ Runs `dotnet new update`. *No arguments or options.*
 
 ### `gondwana templates list`
 
-Runs `dotnet new list gondwana`. *No arguments or options.*
+Shows the locally installed `Gondwana.Templates` package version (including any prerelease suffix), then runs `dotnet new list gondwana` to display the installed templates. If the version cannot be determined, the command reports it as unavailable while still listing templates. *No arguments or options.*
 
 ---
 

@@ -287,8 +287,10 @@ public sealed partial class SceneEditorTests
     public void CollisionInsetConverterCreatesWholeValueAndRejectsInvalidInput()
     {
         var converter = TypeDescriptor.GetProperties(typeof(TilePropertyAdapter))["AdjustCollisionArea"]!.Converter;
+        // Text is now CSS-style Top, Right, Bottom, Left, not the
+        // CollisionAdjust constructor's Top, Bottom, Left, Right order.
         var value = Assert.IsType<CollisionAdjust>(converter.ConvertFromInvariantString("1, -2, 3, 4"));
-        Assert.Equal(new CollisionAdjust(1, -2, 3, 4), value);
+        Assert.Equal(new CollisionAdjust(top: 1, bottom: 3, left: 4, right: -2), value);
         Assert.Equal("1, -2, 3, 4", converter.ConvertToInvariantString(value));
         Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("1, 2"));
     }
