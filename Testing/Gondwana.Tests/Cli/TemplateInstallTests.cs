@@ -17,6 +17,13 @@ public sealed class TemplateInstallTests
     [InlineData("2.6.2", true)]
     [InlineData("2.6.2.27", true)]
     [InlineData("2.6.2-rc.10", true)]
+    [InlineData("2.6.2+build.1", true)]
+    [InlineData("2.6.2-beta.1+build.1", true)]
+    [InlineData("2.6.2+.", false)]
+    [InlineData("2.6.2+build..1", false)]
+    [InlineData("2.6.2+.build", false)]
+    [InlineData("2.6.2+build.", false)]
+    [InlineData("2.6.2+", false)]
     [InlineData("", false)]
     [InlineData("latest", false)]
     [InlineData("2.6.*", false)]
@@ -63,7 +70,7 @@ public sealed class TemplateInstallTests
     {
         Assert.Equal(["new", "install", "Gondwana.Templates"],
             TemplatePackageHelper.InstallArguments());
-        Assert.Equal(["new", "install", "Gondwana.Templates@2.6.2-beta.1", "--force"],
+        Assert.Equal(["new", "install", "Gondwana.Templates::2.6.2-beta.1", "--force"],
             TemplatePackageHelper.InstallArguments("2.6.2-beta.1"));
     }
 
