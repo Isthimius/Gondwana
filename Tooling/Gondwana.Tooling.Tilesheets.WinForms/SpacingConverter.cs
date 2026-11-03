@@ -11,7 +11,7 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 /// </summary>
 public sealed class SpacingConverter : ExpandableObjectConverter
 {
-    private static readonly string[] Edges = ["Left", "Top", "Right", "Bottom"];
+    private static readonly string[] Edges = ["Top", "Right", "Bottom", "Left"];
 
     /// <inheritdoc/>
     public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
@@ -56,7 +56,7 @@ public sealed class SpacingConverter : ExpandableObjectConverter
     public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
     {
         if (destinationType == typeof(string) && value is Spacing spacing)
-            return $"{spacing.Left}, {spacing.Top}, {spacing.Right}, {spacing.Bottom}";
+            return $"{spacing.Top}, {spacing.Right}, {spacing.Bottom}, {spacing.Left}";
         return base.ConvertTo(context, culture, value, destinationType);
     }
 
@@ -73,13 +73,13 @@ public sealed class SpacingConverter : ExpandableObjectConverter
         var components = text.Split(',', StringSplitOptions.TrimEntries);
         var edges = new int[4];
         if (components.Length != edges.Length)
-            throw new FormatException("Specify four comma-separated integers: Left, Top, Right, Bottom.");
+            throw new FormatException("Specify four comma-separated integers: Top, Right, Bottom, Left.");
 
         for (int i = 0; i < edges.Length; i++)
         {
             if (!int.TryParse(components[i], NumberStyles.Integer, culture ?? CultureInfo.CurrentCulture, out edges[i]))
-                throw new FormatException("Specify four comma-separated integers: Left, Top, Right, Bottom.");
+                throw new FormatException("Specify four comma-separated integers: Top, Right, Bottom, Left.");
         }
-        return new Spacing(edges[0], edges[1], edges[2], edges[3]);
+        return new Spacing(left: edges[3], top: edges[0], right: edges[1], bottom: edges[2]);
     }
 }
