@@ -745,7 +745,27 @@ Use `gondwana run blazor` for the development server instead.
 
 ### `gondwana templates install`
 
-Installs `Gondwana.Templates` from NuGet when missing. When already installed, checks for updates instead so a newer local package is retained. *No arguments or options.*
+| Option | Description |
+|---|---|
+| *(none)* | Install the latest stable templates if missing; otherwise run `dotnet new update` to check for updates without downgrading newer local packages. |
+| `--prerelease` | Query nuget.org for the newest available template package version, including prereleases, and install it even if an earlier version is present. A newer stable version still takes precedence. |
+| `--version <VERSION>` | Install the exact template version (stable or prerelease), replacing the installed version if needed. |
+
+**Examples**
+
+```powershell
+gondwana templates install
+gondwana templates install --prerelease
+gondwana templates install --version 2.6.2-beta.1
+```
+
+The two switches are mutually exclusive. Explicit selection uses
+`dotnet new install Gondwana.Templates@<VERSION> --force`.
+The CLI resolves `--prerelease` through NuGet so it also works with .NET SDK
+8–10 (where the SDK's own `dotnet new install --prerelease` is not supported).
+For an exact prerelease version, `--version` is the reproducible choice.
+The separate `gondwana templates update` command retains its current
+stable-only update behavior.
 
 ### `gondwana templates update`
 
