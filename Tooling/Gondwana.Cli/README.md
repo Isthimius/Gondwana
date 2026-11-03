@@ -550,7 +550,7 @@ gondwana templates install                         # Install latest stable, or c
 gondwana templates install --prerelease            # Install newest available version, including prereleases
 gondwana templates install --version <VERSION>       # Install an explicitly selected version
 gondwana templates update                          # Check installed templates for updates
-gondwana templates list                            # List installed Gondwana templates
+gondwana templates list                            # List installed templates and package version
 ```
 
 Without options, `install` retains its original stable-only behavior: it installs
@@ -568,6 +568,10 @@ installs work on .NET SDK 8–10. The newer `@` separator requires SDK 9.0.200
 or later. Prerelease resolution does not require SDK 11.
 `templates update` remains unchanged and does not switch to a newer prerelease
 track automatically.
+`templates list` displays the locally installed `Gondwana.Templates` package
+version (including prerelease labels) above the standard `dotnet new list gondwana`
+results. If the version cannot be determined, it shows `version: unavailable`
+without failing the template listing.
 
 ---
 
