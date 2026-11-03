@@ -221,6 +221,33 @@ public sealed partial class EditorInteractionTests
         Assert.Same(second, pane.SelectedItem);
     });
 
+    /// <summary>PropertyGrid renders the declared category and field order instead of alphabetizing it.</summary>
+    [Fact]
+    public void GtsPropertyGrids_RenderRequestedCategoryAndFieldOrder() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
+        document.Definition.Mask = new TilesheetMaskDefinition { Red = 5, Green = 10, Blue = 15 };
+        using var editor = Show(document);
+        var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
+        var region = Field<PropertyGrid>(editor.Editor, "_regionProperties");
+        var frame = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+
+        GridItem Category(PropertyGrid grid, string label) => Items(grid)
+            .Single(item => item.GridItemType == GridItemType.Category && item.Label == label);
+        string[] Children(GridItem item) => item.GridItems.Cast<GridItem>()
+            .Select(child => child.PropertyDescriptor?.Name).Where(name => name is not null).Select(name => name!).ToArray();
+
+        Assert.Equal(new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
+            Children(Category(details, "Mask")));
+        Assert.Equal(new[] { "CollisionType", "CollisionAdjust" },
+            Children(Category(region, "Collision")));
+        Assert.Equal(new[] { "Coordinates (read only)", "Collision" }, Items(frame)
+            .Where(item => item.GridItemType == GridItemType.Category).Select(item => item.Label));
+        Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(frame, "Coordinates (read only)")));
+        Assert.Equal(new[] { "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
+            Children(Category(frame, "Collision")));
+    });
+
     /// <summary>
     /// Verifies loaded zelda definition click selects frames in other regions.
     /// </summary>
