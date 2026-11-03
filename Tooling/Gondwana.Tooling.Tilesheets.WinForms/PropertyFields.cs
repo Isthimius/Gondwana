@@ -242,11 +242,15 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         {
             List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
             if (typeof(T) == typeof(Color))
-                // This descriptor is also linked into the cross-platform Gondwana.Tests assembly.
-                // Keep the WinForms-only type editor out of its compile-time dependencies.
-                attributes.Add(new EditorAttribute(
+            {
+                // The property descriptors also compile into platform-neutral Gondwana.Tests.
+                // Resolve the Windows editor only when the UI assembly is available.
+                var editorType = Type.GetType(
                     "Gondwana.Tooling.Tilesheets.WinForms.MaskColorEditor, Gondwana.Tooling.Tilesheets.WinForms",
-                    "System.Drawing.Design.UITypeEditor, System.Windows.Forms"));
+                    throwOnError: false);
+                if (editorType?.BaseType is { } editorBaseType)
+                    attributes.Add(new EditorAttribute(editorType, editorBaseType));
+            }
             return [.. attributes];
         }
 
