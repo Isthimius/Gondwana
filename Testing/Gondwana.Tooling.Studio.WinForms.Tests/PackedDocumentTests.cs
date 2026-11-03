@@ -76,7 +76,8 @@ public sealed partial class CompositionTests
     private static void SelectPackedMember(Control editor, string identity)
     {
         var selector = editor.Controls.OfType<ToolStrip>().Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar"));
-        selector.Items.OfType<ToolStripComboBox>().Single().SelectedItem = identity;
+        // GTS also exposes a Region selector; the Definition selector is the first combo.
+        selector.Items.OfType<ToolStripComboBox>().First().SelectedItem = identity;
         Application.DoEvents();
     }
     [Fact]
