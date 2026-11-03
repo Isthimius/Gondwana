@@ -24,6 +24,13 @@ internal sealed class NewBlazorCommand : Command<NewBlazorCommand.Settings>
         [CommandOption("-o|--output")]
         [Description("The directory to place the generated output in. Defaults to a new folder named <name> in the current directory.")]
         public string? Output { get; init; }
+
+        /// <summary>
+        /// Gets or sets whether to skip the WebAssembly workload preflight.
+        /// </summary>
+        [CommandOption("--skip-workload")]
+        [Description("Generate the project without checking or installing the wasm-tools workload.")]
+        public bool SkipWorkload { get; init; }
     }
 
     /// <inheritdoc/>
@@ -34,6 +41,31 @@ internal sealed class NewBlazorCommand : Command<NewBlazorCommand.Settings>
             AnsiConsole.MarkupLine("[red]Project name is required.[/]");
             return 1;
         }
+
+        var sdkVersion = ProcessHelper.Run("dotnet", "--version", out var sdkExitCode);
+        var prerequisites = BlazorScaffoldPrerequisites.Prepare(
+            sdkVersion,
+            sdkExitCode,
+            settings.SkipWorkload,
+            checkWorkload: () =>
+            {
+                var success = ProjectHelper.TryGetInstalledWorkloadVersion("wasm-tools", out var version, out var error);
+                return new BlazorWorkloadProbe(success, version, error);
+            },
+            confirmInstall: () => AnsiConsole.Confirm(
+                "The .NET 10 wasm-tools workload is missing or incompatible. Install it now?", defaultValue: true),
+            installWorkload: () => ProcessHelper.RunLive("dotnet", new[] { "workload", "install", "wasm-tools" }),
+            canPrompt: !Console.IsInputRedirected && !Console.IsOutputRedirected);
+
+        if (!prerequisites.CanCreate)
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(prerequisites.Message)}[/]");
+            return 1;
+        }
+
+        AnsiConsole.MarkupLine(prerequisites.WorkloadReady
+            ? $"[green]{Markup.Escape(prerequisites.Message)}[/]"
+            : $"[yellow]{Markup.Escape(prerequisites.Message)}[/]");
 
         var args = new List<string> { "new", "gondwana-blazor", "-n", settings.Name };
         if (settings.Output is not null)
@@ -50,6 +82,10 @@ internal sealed class NewBlazorCommand : Command<NewBlazorCommand.Settings>
         {
             NewSolutionHelper.CreateHoldingSolution(settings.Name, settings.Output ?? settings.Name);
             AnsiConsole.MarkupLine($"[green]Project '{Markup.Escape(settings.Name)}' created successfully.[/]");
+            if (prerequisites.WorkloadReady)
+                AnsiConsole.MarkupLine("[green]Blazor environment ready: .NET 10 SDK and wasm-tools verified.[/]");
+            else
+                AnsiConsole.MarkupLine("[yellow]Blazor environment not fully verified: install wasm-tools before building.[/]");
             AnsiConsole.MarkupLine($"[dim]Run: cd {Markup.Escape(settings.Output ?? settings.Name)} && gondwana run blazor[/]");
             AnsiConsole.MarkupLine($"[dim]Publish: cd {Markup.Escape(settings.Output ?? settings.Name)} && gondwana publish blazor[/]");
         }
