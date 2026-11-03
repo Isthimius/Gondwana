@@ -11,7 +11,7 @@ public sealed class CssEdgeOrderTests
     public void SourceAndEffectiveSpacingUseClockwiseOrder()
     {
         var converter = new SceneSpacingConverter();
-        var spacing = new Spacing(left: 11, top: 22, right: 33, bottom: 44);
+        var spacing = new Spacing(11, 22, 33, 44);
         var edges = converter.GetProperties(spacing)!.Cast<PropertyDescriptor>().Select(property => property.Name);
         Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" }, edges);
         Assert.Equal("22, 33, 44, 11", converter.ConvertToInvariantString(spacing));
