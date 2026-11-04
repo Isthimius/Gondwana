@@ -82,7 +82,7 @@ public sealed class ExternalImportPanel : UserControl
         {
             using var dialog = new OpenFileDialog
             {
-                Filter = "External assets|*.tres;*.tsx;*.tmx;*.ase;*.aseprite|All files|*.*"
+                Filter = "External assets|*.tres;*.tscn;*.tsx;*.tmx;*.ase;*.aseprite|All files|*.*"
             };
 
             if (dialog.ShowDialog(this) == DialogResult.OK)

@@ -1,6 +1,6 @@
 # External Asset Importing
 
-Gondwana Studio can import supported Godot 3.x and Godot 4.x TileSets, Tiled TMX/TSX
+Gondwana Studio can import supported Godot 3.x and Godot 4.x TileSets, Godot 4 tile scenes, Tiled TMX/TSX
 content, and Aseprite sprites into native Gondwana authoring formats.
 Import is a one-time conversion, not live foreign-format runtime support.
 Games load ordinary GTS, GANI and GSCN files through existing serializers.
@@ -33,7 +33,8 @@ normal activation behavior; import does not discard unsaved editor changes.
 | Source | Supported conversion | Explicit limitations |
 | --- | --- | --- |
 | Godot 3.x TileSet (`format=2`) | Text .tres resources, single tiles, atlas tiles, underlying autotile atlas geometry, multiple tile IDs/textures, region offsets, tile sizes and spacing → grouped GTS | No binary .res or .tscn scenes. Autotile bitmask/priority/fallback/icon-selection semantics are not preserved. Collision, navigation, occlusion, materials, normal maps, modulation, offsets, z-index and unfamiliar metadata are diagnosed and omitted. No GANI is generated; AnimatedTexture traversal is unsupported. |
-| Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, single- and multi-cell atlas tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → grouped GTS/GANI | No `.res`, scenes or scene collections. Multi-cell tiles become named regions containing their full atlas rectangles; animation frames have distinct regions when needed. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
+| Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, single- and multi-cell atlas tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → grouped GTS/GANI | No `.res` or scene collections; use the `.tscn` provider for tile scenes. Multi-cell tiles become named regions containing their full atlas rectangles; animation frames have distinct regions when needed. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
+| Godot 4 `.tscn` tile scene | Legacy TileMap (`format = 2` cell data) and TileMapLayer (version 0 byte records), external `.tres` and embedded TileSets, multiple atlas sources, animations, negative coordinates, integer translations, visibility, layer order, H/V/transpose flags → GSCN plus one grouped GTS and GANI per atlas source | Orthogonal cells only. A plain Node root and Node2D translation/visibility/z-order ancestors are supported. Nontrivial transforms, Y sorting, proxies, alternatives, undeclared tiles, incompatible artwork dimensions and unsupported tile ancestors block import. No general scene conversion or scene instancing. Scripts, cameras, physics, navigation, terrain rules and appearance overrides are diagnosed and omitted. |
 | Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections, embedded image bytes, nonzero tile offsets or per-tile subrectangles. Wang/terrain, properties, collision objects and transformation metadata warn and are omitted. |
 | Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets grouped into one GTS document per map, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Frame dimensions must match map cells. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
 | Aseprite `.ase` / `.aseprite` | RGBA, grayscale, indexed palettes/transparency, raw/zlib/linked cels, visibility, Normal blending, opacity, groups, cel z-order, tags and mixed timing → PNG/GTS/GANI | No tilemaps, reference layers, non-Normal blends, precise/scaled cel bounds, non-square pixel aspect ratios, external dependencies, ICC or custom gamma. Other metadata chunks are diagnosed and omitted. |
@@ -98,6 +99,51 @@ Grouping is chosen by each provider's output filenames. Aseprite groups tags fro
 The plan assigns generated-source provenance to all native members and retains each serializer's existing persistence rules (GSPR and GSND load provenance is not serialized). Cross-definition references retain logical selectors and output-relative paths. Duplicate identities within or across generated documents of the same type are errors, as are conflicts with any member of other native documents directly in the output directory.
 
 External conversion creates complete output documents. Overwrite replaces a destination file in full; it never appends to an existing `Definitions` collection. Use an editor's **Import definition…** command to combine existing native definitions interactively. External conversion does not relocate existing referenced resources or change GAF packaging.
+
+## Godot tile scenes
+
+Choose **Godot 4 Tile Scene (.tscn)** or Auto-detect in Studio. Godot text
+formats 3 and 4 are recognized; TileMapLayer data can use base64 or numeric
+`PackedByteArray` values. The test fixtures were saved with official Godot 4.3
+and 4.4 builds. Older Godot 3 TileMap layouts and unknown byte-data versions
+are rejected rather than guessed.
+
+Each imported tile layer uses its occupied bounding rectangle. Cell coordinates
+are rebased to nonnegative GSCN indices, and the layer's `OriginPx` compensates
+for the original coordinates and accumulated integer Node2D translations.
+This preserves world positions, including tiles left of or above the Godot
+origin. Empty layers become empty 1×1 grids. A layer exceeding one million
+cells in its bounding rectangle must be split before import. Visibility includes
+ancestor visibility and the tile layer's enabled state. Layers are ordered by
+effective Godot z-index, then source order, with unique native ZOrder values.
+
+For `level.tscn`, all referenced TileSets share `level.gts`. Logical identities
+are scene-scoped: `level.tileset.0.source.3`, for example. TileSet ordinals follow
+first reference order; repeated references to the same TileSet are reused.
+A TileSet with one atlas omits the `.source.ID` suffix. Embedded and external
+TileSets use the same converter as standalone `.tres` import. Each atlas's
+animations share `<atlas-name>-animations.gani` (multi-source filenames use
+`-source-ID`); GSCN and GANI retain logical selectors into `level.gts`.
+Textures resolve relative to their owning `.tres` or `.tscn`, with `res://`
+resolved from the nearest `project.godot` ancestor, or the owning file's directory
+when no project file exists. Textures remain external image dependencies.
+
+The scene mapping requires selected artwork dimensions to match logical cell
+dimensions. Named multi-cell regions are usable only when their resulting frame
+size matches the logical cell. Texture-origin offsets, per-tile rendering
+overrides, custom alternatives, proxy remapping and nonorthogonal TileSets block
+scene import. Geometry-affecting hierarchy properties such as rotation, scaling,
+skew, top-level transforms and Y sorting must be removed or baked before import.
+Unsupported leaf nodes are omitted with warnings; a tile node beneath an
+unsupported ancestor blocks import. Plain Node is allowed only at the root;
+intermediate non-CanvasItem nodes break Godot inheritance and are not flattened.
+Effective z-index outside Godot's canvas range also blocks import. Scripts are not executed. Metadata such as
+physics, navigation and terrain definitions may warn without blocking when it
+does not affect the explicit tile placement being converted.
+
+Runtime loading uses the existing native registries: load all GTS members, then
+GANI cycles, then materialize GSCN. The scene's dependency sources remain
+authoring references; they do not introduce automatic foreign-resource loading.
 
 ## Godot multi-cell regions
 
