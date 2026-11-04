@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="TileSet" path="res://terrain.tres" id="1_wxd2x"]
+
+[node name="World" type="Node2D"]
+position = Vector2(7, -9)
+
+[node name="Legacy" type="TileMap" parent="."]
+position = Vector2(16, 32)
+tile_set = ExtResource("1_wxd2x")
+format = 2
+layer_0/tile_data = PackedInt32Array(-2, 3, 0, 131073, 131081, 268435457)
+layer_1/name = "Hidden"
+layer_1/enabled = false
+layer_1/z_index = -2
+layer_1/tile_data = PackedInt32Array(65535, 131075, 1)

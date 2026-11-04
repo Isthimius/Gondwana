@@ -61,7 +61,7 @@ public sealed class ExternalImportTests
             File.WriteAllText(source, "<tileset name='tiles' tilewidth='2' tileheight='2' tilecount='1' columns='1'><image source='atlas.png'/></tileset>");
             var services = new Host(directory); var plugin = new ExternalImportPlugin(); plugin.AttachHostServices(services);
             using var panel = (ExternalImportPanel)plugin.CreatePanel(); plugin.OnProjectOpened(directory);
-            Assert.Equal(directory, panel.OutputDirectory); Assert.Equal(5, panel.Formats.Count); Assert.False(panel.CanImport);
+            Assert.Equal(directory, panel.OutputDirectory); Assert.Equal(6, panel.Formats.Count); Assert.False(panel.CanImport);
             panel.SourcePath = source; panel.Analyze(); Wait(panel);
             Assert.True(panel.CanImport); Assert.Single(panel.Analysis!.Artifacts);
             panel.Import(); Wait(panel);
@@ -116,13 +116,40 @@ public sealed class ExternalImportTests
             Assert.IsType<GodotTilesetImporter>(Assert.Single(providers, p => p.CanImport(source)));
             using var panel = new ExternalImportPanel(providers) { SourcePath = source, OutputDirectory = Path.Combine(directory, "output") };
             Assert.Equal("Auto-detect", panel.Formats[0]);
-            Assert.Single(panel.Formats, f => f.StartsWith("Godot", StringComparison.Ordinal));
+            Assert.Equal(2, panel.Formats.Count(f => f.StartsWith("Godot", StringComparison.Ordinal)));
             Assert.Contains("Godot 3 / 4 TileSet (.tres)", panel.Formats);
             panel.Analyze(); Wait(panel);
             Assert.True(panel.CanImport, string.Join(";", panel.Analysis!.Diagnostics));
             Assert.Single(panel.Analysis.Artifacts);
             panel.Import(); Wait(panel);
             Assert.True(File.Exists(Path.Combine(panel.OutputDirectory, "tiles.gts")));
+        }
+        finally { Directory.Delete(directory, true); }
+    });
+
+    /// <summary>Godot scene auto-detection uses the same panel workflow and opens the generated GSCN.</summary>
+    [Fact]
+    public void AutoDetectImportsGodotSceneAndOpensGscn() => RunSta(() =>
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "StudioGodotScene-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            foreach (string file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Fixtures", "Godot4")))
+                File.Copy(file, Path.Combine(directory, Path.GetFileName(file)));
+            var services = new Host(Path.Combine(directory, "output"));
+            var plugin = new ExternalImportPlugin();
+            plugin.AttachHostServices(services);
+            using var panel = (ExternalImportPanel)plugin.CreatePanel();
+            plugin.OnProjectOpened(services.CurrentWorkingDirectory);
+            panel.SourcePath = Path.Combine(directory, "layers.tscn");
+            Assert.Contains("Godot 4 Tile Scene (.tscn)", panel.Formats);
+            panel.Analyze(); Wait(panel);
+            Assert.True(panel.CanImport, string.Join(";", panel.Analysis!.Diagnostics));
+            Assert.Single(panel.Analysis.Artifacts, a => a.Kind == "GTS");
+            panel.Import(); Wait(panel);
+            Assert.Equal(Path.Combine(panel.OutputDirectory, "layers.gscn"), Assert.Single(services.Opened));
+            Assert.Equal(1, services.Refreshes);
         }
         finally { Directory.Delete(directory, true); }
     });

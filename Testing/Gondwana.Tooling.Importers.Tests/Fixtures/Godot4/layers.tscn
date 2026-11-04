@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=4]
+
+[ext_resource type="TileSet" path="res://terrain.tres" id="1_ggshc"]
+[ext_resource type="Texture2D" path="res://atlas.png" id="2_m3fse"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c3e84"]
+texture = ExtResource("2_m3fse")
+0:0/animation_columns = 2
+0:0/animation_speed = 4.0
+0:0/animation_frame_0/duration = 1.0
+0:0/animation_frame_1/duration = 3.0
+0:0/0 = 0
+2:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jn26s"]
+texture = ExtResource("2_m3fse")
+0:0/animation_columns = 2
+0:0/animation_speed = 4.0
+0:0/animation_frame_0/duration = 1.0
+0:0/animation_frame_1/duration = 3.0
+0:0/0 = 0
+2:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_impxw"]
+sources/3 = SubResource("TileSetAtlasSource_c3e84")
+sources/9 = SubResource("TileSetAtlasSource_jn26s")
+
+[node name="World" type="Node2D"]
+position = Vector2(7, -9)
+
+[node name="Group" type="Node2D" parent="."]
+position = Vector2(16, 32)
+
+[node name="Ground" type="TileMapLayer" parent="Group"]
+tile_map_data = PackedByteArray("AAD+////AwAAAAAAAAABAAIACQACAAEAAAD+/wAAAwACAAEAAAD//wAAAwACAAEAABAAAAAAAwACAAEAACABAAAAAwACAAEAADACAAAAAwACAAEAAEADAAAAAwACAAEAAFAEAAAAAwACAAEAAGAFAAAAAwACAAEAAHA=")
+tile_set = ExtResource("1_ggshc")
+
+[node name="Embedded" type="TileMapLayer" parent="."]
+visible = false
+z_index = -1
+tile_map_data = PackedByteArray("AAAAAP3/CQACAAEAAAA=")
+tile_set = SubResource("TileSet_impxw")

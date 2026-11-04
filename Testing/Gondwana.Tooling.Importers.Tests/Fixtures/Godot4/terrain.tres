@@ -1,0 +1,25 @@
+[gd_resource type="TileSet" load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://atlas.png" id="1_8rp5s"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0yij4"]
+texture = ExtResource("1_8rp5s")
+0:0/animation_columns = 2
+0:0/animation_speed = 4.0
+0:0/animation_frame_0/duration = 1.0
+0:0/animation_frame_1/duration = 3.0
+0:0/0 = 0
+2:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_76y57"]
+texture = ExtResource("1_8rp5s")
+0:0/animation_columns = 2
+0:0/animation_speed = 4.0
+0:0/animation_frame_0/duration = 1.0
+0:0/animation_frame_1/duration = 3.0
+0:0/0 = 0
+2:1/0 = 0
+
+[resource]
+sources/3 = SubResource("TileSetAtlasSource_0yij4")
+sources/9 = SubResource("TileSetAtlasSource_76y57")

@@ -5,6 +5,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Scenes.GSCN;
 using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
@@ -41,12 +42,18 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         else BuildGodot4Plan(plan, sections, root, token);
     }
 
-    private static void BuildGodot4Plan(ImportPlan plan, IReadOnlyList<GodotResourceSection> sections, GodotResourceSection root, CancellationToken token)
+    internal sealed record ConvertedTile(SceneFrameDefinition Frame, Size Size, string? AnimationKey, string? AnimationFile);
+    internal sealed record ConvertedAtlas(string Name, Dictionary<Point, ConvertedTile> Tiles, GodotResourceSection Resource);
+
+    internal static Dictionary<int, ConvertedAtlas> BuildGodot4Plan(ImportPlan plan, IReadOnlyList<GodotResourceSection> sections, GodotResourceSection root, CancellationToken token,
+        string? sourcePath = null, string? basename = null, string? gtsFile = null)
     {
         var sources = root.Properties.Where(p => Regex.IsMatch(p.Key, @"^sources/\d+$")).OrderBy(p => int.Parse(p.Key[8..], CultureInfo.InvariantCulture)).ToArray();
         if (sources.Length == 0) throw new InvalidDataException("No atlas sources found.");
-        string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
-        string gtsFile = basename + ".gts";
+        sourcePath ??= plan.Request.SourcePath;
+        basename ??= ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(sourcePath));
+        gtsFile ??= basename + ".gts";
+        var result = new Dictionary<int, ConvertedAtlas>();
         foreach (var property in root.Properties.Keys.Where(k => k != "tile_size" && !k.StartsWith("sources/", StringComparison.Ordinal)))
             plan.Report(ExternalImportSeverity.Warning, "godot.metadata", $"TileSet property '{property}' is omitted (terrain, physics, navigation, proxies and custom data have no import mapping).");
         foreach (var source in sources)
@@ -62,7 +69,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
             string textureId = Reference(Get(p, "texture"), "ExtResource");
             var texture = sections.SingleOrDefault(s => s.Kind == "ext_resource" && s.Attributes.TryGetValue("id", out var v) && ResourceId(v) == textureId)
                 ?? throw new InvalidDataException($"Unresolved texture {textureId} for atlas source {id}.");
-            string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(texture.Attributes["path"]));
+            string path = ResolvePath(sourcePath, GodotTextResource.String(texture.Attributes["path"]));
             plan.Dependencies.Add(path);
             if (!File.Exists(path))
                 throw new InvalidDataException($"Atlas source {id}: missing Godot texture: {path}");
@@ -93,6 +100,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
             // ImportPlan retains the mutable definition, so adding it now keeps the
             // shared GTS first in the output list while regions are added below.
             plan.Add(gtsFile, definition);
+            var converted = new ConvertedAtlas(name, new(), atlas);
+            result.Add(int.Parse(id, CultureInfo.InvariantCulture), converted);
             var coords = p.Keys.Where(k => Regex.IsMatch(k, @"^\d+:\d+/0$")).Select(k => k[..^2]).OrderBy(k => k, StringComparer.Ordinal).ToArray();
             if (coords.Length < grid.Columns * grid.Rows)
                 plan.Report(ExternalImportSeverity.Info, "godot.sparse", $"Atlas source {id}: GTS exposes all atlas grid cells; generated animation references use only declared tile animation frames.");
@@ -182,6 +191,14 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 if (multiCell && !invalidFrame)
                     plan.Report(ExternalImportSeverity.Info, "godot.multicell",
                         $"Atlas source {id}, tile {coord}: {span.X}x{span.Y} atlas cells retained as named GTS region{(count > 1 ? "s" : "")}.");
+                if (!invalidFrame)
+                {
+                    var region = multiCell ? definition.Regions.First(r => r.Name == $"tile-{xy[0]}-{xy[1]}" + (count > 1 ? "-frame-0" : "")) : defaultRegion;
+                    converted.Tiles.Add(new(xy[0], xy[1]), new(
+                        new() { Tilesheet = name, RegionName = region.Name, XTile = multiCell ? 0 : xy[0], YTile = multiCell ? 0 : xy[1] },
+                        region.TileSize, count > 1 ? $"{name}.tile.{xy[0]}.{xy[1]}" : null,
+                        count > 1 ? $"{animationFile}-animations.gani" : null));
+                }
                 if (count > 1 && !invalidFrame)
                 {
                     var gani = new AnimationDefinition
@@ -195,6 +212,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 }
             }
         }
+        return result;
     }
 
     private static void BuildGodot3Plan(ImportPlan plan, IReadOnlyList<GodotResourceSection> sections, GodotResourceSection root, CancellationToken token)
@@ -320,32 +338,32 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         return new(parts[0], parts[1]);
     }
 
-    private static string ResourceId(string value)
+    internal static string ResourceId(string value)
     {
         if (value.StartsWith('"')) return GodotTextResource.String(value);
         if (!Regex.IsMatch(value, @"^\d+$")) throw new InvalidDataException($"Invalid Godot resource ID '{value}'.");
         return int.Parse(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
     }
 
-    private static string Get(IReadOnlyDictionary<string, string> values, string key, string? fallback = null) =>
+    internal static string Get(IReadOnlyDictionary<string, string> values, string key, string? fallback = null) =>
         values.TryGetValue(key, out var value) ? value : fallback ?? throw new InvalidDataException($"Missing Godot property {key}.");
     private static double Number(string value)
     {
         double number = double.Parse(value, CultureInfo.InvariantCulture);
         return double.IsFinite(number) ? number : throw new InvalidDataException("Non-finite Godot number.");
     }
-    private static Point Vector(string value)
+    internal static Point Vector(string value)
     {
         var match = Regex.Match(value, @"^Vector2i\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)$");
         if (!match.Success) throw new InvalidDataException($"Expected Vector2i, found {value}.");
         return new(int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture), int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture));
     }
-    private static string Reference(string value, string kind)
+    internal static string Reference(string value, string kind)
     {
         var match = Regex.Match(value, "^" + kind + @"\(\s*(""(?:\\.|[^""])*""|\d+)\s*\)$");
         return match.Success ? ResourceId(match.Groups[1].Value) : throw new InvalidDataException($"Expected {kind} reference.");
     }
-    private static string ResolvePath(string source, string dependency)
+    internal static string ResolvePath(string source, string dependency)
     {
         string directory = Path.GetDirectoryName(Path.GetFullPath(source))!;
         if (!dependency.StartsWith("res://", StringComparison.Ordinal)) return Path.GetFullPath(dependency, directory);
