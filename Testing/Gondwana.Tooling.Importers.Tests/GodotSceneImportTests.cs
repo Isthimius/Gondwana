@@ -256,8 +256,8 @@ public sealed class GodotSceneImportTests : IDisposable
         // Start with the official Godot-generated legacy TileMap fixture and change
         // only its atlas geometry and existing placement transform.
         Replace("terrain.tres", "texture = ExtResource(\"1_8rp5s\")",
-            "texture = ExtResource(\"1_8rp5s\")\\ntexture_region_size = Vector2i(15, 16)".Replace("\\n", "\n"));
-        Replace("terrain.tres", "[resource]", "[resource]\\ntile_size = Vector2i(15, 16)".Replace("\\n", "\n"));
+            "texture = ExtResource(\"1_8rp5s\")\ntexture_region_size = Vector2i(15, 16)");
+        Replace("terrain.tres", "[resource]", "[resource]\ntile_size = Vector2i(15, 16)");
         var importer = new GodotSceneImporter();
         var request = Request();
         var ordinaryFlip = importer.Analyze(request);
