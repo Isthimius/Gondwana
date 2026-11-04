@@ -246,6 +246,36 @@ public sealed class GodotSceneImportTests : IDisposable
         Assert.Equal(original, File.ReadAllBytes(output));
     }
 
+    /// <summary>
+    /// Axis-swapping mixed-parity artwork needs a half-pixel center that GSCN integer
+    /// tile bounds cannot retain. An ordinary horizontal flip remains supported.
+    /// </summary>
+    [Fact]
+    public void MixedParityRectangularTileRejectsTransposeButAllowsHorizontalFlip()
+    {
+        // Start with the official Godot-generated legacy TileMap fixture and change
+        // only its atlas geometry and existing placement transform.
+        Replace("terrain.tres", "texture = ExtResource(\"1_8rp5s\")",
+            "texture = ExtResource(\"1_8rp5s\")\\ntexture_region_size = Vector2i(15, 16)".Replace("\\n", "\n"));
+        Replace("terrain.tres", "[resource]", "[resource]\\ntile_size = Vector2i(15, 16)".Replace("\\n", "\n"));
+        var importer = new GodotSceneImporter();
+        var request = Request();
+        var ordinaryFlip = importer.Analyze(request);
+        Assert.True(ordinaryFlip.CanImport, string.Join(";", ordinaryFlip.Diagnostics));
+
+        // 0x10000001 is a generated base tile with horizontal flip (0x1000).
+        // Change just the high transform bits to 0x4000 (transpose).
+        Replace("legacy.tscn", "268435457", "1073741825");
+        var transposed = importer.Import(request);
+        Assert.False(transposed.Analysis.CanImport);
+        Assert.Empty(transposed.WrittenFiles);
+        Assert.Contains(transposed.Analysis.Diagnostics, d =>
+            d.Severity == ExternalImportSeverity.Error &&
+            d.Message.Contains("transposed tile artwork 15x16") &&
+            d.Message.Contains("half-pixel anchoring"));
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
     [Theory]
     [InlineData("texture_origin", "Vector2i(1, 0)")]
     [InlineData("flip_h", "true")]
