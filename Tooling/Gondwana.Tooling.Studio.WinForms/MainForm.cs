@@ -259,7 +259,9 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         }
         finally
         {
-            foreach (string path in _failedRestoreArchives) _packages.Invalidate(path);
+            foreach (string path in _failedRestoreArchives)
+                _packages.Invalidate(path);
+
             _failedRestoreArchives.Clear();
         }
     }
