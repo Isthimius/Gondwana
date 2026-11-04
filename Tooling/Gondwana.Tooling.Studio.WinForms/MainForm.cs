@@ -543,6 +543,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
             assets.RelocationScope = () => Browser.WorkingDirectory;
             assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
             assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
+
             assets.WorkspaceChanged = () =>
             {
                 InvalidateDependencies();
@@ -588,7 +589,9 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
     internal Task<bool> SaveDocument(StudioDockDocument document, bool saveAs = false, string? destination = null)
     {
-        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted) return pending;
+        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted)
+            return pending;
+
         return _saves[document] = SaveDocumentCore(document, saveAs, destination);
     }
 
