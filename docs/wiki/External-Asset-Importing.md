@@ -116,6 +116,9 @@ origin. Empty layers become empty 1×1 grids. A layer exceeding one million
 cells in its bounding rectangle must be split before import. Visibility includes
 ancestor visibility and the tile layer's enabled state. Layers are ordered by
 effective Godot z-index, then source order, with unique native ZOrder values.
+Native layer IDs use `<scene-name>.layer.<source-order-ordinal>` so legacy
+TileMap layers cannot collide with child node paths. Diagnostics retain Godot
+node/layer paths for locating the source of a problem.
 
 For `level.tscn`, all referenced TileSets share `level.gts`. Logical identities
 are scene-scoped: `level.tileset.0.source.3`, for example. TileSet ordinals follow

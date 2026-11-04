@@ -225,6 +225,47 @@ public sealed class GodotSceneImportTests : IDisposable
     }
 
     [Fact]
+    public void LegacyLayerAndSameNamedChildHaveDistinctStableNativeIds()
+    {
+        var request = Request();
+        string text = File.ReadAllText(request.SourcePath);
+        string reference = GodotTextResource.Parse(text).Single(s => s.Kind == "node" && s.Properties.ContainsKey("tile_set")).Properties["tile_set"];
+        File.AppendAllText(request.SourcePath, $"\n[node name=\"layer_0\" type=\"TileMapLayer\" parent=\"Legacy\"]\ntile_set = {reference}\n");
+        var importer = new GodotSceneImporter();
+        var result = importer.Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        string output = Path.Combine(request.OutputDirectory, "legacy.gscn");
+        var scene = SceneDefinitionSerializer.Load(output);
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        Assert.Equal(new[] { "legacy.layer.1", "legacy.layer.0", "legacy.layer.2" }, scene.Layers.Select(l => l.ID));
+        Assert.Single(scene.Layers[0].Tiles);
+        Assert.Equal(2, scene.Layers[1].Tiles.Count);
+        Assert.Empty(scene.Layers[2].Tiles);
+        byte[] original = File.ReadAllBytes(output);
+        Assert.True(importer.Import(request with { Overwrite = true }).Analysis.CanImport);
+        Assert.Equal(original, File.ReadAllBytes(output));
+    }
+
+    [Theory]
+    [InlineData("texture_origin", "Vector2i(1, 0)")]
+    [InlineData("flip_h", "true")]
+    [InlineData("flip_v", "true")]
+    [InlineData("transpose", "true")]
+    [InlineData("z_index", "1")]
+    [InlineData("y_sort_origin", "1")]
+    [InlineData("material", "null")]
+    [InlineData("modulate", "Color(1, 0, 0, 1)")]
+    public void ExactTileDataLookupsStillBlockEveryUnsupportedField(string field, string value)
+    {
+        Replace("terrain.tres", "0:0/0 = 0", $"0:0/0 = 0\n0:0/0/{field} = {value}");
+        var result = new GodotSceneImporter().Import(Request());
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Severity == ExternalImportSeverity.Error &&
+            d.Message.Contains($"TileData '{field}'") && d.Message.Contains("cell"));
+        Assert.Empty(result.WrittenFiles);
+    }
+
+    [Fact]
     public void NativeKeyConflictsAndCancellationRemainProtected()
     {
         var request = Request();

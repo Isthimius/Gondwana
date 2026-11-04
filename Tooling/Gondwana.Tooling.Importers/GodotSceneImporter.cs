@@ -18,6 +18,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
 
     private sealed record TileSet(Point CellSize, Dictionary<int, ConvertedAtlas> Atlases);
     private sealed record NodeState(Point Position, bool Visible, int Z, bool Supported);
+    private static readonly string[] UnsupportedTileDataFields =
+        ["texture_origin", "flip_h", "flip_v", "transpose", "z_index", "y_sort_origin", "material", "modulate"];
 
     /// <inheritdoc/>
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
@@ -153,7 +155,9 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 if ((long)width * height > 1_000_000) throw new InvalidDataException($"Layer '{label}': occupied bounds exceed one million native grid cells; split the scene.");
                 var layer = new SceneLayerDefinition
                 {
-                    ID = label, Columns = width, Rows = height, TileWidth = set.CellSize.X, TileHeight = set.CellSize.Y,
+                    // Diagnostic paths can overlap (Map's layer_0 and a child named layer_0).
+                    // Native identity uses a source-order ordinal, independent of node names and z sorting.
+                    ID = $"{name}.layer.{scene.Layers.Count}", Columns = width, Rows = height, TileWidth = set.CellSize.X, TileHeight = set.CellSize.Y,
                     OriginPx = new(checked(-position.X - minX * set.CellSize.X), checked(-position.Y - minY * set.CellSize.Y)),
                     Visible = shown && Boolean(Get(properties, "enabled", "true")), ZOrder = order
                 };
@@ -166,10 +170,9 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     if (tile.Size != new Size(set.CellSize.X, set.CellSize.Y))
                         throw new InvalidDataException($"{context}: artwork dimensions differ from logical cells; anchoring/scaling cannot be preserved.");
                     string prefix = $"{cell.Atlas.X}:{cell.Atlas.Y}/0/";
-                    foreach (var property in atlas.Resource.Properties.Where(kv => kv.Key.StartsWith(prefix, StringComparison.Ordinal)))
+                    foreach (string field in UnsupportedTileDataFields)
                     {
-                        string field = property.Key[prefix.Length..];
-                        if (field is "texture_origin" or "flip_h" or "flip_v" or "transpose" or "z_index" or "y_sort_origin" or "material" or "modulate")
+                        if (atlas.Resource.Properties.ContainsKey(prefix + field))
                             throw new InvalidDataException($"{context}: TileData '{field}' is unsupported for scene placement; bake it into the artwork or remove it.");
                     }
                     layer.Tiles.Add(new()
