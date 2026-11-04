@@ -440,9 +440,15 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
     private void TryOpen(string path)
     {
-        try { OpenDocument(path); }
+        try
+        {
+            OpenDocument(path);
+        }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { ReportError(ex); }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
     }
 
     internal StudioDockDocument OpenDocument(string path, string? password = null) =>
