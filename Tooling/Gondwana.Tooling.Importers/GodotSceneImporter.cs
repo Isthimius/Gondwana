@@ -157,9 +157,14 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 {
                     // Diagnostic paths can overlap (Map's layer_0 and a child named layer_0).
                     // Native identity uses a source-order ordinal, independent of node names and z sorting.
-                    ID = $"{name}.layer.{scene.Layers.Count}", Columns = width, Rows = height, TileWidth = set.CellSize.X, TileHeight = set.CellSize.Y,
+                    ID = $"{name}.layer.{scene.Layers.Count}",
+                    Columns = width,
+                    Rows = height,
+                    TileWidth = set.CellSize.X,
+                    TileHeight = set.CellSize.Y,
                     OriginPx = new(checked(-position.X - minX * set.CellSize.X), checked(-position.Y - minY * set.CellSize.Y)),
-                    Visible = shown && Boolean(Get(properties, "enabled", "true")), ZOrder = order
+                    Visible = shown && Boolean(Get(properties, "enabled", "true")),
+                    ZOrder = order
                 };
                 foreach (var cell in cells)
                 {
@@ -185,9 +190,12 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     }
                     layer.Tiles.Add(new()
                     {
-                        X = cell.Position.X - minX, Y = cell.Position.Y - minY, Frame = tile.Frame,
+                        X = cell.Position.X - minX,
+                        Y = cell.Position.Y - minY,
+                        Frame = tile.Frame,
                         Transform = transform,
-                        AnimationKey = tile.AnimationKey, StartAnimation = tile.AnimationKey is not null
+                        AnimationKey = tile.AnimationKey,
+                        StartAnimation = tile.AnimationKey is not null
                     });
                 }
                 scene.Layers.Add(layer);
@@ -253,7 +261,9 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
     }
     private static bool Boolean(string value) => value switch
     {
-        "true" => true, "false" => false, _ => throw new InvalidDataException($"Expected boolean, found '{value}'.")
+        "true" => true,
+        "false" => false,
+        _ => throw new InvalidDataException($"Expected boolean, found '{value}'.")
     };
     private static Point PixelVector(string value)
     {
