@@ -169,6 +169,14 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                         throw new InvalidDataException($"{context}: no declared base atlas tile; check the TileSet dependency.");
                     if (tile.Size != new Size(set.CellSize.X, set.CellSize.Y))
                         throw new InvalidDataException($"{context}: artwork dimensions differ from logical cells; anchoring/scaling cannot be preserved.");
+                    var transform = CellTransform(cell.Alternative, context);
+                    // Native axis-swapped artwork is centered using integer pixel bounds.
+                    // Different width/height parity needs a half-pixel anchor that would be lost.
+                    bool swapsAxes = transform is Gondwana.Drawing.TileTransform.Rotate90 or
+                        Gondwana.Drawing.TileTransform.Rotate270 or Gondwana.Drawing.TileTransform.FlipDiagonal or
+                        Gondwana.Drawing.TileTransform.FlipAntiDiagonal;
+                    if (swapsAxes && (tile.Size.Width & 1) != (tile.Size.Height & 1))
+                        throw new InvalidDataException($"{context}: transposed tile artwork {tile.Size.Width}x{tile.Size.Height} has mixed-parity dimensions and requires unsupported half-pixel anchoring.");
                     string prefix = $"{cell.Atlas.X}:{cell.Atlas.Y}/0/";
                     foreach (string field in UnsupportedTileDataFields)
                     {
@@ -178,7 +186,7 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     layer.Tiles.Add(new()
                     {
                         X = cell.Position.X - minX, Y = cell.Position.Y - minY, Frame = tile.Frame,
-                        Transform = CellTransform(cell.Alternative, context),
+                        Transform = transform,
                         AnimationKey = tile.AnimationKey, StartAnimation = tile.AnimationKey is not null
                     });
                 }
