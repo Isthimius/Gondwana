@@ -59,7 +59,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             // Every tileset in this map becomes a logical member of one GTS document.
             // Standalone TSX imports continue to use their individual GTS filenames.
             var set = ConvertTileset(tilesetRoot, source, basename, plan, token,
-                name + ".gts", new Size(tw, th), orientation);
+                name + ".gts", new Size(tw, th));
             tilesets.Add((first, set));
             scene.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(set.Name, set.GtsFilename));
             foreach (var (id, animation) in set.Animations)
