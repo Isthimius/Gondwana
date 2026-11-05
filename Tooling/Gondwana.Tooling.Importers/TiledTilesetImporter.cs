@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -38,7 +37,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
         Dictionary<int, AnimationDefinition> Animations);
 
-    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null, CoordinateSystemTypes mapOrientation = CoordinateSystemTypes.Orthogonal)
+    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null)
     {
         token.ThrowIfCancellationRequested();
         if (root.Name != "tileset") throw new InvalidDataException("Expected a Tiled tileset XML root.");
@@ -64,8 +63,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             TilePadding = new Spacing { Right = spacing, Bottom = spacing },
             RegionMargin = new Spacing { Left = margin, Top = margin, Right = margin - spacing, Bottom = margin - spacing }
         };
-        // TMX tile images are drawn at their native size, bottom-aligned with the
-        // map cell. Orthogonal tiles align left; isometric tiles align centrally.
+        // Tiled tile-layer images are bottom-left aligned to the map cell for
+        // orthogonal and isometric maps (tile objects have different alignment rules).
         // Preserve the original atlas slices and express the visual extension
         // beyond the map cell as Gondwana's region overhang.
         if (mapCellSize is { } cell)
@@ -82,14 +81,10 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             if (drawnWidth < cell.Width || drawnHeight < cell.Height)
                 throw new InvalidDataException("Tileset frame is smaller than the map cell; negative overhang cannot be represented.");
 
-            int extraWidth = drawnWidth - cell.Width;
-            int left = mapOrientation == CoordinateSystemTypes.IsometricRhombic
-                ? drawnWidth / 2 - cell.Width / 2
-                : 0;
             region.Overhang = new Spacing(
-                Left: left,
+                Left: 0,
                 Top: drawnHeight - cell.Height,
-                Right: extraWidth - left,
+                Right: drawnWidth - cell.Width,
                 Bottom: 0);
             if (!region.Overhang.IsEmpty)
                 plan.Report(ExternalImportSeverity.Info, "tiled.overhang",
