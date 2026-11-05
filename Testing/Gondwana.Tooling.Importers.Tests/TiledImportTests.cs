@@ -1,3 +1,4 @@
+using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -34,6 +35,123 @@ public sealed class TiledImportTests : IDisposable
             </tileset>
             """);
         return path;
+    }
+
+
+    private string OversizedTileset(int frameWidth, int frameHeight, string attributes = "", string tileOffset = "")
+    {
+        using var bitmap = new SKBitmap(frameWidth, frameHeight);
+        bitmap.Erase(SKColors.ForestGreen);
+        using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+        File.WriteAllBytes(Path.Combine(directory, "oversized.png"), data.ToArray());
+        string path = Path.Combine(directory, "oversized.tsx");
+        File.WriteAllText(path, $"""
+            <tileset name="oversized" tilewidth="{frameWidth}" tileheight="{frameHeight}" tilecount="1" columns="1" {attributes}>
+              <image source="oversized.png" width="{frameWidth}" height="{frameHeight}"/>
+              {tileOffset}
+            </tileset>
+            """);
+        return path;
+    }
+
+    private string OversizedMap(string orientation = "orthogonal")
+    {
+        string path = Path.Combine(directory, "oversized.tmx");
+        File.WriteAllText(path, $"""
+            <map orientation="{orientation}" width="2" height="2" tilewidth="32" tileheight="24">
+              <tileset firstgid="1" source="oversized.tsx"/>
+              <layer width="2" height="2"><data encoding="csv">1,0,0,1</data></layer>
+            </map>
+            """);
+        return path;
+    }
+
+    /// <summary>
+    /// Tiled atlas artwork larger than the map grid becomes source-preserving GTS
+    /// overhang. Orthogonal tiles anchor bottom-left; isometric tiles center horizontally.
+    /// </summary>
+    [Theory]
+    [InlineData("orthogonal", 32, 32, 0, 8, 0)]
+    [InlineData("orthogonal", 40, 40, 0, 16, 8)]
+    [InlineData("isometric", 32, 32, 0, 8, 0)]
+    [InlineData("isometric", 40, 40, 4, 16, 4)]
+    public void MapImportsOversizedAtlasTilesAsOverhang(
+        string orientation, int frameWidth, int frameHeight,
+        int left, int top, int right)
+    {
+        OversizedTileset(frameWidth, frameHeight);
+        var request = new ExternalImportRequest(OversizedMap(orientation), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.overhang");
+
+        string gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
+        var gts = TilesheetDefinitionSerializer.Load(gtsPath);
+        var region = Assert.Single(gts.Regions);
+        Assert.Equal(new Size(frameWidth, frameHeight), region.TileSize);
+        Assert.Equal(new Spacing(left, top, right, 0), region.Overhang);
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, frameWidth, frameHeight));
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        Assert.Equal(new Size(32, 24),
+            new Size(Assert.Single(scene.Layers).TileWidth, scene.Layers[0].TileHeight));
+
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(gtsPath, "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var runtimeLayer = Assert.Single(runtime.SceneLayers);
+        var tile = runtimeLayer[0, 0]!;
+        Rectangle cell = runtimeLayer.CoordinateSystem.GetPixelRangeForTile(tile, false);
+        Rectangle visual = tile.DrawLocationWorld;
+        Assert.Equal(cell.Left - left, visual.Left);
+        Assert.Equal(cell.Top - top, visual.Top);
+        Assert.Equal(cell.Right + right, visual.Right);
+        Assert.Equal(cell.Bottom, visual.Bottom);
+        Assert.Equal(new Size(frameWidth, frameHeight), visual.Size);
+    }
+
+    /// <summary>A Tiled grid-rendered tile fits the map cell even when the source frame is larger.</summary>
+    [Fact]
+    public void MapGridRenderSizeKeepsLargerSourceWithoutOverhang()
+    {
+        OversizedTileset(40, 40, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gts = TilesheetDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "oversized.gts"));
+        var region = Assert.Single(gts.Regions);
+        Assert.Equal(new Size(40, 40), region.TileSize);
+        Assert.Equal(Spacing.None, region.Overhang);
+        Assert.DoesNotContain(result.Analysis.Diagnostics, d => d.Code == "tiled.overhang");
+    }
+
+    /// <summary>Smaller atlas frames cannot map to unsigned Gondwana overhang geometry.</summary>
+    [Fact]
+    public void MapRejectsFrameSmallerThanCellWithoutWriting()
+    {
+        OversizedTileset(16, 16);
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("negative overhang", StringComparison.OrdinalIgnoreCase));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Nonzero Tiled tileoffset remains explicitly unsupported instead of being discarded.</summary>
+    [Fact]
+    public void MapRejectsNonzeroTileOffset()
+    {
+        OversizedTileset(40, 40, tileOffset: "<tileoffset x='3' y='-2'/>");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("tile offsets are unsupported"));
+        Assert.Empty(result.WrittenFiles);
     }
 
     /// <summary>
