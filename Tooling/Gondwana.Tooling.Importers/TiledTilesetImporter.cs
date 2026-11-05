@@ -65,8 +65,16 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         };
         // Tiled tile-layer images are bottom-left aligned to the map cell for
         // orthogonal and isometric maps (tile objects have different alignment rules).
+        // Tileset drawing offsets shift that image; only shifts keeping the logical
+        // cell inside the drawn image can be expressed with nonnegative GTS overhang.
         // Preserve the original atlas slices and express the visual extension
         // beyond the map cell as Gondwana's region overhang.
+        XElement? tileOffset = root.Element("tileoffset");
+        int offsetX = tileOffset is null ? 0 : Int(tileOffset, "x", 0);
+        int offsetY = tileOffset is null ? 0 : Int(tileOffset, "y", 0);
+        if (mapCellSize is null && (offsetX != 0 || offsetY != 0))
+            throw new InvalidDataException("Non-zero tileset tile offsets are unsupported without a TMX map cell.");
+
         if (mapCellSize is { } cell)
         {
             string renderSize = (string?)root.Attribute("tilerendersize") ?? "tile";
@@ -81,11 +89,16 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             if (drawnWidth < cell.Width || drawnHeight < cell.Height)
                 throw new InvalidDataException("Tileset frame is smaller than the map cell; negative overhang cannot be represented.");
 
-            region.Overhang = new Spacing(
-                Left: 0,
-                Top: drawnHeight - cell.Height,
-                Right: drawnWidth - cell.Width,
-                Bottom: 0);
+            long left = -(long)offsetX;
+            long top = (long)drawnHeight - cell.Height - offsetY;
+            long right = (long)drawnWidth - cell.Width + offsetX;
+            long bottom = offsetY;
+            if (left < 0 || top < 0 || right < 0 || bottom < 0 ||
+                left > int.MaxValue || top > int.MaxValue ||
+                right > int.MaxValue || bottom > int.MaxValue)
+                throw new InvalidDataException(
+                    "Tile drawing offset cannot be represented by nonnegative GTS overhang.");
+            region.Overhang = new Spacing((int)left, (int)top, (int)right, (int)bottom);
             if (!region.Overhang.IsEmpty)
                 plan.Report(ExternalImportSeverity.Info, "tiled.overhang",
                     $"Tileset '{name}' extends beyond the map cell; the extension was imported as GTS overhang.");
@@ -104,8 +117,6 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         }
         foreach (var feature in root.Descendants().Where(e => e.Name.LocalName is "wangsets" or "terraintypes" or "properties" or "objectgroup" or "transformations"))
             plan.Report(ExternalImportSeverity.Warning, "tiled.metadata", $"{feature.Name} is not represented in native tilesheets and will be omitted.");
-        if (root.Element("tileoffset") is { } offset && (Int(offset, "x", 0) != 0 || Int(offset, "y", 0) != 0))
-            throw new InvalidDataException("Non-zero tileset tile offsets are unsupported.");
         if (root.Elements("tile").Any(t => t.Attributes().Any(a => a.Name.LocalName is "x" or "y" or "width" or "height")))
             throw new InvalidDataException("Per-tile atlas subrectangles are unsupported.");
         if (grid.Columns * grid.Rows > count)
