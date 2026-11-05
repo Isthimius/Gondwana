@@ -68,13 +68,13 @@ public sealed class TiledImportTests : IDisposable
 
     /// <summary>
     /// Tiled atlas artwork larger than the map grid becomes source-preserving GTS
-    /// overhang. Orthogonal tiles anchor bottom-left; isometric tiles center horizontally.
+    /// overhang. Orthogonal and isometric tile layers both anchor bottom-left.
     /// </summary>
     [Theory]
     [InlineData("orthogonal", 32, 32, 0, 8, 0)]
     [InlineData("orthogonal", 40, 40, 0, 16, 8)]
     [InlineData("isometric", 32, 32, 0, 8, 0)]
-    [InlineData("isometric", 40, 40, 4, 16, 4)]
+    [InlineData("isometric", 40, 40, 0, 16, 8)]
     public void MapImportsOversizedAtlasTilesAsOverhang(
         string orientation, int frameWidth, int frameHeight,
         int left, int top, int right)
