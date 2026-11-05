@@ -67,13 +67,13 @@ public sealed class TiledImportTests : IDisposable
         return path;
     }
 
-    private string OversizedMap(string orientation = "orthogonal")
+    private string OversizedMap(string orientation = "orthogonal", uint gid = 1)
     {
         string path = Path.Combine(directory, "oversized.tmx");
         File.WriteAllText(path, $"""
             <map orientation="{orientation}" width="2" height="2" tilewidth="32" tileheight="24">
               <tileset firstgid="1" source="oversized.tsx"/>
-              <layer width="2" height="2"><data encoding="csv">1,0,0,1</data></layer>
+              <layer width="2" height="2"><data encoding="csv">{gid},0,0,{gid}</data></layer>
             </map>
             """);
         return path;
@@ -122,6 +122,62 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(cell.Right + right, visual.Right);
         Assert.Equal(cell.Bottom, visual.Bottom);
         Assert.Equal(new Size(frameWidth, frameHeight), visual.Size);
+    }
+
+
+    /// <summary>Flipped oversized tiles are supported when the visual footprint stays anchored.</summary>
+    [Theory]
+    [InlineData("orthogonal")]
+    [InlineData("isometric")]
+    public void MapAllowsHorizontalFlipOfTopOnlyOverhang(string orientation)
+    {
+        OversizedTileset(32, 32);
+        var request = new ExternalImportRequest(
+            OversizedMap(orientation, 0x80000001u), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        Assert.All(Assert.Single(scene.Layers).Tiles,
+            tile => Assert.Equal(TileTransform.FlipHorizontal, tile.Transform));
+
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "oversized.gts"), "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var layer = Assert.Single(runtime.SceneLayers);
+        var cell = LogicalCellBounds(layer, orientation);
+        Assert.Equal(new Rectangle(cell.X, cell.Y - 8, 32, 32), layer[0, 0]!.DrawLocationWorld);
+    }
+
+    /// <summary>Reject flips which would rotate or shift oversized artwork relative to Tiled.</summary>
+    [Theory]
+    [InlineData("orthogonal", 40, 40, 0x80000001u)] // H flip relocates right overhang.
+    [InlineData("orthogonal", 32, 32, 0x40000001u)] // V flip relocates top overhang.
+    [InlineData("isometric", 32, 32, 0x20000001u)] // Diagonal flip swaps a rectangular cell's axes.
+    public void MapRejectsFlippedOversizedTileWhoseAnchorWouldMove(
+        string orientation, int width, int height, uint gid)
+    {
+        OversizedTileset(width, height);
+        var request = new ExternalImportRequest(OversizedMap(orientation, gid), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("transformed oversized tile cannot preserve Tiled artwork anchoring"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Grid sizing does not relax the existing restriction on undersized source frames.</summary>
+    [Fact]
+    public void MapRejectsUndersizedSourceWhenTiledRenderSizeIsGrid()
+    {
+        OversizedTileset(16, 16, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("Tileset frame is smaller than the map cell"));
+        Assert.Empty(result.WrittenFiles);
     }
 
     /// <summary>A Tiled grid-rendered tile fits the map cell even when the source frame is larger.</summary>
