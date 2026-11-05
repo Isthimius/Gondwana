@@ -58,9 +58,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
             // Every tileset in this map becomes a logical member of one GTS document.
             // Standalone TSX imports continue to use their individual GTS filenames.
-            var set = ConvertTileset(tilesetRoot, source, basename, plan, token, name + ".gts");
-            if (set.TileSize != new Size(tw, th))
-                throw new InvalidDataException("Tileset frame size differs from map cell size; tile anchoring/scaling cannot be preserved in this import.");
+            var set = ConvertTileset(tilesetRoot, source, basename, plan, token,
+                name + ".gts", new Size(tw, th), orientation);
             tilesets.Add((first, set));
             scene.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(set.Name, set.GtsFilename));
             foreach (var (id, animation) in set.Animations)
