@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO.Compression;
 using System.Xml.Linq;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes.GSCN;
 using static Gondwana.Tooling.Importers.TiledTilesetImporter;
@@ -113,6 +114,18 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     if (gid == 0) continue;
                     var match = tilesets.LastOrDefault(t => t.First <= gid);
                     if (match.Set is null || gid - match.First >= match.Set.Count) throw new InvalidDataException($"Unresolved tile GID {gid}.");
+                    // Gondwana rotates/flips the overhang rectangle with the
+                    // artwork, whereas Tiled keeps tile-layer artwork anchored in
+                    // the original bottom-left destination rectangle. Do not
+                    // silently shift oversized tiles when their transformed visual
+                    // footprint differs from the Tiled placement.
+                    if (!match.Set.Overhang.IsEmpty &&
+                        (TileTransformGeometry.TransformSize(new Size(tw, th), transform) != new Size(tw, th) ||
+                         TileTransformGeometry.TransformSpacing(match.Set.Overhang, transform) != match.Set.Overhang))
+                    {
+                        throw new InvalidDataException(
+                            $"Layer {layer.ID}, cell {i}: transformed oversized tile cannot preserve Tiled artwork anchoring.");
+                    }
                     int local = (int)(gid - match.First);
                     var tile = new SceneLayerTileDefinition
                     {
