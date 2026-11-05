@@ -2,6 +2,7 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using SkiaSharp;
 
@@ -37,6 +38,18 @@ public sealed class TiledImportTests : IDisposable
         return path;
     }
 
+
+    /// <summary>Computes logical cell coordinates without relying on internal engine geometry APIs.</summary>
+    private static Rectangle LogicalCellBounds(SceneLayer layer, string orientation, int x = 0, int y = 0)
+    {
+        int cellX = orientation == "isometric"
+            ? (int)Math.Floor((x - y) * (layer.TileWidth / 2f)) - layer.OriginPx.X - layer.TileWidth / 2
+            : x * layer.TileWidth - layer.OriginPx.X;
+        int cellY = orientation == "isometric"
+            ? (int)Math.Floor((x + y) * (layer.TileHeight / 2f)) - layer.OriginPx.Y
+            : y * layer.TileHeight - layer.OriginPx.Y;
+        return new Rectangle(cellX, cellY, layer.TileWidth, layer.TileHeight);
+    }
 
     private string OversizedTileset(int frameWidth, int frameHeight, string attributes = "", string tileOffset = "")
     {
@@ -102,7 +115,7 @@ public sealed class TiledImportTests : IDisposable
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var runtimeLayer = Assert.Single(runtime.SceneLayers);
         var tile = runtimeLayer[0, 0]!;
-        Rectangle cell = runtimeLayer.CoordinateSystem.GetPixelRangeForTile(tile, false);
+        Rectangle cell = LogicalCellBounds(runtimeLayer, orientation);
         Rectangle visual = tile.DrawLocationWorld;
         Assert.Equal(cell.Left - left, visual.Left);
         Assert.Equal(cell.Top - top, visual.Top);
@@ -165,7 +178,7 @@ public sealed class TiledImportTests : IDisposable
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var layer = Assert.Single(runtime.SceneLayers);
         var tile = layer[0, 0]!;
-        Rectangle cell = layer.CoordinateSystem.GetPixelRangeForTile(tile, false);
+        Rectangle cell = LogicalCellBounds(layer, orientation);
         Assert.Equal(
             new Rectangle(cell.Left + offsetX, cell.Bottom - 40 + offsetY, 40, 40),
             tile.DrawLocationWorld);
