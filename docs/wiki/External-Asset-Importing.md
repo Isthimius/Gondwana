@@ -36,7 +36,7 @@ normal activation behavior; import does not discard unsaved editor changes.
 | Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, single- and multi-cell atlas tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → grouped GTS/GANI | No `.res` or scene collections; use the `.tscn` provider for tile scenes. Multi-cell tiles become named regions containing their full atlas rectangles; animation frames have distinct regions when needed. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
 | Godot 4 `.tscn` tile scene | Legacy TileMap (`format = 2` cell data) and TileMapLayer (version 0 byte records), external `.tres` and embedded TileSets, multiple atlas sources, animations, negative coordinates, integer translations, visibility, layer order, H/V/transpose flags → GSCN plus one grouped GTS and GANI per atlas source | Orthogonal cells only. A plain Node root and Node2D translation/visibility/z-order ancestors are supported. Nontrivial transforms, Y sorting, proxies, alternatives, undeclared tiles, incompatible artwork dimensions, transposed rectangular tiles with mixed-parity dimensions (which require half-pixel anchoring), and unsupported tile ancestors block import. No general scene conversion or scene instancing. Scripts, cameras, physics, navigation, terrain rules and appearance overrides are diagnosed and omitted. |
 | Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections, embedded image bytes, nonzero tile offsets or per-tile subrectangles. Wang/terrain, properties, collision objects and transformation metadata warn and are omitted. |
-| Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets grouped into one GTS document per map, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Frame dimensions must match map cells. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
+| Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets grouped into one GTS document per map, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Oversized atlas frames are mapped to GTS region overhang (top/right, with bottom-left tile-layer anchoring); tilesets using `tilerendersize="grid"` instead draw at map-cell size. Smaller-than-cell frames, nonzero tileset offsets and grid `preserve-aspect-fit` are unsupported. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
 | Aseprite `.ase` / `.aseprite` | RGBA, grayscale, indexed palettes/transparency, raw/zlib/linked cels, visibility, Normal blending, opacity, groups, cel z-order, tags and mixed timing → PNG/GTS/GANI | No tilemaps, reference layers, non-Normal blends, precise/scaled cel bounds, non-square pixel aspect ratios, external dependencies, ICC or custom gamma. Other metadata chunks are diagnosed and omitted. |
 
 TMX supports XML tile elements, CSV, uncompressed base64, base64+zlib and
@@ -45,6 +45,15 @@ inherited visibility, offsets and parallax. Isometric placement uses Gondwana's
 rhombic coordinates and compensates for Tiled's map origin.
 Non-default orthogonal render order and nonzero map parallax origins are errors;
 these cannot be reproduced by the current scene mapping.
+
+For example, a 32×32 Tiled atlas tile on a 32×24 TMX map cell imports
+with a GTS frame size of 32×32 and `Overhang.Top = 8`. An atlas tile
+of 40×40 on a 32×24 map cell imports with `Overhang.Top = 16` and
+`Overhang.Right = 8`. The atlas pixels are not cropped or resampled;
+Gondwana uses the expanded draw rectangle when rendering. TMX imports
+derive OH from the map-cell dimensions; importing that TSX alone cannot
+determine a map-relative overhang and does not synthesize one.
+
 
 ## Names and paths
 
