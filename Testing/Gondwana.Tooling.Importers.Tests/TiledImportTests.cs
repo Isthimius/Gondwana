@@ -141,13 +141,56 @@ public sealed class TiledImportTests : IDisposable
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
-    /// <summary>Nonzero Tiled tileoffset remains explicitly unsupported instead of being discarded.</summary>
+
+    /// <summary>Representable Tiled tile drawing offsets redistribute overhang across edges.</summary>
+    [Theory]
+    [InlineData("orthogonal", -3, 2, 3, 14, 5, 2)]
+    [InlineData("isometric", 0, 16, 0, 0, 8, 16)]
+    public void MapImportsRepresentableTileOffsetsAsOverhang(
+        string orientation, int offsetX, int offsetY,
+        int left, int top, int right, int bottom)
+    {
+        OversizedTileset(40, 40, tileOffset: $"<tileoffset x='{offsetX}' y='{offsetY}'/>");
+        var request = new ExternalImportRequest(OversizedMap(orientation), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
+        var gts = TilesheetDefinitionSerializer.Load(gtsPath);
+        Assert.Equal(new Spacing(left, top, right, bottom), Assert.Single(gts.Regions).Overhang);
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 40, 40));
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(gtsPath, "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var layer = Assert.Single(runtime.SceneLayers);
+        var tile = layer[0, 0]!;
+        Rectangle cell = layer.CoordinateSystem.GetPixelRangeForTile(tile, false);
+        Assert.Equal(
+            new Rectangle(cell.Left + offsetX, cell.Bottom - 40 + offsetY, 40, 40),
+            tile.DrawLocationWorld);
+    }
+
+    /// <summary>Offsets that place artwork inside a map-cell edge cannot become nonnegative OH.</summary>
     [Fact]
-    public void MapRejectsNonzeroTileOffset()
+    public void MapRejectsUnrepresentableTileOffset()
     {
         OversizedTileset(40, 40, tileOffset: "<tileoffset x='3' y='-2'/>");
         var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("cannot be represented"));
+        Assert.Empty(result.WrittenFiles);
+    }
+
+    /// <summary>Standalone TSX cannot resolve drawing offsets without map cell dimensions.</summary>
+    [Fact]
+    public void StandaloneTsxRejectsNonzeroDrawingOffset()
+    {
+        string source = OversizedTileset(40, 40, tileOffset: "<tileoffset x='-3' y='2'/>");
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
         Assert.Contains(result.Analysis.Diagnostics, d =>
             d.Message.Contains("tile offsets are unsupported"));
