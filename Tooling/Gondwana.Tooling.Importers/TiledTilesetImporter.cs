@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -37,7 +38,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
         Dictionary<int, AnimationDefinition> Animations);
 
-    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null)
+    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null, CoordinateSystemTypes mapOrientation = CoordinateSystemTypes.Orthogonal)
     {
         token.ThrowIfCancellationRequested();
         if (root.Name != "tileset") throw new InvalidDataException("Expected a Tiled tileset XML root.");
@@ -63,6 +64,38 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             TilePadding = new Spacing { Right = spacing, Bottom = spacing },
             RegionMargin = new Spacing { Left = margin, Top = margin, Right = margin - spacing, Bottom = margin - spacing }
         };
+        // TMX tile images are drawn at their native size, bottom-aligned with the
+        // map cell. Orthogonal tiles align left; isometric tiles align centrally.
+        // Preserve the original atlas slices and express the visual extension
+        // beyond the map cell as Gondwana's region overhang.
+        if (mapCellSize is { } cell)
+        {
+            string renderSize = (string?)root.Attribute("tilerendersize") ?? "tile";
+            if (renderSize is not ("tile" or "grid"))
+                throw new InvalidDataException($"Unsupported Tiled tile render size '{renderSize}'.");
+            if (renderSize == "grid" &&
+                (string?)root.Attribute("fillmode") is { } fill && fill != "stretch")
+                throw new InvalidDataException($"Unsupported Tiled grid tile fill mode '{fill}'.");
+
+            int drawnWidth = renderSize == "grid" ? cell.Width : width;
+            int drawnHeight = renderSize == "grid" ? cell.Height : height;
+            if (drawnWidth < cell.Width || drawnHeight < cell.Height)
+                throw new InvalidDataException("Tileset frame is smaller than the map cell; negative overhang cannot be represented.");
+
+            int extraWidth = drawnWidth - cell.Width;
+            int left = mapOrientation == CoordinateSystemTypes.IsometricRhombic
+                ? drawnWidth / 2 - cell.Width / 2
+                : 0;
+            region.Overhang = new Spacing(
+                Left: left,
+                Top: drawnHeight - cell.Height,
+                Right: extraWidth - left,
+                Bottom: 0);
+            if (!region.Overhang.IsEmpty)
+                plan.Report(ExternalImportSeverity.Info, "tiled.overhang",
+                    $"Tileset '{name}' extends beyond the map cell; the extension was imported as GTS overhang.");
+        }
+
         var grid = TilesheetDefinitionValidator.GridSize(region);
         if (grid.Columns != columns || count > grid.Columns * grid.Rows)
             throw new InvalidDataException("Tileset columns/tilecount do not fit the atlas geometry.");
