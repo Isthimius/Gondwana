@@ -35,7 +35,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         : fallback ?? throw new InvalidDataException($"Missing {element.Name}.{name}.");
 
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
-        Dictionary<int, AnimationDefinition> Animations);
+        Spacing Overhang, Dictionary<int, AnimationDefinition> Animations);
 
     internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null)
     {
@@ -86,7 +86,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
 
             int drawnWidth = renderSize == "grid" ? cell.Width : width;
             int drawnHeight = renderSize == "grid" ? cell.Height : height;
-            if (drawnWidth < cell.Width || drawnHeight < cell.Height)
+            // Grid render sizing still requires a supported source footprint.
+            if (width < cell.Width || height < cell.Height)
                 throw new InvalidDataException("Tileset frame is smaller than the map cell; negative overhang cannot be represented.");
 
             long left = -(long)offsetX;
@@ -149,6 +150,6 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             if (!animations.TryAdd(id, gani)) throw new InvalidDataException($"Duplicate animated tile ID {id}.");
             plan.Add($"{filename}-animations.gani", gani);
         }
-        return new(name, gts, columns, count, new(width, height), animations);
+        return new(name, gts, columns, count, new(width, height), region.Overhang, animations);
     }
 }
