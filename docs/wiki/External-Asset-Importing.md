@@ -58,6 +58,13 @@ For example, the official Tiled 64×64-on-64×32 isometric example with a
 Importing a TSX alone cannot determine map-relative overhang, and nonzero
 tile offsets still require TMX context.
 
+For oversized frames with Tiled H/V/diagonal GID flags, conversion accepts
+transformations only when Gondwana's oriented draw bounds preserve Tiled's
+bottom-left tile-layer placement. For example, flipping a top-only overhang
+horizontally is supported; flipping it vertically would move the overhang to
+the bottom and is rejected with an explicit diagnostic. Full multi-axis
+flipping remains supported for ordinary tiles without OH.
+
 
 ## Names and paths
 
