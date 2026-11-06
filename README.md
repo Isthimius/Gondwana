@@ -254,14 +254,21 @@ Gondwana's development tooling is optional and is not required by the engine at 
 
 ### Publish and deploy from the CLI
 
-Blazor/WebAssembly games can be published and deployed directly from the command line:
+Blazor/WebAssembly games can be published and deployed directly from the command line.
 
-```console
+**Publish for static web hosting:**
+
+```bash
 gondwana publish blazor
-gondwana deploy itch
 ```
 
-Static web-host deployment is also supported.
+**Publish and deploy to itch.io:**
+
+```bash
+gondwana deploy itch --itch-game username/game
+```
+
+Static web-host deployment is also supported through `gondwana deploy blazor`.
 
 ### ChatGPT and Codex
 
