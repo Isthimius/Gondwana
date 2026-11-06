@@ -61,6 +61,11 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             // Standalone TSX imports continue to use their individual GTS filenames.
             var set = ConvertTileset(tilesetRoot, source, basename, plan, token,
                 name + ".gts", new Size(tw, th));
+            // RenderTileQuery scans a fixed fringe around the viewport. Do not
+            // import artwork that can intersect the viewport from farther away.
+            if (!FitsRenderCandidateFringe(new Size(tw, th), set.Overhang, orientation))
+                throw new InvalidDataException(
+                    $"Tileset '{set.Name}' overhang exceeds the runtime render-culling fringe for this map grid.");
             tilesets.Add((first, set));
             scene.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(set.Name, set.GtsFilename));
             foreach (var (id, animation) in set.Animations)
@@ -119,7 +124,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     // the original bottom-left destination rectangle. Do not
                     // silently shift oversized tiles when their transformed visual
                     // footprint differs from the Tiled placement.
-                    if (!match.Set.Overhang.IsEmpty &&
+                    if ((match.Set.TileSize != new Size(tw, th) || !match.Set.Overhang.IsEmpty) &&
                         (TileTransformGeometry.TransformSize(new Size(tw, th), transform) != new Size(tw, th) ||
                          TileTransformGeometry.TransformSpacing(match.Set.Overhang, transform) != match.Set.Overhang))
                     {
@@ -148,6 +153,30 @@ public sealed class TiledMapImporter : ExternalAssetImporter
         if (root.Descendants("properties").Any()) plan.Report(ExternalImportSeverity.Warning, "tiled.properties", "Custom properties are omitted.");
         Layers(root, true, 0, 0, 1, 1);
         plan.Add(name + ".gscn", scene);
+    }
+
+    /// <summary>
+    /// Conservatively bounds imported artwork to the fixed-cell candidate fringe
+    /// used by RenderTileQuery. Orthogonal scanning includes one adjacent cell.
+    /// For rhombic isometric scanning, each horizontal/vertical pixel offset
+    /// shifts two grid axes; bounding their combined displacement preserves the
+    /// same one-cell fringe without imposing a limit on ordinary source tiles.
+    /// </summary>
+    private static bool FitsRenderCandidateFringe(
+        Size cell, Spacing oh, CoordinateSystemTypes orientation)
+    {
+        if (oh.IsEmpty) return true;
+        if (orientation == CoordinateSystemTypes.Orthogonal)
+            return oh.Left <= cell.Width && oh.Right <= cell.Width &&
+                oh.Top <= cell.Height && oh.Bottom <= cell.Height;
+
+        long width = cell.Width;
+        long height = cell.Height;
+        long horizontal = Math.Max(oh.Left, oh.Right);
+        // Conservative isometric bounds: top + side <= one grid step,
+        // bottom + side <= half a step. Cast before multiplying to avoid overflow.
+        return (long)oh.Top * width + horizontal * height <= width * height &&
+            2 * ((long)oh.Bottom * width + horizontal * height) <= width * height;
     }
 
     private static double Number(XElement element, string attribute, double fallback)
