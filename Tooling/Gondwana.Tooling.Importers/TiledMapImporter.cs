@@ -170,13 +170,11 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             return oh.Left <= cell.Width && oh.Right <= cell.Width &&
                 oh.Top <= cell.Height && oh.Bottom <= cell.Height;
 
-        long width = cell.Width;
-        long height = cell.Height;
-        long horizontal = Math.Max(oh.Left, oh.Right);
+        decimal sideInCells = (decimal)Math.Max(oh.Left, oh.Right) / cell.Width;
         // Conservative isometric bounds: top + side <= one grid step,
-        // bottom + side <= half a step. Cast before multiplying to avoid overflow.
-        return (long)oh.Top * width + horizontal * height <= width * height &&
-            2 * ((long)oh.Bottom * width + horizontal * height) <= width * height;
+        // bottom + side <= half a step. Decimal avoids large-int overflow.
+        return (decimal)oh.Top / cell.Height + sideInCells <= 1m &&
+            (decimal)oh.Bottom / cell.Height + sideInCells <= 0.5m;
     }
 
     private static double Number(XElement element, string attribute, double fallback)
