@@ -268,7 +268,7 @@ public sealed class TiledImportTests : IDisposable
     /// <summary>Representable Tiled tile drawing offsets redistribute overhang across edges.</summary>
     [Theory]
     [InlineData("orthogonal", -3, 2, 3, 14, 5, 2)]
-    [InlineData("isometric", 0, 16, 0, 0, 8, 16)]
+    [InlineData("isometric", 0, 6, 0, 10, 8, 6)]
     public void MapImportsRepresentableTileOffsetsAsOverhang(
         string orientation, int offsetX, int offsetY,
         int left, int top, int right, int bottom)
@@ -292,6 +292,23 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(
             new Rectangle(cell.Left + offsetX, cell.Bottom - 40 + offsetY, 40, 40),
             tile.DrawLocationWorld);
+    }
+
+    /// <summary>
+    /// A valid nonnegative OH may still exceed the isometric candidate fringe
+    /// when bottom extension combines with right-hand extension.
+    /// </summary>
+    [Fact]
+    public void MapRejectsCombinedIsometricBottomAndRightOverhangBeyondFringe()
+    {
+        OversizedTileset(40, 40, tileOffset: "<tileoffset x='0' y='16'/>");
+        var request = new ExternalImportRequest(OversizedMap("isometric"), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("overhang exceeds the runtime render-culling fringe"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
     /// <summary>Offsets that place artwork inside a map-cell edge cannot become nonnegative OH.</summary>
