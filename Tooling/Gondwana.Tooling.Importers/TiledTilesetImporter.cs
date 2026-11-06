@@ -35,9 +35,9 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         : fallback ?? throw new InvalidDataException($"Missing {element.Name}.{name}.");
 
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
-        Dictionary<int, AnimationDefinition> Animations);
+        Spacing Overhang, Dictionary<int, AnimationDefinition> Animations);
 
-    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null)
+    internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null)
     {
         token.ThrowIfCancellationRequested();
         if (root.Name != "tileset") throw new InvalidDataException("Expected a Tiled tileset XML root.");
@@ -63,6 +63,48 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             TilePadding = new Spacing { Right = spacing, Bottom = spacing },
             RegionMargin = new Spacing { Left = margin, Top = margin, Right = margin - spacing, Bottom = margin - spacing }
         };
+        // Tiled tile-layer images are bottom-left aligned to the map cell for
+        // orthogonal and isometric maps (tile objects have different alignment rules).
+        // Tileset drawing offsets shift that image; only shifts keeping the logical
+        // cell inside the drawn image can be expressed with nonnegative GTS overhang.
+        // Preserve the original atlas slices and express the visual extension
+        // beyond the map cell as Gondwana's region overhang.
+        XElement? tileOffset = root.Element("tileoffset");
+        int offsetX = tileOffset is null ? 0 : Int(tileOffset, "x", 0);
+        int offsetY = tileOffset is null ? 0 : Int(tileOffset, "y", 0);
+        if (mapCellSize is null && (offsetX != 0 || offsetY != 0))
+            throw new InvalidDataException("Non-zero tileset tile offsets are unsupported without a TMX map cell.");
+
+        if (mapCellSize is { } cell)
+        {
+            string renderSize = (string?)root.Attribute("tilerendersize") ?? "tile";
+            if (renderSize is not ("tile" or "grid"))
+                throw new InvalidDataException($"Unsupported Tiled tile render size '{renderSize}'.");
+            if (renderSize == "grid" &&
+                (string?)root.Attribute("fillmode") is { } fill && fill != "stretch")
+                throw new InvalidDataException($"Unsupported Tiled grid tile fill mode '{fill}'.");
+
+            int drawnWidth = renderSize == "grid" ? cell.Width : width;
+            int drawnHeight = renderSize == "grid" ? cell.Height : height;
+            // Grid render sizing still requires a supported source footprint.
+            if (width < cell.Width || height < cell.Height)
+                throw new InvalidDataException("Tileset frame is smaller than the map cell; negative overhang cannot be represented.");
+
+            long left = -(long)offsetX;
+            long top = (long)drawnHeight - cell.Height - offsetY;
+            long right = (long)drawnWidth - cell.Width + offsetX;
+            long bottom = offsetY;
+            if (left < 0 || top < 0 || right < 0 || bottom < 0 ||
+                left > int.MaxValue || top > int.MaxValue ||
+                right > int.MaxValue || bottom > int.MaxValue)
+                throw new InvalidDataException(
+                    "Tile drawing offset cannot be represented by nonnegative GTS overhang.");
+            region.Overhang = new Spacing((int)left, (int)top, (int)right, (int)bottom);
+            if (!region.Overhang.IsEmpty)
+                plan.Report(ExternalImportSeverity.Info, "tiled.overhang",
+                    $"Tileset '{name}' extends beyond the map cell; the extension was imported as GTS overhang.");
+        }
+
         var grid = TilesheetDefinitionValidator.GridSize(region);
         if (grid.Columns != columns || count > grid.Columns * grid.Rows)
             throw new InvalidDataException("Tileset columns/tilecount do not fit the atlas geometry.");
@@ -76,8 +118,6 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         }
         foreach (var feature in root.Descendants().Where(e => e.Name.LocalName is "wangsets" or "terraintypes" or "properties" or "objectgroup" or "transformations"))
             plan.Report(ExternalImportSeverity.Warning, "tiled.metadata", $"{feature.Name} is not represented in native tilesheets and will be omitted.");
-        if (root.Element("tileoffset") is { } offset && (Int(offset, "x", 0) != 0 || Int(offset, "y", 0) != 0))
-            throw new InvalidDataException("Non-zero tileset tile offsets are unsupported.");
         if (root.Elements("tile").Any(t => t.Attributes().Any(a => a.Name.LocalName is "x" or "y" or "width" or "height")))
             throw new InvalidDataException("Per-tile atlas subrectangles are unsupported.");
         if (grid.Columns * grid.Rows > count)
@@ -110,6 +150,6 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             if (!animations.TryAdd(id, gani)) throw new InvalidDataException($"Duplicate animated tile ID {id}.");
             plan.Add($"{filename}-animations.gani", gani);
         }
-        return new(name, gts, columns, count, new(width, height), animations);
+        return new(name, gts, columns, count, new(width, height), region.Overhang, animations);
     }
 }

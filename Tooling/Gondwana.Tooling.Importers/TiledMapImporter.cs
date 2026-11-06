@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO.Compression;
 using System.Xml.Linq;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes.GSCN;
 using static Gondwana.Tooling.Importers.TiledTilesetImporter;
@@ -58,9 +59,13 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
             // Every tileset in this map becomes a logical member of one GTS document.
             // Standalone TSX imports continue to use their individual GTS filenames.
-            var set = ConvertTileset(tilesetRoot, source, basename, plan, token, name + ".gts");
-            if (set.TileSize != new Size(tw, th))
-                throw new InvalidDataException("Tileset frame size differs from map cell size; tile anchoring/scaling cannot be preserved in this import.");
+            var set = ConvertTileset(tilesetRoot, source, basename, plan, token,
+                name + ".gts", new Size(tw, th));
+            // RenderTileQuery scans a fixed fringe around the viewport. Do not
+            // import artwork that can intersect the viewport from farther away.
+            if (!FitsRenderCandidateFringe(new Size(tw, th), set.Overhang, orientation))
+                throw new InvalidDataException(
+                    $"Tileset '{set.Name}' overhang exceeds the runtime render-culling fringe for this map grid.");
             tilesets.Add((first, set));
             scene.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(set.Name, set.GtsFilename));
             foreach (var (id, animation) in set.Animations)
@@ -114,6 +119,18 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     if (gid == 0) continue;
                     var match = tilesets.LastOrDefault(t => t.First <= gid);
                     if (match.Set is null || gid - match.First >= match.Set.Count) throw new InvalidDataException($"Unresolved tile GID {gid}.");
+                    // Gondwana rotates/flips the overhang rectangle with the
+                    // artwork, whereas Tiled keeps tile-layer artwork anchored in
+                    // the original bottom-left destination rectangle. Do not
+                    // silently shift oversized tiles when their transformed visual
+                    // footprint differs from the Tiled placement.
+                    if ((match.Set.TileSize != new Size(tw, th) || !match.Set.Overhang.IsEmpty) &&
+                        (TileTransformGeometry.TransformSize(new Size(tw, th), transform) != new Size(tw, th) ||
+                         TileTransformGeometry.TransformSpacing(match.Set.Overhang, transform) != match.Set.Overhang))
+                    {
+                        throw new InvalidDataException(
+                            $"Layer {layer.ID}, cell {i}: transformed oversized tile cannot preserve Tiled artwork anchoring.");
+                    }
                     int local = (int)(gid - match.First);
                     var tile = new SceneLayerTileDefinition
                     {
@@ -136,6 +153,28 @@ public sealed class TiledMapImporter : ExternalAssetImporter
         if (root.Descendants("properties").Any()) plan.Report(ExternalImportSeverity.Warning, "tiled.properties", "Custom properties are omitted.");
         Layers(root, true, 0, 0, 1, 1);
         plan.Add(name + ".gscn", scene);
+    }
+
+    /// <summary>
+    /// Conservatively bounds imported artwork to the fixed-cell candidate fringe
+    /// used by RenderTileQuery. Orthogonal scanning includes one adjacent cell.
+    /// For rhombic isometric scanning, each horizontal/vertical pixel offset
+    /// shifts two grid axes; bounding their combined displacement preserves the
+    /// same one-cell fringe without imposing a limit on ordinary source tiles.
+    /// </summary>
+    private static bool FitsRenderCandidateFringe(
+        Size cell, Spacing oh, CoordinateSystemTypes orientation)
+    {
+        if (oh.IsEmpty) return true;
+        if (orientation == CoordinateSystemTypes.Orthogonal)
+            return oh.Left <= cell.Width && oh.Right <= cell.Width &&
+                oh.Top <= cell.Height && oh.Bottom <= cell.Height;
+
+        decimal sideInCells = (decimal)Math.Max(oh.Left, oh.Right) / cell.Width;
+        // Conservative isometric bounds: top + side <= one grid step,
+        // bottom + side <= half a step. Decimal avoids large-int overflow.
+        return (decimal)oh.Top / cell.Height + sideInCells <= 1m &&
+            (decimal)oh.Bottom / cell.Height + sideInCells <= 0.5m;
     }
 
     private static double Number(XElement element, string attribute, double fallback)
