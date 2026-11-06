@@ -76,6 +76,107 @@ gondwana-templates:
       - 'Tooling/Gondwana.Templates/**'
       - '!**/CHANGELOG.md'
 
+# Specific tooling project/family labels accompany the broader `tooling` label.
+# Match matching test projects too, so test-only PRs retain component ownership.
+# Every positive rule excludes generated changelog files.
+gondwana-mcp:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Mcp/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-assets:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Assets*/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-importers:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Importers/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Importers.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-studio:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Studio.*/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Studio.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-tilesheets-editor:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Tilesheets.WinForms/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-animations-editor:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Animations.WinForms/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Animations.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-audio-editor:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Audio.WinForms/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Audio.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-scenes-editor:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Scenes.WinForms/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Scenes.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-sprites-editor:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.Sprites.WinForms/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.Sprites.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-scene-viewer:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Tooling.SceneViewer.WinForms/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests/**'
+      - '!**/CHANGELOG.md'
+
+gondwana-tooling-shared:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Shared/**'
+      - '!**/CHANGELOG.md'
+
 tooling:
   - changed-files:
     - all-globs-to-any-file:
