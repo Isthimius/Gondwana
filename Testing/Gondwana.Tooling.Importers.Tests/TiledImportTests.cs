@@ -125,6 +125,60 @@ public sealed class TiledImportTests : IDisposable
     }
 
 
+    /// <summary>
+    /// A grid-sized destination does not make diagonal flips of oversized source
+    /// frames compatible with Tiled's bottom-left tile-layer anchoring.
+    /// </summary>
+    [Fact]
+    public void MapRejectsDiagonalGridRenderedOversizedTile()
+    {
+        OversizedTileset(40, 40, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(
+            OversizedMap(gid: 0x20000001u), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("transformed oversized tile cannot preserve Tiled artwork anchoring"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Safe horizontal flips remain supported with grid render sizing.</summary>
+    [Fact]
+    public void MapAllowsHorizontalFlipOfGridRenderedOversizedTile()
+    {
+        OversizedTileset(40, 40, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(
+            OversizedMap(gid: 0x80000001u), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        Assert.All(Assert.Single(scene.Layers).Tiles,
+            tile => Assert.Equal(TileTransform.FlipHorizontal, tile.Transform));
+    }
+
+    /// <summary>
+    /// Reject imagery reaching beyond the engine's fixed render-candidate fringe:
+    /// a row-four tile can otherwise overlap a row-zero viewport without being queried.
+    /// </summary>
+    [Theory]
+    [InlineData("orthogonal", 32, 128)]
+    [InlineData("isometric", 32, 128)]
+    [InlineData("isometric", 96, 24)]
+    public void MapRejectsOverhangOutsideRuntimeCullingFringe(
+        string orientation, int frameWidth, int frameHeight)
+    {
+        OversizedTileset(frameWidth, frameHeight);
+        var request = new ExternalImportRequest(
+            OversizedMap(orientation), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("overhang exceeds the runtime render-culling fringe"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
     /// <summary>Flipped oversized tiles are supported when the visual footprint stays anchored.</summary>
     [Theory]
     [InlineData("orthogonal")]
