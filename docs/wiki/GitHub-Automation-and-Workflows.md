@@ -887,12 +887,23 @@ Path rules cover areas including:
 - hosting
 - input
 - video
-- CLI
-- templates
-- tooling
+- CLI and templates
+- MCP, Assets, and external Importers
+- Studio Core, Studio WinForms, and Studio plugins (grouped as `gondwana-studio`)
+- Tilesheets, Animations, Audio, Scenes, Sprites, and Scene Viewer standalone tools
+- shared WinForms tooling
+- tooling (the umbrella label)
 - demos
 - documentation
 - repository chores
+
+Dedicated tooling labels include `gondwana-importers`, `gondwana-mcp`,
+`gondwana-assets`, `gondwana-studio`, `gondwana-tilesheets-editor`,
+`gondwana-animations-editor`, `gondwana-audio-editor`,
+`gondwana-scenes-editor`, `gondwana-sprites-editor`,
+`gondwana-scene-viewer`, and `gondwana-tooling-shared`.
+Matching component tests under `Testing/` receive the same project labels,
+in addition to the existing `testing` label.
 
 There are also broad category labels for:
 
@@ -913,7 +924,15 @@ Generated changelogs are explicitly excluded from the path rules:
 
 so a project does not receive a functional label merely because its generated changelog changed.
 
-Multiple labels are intentional. A Templates change, for example, may receive both a template-specific label and the broader tooling label.
+Multiple labels are intentional. A Templates change, for example, may receive both a template-specific label and the broader tooling label. An Importers change similarly receives `gondwana-importers` and `tooling`.
+
+The Label PR workflow uses `pull_request_target` and reads the repository's
+base-branch label configuration. Its token has `pull-requests: write` to apply
+labels and `issues: write` so the labeler can create a missing project label on
+its first match. `sync-labels: false` keeps user-assigned labels intact.
+The `edited` event also allows an existing PR to be relabeled after the
+configuration has merged to `master`. Rules on an unmerged branch are **not**
+used by that branch's own `pull_request_target` run.
 
 ---
 
