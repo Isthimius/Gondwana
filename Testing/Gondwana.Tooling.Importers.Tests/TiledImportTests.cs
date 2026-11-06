@@ -1,6 +1,8 @@
+using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using SkiaSharp;
 
@@ -34,6 +36,305 @@ public sealed class TiledImportTests : IDisposable
             </tileset>
             """);
         return path;
+    }
+
+
+    /// <summary>Computes logical cell coordinates without relying on internal engine geometry APIs.</summary>
+    private static Rectangle LogicalCellBounds(SceneLayer layer, string orientation, int x = 0, int y = 0)
+    {
+        int cellX = orientation == "isometric"
+            ? (int)Math.Floor((x - y) * (layer.TileWidth / 2f)) - layer.OriginPx.X - layer.TileWidth / 2
+            : x * layer.TileWidth - layer.OriginPx.X;
+        int cellY = orientation == "isometric"
+            ? (int)Math.Floor((x + y) * (layer.TileHeight / 2f)) - layer.OriginPx.Y
+            : y * layer.TileHeight - layer.OriginPx.Y;
+        return new Rectangle(cellX, cellY, layer.TileWidth, layer.TileHeight);
+    }
+
+    private string OversizedTileset(int frameWidth, int frameHeight, string attributes = "", string tileOffset = "")
+    {
+        using var bitmap = new SKBitmap(frameWidth, frameHeight);
+        bitmap.Erase(SKColors.ForestGreen);
+        using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+        File.WriteAllBytes(Path.Combine(directory, "oversized.png"), data.ToArray());
+        string path = Path.Combine(directory, "oversized.tsx");
+        File.WriteAllText(path, $"""
+            <tileset name="oversized" tilewidth="{frameWidth}" tileheight="{frameHeight}" tilecount="1" columns="1" {attributes}>
+              <image source="oversized.png" width="{frameWidth}" height="{frameHeight}"/>
+              {tileOffset}
+            </tileset>
+            """);
+        return path;
+    }
+
+    private string OversizedMap(string orientation = "orthogonal", uint gid = 1)
+    {
+        string path = Path.Combine(directory, "oversized.tmx");
+        File.WriteAllText(path, $"""
+            <map orientation="{orientation}" width="2" height="2" tilewidth="32" tileheight="24">
+              <tileset firstgid="1" source="oversized.tsx"/>
+              <layer width="2" height="2"><data encoding="csv">{gid},0,0,{gid}</data></layer>
+            </map>
+            """);
+        return path;
+    }
+
+    /// <summary>
+    /// Tiled atlas artwork larger than the map grid becomes source-preserving GTS
+    /// overhang. Orthogonal and isometric tile layers both anchor bottom-left.
+    /// </summary>
+    [Theory]
+    [InlineData("orthogonal", 32, 32, 0, 8, 0)]
+    [InlineData("orthogonal", 40, 40, 0, 16, 8)]
+    [InlineData("isometric", 32, 32, 0, 8, 0)]
+    [InlineData("isometric", 40, 40, 0, 16, 8)]
+    public void MapImportsOversizedAtlasTilesAsOverhang(
+        string orientation, int frameWidth, int frameHeight,
+        int left, int top, int right)
+    {
+        OversizedTileset(frameWidth, frameHeight);
+        var request = new ExternalImportRequest(OversizedMap(orientation), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.overhang");
+
+        string gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
+        var gts = TilesheetDefinitionSerializer.Load(gtsPath);
+        var region = Assert.Single(gts.Regions);
+        Assert.Equal(new Size(frameWidth, frameHeight), region.TileSize);
+        Assert.Equal(new Spacing(left, top, right, 0), region.Overhang);
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, frameWidth, frameHeight));
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        Assert.Equal(new Size(32, 24),
+            new Size(Assert.Single(scene.Layers).TileWidth, scene.Layers[0].TileHeight));
+
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(gtsPath, "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var runtimeLayer = Assert.Single(runtime.SceneLayers);
+        var tile = runtimeLayer[0, 0]!;
+        Rectangle cell = LogicalCellBounds(runtimeLayer, orientation);
+        Rectangle visual = tile.DrawLocationWorld;
+        Assert.Equal(cell.Left - left, visual.Left);
+        Assert.Equal(cell.Top - top, visual.Top);
+        Assert.Equal(cell.Right + right, visual.Right);
+        Assert.Equal(cell.Bottom, visual.Bottom);
+        Assert.Equal(new Size(frameWidth, frameHeight), visual.Size);
+    }
+
+
+    /// <summary>
+    /// A grid-sized destination does not make diagonal flips of oversized source
+    /// frames compatible with Tiled's bottom-left tile-layer anchoring.
+    /// </summary>
+    [Fact]
+    public void MapRejectsDiagonalGridRenderedOversizedTile()
+    {
+        OversizedTileset(40, 40, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(
+            OversizedMap(gid: 0x20000001u), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("transformed oversized tile cannot preserve Tiled artwork anchoring"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Safe horizontal flips remain supported with grid render sizing.</summary>
+    [Fact]
+    public void MapAllowsHorizontalFlipOfGridRenderedOversizedTile()
+    {
+        OversizedTileset(40, 40, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(
+            OversizedMap(gid: 0x80000001u), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        Assert.All(Assert.Single(scene.Layers).Tiles,
+            tile => Assert.Equal(TileTransform.FlipHorizontal, tile.Transform));
+    }
+
+    /// <summary>
+    /// Reject imagery reaching beyond the engine's fixed render-candidate fringe:
+    /// a row-four tile can otherwise overlap a row-zero viewport without being queried.
+    /// </summary>
+    [Theory]
+    [InlineData("orthogonal", 32, 128)]
+    [InlineData("isometric", 32, 128)]
+    [InlineData("isometric", 96, 24)]
+    public void MapRejectsOverhangOutsideRuntimeCullingFringe(
+        string orientation, int frameWidth, int frameHeight)
+    {
+        OversizedTileset(frameWidth, frameHeight);
+        var request = new ExternalImportRequest(
+            OversizedMap(orientation), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("overhang exceeds the runtime render-culling fringe"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Flipped oversized tiles are supported when the visual footprint stays anchored.</summary>
+    [Theory]
+    [InlineData("orthogonal")]
+    [InlineData("isometric")]
+    public void MapAllowsHorizontalFlipOfTopOnlyOverhang(string orientation)
+    {
+        OversizedTileset(32, 32);
+        var request = new ExternalImportRequest(
+            OversizedMap(orientation, 0x80000001u), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        Assert.All(Assert.Single(scene.Layers).Tiles,
+            tile => Assert.Equal(TileTransform.FlipHorizontal, tile.Transform));
+
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "oversized.gts"), "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var layer = Assert.Single(runtime.SceneLayers);
+        var cell = LogicalCellBounds(layer, orientation);
+        Assert.Equal(new Rectangle(cell.X, cell.Y - 8, 32, 32), layer[0, 0]!.DrawLocationWorld);
+    }
+
+    /// <summary>Reject flips which would rotate or shift oversized artwork relative to Tiled.</summary>
+    [Theory]
+    [InlineData("orthogonal", 40, 40, 0x80000001u)] // H flip relocates right overhang.
+    [InlineData("orthogonal", 32, 32, 0x40000001u)] // V flip relocates top overhang.
+    [InlineData("isometric", 32, 32, 0x20000001u)] // Diagonal flip swaps a rectangular cell's axes.
+    public void MapRejectsFlippedOversizedTileWhoseAnchorWouldMove(
+        string orientation, int width, int height, uint gid)
+    {
+        OversizedTileset(width, height);
+        var request = new ExternalImportRequest(OversizedMap(orientation, gid), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("transformed oversized tile cannot preserve Tiled artwork anchoring"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Grid sizing does not relax the existing restriction on undersized source frames.</summary>
+    [Fact]
+    public void MapRejectsUndersizedSourceWhenTiledRenderSizeIsGrid()
+    {
+        OversizedTileset(16, 16, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("Tileset frame is smaller than the map cell"));
+        Assert.Empty(result.WrittenFiles);
+    }
+
+    /// <summary>A Tiled grid-rendered tile fits the map cell even when the source frame is larger.</summary>
+    [Fact]
+    public void MapGridRenderSizeKeepsLargerSourceWithoutOverhang()
+    {
+        OversizedTileset(40, 40, "tilerendersize='grid'");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gts = TilesheetDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "oversized.gts"));
+        var region = Assert.Single(gts.Regions);
+        Assert.Equal(new Size(40, 40), region.TileSize);
+        Assert.Equal(Spacing.None, region.Overhang);
+        Assert.DoesNotContain(result.Analysis.Diagnostics, d => d.Code == "tiled.overhang");
+    }
+
+    /// <summary>Smaller atlas frames cannot map to unsigned Gondwana overhang geometry.</summary>
+    [Fact]
+    public void MapRejectsFrameSmallerThanCellWithoutWriting()
+    {
+        OversizedTileset(16, 16);
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("negative overhang", StringComparison.OrdinalIgnoreCase));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+
+    /// <summary>Representable Tiled tile drawing offsets redistribute overhang across edges.</summary>
+    [Theory]
+    [InlineData("orthogonal", -3, 2, 3, 14, 5, 2)]
+    [InlineData("isometric", 0, 6, 0, 10, 8, 6)]
+    public void MapImportsRepresentableTileOffsetsAsOverhang(
+        string orientation, int offsetX, int offsetY,
+        int left, int top, int right, int bottom)
+    {
+        OversizedTileset(40, 40, tileOffset: $"<tileoffset x='{offsetX}' y='{offsetY}'/>");
+        var request = new ExternalImportRequest(OversizedMap(orientation), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
+        var gts = TilesheetDefinitionSerializer.Load(gtsPath);
+        Assert.Equal(new Spacing(left, top, right, bottom), Assert.Single(gts.Regions).Overhang);
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 40, 40));
+
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(gtsPath, "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var layer = Assert.Single(runtime.SceneLayers);
+        var tile = layer[0, 0]!;
+        Rectangle cell = LogicalCellBounds(layer, orientation);
+        Assert.Equal(
+            new Rectangle(cell.Left + offsetX, cell.Bottom - 40 + offsetY, 40, 40),
+            tile.DrawLocationWorld);
+    }
+
+    /// <summary>
+    /// A valid nonnegative OH may still exceed the isometric candidate fringe
+    /// when bottom extension combines with right-hand extension.
+    /// </summary>
+    [Fact]
+    public void MapRejectsCombinedIsometricBottomAndRightOverhangBeyondFringe()
+    {
+        OversizedTileset(40, 40, tileOffset: "<tileoffset x='0' y='16'/>");
+        var request = new ExternalImportRequest(OversizedMap("isometric"), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics,
+            d => d.Message.Contains("overhang exceeds the runtime render-culling fringe"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Offsets that place artwork inside a map-cell edge cannot become nonnegative OH.</summary>
+    [Fact]
+    public void MapRejectsUnrepresentableTileOffset()
+    {
+        OversizedTileset(40, 40, tileOffset: "<tileoffset x='3' y='-2'/>");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("cannot be represented"));
+        Assert.Empty(result.WrittenFiles);
+    }
+
+    /// <summary>Standalone TSX cannot resolve drawing offsets without map cell dimensions.</summary>
+    [Fact]
+    public void StandaloneTsxRejectsNonzeroDrawingOffset()
+    {
+        string source = OversizedTileset(40, 40, tileOffset: "<tileoffset x='-3' y='2'/>");
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("tile offsets are unsupported"));
+        Assert.Empty(result.WrittenFiles);
     }
 
     /// <summary>
