@@ -1,0 +1,142 @@
+# Shared change filters for CI (master). Keep conservative shared-dependency
+# coverage; narrow per-editor filters below control which Windows suites run.
+changelog:
+  - 'Tooling/scripts/*Changelog*.ps1'
+  - 'Tooling/scripts/release.ps1'
+  - 'Tooling/scripts/Extract-ReleaseNotes.ps1'
+  - 'Tooling/scripts/Prepare-PrereleaseTemplates.ps1'
+  - 'Tooling/scripts/Test-PrereleaseTemplateReferences.ps1'
+  - 'cliff.toml'
+  - '.github/workflows/ci-master.yml'
+  - '.github/workflows/changelog-weekly.yml'
+  - '.github/workflows/release.yml'
+  - '.github/ci-paths.yml'
+
+blazor:
+  # Actual projects packed by Testing/BlazorConsumer/Run.ps1 (plus CLI assets).
+  # Do not run the full WASM/browser integration for WinForms-only changes.
+  - 'Gondwana/**'
+  - 'Gondwana.Widgets/**'
+  - 'Gondwana.Hosting/**'
+  - 'Gondwana.Blazor/**'
+  - 'Gondwana.Blazor.Hosting/**'
+  - 'Gondwana.Audio.Browser/**'
+  - 'Tooling/Gondwana.Tooling.Assets/**'
+  - 'Tooling/Gondwana.Cli/**'
+  - 'Tooling/Gondwana.Templates/**'
+  - 'Testing/BlazorConsumer/**'
+  - 'Testing/BlazorPresentationTests.mjs'
+  - 'Testing/browser-audio.test.mjs'
+  - 'assets/**'
+  - 'Directory.Build.props'
+  - 'Directory.Build.targets'
+  - 'Gondwana.sln'
+  - 'global.json'
+  - 'version.json'
+  - '.github/actions/**'
+  - '.github/workflows/ci-master.yml'
+  - '.github/ci-paths.yml'
+
+# Job-level gate: any Windows editor-related source, test, or shared build change.
+winforms:
+  - 'Tooling/Gondwana.Tooling.*/**'
+  - 'Tooling/Shared/**'
+  # Only actual test suites, not the standalone ThemeProbe utility.
+  - 'Testing/Gondwana.Tooling.*.Tests/**'
+  - 'Testing/Shared/**'
+  - 'Testing/WinFormsEditorTests.slnf'
+  # Runtime/hosting dependencies of the WinForms editor/test projects.
+  # In particular, browser-only files do not trigger Windows integration tests.
+  - 'Gondwana/**'
+  - 'Gondwana.Audio.Midi/**'
+  - 'Gondwana.Audio.NAudio/**'
+  - 'Gondwana.Avalonia/**'
+  - 'Gondwana.Avalonia.Hosting/**'
+  - 'Gondwana.Hosting/**'
+  - 'Gondwana.Input.SDL2/**'
+  - 'Gondwana.Video/**'
+  - 'Gondwana.Video.Widgets/**'
+  - 'Gondwana.Widgets/**'
+  - 'Gondwana.WinForms/**'
+  - 'Gondwana.WinForms.Hosting/**'
+  - 'assets/**'
+  # Source fixtures copied by Tilesheets.WinForms.Tests.csproj.
+  - 'Demos/Gondwana.ZeldaPrototype/assets/*.gts'
+  - 'Demos/Gondwana.ZeldaPrototype/assets/*.png'
+  - 'Directory.Build.props'
+  - 'Directory.Build.targets'
+  - 'Gondwana.sln'
+  - 'global.json'
+  - 'version.json'
+  - '.github/actions/**'
+  - '.github/workflows/ci-master.yml'
+  - '.github/ci-paths.yml'
+
+# Shared engine, assets, theme, build, or CI changes require all editor suites.
+winforms_shared:
+  # Runtime/hosting dependencies of the WinForms editor/test projects.
+  # In particular, browser-only files do not trigger Windows integration tests.
+  - 'Gondwana/**'
+  - 'Gondwana.Audio.Midi/**'
+  - 'Gondwana.Audio.NAudio/**'
+  - 'Gondwana.Avalonia/**'
+  - 'Gondwana.Avalonia.Hosting/**'
+  - 'Gondwana.Hosting/**'
+  - 'Gondwana.Input.SDL2/**'
+  - 'Gondwana.Video/**'
+  - 'Gondwana.Video.Widgets/**'
+  - 'Gondwana.Widgets/**'
+  - 'Gondwana.WinForms/**'
+  - 'Gondwana.WinForms.Hosting/**'
+  - 'Tooling/Shared/**'
+  - 'Tooling/Gondwana.Tooling.Assets/**'
+  - 'Testing/Shared/**'
+  - 'Testing/WinFormsEditorTests.slnf'
+  - 'assets/**'
+  - 'Directory.Build.props'
+  - 'Directory.Build.targets'
+  - 'Gondwana.sln'
+  - 'global.json'
+  - 'version.json'
+  - '.github/actions/**'
+  - '.github/workflows/ci-master.yml'
+  - '.github/ci-paths.yml'
+
+# Direct editor tests. Keep transitive test/project references in these lists.
+winforms_tilesheets:
+  - 'Tooling/Gondwana.Tooling.Tilesheets.WinForms/**'
+  - 'Tooling/Gondwana.Tooling.Assets.WinForms/**'
+  - 'Tooling/Gondwana.Tooling.Animations.WinForms/**'
+  - 'Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/**'
+  - 'Demos/Gondwana.ZeldaPrototype/assets/*.gts'
+  - 'Demos/Gondwana.ZeldaPrototype/assets/*.png'
+
+winforms_animations:
+  - 'Tooling/Gondwana.Tooling.Animations.WinForms/**'
+  - 'Testing/Gondwana.Tooling.Animations.WinForms.Tests/**'
+
+winforms_audio:
+  - 'Tooling/Gondwana.Tooling.Audio.WinForms/**'
+  - 'Testing/Gondwana.Tooling.Audio.WinForms.Tests/**'
+
+winforms_scenes:
+  - 'Tooling/Gondwana.Tooling.Scenes.WinForms/**'
+  - 'Testing/Gondwana.Tooling.Scenes.WinForms.Tests/**'
+
+winforms_sprites:
+  - 'Tooling/Gondwana.Tooling.Sprites.WinForms/**'
+  - 'Testing/Gondwana.Tooling.Sprites.WinForms.Tests/**'
+
+winforms_scene_viewer:
+  - 'Tooling/Gondwana.Tooling.SceneViewer.WinForms/**'
+  - 'Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests/**'
+
+# Studio references all standalone editors plus the plugin/asset/importer layers.
+winforms_studio:
+  - 'Tooling/Gondwana.Tooling.*/**'
+  - 'Testing/Gondwana.Tooling.Studio.WinForms.Tests/**'
+  - 'Testing/Gondwana.Tooling.Importers.Tests/Fixtures/**'
+
+winforms_importers:
+  - 'Tooling/Gondwana.Tooling.Importers/**'
+  - 'Testing/Gondwana.Tooling.Importers.Tests/**'

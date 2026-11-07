@@ -16,11 +16,32 @@ on:
       - 'CHANGELOG.md'
       - '**/CHANGELOG.md'
 
+  # All integration suites run nightly and on a manual dispatch.
+  schedule:
+    - cron: '15 2 * * *'
+      timezone: 'America/New_York'
+  workflow_dispatch:
+  # The tagged release workflow calls this same full suite before packaging.
+  workflow_call:
+
+# A new PR commit supersedes old CI runs; never cancel release or master runs.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
   actions: read
 jobs:
   blazor-consumer:
+    needs: changes
+    # Use full packaging/browser smoke tests only for relevant PR/master changes.
+    # Manual/nightly/tagged release runs always execute them.
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      github.ref_type == 'tag' ||
+      needs.changes.outputs.blazor == 'true'
     # Match the pinned Playwright browser's supported OS, independent of runner image upgrades.
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -67,53 +88,32 @@ jobs:
       pull-requests: read
     outputs:
       changelog: ${{ steps.filter.outputs.changelog }}
+      blazor: ${{ steps.filter.outputs.blazor }}
       winforms: ${{ steps.filter.outputs.winforms }}
+      winforms_shared: ${{ steps.filter.outputs.winforms_shared }}
+      winforms_tilesheets: ${{ steps.filter.outputs.winforms_tilesheets }}
+      winforms_animations: ${{ steps.filter.outputs.winforms_animations }}
+      winforms_audio: ${{ steps.filter.outputs.winforms_audio }}
+      winforms_scenes: ${{ steps.filter.outputs.winforms_scenes }}
+      winforms_sprites: ${{ steps.filter.outputs.winforms_sprites }}
+      winforms_scene_viewer: ${{ steps.filter.outputs.winforms_scene_viewer }}
+      winforms_studio: ${{ steps.filter.outputs.winforms_studio }}
+      winforms_importers: ${{ steps.filter.outputs.winforms_importers }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v3
         id: filter
+        # The caller's tag event is also a push; only diff actual master pushes.
+        if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
         with:
           base: master
-          filters: |
-            changelog:
-              - 'Tooling/scripts/*Changelog*.ps1'
-              - 'Tooling/scripts/release.ps1'
-              - 'Tooling/scripts/Extract-ReleaseNotes.ps1'
-              - 'Tooling/scripts/Prepare-PrereleaseTemplates.ps1'
-              - 'Tooling/scripts/Test-PrereleaseTemplateReferences.ps1'
-              - 'cliff.toml'
-              - '.github/workflows/ci-master.yml'
-              - '.github/workflows/changelog-weekly.yml'
-              - '.github/workflows/release.yml'
-            # Run WinForms integration tests for changes to the editor code and
-            # its shared runtime/build dependencies. CLI-only and Blazor-only
-            # changes don't require a Windows editor test run on PRs.
-            winforms:
-              - 'Tooling/Gondwana.Tooling.*/**'
-              - 'Tooling/Shared/**'
-              - 'Gondwana/**'
-              - 'Gondwana.Audio.NAudio/**'
-              - 'Gondwana.Hosting/**'
-              - 'Gondwana.Widgets/**'
-              - 'Gondwana.WinForms/**'
-              - 'Gondwana.WinForms.Hosting/**'
-              - 'Testing/Gondwana.Tooling.*/**'
-              - 'Testing/Shared/**'
-              - 'Testing/WinFormsEditorTests.slnf'
-              - 'Directory.Build.props'
-              - 'Directory.Build.targets'
-              - 'Gondwana.sln'
-              - 'global.json'
-              - 'version.json'
-              - 'assets/**'
-              - '.github/workflows/ci-master.yml'
-              - '.github/actions/**'
+          filters: .github/ci-paths.yml
 
   changelog-tests:
     needs: changes
-    if: needs.changes.outputs.changelog == 'true'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' || needs.changes.outputs.changelog == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -128,9 +128,13 @@ jobs:
           ./Tooling/scripts/Test-PrereleaseTemplateReferences.ps1
 
   winforms-editor-tests:
-    # Keep full editor coverage on master, but skip unrelated PRs.
+    # Only affected editor suites on PRs/master; full nightly/manual/release.
     needs: changes
-    if: github.event_name == 'push' || needs.changes.outputs.winforms == 'true'
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      github.ref_type == 'tag' ||
+      needs.changes.outputs.winforms == 'true'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -139,33 +143,90 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      # Compile all tooling test projects and shared dependencies once.
+      # Restore/build only selected test projects and their transitive dependencies.
+      - name: Select affected WinForms editor suites
+        id: select
+        shell: pwsh
+        env:
+          RUN_ALL: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' || needs.changes.outputs.winforms_shared == 'true' }}
+          TILESHEETS: ${{ needs.changes.outputs.winforms_tilesheets }}
+          ANIMATIONS: ${{ needs.changes.outputs.winforms_animations }}
+          AUDIO: ${{ needs.changes.outputs.winforms_audio }}
+          SCENES: ${{ needs.changes.outputs.winforms_scenes }}
+          SPRITES: ${{ needs.changes.outputs.winforms_sprites }}
+          SCENE_VIEWER: ${{ needs.changes.outputs.winforms_scene_viewer }}
+          STUDIO: ${{ needs.changes.outputs.winforms_studio }}
+          IMPORTERS: ${{ needs.changes.outputs.winforms_importers }}
+        run: |
+          $full = $env:RUN_ALL -eq 'true'
+          $flags = @{
+            'Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj' = $env:TILESHEETS
+            'Gondwana.Tooling.Animations.WinForms.Tests.csproj' = $env:ANIMATIONS
+            'Gondwana.Tooling.Audio.WinForms.Tests.csproj' = $env:AUDIO
+            'Gondwana.Tooling.Scenes.WinForms.Tests.csproj' = $env:SCENES
+            'Gondwana.Tooling.Sprites.WinForms.Tests.csproj' = $env:SPRITES
+            'Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj' = $env:SCENE_VIEWER
+            'Gondwana.Tooling.Studio.WinForms.Tests.csproj' = $env:STUDIO
+            'Gondwana.Tooling.Importers.Tests.csproj' = $env:IMPORTERS
+          }
+          $source = Get-Content Testing/WinFormsEditorTests.slnf -Raw | ConvertFrom-Json
+          $selected = @($source.solution.projects | Where-Object {
+            $filename = [IO.Path]::GetFileName($_)
+            if (!$flags.ContainsKey($filename)) { throw "Unmapped WinForms test project: $_" }
+            $full -or $flags[$filename] -eq 'true'
+          })
+          if ($selected.Count -eq 0) { throw 'WinForms job started but no test suites were selected.' }
+          $source.solution.projects = $selected
+          $source | ConvertTo-Json -Depth 4 | Set-Content Testing/SelectedWinFormsEditorTests.slnf
+          Write-Host "Selected Windows suites: $($selected -join ', ')"
+          $outputs = [ordered]@{
+            tilesheets = 'Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj'
+            animations = 'Gondwana.Tooling.Animations.WinForms.Tests.csproj'
+            audio = 'Gondwana.Tooling.Audio.WinForms.Tests.csproj'
+            scenes = 'Gondwana.Tooling.Scenes.WinForms.Tests.csproj'
+            sprites = 'Gondwana.Tooling.Sprites.WinForms.Tests.csproj'
+            scene_viewer = 'Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj'
+            studio = 'Gondwana.Tooling.Studio.WinForms.Tests.csproj'
+            importers = 'Gondwana.Tooling.Importers.Tests.csproj'
+          }
+          foreach ($entry in $outputs.GetEnumerator()) {
+            $enabled = (@($selected | Where-Object { [IO.Path]::GetFileName($_) -eq $entry.Value }).Count -gt 0)
+            "$($entry.Key)=$($enabled.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          }
       - name: Restore tooling test projects
-        run: dotnet restore Testing/WinFormsEditorTests.slnf --nologo -p:Configuration=Release
+        run: dotnet restore Testing/SelectedWinFormsEditorTests.slnf --nologo -p:Configuration=Release
       - name: Build tooling test projects
-        run: dotnet build Testing/WinFormsEditorTests.slnf --configuration Release --no-restore --nologo
+        run: dotnet build Testing/SelectedWinFormsEditorTests.slnf --configuration Release --no-restore --nologo
       - name: Tilesheet WinForms editor interaction tests
+        if: ${{ steps.select.outputs.tilesheets == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Animation WinForms editor interaction tests
+        if: ${{ steps.select.outputs.animations == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Animations.WinForms.Tests/Gondwana.Tooling.Animations.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Audio WinForms editor interaction tests
+        if: ${{ steps.select.outputs.audio == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Audio.WinForms.Tests/Gondwana.Tooling.Audio.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Scene WinForms editor interaction tests
+        if: ${{ steps.select.outputs.scenes == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Scenes.WinForms.Tests/Gondwana.Tooling.Scenes.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Sprite WinForms editor interaction tests
+        if: ${{ steps.select.outputs.sprites == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Sprites.WinForms.Tests/Gondwana.Tooling.Sprites.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Scene Viewer runtime loading and camera tests
+        if: ${{ steps.select.outputs.scene_viewer == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests/Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Studio WinForms composition tests
+        if: ${{ steps.select.outputs.studio == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Studio.WinForms.Tests/Gondwana.Tooling.Studio.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Tooling importer tests
+        if: ${{ steps.select.outputs.importers == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Importers.Tests/Gondwana.Tooling.Importers.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
   build:

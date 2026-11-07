@@ -21,8 +21,9 @@ Never reuse a published version. Older Git tags, GitHub Releases, and NuGet pack
 
 ## 2. Verify readiness
 
-- Confirm required fixes are merged, `master` is current, and CI is passing.
-- Confirm the nightly `package-binaries.yml` validation (or run it manually via Actions).
+- Confirm required fixes are merged, `master` is current, and CI is passing; CI selects affected integration tests on ordinary PRs and master pushes.
+- Confirm the **2:15 AM Eastern full CI run** has passed recently (or run `CI (master)` manually for comprehensive coverage).
+- Confirm the daily `package-binaries.yml` validation (or run it manually via Actions).
 - Verify release-specific behavior such as Blazor template/native asset packaging when relevant.
 - Install Git, .NET SDK, `nbgv` (`dotnet tool install -g nbgv`), and `git-cliff` (`winget install --id orhun.git-cliff`).
 - On `master`, inspect `nbgv get-version -v NuGetPackageVersion`; it must match the intended version exactly.
@@ -44,11 +45,11 @@ Check the generated release notes and version tag. When correct:
 .\Tooling\scripts\release.ps1
 ```
 
-Type `DEPLOY` only after reviewing the preview. The script runs the core tests, regenerates changelogs, commits them, creates the version tag, and atomically pushes the release commit and tag. GitHub Actions then builds, packages, and publishes.
+Type `DEPLOY` only after reviewing the preview. The script runs the core tests, regenerates changelogs, commits them, creates the version tag, and atomically pushes the release commit and tag. GitHub Actions then runs the **full CI suite on the tagged commit** (including Blazor NuGet/browser and all WinForms editor tests), validates release packages/binaries, and publishes only after those prerequisites pass.
 
 ## 4. Verify publication
 
-Inspect **Actions → Release** and the resulting GitHub Release, ZIP asset, and NuGet packages. Confirm the tag, package versions, and release-note body agree.
+Inspect **Actions → Release**: preflight must succeed, then the reusable full-CI `validation` job, then the `packaging` job before publication can begin. Verify the resulting GitHub Release, ZIP asset, and NuGet packages. Confirm the tag, package versions, and release-note body agree.
 
 - **Alpha/beta/RC:** GitHub marks it as a prerelease; the latest stable Release stays unchanged. Stable `/api/` documentation is not republished. All prerelease templates (including alpha, beta, RC, and preview) pin `Gondwana.*` dependencies to that exact prerelease package version.
 - **Stable:** GitHub marks it as a normal release and updates the immutable versioned API documentation and stable `/api/` redirect.
