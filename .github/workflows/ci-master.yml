@@ -67,6 +67,7 @@ jobs:
       pull-requests: read
     outputs:
       changelog: ${{ steps.filter.outputs.changelog }}
+      winforms: ${{ steps.filter.outputs.winforms }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -86,6 +87,29 @@ jobs:
               - '.github/workflows/ci-master.yml'
               - '.github/workflows/changelog-weekly.yml'
               - '.github/workflows/release.yml'
+            # Run WinForms integration tests for changes to the editor code and
+            # its shared runtime/build dependencies. CLI-only and Blazor-only
+            # changes don't require a Windows editor test run on PRs.
+            winforms:
+              - 'Tooling/Gondwana.Tooling.*/**'
+              - 'Tooling/Shared/**'
+              - 'Gondwana/**'
+              - 'Gondwana.Audio.NAudio/**'
+              - 'Gondwana.Hosting/**'
+              - 'Gondwana.Widgets/**'
+              - 'Gondwana.WinForms/**'
+              - 'Gondwana.WinForms.Hosting/**'
+              - 'Testing/Gondwana.Tooling.*/**'
+              - 'Testing/Shared/**'
+              - 'Testing/WinFormsEditorTests.slnf'
+              - 'Directory.Build.props'
+              - 'Directory.Build.targets'
+              - 'Gondwana.sln'
+              - 'global.json'
+              - 'version.json'
+              - 'assets/**'
+              - '.github/workflows/ci-master.yml'
+              - '.github/actions/**'
 
   changelog-tests:
     needs: changes
@@ -104,6 +128,9 @@ jobs:
           ./Tooling/scripts/Test-PrereleaseTemplateReferences.ps1
 
   winforms-editor-tests:
+    # Keep full editor coverage on master, but skip unrelated PRs.
+    needs: changes
+    if: github.event_name == 'push' || needs.changes.outputs.winforms == 'true'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
