@@ -25,13 +25,15 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 4. Restores NuGet packages for the solution with dependency reevaluation.
 5. Builds the solution in `Release` configuration.
 6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
-7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
-8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
+7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-blazor`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
+8. Detects an installed .NET 10 SDK, offering to install it via `winget` **only if it is missing** (with an explanation that the `net10.0-browser` Blazor template requires it). When a .NET 10 SDK is available, installs or updates its matching `wasm-tools` workload in an isolated SDK 10 context; the repository's .NET 8 SDK selection remains unchanged.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance (including the official SDL releases page) if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
 11. Ensures `git-cliff` is installed; updates it via `winget` when available on Windows.
 12. Installs `butler` (itch.io) by downloading the latest binary from the [broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, and extracting it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Adds the directory to the current session PATH and prints a reminder to add it permanently. Prints `butler login` instructions after install.
 13. Runs `gondwana doctor` to confirm the final environment state.
+
+**Blazor SDK behavior:** The main solution stays on SDK 8 via `global.json`. The script checks `dotnet --list-sdks` for .NET 10; if it is already present, **no installation prompt appears**. On Windows, an interactive session without SDK 10 offers to install it side-by-side using `winget`; declining or running non-interactively leaves ordinary desktop development intact. The .NET 10 workload is installed/verified separately. `gondwana doctor` launched from the repository still reports the SDK 8 workload because of `global.json`.
 
 **Prerequisites:**
 - Git on `PATH`
@@ -42,7 +44,7 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 | Parameter | Description | Default |
 |---|---|---|
 | `-SkipBuild` | Skip step 5 (`dotnet build`). Restores packages and tools only. | — |
-| `-SkipOptional` | Skip steps 8–12 (wasm-tools, SDL2, LibVLC, git-cliff, butler). | — |
+| `-SkipOptional` | Skip steps 8–12 (optional .NET 10 / wasm-tools, SDL2, LibVLC, git-cliff, butler). | — |
 
 **Examples:**
 ```powershell
@@ -52,7 +54,7 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 # Skip building the solution
 .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
-# Install core tools only (no WASM workload, SDL2, LibVLC, git-cliff, or butler)
+# Install core tools only (no optional .NET 10/WASM, SDL2, LibVLC, git-cliff, or butler)
 .\Setup-Gondwana-Dev.ps1 -SkipOptional
 ```
 
