@@ -13,4 +13,9 @@
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Shared artwork for Studio and standalone WinForms editors. -->
+    <EmbeddedResource Include="assets/icons8-folder-96.png"
+                      LogicalName="Gondwana.Tooling.WinForms.Theming.assets.icons8-folder-96.png" />
+  </ItemGroup>
 </Project>
