@@ -8,36 +8,23 @@ jobs:
   format-title:
     runs-on: ubuntu-latest
 
-    # Only run for same-repository PRs targeting master. This avoids running
-    # Copilot against untrusted fork content under pull_request_target.
+    # pull_request_target uses this trusted workflow for both forks and same-repo PRs.
+    # Never checkout or execute PR content; read only metadata through the API.
     if: |
       github.event.pull_request.base.ref == 'master' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
       !startsWith(github.event.pull_request.title, 'docs: update changelog')
 
+    # Copilot can read PR metadata, but cannot edit the pull request.
     permissions:
       contents: read
-      pull-requests: write
+      pull-requests: read
       copilot-requests: write
 
+    outputs:
+      title: ${{ steps.generate_title.outputs.title }}
+      body: ${{ steps.generate_description.outputs.body }}
+
     steps:
-      - name: Checkout PR branch
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      - name: Install GitHub Copilot CLI
-        run: npm install -g @github/copilot
-
-      - name: Fetch master for diff base
-        run: git fetch origin master --depth=50
-
       - name: Inspect current PR state
         id: state
         env:
@@ -60,20 +47,36 @@ jobs:
           print(f"needs_body={'false' if body else 'true'}")
           PY
 
-      - name: Build diff and commit summary
+      - name: Set up Node.js
+        if: steps.state.outputs.needs_title == 'true' || steps.state.outputs.needs_body == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install GitHub Copilot CLI
+        if: steps.state.outputs.needs_title == 'true' || steps.state.outputs.needs_body == 'true'
+        run: npm install -g @github/copilot
+
+      - name: Build diff and commit summary from GitHub API
         id: context
         if: steps.state.outputs.needs_title == 'true' || steps.state.outputs.needs_body == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          BASE=$(git merge-base origin/master HEAD)
+          # Work exclusively with GitHub API metadata; never run untrusted fork code.
+          # awk consumes all pages without early-exit SIGPIPE failures under pipefail.
+          DIFF_STAT=$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" \
+            --jq '.[] | "\(.filename) | \(.status) | +\(.additions) -\(.deletions)"' \
+            | awk 'NR <= 60 { print }')
 
-          # File-level change summary, capped to keep the prompt reasonably small.
-          DIFF_STAT=$(git diff "$BASE"...HEAD --stat | head -60)
-
-          # Commit messages on this branch, capped for the same reason.
-          COMMITS=$(git log "$BASE"...HEAD --oneline | head -30)
+          COMMITS=$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/commits?per_page=100" \
+            --jq '.[] | "\(.sha[0:7]) \(.commit.message | split("\n")[0])"' \
+            | awk 'NR <= 30 { print }')
 
           OUTPUT_DELIM=$(uuidgen)
-
           {
             echo "diff_stat<<$OUTPUT_DELIM"
             printf '%s\n' "$DIFF_STAT"
@@ -270,14 +273,22 @@ jobs:
             echo "$DELIM"
           } >> "$GITHUB_OUTPUT"
 
+  # Only this separate job has PR write permission. It never runs Copilot or PR code.
+  update-pr:
+    needs: format-title
+    if: needs.format-title.outputs.title != '' || needs.format-title.outputs.body != ''
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
       - name: Update PR title
-        if: steps.generate_title.outputs.title != ''
+        if: needs.format-title.outputs.title != ''
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          NEW_TITLE: ${{ steps.generate_title.outputs.title }}
+          NEW_TITLE: ${{ needs.format-title.outputs.title }}
         run: |
-          CURRENT_TITLE=$(gh pr view "$PR_NUMBER" --json title --jq '.title // ""')
+          CURRENT_TITLE=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json title --jq '.title // ""')
 
           # Preserve a title that someone manually fixed while this job was running.
           if echo "$CURRENT_TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
@@ -294,16 +305,16 @@ jobs:
           echo "  From: $CURRENT_TITLE"
           echo "  To:   $NEW_TITLE"
 
-          gh pr edit "$PR_NUMBER" --title "$NEW_TITLE"
+          gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --title "$NEW_TITLE"
 
       - name: Update PR description when body is blank
-        if: steps.generate_description.outputs.body != ''
+        if: needs.format-title.outputs.body != ''
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          NEW_BODY: ${{ steps.generate_description.outputs.body }}
+          NEW_BODY: ${{ needs.format-title.outputs.body }}
         run: |
-          CURRENT_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body // ""')
+          CURRENT_BODY=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json body --jq '.body // ""')
 
           if [ -n "$(printf '%s' "$CURRENT_BODY" | tr -d '[:space:]')" ]; then
             echo "PR description is not blank. Skipping update."
@@ -316,4 +327,4 @@ jobs:
           fi
 
           echo "Populating blank PR description for #$PR_NUMBER"
-          gh pr edit "$PR_NUMBER" --body "$NEW_BODY"
+          gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$NEW_BODY"
