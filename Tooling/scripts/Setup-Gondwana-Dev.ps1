@@ -400,7 +400,42 @@ if ($SkipOptional) {
 
             if ($canPrompt) {
                 $answer = Read-Host 'Install the .NET 10 SDK now with winget? [y/N]'
-                if ($answer -match '^(?i:y|yes)
+                if ($answer -match '^(?i:y|yes)$') {
+                    try {
+                        Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.10', '--exact',
+                                            '--silent', '--accept-source-agreements',
+                                            '--accept-package-agreements')
+                        $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
+                                    [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+                        $sdk10Version = Get-DotNet10SdkVersion
+                        if (-not $sdk10Version) {
+                            WARN '.NET 10 was installed but is not visible yet; reopen the terminal and rerun setup.'
+                        }
+                    } catch {
+                        WARN "Automatic .NET 10 installation failed: $_"
+                    }
+                } else {
+                    INFO '.NET 10 installation declined; Blazor workloads will be skipped.'
+                }
+            } else {
+                WARN 'Non-interactive session: skipping optional .NET 10 installation prompt.'
+            }
+        } else {
+            INFO 'Automatic .NET 10 installation requires winget on Windows; install the SDK manually.'
+        }
+    }
+
+    if ($sdk10Version) {
+        try {
+            Ensure-DotNet10WasmTools -SdkVersion $sdk10Version
+        } catch {
+            WARN "Could not set up the .NET 10 wasm-tools workload: $_"
+            INFO 'From outside this repository (which pins SDK 8), select SDK 10 and run: dotnet workload install wasm-tools'
+        }
+    } else {
+        WARN 'Skipping .NET 10 wasm-tools: .NET 10 SDK is not installed.'
+        INFO 'Install .NET 10 from https://dotnet.microsoft.com/download/dotnet/10.0 for Blazor template support.'
+    }
 
     # ─── Step 9: SDL2 native library ──────────────────────────────────────────
 
