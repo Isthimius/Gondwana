@@ -16,7 +16,7 @@ public static class ToolingIconResources
             throw new ArgumentOutOfRangeException(nameof(pixels));
 
         using var stream = typeof(ToolingIconResources).Assembly.GetManifestResourceStream(ResourcePrefix + fileName)
-            ?? throw new InvalidOperationException($"Missing embedded toolbar icon: {fileName}");
+            ?? throw new InvalidOperationException($"Missing embedded tooling icon: {fileName}");
         using var source = Image.FromStream(stream);
         var bitmap = new Bitmap(pixels, pixels);
         try
