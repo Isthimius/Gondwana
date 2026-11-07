@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.WinForms.Theming;
 using ICSharpCode.SharpZipLib;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
@@ -558,12 +559,21 @@ public sealed class DirectoryPanel : UserControl
         var images = new ImageList { ImageSize = new Size(pixels, pixels), ColorDepth = ColorDepth.Depth32Bit };
         try
         {
-            AddIcon(images, "directory", "D", Color.DarkKhaki);
+            AddFolderIcon(images);
             foreach (var category in Categories)
                 AddIcon(images, category.Key, category.Glyph, category.Color);
             return images;
         }
         catch { images.Dispose(); throw; }
+    }
+
+    private static void AddFolderIcon(ImageList images)
+    {
+        using var bitmap = ToolingIconResources.CreateBitmap("icons8-folder-96.png", images.ImageSize.Width);
+        images.Images.Add("directory", bitmap);
+
+        // Materialize the native copy before disposing the source bitmap.
+        _ = images.Handle;
     }
 
     private static void AddIcon(ImageList images, string key, string glyph, Color color)
