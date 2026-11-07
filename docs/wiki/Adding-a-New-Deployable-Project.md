@@ -132,17 +132,35 @@ The changelog generators derive project include globs from `Path`; a normal proj
 
 ---
 
-## ✅ Required — CI downloadable-binary staging
+## ✅ Required — CI integration-test coverage
 
-### `.github/workflows/ci-master.yml`
+### `.github/ci-paths.yml` and `.github/workflows/ci-master.yml`
 
-If the deployable project should appear in the repository's downloadable binary ZIP:
+The normal PR/master build covers all projects added to the solution, but expensive integration suites are **selected by changed paths**. When adding or changing a project:
 
-1. Add a `mkdir -p publish/<ProjectName>` line to **Publish projects needed for staged binaries**.
-2. Add the corresponding `dotnet publish` command.
-3. Add the DLL/app to **Stage exact downloadable binaries**.
+1. Check whether its code, package inputs, and test fixtures are included in the `blazor`, `winforms`, or `winforms_shared` filters when those integration suites depend on it.
+2. For a new Windows test suite, add its paths to the appropriate `winforms_*` filter(s), register its project in `Testing/WinFormsEditorTests.slnf`, and add it to the selector/map and test steps in `ci-master.yml`.
+3. Update Studio dependency selection when an editor, importer, or plugin becomes part of Studio.
+4. Confirm a PR changing **only that project's files** selects the intended suites; consider fixtures and transitive project references as well.
 
-Typical library example:
+Nightly, manual, and tagged-release CI runs execute the **full** integration suite, regardless of which files changed. The tagged-release workflow requires a successful full run before packaging and publication.
+
+---
+
+## ✅ Required — downloadable and release binary staging
+
+### `.github/workflows/package-binaries.yml`
+
+The CI workflow no longer stages the full Windows binary ZIP. The **reusable packaging workflow** is the single place for NuGet package creation and release binary staging. It runs daily, can be dispatched manually, and is invoked by tagged releases **after full CI validation**.
+
+If a new deployable project must appear in `Gondwana-binaries.zip`:
+
+1. Add its publish destination and `dotnet publish` command to **Publish projects** in `package-binaries.yml`.
+2. Add the matching DLL or application folder to **Stage release assets**.
+3. For tooling applications with runtime assets, add the project to the shared `Tooling/scripts/Publish-WindowsTooling.ps1` plan as appropriate.
+4. Update `Tooling/scripts/Test-WindowsToolingBundle.ps1` if the new binary is part of the required bundle contract.
+
+Typical library example in the packaging workflow:
 
 ```bash
 mkdir -p publish/Gondwana.NewProject
@@ -151,26 +169,13 @@ dotnet publish Gondwana.NewProject/Gondwana.NewProject.csproj \
   --nologo /p:EnableWindowsTargeting=true
 ```
 
-and:
+and in the release staging step:
 
 ```bash
-cp publish/Gondwana.NewProject/Gondwana.NewProject.dll artifacts/
+cp publish/Gondwana.NewProject/Gondwana.NewProject.dll release-assets/
 ```
 
-For apps/tools that require runtime assets, publish with the appropriate RID and stage the whole directory rather than only the executable.
-
----
-
-## ✅ Required — release binary staging
-
-### `.github/workflows/release.yml`
-
-Mirror the CI binary-staging changes in the release workflow:
-
-1. Add the project to **Publish projects**.
-2. Add the matching DLL/app to **Stage release assets**.
-
-The NuGet side is intentionally more automatic: `release.yml` runs `dotnet pack` over `Gondwana.sln` and pushes every resulting `.nupkg`. A packable project that is correctly added to the solution therefore does **not** require a separate NuGet push command.
+The tagged `.github/workflows/release.yml` calls the same packaging workflow; **do not duplicate publish/staging commands there**. Packable solution projects normally participate in its `dotnet pack` step and the resulting `nupkgs/*.nupkg` files are published without adding package-specific NuGet push commands.
 
 ---
 

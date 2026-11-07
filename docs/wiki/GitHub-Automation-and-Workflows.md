@@ -18,6 +18,7 @@ Most of the automation lives under:
 .github/
 ├── labeler.yml
 ├── release.yml
+├── ci-paths.yml
 └── workflows/
     ├── changelog-weekly.yml
     ├── ci-master.yml
@@ -36,7 +37,7 @@ Most of the automation lives under:
 
 Files under `.github/workflows/` are **GitHub Actions workflows**: they define things GitHub actually runs.
 
-Files such as `.github/labeler.yml` and `.github/release.yml` are **configuration files** consumed by workflows or by GitHub itself.
+Files such as `.github/labeler.yml`, `.github/release.yml`, and `.github/ci-paths.yml` are **configuration files** consumed by workflows or by GitHub itself.
 
 ---
 
@@ -70,7 +71,7 @@ At a high level, Gondwana's repository automation looks like this:
 flowchart TD
     PR[Pull Request] --> LABEL[Label PR]
     PR --> FORMAT[Normalize PR metadata]
-    PR --> CI[Format + Build + Test]
+    PR --> CI[Format + Build + Selective Tests]
 
     MASTER[Push to master] --> CI
     MASTER --> DOCS[Development API docs when relevant]
@@ -86,11 +87,13 @@ flowchart TD
 
     WIKIWEEKLY[Monday 04:17 UTC] --> RECONCILE[Reconcile Wiki and docs/wiki drift]
 
+    NIGHTLY[Daily 2:15 AM Eastern] --> FULLCI[Full CI integration suite]
     DAILY[Daily 12:30 PM Eastern] --> PKG[Validate NuGet packages + Windows binary bundle]
 
     TAG[Push v* tag] --> RELEASE[Release preflight]
     TAG --> MIRRORS
-    RELEASE --> SHARED[Run package-binaries.yml for tagged commit]
+    RELEASE --> VALIDATE[Run full CI for the tag]
+    VALIDATE --> SHARED[Run package-binaries.yml for tagged commit]
     SHARED --> PUB[Publish validated release artifacts]
     PUB --> GHREL[GitHub Release]
     PUB --> NUGET[NuGet.org]
@@ -149,6 +152,11 @@ It runs for:
 - pull requests that receive new commits
 - reopened pull requests
 - draft pull requests marked ready for review
+- nightly runs at **2:15 AM Eastern** (full integration coverage)
+- manual workflow dispatch (full integration coverage)
+- `workflow_call` from the tagged release process (full integration coverage)
+
+A newer commit to the same pull request cancels that PR's superseded CI run; master, scheduled, manual, and release runs are not canceled by that PR rule.
 
 Documentation-only and changelog-only changes are excluded from the normal CI workflow.
 
@@ -157,7 +165,6 @@ The current `paths-ignore` rules include:
 ```text
 docs/**
 .github/workflows/docs.yml
-.github/release.yml
 CHANGELOG.md
 **/CHANGELOG.md
 ```
@@ -188,7 +195,7 @@ Although Gondwana contains Windows-targeting projects, CI builds from Linux usin
 /p:EnableWindowsTargeting=true
 ```
 
-This allows Windows-targeted assemblies to be built from Linux. The separate WinForms tooling interaction test job runs on `windows-latest`.
+This allows Windows-targeted assemblies to be built from Linux. The separate WinForms tooling interaction test job runs on `windows-latest`. The Blazor NuGet consumer job uses `ubuntu-24.04`, .NET 8 plus .NET 10, the `wasm-tools` workload, and Playwright/Chromium.
 
 ---
 
@@ -217,15 +224,22 @@ dotnet build \
 
 ## Formatting and tests
 
-CI checks whitespace and selected style diagnostics, builds the solution in Release configuration, and runs:
+CI always checks whitespace and selected style diagnostics, builds the solution in Release configuration, and runs:
 
-- `Testing/Gondwana.Tests/Gondwana.Tests.csproj` unit tests
-- Node.js browser-side tests in `Testing/BlazorPresentationTests.mjs` and `Testing/browser-audio.test.mjs`
-- WinForms tooling tests on `windows-latest` for Tilesheets, Animations, Audio, Scenes, Sprites, Scene Viewer, and Studio
+- `Testing/Gondwana.Tests/Gondwana.Tests.csproj` core unit tests
+- fast Node.js browser-side tests in `Testing/BlazorPresentationTests.mjs` and `Testing/browser-audio.test.mjs`
 
-The `changelog-tests` job is conditional. A lightweight `changes` job uses `dorny/paths-filter` to run the changelog integration suite only when a pull request or push to `master` changes the changelog PowerShell scripts, `release.ps1`, `Extract-ReleaseNotes.ps1`, `cliff.toml`, or the CI, weekly changelog, or release workflow YAML files. Otherwise the changelog job is skipped; normal build and editor tests remain unaffected.
+The **integration jobs are change-aware** for PRs and pushes to `master`:
 
-The standalone release workflow (`.github/workflows/release.yml`) is not excluded by CI's `paths-ignore` rules, so release workflow changes can trigger these tests. The scheduled `changelog-weekly.yml` workflow still runs the same integration suite before writing changelogs, regardless of which files were changed.
+- `blazor-consumer` packs the engine and browser dependencies, installs the CLI/templates into an isolated consumer environment, generates a Blazor project, then performs Debug/Release builds, publishing, and Chromium smoke tests. It runs when a relevant engine, Blazor, browser-audio, CLI, template, CLI asset dependency, or build/test input changes.
+- `winforms-editor-tests` runs only for relevant Windows tooling/runtime changes. It selects affected suites from Tilesheets, Animations, Audio, Scenes, Sprites, Scene Viewer, Studio, and Importers. It generates `Testing/SelectedWinFormsEditorTests.slnf` and restores/builds only those test projects and their dependencies.
+- `changelog-tests` runs for changes affecting changelog scripts, release preparation, and related CI/release configuration.
+
+All path filters are maintained centrally in **`.github/ci-paths.yml`** and evaluated by the `changes` job using `dorny/paths-filter`. Studio tests cover changes to its referenced standalone editors and tooling plugins. Windows editor test selection intentionally excludes unrelated browser-only and ThemeProbe-only changes; fixture files copied from `Demos/Gondwana.ZeldaPrototype/assets` trigger the Tilesheets suite.
+
+A change to a shared engine, Windows runtime, common tooling, test setup, or global build configuration selects the full Windows test suite. Newly added test suites or cross-project dependencies must be reflected in the filter file and the selector in `ci-master.yml`.
+
+**Full integration coverage** runs nightly, through manual dispatch, and for a tagged release before packaging. Those modes run all eight Windows suites, Blazor consumer validation, and changelog integration tests, even if no matching paths changed. The standalone weekly changelog workflow still validates changelog generation before writing generated files.
 
 The Linux build/test job and Windows editor-test job are separate CI jobs. The Linux job's broad sequence is:
 
@@ -241,7 +255,7 @@ Gondwana.Tests
 Browser helper tests
 ```
 
-**Ordinary PR CI and pushes to `master` do not run `dotnet pack`, publish binaries, or upload a `Gondwana-binaries` artifact.** Packaging is validated separately by the scheduled workflow and again for every tagged release.
+**Ordinary PR CI and pushes to `master` do not build or upload the full release binary bundle.** The conditional Blazor consumer test packs selected NuGet dependencies as disposable test fixtures, but complete release packaging and `Gondwana-binaries` validation are reserved for the separate daily packaging workflow and tagged releases.
 
 ---
 
@@ -1074,12 +1088,13 @@ A tag is therefore an executable release event, not merely a label.
 
 ## Release flow
 
-The tag workflow performs preflight validation (including matching the tag to the Nerdbank.GitVersioning package version and extracting release notes), invokes the reusable packaging workflow, and only then publishes.
+The tag workflow performs preflight validation (including matching the tag to the Nerdbank.GitVersioning package version and extracting release notes), invokes the **full reusable CI suite for the tagged commit**, invokes the reusable packaging workflow only after CI passes, and only then publishes.
 
 ```mermaid
 flowchart TD
     TAG[Push v* tag] --> PREFLIGHT[Validate version and release notes]
-    PREFLIGHT --> PKG[Call package-binaries.yml]
+    PREFLIGHT --> CI[Call full ci-master.yml suite for tag]
+    CI --> PKG[Call package-binaries.yml]
     PKG --> BUNDLE[Build + Pack + Publish + Stage + Validate + ZIP]
     BUNDLE --> UPLOAD[Upload validated ZIP + NuGet artifacts]
     UPLOAD --> PUB[Release publication job]
@@ -1099,7 +1114,7 @@ flowchart TD
 
 ## Release branch
 
-After preflight and packaging succeed, the release publication job creates or overwrites:
+After preflight, full CI validation, and packaging succeed, the release publication job creates or overwrites:
 
 ```text
 release/v<version>
@@ -1113,7 +1128,7 @@ The immutable tag remains the actual release identity; the release branch provid
 
 ## Build, packages, and binaries
 
-The release calls `package-binaries.yml` on the tagged source. That reusable job restores, builds, packs, publishes, stages, and validates the release outputs **before** uploading artifacts.
+Only after the full CI suite passes does the release call `package-binaries.yml` on the tagged source. That reusable job restores, builds, packs, publishes, stages, and validates the release outputs **before** uploading artifacts.
 
 The release publication job downloads `Gondwana-nupkgs` and `Gondwana-binaries` from that same workflow run. It does not rely on any previous PR CI or scheduled validation run, and does not rebuild the distributable outputs.
 
@@ -1512,7 +1527,7 @@ For unit-test failures, compilation succeeded but behavior no longer satisfies a
 
 For browser-presentation failures, inspect the Node test output separately from the .NET test output.
 
-CI no longer runs `dotnet pack`; check the **Package binaries** workflow for packaging and Windows release-bundle failures.
+The regular CI build job does not perform full release packaging; the conditional Blazor consumer job packs selected dependencies to verify an isolated NuGet consumer. Check the **Package binaries** workflow for release bundle validation failures.
 
 ---
 
@@ -1651,7 +1666,7 @@ The simplest reference table is:
 
 | Concern | Source |
 |---|---|
-| Does Gondwana build and test? | `.github/workflows/ci-master.yml` |
+| Does Gondwana build and test? | `.github/workflows/ci-master.yml` (suite selection in `.github/ci-paths.yml`) |
 | Can the NuGet packages and Windows release bundle be produced? | `.github/workflows/package-binaries.yml` |
 | Are `[Unreleased]` changelogs current? | `.github/workflows/changelog-weekly.yml` |
 | Do normal Wiki edits sync both ways? | `.github/workflows/wiki-sync.yml` |
@@ -1669,7 +1684,10 @@ Or, more compactly:
 Pull Request
 ├── label it
 ├── normalize metadata when needed
-└── build + test normal code changes
+└── build + selective integration tests for normal code changes
+
+Nightly at 2:15 AM Eastern
+└── full CI suite (including Blazor consumer + all WinForms editors)
 
 master
 ├── build + test normal code changes
@@ -1694,8 +1712,9 @@ Sunday night / Monday UTC
 v* tag
 ├── mirror tag outward
 └── validate version and release notes
-    └── run reusable package-binaries.yml
-        └── publish validated artifacts
+    └── run full CI suite for tagged commit
+        └── run reusable package-binaries.yml
+            └── publish validated artifacts
             ├── create GitHub Release
             ├── publish NuGet packages
             ├── publish GitHub Packages
