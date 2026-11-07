@@ -13,30 +13,38 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Gondwana.Tooling.Studio.WinForms;
 
 /// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
-public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
+public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHostServices
 {
     private UndoRedoMenu _undoRedo = null!;
+
     // Packed saves disable the document while serialized bytes await archive readers.
     // Host commands must honor the same editing boundary as the disabled editor.
-    private Gondwana.Tooling.Editing.EditHistory? ActiveHistory =>
-        ActiveDocument is { Enabled: true } active ? active.Document.History : null;
+    private Editing.EditHistory? ActiveHistory => ActiveDocument is { Enabled: true } active ? active.Document.History : null;
 
     /// <inheritdoc/>
-    string Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
+    string Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
+
     /// <inheritdoc/>
-    void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.Log(string message) => _output.Log(message);
+    void Core.Extensibility.IStudioPluginHostServices.Log(string message) => _output.Log(message);
+
     /// <inheritdoc/>
-    void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.RefreshWorkingDirectory() => Browser.RefreshDirectory();
+    void Core.Extensibility.IStudioPluginHostServices.RefreshWorkingDirectory() => Browser.RefreshDirectory();
+
     /// <inheritdoc/>
-    void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.OpenDocument(string path) => OpenDocument(path);
+    void Core.Extensibility.IStudioPluginHostServices.OpenDocument(string path) => OpenDocument(path);
+
     internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn;*.gspr|All files|*.*";
     private readonly OutputViewModel _output = new();
     internal static readonly (string Format, string Label)[] NewFileFormats =
     [
-        ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
-        ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"),
-        ("gscn", "Scene / GSCN"), ("gspr", "Sprite / GSPR")
+        ("gaf", "Asset file / GAF…"),
+        ("gts", "Tilesheet / GTS"),
+        ("gani", "Animation / GANI"),
+        ("gsnd", "Sound / GSND"),
+        ("gscn", "Scene / GSCN"),
+        ("gspr", "Sprite / GSPR")
     ];
+
     private readonly StudioPluginHost _plugins;
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly AssetPackageCatalog _packages = new();
@@ -47,9 +55,11 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
     private readonly ProjectFolderStore _projectFolder = new();
+
     private bool _disposed;
     private bool _shutdownPending;
     private bool _shutdownApproved;
+
     private readonly Dictionary<StudioDockDocument, Task<bool>> _saves = new();
     internal DockPanel Workspace { get; }
     internal DirectoryPanel Browser { get; }
@@ -67,13 +77,15 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
 
     internal MainForm(bool loadPlugins)
     {
-        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
+        Icon = ToolingBranding.CreateIcon();
         Text = "Gondwana Studio";
         Size = new Size(1450, 950);
         MinimumSize = new Size(900, 650);
+
         StartPosition = FormStartPosition.CenterScreen;
         BackColor = ToolingAppearance.Palette.Surface;
         ForeColor = ToolingAppearance.Palette.Foreground;
+
         Workspace = new DockPanel
         {
             Dock = DockStyle.Fill,
@@ -83,67 +95,106 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             DockLeftPortion = 250,
             DockBottomPortion = 130
         };
+
         _layout = new DockLayoutPersistence(Workspace, "shell");
         _plugins = new StudioPluginHost(_output.Log);
         Browser = new DirectoryPanel(_output.Log);
+
         NavigationSizing.SynchronizeOnActivation(this);
+
         Browser.KnownArchivePassword = path => _archivePasswords.GetValueOrDefault(Path.GetFullPath(path));
         Browser.FileActivated += path => TryOpen(path);
         Browser.PackedFileActivated += packed =>
         {
-            try { OpenDocument(new AssetLocation(packed.AssetType, packed.ArchivePath, packed.EntryName)); }
+            try
+            {
+                OpenDocument(new AssetLocation(packed.AssetType, packed.ArchivePath, packed.EntryName));
+            }
             catch (OperationCanceledException) { }
-            catch (Exception ex) { ReportError(ex); }
+            catch (Exception ex)
+            {
+                ReportError?.Invoke(ex);
+            }
         };
+
         Browser.ChooseDirectoryRequested += ChooseDirectory;
         Browser.NewFileRequested += (format, directory) => TryNew(format, directory);
-        Workspace.ActiveDocumentChanged += (_, _) => { SyncActiveDocumentSelection(); UpdateToolbarState(); };
+        Workspace.ActiveDocumentChanged += (_, _) =>
+        {
+            SyncActiveDocumentSelection();
+            UpdateToolbarState();
+        };
+
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
+
         InitializeDependencies();
+
         Workspace.ActiveDocumentChanged += DependencySelectionChanged;
         AskSave = document => ThemedMessageBox.Show(this, $"Save changes to {document.Caption}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         SavePath = ChooseSavePath;
         AllowInvalidSave = _ => ThemedMessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
             "Validation failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
-        ReportError = ex => { _output.Log($"Error: {ex.Message}"); ThemedMessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
+        ReportError = ex =>
+        {
+            _output.Log($"Error: {ex.Message}");
+            ThemedMessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
         AssetPassword = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this, password: true);
+
         _packages.PasswordProvider = path =>
         {
             path = Path.GetFullPath(path);
-            if (_session.IsRestoring && _failedRestoreArchives.Contains(path)) return null;
+
+            if (_session.IsRestoring && _failedRestoreArchives.Contains(path))
+                return null;
+
             // Revalidate cached credentials after package invalidation. PasswordAccepted
             // restores them on success; a changed password must remain retryable.
             string? password;
-            if (_archivePasswords.Remove(path, out var known)) password = known;
+
+            if (_archivePasswords.Remove(path, out var known))
+                password = known;
             // Keep unverified answers out of the session cache so Reload can retry.
-            else password = AssetPassword(path);
-            if (_session.IsRestoring) _failedRestoreArchives.Add(path);
+            else
+                password = AssetPassword(path);
+
+            if (_session.IsRestoring)
+                _failedRestoreArchives.Add(path);
+
             return password;
         };
+
         _packages.PackageAccessed += path => (_loadingDependencies ?? ActiveDocument?.Document.DependencyArchives)?.Add(path);
         _packages.PasswordAccepted += (path, password) =>
         {
             _archivePasswords[path] = password;
-            if (_session.IsRestoring) _failedRestoreArchives.Remove(path);
+
+            if (_session.IsRestoring)
+                _failedRestoreArchives.Remove(path);
         };
+
         MainMenuStrip = BuildMenu();
         StudioToolbar = BuildToolbar();
         Controls.Add(Workspace);
         Controls.Add(StudioToolbar);
         Controls.Add(MainMenuStrip);
+
         _view.DropDownOpening += (_, _) => RebuildViewMenu();
+
         if (loadPlugins)
         {
             _plugins.DiscoverAndLoad();
             _plugins.AttachHostServices(this);
             AttachPlugins();
         }
+
         _layout.Start();
         SetWorkingDirectory(_session.InitialWorkingDirectory(_projectFolder.Read()));
         Shown += (_, _) => RestoreSession();
         ToolingAppearance.Apply(this);
+
         // Restore the ToolStrip's native hover tooltips after appearance is applied.
         StudioToolbar.ShowItemToolTips = true;
         _output.Log("Gondwana Studio ready.");
@@ -152,32 +203,47 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     private MenuStrip BuildMenu()
     {
         var menu = new MenuStrip();
+
         Disposed += (_, _) => _undoRedo?.Dispose();
         _undoRedo = new(() => ActiveHistory, () => ActiveDocument?.Document.CommitEdits() == true);
         Workspace.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
+
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
+
         foreach (var (format, label) in NewFileFormats)
             Add(create, label, Keys.None, () => TryNew(format));
+
         file.DropDownItems.Add(create);
+
         Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
         Add(file, "Open working &directory…", Keys.None, ChooseDirectory);
         Add(file, "Move / rename content…", Keys.None, MoveContent);
         Add(file, "Delete content…", Keys.None, DeleteContent);
+
         file.DropDownItems.Add(new ToolStripSeparator());
+
         Add(file, "&Save", Keys.Control | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
         _saveAllMenuItem = Add(file, "Save A&ll", Keys.Control | Keys.Alt | Keys.S, async () => await SaveAllDocuments());
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
+
+        file.DropDownItems.Add(new ToolStripSeparator());
+
         Add(file, "Reload document from disk", Keys.None, () => { if (ActiveDocument is { } doc) ReloadDocument(doc); });
         Add(file, "Reload dependency previews", Keys.None, () => { if (ActiveDocument is { } doc) ReloadPreviews(doc); });
         Add(file, "Find References", Keys.None, () => ShowDependencies(dependents: true));
         Add(file, "Show Dependencies", Keys.None, () => ShowDependencies(dependents: false));
         Add(file, "Show Dependents", Keys.None, () => ShowDependencies(dependents: true));
+
+        file.DropDownItems.Add(new ToolStripSeparator());
+
         Add(file, "&Close", Keys.Control | Keys.W, () => ActiveDocument?.Close());
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+
         _session.AddMenu(file);
-        menu.Items.AddRange([file, _view, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
-        menu.Items.Add(_undoRedo.Menu);
+
+        menu.Items.AddRange([file, _view, _undoRedo.Menu, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
+
         return menu;
     }
 
@@ -193,16 +259,23 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         }
         finally
         {
-            foreach (string path in _failedRestoreArchives) _packages.Invalidate(path);
+            foreach (string path in _failedRestoreArchives)
+                _packages.Invalidate(path);
+
             _failedRestoreArchives.Clear();
         }
     }
 
     private static AssetLocation SessionLocation(WorkspaceSessionDocument document)
     {
-        if (document.EntryName is null) return new AssetLocation(AssetTypes.Misc, document.Path);
+        if (document.EntryName is null)
+            return new AssetLocation(AssetTypes.Misc, document.Path);
+
         var type = (AssetTypes)(document.AssetType ?? throw new InvalidDataException("Missing packed asset type."));
-        if (StudioDocument.FormatFor(type) != document.Format) throw new InvalidDataException("Packed document type does not match its editor.");
+
+        if (StudioDocument.FormatFor(type) != document.Format)
+            throw new InvalidDataException("Packed document type does not match its editor.");
+
         return new AssetLocation(type, document.Path, document.EntryName);
     }
 
@@ -216,10 +289,19 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
 
     private void MoveContent()
     {
-        using var dialog = new OpenFileDialog { Title = "Move / rename content (save and close documents first)", Filter = "All content|*.*", InitialDirectory = Browser.WorkingDirectory };
-        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        using var dialog = new OpenFileDialog
+        {
+            Title = "Move / rename content (save and close documents first)",
+            Filter = "All content|*.*",
+            InitialDirectory = Browser.WorkingDirectory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
         var path = Path.GetFullPath(dialog.FileName);
         bool archive = AssetArchiveFormat.IsArchive(path);
+
         AssetMoveDialog.Show(this, new AssetLocation(AssetImportPlan.InferType(path), path), Browser.WorkingDirectory, plan =>
         {
             ValidateRelocation(plan, null);
@@ -233,11 +315,21 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
 
     private void DeleteContent()
     {
-        using var dialog = new OpenFileDialog { Title = "Delete content (save and close documents first)", Filter = "All content|*.*", Multiselect = true, InitialDirectory = Browser.WorkingDirectory };
-        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        using var dialog = new OpenFileDialog
+        {
+            Title = "Delete content (save and close documents first)",
+            Filter = "All content|*.*",
+            Multiselect = true,
+            InitialDirectory = Browser.WorkingDirectory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
         var paths = dialog.FileNames.Select(Path.GetFullPath).ToArray();
         var archives = paths.Where(AssetArchiveFormat.IsArchive).ToArray();
         var targets = paths.Except(archives).Select(path => new AssetLocation(AssetImportPlan.InferType(path), path)).ToArray();
+
         AssetDeleteDialog.Show(this, targets, archives, Browser.WorkingDirectory, (plan, force) =>
         {
             ValidateDeletion(plan, null);
@@ -276,55 +368,89 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
 
     internal void RebuildViewMenu()
     {
-        while (_view.DropDownItems.Count > 0) _view.DropDownItems[0].Dispose();
+        while (_view.DropDownItems.Count > 0)
+            _view.DropDownItems[0].Dispose();
+
         _view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
+        _view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
+        _view.DropDownItems.Add(new ToolStripSeparator());
+
         foreach (var tool in _tools)
             Add(_view, tool.Text, Keys.None, () => tool.Show(Workspace)).Checked = !tool.IsHidden;
-        _view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
+
         Add(_view, "Reset application layout", Keys.None, _layout.Reset);
-        if (ActiveDocument is not { } active) return;
+
+        if (ActiveDocument is not { } active)
+            return;
+
         _view.DropDownItems.Add(new ToolStripSeparator());
+
         foreach (var name in active.Document.PaneNames)
             Add(_view, name, Keys.None, () => active.Document.ShowPane(name)).Checked = active.Document.IsPaneVisible(name);
+
         Add(_view, $"Show all {active.Document.Kind} panes", Keys.None, active.Document.ShowAllPanes);
         Add(_view, "Reset active editor layout", Keys.None, active.Document.ResetLayout);
     }
 
-    private void SyncActiveDocumentSelection() =>
-        Browser.SelectActiveDocument(ActiveDocument?.Document.Location);
+    private void SyncActiveDocumentSelection() => Browser.SelectActiveDocument(ActiveDocument?.Document.Location);
 
     internal void SetWorkingDirectory(string path)
     {
         InvalidateDependencies();
         path = Path.GetFullPath(path);
-        if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
+
+        if (_workingDirectory is not null)
+            _plugins.NotifyProjectClosed();
+
         Browser.SetDirectory(path);
         SyncActiveDocumentSelection();
         _workingDirectory = path;
         _plugins.NotifyProjectOpened(path);
         _output.Log($"Info: Working directory: {path}");
-        if (Directory.Exists(path)) _projectFolder.Write(path);
+
+        if (Directory.Exists(path))
+            _projectFolder.Write(path);
     }
+
     private string? _workingDirectory;
 
     private void ChooseDirectory()
     {
-        using var dialog = new FolderBrowserDialog { Description = "Choose working directory", UseDescriptionForTitle = true, SelectedPath = Browser.WorkingDirectory };
-        if (dialog.ShowDialog(this) == DialogResult.OK) SetWorkingDirectory(dialog.SelectedPath);
+        using var dialog = new FolderBrowserDialog
+        {
+            Description = "Choose working directory",
+            UseDescriptionForTitle = true,
+            SelectedPath = Browser.WorkingDirectory
+        };
+
+        if (dialog.ShowDialog(this) == DialogResult.OK)
+            SetWorkingDirectory(dialog.SelectedPath);
     }
 
     private void OpenFiles()
     {
-        using var dialog = new OpenFileDialog { Filter = OpenFilter, Multiselect = true, InitialDirectory = Browser.WorkingDirectory };
+        using var dialog = new OpenFileDialog
+        {
+            Filter = OpenFilter,
+            Multiselect = true,
+            InitialDirectory = Browser.WorkingDirectory
+        };
+
         if (dialog.ShowDialog(this) == DialogResult.OK)
             foreach (var path in dialog.FileNames) TryOpen(path);
     }
 
     private void TryOpen(string path)
     {
-        try { OpenDocument(path); }
+        try
+        {
+            OpenDocument(path);
+        }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { ReportError(ex); }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
     }
 
     internal StudioDockDocument OpenDocument(string path, string? password = null) =>
@@ -335,49 +461,89 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         if (_paths.TryGetValue(location, out var existing)) { existing.Activate(); return existing; }
         return ShowDocument(CreateModel(location, password));
     }
-    private async void TryNew(string format, string? directory = null)
+
+    private async Task TryNew(string format, string? directory = null)
     {
         try
         {
-            if (format != "gaf") { NewDocument(format, directory: directory); return; }
-            using var dialog = new SaveFileDialog { Filter = "Asset files|*.gaf;*.zip", DefaultExt = "gaf", InitialDirectory = directory ?? Browser.WorkingDirectory };
-            if (dialog.ShowDialog(this) != DialogResult.OK) return;
-            if (File.Exists(dialog.FileName)) { TryOpen(dialog.FileName); return; }
+            if (format != "gaf")
+            {
+                NewDocument(format, directory: directory);
+                return;
+            }
+
+            using var dialog = new SaveFileDialog
+            {
+                Filter = "Asset files|*.gaf;*.zip",
+                DefaultExt = "gaf",
+                InitialDirectory = directory ?? Browser.WorkingDirectory
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            if (File.Exists(dialog.FileName))
+            {
+                TryOpen(dialog.FileName);
+                return;
+            }
+
             bool encrypt = ThemedMessageBox.Show(this, "Enable password protection?", "New asset file", MessageBoxButtons.YesNo) == DialogResult.Yes;
             string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this, password: true) : null;
-            if (encrypt && string.IsNullOrWhiteSpace(password)) return;
+
+            if (encrypt && string.IsNullOrWhiteSpace(password))
+                return;
+
             var document = NewDocument(format, dialog.FileName, password, encrypt,
                 directory: Path.GetDirectoryName(dialog.FileName));
+
             await SaveDocument(document);
         }
-        catch (Exception ex) { ReportError(ex); }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
     }
 
     internal StudioDockDocument NewDocument(string format, string? assetPath = null, string? password = null,
         bool encrypt = false, string? directory = null)
     {
         if (assetPath is not null && _paths.TryGetValue(new AssetLocation(AssetTypes.Misc, Path.GetFullPath(assetPath)), out var existing))
-        { existing.Activate(); return existing; }
+        {
+            existing.Activate();
+            return existing;
+        }
+
         var model = StudioDocument.Create(format, directory ?? Browser.WorkingDirectory, assetPath, _packages, password, encrypt);
         model.SaveDirectoryHint = directory;
+
         return ShowDocument(model);
     }
 
     private StudioDockDocument ShowDocument(StudioDocument model)
     {
         var document = new StudioDockDocument(model, ConfirmClose);
+
         if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
             sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
+
         _documents.Add(document);
         model.Changed += ToolbarDocumentChanged;
         model.Changed += DependencySelectionChanged;
         var referencesMenu = new ContextMenuStrip();
+
         foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
+        {
             referencesMenu.Items.Add(title, null, (_, _) => ShowDependencies(
                 model.Location is { } endpoint ? new ResourceAddress(endpoint, model.SelectedMember) : null,
                 dependents: title != "Show Dependencies"));
+        }
+
         document.TabPageContextMenuStrip = referencesMenu;
-        if (model.Location is { } location) _paths.Add(location, document);
+
+        if (model.Location is { } location)
+            _paths.Add(location, document);
+
         if (model.Editor is AssetEditorControl assets)
         {
             assets.SaveRequested = async saveAs => await SaveDocument(document, saveAs);
@@ -385,6 +551,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             assets.RelocationScope = () => Browser.WorkingDirectory;
             assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
             assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
+
             assets.WorkspaceChanged = () =>
             {
                 InvalidateDependencies();
@@ -394,32 +561,45 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
                     // Existing relocation/deletion transactions already verify the editor against disk.
                     model.ArchiveHash = current.Hash;
                 }
+
                 _packages.Clear();
                 Browser.RefreshDirectory();
             };
         }
+
         document.Disposed += (_, _) =>
         {
             model.Changed -= ToolbarDocumentChanged;
             model.Changed -= DependencySelectionChanged;
+
             referencesMenu.Dispose();
             _documents.Remove(document);
             _saves.Remove(document);
-            foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
+
+            foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray())
+                _paths.Remove(key);
+
             UpdateToolbarState();
         };
+
         document.Show(Workspace, DockState.Document);
         document.Activate();
         SyncActiveDocumentSelection();
         UpdateToolbarState();
-        if (model.Kind == "asset") Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
+
+        if (model.Kind == "asset")
+            Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
+
         _output.Log($"Opened {model.Path() ?? document.Text}");
+
         return document;
     }
 
     internal Task<bool> SaveDocument(StudioDockDocument document, bool saveAs = false, string? destination = null)
     {
-        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted) return pending;
+        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted)
+            return pending;
+
         return _saves[document] = SaveDocumentCore(document, saveAs, destination);
     }
 
@@ -428,28 +608,44 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         try
         {
             var model = document.Document;
-            if (!model.CommitEdits() || !model.CanSave()) return false;
+            if (!model.CommitEdits() || !model.CanSave())
+                return false;
+
             bool packedSave = !saveAs && destination is null && model.PackedLocation() is not null;
             destination ??= packedSave ? model.PackedLocation()!.Path : saveAs || model.Path() is null ? SavePath(model) : model.Path();
-            if (destination is null) return false;
+
+            if (destination is null)
+                return false;
+
             destination = Path.GetFullPath(destination);
+
             if (!packedSave && StudioDocument.FormatFor(destination) != StudioDocument.FormatFor("file." + model.Extension))
                 throw new InvalidOperationException("Choose a filename with the document's format extension.");
+
             var target = packedSave ? model.PackedLocation()! : new AssetLocation(StudioDocument.TypeFor(model.Extension), destination);
+
             void CheckOwner()
             {
                 if (_paths.TryGetValue(target, out var owner) && owner != document)
                     throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
             }
+
             CheckOwner();
+
             var errors = model.Validate();
-            if (errors.Count > 0 && !AllowInvalidSave(errors)) return false;
+            if (errors.Count > 0 && !AllowInvalidSave(errors))
+                return false;
+
             var bytes = packedSave ? model.SerializePacked!() : null;
             void Save()
             {
-                if (document.IsDisposed || IsDisposed) throw new OperationCanceledException();
+                if (document.IsDisposed || IsDisposed)
+                    throw new OperationCanceledException();
+
                 CheckOwner();
-                if (packedSave || model.Kind == "asset") SaveArchive(document, destination, bytes);
+
+                if (packedSave || model.Kind == "asset")
+                    SaveArchive(document, destination, bytes);
                 else
                 {
                     model.Save(destination, errors.Count > 0);
@@ -458,34 +654,68 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
                     model.ContentStale = false;
                     model.ArchivePassword = null;
                 }
-                foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
+
+                foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray())
+                    _paths.Remove(key);
+
                 _paths.Add(model.Location!, document);
                 document.UpdateCaption();
+
                 SyncActiveDocumentSelection();
+
                 _packages.Invalidate(destination);
                 _output.Log($"Saved {model.Tooltip}");
+
                 InvalidateDependencies();
-                if (_followDependencySelection) _dependencyTarget = ActiveAddress();
+
+                if (_followDependencySelection)
+                    _dependencyTarget = ActiveAddress();
             }
+
             if (packedSave || model.Kind == "asset")
             {
                 InvalidateDependencies(); // Cancel readers before asynchronously draining their archive handles.
+
                 document.Enabled = false;
                 _undoRedo.Refresh();
-                try { await Browser.RunWithoutArchiveReadsAsync(Save); }
+
+                try
+                {
+                    await Browser.RunWithoutArchiveReadsAsync(Save);
+                }
                 finally
                 {
-                    if (!document.IsDisposed) document.Enabled = true;
-                    if (!IsDisposed && !_disposed) _undoRedo.Refresh();
+                    if (!document.IsDisposed)
+                        document.Enabled = true;
+
+                    if (!IsDisposed && !_disposed)
+                        _undoRedo.Refresh();
                 }
             }
-            else { Save(); Browser.RefreshDirectory(); }
+            else
+            {
+                Save();
+                Browser.RefreshDirectory();
+            }
+
             return true;
         }
-        catch (OperationCanceledException) { return false; }
-        catch (Exception ex) { ReportError(ex); return false; }
-        finally { if (!IsDisposed && !_disposed) UpdateToolbarState(); }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+            return false;
+        }
+        finally
+        {
+            if (!IsDisposed && !_disposed)
+                UpdateToolbarState();
+        }
     }
+
     private string? ChooseSavePath(StudioDocument model)
     {
         using var dialog = new SaveFileDialog
@@ -497,6 +727,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
                 : model.SaveDirectoryHint ?? Browser.WorkingDirectory,
             FileName = model.PackedLocation()?.AssetEntryName is { } entry ? Path.GetFileName(entry) : model.Path() is { } name ? Path.GetFileName(name) : $"Untitled.{model.Extension}"
         };
+
         return dialog.ShowDialog(this) == DialogResult.OK ? dialog.FileName : null;
     }
 
@@ -504,8 +735,13 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     {
         if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted)
             return await pending;
-        if (!document.Document.CommitEdits()) return false;
-        if (!document.Document.Dirty()) return true;
+
+        if (!document.Document.CommitEdits())
+            return false;
+
+        if (!document.Document.Dirty())
+            return true;
+
         return AskSave(document.Document) switch
         {
             DialogResult.No => true,
@@ -517,8 +753,12 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     internal async Task<bool> ApproveShutdown()
     {
         foreach (var document in _documents.ToArray())
-            if (!await ConfirmClose(document)) return false;
-        foreach (var document in _documents) document.CloseApproved = true;
+            if (!await ConfirmClose(document))
+                return false;
+
+        foreach (var document in _documents)
+            document.CloseApproved = true;
+
         return true;
     }
 
@@ -527,23 +767,41 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (e.Cancel) return;
-        if (_shutdownApproved) { SaveSession(); return; }
-        if (_shutdownPending) { e.Cancel = true; return; }
+
+        if (e.Cancel)
+            return;
+
+        if (_shutdownApproved)
+        {
+            SaveSession();
+            return;
+        }
+
+        if (_shutdownPending)
+        {
+            e.Cancel = true;
+            return;
+        }
+
         var approval = ApproveShutdown();
         if (approval.IsCompleted)
         {
             e.Cancel = !approval.GetAwaiter().GetResult();
-            if (!e.Cancel) SaveSession();
+
+            if (!e.Cancel)
+                SaveSession();
+
             return;
         }
+
         e.Cancel = true;
         _shutdownPending = true;
         Enabled = false;
-        FinishShutdownAsync(approval);
+
+        _ = FinishShutdownAsync(approval);
     }
 
-    private async void FinishShutdownAsync(Task<bool> approval)
+    private async Task FinishShutdownAsync(Task<bool> approval)
     {
         try
         {
@@ -556,31 +814,42 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         finally
         {
             _shutdownPending = false;
-            if (!IsDisposed) Enabled = true;
+            if (!IsDisposed)
+                Enabled = true;
         }
     }
 
     private DockContent AddTool(string id, string title, Control control, DockState state)
     {
-        var tool = new PersistentDockContent(id) { Text = title, HideOnClose = true };
+        var tool = new PersistentDockContent(id)
+        {
+            Text = title,
+            HideOnClose = true
+        };
+
         control.Dock = DockStyle.Fill;
         ApplyTheme(control);
+
         tool.Controls.Add(control);
         _tools.Add(tool);
         _layout.Register(tool, () => tool.Show(Workspace, state));
         tool.Show(Workspace, state);
+
         return tool;
     }
 
     private void AttachPlugins()
     {
         var menu = (ToolStripMenuItem)MainMenuStrip!.Items["PluginsMenu"]!;
-        foreach (var item in _plugins.GetPluginMenuItems()) menu.DropDownItems.Add(item);
+
+        foreach (var item in _plugins.GetPluginMenuItems())
+            menu.DropDownItems.Add(item);
+
         foreach (var (id, name, control) in _plugins.GetPersistentPluginPanels())
             AddTool(id, name, control, DockState.DockRight);
     }
 
-    private void ApplyTheme(Control control) => ToolingAppearance.Apply(control);
+    private static void ApplyTheme(Control control) => ToolingAppearance.Apply(control);
 
     /// <summary>Closes plugin project state and disposes layout persistence, documents, tools, package resources, and the theme.</summary>
     /// <param name="disposing">Whether to release managed shell resources.</param>
@@ -589,18 +858,29 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         if (disposing && !_disposed)
         {
             _disposed = true;
+
             InvalidateDependencies();
             _layout.Dispose();
-            if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
-            foreach (var document in _documents.ToArray()) document.Dispose();
-            foreach (var tool in _tools) tool.Dispose();
+
+            if (_workingDirectory is not null)
+                _plugins.NotifyProjectClosed();
+
+            foreach (var document in _documents.ToArray())
+                document.Dispose();
+
+            foreach (var tool in _tools)
+                tool.Dispose();
+
             _tools.Clear();
             _packages.Dispose();
         }
+
         base.Dispose(disposing);
-        if (disposing) _theme.Dispose();
+
+        if (disposing)
+            _theme.Dispose();
     }
+
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
         UndoRedoMenu.TryShortcut(this, keyData, ActiveHistory, () => ActiveDocument?.Document.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
-
 }
