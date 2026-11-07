@@ -738,7 +738,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         if (!document.Document.CommitEdits())
             return false;
-        
+
         if (!document.Document.Dirty())
             return true;
 
