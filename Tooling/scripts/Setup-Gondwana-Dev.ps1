@@ -17,7 +17,9 @@
       5.  Builds the solution in Release configuration.
       6.  Installs/updates the Gondwana CLI global tool (Gondwana.Cli).
       7.  Installs/updates Gondwana project templates (Gondwana.Templates).
-      8.  Installs wasm-tools (if missing) and updates installed workloads.
+      8.  Checks for the .NET 10 SDK required by Blazor templates, offers a
+          side-by-side install only if missing, and verifies/installs the matching
+          .NET 10 wasm-tools workload without changing the repo's .NET 8 SDK.
       9.  Checks for SDL2 native binaries required by Gondwana.Input.SDL2.
       10. Explains app-local native LibVLC deployment for optional Gondwana.Video.
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
@@ -34,7 +36,7 @@
     Skip step 5 (dotnet build). Restores packages and tools only.
 
 .PARAMETER SkipOptional
-    Skip steps 8–12: wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
+    Skip steps 8–12: optional .NET 10/wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
 
 .EXAMPLE
     # Full setup — run from anywhere inside the cloned repository
@@ -45,7 +47,7 @@
     .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
 .EXAMPLE
-    # Install core tools only; skip WASM workload, SDL2, LibVLC, git-cliff, and butler
+    # Install core tools only; skip .NET 10/WASM, SDL2, LibVLC, git-cliff, and butler
     .\Setup-Gondwana-Dev.ps1 -SkipOptional
 #>
 param(
@@ -78,6 +80,41 @@ function Invoke-Cmd {
     & $Executable @Arguments
     if ($LASTEXITCODE -ne 0) {
         throw "'$Executable $($Arguments -join ' ')' exited with code $LASTEXITCODE."
+    }
+}
+
+function Add-PersistedPathsToProcess {
+    # Installing software may add paths to the Machine/User environment. Keep
+    # existing process entries first, including shell/profile-local tool paths,
+    # then append only newly available persisted entries.
+    $separator = [string] [System.IO.Path]::PathSeparator
+    $separatorPattern = [regex]::Escape($separator)
+    $seen = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($entry in ($env:PATH -split $separatorPattern)) {
+        $normalized = $entry.Trim().Trim('"').TrimEnd('\', '/')
+        if ($normalized) { [void] $seen.Add($normalized) }
+    }
+
+    $newEntries = @()
+    foreach ($scope in @('Machine', 'User')) {
+        $persisted = [System.Environment]::GetEnvironmentVariable('PATH', $scope)
+        if ([string]::IsNullOrWhiteSpace($persisted)) { continue }
+
+        foreach ($entry in ($persisted -split $separatorPattern)) {
+            $normalized = $entry.Trim().Trim('"').TrimEnd('\', '/')
+            if ($normalized -and $seen.Add($normalized)) {
+                $newEntries += $entry
+            }
+        }
+    }
+
+    if ($newEntries.Count -gt 0) {
+        if ([string]::IsNullOrWhiteSpace($env:PATH)) {
+            $env:PATH = $newEntries -join $separator
+        } else {
+            $env:PATH += $separator + ($newEntries -join $separator)
+        }
     }
 }
 
@@ -119,10 +156,80 @@ function Test-TemplatesInstalled {
     return -not [string]::IsNullOrWhiteSpace((Get-InstalledTemplatePackageVersion))
 }
 
-function Test-Workload {
-    param([string] $Id)
-    $output = dotnet workload list 2>&1
-    return (@($output | Where-Object { $_ -match "\b$([regex]::Escape($Id))\b" })).Count -gt 0
+function Get-DotNet10SdkVersion {
+    # The solution's global.json selects .NET 8, so inspect all installed SDKs
+    # rather than relying on 'dotnet --version' in the repository.
+    $lines = @(& dotnet --list-sdks 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not enumerate installed .NET SDKs."
+    }
+
+    $versions = @(
+        foreach ($line in $lines) {
+            if ($line.ToString() -match '^(10\.0\.\d+)\s+\[') {
+                $parsed = [Version] $Matches[1]
+                if ($parsed.Build -ge 100) { $parsed }
+            }
+        }
+    )
+    if ($versions.Count -eq 0) { return $null }
+    return ($versions | Sort-Object -Descending | Select-Object -First 1).ToString()
+}
+
+function Get-WasmToolsWorkloadVersion {
+    $lines = @(& dotnet workload list 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect wasm-tools for the selected SDK."
+    }
+
+    foreach ($line in $lines) {
+        if ($line.ToString() -match '^\s*wasm-tools\s+(\S+)') {
+            return $Matches[1]
+        }
+    }
+    return $null
+}
+
+function Ensure-DotNet10WasmTools {
+    param([string] $SdkVersion)
+
+    # dotnet workload commands select an SDK from the working directory.
+    # Use an isolated temporary global.json so the repository's .NET 8 pin
+    # cannot accidentally install/update the .NET 8 workload instead.
+    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("gondwana-sdk10-" + [Guid]::NewGuid().ToString('N'))
+    [System.IO.Directory]::CreateDirectory($workDir) | Out-Null
+    $globalJson = '{"sdk":{"version":"' + $SdkVersion + '","rollForward":"latestPatch"}}'
+    [System.IO.File]::WriteAllText(
+        (Join-Path $workDir 'global.json'), $globalJson,
+        (New-Object System.Text.UTF8Encoding($false))
+    )
+
+    Push-Location $workDir
+    try {
+        $selected = [string] ((& dotnet --version 2>&1) | Select-Object -First 1)
+        if ($LASTEXITCODE -ne 0 -or $selected -notmatch '^10\.0\.') {
+            throw "Expected .NET 10 SDK $SdkVersion but dotnet selected '$selected'."
+        }
+        INFO "Using .NET SDK $selected for the Blazor WebAssembly workload."
+
+        $workloadVersion = Get-WasmToolsWorkloadVersion
+        if ($workloadVersion -and $workloadVersion -match '^10\.0\.') {
+            INFO "Compatible wasm-tools $workloadVersion found; updating the .NET 10 workloads."
+            Invoke-Cmd dotnet @('workload', 'update')
+        } else {
+            INFO "Installing wasm-tools for the selected .NET 10 SDK."
+            Invoke-Cmd dotnet @('workload', 'install', 'wasm-tools')
+        }
+
+        $verifiedVersion = Get-WasmToolsWorkloadVersion
+        if (-not $verifiedVersion -or $verifiedVersion -notmatch '^10\.0\.') {
+            throw "A compatible .NET 10 wasm-tools workload could not be verified after setup."
+        }
+        OK "Blazor prerequisites ready: .NET SDK $selected, wasm-tools $verifiedVersion."
+    } finally {
+        Pop-Location
+        Remove-Item -LiteralPath $workDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
 
 function Get-CommandVersionLine {
@@ -184,9 +291,8 @@ if ($hasSdk8) {
     }
     Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.8', '--silent',
                         '--accept-source-agreements', '--accept-package-agreements')
-    # Refresh PATH so the newly installed dotnet is usable in this session
-    $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+    # Append newly installed SDK paths while preserving this session's existing PATH
+    Add-PersistedPathsToProcess
     OK '.NET 8 SDK installed. Reopen your terminal if subsequent steps fail to find dotnet.'
 } else {
     throw ".NET 8 SDK not found.`nInstall it via your package manager or from https://dotnet.microsoft.com/download/dotnet/8 then rerun this script."
@@ -311,13 +417,64 @@ if ($SkipOptional) {
 
     # ─── Step 8: WASM workload ────────────────────────────────────────────────
 
-    Step '8/13  WASM workload (wasm-tools)'
-    if (Test-Workload 'wasm-tools') {
-        Invoke-Cmd dotnet @('workload', 'update')
-        OK 'wasm-tools and other installed workloads updated to latest available versions.'
+    Step '8/13  .NET 10 Blazor SDK + WASM workload'
+    $sdk10Version = Get-DotNet10SdkVersion
+
+    if (-not $sdk10Version) {
+        WARN 'The Gondwana Blazor template targets net10.0-browser and requires a .NET 10 SDK plus matching wasm-tools.'
+        INFO 'The Gondwana repository still uses .NET 8; .NET 10 is installed side-by-side for Blazor projects.'
+
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            $canPrompt = $false
+            try {
+                $canPrompt = [Environment]::UserInteractive -and -not [Console]::IsInputRedirected
+            } catch {
+                $canPrompt = $false
+            }
+
+            if ($canPrompt) {
+                $answer = $null
+                try {
+                    $answer = Read-Host 'Install the .NET 10 SDK now with winget? [y/N]'
+                } catch {
+                    # PowerShell -NonInteractive can still report an interactive
+                    # console. A failed prompt must not abort optional setup.
+                    WARN 'Interactive input is unavailable; skipping optional .NET 10 installation.'
+                }
+                if ($answer -match '^(?i:y|yes)$') {
+                    try {
+                        Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.10', '--exact',
+                                            '--silent', '--accept-source-agreements',
+                                            '--accept-package-agreements')
+                        Add-PersistedPathsToProcess
+                        $sdk10Version = Get-DotNet10SdkVersion
+                        if (-not $sdk10Version) {
+                            WARN '.NET 10 was installed but is not visible yet; reopen the terminal and rerun setup.'
+                        }
+                    } catch {
+                        WARN "Automatic .NET 10 installation failed: $_"
+                    }
+                } elseif ($null -ne $answer) {
+                    INFO '.NET 10 installation declined; Blazor workloads will be skipped.'
+                }
+            } else {
+                WARN 'Non-interactive session: skipping optional .NET 10 installation prompt.'
+            }
+        } else {
+            INFO 'Automatic .NET 10 installation requires winget on Windows; install the SDK manually.'
+        }
+    }
+
+    if ($sdk10Version) {
+        try {
+            Ensure-DotNet10WasmTools -SdkVersion $sdk10Version
+        } catch {
+            WARN "Could not set up the .NET 10 wasm-tools workload: $_"
+            INFO 'From outside this repository (which pins SDK 8), select SDK 10 and run: dotnet workload install wasm-tools'
+        }
     } else {
-        Invoke-Cmd dotnet @('workload', 'install', 'wasm-tools')
-        OK 'wasm-tools workload installed.'
+        WARN 'Skipping .NET 10 wasm-tools: .NET 10 SDK is not installed.'
+        INFO 'Install .NET 10 from https://dotnet.microsoft.com/download/dotnet/10.0 for Blazor template support.'
     }
 
     # ─── Step 9: SDL2 native library ──────────────────────────────────────────
@@ -371,9 +528,8 @@ if ($SkipOptional) {
             try {
                 Invoke-Cmd winget @('install', '--id', 'orhun.git-cliff', '--exact', '--silent',
                                     '--accept-source-agreements', '--accept-package-agreements')
-                # Refresh PATH so the newly installed git-cliff is usable in this session
-                $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                            [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+                # Append newly installed tool paths while preserving this session's existing PATH
+                Add-PersistedPathsToProcess
                 $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
                 OK ("git-cliff installed{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
             } catch {
@@ -523,6 +679,7 @@ if ($SkipOptional) {
 # ─── Step 13: gondwana doctor ─────────────────────────────────────────────────
 
 Step '13/13 gondwana doctor'
+INFO 'Doctor runs under the repository-pinned SDK 8; the .NET 10 Blazor toolchain is checked separately in step 8.'
 if (Get-Command gondwana -ErrorAction SilentlyContinue) {
     gondwana doctor
 } else {
