@@ -17,7 +17,9 @@
       5.  Builds the solution in Release configuration.
       6.  Installs/updates the Gondwana CLI global tool (Gondwana.Cli).
       7.  Installs/updates Gondwana project templates (Gondwana.Templates).
-      8.  Installs wasm-tools (if missing) and updates installed workloads.
+      8.  Checks for the .NET 10 SDK required by Blazor templates, offers a
+          side-by-side install only if missing, and verifies/installs the matching
+          .NET 10 wasm-tools workload without changing the repo's .NET 8 SDK.
       9.  Checks for SDL2 native binaries required by Gondwana.Input.SDL2.
       10. Explains app-local native LibVLC deployment for optional Gondwana.Video.
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
@@ -34,7 +36,7 @@
     Skip step 5 (dotnet build). Restores packages and tools only.
 
 .PARAMETER SkipOptional
-    Skip steps 8–12: wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
+    Skip steps 8–12: optional .NET 10/wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
 
 .EXAMPLE
     # Full setup — run from anywhere inside the cloned repository
@@ -45,7 +47,7 @@
     .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
 .EXAMPLE
-    # Install core tools only; skip WASM workload, SDL2, LibVLC, git-cliff, and butler
+    # Install core tools only; skip .NET 10/WASM, SDL2, LibVLC, git-cliff, and butler
     .\Setup-Gondwana-Dev.ps1 -SkipOptional
 #>
 param(
@@ -119,10 +121,80 @@ function Test-TemplatesInstalled {
     return -not [string]::IsNullOrWhiteSpace((Get-InstalledTemplatePackageVersion))
 }
 
-function Test-Workload {
-    param([string] $Id)
-    $output = dotnet workload list 2>&1
-    return (@($output | Where-Object { $_ -match "\b$([regex]::Escape($Id))\b" })).Count -gt 0
+function Get-DotNet10SdkVersion {
+    # The solution's global.json selects .NET 8, so inspect all installed SDKs
+    # rather than relying on 'dotnet --version' in the repository.
+    $lines = @(& dotnet --list-sdks 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not enumerate installed .NET SDKs."
+    }
+
+    $versions = @(
+        foreach ($line in $lines) {
+            if ($line.ToString() -match '^(10\.0\.\d+)\s+\[') {
+                $parsed = [Version] $Matches[1]
+                if ($parsed.Build -ge 100) { $parsed }
+            }
+        }
+    )
+    if ($versions.Count -eq 0) { return $null }
+    return ($versions | Sort-Object -Descending | Select-Object -First 1).ToString()
+}
+
+function Get-WasmToolsWorkloadVersion {
+    $lines = @(& dotnet workload list 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect wasm-tools for the selected SDK."
+    }
+
+    foreach ($line in $lines) {
+        if ($line.ToString() -match '^\s*wasm-tools\s+(\S+)') {
+            return $Matches[1]
+        }
+    }
+    return $null
+}
+
+function Ensure-DotNet10WasmTools {
+    param([string] $SdkVersion)
+
+    # dotnet workload commands select an SDK from the working directory.
+    # Use an isolated temporary global.json so the repository's .NET 8 pin
+    # cannot accidentally install/update the .NET 8 workload instead.
+    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("gondwana-sdk10-" + [Guid]::NewGuid().ToString('N'))
+    [System.IO.Directory]::CreateDirectory($workDir) | Out-Null
+    $globalJson = '{"sdk":{"version":"' + $SdkVersion + '","rollForward":"latestPatch"}}'
+    [System.IO.File]::WriteAllText(
+        (Join-Path $workDir 'global.json'), $globalJson,
+        (New-Object System.Text.UTF8Encoding($false))
+    )
+
+    Push-Location $workDir
+    try {
+        $selected = [string] ((& dotnet --version 2>&1) | Select-Object -First 1)
+        if ($LASTEXITCODE -ne 0 -or $selected -notmatch '^10\.0\.') {
+            throw "Expected .NET 10 SDK $SdkVersion but dotnet selected '$selected'."
+        }
+        INFO "Using .NET SDK $selected for the Blazor WebAssembly workload."
+
+        $workloadVersion = Get-WasmToolsWorkloadVersion
+        if ($workloadVersion -and $workloadVersion -match '^10\.0\.') {
+            INFO "Compatible wasm-tools $workloadVersion found; updating the .NET 10 workloads."
+            Invoke-Cmd dotnet @('workload', 'update')
+        } else {
+            INFO "Installing wasm-tools for the selected .NET 10 SDK."
+            Invoke-Cmd dotnet @('workload', 'install', 'wasm-tools')
+        }
+
+        $verifiedVersion = Get-WasmToolsWorkloadVersion
+        if (-not $verifiedVersion -or $verifiedVersion -notmatch '^10\.0\.') {
+            throw "A compatible .NET 10 wasm-tools workload could not be verified after setup."
+        }
+        OK "Blazor prerequisites ready: .NET SDK $selected, wasm-tools $verifiedVersion."
+    } finally {
+        Pop-Location
+        Remove-Item -LiteralPath $workDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
 
 function Get-CommandVersionLine {
@@ -311,13 +383,273 @@ if ($SkipOptional) {
 
     # ─── Step 8: WASM workload ────────────────────────────────────────────────
 
-    Step '8/13  WASM workload (wasm-tools)'
-    if (Test-Workload 'wasm-tools') {
-        Invoke-Cmd dotnet @('workload', 'update')
-        OK 'wasm-tools and other installed workloads updated to latest available versions.'
+    Step '8/13  .NET 10 Blazor SDK + WASM workload'
+    $sdk10Version = Get-DotNet10SdkVersion
+
+    if (-not $sdk10Version) {
+        WARN 'The Gondwana Blazor template targets net10.0-browser and requires a .NET 10 SDK plus matching wasm-tools.'
+        INFO 'The Gondwana repository still uses .NET 8; .NET 10 is installed side-by-side for Blazor projects.'
+
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            $canPrompt = $false
+            try {
+                $canPrompt = [Environment]::UserInteractive -and -not [Console]::IsInputRedirected
+            } catch {
+                $canPrompt = $false
+            }
+
+            if ($canPrompt) {
+                $answer = Read-Host 'Install the .NET 10 SDK now with winget? [y/N]'
+                if ($answer -match '^(?i:y|yes)
+
+    # ─── Step 9: SDL2 native library ──────────────────────────────────────────
+
+    Step '9/13  SDL2 native library (Gondwana.Input.SDL2)'
+    $sdl2Dlls = if ($isWindowsOS) { @('SDL2.dll') } else { @('libSDL2-2.0.so.0', 'libSDL2.so') }
+    if (Test-NativeDll $sdl2Dlls) {
+        OK "SDL2 native library found."
     } else {
-        Invoke-Cmd dotnet @('workload', 'install', 'wasm-tools')
-        OK 'wasm-tools workload installed.'
+        WARN "SDL2 native library not detected on this system."
+        INFO "SDL2 is only required if you use the Gondwana.Input.SDL2 package (gamepad input)."
+        INFO "When building a project that references Gondwana.Input.SDL2, the SDL2-CS NuGet"
+        INFO "package typically copies SDL2.dll to the project output directory automatically."
+        INFO "If you need a system-wide install, download the runtime from:"
+        INFO "  https://github.com/libsdl-org/SDL/releases"
+    }
+
+    # ─── Step 10: LibVLC native library ───────────────────────────────────────
+
+    Step '10/13 LibVLC native library (optional Gondwana.Video)'
+    INFO 'Native LibVLC belongs in the application deployment; no global VLC installation is required.'
+    INFO '  Windows app: dotnet add package VideoLAN.LibVLC.Windows --version 3.0.23.1'
+    INFO '  macOS app:   VideoLAN.LibVLC.Mac with a matching process architecture'
+    INFO '  Linux host:  sudo apt install libvlc-dev vlc-plugin-base'
+    INFO 'Restore/build the desktop app and follow Gondwana.Video/README.md smoke instructions.'
+
+    # ─── Step 11: git-cliff ────────────────────────────────────────────────────
+
+    Step '11/13 git-cliff'
+    if (Get-Command git-cliff -ErrorAction SilentlyContinue) {
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            $wingetUpgradeOutput = & winget upgrade --id orhun.git-cliff --exact --silent `
+                --accept-source-agreements --accept-package-agreements 2>&1
+            $wingetUpgradeExitCode = $LASTEXITCODE
+            $wingetUpgradeText = ($wingetUpgradeOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+
+            $isNoUpgrade = ($wingetUpgradeExitCode -ne 0) -and (
+                $wingetUpgradeText -match 'No available upgrade found' -or
+                $wingetUpgradeText -match 'No newer package' -or
+                $wingetUpgradeText -match 'No applicable update'
+            )
+            if ($wingetUpgradeExitCode -ne 0 -and -not $isNoUpgrade) {
+                WARN "Could not auto-update git-cliff via winget: 'winget upgrade ...' exited with code $wingetUpgradeExitCode."
+            }
+        }
+
+        $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
+        OK ("git-cliff ready{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
+    } else {
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            try {
+                Invoke-Cmd winget @('install', '--id', 'orhun.git-cliff', '--exact', '--silent',
+                                    '--accept-source-agreements', '--accept-package-agreements')
+                # Refresh PATH so the newly installed git-cliff is usable in this session
+                $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
+                            [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+                $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
+                OK ("git-cliff installed{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
+            } catch {
+                WARN "winget install orhun.git-cliff failed: $_"
+                INFO "Install git-cliff manually from https://git-cliff.org/"
+            }
+        } else {
+            WARN "git-cliff not found on PATH."
+            INFO "Install git-cliff from https://git-cliff.org/"
+        }
+    }
+
+    # ─── Step 12: butler ───────────────────────────────────────────────────────
+
+    Step '12/13 butler (itch.io)'
+    if (Get-Command butler -ErrorAction SilentlyContinue) {
+        $butlerVersion = Get-CommandVersionLine -Command 'butler'
+        OK ("butler ready{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
+    } else {
+        # Determine the broth CDN platform slug and executable name.
+        $isMacOSPlatform = if (Get-Variable -Name 'IsMacOS' -ErrorAction SilentlyContinue) { $IsMacOS } else { $false }
+        # $env:PROCESSOR_ARCHITECTURE is always set on Windows (AMD64, ARM64, x86).
+        # RuntimeInformation.ProcessArchitecture is only reliably available in PS Core 6+; avoid it in PS 5.1.
+        $butlerArchitecture = if ($isWindowsOS -and $env:PROCESSOR_ARCHITECTURE) {
+            switch ($env:PROCESSOR_ARCHITECTURE.ToUpperInvariant()) {
+                'AMD64' { 'x64' }
+                'ARM64' { 'arm64' }
+                default { 'x86' }
+            }
+        } else {
+            try {
+                [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
+            } catch {
+                'x64'
+            }
+        }
+
+        $butlerPlatform = if ($isWindowsOS) {
+            if ($butlerArchitecture -ne 'x64') {
+                WARN "No native butler package mapping is defined for Windows '$butlerArchitecture'; falling back to windows-amd64."
+            }
+
+            'windows-amd64'
+        } elseif ($isMacOSPlatform) {
+            switch ($butlerArchitecture) {
+                'arm64' { 'darwin-arm64' }
+                'x64'   { 'darwin-amd64' }
+                default {
+                    WARN "No native butler package mapping is defined for macOS '$butlerArchitecture'; falling back to darwin-amd64."
+                    'darwin-amd64'
+                }
+            }
+        } else {
+            switch ($butlerArchitecture) {
+                'arm64' { 'linux-arm64' }
+                'x64'   { 'linux-amd64' }
+                default {
+                    WARN "No native butler package mapping is defined for Linux '$butlerArchitecture'; falling back to linux-amd64."
+                    'linux-amd64'
+                }
+            }
+        }
+
+        $butlerExeName = if ($isWindowsOS) { 'butler.exe' } else { 'butler' }
+
+        $butlerInstallDir = if ($isWindowsOS) {
+            Join-Path (Join-Path $env:LOCALAPPDATA 'itch') 'butler'
+        } else {
+            Join-Path (Join-Path $HOME '.itch') 'butler'
+        }
+
+        $butlerUrls = @(
+            "https://broth.itch.ovh/butler/$butlerPlatform/LATEST/archive/default",
+            "https://broth.itch.zone/butler/$butlerPlatform/LATEST/archive/default"
+        )
+        $butlerZip = Join-Path ([System.IO.Path]::GetTempPath()) ("butler-install-{0}.zip" -f ([System.Guid]::NewGuid().ToString('N')))
+
+        try {
+            if (-not (Test-Path $butlerInstallDir)) {
+                [System.IO.Directory]::CreateDirectory($butlerInstallDir) | Out-Null
+            }
+
+            $downloadSucceeded = $false
+            $lastDownloadError = $null
+            foreach ($butlerUrl in $butlerUrls) {
+                INFO "butler not found — downloading from $butlerUrl ..."
+                try {
+                    if (Test-Path $butlerZip) { Remove-Item $butlerZip -Force -ErrorAction SilentlyContinue }
+                    Invoke-WebRequest -Uri $butlerUrl -OutFile $butlerZip -UseBasicParsing
+                    $downloadSucceeded = $true
+                    break
+                } catch {
+                    $lastDownloadError = $_
+                    WARN "Download failed from ${butlerUrl}: $($_.Exception.Message)"
+                }
+            }
+
+            if (-not $downloadSucceeded) {
+                throw "Could not download butler from any known source. Last error: $($lastDownloadError.Exception.Message)"
+            }
+
+            Expand-Archive -Path $butlerZip -DestinationPath $butlerInstallDir -Force
+
+            # Set executable bit on non-Windows platforms.
+            if (-not $isWindowsOS) {
+                & chmod +x (Join-Path $butlerInstallDir $butlerExeName)
+            }
+
+            # Add to PATH for the current session so gondwana doctor can find it.
+            $normalizedButlerInstallDir = $butlerInstallDir.Trim().Trim('"').TrimEnd('\', '/')
+            $pathEntries = @()
+            if (-not [string]::IsNullOrWhiteSpace($env:PATH)) {
+                $pathEntries = $env:PATH.Split([System.IO.Path]::PathSeparator, [System.StringSplitOptions]::RemoveEmptyEntries)
+            }
+
+            $hasButlerInstallDir = $false
+            foreach ($entry in $pathEntries) {
+                $normalizedEntry = $entry.Trim().Trim('"').TrimEnd('\', '/')
+                if (($isWindowsOS -and $normalizedEntry -ieq $normalizedButlerInstallDir) -or
+                    (-not $isWindowsOS -and $normalizedEntry -ceq $normalizedButlerInstallDir)) {
+                    $hasButlerInstallDir = $true
+                    break
+                }
+            }
+
+            if (-not $hasButlerInstallDir) {
+                if ([string]::IsNullOrWhiteSpace($env:PATH)) {
+                    $env:PATH = $butlerInstallDir
+                } else {
+                    $env:PATH = "$env:PATH$([System.IO.Path]::PathSeparator)$butlerInstallDir"
+                }
+            }
+
+            $butlerVersion = Get-CommandVersionLine -Command 'butler'
+            OK ("butler installed to $butlerInstallDir{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
+            WARN "Add '$butlerInstallDir' to your PATH to use butler in future terminal sessions."
+            INFO "Run 'butler login' to authenticate with itch.io."
+        } catch {
+            WARN "Failed to download/install butler: $_"
+            INFO "Install butler manually from https://itch.io/docs/butler/installing.html"
+        } finally {
+            if (Test-Path $butlerZip) { Remove-Item $butlerZip -Force -ErrorAction SilentlyContinue }
+        }
+    }
+}
+
+# ─── Step 13: gondwana doctor ─────────────────────────────────────────────────
+
+Step '13/13 gondwana doctor'
+INFO 'Doctor runs under the repository-pinned SDK 8; the .NET 10 Blazor toolchain is checked separately in step 8.'
+if (Get-Command gondwana -ErrorAction SilentlyContinue) {
+    gondwana doctor
+} else {
+    WARN "'gondwana' command not found on PATH."
+    INFO "If you just installed Gondwana.Cli, reopen your terminal and run 'gondwana doctor'."
+}
+
+Write-Host ""
+Write-Host "Setup complete." -ForegroundColor Green
+) {
+                    try {
+                        Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.10', '--exact',
+                                            '--silent', '--accept-source-agreements',
+                                            '--accept-package-agreements')
+                        $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
+                                    [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+                        $sdk10Version = Get-DotNet10SdkVersion
+                        if (-not $sdk10Version) {
+                            WARN '.NET 10 was installed but is not visible yet; reopen the terminal and rerun setup.'
+                        }
+                    } catch {
+                        WARN "Automatic .NET 10 installation failed: $_"
+                    }
+                } else {
+                    INFO '.NET 10 installation declined; Blazor workloads will be skipped.'
+                }
+            } else {
+                WARN 'Non-interactive session: skipping optional .NET 10 installation prompt.'
+            }
+        } else {
+            INFO 'Automatic .NET 10 installation requires winget on Windows; install the SDK manually.'
+        }
+    }
+
+    if ($sdk10Version) {
+        try {
+            Ensure-DotNet10WasmTools -SdkVersion $sdk10Version
+        } catch {
+            WARN "Could not set up the .NET 10 wasm-tools workload: $_"
+            INFO 'From outside this repository (which pins SDK 8), select SDK 10 and run: dotnet workload install wasm-tools'
+        }
+    } else {
+        WARN 'Skipping .NET 10 wasm-tools: .NET 10 SDK is not installed.'
+        INFO 'Install .NET 10 from https://dotnet.microsoft.com/download/dotnet/10.0 for Blazor template support.'
     }
 
     # ─── Step 9: SDL2 native library ──────────────────────────────────────────
