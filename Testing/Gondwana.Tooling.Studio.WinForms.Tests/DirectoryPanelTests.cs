@@ -3,6 +3,7 @@ using System.Reflection;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -319,6 +320,13 @@ public sealed partial class CompositionTests
             Assert.Equal(size == NavigationIconSize.Small ? 9f : size == NavigationIconSize.Medium ? 11f : 13f, panel.Tree.Font.SizeInPoints);
             Assert.True(panel.Tree.ItemHeight > panel.Tree.ImageList.ImageSize.Height);
             Assert.Equal(8, panel.Tree.ImageList.Images.Count);
+            // The directory image must come from the embedded PNG, not the old "D" glyph.
+            using (var expected = ToolingIconResources.CreateBitmap("icons8-folder-96.png", panel.Tree.ImageList.ImageSize.Width))
+            using (var actual = new Bitmap(panel.Tree.ImageList.Images["directory"]!))
+            {
+                int center = expected.Width / 2;
+                Assert.Equal(expected.GetPixel(center, center).ToArgb(), actual.GetPixel(center, center).ToArgb());
+            }
             foreach (var key in panel.Tree.ImageList.Images.Keys.Cast<string>())
             {
                 using var icon = new Bitmap(panel.Tree.ImageList.Images[key]!);
