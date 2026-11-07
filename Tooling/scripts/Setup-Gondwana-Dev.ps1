@@ -83,6 +83,41 @@ function Invoke-Cmd {
     }
 }
 
+function Add-PersistedPathsToProcess {
+    # Installing software may add paths to the Machine/User environment. Keep
+    # existing process entries first, including shell/profile-local tool paths,
+    # then append only newly available persisted entries.
+    $separator = [string] [System.IO.Path]::PathSeparator
+    $separatorPattern = [regex]::Escape($separator)
+    $seen = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($entry in ($env:PATH -split $separatorPattern)) {
+        $normalized = $entry.Trim().Trim('"').TrimEnd('\', '/')
+        if ($normalized) { [void] $seen.Add($normalized) }
+    }
+
+    $newEntries = @()
+    foreach ($scope in @('Machine', 'User')) {
+        $persisted = [System.Environment]::GetEnvironmentVariable('PATH', $scope)
+        if ([string]::IsNullOrWhiteSpace($persisted)) { continue }
+
+        foreach ($entry in ($persisted -split $separatorPattern)) {
+            $normalized = $entry.Trim().Trim('"').TrimEnd('\', '/')
+            if ($normalized -and $seen.Add($normalized)) {
+                $newEntries += $entry
+            }
+        }
+    }
+
+    if ($newEntries.Count -gt 0) {
+        if ([string]::IsNullOrWhiteSpace($env:PATH)) {
+            $env:PATH = $newEntries -join $separator
+        } else {
+            $env:PATH += $separator + ($newEntries -join $separator)
+        }
+    }
+}
+
 function Test-GlobalTool {
     param([string] $PackageId)
     $output = dotnet tool list -g 2>&1
@@ -256,9 +291,8 @@ if ($hasSdk8) {
     }
     Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.8', '--silent',
                         '--accept-source-agreements', '--accept-package-agreements')
-    # Refresh PATH so the newly installed dotnet is usable in this session
-    $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+    # Append newly installed SDK paths while preserving this session's existing PATH
+    Add-PersistedPathsToProcess
     OK '.NET 8 SDK installed. Reopen your terminal if subsequent steps fail to find dotnet.'
 } else {
     throw ".NET 8 SDK not found.`nInstall it via your package manager or from https://dotnet.microsoft.com/download/dotnet/8 then rerun this script."
@@ -412,8 +446,7 @@ if ($SkipOptional) {
                         Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.10', '--exact',
                                             '--silent', '--accept-source-agreements',
                                             '--accept-package-agreements')
-                        $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                                    [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+                        Add-PersistedPathsToProcess
                         $sdk10Version = Get-DotNet10SdkVersion
                         if (-not $sdk10Version) {
                             WARN '.NET 10 was installed but is not visible yet; reopen the terminal and rerun setup.'
@@ -495,9 +528,8 @@ if ($SkipOptional) {
             try {
                 Invoke-Cmd winget @('install', '--id', 'orhun.git-cliff', '--exact', '--silent',
                                     '--accept-source-agreements', '--accept-package-agreements')
-                # Refresh PATH so the newly installed git-cliff is usable in this session
-                $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                            [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+                # Append newly installed tool paths while preserving this session's existing PATH
+                Add-PersistedPathsToProcess
                 $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
                 OK ("git-cliff installed{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
             } catch {
