@@ -73,16 +73,16 @@ jobs:
 
           COMMITS=$(gh api --paginate \
             "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/commits?per_page=100" \
-            --jq '.[] | "\(.sha[0:7]) \(.commit.message | split("\\n")[0])"' \
+            --jq '.[] | "\(.sha[0:7]) \(.commit.message | split("\n")[0])"' \
             | awk 'NR <= 30 { print }')
 
           OUTPUT_DELIM=$(uuidgen)
           {
             echo "diff_stat<<$OUTPUT_DELIM"
-            printf '%s\\n' "$DIFF_STAT"
+            printf '%s\n' "$DIFF_STAT"
             echo "$OUTPUT_DELIM"
             echo "commits<<$OUTPUT_DELIM"
-            printf '%s\\n' "$COMMITS"
+            printf '%s\n' "$COMMITS"
             echo "$OUTPUT_DELIM"
           } >> "$GITHUB_OUTPUT"
 
