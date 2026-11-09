@@ -101,7 +101,7 @@ The computer player is intentionally straightforward: it evaluates legal moves b
 
 [Gondwana](https://github.com/Isthimius/Gondwana) is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. Spot! serves both as a playable game and as a dogfooding project for Gondwana's Windows and browser stacks.
 
-The Gondwana source is released under the [MIT License](../../LICENSE). Third-party font, music, sound, and art attribution for Spot! is recorded in [`assets/sources.txt`](assets/sources.txt) and [`assets/OFL.txt`](assets/OFL.txt).
+The Gondwana source is released under the [MIT License](../../LICENSE). Third-party font, music, sound, and art attribution for Spot! is recorded in [`Spot.Shared/assets/sources.txt`](../Spot.Shared/assets/sources.txt) and [`Spot.Shared/assets/OFL.txt`](../Spot.Shared/assets/OFL.txt).
 
 ## Shared assets
 
