@@ -13,7 +13,7 @@ Run from the repository root:
 dotnet run --project Tooling/Gondwana.Tooling.Scenes.WinForms -c Release
 ```
 
-## Undo and redo (Phase 1)
+## Undo and redo
 
 **Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
 active GTS or GSCN document in both Studio and the standalone editors.
@@ -28,9 +28,10 @@ Undo discards the redo branch. Each document retains up to 200 committed operati
 by default; evicting history never makes an unreachable saved state clean.
 
 History includes in-memory edits to loose and GAF-backed GTS/GSCN definitions.
-It cannot reverse committed archive relocation, file deletion, or cross-file
-reference rewrites. GANI, GSPR, GSND, and general GAF history are deferred to
-later phases. Scene painting and fill tools are not included in this phase.
+GANI, GSPR, GSND, and GAF Add/Import/Replace now have independent document-scoped
+histories in Studio and their standalone editors. Reviewed archive Rename/Move/Delete
+operations and cross-file reference rewrites are not locally undoable. Scene
+painting and fill operations remain outside the current history.
 
 GSCN history covers members, layers, property and collection edits, source references,
 and sparse tile frame/animation, transform, and collision edits. Undoing an edit that
@@ -216,8 +217,7 @@ the other standalone Gondwana tooling.
 
 ## Studio reuse
 
-Studio should host `SceneEditorControl` directly. It should not reimplement
-scene editing or translate GSCN into an older Studio-specific scene model.
+Studio hosts `SceneEditorControl` directly. It does not reimplement scene editing or translate GSCN into an older Studio-specific scene model.
 
 The outer Studio shell owns projects/documents/global tools. Each
 `SceneEditorControl` owns its editor-local panes and GSCN authoring state.
