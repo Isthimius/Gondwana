@@ -42,9 +42,12 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private DirectLightLayer _lights = null!;
     private DirectRadialLight _playerTorch = null!;
     private DirectDarknessOverlay _darkness = null!;
+    private DirectSceneLayerDarknessOverlay _layerDarkness = null!;
     private TextBlock _hud = null!;
 
     private bool _flicker = true;
+    private bool _darknessEnabled = true;
+    private bool _useLayerDarkness;
     private bool _wallTorchesEnabled = true;
     private bool _playerTorchEnabled = true;
     private float _radius = DefaultTorchRadius;
@@ -159,6 +162,19 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         // Tracking a light owner also tracks lights added after this call.
         _darkness.TrackLightLayer(_lights, radiusScale: 1.16f);
 
+        // Switchable comparison of the view-space and scene-layer-space render paths.
+        // Both overlays track the same lights, but only one is drawn at a time.
+        _layerDarkness = new DirectSceneLayerDarknessOverlay(host, _actorLayer,
+                new Rectangle(0, 0, Columns * DungeonArt.TileSize, Rows * DungeonArt.TileSize),
+                "dungeon-world-darkness")
+            .SetDarknessColor(Color.Black)
+            .SetDarknessOpacity(214)
+            .SetInnerClearRadiusRatio(0.18f)
+            .SetMidpointRadiusRatio(0.62f)
+            .SetMidpointStrength(0.48f);
+        _layerDarkness.TrackLightLayer(_lights, radiusScale: 1.16f);
+        _layerDarkness.Visible = false;
+
         _playerTorch = _lights.AddTorchLight(TileCenter(Spawn), _radius,
             Color.FromArgb(210, 255, 178, 68), "explorer-torch");
         _playerTorch.Intensity = 0.95f;
@@ -202,7 +218,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         {
             Keys.W, Keys.A, Keys.S, Keys.D,
             Keys.Up, Keys.Left, Keys.Down, Keys.Right,
-            Keys.V, Keys.F, Keys.T, Keys.L, Keys.R,
+            Keys.V, Keys.B, Keys.F, Keys.T, Keys.L, Keys.R,
             Keys.Oemplus, Keys.Add, Keys.OemMinus, Keys.Subtract
         })
             keyboard.StartMonitoringKey((int)key, key.ToString());
@@ -225,7 +241,12 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         switch (key)
         {
             case Keys.V:
-                _darkness.Visible = !_darkness.Visible;
+                _darknessEnabled = !_darknessEnabled;
+                ApplyDarknessMode();
+                break;
+            case Keys.B:
+                _useLayerDarkness = !_useLayerDarkness;
+                ApplyDarknessMode();
                 break;
             case Keys.F:
                 _flicker = !_flicker;
@@ -262,14 +283,20 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         RefreshHud();
     }
 
+    private void ApplyDarknessMode()
+    {
+        _darkness.Visible = _darknessEnabled && !_useLayerDarkness;
+        _layerDarkness.Visible = _darknessEnabled && _useLayerDarkness;
+    }
+
     private void RefreshHud()
     {
         if (_hud is null)
             return;
 
         _hud.SetText(
-            $"TORCHLIGHT DUNGEON   WASD / Arrows move   V darkness   F flicker   T carried torch   L sconces\n" +
-            $"+/- radius ({_radius:0} px)   R respawn   ESC exit   |   Darkness {(_darkness.Visible ? "ON" : "OFF")}  Flicker {(_flicker ? "ON" : "OFF")}");
+            $"TORCHLIGHT   WASD / Arrows move   B view/layer mode   V darkness   F flicker   T torch   L sconces\n" +
+            $"+/- radius ({_radius:0} px)   R respawn   ESC exit   |   {(_useLayerDarkness ? "SceneLayer" : "View")} darkness: {(_darknessEnabled ? "ON" : "OFF")}");
     }
 
     protected override void OnEngineInitialized()
@@ -351,6 +378,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     protected override void OnDisposing()
     {
         _darkness?.Dispose();
+        _layerDarkness?.Dispose();
         _lights?.Dispose();
     }
 }
