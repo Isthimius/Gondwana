@@ -11,6 +11,13 @@ All notable changes to this project will be documented in this file.
 - Remove duplicate Studio editors and the deprecated Avalonia Studio prototype; retain shell/plugin infrastructure.
 - Add Windows composition tests covering nested ownership, saving, cancellation, encrypted assets, and disposal.
 
+# [Unreleased]
+
+
+
+## Added
+- Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+
 # v2.6.2 - November 03, 2026
 
 
