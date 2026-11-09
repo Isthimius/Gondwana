@@ -143,8 +143,10 @@ Tabs, split proportions, and hidden-pane visibility persist across launches.
 Use **View → Reset application layout**, **View → Reset active editor layout**,
 or an editor's **Show all … panes** command to recover a workspace.
 
-These preferences never alter Gondwana asset files and do not save source-document
-paths or unsaved changes. **Open documents are not restored on startup.**
-Missing or invalid preferences fall back to defaults. For detailed ownership,
+Dock-layout preferences never alter Gondwana asset files and do not store
+source-document paths or unsaved edits. A separate **workspace-session** preference
+can reopen previously saved documents on startup; untitled documents and unsaved
+contents are not recovered. **File > Restore workspace on startup** controls that
+behavior. Missing or invalid preferences fall back to defaults. For detailed ownership,
 pane recovery, and plugin behavior, see the
 [Studio documentation](./Gondwana.Tooling.Studio.WinForms/README.md).

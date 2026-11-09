@@ -16,7 +16,7 @@ Visual Studio, or run from the repository root:
 dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
 ```
 
-## Undo and redo (Phase 1)
+## Undo and redo
 
 **Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
 active GTS or GSCN document in both Studio and the standalone editors.
@@ -31,9 +31,10 @@ Undo discards the redo branch. Each document retains up to 200 committed operati
 by default; evicting history never makes an unreachable saved state clean.
 
 History includes in-memory edits to loose and GAF-backed GTS/GSCN definitions.
-It cannot reverse committed archive relocation, file deletion, or cross-file
-reference rewrites. GANI, GSPR, GSND, and general GAF history are deferred to
-later phases. Scene painting and fill tools are not included in this phase.
+GANI, GSPR, GSND, and GAF Add/Import/Replace now have independent document-scoped
+histories in Studio and their standalone editors. Reviewed archive Rename/Move/Delete
+operations and cross-file reference rewrites are not locally undoable. Scene
+painting and fill operations remain outside the current history.
 
 GTS history covers definition add/duplicate/remove/rename/import, image references,
 mask and scalar properties, region geometry and removal, collision overrides, and
@@ -153,14 +154,11 @@ MainForm / DockPanelSuite
 
 `TilesheetEditorControl` and `TilesheetWorkspaceControl` are public WinForms
 `UserControl` types. `EditorDocument` contains standalone docking/close-prompt
-behavior only. A future Gondwana Studio WinForms host can therefore place the same
-controls inside its own document/tool-window model instead of copying the standalone
-forms.
+behavior only. Gondwana Studio already hosts those controls inside its own document/tool-window model instead of copying the standalone forms.
 
 `AssetPackageCatalog` is a non-visual package/image service that can be shared by
 multiple hosted controls. The GTS standalone app shares one catalog between its
-workspace and open editors; Studio can do the same while eventually composing it
-with the hostable GAF editor.
+workspace and open editors; Studio hosts the same editors alongside the GAF editor.
 
 ## Validation and maintenance
 

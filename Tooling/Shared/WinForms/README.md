@@ -1,13 +1,13 @@
 # Shared WinForms docking
 
-The five reusable editor controls and Studio source-link the docking helpers. There
+The six reusable editor controls and Studio source-link the docking helpers. There
 is no runtime/engine dependency on these preferences and no additional docking framework.
 
 `DockLayoutStore` centralizes the per-user directory and atomic writes. The default
 root is `%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling`; the entry assembly's
 simple name selects the application directory (without its version). `shell.xml`
-stores outer tool windows, while `gaf.xml`, `gts.xml`, `gani.xml`, `gsnd.xml`, and
-`gscn.xml` store independent editor-type arrangements under `Docking`.
+stores outer tool windows, while `gaf.xml`, `gts.xml`, `gani.xml`, `gsnd.xml`,
+`gscn.xml`, and `gspr.xml` store independent editor-type arrangements under `Docking`.
 
 Embedding hosts may set these process-wide AppContext values **before constructing
 any editor or shell**:

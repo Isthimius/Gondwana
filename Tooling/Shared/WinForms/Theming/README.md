@@ -78,14 +78,10 @@ keeps the Studio preview open for three minutes for interactive inspection.
 Native file dialogs and interactive docking drag targets still warrant a manual
 check on the target Windows version and DPI/accessibility configuration.
 
-## Visual previews
+## Generating visual previews
 
-These are programmatic renderings of real WinForms controls from the Windows probe,
-with empty sample documents. They preserve the dark scene/sprite canvas deliberately.
-Desktop screenshot capture was not available because interactive app approval timed out.
-
-| Theme | Studio | Scene editor (property grid and nested panes) |
-| --- | --- | --- |
-| Dark | [Preview](images/Dark-Studio.png) | [Preview](images/Dark-Scenes.png) |
-| Dark Blue | [Preview](images/DarkBlue-Studio.png) | [Preview](images/DarkBlue-Scenes.png) |
-| Light | [Preview](images/Light-Studio.png) | [Preview](images/Light-Scenes.png) |
+The theme probe can save programmatic WinForms control renderings to a local
+output directory. These images are not checked into this repository, so there
+are no committed image previews to link here. Run the probe as shown above for
+each theme and inspect its output, or use `--inspect` to examine the running
+Studio window interactively on Windows.
