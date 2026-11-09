@@ -19,17 +19,22 @@ dotnet add package Gondwana.WinForms.Hosting
 
 ## Usage
 
-Create a host by inheriting from the WinForms host:
+Create a bitmap host with its required WinForms render-surface control:
 
 ```csharp
+using Gondwana.Scenes;
+using Gondwana.WinForms.Hosting;
+using Gondwana.WinForms.Rendering;
+
 public class MyGameHost : WinFormsGameHost
 {
-    protected override void CreateInitialScene()
-    {
-        // Setup scene
-    }
+    public MyGameHost(WinFormBitmapRenderSurfaceControl surface) : base(surface) { }
+
+    protected override Scene CreateInitialScene() => Scene.Empty;
 }
 ```
+
+Use `WinFormsGpuGameHost` with `WinFormGpuRenderSurfaceControl` for OpenGL/GPU rendering. The host's `Initialize()` method wires up the engine lifecycle; override content and scene hooks to build your game.
 
 ## Documentation
 
