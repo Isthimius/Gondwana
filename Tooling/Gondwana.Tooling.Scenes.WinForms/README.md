@@ -31,7 +31,7 @@ History includes in-memory edits to loose and GAF-backed GTS/GSCN definitions.
 GANI, GSPR, GSND, and GAF Add/Import/Replace now have independent document-scoped
 histories in Studio and their standalone editors. Reviewed archive Rename/Move/Delete
 operations and cross-file reference rewrites are not locally undoable. Scene
-painting and fill operations remain outside the current history.
+painting strokes and fill operations are grouped into document-scoped undo steps.
 
 GSCN history covers members, layers, property and collection edits, source references,
 and sparse tile frame/animation, transform, and collision edits. Undoing an edit that
