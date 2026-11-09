@@ -1,6 +1,6 @@
 # The Greenward Key
 
-The Greenward Key is a playable, code-first top-down action-RPG prototype built with Gondwana and .NET 8 for Windows. Its gameplay uses imported *The Legend of Zelda: A Link to the Past* sprite sheets through Gondwana `.gts` definitions.
+The Greenward Key is a playable, code-first top-down action-RPG prototype built with Gondwana and .NET 8 for Windows. It supports optional imported *The Legend of Zelda: A Link to the Past* sprite sheets through Gondwana `.gts` definitions; generated artwork is the default.
 
 ## Art source and redistribution
 
@@ -46,13 +46,15 @@ dotnet restore
 dotnet run --project Demos/Gondwana.ZeldaPrototype/Gondwana.ZeldaPrototype.csproj
 ```
 
-The normal project path follows Gondwana's current WinForms template and references the latest `2.*` packages.
+Inside this repository, the project automatically references the neighboring Gondwana source projects. When the demo is copied outside a Gondwana checkout, it falls back to the `2.*` NuGet packages, as in the WinForms template.
 
-To compile directly against a Gondwana source checkout instead:
+To build a standalone copy against a separate checkout, supply `GondwanaSourceRoot` from the demo's directory:
 
 ```powershell
-./run-against-source.ps1 -GondwanaSourceRoot C:\src\Gondwana
+dotnet build .\Gondwana.ZeldaPrototype.csproj -p:GondwanaSourceRoot=C:\src\Gondwana
 ```
+
+The checkout must contain the Gondwana, Hosting, WinForms, and WinForms.Hosting projects.
 
 ## Controls
 
@@ -93,7 +95,6 @@ Gondwana.ZeldaPrototype/
 ├── README.md
 ├── docs/
 │   └── API-VERIFICATION.md
-├── run-against-source.ps1
 ├── GameArt.cs
 ├── GameHealthBar.cs
 ├── GameModels.cs
