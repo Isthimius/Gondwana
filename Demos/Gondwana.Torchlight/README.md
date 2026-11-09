@@ -2,7 +2,7 @@
 
 A compact top-down dungeon walkabout for testing Gondwana's direct-drawing lighting primitives on the **GPU WinForms backbuffer**. The procedurally generated 32px atlas needs no external images or assets.
 
-The player carries a warm, flickering torch. Five independent wall sconces light the passageways. A view-bound darkness overlay tracks every light through a `DirectLightLayer`, automatically revealing terrain as the explorer moves and the camera follows. No custom shaders or lighting substitutes are used by the demo.
+The player carries a warm, flickering torch. Five independent wall sconces light the passageways. Two switchable darkness overlays (one view-bound, one SceneLayer-bound) each track the same `DirectLightLayer`, automatically revealing terrain as the explorer moves and the camera follows. No custom shaders or lighting substitutes are used by the demo.
 
 ## Run
 
@@ -19,7 +19,8 @@ When built inside the repository the project references the latest source. Outsi
 | Key | Action |
 | --- | --- |
 | WASD / Arrow keys | Walk (diagonals normalized; walls block movement) |
-| V | Toggle the darkness overlay |
+| V | Toggle the currently selected darkness overlay |
+| B | Switch between view-bound and SceneLayer-bound darkness |
 | F | Toggle flicker on all torches |
 | T | Toggle the player's torch (glow *and* reveal) |
 | L | Toggle the five wall sconces (glows *and* reveals) |
@@ -30,10 +31,10 @@ When built inside the repository the project references the latest source. Outsi
 ## What to inspect
 
 - `DirectLightLayer`: each light is a world-pixel scene-layer `DirectRadialLight`, not a regular `SceneLayer`.
-- `DirectDarknessOverlay`: one view-space overlay tracks all lights with `TrackLightLayer`, including those created afterward.
+- `DirectDarknessOverlay` vs `DirectSceneLayerDarknessOverlay`: press **B** to compare view-space darkness against world-bounded SceneLayer darkness; each tracks all lights via `TrackLightLayer`.
 - Flicker: all six lights have independent frequencies; tracked reveal intensity changes together with the light.
 - Movement: sprite positions are in grid coordinates, so `TileCenter` converts to world pixels for the light; both stay aligned as the camera pans.
-- Layering: floor tiles, walls/sprites, light glows, view darkness, and the HUD use distinct layers / Z-order ranges.
+- Layering: floor tiles, walls/sprites, light glows, one selected darkness overlay, and the HUD use distinct layers / Z-order ranges.
 
 **Limitations:** This intentionally tests soft radial glows and reveals, not ray-cast visibility or shadows. Light passes visually through walls because the underlying primitives do not implement occlusion. Collision is a small demo-local tile grid check.
 
