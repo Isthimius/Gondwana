@@ -1,12 +1,10 @@
 # Gondwana.Avalonia
 
-**Gondwana.Avalonia** provides Avalonia UI adapters for rendering and input, mirroring
-`Gondwana.WinForms` but targeting all platforms supported by Avalonia: **desktop** (Windows,
-Linux, macOS), **WebAssembly**, **Android**, and **iOS / macOS (Catalyst)**.
+**Gondwana.Avalonia** provides Avalonia UI adapters for rendering and input, mirroring the adapter role of `Gondwana.WinForms`. Its primary desktop targets are Windows, Linux, and macOS. Avalonia's broader platform reach does not by itself certify Gondwana hosting, GPU rendering, or native dependencies on WebAssembly, Android, or iOS.
 
 ## Features
 
-- Bitmap rendering surface using Avalonia `WriteableBitmap` (no platform-specific SkiaSharp view package required; works on all Avalonia targets)
+- Bitmap rendering surface using Avalonia `WriteableBitmap` (without a platform-specific SkiaSharp view package); validate the complete host on each non-desktop target
 - Keyboard input integration (global key capture via Avalonia `TopLevel`)
 - Mouse / pointer input integration
 - Touch input integration with gesture recognizer support (`TapGestureRecognizer`, `SwipeGestureRecognizer`, `PinchGestureRecognizer`)
@@ -72,8 +70,7 @@ var pinch = new PinchGestureRecognizer(Engine.Instance.Input.TouchEventPoller!);
 pinch.PinchUpdated += (_, e) => Console.WriteLine($"Pinch scale delta: {e.ScaleDelta:F3}");
 ```
 
-> **Desktop note:** On desktop platforms without a hardware touch screen, the mouse pointer is
-> automatically emulated as a single touch contact (`Id = 0`). Existing mouse input is unaffected.
+> **Desktop note:** Mouse-to-touch emulation is **off by default**. On a desktop without a touch screen, call `InitializeAvaloniaTouchAdapter(renderSurfaceControl, emulateMouse: true)` to represent the mouse as touch contact `Id = 0`. Leave it disabled if mouse and physical touch should remain distinct.
 
 ### Key codes
 
