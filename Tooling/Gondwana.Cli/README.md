@@ -184,8 +184,8 @@ Gondwana Doctor
 Git                  OK  git version 2.47.0.windows.2
 .NET SDK             OK  10.0.201
 nbgv                 OK  3.9.50
-Gondwana CLI         OK  1.2.0
-Gondwana Templates   OK  Gondwana.Templates 1.2.0 (gondwana-winforms, gondwana-avalonia, gondwana-blazor)
+Gondwana CLI         OK  2.6.2
+Gondwana Templates   OK  Gondwana.Templates 2.6.2 (gondwana-winforms, gondwana-avalonia, gondwana-blazor)
 wasm-tools           OK  10.0.300
 git-cliff            OK  git-cliff 2.10.0
 butler               OK  v17.0.0, built on ...

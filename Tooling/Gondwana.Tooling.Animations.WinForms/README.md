@@ -20,9 +20,7 @@ boots a `GameHost`, creates a runtime `Animator`, or serializes runtime playback
 state.
 
 `AnimationEditorControl` is a public, hostable WinForms surface. The standalone
-application places that control inside a DockPanelSuite document, but a future
-Gondwana Studio host can reuse the same editor surface without depending on
-`MainForm`.
+application places that control inside a DockPanelSuite document, and Gondwana Studio already hosts the same editor surface without depending on the standalone `MainForm`.
 
 ## Workflow
 
@@ -93,8 +91,7 @@ AnimationEditorControl
 AnimationDocument + AnimationDefinition
 ```
 
-Studio can eventually host `AnimationEditorControl` directly while using its own
-project/reference model around it.
+Studio already hosts `AnimationEditorControl` directly inside its own document and working-directory model.
 
 ## Editor-local docking
 
@@ -179,4 +176,4 @@ GAF-backed definitions opened through Studio.
 
 History edits authoring metadata. It does not modify external media, download URI
 sources, undo committed archive/file operations, or alter other documents.
-General GAF editor history remains Phase 3 work.
+GAF Add/Import and Replace also have document-scoped history. Reviewed archive Rename/Move/Delete operations are not locally undoable; see [Studio's undo/redo contract](../Gondwana.Tooling.Studio.WinForms/README.md#undo-and-redo).

@@ -77,10 +77,9 @@ HarfBuzz versions merit a separate Linux text-shaping test before any forced
 upgrade. This empty-template test does not exercise HarfBuzz text shaping, and
 does not certify Linux native compatibility. No HarfBuzz versions are changed.
 
-## Reporter verification after release
+## Published-release verification (v2.6.2)
 
-Keep Issue #531 open until the reporter verifies v2.6.2, or equivalent clean
-testing against the published packages succeeds. After publication:
+Issue #531 was closed as completed on November 4, 2026. The following remains a regression-verification checklist for the published packages:
 
 1. Update the CLI (`dotnet tool update --global Gondwana.Cli`) and templates
    (`dotnet new update`). Confirm the installed versions include v2.6.2.

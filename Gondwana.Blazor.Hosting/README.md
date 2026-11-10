@@ -10,7 +10,7 @@ It is the Blazor equivalent of `Gondwana.WinForms.Hosting` and `Gondwana.Avaloni
 - `BlazorGpuGameHost` – WebGL/GPU host using `BlazorGpuRenderSurfaceComponent`
 - `BlazorGameHost` – preserved Canvas 2D/bitmap host using `BlazorBitmapRenderSurfaceComponent`
 - Timer-driven browser engine execution: WebGL uses `SKGLView`'s `requestAnimationFrame` loop directly, while the bitmap path retains Gondwana's JavaScript render loop
-- Works with both Blazor WebAssembly and Blazor Server
+- Supports browser-executed Blazor WebAssembly; the `BlazorGpuGameHost` is browser-only and is not a Blazor Server renderer
 - `ConfigureLogicalResolution(width, height)` retains game coordinates across browser resizes by handling the first usable canvas size
 
 ## Installation
@@ -20,6 +20,8 @@ dotnet add package Gondwana.Blazor.Hosting
 ```
 
 ## Usage
+
+The current Blazor game template targets `net10.0-browser` and requires the matching .NET 10 SDK and `wasm-tools` workload. The hosting library itself still targets .NET 8; this does not make the generated browser app a .NET 8 template.
 
 ```csharp
 public class MyGameHost : BlazorGpuGameHost
@@ -35,15 +37,18 @@ public class MyGameHost : BlazorGpuGameHost
 Then in your Blazor page's `OnAfterRenderAsync`:
 
 ```csharp
+@using Gondwana.Blazor.Rendering
 @inject IJSRuntime JS
 
+<BlazorGpuRenderSurfaceComponent @ref="_surface" />
+
 @code {
-    private BlazorGpuRenderSurfaceComponent _surface = null!;
+    private BlazorGpuRenderSurfaceComponent? _surface;
     private MyGameHost? _host;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return Task.CompletedTask;
+        if (!firstRender || _surface is null) return Task.CompletedTask;
         _host = new MyGameHost(_surface, JS);
         _host.Initialize();
         _host.ConfigureLogicalResolution(800, 600); // Optional fixed game coordinates

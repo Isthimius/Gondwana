@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file.
 
 - Retain plugin infrastructure and shell Output state while removing obsolete duplicate editor models and services with the deprecated Avalonia Studio prototype.
 
+# [Unreleased]
+
+
+
+## Added
+- Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+
 # v2.6.2 - November 03, 2026
 
 

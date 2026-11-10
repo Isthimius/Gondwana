@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+# [Unreleased]
+
+## Tooling / Gondwana.Tooling.Studio.Core
+
+### Added
+- Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+
+## Tooling / Gondwana.Tooling.Studio.WinForms
+
+### Added
+- Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+
+## Build / Repository
+
+### Fixed
+- Align dev setup with .NET 10 Blazor prerequisites ([#550](https://github.com/Isthimius/Gondwana/pull/550))
+
+
+
+### Documentation
+- Clarify blazor publishing and itch.io deployment ([#547](https://github.com/Isthimius/Gondwana/pull/547))
+
+
+
+### CI
+- Support safe PR title formatting for forks ([#548](https://github.com/Isthimius/Gondwana/pull/548))
+
 # [v2.6.2] - 2026-11-03
 
 ## Gondwana

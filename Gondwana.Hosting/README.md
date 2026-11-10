@@ -20,17 +20,24 @@ dotnet add package Gondwana.Hosting
 
 ## Usage
 
-Create a custom host by inheriting from the base host:
+Create a platform-neutral host by inheriting from `GameHostBase` and returning a `Scene` from `CreateInitialScene`:
 
 ```csharp
+using Gondwana.Hosting;
+using Gondwana.Scenes;
+
 public class MyGameHost : GameHostBase
 {
-    protected override void CreateInitialScene()
+    protected override void ConfigurePlatform()
     {
-        // Setup scene here
+        // Configure the platform-specific render and input services.
     }
+
+    protected override Scene CreateInitialScene() => Scene.Empty;
 }
 ```
+
+A concrete application must also supply render-surface/scene binding. For a ready-made platform integration, derive from the WinForms, Avalonia, or Blazor hosting classes instead.
 
 ## Documentation
 

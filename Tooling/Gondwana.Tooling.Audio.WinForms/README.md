@@ -19,8 +19,7 @@ The editor is definition-driven. It edits `AudioDefinition` directly and does no
 boot a `GameHost` or require a configured playback backend simply to author GSND.
 
 `AudioEditorControl` is a public, hostable WinForms surface. The standalone
-application places that control inside a DockPanelSuite document; Gondwana Studio
-can host the same control later without copying editor logic.
+application places that control inside a DockPanelSuite document; Gondwana Studio already hosts the same control without copying editor logic.
 
 ## Workflow
 
@@ -112,4 +111,4 @@ GAF-backed definitions opened through Studio.
 
 History edits authoring metadata. It does not modify external media, download URI
 sources, undo committed archive/file operations, or alter other documents.
-General GAF editor history remains Phase 3 work.
+GAF Add/Import and Replace also have document-scoped history. Reviewed archive Rename/Move/Delete operations are not locally undoable; see [Studio's undo/redo contract](../Gondwana.Tooling.Studio.WinForms/README.md#undo-and-redo).
