@@ -1,8 +1,8 @@
 using System.Drawing;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using GondwanaMouseButton = Gondwana.Input.Mouse.MouseButton;
