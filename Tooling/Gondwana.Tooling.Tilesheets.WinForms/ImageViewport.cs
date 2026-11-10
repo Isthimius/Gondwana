@@ -10,26 +10,37 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     private const float ZoomStepFactor = 1.25f;
     private int _zoomWheelDelta;
     private bool _fitSelected;
+
     /// <summary>Gets or sets the borrowed preview bitmap; the owner must dispose replaced images.</summary>
     public Bitmap? Image { get; set; }
+
     /// <summary>Gets or sets the tilesheet definition supplying regions and overlays, or null when unavailable.</summary>
     public TilesheetDefinition? Definition { get; set; }
+
     /// <summary>Gets or sets the region highlighted and prioritized for hit testing, or null for no region selection.</summary>
     public TilesheetRegionDefinition? SelectedRegion { get; set; }
+
     /// <summary>Gets or sets the selected frame column and row within the selected region, or null for no frame selection.</summary>
     public Point? SelectedFrame { get; set; }
+
     /// <summary>Gets the mutable set of overlay-kind names enabled for painting.</summary>
     public HashSet<string> Overlays { get; } = Enum.GetNames<OverlayKind>().ToHashSet();
+
     /// <summary>Gets or sets the shared color settings used to paint overlays.</summary>
     public OverlaySettings Colors { get; set; } = OverlaySettings.Default;
+
     /// <summary>Occurs after a frame hit, supplying its region and zero-based column and row.</summary>
     public event Action<TilesheetRegionDefinition, Point>? FrameSelected;
+
     /// <summary>Gets the displayed pixels per source-image pixel.</summary>
     public float Zoom { get; private set; } = 1;
+
     /// <summary>Gets whether Fit is currently selected.</summary>
     internal bool IsFit => _fitSelected;
+
     /// <summary>Occurs when magnification or Fit state changes.</summary>
     internal event Action? ZoomChanged;
+
     /// <summary>Gets or sets the placeholder text displayed when no preview image is available.</summary>
     public string Message { get; set; } = "Choose a loose image to preview.";
 

@@ -72,6 +72,7 @@ internal sealed class ZoomSelector
             return;
 
         int selected = _combo.SelectedIndex;
+
         if (selected == 5)
             _setZoom(null);
         else if (selected >= 0 && selected < Presets.Length)

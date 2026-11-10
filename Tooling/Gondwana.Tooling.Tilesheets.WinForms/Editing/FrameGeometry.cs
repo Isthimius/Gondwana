@@ -15,31 +15,42 @@ internal static class FrameGeometry
     {
         if (selectedRegion is not null && definition.Regions.Contains(selectedRegion) &&
             HitTestRegion(selectedRegion, imagePoint) is { } selectedFrame)
+        {
             return (selectedRegion, selectedFrame);
+        }
 
         foreach (var region in definition.Regions)
             if (region != selectedRegion && HitTestRegion(region, imagePoint) is { } frame)
                 return (region, frame);
+
         return null;
     }
 
     private static Point? HitTestRegion(TilesheetRegionDefinition region, PointF point)
     {
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+
         long pitchX = (long)region.TileSize.Width + region.TilePadding.Left + region.TilePadding.Right;
         long pitchY = (long)region.TileSize.Height + region.TilePadding.Top + region.TilePadding.Bottom;
         if (columns <= 0 || rows <= 0 || pitchX <= 0 || pitchY <= 0 ||
-            region.TileSize.Width <= 0 || region.TileSize.Height <= 0) return null;
+            region.TileSize.Width <= 0 || region.TileSize.Height <= 0)
+        {
+            return null;
+        }
 
         double px = (double)point.X - region.Area.X - region.RegionMargin.Left;
         double py = (double)point.Y - region.Area.Y - region.RegionMargin.Top;
-        if (!double.IsFinite(px) || !double.IsFinite(py) || px < 0 || py < 0) return null;
+        if (!double.IsFinite(px) || !double.IsFinite(py) || px < 0 || py < 0)
+            return null;
+
         double x = Math.Floor(px / pitchX), y = Math.Floor(py / pitchY);
-        if (x >= columns || y >= rows || x > int.MaxValue || y > int.MaxValue) return null;
+        if (x >= columns || y >= rows || x > int.MaxValue || y > int.MaxValue)
+            return null;
 
         // Padding and unused region pixels are not frames.
         double localX = px - x * pitchX - region.TilePadding.Left;
         double localY = py - y * pitchY - region.TilePadding.Top;
+
         return localX >= 0 && localX < region.TileSize.Width && localY >= 0 && localY < region.TileSize.Height
             ? new Point((int)x, (int)y) : null;
     }

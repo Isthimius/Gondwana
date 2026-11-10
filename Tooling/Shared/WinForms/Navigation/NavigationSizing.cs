@@ -20,6 +20,7 @@ public static class NavigationSizing
         NavigationIconSize? defaultSize = null, NavigationPreferenceStore? store = null)
     {
         var binding = Trees.GetValue(tree, key => new TreeNavigationSizing(key, createImages, defaultSize, store));
+
         if (store is not null && !binding.UsesStore(store))
             throw new ArgumentException("The tree is already registered with another preference source.", nameof(store));
 
@@ -38,8 +39,10 @@ public static class NavigationSizing
         {
             var source = store ?? new NavigationPreferenceStore();
             void Refresh(object? sender, EventArgs e) => PreferenceChanged?.Invoke(source.FilePath);
+
             owner.Activated += Refresh;
             owner.Disposed += (_, _) => owner.Activated -= Refresh;
+
             return source;
         });
 
@@ -95,7 +98,9 @@ public static class NavigationSizing
         void RefreshChecks()
         {
             var size = store.Read() ?? NavigationIconSize.Small;
-            foreach (ToolStripMenuItem item in menu.DropDownItems) item.Checked = Equals(item.Tag, size);
+
+            foreach (ToolStripMenuItem item in menu.DropDownItems)
+                item.Checked = Equals(item.Tag, size);
         }
 
         void RefreshPreference(object? sender, EventArgs e)

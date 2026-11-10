@@ -30,7 +30,7 @@ internal sealed class MainForm : Form
     /// <summary>Creates the standalone tilesheets editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
-        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
+        Icon = ToolingBranding.CreateIcon();
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Tilesheets — GTS editor";
         Size = new Size(1450, 900);
@@ -45,14 +45,10 @@ internal sealed class MainForm : Form
             Environment.CurrentDirectory);
 
         _workspaceControl.OpenGtsRequested += OpenDocument;
-        _workspaceControl.CreateFromLooseImageRequested +=
-            path => NewDocument(path);
-        _workspaceControl.UseLooseImageRequested +=
-            path => ActiveEditor?.ChooseImage(path);
-        _workspaceControl.CreateFromPackedImageRequested +=
-            source => NewDocument(source);
-        _workspaceControl.UsePackedImageRequested +=
-            source => ActiveEditor?.ChoosePackedImage(source);
+        _workspaceControl.CreateFromLooseImageRequested += path => NewDocument(path);
+        _workspaceControl.UseLooseImageRequested += path => ActiveEditor?.ChooseImage(path);
+        _workspaceControl.CreateFromPackedImageRequested += source => NewDocument(source);
+        _workspaceControl.UsePackedImageRequested += source => ActiveEditor?.ChoosePackedImage(source);
 
         _workspace.Controls.Add(_workspaceControl);
 
@@ -142,11 +138,13 @@ internal sealed class MainForm : Form
         {
             outerWorkspaceItem.Checked = !_workspace.IsHidden;
             var editor = ActiveEditor;
+
             foreach (var (paneName, item) in paneItems)
             {
                 item.Enabled = editor is not null;
                 item.Checked = editor?.IsPaneVisible(paneName) == true;
             }
+
             showAllPanesItem.Enabled = editor is not null;
             resetEditor.Enabled = editor is not null;
         };
@@ -191,10 +189,12 @@ internal sealed class MainForm : Form
     private void RestoreSession()
     {
         var messages = new List<string>();
+
         _session.Restore(["gts"], path => _workspaceControl.SetWorkingDirectory(path),
             document => OpenDocument(document.Path),
             path => _documents.FirstOrDefault(document => string.Equals(document.Document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
             messages.Add, message => ReportSessionError(message));
+
         WorkspaceSessionController.ShowStatus(this, messages);
     }
 
@@ -216,6 +216,7 @@ internal sealed class MainForm : Form
 
         item.Click += (_, _) => action();
         menu.DropDownItems.Add(item);
+
         return item;
     }
 
@@ -263,7 +264,9 @@ internal sealed class MainForm : Form
             InvalidOperationException or
             NotSupportedException)
         {
-            if (_session.IsRestoring) throw;
+            if (_session.IsRestoring)
+                throw;
+
             ShowError(ex);
         }
     }
@@ -310,10 +313,9 @@ internal sealed class MainForm : Form
                     _workspaceControl.WorkingDirectory));
 
         _documents.Add(editor);
-        editor.FormClosed += (_, _) =>
-            _documents.Remove(editor);
-
+        editor.FormClosed += (_, _) => _documents.Remove(editor);
         editor.Show(_dock, DockState.Document);
+
         return editor;
     }
 
@@ -421,5 +423,4 @@ internal sealed class MainForm : Form
     }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
         UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Document.History, () => ActiveEditor?.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
-
 }

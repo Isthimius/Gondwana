@@ -15,6 +15,7 @@ public sealed class TilesheetEditorControl : UserControl
 
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public TilesheetDocument Document { get; }
+
     private readonly OverlaySettings _overlaySettings;
     private readonly AssetPackageCatalog _assetPackages;
     private readonly bool _ownsAssetPackages;
@@ -35,6 +36,7 @@ public sealed class TilesheetEditorControl : UserControl
     private bool _refreshPending;
     private EditorDockWorkspace _workspace = null!;
     private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
+
     /// <summary>Gets the dimensions of the loaded preview image, or null when no preview is available.</summary>
     public Size? ImageSize => _viewport.Image?.Size;
 
@@ -66,21 +68,27 @@ public sealed class TilesheetEditorControl : UserControl
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
         var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+
         Disposed += (_, _) => shortcuts.Dispose();
+
         _overlaySettings = overlaySettings ?? OverlaySettings.Default;
         _assetPackages = assetPackages ?? new AssetPackageCatalog();
         _ownsAssetPackages = assetPackages is null;
         _viewport.Colors = _overlaySettings;
+
         Size = new Size(1000, 650);
         Dock = DockStyle.Fill;
+
         var regionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         regionTools.Items.Add("+ Region", null, (_, _) => AddRegion());
         regionTools.Items.Add("− Region", null, (_, _) => RemoveRegion());
         regionTools.Items.Add("Prune invalid frames…", null, (_, _) => PruneFrames());
         regionTools.Items.Add(new ToolStripControlHost(_regions) { AutoSize = false, Width = 185 });
+
         var navigator = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
         navigator.Controls.AddRange([new Label { Text = "Frame X", AutoSize = true }, _column,
             new Label { Text = "Y", AutoSize = true }, _row, _gridSize]);
+
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
         _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
@@ -90,42 +98,56 @@ public sealed class TilesheetEditorControl : UserControl
                 !ReferenceEquals(Document.SelectedDefinition, definition))
                 SelectDefinition(definition);
         };
+
         _toolbarRegions.ComboBox.DisplayMember = "Name";
         _toolbarRegions.SelectedIndexChanged += (_, _) =>
         {
             if (!_refreshing && _toolbarRegions.SelectedItem is TilesheetRegionDefinition region &&
                 !ReferenceEquals(_regions.SelectedItem, region))
+            {
                 _regions.SelectedItem = region;
+            }
         };
+
         _workspace = new EditorDockWorkspace("gts");
         Controls.Add(_workspace);
+
         var dock = _workspace.DockPanel;
         var image = _workspace.AddPane("image", "Image", _viewport, BuildPreviewToolbar());
+
         var definitionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         definitionTools.Items.Add(new ToolStripLabel("Definition"));
         definitionTools.Items.Add(new ToolStripControlHost(_paneDefinitions) { AutoSize = false, Width = 205 });
+
         var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, definitionTools);
         var region = _workspace.AddPane("region", "Region", _regionProperties, regionTools);
         var frame = _workspace.AddPane("frame", "Frame", _frameProperties, navigator);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
+
         _workspace.Place(image, () => image.Show(dock, DockState.Document));
         _workspace.Place(definition, () => definition.Show(image.Pane, DockAlignment.Right, .36));
         _workspace.Place(region, () => region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3));
         _workspace.Place(frame, () => frame.Show(region.Pane, DockAlignment.Bottom, .5));
         _workspace.Place(validation, () => validation.Show(image.Pane, DockAlignment.Bottom, .24));
         _workspace.InitializeLayout();
+
         var definitionBar = new DefinitionSelectionBar<TilesheetDefinition>(
             () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Name,
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gts", (path, select) => Document.ImportDefinitions(path, select));
+
         definitionBar.Items.Insert(2, new ToolStripLabel("Region"));
         definitionBar.Items.Insert(3, _toolbarRegions);
         definitionBar.SetLogicalWidth(_toolbarRegions, 180);
         definitionBar.MoveRenameToFront();
+
         Controls.Add(definitionBar);
+
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
+
         ToolingAppearance.Apply(this);
+
         _viewport.FrameSelected += (region, p) =>
         {
             // A GTS can describe disjoint grids. Select the clicked region before
@@ -140,6 +162,7 @@ public sealed class TilesheetEditorControl : UserControl
             _refreshing = false;
             SelectFrame();
         };
+
         Document.Changed += DocumentChanged;
         _overlaySettings.Changed += OverlayColorsChanged;
         RefreshView();
@@ -148,7 +171,9 @@ public sealed class TilesheetEditorControl : UserControl
     /// <summary>Reloads the image without modifying the document.</summary>
     public void ReloadImage()
     {
-        if (Document.ResolveAssetsFilePath() is { } path) _assetPackages.Invalidate(path);
+        if (Document.ResolveAssetsFilePath() is { } path)
+            _assetPackages.Invalidate(path);
+
         _previewKey = null;
         RefreshView();
     }
@@ -160,6 +185,7 @@ public sealed class TilesheetEditorControl : UserControl
         bar.Items.Add("GAF image…", null, (_, _) => ChoosePackedImage());
         bar.Items.Add("Reload image", null, (_, _) => ReloadImage());
         bar.Items.Add("−", null, (_, _) => _viewport.ZoomOut());
+
         var zoom = new ToolStripComboBox
         {
             DropDownStyle = ComboBoxStyle.DropDownList,
@@ -168,14 +194,19 @@ public sealed class TilesheetEditorControl : UserControl
             ForeColor = ToolingAppearance.Palette.Foreground,
             FlatStyle = FlatStyle.Flat
         };
+
         var zoomSelector = new ZoomSelector(zoom.ComboBox, requested =>
         {
-            if (requested is { } value) _viewport.SetZoom(value);
-            else _viewport.Fit();
+            if (requested is { } value)
+                _viewport.SetZoom(value);
+            else
+                _viewport.Fit();
         });
+
         _viewport.ZoomChanged += () => zoomSelector.Show(_viewport.Zoom, _viewport.IsFit);
         bar.Items.Add(zoom);
         bar.Items.Add("+", null, (_, _) => _viewport.ZoomIn());
+
         var overlays = new ToolStripDropDownButton("Overlays / legend");
         foreach (var (kind, description) in new[]
         {
@@ -192,23 +223,39 @@ public sealed class TilesheetEditorControl : UserControl
             var row = new OverlayLegendRow(kind, description, _overlaySettings,
                 visible =>
                 {
-                    if (visible) _viewport.Overlays.Add(kind.ToString()); else _viewport.Overlays.Remove(kind.ToString());
+                    if (visible)
+                        _viewport.Overlays.Add(kind.ToString());
+                    else
+                        _viewport.Overlays.Remove(kind.ToString());
+
                     _viewport.Invalidate();
                 },
                 () =>
                 {
                     overlays.HideDropDown();
-                    using var dialog = new ColorDialog { Color = _overlaySettings[kind], FullOpen = true };
-                    if (dialog.ShowDialog(this) != DialogResult.OK) return;
-                    try { _overlaySettings.SetColor(kind, dialog.Color); }
+                    using var dialog = new ColorDialog
+                    {
+                        Color = _overlaySettings[kind],
+                        FullOpen = true
+                    };
+
+                    if (dialog.ShowDialog(this) != DialogResult.OK)
+                        return;
+
+                    try
+                    {
+                        _overlaySettings.SetColor(kind, dialog.Color);
+                    }
                     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                     {
                         ThemedMessageBox.Show(this, $"Could not save overlay colors to {_overlaySettings.FilePath}.\n{ex.Message}",
                             "Overlay settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 });
+
             overlays.DropDownItems.Add(new ToolStripControlHost(row) { AutoSize = false, Size = row.Size, Margin = Padding.Empty, Padding = Padding.Empty });
         }
+
         bar.Items.Add(overlays);
         return bar;
     }
@@ -225,10 +272,18 @@ public sealed class TilesheetEditorControl : UserControl
     {
         if (path is null)
         {
-            using var dialog = new OpenFileDialog { Filter = TilesheetWorkspaceControl.ImageFilter, InitialDirectory = Document.BaseDirectory };
-            if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            using var dialog = new OpenFileDialog
+            {
+                Filter = TilesheetWorkspaceControl.ImageFilter,
+                InitialDirectory = Document.BaseDirectory
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
             path = dialog.FileName;
         }
+
         Document.SetImage(Path.GetFullPath(path));
         RefreshView();
     }
@@ -245,6 +300,7 @@ public sealed class TilesheetEditorControl : UserControl
                 "GAF image source",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+
             return;
         }
 
@@ -269,7 +325,10 @@ public sealed class TilesheetEditorControl : UserControl
     {
         string name = "default";
         int number = 1;
-        while (Document.Definition.Regions.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase))) name = "region" + number++;
+
+        while (Document.Definition.Regions.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase)))
+            name = "region" + number++;
+
         var size = ImageSize ?? new Size(32, 32);
         var region = new TilesheetRegionDefinition
         {
@@ -277,6 +336,7 @@ public sealed class TilesheetEditorControl : UserControl
             Area = new Rectangle(Point.Empty, size),
             TileSize = new Size(Math.Min(32, size.Width), Math.Min(32, size.Height))
         };
+
         Document.AddRegion(region);
         RefreshView();
         _regions.SelectedItem = region;
@@ -285,18 +345,30 @@ public sealed class TilesheetEditorControl : UserControl
 
     private void RemoveRegion()
     {
-        if (SelectedRegion is not { } region) return;
+        if (SelectedRegion is not { } region)
+            return;
+
         if (ThemedMessageBox.Show(this, $"Remove region '{region.Name}' and all its frame metadata?", "Remove region",
-            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+        {
+            return;
+        }
+
         Document.RemoveRegion(region);
         RefreshView();
     }
 
     private void PruneFrames()
     {
-        if (SelectedRegion is not { } region) return;
+        if (SelectedRegion is not { } region)
+            return;
+
         if (ThemedMessageBox.Show(this, "Delete metadata outside this region's current grid? Restore the geometry instead to keep it.",
-            "Prune invalid frame metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            "Prune invalid frame metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+        {
+            return;
+        }
+
         Document.RemoveOutOfGridMetadata(region);
         RefreshView();
     }
@@ -304,17 +376,22 @@ public sealed class TilesheetEditorControl : UserControl
     private void DocumentChanged(object? sender, EventArgs e)
     {
         // Rebind after PropertyGrid finishes committing, never while it is editing a descriptor.
-        if (_refreshPending || !IsHandleCreated) return;
+        if (_refreshPending || !IsHandleCreated)
+            return;
+
         _refreshPending = true;
         BeginInvoke(() => { _refreshPending = false; if (!IsDisposed) RefreshView(); });
     }
 
     private void SelectFrame()
     {
-        if (_refreshing) return;
+        if (_refreshing)
+            return;
+
         _viewport.SelectedFrame = new Point((int)_column.Value, (int)_row.Value);
         _viewport.RevealSelectedFrame();
         _viewport.Invalidate();
+
         RefreshProperties();
     }
 
@@ -331,13 +408,16 @@ public sealed class TilesheetEditorControl : UserControl
         BindProperties(_definitionProperties, PropertyFields.Definition(Document, Document.MarkChanged, ImageSize));
         PropertyFields? regionFields = null;
         PropertyFields? frameFields = null;
+
         if (SelectedRegion is { } region)
         {
             regionFields = new PropertyFields(Document);
             regionFields.AddModel(region, Document.MarkChanged, "Frames");
+
             if (_column.Enabled)
                 frameFields = PropertyFields.Frame(Document, region, (int)_column.Value, (int)_row.Value, Document.MarkChanged);
         }
+
         BindProperties(_regionProperties, regionFields);
         BindProperties(_frameProperties, frameFields);
     }
@@ -346,14 +426,17 @@ public sealed class TilesheetEditorControl : UserControl
     {
         // Nested Size properties can both have a child named Width (or Height).
         // Preserve the entire property path, not just the final descriptor name.
+
         string? selectedPath = grid.SelectedGridItem is { } selected ? GridItemPath(selected) : null;
         var oldItems = GridItems(grid).ToArray();
         var collapsedCategories = oldItems.Where(item => item.GridItemType == GridItemType.Category && !item.Expanded)
             .Select(item => item.Label).ToHashSet();
         var expandedProperties = oldItems.Where(item => item.GridItemType == GridItemType.Property && item.Expandable && item.Expanded)
             .Select(GridItemPath).ToHashSet();
+
         grid.SelectedObject = fields;
         grid.Enabled = fields is not null;
+
         foreach (var item in GridItems(grid))
         {
             if (item.GridItemType == GridItemType.Category && collapsedCategories.Contains(item.Label))
@@ -379,50 +462,71 @@ public sealed class TilesheetEditorControl : UserControl
     private static IEnumerable<GridItem> GridItems(PropertyGrid grid)
     {
         var root = grid.SelectedGridItem;
-        if (root is null) yield break;
-        while (root.Parent is not null) root = root.Parent;
-        foreach (var item in Descendants(root)) yield return item;
+
+        if (root is null)
+            yield break;
+
+        while (root.Parent is not null)
+            root = root.Parent;
+
+        foreach (var item in Descendants(root))
+            yield return item;
 
         static IEnumerable<GridItem> Descendants(GridItem parent)
         {
             foreach (GridItem child in parent.GridItems)
             {
                 yield return child;
-                foreach (var descendant in Descendants(child)) yield return descendant;
+
+                foreach (var descendant in Descendants(child))
+                    yield return descendant;
             }
         }
     }
+
     /// <summary>
     /// Refreshes the editor controls from the current document.
     /// </summary>
     public void RefreshView()
     {
         _refreshing = true;
+
         _paneDefinitions.Items.Clear();
         _paneDefinitions.Items.AddRange(Document.Definitions.Cast<object>().ToArray());
         _paneDefinitions.SelectedItem = Document.SelectedDefinition;
+
         var selected = SelectedRegion;
         var regions = Document.Definition.Regions.Cast<object>().ToArray();
+
         _regions.Items.Clear();
         _regions.Items.AddRange(regions);
-        if (selected is not null && _regions.Items.Contains(selected)) _regions.SelectedItem = selected;
-        else if (_regions.Items.Count > 0) _regions.SelectedIndex = 0;
+
+        if (selected is not null && _regions.Items.Contains(selected))
+            _regions.SelectedItem = selected;
+        else if (_regions.Items.Count > 0)
+            _regions.SelectedIndex = 0;
+
         _toolbarRegions.Items.Clear();
         _toolbarRegions.Items.AddRange(regions);
         _toolbarRegions.SelectedItem = _regions.SelectedItem;
+
         var (columns, rows) = SelectedRegion is { } r ? TilesheetDefinitionValidator.GridSize(r) : (0L, 0L);
+
         _column.Value = Math.Min(_column.Value, Math.Max(0, columns - 1));
         _row.Value = Math.Min(_row.Value, Math.Max(0, rows - 1));
         _column.Maximum = Math.Clamp(columns - 1, 0, int.MaxValue);
         _row.Maximum = Math.Clamp(rows - 1, 0, int.MaxValue);
         _column.Enabled = _row.Enabled = columns > 0 && rows > 0;
         _gridSize.Text = $"{columns} × {rows} frames";
+
         _refreshing = false;
         LoadPreview();
+
         _viewport.Definition = Document.Definition;
         _viewport.SelectedRegion = SelectedRegion;
         _viewport.SelectedFrame = _column.Enabled ? new Point((int)_column.Value, (int)_row.Value) : null;
         _viewport.Invalidate();
+
         RefreshProperties();
         UpdateValidation();
     }
@@ -430,7 +534,9 @@ public sealed class TilesheetEditorControl : UserControl
     /// <summary>Selects an owned definition and refreshes its regions, properties, and image without reloading or saving the document.</summary>
     public void SelectDefinition(TilesheetDefinition definition)
     {
-        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        if (ReferenceEquals(Document.SelectedDefinition, definition))
+            return;
+
         Document.SelectDefinition(definition);
         RefreshView();
     }
@@ -441,11 +547,15 @@ public sealed class TilesheetEditorControl : UserControl
         var mask = model.Mask;
         string key = $"{Document.BaseDirectory}|{model.Image?.FilePath}|{model.Image?.AssetsFilePath}|{model.Image?.AssetEntryName}|{model.PremultiplyAlpha}|" +
             (mask is null ? "none" : $"{mask.Red},{mask.Green},{mask.Blue},{mask.Alpha},{mask.Tolerance}");
-        if (key == _previewKey) return;
+
+        if (key == _previewKey)
+            return;
+
         _previewKey = key;
         _viewport.Image?.Dispose();
         _viewport.Image = null;
         _previewError = null;
+
         try
         {
             _viewport.Image = AuthoringPreviewImage.Load(model, Document.BaseDirectory, _assetPackages, Document.PackedLocation?.Path);
@@ -455,7 +565,10 @@ public sealed class TilesheetEditorControl : UserControl
             _previewError = "Image cannot be previewed: " + ex.Message;
             _viewport.Message = _previewError;
         }
-        finally { _viewport.UpdateExtent(); }
+        finally
+        {
+            _viewport.UpdateExtent();
+        }
     }
 
     /// <summary>Refreshes the validation pane using the document and current preview dimensions.</summary>
@@ -463,20 +576,31 @@ public sealed class TilesheetEditorControl : UserControl
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate(ImageSize).ToList();
-        if (_previewError is not null) errors.Add(_previewError);
+
+        if (_previewError is not null)
+            errors.Add(_previewError);
+
         var lines = errors.Select(e => "ERROR: " + e).ToList();
-        if (_overlaySettings.Warning is { } settingsWarning) lines.Add("WARNING: " + settingsWarning);
+
+        if (_overlaySettings.Warning is { } settingsWarning)
+            lines.Add("WARNING: " + settingsWarning);
+
         if (!string.IsNullOrWhiteSpace(Document.Definition.Image?.AssetsFilePath) &&
             !string.IsNullOrWhiteSpace(Document.Definition.Image?.AssetEntryName) &&
             _previewError is null)
         {
             lines.Add("INFO: Packed GAF image resolved successfully without extracting it.");
         }
+
         lines.Add("INFO: Geometry changes retain frame metadata at its original coordinates. Use Prune invalid frames only to explicitly discard it.");
         lines.Add("INFO: Overhang shows world extent at source scale; it does not change the extracted frame. Dense grids are sampled visually; use X/Y to inspect any frame.");
+
         if (Document.Definition.Mask is not null)
             lines.Add("INFO: Mask preview matches runtime RGB tolerance (alpha is stored, but runtime matching ignores it). GDI+ composites alpha for display.");
-        if (errors.Count == 0) lines.Insert(0, "VALID: GTS geometry and available loose-image checks passed.");
+
+        if (errors.Count == 0)
+            lines.Insert(0, "VALID: GTS geometry and available loose-image checks passed.");
+
         _validation.Text = string.Join(Environment.NewLine, lines);
         return errors;
     }
@@ -486,16 +610,14 @@ public sealed class TilesheetEditorControl : UserControl
     /// </summary>
     /// <param name="paneName">The name of the editor pane.</param>
     /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
-    public bool ShowPane(string paneName) =>
-        _workspace.ShowPane(paneName);
+    public bool ShowPane(string paneName) => _workspace.ShowPane(paneName);
 
     /// <summary>
     /// Determines whether the named editor pane is visible.
     /// </summary>
     /// <param name="paneName">The name of the editor pane.</param>
     /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
-    public bool IsPaneVisible(string paneName) =>
-        _workspace.IsPaneVisible(paneName);
+    public bool IsPaneVisible(string paneName) => _workspace.IsPaneVisible(paneName);
 
     /// <summary>Restore the default pane arrangement for this editor type.</summary>
     public void ResetLayout() => _workspace.ResetLayout();
@@ -503,14 +625,14 @@ public sealed class TilesheetEditorControl : UserControl
     /// <summary>
     /// Shows every editor pane.
     /// </summary>
-    public void ShowAllPanes() =>
-        _workspace.ShowAllPanes();
+    public void ShowAllPanes() => _workspace.ShowAllPanes();
 
     /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
     /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
+
         return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus &&
             !_frameProperties.ContainsFocus && ValidateChildren();
     }
@@ -522,15 +644,18 @@ public sealed class TilesheetEditorControl : UserControl
         {
             Document.Changed -= DocumentChanged;
             _overlaySettings.Changed -= OverlayColorsChanged;
+
             _viewport.Image?.Dispose();
             _viewport.Image = null;
+
             if (_ownsAssetPackages)
                 _assetPackages.Dispose();
         }
+
         base.Dispose(disposing);
     }
+
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
         UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
-
 }

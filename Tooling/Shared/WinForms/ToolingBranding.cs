@@ -10,6 +10,7 @@ internal static class ToolingBranding
     {
         using var stream = typeof(ToolingBranding).Assembly.GetManifestResourceStream(ResourceName)
             ?? throw new InvalidOperationException($"Missing embedded Gondwana icon resource: {ResourceName}.");
+
         return new Icon(stream);
     }
 }

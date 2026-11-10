@@ -18,7 +18,10 @@ internal sealed class UndoRedoMenu : IDisposable
 
         internal ShortcutFilter(Control editor, Func<EditHistory?> history, Func<bool> commit)
         {
-            _editor = editor; _history = history; _commit = commit;
+            _editor = editor;
+            _history = history;
+            _commit = commit;
+
             Application.AddMessageFilter(this);
         }
 
@@ -47,15 +50,20 @@ internal sealed class UndoRedoMenu : IDisposable
     private readonly ToolStripMenuItem _undo = new("&Undo") { ShortcutKeyDisplayString = "Ctrl+Z" };
     private readonly ToolStripMenuItem _redo = new("&Redo") { ShortcutKeyDisplayString = "Ctrl+Y" };
     private EditHistory? _observed;
+
     public ToolStripMenuItem Menu { get; } = new("&Edit");
 
     public UndoRedoMenu(Func<EditHistory?> history, Func<bool> commit)
     {
-        _history = history; _commit = commit;
+        _history = history;
+        _commit = commit;
+
         Menu.DropDownItems.AddRange([_undo, _redo]);
         Menu.DropDownOpening += (_, _) => Refresh();
+
         _undo.Click += (_, _) => Perform(_history(), _commit, redo: false);
         _redo.Click += (_, _) => Perform(_history(), _commit, redo: true);
+
         Refresh();
     }
 

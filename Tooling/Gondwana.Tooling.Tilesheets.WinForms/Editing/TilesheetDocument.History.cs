@@ -54,12 +54,18 @@ public sealed partial class TilesheetDocument : IDisposable
     /// <summary>Edits one frame, creating sparse metadata only for an actual change.</summary>
     public bool EditFrame(TilesheetRegionDefinition region, int x, int y, string description, Action<TilesheetFrameDefinition> change)
     {
-        if (!Owns(region)) throw new ArgumentException("Region does not belong to this document.", nameof(region));
+        if (!Owns(region))
+            throw new ArgumentException("Region does not belong to this document.", nameof(region));
+
         var existing = FindFrame(region, x, y);
         var frame = existing ?? new TilesheetFrameDefinition { XTile = x, YTile = y };
         using var transaction = History.BeginTransaction(description);
+
         bool changed = History.Edit(description, frame, () => change(frame));
-        if (changed && existing is null) History.Insert(description, region.Frames, region.Frames.Count, frame);
+
+        if (changed && existing is null)
+            History.Insert(description, region.Frames, region.Frames.Count, frame);
+
         transaction.Commit();
         return changed;
     }
@@ -67,7 +73,8 @@ public sealed partial class TilesheetDocument : IDisposable
     private void RememberReferenceOrigins()
     {
         foreach (var member in _definitions)
-            if (member.Image is { } image) _origins.Remember(image, BaseDirectory, PackedLocation?.Path);
+            if (member.Image is { } image)
+                _origins.Remember(image, BaseDirectory, PackedLocation?.Path);
     }
 
     private void RestoreReferenceOrigins()
@@ -78,6 +85,7 @@ public sealed partial class TilesheetDocument : IDisposable
                 _origins.Restore(image, BaseDirectory, PackedLocation?.Path, image.AssetEntryName,
                     () => image.FilePath, value => image.FilePath = value,
                     () => image.AssetsFilePath, value => image.AssetsFilePath = value);
+
             if (FilePath is not null && !string.Equals(member.Source.GtsFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
                 member.Source = TilesheetDefinitionSource.LooseDefinitionFile(FilePath);
         }

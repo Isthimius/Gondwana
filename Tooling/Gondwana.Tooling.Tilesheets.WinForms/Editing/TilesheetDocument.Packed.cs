@@ -20,18 +20,26 @@ public sealed partial class TilesheetDocument
     {
         if (!archive.GetAllEntries().Any(entry => entry.AssetType == AssetTypes.TilesheetDefinition &&
             string.Equals(entry.AssetName, entryName, StringComparison.OrdinalIgnoreCase)))
+        {
             throw new FileNotFoundException($"TilesheetDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
+        }
+
         var path = Path.GetFullPath(archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
         var directory = Path.GetDirectoryName(path)!;
         var definitions = TilesheetDefinitionSerializer.LoadAll(archive, entryName).ToList();
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
+
         var document = new TilesheetDocument(definitions[0], null, directory)
         {
             _definitions = definitions,
             PackedLocation = new(AssetTypes.TilesheetDefinition, path, entryName)
         };
+
         document.RememberReferenceOrigins();
         document.History.MarkSaved();
+
         return document;
     }
 
@@ -45,7 +53,9 @@ public sealed partial class TilesheetDocument
     /// <exception cref="InvalidOperationException">The document has no packed location.</exception>
     public void AcceptPackedSave()
     {
-        if (PackedLocation is null) throw new InvalidOperationException("This document is not packed.");
+        if (PackedLocation is null)
+            throw new InvalidOperationException("This document is not packed.");
+
         History.MarkSaved();
     }
 }

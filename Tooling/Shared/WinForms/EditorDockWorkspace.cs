@@ -41,16 +41,20 @@ internal sealed class EditorDockWorkspace : UserControl
         {
             Text = title,
             HideOnClose = true,
+
             // Use document-style split/tab groups throughout the inner workspace.
             // Tool-window states move tabs to the bottom and make a fill-drop
             // look like it replaced the original pane. Document-only contents
             // keep top tabs consistently, and cannot float or auto-hide.
             DockAreas = DockAreas.Document
         };
+
         pane.Controls.AddRange(controls);
         ToolingAppearance.Apply(pane);
+
         _contents.Add(pane);
         _contentsByTitle.Add(title, pane);
+
         return pane;
     }
 
@@ -60,6 +64,7 @@ internal sealed class EditorDockWorkspace : UserControl
     }
 
     internal void InitializeLayout() => _layout.Start();
+
     internal void ResetLayout() => _layout.Reset();
 
     internal bool ShowPane(string title)
@@ -95,15 +100,18 @@ internal sealed class EditorDockWorkspace : UserControl
         if (disposing)
         {
             _layout.Dispose();
+
             // Hidden contents need explicit ownership too; do not rely on the
             // visible control hierarchy or DockPanel's pane disposal behavior.
             foreach (var content in _contents)
                 content.Dispose();
+
             _contents.Clear();
             _contentsByTitle.Clear();
         }
 
         base.Dispose(disposing);
+
         if (disposing)
             _theme.Dispose();
     }
