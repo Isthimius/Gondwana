@@ -25,7 +25,7 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
     /// <summary>
     /// Gets the current position of the pointer cursor in client (control-local) coordinates.
     /// </summary>
-    public Point CurrentPosition => PointerCoordinates.ToScreenPx(_control, _currentPosition);
+    public System.Drawing.Point CurrentPosition => PointerCoordinates.ToScreenPx(_control, _currentPosition);
 
     /// <summary>
     /// Gets the set of currently pressed mouse buttons.
