@@ -1,4 +1,5 @@
 using System.Numerics;
+using Gondwana.Diagnostics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
@@ -8,6 +9,7 @@ using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;
+using GondwanaMouseEventArgs = Gondwana.Input.Mouse.MouseEventArgs;
 using SpriteHorizontalAlignment = Gondwana.Drawing.Sprites.HorizontalAlignment;
 using SpriteVerticalAlignment = Gondwana.Drawing.Sprites.VerticalAlignment;
 
@@ -24,6 +26,9 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private const float WalkSpeedTilesPerSecond = 4.2f;
     private const float PlayerRadiusTiles = 0.29f;
     private const float DefaultTorchRadius = 155f;
+    private const float MinimumZoom = 0.5f;
+    private const float MaximumZoom = 3f;
+    private const float ZoomStep = 1.2f;
 
     private static readonly Vector2 Spawn = new(8f, 12f);
     private static readonly Point[] WallTorches =
@@ -43,6 +48,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private DirectDarknessOverlay _darkness = null!;
     private DirectSceneLayerDarknessOverlay _layerDarkness = null!;
     private TextBlock _hud = null!;
+    private IDisposable? _profilerRequest;
 
     private bool _flicker = true;
     private bool _darknessEnabled = true;
@@ -50,6 +56,8 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private bool _wallTorchesEnabled = true;
     private bool _playerTorchEnabled = true;
     private float _radius = DefaultTorchRadius;
+    private double? _gpuFps;
+    private float _fpsRefreshElapsed;
     private long _lastTick;
     private int _playerFrame = DungeonArt.HeroDown;
 
@@ -194,11 +202,11 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         }
 
         // View-space UI must be ordered above the view-space darkness overlay.
-        _hud = new TextBlock(host, view, new Rectangle(14, 10, 930, 69), "torchlight-hud")
+        _hud = new TextBlock(host, view, new Rectangle(14, 10, 930, 102), "torchlight-hud")
             .SetFont(SKTypeface.Default, 16f)
             .SetColors(new SKColor(255, 227, 185), new SKColor(21, 23, 30, 222))
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-            .SetMaxLines(2)
+            .SetMaxLines(3)
             .UseShadow();
         _hud.HorizontalPadding = 12;
         _hud.ZOrder = 30_000;
@@ -218,9 +226,42 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
             Keys.W, Keys.A, Keys.S, Keys.D,
             Keys.Up, Keys.Left, Keys.Down, Keys.Right,
             Keys.V, Keys.B, Keys.F, Keys.T, Keys.L, Keys.R,
+            Keys.Z, Keys.X, Keys.C,
             Keys.Oemplus, Keys.Add, Keys.OemMinus, Keys.Subtract
         })
             keyboard.StartMonitoringKey((int)key, key.ToString());
+    }
+
+    protected override void OnMouseAdapterInitialized()
+    {
+        var mouse = Engine.Input.MouseEventPoller!;
+        mouse.MouseEvent += OnMouse;
+        mouse.StartMonitoringMouse(trackMouseMovement: false, timeBetweenEvents: 0);
+    }
+
+    private void OnMouse(GondwanaMouseEventArgs args)
+    {
+        if (args.ScrollDelta != 0)
+            ZoomBy(MathF.Pow(ZoomStep, args.ScrollDelta / 120f));
+    }
+
+    private void ZoomBy(float factor)
+    {
+        var view = RenderSurface.Host.ViewManager.Views[0];
+        SetZoom(view.Viewport.Zoom * factor);
+    }
+
+    private void SetZoom(float zoom)
+    {
+        var view = RenderSurface.Host.ViewManager.Views[0];
+        float clamped = Math.Clamp(zoom, MinimumZoom, MaximumZoom);
+        if (MathF.Abs(view.Viewport.Zoom - clamped) < 0.001f)
+            return;
+
+        view.Viewport.SnapZoom(clamped);
+        // Keep the hard-follow player visually centered immediately after zooming.
+        view.Camera.CenterOn(TileCenter(_player.GetPosition()));
+        RefreshHud();
     }
 
     private void OnKeyDown(KeyDownEventArgs args)
@@ -239,6 +280,15 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
 
         switch (key)
         {
+            case Keys.Z:
+                ZoomBy(1f / ZoomStep);
+                break;
+            case Keys.X:
+                ZoomBy(ZoomStep);
+                break;
+            case Keys.C:
+                SetZoom(1f);
+                break;
             case Keys.V:
                 _darknessEnabled = !_darknessEnabled;
                 ApplyDarknessMode();
@@ -293,14 +343,35 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         if (_hud is null)
             return;
 
+        string fps = _gpuFps?.ToString("0.0") ?? "--";
+        float zoom = RenderSurface.Host.ViewManager.Views[0].Viewport.Zoom;
         _hud.SetText(
-            $"TORCHLIGHT   WASD / Arrows move   B view/layer mode   V darkness   F flicker   T torch   L sconces\n" +
-            $"+/- radius ({_radius:0} px)   R respawn   ESC exit   |   {(_useLayerDarkness ? "SceneLayer" : "View")} darkness: {(_darknessEnabled ? "ON" : "OFF")}");
+            "TORCHLIGHT   WASD / Arrows move   Wheel or Z/X zoom   C reset   ESC exit\n" +
+            "B overlay mode   V darkness   F flicker   T torch   L sconces   R respawn\n" +
+            $"+/- torch radius ({_radius:0}px)   GPU FPS: {fps}   Zoom: {zoom:0.00}x   " +
+            $"{(_useLayerDarkness ? "SceneLayer" : "View")} darkness: {(_darknessEnabled ? "ON" : "OFF")}");
+    }
+
+    private void UpdateFps()
+    {
+        var snapshot = Engine.Profiler.GetLatestSnapshot();
+        if (snapshot is null || snapshot.ElapsedSeconds <= 0d)
+            return;
+
+        long? sourceId = RenderSurface.Host.Telemetry?.Id;
+        var renderSource = snapshot.Sources.FirstOrDefault(source => source.Id == sourceId);
+        if (renderSource?.Metrics.TryGetValue("presentation.count", out var metric) != true ||
+            metric.Availability != TelemetryAvailability.Available)
+            return;
+
+        _gpuFps = metric.Count / snapshot.ElapsedSeconds;
+        RefreshHud();
     }
 
     protected override void OnEngineInitialized()
     {
         Engine.Configuration.VSync = true;
+        _profilerRequest = Engine.Profiler.Start();
         _lastTick = HighResTimer.GetCurrentTick();
         Engine.BeforeBackgroundTasksExecute += UpdateMovement;
     }
@@ -348,6 +419,13 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
 
         // DirectRadialLight uses WORLD PIXELS, while Sprite positions use GRID coordinates.
         _playerTorch.MoveTo(TileCenter(_player.GetPosition()));
+
+        _fpsRefreshElapsed += dt;
+        if (_fpsRefreshElapsed >= 0.25f)
+        {
+            _fpsRefreshElapsed = 0f;
+            UpdateFps();
+        }
     }
 
     private bool CanOccupy(Vector2 position)
@@ -371,7 +449,11 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     {
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+        if (Engine.Input.MouseEventPoller is not null)
+            Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
         Engine.BeforeBackgroundTasksExecute -= UpdateMovement;
+        _profilerRequest?.Dispose();
+        _profilerRequest = null;
     }
 
     protected override void OnDisposing()
