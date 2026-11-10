@@ -32,7 +32,7 @@ internal sealed class BreakoutRuntime
     private string _lastHud = "";
     private string _lastMessage = "";
 
-    private static Engine Engine => Engine.Instance;
+    private static Gondwana.Engine Engine => Gondwana.Engine.Instance;
 
     internal BreakoutRuntime(RenderSurfaceHostBase surface) => _surface = surface;
 
