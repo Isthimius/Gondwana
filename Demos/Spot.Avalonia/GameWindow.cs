@@ -60,6 +60,11 @@ internal sealed class GameWindow : Window
             _gameHost.Engine.Configuration.TargetFPS = GpuTargetFps;
             _gameHost.Engine.Configuration.VSync = false;
             _gameHost.Engine.Configuration.MsaaSampleCount = GpuMsaaSampleCount;
+            // Avalonia window bounds are DIPs, while the GPU adapter measures
+            // physical pixels. Keep Spot's fixed 769x801 logical playfield at
+            // every Windows display scale, then let presentation scale to DPI.
+            var dpi = RenderScaling > 0d ? RenderScaling : 1d;
+            _gameHost.Engine.Configuration.RenderScale = (float)(1d / dpi);
         };
 
         try

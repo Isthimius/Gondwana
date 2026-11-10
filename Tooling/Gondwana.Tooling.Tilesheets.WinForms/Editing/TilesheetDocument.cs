@@ -9,16 +9,21 @@ public sealed partial class TilesheetDocument
 {
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public TilesheetDefinition Definition { get; private set; }
+
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
+
     /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
+
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty => History.IsDirty;
+
     /// <summary>Document-local reversible edits and save checkpoints.</summary>
     public EditHistory History { get; }
+
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -28,8 +33,10 @@ public sealed partial class TilesheetDocument
         Definition = definition;
         FilePath = path;
         BaseDirectory = Path.GetFullPath(baseDirectory);
+
         History = new(initiallySaved: path is not null);
         History.Changed += HistoryChanged;
+
         RememberReferenceOrigins();
     }
 
@@ -41,10 +48,14 @@ public sealed partial class TilesheetDocument
     {
         path = Path.GetFullPath(path);
         var definitions = TilesheetDefinitionSerializer.LoadAll(path).ToList();
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
+
         var document = new TilesheetDocument(definitions[0], path, Path.GetDirectoryName(path)!);
         document._definitions = definitions;
         document.RememberReferenceOrigins();
+
         return document;
     }
 
@@ -84,7 +95,9 @@ public sealed partial class TilesheetDocument
     {
         // Changing the source is explicit. Unrelated edits never clear packed fields.
         var member = Definition;
-        if (member.Image?.FilePath == path && string.IsNullOrEmpty(member.Image.AssetsFilePath) && string.IsNullOrEmpty(member.Image.AssetEntryName)) return;
+        if (member.Image?.FilePath == path && string.IsNullOrEmpty(member.Image.AssetsFilePath) && string.IsNullOrEmpty(member.Image.AssetEntryName))
+            return;
+
         History.Set("Change image source", () => member.Image, value => member.Image = value!, new TilesheetImageDefinition { FilePath = path });
     }
 
@@ -97,6 +110,7 @@ public sealed partial class TilesheetDocument
     {
         if (string.IsNullOrWhiteSpace(assetsFilePath))
             throw new ArgumentException("Assets file path must be a non-empty string.", nameof(assetsFilePath));
+
         if (string.IsNullOrWhiteSpace(assetEntryName))
             throw new ArgumentException("Asset entry name must be a non-empty string.", nameof(assetEntryName));
 
@@ -106,7 +120,10 @@ public sealed partial class TilesheetDocument
             AssetsFilePath = Path.GetFullPath(assetsFilePath),
             AssetEntryName = assetEntryName
         };
-        if (member.Image?.AssetsFilePath == image.AssetsFilePath && member.Image.AssetEntryName == image.AssetEntryName && string.IsNullOrEmpty(member.Image.FilePath)) return;
+
+        if (member.Image?.AssetsFilePath == image.AssetsFilePath && member.Image.AssetEntryName == image.AssetEntryName && string.IsNullOrEmpty(member.Image.FilePath))
+            return;
+
         History.Set("Change image source", () => member.Image, value => member.Image = value!, image);
     }
 
@@ -117,12 +134,15 @@ public sealed partial class TilesheetDocument
     public IReadOnlyList<string> Validate(Size? imageSize = null)
     {
         var errors = TilesheetDefinitionSerializer.ValidateDocument(new TilesheetDefinitionDocument { Definitions = _definitions }).ToList();
+
         if (imageSize.HasValue)
             errors.AddRange(TilesheetDefinitionValidator.Validate(Definition, imageSize.Value.Width, imageSize.Value.Height)
                 .Select(error => $"Tilesheet '{Definition.Name}': {error}").Where(error => !errors.Contains(error)));
+
         // The shared validator owns all geometry rules. These are loose-file I/O checks
         // (the core validator deliberately does not access the filesystem).
         var image = Definition.Image;
+
         if (image is null)
             errors.Add("Image source is missing.");
         else if (!string.IsNullOrWhiteSpace(image.FilePath))
@@ -160,9 +180,12 @@ public sealed partial class TilesheetDocument
     public TilesheetFrameDefinition EditFrame(TilesheetRegionDefinition region, int x, int y)
     {
         var frame = FindFrame(region, x, y);
-        if (frame is not null) return frame;
+        if (frame is not null)
+            return frame;
+
         frame = new() { XTile = x, YTile = y };
         region.Frames.Add(frame);
+
         return frame;
     }
 
@@ -171,8 +194,11 @@ public sealed partial class TilesheetDocument
     /// <returns>The number of frame metadata entries removed.</returns>
     public int RemoveOutOfGridMetadata(TilesheetRegionDefinition region)
     {
-        if (!Owns(region)) throw new ArgumentException("Region does not belong to this document.", nameof(region));
+        if (!Owns(region))
+            throw new ArgumentException("Region does not belong to this document.", nameof(region));
+
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+
         return History.RemoveWhere("Prune frame metadata", region.Frames, f => f is not null &&
             (f.XTile < 0 || f.YTile < 0 || f.XTile >= columns || f.YTile >= rows));
     }
@@ -188,45 +214,62 @@ public sealed partial class TilesheetDocument
     /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, Size? imageSize = null, bool allowInvalid = false)
     {
-        if (History.InTransaction || History.IsExecuting) throw new InvalidOperationException("Finish the current edit before saving.");
+        if (History.InTransaction || History.IsExecuting)
+            throw new InvalidOperationException("Finish the current edit before saving.");
+
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = Validate(imageSize);
-        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Name)) ||
             _definitions.Select(member => member.Name).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
+        {
             throw new InvalidDataException("Every definition needs a unique, non-empty logical identity.");
+        }
+
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
+
         var snapshots = _definitions.Select(member =>
         {
             var clone = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(member));
+
             if (clone.Image is not null)
             {
                 if (PackedLocation is not null &&
                     string.IsNullOrWhiteSpace(clone.Image.AssetsFilePath) && !string.IsNullOrWhiteSpace(clone.Image.AssetEntryName))
                     clone.Image.AssetsFilePath = PackedLocation.Path;
+
                 clone.Image.FilePath = Rebase(clone.Image.FilePath, directory);
                 clone.Image.AssetsFilePath = Rebase(clone.Image.AssetsFilePath, directory);
             }
+
             if (clone.Source.Kind != TilesheetDefinitionSourceKind.Generated)
                 clone.Source = TilesheetDefinitionSource.LooseDefinitionFile(path);
             return clone;
         }).ToList();
+
         TilesheetDefinitionSerializer.SaveAll(path, snapshots);
         var saved = TilesheetDefinitionSerializer.LoadAll(path);
+
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];
             var persisted = saved[i];
+
             if (member.Image is not null && persisted.Image is not null)
             {
                 member.Image.FilePath = persisted.Image.FilePath;
                 member.Image.AssetsFilePath = persisted.Image.AssetsFilePath;
             }
+
             member.Source = persisted.Source;
         }
+
         FilePath = path;
         BaseDirectory = directory;
         PackedLocation = null;
@@ -236,10 +279,13 @@ public sealed partial class TilesheetDocument
 
     private string? Rebase(string? path, string directory)
     {
-        if (string.IsNullOrWhiteSpace(path)) return path;
+        if (string.IsNullOrWhiteSpace(path))
+            return path;
+
         // Preserve existing relative spelling on ordinary Save.
         if (!Path.IsPathRooted(path) && string.Equals(directory, BaseDirectory, StringComparison.OrdinalIgnoreCase))
             return path;
+
         return Path.GetRelativePath(directory, Path.GetFullPath(path, BaseDirectory)).Replace('\\', '/');
     }
 
@@ -256,7 +302,9 @@ public sealed partial class TilesheetDocument
     /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(TilesheetDefinition definition)
     {
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -287,18 +335,24 @@ public sealed partial class TilesheetDocument
     /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(TilesheetDefinition definition)
     {
-        if (_definitions.Count == 1 || !_definitions.Contains(definition)) return false;
+        if (_definitions.Count == 1 || !_definitions.Contains(definition))
+            return false;
+
         var selected = Definition;
         int index = _definitions.IndexOf(definition);
+
         History.Execute("Remove definition", () =>
         {
             _definitions.Remove(definition);
             if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
         }, () =>
         {
-            if (!_definitions.Contains(definition)) _definitions.Insert(index, definition);
+            if (!_definitions.Contains(definition))
+                _definitions.Insert(index, definition);
+
             Definition = selected;
         });
+
         return true;
     }
 
@@ -310,9 +364,12 @@ public sealed partial class TilesheetDocument
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
+
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Name == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
+
         var member = Definition;
+
         History.Set("Rename definition", () => member.Name, value => member.Name = value, identity);
     }
 
@@ -327,8 +384,10 @@ public sealed partial class TilesheetDocument
         path = Path.GetFullPath(path);
         if (!string.Equals(Path.GetExtension(path), ".gts", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Choose a .gts definition document.", nameof(path));
+
         var sourceDirectory = Path.GetDirectoryName(path)!;
         string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
+
         var imported = DefinitionImport.Prepare(path, Definitions, TilesheetDefinitionSerializer.LoadAll, select, member =>
         {
             var clone = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(member));
@@ -337,9 +396,13 @@ public sealed partial class TilesheetDocument
                 clone.Image.FilePath = Rebase(clone.Image.FilePath);
                 clone.Image.AssetsFilePath = Rebase(clone.Image.AssetsFilePath);
             }
+
             return clone;
         }, member => member.Name, (member, identity) => member.Name = identity, "tilesheet");
-        if (imported.Count == 0) return 0;
+
+        if (imported.Count == 0)
+            return 0;
+
         AddMembers(imported, "Import definitions");
         return imported.Count;
     }
@@ -347,7 +410,9 @@ public sealed partial class TilesheetDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.Name == candidate); i++) candidate = basis + "-" + i;
+        for (int i = 2; _definitions.Any(member => member.Name == candidate); i++)
+            candidate = basis + "-" + i;
+
         return candidate;
     }
 }

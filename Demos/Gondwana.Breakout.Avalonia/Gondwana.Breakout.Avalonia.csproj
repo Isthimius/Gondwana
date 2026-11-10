@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Gondwana.Demos.Breakout</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
+    <ProjectReference Include="..\Gondwana.Breakout.Shared\Gondwana.Breakout.Shared.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Avalonia.Hosting\Gondwana.Avalonia.Hosting.csproj" />
+  </ItemGroup>
+</Project>

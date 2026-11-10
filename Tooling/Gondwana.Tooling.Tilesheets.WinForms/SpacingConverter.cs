@@ -22,6 +22,7 @@ public sealed class SpacingConverter : ExpandableObjectConverter
         // Exclude the calculated IsEmpty property: only the four editable edges belong here.
         var properties = TypeDescriptor.GetProperties(typeof(Spacing), attributes ?? []);
         string parentName = context?.PropertyDescriptor?.Name ?? "";
+
         return new PropertyDescriptorCollection(Edges.Select(edge =>
             TypeDescriptor.CreateProperty(typeof(Spacing), properties[edge]!,
                 new DescriptionAttribute(DescribeEdge(parentName, edge)),
@@ -31,6 +32,7 @@ public sealed class SpacingConverter : ExpandableObjectConverter
     private static string DescribeEdge(string parentName, string edge)
     {
         string side = edge.ToLowerInvariant();
+
         return parentName switch
         {
             "TilePadding" => $"Unused {side}-edge padding around each frame, in source-image pixels.",
@@ -57,6 +59,7 @@ public sealed class SpacingConverter : ExpandableObjectConverter
     {
         if (destinationType == typeof(string) && value is Spacing spacing)
             return $"{spacing.Top}, {spacing.Right}, {spacing.Bottom}, {spacing.Left}";
+
         return base.ConvertTo(context, culture, value, destinationType);
     }
 
@@ -72,6 +75,7 @@ public sealed class SpacingConverter : ExpandableObjectConverter
 
         var components = text.Split(',', StringSplitOptions.TrimEntries);
         var edges = new int[4];
+
         if (components.Length != edges.Length)
             throw new FormatException("Specify four comma-separated integers: Top, Right, Bottom, Left.");
 
@@ -80,6 +84,7 @@ public sealed class SpacingConverter : ExpandableObjectConverter
             if (!int.TryParse(components[i], NumberStyles.Integer, culture ?? CultureInfo.CurrentCulture, out edges[i]))
                 throw new FormatException("Specify four comma-separated integers: Top, Right, Bottom, Left.");
         }
+
         return new Spacing(edges[3], edges[0], edges[1], edges[2]);
     }
 }

@@ -7,6 +7,7 @@ internal sealed class ThemeStripRenderer(ToolingPalette palette) : ToolStripProf
         e.TextColor = !e.Item.Enabled ? palette.DisabledForeground : palette.Foreground;
         base.OnRenderItemText(e);
     }
+
     protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
     {
         e.ArrowColor = e.Item?.Enabled == false ? palette.DisabledForeground : palette.Foreground;

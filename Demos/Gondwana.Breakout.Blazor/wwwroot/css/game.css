@@ -1,0 +1,6 @@
+html,body,#app{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#091021}
+.game-container{display:flex;align-items:center;justify-content:center;width:100%;height:100vh;height:100dvh;overflow:hidden}
+.render-surface-container{position:relative;flex:0 0 auto;height:auto;overflow:hidden;background:#091021}
+.status-overlay{position:absolute;inset:0;z-index:10000;display:grid;place-items:center;color:white;background:#091021;font:600 24px system-ui,sans-serif}
+.status-overlay.error{background:#421c26;padding:24px;text-align:center}
+.startup{height:100%;display:grid;place-items:center;color:white;font:600 24px system-ui,sans-serif}

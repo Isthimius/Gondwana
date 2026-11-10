@@ -118,6 +118,7 @@ internal sealed class WorkspaceSessionStore
 /// <summary>Reopens current files through host adapters; failures are isolated to one document.</summary>
 internal static class WorkspaceSessionRestore
 {
+#pragma warning disable S107
     internal static void Restore(WorkspaceSession session,
                                  IReadOnlyCollection<string> supportedFormats,
                                  Action<string> setDirectory,
@@ -126,6 +127,7 @@ internal static class WorkspaceSessionRestore
                                  Action<string> report,
                                  bool startEmpty = false,
                                  Action<WorkspaceSessionDocument>? activatePacked = null)
+#pragma warning restore S107
     {
         if (startEmpty || !session.RestoreOnStartup)
             return;

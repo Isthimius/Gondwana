@@ -27,9 +27,20 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
     /// <param name="refresh">Refreshes the editor after a member operation.</param>
     /// <param name="extension">The accepted native definition extension.</param>
     /// <param name="import">Imports a file using the shared member picker.</param>
-    internal DefinitionSelectionBar(Func<IReadOnlyList<T>> definitions, Func<T> selected, Func<T, string> name,
-        Action<T> select, Action add, Action duplicate, Action remove, Action<string> rename, Action refresh, string extension,
-        Func<string, Func<IReadOnlyList<T>, IReadOnlyList<int>?>, int> import) : base(32, 32)
+#pragma warning disable S107
+    internal DefinitionSelectionBar(Func<IReadOnlyList<T>> definitions,
+                                    Func<T> selected,
+                                    Func<T, string> name,
+                                    Action<T> select,
+                                    Action add,
+                                    Action duplicate,
+                                    Action remove,
+                                    Action<string> rename,
+                                    Action refresh,
+                                    string extension,
+                                    Func<string, Func<IReadOnlyList<T>, IReadOnlyList<int>?>, int> import)
+#pragma warning restore S107
+        : base(32, 32)
     {
         _definitions = definitions;
         _selected = selected;
@@ -38,36 +49,58 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
         _refresh = refresh;
         Dock = DockStyle.Top;
         GripStyle = ToolStripGripStyle.Hidden;
+
         // Apply the shared appearance before enabling native ToolStrip hover tooltips.
         // Otherwise it substitutes mouse-move tooltips for the whole strip.
         ShowItemToolTips = false;
         Items.Add(new ToolStripLabel("Definition"));
         Items.Add(_members);
+
         AddIconButton("Add definition", "AddDefinition", DefinitionCommand.Add, () => Execute(add));
+
         AddIconButton("Import definition…", "ImportDefinition", DefinitionCommand.Import, () =>
         {
             try
             {
-                using var file = new OpenFileDialog { Filter = $"{extension.ToUpperInvariant()} definitions|*.{extension}", CheckFileExists = true, Multiselect = false };
-                if (file.ShowDialog(FindForm()) != DialogResult.OK) return;
-                if (import(file.FileName, ChooseMembers) == 0) return;
+                using var file = new OpenFileDialog
+                {
+                    Filter = $"{extension.ToUpperInvariant()} definitions|*.{extension}",
+                    CheckFileExists = true,
+                    Multiselect = false
+                };
+
+                if (file.ShowDialog(FindForm()) != DialogResult.OK)
+                    return;
+
+                if (import(file.FileName, ChooseMembers) == 0)
+                    return;
+
                 _refresh();
                 RefreshMembers(this, EventArgs.Empty);
             }
-            catch (Exception ex) { ThemedMessageBox.Show(FindForm(), ex.Message, "Import definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception ex)
+            {
+                ThemedMessageBox.Show(FindForm(), ex.Message, "Import definition", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         });
+
         AddIconButton("Duplicate definition", "DuplicateDefinition", DefinitionCommand.Duplicate, () => Execute(duplicate));
         AddIconButton("Remove definition", "RemoveDefinition", DefinitionCommand.Remove, () => Execute(remove));
+
         Items.Add(new ToolStripSeparator());
         Items.Add(_identity);
+
         SetLogicalWidth(_members, 230);
         SetLogicalWidth(_identity, 180);
+
         AddIconButton("Rename", "RenameDefinition", DefinitionCommand.Rename, () => Execute(() => rename(_identity.Text)));
+
         _members.SelectedIndexChanged += (_, _) =>
         {
             if (!_binding && _members.SelectedIndex >= 0)
                 Execute(() => _select(_definitions()[_members.SelectedIndex]));
         };
+
         RefreshMembers(this, EventArgs.Empty);
         ToolingAppearance.Apply(this);
         ShowItemToolTips = true;
@@ -93,14 +126,21 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
         try
         {
             _members.Items.Clear();
+
             foreach (var member in _definitions())
             {
                 int index = _members.Items.Add(_name(member));
-                if (ReferenceEquals(member, _selected())) _members.SelectedIndex = index;
+
+                if (ReferenceEquals(member, _selected()))
+                    _members.SelectedIndex = index;
             }
+
             _identity.Text = _name(_selected());
         }
-        finally { _binding = false; }
+        finally
+        {
+            _binding = false;
+        }
     }
 
 
@@ -116,14 +156,18 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
             AutoToolTip = false,
             AccessibleName = label
         };
+
         button.Click += (_, _) => action();
+
         Items.Add(button);
         SetGlyph(button, pixels => ToolbarGlyphs.Definition(command, pixels, ToolingAppearance.Palette));
     }
 
     private IReadOnlyList<int>? ChooseMembers(IReadOnlyList<T> definitions)
     {
-        if (definitions.Count <= 1) return Enumerable.Range(0, definitions.Count).ToArray();
+        if (definitions.Count <= 1)
+            return Enumerable.Range(0, definitions.Count).ToArray();
+
         using var dialog = new Form
         {
             Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
@@ -135,27 +179,42 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
             MaximizeBox = false,
             ShowInTaskbar = false
         };
+
         var list = new CheckedListBox { Dock = DockStyle.Fill, CheckOnClick = true };
-        foreach (var member in definitions) list.Items.Add(_name(member), true);
+
+        foreach (var member in definitions)
+            list.Items.Add(_name(member), true);
+
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.LeftToRight };
         var all = new Button { Text = "Select all", AutoSize = true };
         var none = new Button { Text = "Select none", AutoSize = true };
         var accept = new Button { Text = "Import", DialogResult = DialogResult.OK, AutoSize = true };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
+
         all.Click += (_, _) => { for (int i = 0; i < list.Items.Count; i++) list.SetItemChecked(i, true); };
         none.Click += (_, _) => { for (int i = 0; i < list.Items.Count; i++) list.SetItemChecked(i, false); };
+
         buttons.Controls.AddRange([all, none, accept, cancel]);
         dialog.Controls.Add(list);
         dialog.Controls.Add(buttons);
         dialog.AcceptButton = accept;
         dialog.CancelButton = cancel;
-        Gondwana.Tooling.WinForms.Theming.ToolingAppearance.Apply(dialog);
+
+        ToolingAppearance.Apply(dialog);
+
         return dialog.ShowDialog(FindForm()) == DialogResult.OK ? list.CheckedIndices.Cast<int>().ToArray() : null;
     }
 
     private void Execute(Action action)
     {
-        try { action(); _refresh(); RefreshMembers(this, EventArgs.Empty); }
-        catch (Exception ex) { ThemedMessageBox.Show(FindForm(), ex.Message, "Definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        try
+        {
+            action(); _refresh();
+            RefreshMembers(this, EventArgs.Empty);
+        }
+        catch (Exception ex)
+        {
+            ThemedMessageBox.Show(FindForm(), ex.Message, "Definition", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
     }
 }

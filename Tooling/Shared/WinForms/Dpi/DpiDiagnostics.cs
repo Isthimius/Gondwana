@@ -17,14 +17,19 @@ internal static class DpiDiagnostics
                 $"ImageScalingSize={strip.ImageScalingSize}; " + string.Join("; ",
                     strip.Items.Cast<ToolStripItem>().Select(item =>
                         $"{item.Name}/{item.Text}: bounds={item.Bounds}, image={item.Image?.Size}, margin={item.Margin}"));
-            if (state == previous) return;
+
+            if (state == previous)
+                return;
+
             Debug.WriteLine($"[Tooling DPI: {reason}] {state}");
             previous = state;
         }
+
         strip.HandleCreated += (_, _) => Record("handle created");
         strip.DpiChangedBeforeParent += (_, _) => Record("before parent DPI change");
         strip.DpiChangedAfterParent += (_, _) => Record("after parent DPI change");
         strip.LayoutCompleted += (_, _) => Record("layout/scaling");
+
         Record("attached");
 #endif
     }

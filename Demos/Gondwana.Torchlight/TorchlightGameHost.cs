@@ -33,7 +33,11 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private static readonly Vector2 Spawn = new(8f, 12f);
     private static readonly Point[] WallTorches =
     [
-        new(6, 5), new(10, 19), new(19, 13), new(24, 5), new(34, 18)
+        new(6, 5),
+        new(10, 19),
+        new(19, 13),
+        new(24, 5),
+        new(34, 18)
     ];
 
     private readonly HashSet<Keys> _keysDown = [];
@@ -71,8 +75,10 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
+
         _floorLayer = scene.AddLayer(Columns, Rows, DungeonArt.TileSize, DungeonArt.TileSize,
             zOrder: 0, parallax: 1f, coordinateSystem: CoordinateSystemTypes.Orthogonal);
+
         _actorLayer = scene.AddLayer(Columns, Rows, DungeonArt.TileSize, DungeonArt.TileSize,
             zOrder: 10, parallax: 1f, coordinateSystem: CoordinateSystemTypes.Orthogonal);
 
@@ -360,6 +366,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
 
         long? sourceId = RenderSurface.Host.Telemetry?.Id;
         var renderSource = snapshot.Sources.FirstOrDefault(source => source.Id == sourceId);
+
         if (renderSource?.Metrics.TryGetValue("presentation.count", out var metric) != true ||
             metric.Availability != TelemetryAvailability.Available)
             return;
@@ -381,6 +388,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0f, 0.05f);
         _lastTick = tick;
+
         if (dt <= 0f)
             return;
 
@@ -408,9 +416,12 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
             Vector2 position = _player.GetPosition();
             Vector2 step = movement * WalkSpeedTilesPerSecond * dt;
             Vector2 horizontal = new(position.X + step.X, position.Y);
+
             if (CanOccupy(horizontal))
                 position = horizontal;
+
             Vector2 vertical = new(position.X, position.Y + step.Y);
+
             if (CanOccupy(vertical))
                 position = vertical;
 
@@ -449,8 +460,10 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     {
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+
         if (Engine.Input.MouseEventPoller is not null)
             Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
+
         Engine.BeforeBackgroundTasksExecute -= UpdateMovement;
         _profilerRequest?.Dispose();
         _profilerRequest = null;
