@@ -70,9 +70,9 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
             zOrder: 10, parallax: 1f, coordinateSystem: CoordinateSystemTypes.Orthogonal);
 
         for (int y = 0; y < Rows; y++)
-        for (int x = 0; x < Columns; x++)
-            _floorLayer[x, y]!.CurrentFrame = DungeonArt.Get((x * 17 + y * 13) % 9 == 0
-                ? DungeonArt.FloorCracked : DungeonArt.Floor);
+            for (int x = 0; x < Columns; x++)
+                _floorLayer[x, y]!.CurrentFrame = DungeonArt.Get((x * 17 + y * 13) % 9 == 0
+                    ? DungeonArt.FloorCracked : DungeonArt.Floor);
 
         // Dividing walls deliberately have gaps to walk through, so moving lights
         // exercise screen projection and camera-follow across multiple rooms.
@@ -356,14 +356,14 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         float centerX = position.X + 0.5f;
         float centerY = position.Y + 0.5f;
         foreach (float dx in new[] { -PlayerRadiusTiles, PlayerRadiusTiles })
-        foreach (float dy in new[] { -PlayerRadiusTiles, PlayerRadiusTiles })
-        {
-            int tileX = (int)MathF.Floor(centerX + dx);
-            int tileY = (int)MathF.Floor(centerY + dy);
-            if (tileX < 0 || tileX >= Columns || tileY < 0 || tileY >= Rows ||
-                _blocked[tileX, tileY])
-                return false;
-        }
+            foreach (float dy in new[] { -PlayerRadiusTiles, PlayerRadiusTiles })
+            {
+                int tileX = (int)MathF.Floor(centerX + dx);
+                int tileY = (int)MathF.Floor(centerY + dy);
+                if (tileX < 0 || tileX >= Columns || tileY < 0 || tileY >= Rows ||
+                    _blocked[tileX, tileY])
+                    return false;
+            }
 
         return true;
     }
