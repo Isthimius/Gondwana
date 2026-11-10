@@ -1,5 +1,7 @@
 using System.Drawing;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Input;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
@@ -14,6 +16,7 @@ namespace Gondwana.Avalonia.Input.Mouse;
 public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
 {
     private readonly Control _control;
+    private TopLevel? _topLevel;
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
     private PointF _currentPosition;
     private KeyboardModifierState _modifiers;
@@ -48,33 +51,71 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
     {
         _control = control ?? throw new ArgumentNullException(nameof(control));
 
-        _control.PointerPressed += OnPointerPressed;
-        _control.PointerReleased += OnPointerReleased;
-        _control.PointerMoved += OnPointerMoved;
-        _control.PointerWheelChanged += OnPointerWheelChanged;
+        // OpenGlControlBase can render in a native child surface (notably WGL).
+        // Route input at the Avalonia TopLevel in the tunnel phase, as keyboard
+        // input already does, so the GL surface cannot swallow pointer events.
+        _control.AttachedToVisualTree += OnAttachedToVisualTree;
+        _control.DetachedFromVisualTree += OnDetachedFromVisualTree;
+
+        if (TopLevel.GetTopLevel(_control) is not null)
+            ConnectToTopLevel();
+    }
+
+    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+        => ConnectToTopLevel();
+
+    private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+        => DisconnectFromTopLevel();
+
+    private void ConnectToTopLevel()
+    {
+        var topLevel = TopLevel.GetTopLevel(_control);
+        if (topLevel is null || ReferenceEquals(topLevel, _topLevel))
+            return;
+
+        DisconnectFromTopLevel();
+        _topLevel = topLevel;
+        topLevel.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
+        topLevel.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
+        topLevel.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
+        topLevel.AddHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged, RoutingStrategies.Tunnel);
+    }
+
+    private void DisconnectFromTopLevel()
+    {
+        if (_topLevel is null)
+            return;
+
+        _topLevel.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
+        _topLevel.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
+        _topLevel.RemoveHandler(InputElement.PointerMovedEvent, OnPointerMoved);
+        _topLevel.RemoveHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged);
+        _topLevel = null;
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        var point = e.GetCurrentPoint(sender as Control);
+        var point = e.GetCurrentPoint(_control);
         _pressed.Add(MapButton(point.Properties));
-        UpdatePosition(e, sender as Control);
+        UpdatePosition(e);
     }
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _pressed.Remove(MapReleasedButton(e.InitialPressMouseButton));
-        UpdatePosition(e, sender as Control);
+        UpdatePosition(e);
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
-        UpdatePosition(e, sender as Control);
+        UpdatePosition(e);
     }
 
-    private void UpdatePosition(PointerEventArgs e, Control? relativeTo)
+    private void UpdatePosition(PointerEventArgs e)
     {
-        var pos = e.GetPosition(relativeTo);
+        // Pointer events are raised on TopLevel, but positions must remain
+        // local to the render control for DPI/presentation normalization.
+        var pos = e.GetPosition(_control);
         _currentPosition = new PointF((float)pos.X, (float)pos.Y);
 
         _modifiers = KeyboardModifierState.None;
@@ -111,9 +152,8 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
     /// <summary>Unsubscribes from the control's pointer events.</summary>
     public void Dispose()
     {
-        _control.PointerPressed -= OnPointerPressed;
-        _control.PointerReleased -= OnPointerReleased;
-        _control.PointerMoved -= OnPointerMoved;
-        _control.PointerWheelChanged -= OnPointerWheelChanged;
+        DisconnectFromTopLevel();
+        _control.AttachedToVisualTree -= OnAttachedToVisualTree;
+        _control.DetachedFromVisualTree -= OnDetachedFromVisualTree;
     }
 }
