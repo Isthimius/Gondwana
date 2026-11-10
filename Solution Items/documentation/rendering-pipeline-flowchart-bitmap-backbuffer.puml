@@ -18,25 +18,33 @@ start
 :BitmapBackbuffer.BeginFrame();
 :RenderBackbufferBegin;
 
-if (No views or visible scene layers?) then (yes)
+if (No views?) then (yes)
   :Clear whole bitmap backbuffer;
   :Scene.FullRefreshNeeded = false;
+  note right: Return from bitmap rendering routine only.
 else (no)
-  if (Scene full refresh, or dirty full-view composition?) then (yes)
-    :Enqueue visible world rectangles\nfor all views and layers;
+  :Determine full-view composition\n(presentation effects or wrapping layers);
+  if (No visible scene layers?) then (yes)
+    :Clear whole bitmap backbuffer;
+    :Scene.FullRefreshNeeded = false;
+    note right: Continue into view composition for overlays.
+  else (no)
+    if (Scene full refresh, or dirty full-view composition?) then (yes)
+      :Enqueue visible world rectangles\nfor all views and layers;
+    endif
   endif
-  if (Scene.IsDirty?) then (yes)
+  if (Visible layers and no dirty scene?) then (yes)
+    :RenderBackbufferNoOp;\nreturn from bitmap rendering routine;
+  else (no)
     :For each View in Z order;
     :Collect dirty screen regions from layer RefreshQueues;
     :Clip to view, excluding blocking higher views;
     :Apply view presentation effects;
-    :Draw visible layers back-to-front,\nscene tiles, sprites, and layer drawings;
-    :Draw view overlays;
-    :Invoke post-scene canvas hooks;
+    :Draw visible layers back-to-front,\nscene tiles, sprites, and layer drawings (if any);
+    :Draw view overlays (also with zero visible layers);
     :Clear consumed layer RefreshQueues;
     :Scene.FullRefreshNeeded = false;
-  else (no)
-    :RenderBackbufferNoOp;\n(no dirty-region drawing);
+    :Invoke post-scene canvas hooks;
   endif
 endif
 

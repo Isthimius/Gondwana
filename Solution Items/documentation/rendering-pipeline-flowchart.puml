@@ -58,19 +58,30 @@ endif
 :Flush and RecordFrame;
 stop
 
-|Blazor / browser|
+|Blazor bitmap host requestAnimationFrame|
 start
-:Browser animation frame drives Engine.Tick()\n(StartTimerDriven mode);
-:Engine runs due simulation steps\nand foreground work;
-:SKGLView callback paints browser GPU surface;
-:Render live scene synchronously on GPU thread\n(no desktop snapshot mailbox);
-:Present in browser canvas;
+:Host.OnAnimationFrame() calls Engine.Tick()\n(StartTimerDriven mode);
+:Engine runs due simulation steps and CPU bitmap frames;
+:Bitmap UI surface presents latest image;
+stop
+
+|Blazor GPU SKGLView paint callback|
+start
+:Begin paint and ensure GpuBackbuffer initialized;
+:Engine.Tick() inside owning SKGLView paint callback;
+:Consume foreground frame request;
+if (New scene frame needed or backbuffer recreated?) then (yes)
+  :Host.GlRenderToCanvas()\nrender scene and present to GPU canvas;
+else (no)
+  :Host.GlDrawCurrentFrameToCanvas()\nre-present existing GPU frame;
+endif
+:RecordFrame after successful presentation;
 stop
 
 note right
   CPU: dirty-rectangle optimization.
   Desktop GPU: three-slot immutable snapshot mailbox.
-  Browser GPU: GL callback owns live render.
+  Browser GPU: SKGLView drives Tick, then renders on demand.
   Window resizing and logical resolution are distinct.
 end note
 @enduml

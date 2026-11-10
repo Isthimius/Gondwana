@@ -45,10 +45,12 @@ alt Foreground render due
     end
   end
 
-  loop Each non-GL surface
+  loop Each non-GL surface - bitmap render pass (all surfaces first)
     Engine -> Host : RenderToBackbuffer(tick)
     Host -> CPU : BeginFrame()
-    Host -> CPU : Render dirty scene regions\n(or no-op)
+    Host -> CPU : Render dirty scene regions\n(or no-op / overlay-only)
+  end
+  loop Each non-GL surface - bitmap presentation pass (after all renders)
     Engine -> Host : PresentBackbufferToAdapter()
     Host -> CPU : EndFrame()
     Host -> CPU : Snapshot full / dirty rect as needed
@@ -80,15 +82,25 @@ Host --> GL : GPU-backed image
 GL -> GL : Draw image on GL framebuffer; dispose image
 GL -> GPU : RecordFrame()
 
-== Browser GPU path (not the desktop mailbox) ==
-participant "Browser rAF / SKGLView" as Browser
-Browser -> Engine : Tick() in StartTimerDriven mode
+== Browser GPU path (no desktop snapshot mailbox) ==
+participant "SKGLView paint callback" as Browser
+Browser -> GPU : EnsureInitialized(current GRContext)
+Browser -> Engine : Tick() (StartTimerDriven) inside paint callback
+Browser -> Browser : ConsumeFrameRequest()
+alt New scene frame due, or GPU backbuffer recreated
+  Browser -> Host : GlRenderToCanvas(browserCanvas)
+  Host -> GPU : Live scene render / EndFrame
+  Host -> Browser : Draw current GPU surface into canvas
+else Presentation without a new scene frame
+  Browser -> Host : GlDrawCurrentFrameToCanvas(browserCanvas)
+  Host -> Browser : Draw existing GPU surface into canvas
+end
+Browser -> GPU : RecordFrame() on successful presentation
+
 note over Browser,Host
-  Blazor GPU paint uses a live synchronous GL render,
-  not ProduceRenderFrameSnapshot / RenderFrameMailbox.
-  Simulation is driven by browser animation frames.
+  Blazor bitmap instead uses host OnAnimationFrame()
+  to drive Engine.Tick() from its own JS rAF loop.
+  Browser GPU paint owns the simulation Tick and
+  renders only when the backbuffer or frame is due.
 end note
-Browser -> Host : GlRenderAndSnapshot() during GL paint
-Host -> GPU : Render scene / EndFrame / Snapshot / BeginFrame
-Host --> Browser : GPU-backed image for presentation
 @enduml

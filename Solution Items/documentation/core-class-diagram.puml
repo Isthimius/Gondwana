@@ -205,6 +205,7 @@ package "Scene, drawing and animation" {
     +Update(tick)
   }
   class DirectLightLayer
+  class DirectRadialLight
   class DirectDarknessOverlay
 }
 
@@ -255,12 +256,12 @@ Cycle --> FrameSequence
 Sprite *-- MovementController
 SpriteManager o-- Sprite
 DirectDrawingManager o-- DirectDrawingBase
-DirectDrawingBase <|-- DirectLightLayer
+DirectDrawingBase <|-- DirectRadialLight
 DirectDrawingBase <|-- DirectDarknessOverlay
+DirectLightLayer "1" *-- "0..*" DirectRadialLight : owns / disposes
 SceneLayer *-- ColliderRegistry
 SceneLayer *-- CollisionResolver
 Sprite ..|> IMovableOnSceneLayer
 Sprite ..|> ICollisionMovableEntity
 ICollisionMovableEntity --|> ICollisionEntity
-ICollisionMovableEntity --|> IMovableOnSceneLayer
 @enduml

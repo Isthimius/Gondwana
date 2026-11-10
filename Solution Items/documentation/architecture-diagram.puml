@@ -23,6 +23,10 @@ package "Platform rendering and input adapters" {
   [Blazor adapters\ncanvas / SKGLView] as WebAdapter
 }
 
+package "Companion UI library" {
+  [Gondwana.Widgets] as Widgets
+}
+
 package "Gondwana core" {
   [Engine singleton\nsimulation and frame cadence] as Engine
   [Input pollers / timers\nmovement / collisions] as Simulation
@@ -31,7 +35,7 @@ package "Gondwana core" {
   [BitmapBackbuffer\nCPU dirty rectangles] as CPU
   [GpuBackbuffer\nGPU full-surface rendering] as GPU
   [RenderFrameSnapshot\n3-slot RenderFrameMailbox\nDESKTOP GPU ONLY] as Mailbox
-  [DirectDrawingManager\nEffectsManager / Widgets] as Presentation
+  [DirectDrawingManager\nEffectsManager] as Presentation
   [EngineState / definitions\nEngineConfiguration] as Persistence
 }
 
@@ -48,6 +52,7 @@ Engine --> Simulation : advance
 Engine --> Content : update state
 Engine --> Persistence : load / save / configure
 Engine --> Presentation : foreground updates
+Widgets --> Engine : depends on core
 Engine --> Surface : foreground rendering
 Surface --> Content : render bound scene
 Surface --> CPU : bitmap path

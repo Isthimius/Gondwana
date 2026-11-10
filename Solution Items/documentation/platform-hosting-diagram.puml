@@ -28,7 +28,8 @@ package "Blazor / WebAssembly" {
   [BlazorGpuGameHost] as BlGpu
   [BlazorBitmapRenderSurfaceAdapter] as BlBitmapAdapter
   [BlazorGpuRenderSurfaceAdapter] as BlGpuAdapter
-  [Browser animation frame\nEngine.Tick()] as BrowserTick
+  [Host-owned requestAnimationFrame\nOnAnimationFrame()] as BrowserBitmapTick
+  [SKGLView paint callback\nEngine.Tick()] as BrowserGpuTick
 }
 package "Frame ownership" {
   [CPU bitmap\nengine frame + UI present] as CPU
@@ -58,8 +59,10 @@ BlBitmapAdapter --> CPU
 WFGpuAdapter --> DesktopGPU
 AvGpuAdapter --> DesktopGPU
 BlGpuAdapter --> BrowserGPU
-BrowserTick --> Engine : StartTimerDriven\nsimulation and render cadence
-BlBase --> BrowserTick : OnAnimationFrame()
+BlBitmap --> BrowserBitmapTick : host JS rAF loop
+BlGpu --> BrowserGpuTick : surface-owned rAF
+BrowserBitmapTick --> Engine : Tick() in StartTimerDriven mode
+BrowserGpuTick --> Engine : Tick() inside GPU paint callback
 
 note bottom of DesktopGPU
   Engine builds immutable RenderFrameSnapshot.
@@ -67,7 +70,9 @@ note bottom of DesktopGPU
   AfterFrameRender requests UI repaint.
 end note
 note bottom of BrowserGPU
-  Browser GPU renders on the owning GL callback.
+  Browser GPU: Engine.Tick() happens inside SKGLView's
+  paint callback; render a new scene frame only when
+  requested, otherwise re-present the existing GPU frame.
   Does not use the desktop snapshot mailbox.
 end note
 @enduml
