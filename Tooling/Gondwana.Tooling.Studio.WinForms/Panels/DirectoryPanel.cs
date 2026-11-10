@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.WinForms;
-using Gondwana.Tooling.WinForms.Theming;
 using ICSharpCode.SharpZipLib;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
