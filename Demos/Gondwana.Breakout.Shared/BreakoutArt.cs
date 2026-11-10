@@ -23,23 +23,25 @@ internal static class BreakoutArt
             new(115, 216, 155), new(87, 198, 242), new(168, 145, 251)
         ];
 
+        // Each frame fills its rendered sprite bounds. The game uses those
+        // same bounds for paddle, ball, and brick collisions.
         body.Color = new SKColor(105, 222, 255);
-        canvas.DrawRoundRect(new SKRect(2, 19, 62, 45), 10, 10, body);
-        canvas.DrawRoundRect(new SKRect(5, 21, 59, 28), 5, 5, shine);
+        canvas.DrawRoundRect(new SKRect(0, 0, FrameSize, FrameSize), 5, 5, body);
+        canvas.DrawRoundRect(new SKRect(5, 8, 59, 18), 4, 4, shine);
 
         body.Color = new SKColor(240, 252, 255);
-        canvas.DrawCircle(96, 32, 13f, body);
+        canvas.DrawCircle(96, 32, FrameSize / 2f, body);
         body.Color = new SKColor(93, 204, 249);
-        canvas.DrawCircle(92, 27, 4f, body);
+        canvas.DrawCircle(86, 22, 10f, body);
 
         for (int i = 0; i < colors.Length; i++)
         {
             int x = (FirstBrick + i) * FrameSize;
             body.Color = colors[i];
-            canvas.DrawRoundRect(new SKRect(x + 2, 10, x + 62, 54), 8, 8, body);
-            canvas.DrawRoundRect(new SKRect(x + 5, 13, x + 59, 20), 3, 3, shine);
+            canvas.DrawRoundRect(new SKRect(x, 0, x + FrameSize, FrameSize), 5, 5, body);
+            canvas.DrawRoundRect(new SKRect(x + 5, 8, x + 59, 19), 3, 3, shine);
             body.Color = new SKColor(4, 14, 34, 65);
-            canvas.DrawRoundRect(new SKRect(x + 6, 44, x + 58, 50), 3, 3, body);
+            canvas.DrawRoundRect(new SKRect(x + 6, 50, x + 58, 58), 3, 3, body);
         }
 
         canvas.Flush();

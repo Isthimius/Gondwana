@@ -40,6 +40,11 @@ internal sealed class GameWindow : Window
         // are DIPs. Account for display scaling (for example 150% on a 4K screen)
         // so the initial 1280 x 720 presentation establishes a 1920 x 1080 buffer.
         double scaling = RenderScaling > 0d ? RenderScaling : 1d;
+        // Window minimums are Avalonia DIPs, not physical pixels. Keep the
+        // intended minimum presentation size at high DPI so the 1280x720
+        // initial client area is not clamped at 200% scaling or above.
+        MinWidth = 660d / scaling;
+        MinHeight = 440d / scaling;
         Width += 1280d / scaling - _surface.Bounds.Width;
         Height += 720d / scaling - _surface.Bounds.Height;
 
