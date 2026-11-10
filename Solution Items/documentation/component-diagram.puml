@@ -1,90 +1,71 @@
 @startuml component-diagram
-title Gondwana Engine — Component Diagram
-
+title Gondwana - Project Components and Direct Dependencies
+' ProjectReference edges, simplified to architectural dependencies.
 skinparam componentStyle rectangle
+skinparam shadowing false
 skinparam linetype ortho
-skinparam defaultFontName Segoe UI
-skinparam backgroundColor #FAFAFA
-skinparam component {
-    BackgroundColor #DDEEFF
-    BorderColor #336699
-    FontColor #003366
-}
-skinparam package {
-    BackgroundColor #F0F8FF
-    BorderColor #336699
-}
+left to right direction
 
-package "Core" {
-    [Gondwana] <<library>> as core
+package "Runtime libraries" {
+  [Gondwana] as Core
+  [Gondwana.Hosting] as Hosting
+  [Gondwana.WinForms] as WinForms
+  [Gondwana.Avalonia] as Avalonia
+  [Gondwana.Blazor] as Blazor
+  [Gondwana.Widgets] as Widgets
 }
-
-package "Platform Adapters" {
-    [Gondwana.WinForms] <<library>> as winforms
-    [Gondwana.Avalonia] <<library>> as avalonia
+package "Host libraries" {
+  [Gondwana.WinForms.Hosting] as WFHost
+  [Gondwana.Avalonia.Hosting] as AvHost
+  [Gondwana.Blazor.Hosting] as BlHost
 }
-
-package "Hosting" {
-    [Gondwana.Hosting] <<library>> as hosting
-    [Gondwana.WinForms.Hosting] <<library>> as winformsHosting
-    [Gondwana.Avalonia.Hosting] <<library>> as avaloniaHosting
-}
-
 package "Extensions" {
-    [Gondwana.Audio.Browser] <<library>> as audioBrowser
-    [Gondwana.Audio.Midi] <<library>> as audioMidi
-    [Gondwana.Input.SDL2] <<library>> as inputSdl2
-    [Gondwana.Video] <<library>> as video
+  [Gondwana.Audio.Browser] as AudioBrowser
+  [Gondwana.Audio.NAudio] as AudioNAudio
+  [Gondwana.Audio.Midi] as AudioMidi
+  [Gondwana.Input.SDL2] as SDL2
+  [Gondwana.Video] as Video
+  [Gondwana.Video.Widgets] as VideoWidgets
+}
+package "Tooling / authoring" {
+  [Gondwana.Cli] as CLI
+  [Gondwana.Templates] as Templates
+  [Gondwana.Tooling.Studio.WinForms] as Studio
+  [Standalone editors\nGTS / GANI / GSCN / GSPR / GSND / GAF] as Editors
+  [Gondwana.Tooling.Importers] as Importers
+  [Gondwana.Mcp] as MCP
 }
 
-package "Tooling" {
-    [Gondwana.Cli] <<tool>> as cli
-    [Gondwana.Templates] <<template-package>> as templates
-}
+Hosting --> Core
+WinForms --> Core
+Avalonia --> Core
+Blazor --> Core
+Blazor --> Widgets
+Widgets --> Core
+WFHost --> Hosting
+WFHost --> WinForms
+AvHost --> Hosting
+AvHost --> Avalonia
+BlHost --> Hosting
+BlHost --> Blazor
 
-' Core dependencies
-winforms --> core : uses
-avalonia --> core : uses
-hosting --> core : uses
+AudioBrowser --> Core
+AudioNAudio --> Core
+AudioMidi --> AudioNAudio
+SDL2 --> Core
+Video --> Core
+VideoWidgets --> Video
+VideoWidgets --> Widgets
 
-' Hosting dependencies
-winformsHosting --> hosting : extends
-winformsHosting --> winforms : uses
-avaloniaHosting --> hosting : extends
-avaloniaHosting --> avalonia : uses
+CLI ..> Templates : scaffolds / manages
+Studio ..> Editors : shared tooling
+Studio ..> Importers : imports
+MCP ..> Core : engine guidance / tooling
 
-' Extension dependencies
-audioBrowser --> core : extends
-audioMidi --> core : extends
-inputSdl2 --> core : extends
-video --> core : extends
-
-' Tooling
-cli --> templates : scaffolds
-
-note bottom of core
-  Engine, Scenes, Drawing,
-  Rendering, Collisions,
-  Input, Audio, Timers,
-  Movement, Configuration
+note right of Studio
+  Tooling links are conceptual workflows,
+  not necessarily project references.
+  Runtime and host arrows above are
+  dependencies on other Gondwana projects.
 end note
-
-note bottom of winforms
-  WinForm Bitmap/GPU
-  RenderSurfaceAdapters
-  and Controls
-end note
-
-note bottom of avalonia
-  Avalonia Bitmap/GPU
-  RenderSurfaceAdapters
-  and Controls
-end note
-
-note bottom of hosting
-  GameHostBase —
-  lifecycle management
-  template for game hosts
-end note
-
 @enduml
