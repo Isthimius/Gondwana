@@ -23,8 +23,10 @@
         <PackageReference Include="Gondwana.Widgets" Version="2.*" />
 
 		<!-- Blazor WebAssembly -->
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.*" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.*" PrivateAssets="all" />
+		<!-- Keep the Blazor runtime and development server on the same published patch.
+		     A floating 10.* range can select partially published Microsoft releases and break restore. -->
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
 	</ItemGroup>
 
 	<!--

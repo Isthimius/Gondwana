@@ -27,8 +27,12 @@ try {
             throw "Beta Gondwana references were not pinned in $($file.FullName)."
         }
         if ($content -match 'Include="Microsoft.AspNetCore.Components.WebAssembly"') {
-            if ($content -notmatch 'Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10\.\*"') {
-                throw 'Unrelated Microsoft dependencies were modified.'
+            # Keep the two Microsoft package versions matched through prerelease packaging.
+            foreach ($package in @('Microsoft.AspNetCore.Components.WebAssembly', 'Microsoft.AspNetCore.Components.WebAssembly.DevServer')) {
+                $expected = 'Include="' + $package + '" Version="10.0.14"'
+                if (!$content.Contains($expected)) {
+                    throw "Blazor template dependency $package must remain on tested 10.0.14."
+                }
             }
         }
         if ($content -match 'Include="Avalonia.Desktop"' -and $content -notmatch 'Include="Avalonia.Desktop" Version="11\.\*"') {
