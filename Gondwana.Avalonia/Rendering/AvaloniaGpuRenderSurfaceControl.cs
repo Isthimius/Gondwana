@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Gondwana.Rendering;
@@ -38,6 +39,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     private GpuBackbuffer? _gpuBackbuffer;
     private readonly object _lifecycleGate = new();
     private int _disposeRequested;
+    private int _contextFailureReported;
 
     // Last physical dimensions used to detect resize inside OnOpenGlRender.
     private int _lastPhysW;
@@ -83,10 +85,15 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
         {
             if (_disposeRequested != 0) return;
             _glInterface = GRGlInterface.Create();
-            if (_glInterface == null) return;
+            if (_glInterface == null)
+            {
+                Trace.TraceError("Gondwana Avalonia GPU: could not create a GRGlInterface from the current OpenGL context. Check the Windows GPU backend and driver.");
+                return;
+            }
             _grContext = GRContext.CreateGl(_glInterface);
             if (_grContext == null)
             {
+                Trace.TraceError("Gondwana Avalonia GPU: SkiaSharp could not create a GRContext from the current OpenGL context.");
                 _glInterface.Dispose();
                 _glInterface = null;
                 return;
@@ -110,7 +117,13 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     protected override void OnOpenGlRender(GlInterface gl, int fb)
     {
         long telemetryGeneration = Host?.Telemetry?.BeginSample() ?? 0;
-        if (Volatile.Read(ref _disposeRequested) != 0 || _grContext == null || _gpuBackbuffer == null) return;
+        if (Volatile.Read(ref _disposeRequested) != 0 || _gpuBackbuffer == null) return;
+        if (_grContext == null)
+        {
+            if (Interlocked.Exchange(ref _contextFailureReported, 1) == 0)
+                Trace.TraceError("Gondwana Avalonia GPU: render requested without a SkiaSharp OpenGL context.");
+            return;
+        }
 
         // Notify SkiaSharp that external GL code (Avalonia's compositor) may have
         // modified the GL state since the last Skia draw call.
@@ -144,7 +157,12 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
         using var renderTarget = new GRBackendRenderTarget(physW, physH, sampleCount: 0, stencilBits: 0, fbInfo);
         using var fbSurface = SKSurface.Create(_grContext, renderTarget, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
-        if (fbSurface == null) return;
+        if (fbSurface == null)
+        {
+            if (Interlocked.Exchange(ref _contextFailureReported, 1) == 0)
+                Trace.TraceError("Gondwana Avalonia GPU: unable to wrap Avalonia's framebuffer as an SKSurface.");
+            return;
+        }
 
         var canvas = fbSurface.Canvas;
 
