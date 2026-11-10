@@ -1,37 +1,59 @@
 @startuml rendering-pipeline-flowchart-gpu-backbuffer
-title Desktop GPU: immutable RenderFrameSnapshot mailbox
+title Gondwana - Desktop GPU RenderFrameSnapshot Mailbox
+' Desktop-only: browser GPU does NOT use the snapshot mailbox.
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #FFF1D8
+  BorderColor #B57521
+  ArrowColor #B57521
+}
+
 |Engine thread|
 start
 repeat
-:Simulation / background work;
-if (Foreground frame due at TargetFPS?) then (yes)
-:Update effects and DirectDrawings;
-:Acquire free slot (three total);
-:Resolve views, visibility, ordering, frames, geometry;
-:Record CPU commands, overlays and post-scene hooks;
-:Publish completed RenderFrameSnapshot;
-:Recycle replaced unacquired snapshot;
-:AfterFrameRender requests repaint;
-endif
+  :Run simulation / background work;
+  if (Foreground frame due?) then (yes)
+    :Update surface effects and DirectDrawings;
+    :TryBeginBuild() in 3-slot mailbox;
+    if (Free slot available?) then (yes)
+      :Resolve views, scene, layers,\nvisibility, animation and geometry;
+      :Record immutable SKPicture commands\nwith RecordingBackbuffer;
+      :Publish RenderFrameSnapshot;
+      :Recycle previously published, unacquired frame;
+    else (no)
+      :Skip snapshot production this frame;
+    endif
+    :AfterFrameRender requests desktop GL repaint;
+  endif
 repeat while (Engine running?)
 stop
-|GL callback|
+
+|Desktop GL callback|
 start
-:EnsureInitialized with current GRContext;
-note right: Only size notification briefly synchronizes live viewports.
-:Try acquire newest completed snapshot;
-if (Snapshot acquired?) then (yes)
-  if (Matching logical dimensions?) then (yes)
-    :Replay immutable commands to GpuBackbuffer;
-    :EndFrame / GPU snapshot;
-  else (no — stale size)
-    :Reuse current GPU backbuffer;
+:Ensure GpuBackbuffer is initialized\nfor logical size, context and MSAA;
+:TryAcquire newest published snapshot;
+if (Snapshot available?) then (yes)
+  if (Recorded dimensions match backbuffer?) then (yes)
+    :BeginFrame;
+    :Replay snapshot commands on GPU;
+    :EndFrame (flush);
+    :Snapshot GPU image;
+  else (no)
+    :Keep current GPU backbuffer\n(recording has stale logical size);
   endif
-  :Release snapshot slot;
+  :Release rendering slot;
 else (no)
   :Reuse current GPU backbuffer;
 endif
-:Present with existing transform and sampling;
-:Flush / RecordFrame;
+:Present image with aspect-preserving transform;
+:Flush GL and RecordFrame;
 stop
+
+note right
+  Mailbox ownership is protected by a short lock.
+  Building, replay, and disposal happen outside it.
+  A stalled renderer owns one slot while the producer
+  can alternate the other two. The UI/window size
+  does not change the logical backbuffer resolution.
+end note
 @enduml

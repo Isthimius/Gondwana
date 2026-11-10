@@ -1,0 +1,78 @@
+@startuml platform-hosting-diagram
+title Gondwana - Platform Hosting and Frame Ownership
+' Host responsibilities verified against master, 2026-11-10.
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam linetype ortho
+
+package "Shared lifecycle" {
+  [GameHostBase] as Host
+  [Engine] as Engine
+}
+package "WinForms" {
+  [WinFormsGameHostBase] as WFBase
+  [WinFormsGameHost\n(bitmap)] as WFBitmap
+  [WinFormsGpuGameHost] as WFGpu
+  [WinFormBitmapRenderSurfaceAdapter] as WFBitmapAdapter
+  [WinFormGpuRenderSurfaceAdapter] as WFGpuAdapter
+}
+package "Avalonia" {
+  [AvaloniaBitmapGameHost] as AvBitmap
+  [AvaloniaGpuGameHost] as AvGpu
+  [AvaloniaBitmapRenderSurfaceAdapter] as AvBitmapAdapter
+  [AvaloniaGpuRenderSurfaceAdapter] as AvGpuAdapter
+}
+package "Blazor / WebAssembly" {
+  [BlazorGameHostBase] as BlBase
+  [BlazorGameHost\n(bitmap)] as BlBitmap
+  [BlazorGpuGameHost] as BlGpu
+  [BlazorBitmapRenderSurfaceAdapter] as BlBitmapAdapter
+  [BlazorGpuRenderSurfaceAdapter] as BlGpuAdapter
+  [Host-owned requestAnimationFrame\nOnAnimationFrame()] as BrowserBitmapTick
+  [SKGLView paint callback\nEngine.Tick()] as BrowserGpuTick
+}
+package "Frame ownership" {
+  [CPU bitmap\nengine frame + UI present] as CPU
+  [Desktop GPU\nsnapshot mailbox + GL replay] as DesktopGPU
+  [Browser GPU\nsynchronous SKGLView paint] as BrowserGPU
+}
+
+WFBase --|> Host
+WFBitmap --|> WFBase
+WFGpu --|> WFBase
+AvBitmap --|> Host
+AvGpu --|> Host
+BlBase --|> Host
+BlBitmap --|> BlBase
+BlGpu --|> BlBase
+
+Host --> Engine : initialization / lifecycle
+WFBitmap --> WFBitmapAdapter
+WFGpu --> WFGpuAdapter
+AvBitmap --> AvBitmapAdapter
+AvGpu --> AvGpuAdapter
+BlBitmap --> BlBitmapAdapter
+BlGpu --> BlGpuAdapter
+WFBitmapAdapter --> CPU
+AvBitmapAdapter --> CPU
+BlBitmapAdapter --> CPU
+WFGpuAdapter --> DesktopGPU
+AvGpuAdapter --> DesktopGPU
+BlGpuAdapter --> BrowserGPU
+BlBitmap --> BrowserBitmapTick : host JS rAF loop
+BlGpu --> BrowserGpuTick : surface-owned rAF
+BrowserBitmapTick --> Engine : Tick() in StartTimerDriven mode
+BrowserGpuTick --> Engine : Tick() inside GPU paint callback
+
+note bottom of DesktopGPU
+  Engine builds immutable RenderFrameSnapshot.
+  Three-slot mailbox hands it to the desktop GL callback.
+  AfterFrameRender requests UI repaint.
+end note
+note bottom of BrowserGPU
+  Browser GPU: Engine.Tick() happens inside SKGLView's
+  paint callback; render a new scene frame only when
+  requested, otherwise re-present the existing GPU frame.
+  Does not use the desktop snapshot mailbox.
+end note
+@enduml

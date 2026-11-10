@@ -1,147 +1,106 @@
 @startuml rendering-pipeline-sequence
-title Gondwana Engine — Rendering Pipeline Sequence\n(BackgroundTasks vs ForegroundTasks · BitmapBackbuffer vs GpuBackbuffer)
+title Gondwana - Engine Frame and Rendering Sequence
+' Desktop GPU snapshots and browser GPU paint are distinct code paths.
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
 
-skinparam defaultFontName Segoe UI
-skinparam backgroundColor #FAFAFA
-skinparam sequence {
-    LifeLineBorderColor #336699
-    ParticipantBackgroundColor #DDEEFF
-    ParticipantBorderColor #336699
-    ActorBackgroundColor #FFFACD
-    BoxBackgroundColor #F0F8FF
-    BoxBorderColor #AAAAAA
-    DividerBackgroundColor #F5F5F5
-    GroupBackgroundColor #EEFAEE
-    GroupBorderColor #336699
-    ArrowColor #336699
-    LifeLineBackgroundColor #EEF4FF
-}
+participant "Engine\nRunSimulationCycle" as Engine
+participant "Input / timers /\nsimulation" as Sim
+participant "Effects and\nDirectDrawingManager" as Draw
+participant "RenderSurfaceHost" as Host
+participant "BitmapBackbuffer" as CPU
+participant "Bitmap UI adapter" as CPUAdapter
+participant "RenderFrameMailbox" as Mail
+participant "RecordingBackbuffer" as Recorder
+participant "Desktop GPU adapter\n(GL paint callback)" as GL
+participant "GpuBackbuffer" as GPU
 
-box "Engine Background Thread" #EEF4FF
-    participant "Engine\n(Cycle loop)" as Engine
-    participant "EngineDispatcher" as Dispatcher
-end box
+== Simulation cycle ==
+Engine -> Sim : RefreshGamepads (hardware cadence)
+Engine -> Sim : Plugin pre-cycle
+Engine -> Sim : BeforeBackgroundTasksExecute
+Engine -> Sim : PreCycle timers, input pollers
+Engine -> Sim : Animations, movement, collisions, cameras
+Engine -> Sim : AfterBackgroundTasksExecute
 
-box "Background Tasks (every cycle)" #FFFACD
-    participant "Timer\n(PreCycle)" as TimerPre
-    participant "KeyboardEventPoller" as KB
-    participant "MouseEventPoller" as Mouse
-    participant "IGamepadManager" as GamepadManager
-    participant "GamepadEventPoller" as Gamepad
-    participant "Tile.TilesAnimating\n(Animator)" as Anim
-    participant "SpriteManager" as Sprites
-    participant "CollisionResolver" as Collision
-    participant "ViewManager\n(Camera)" as Camera
-    participant "Timer\n(PostCycle)" as TimerPost
-end box
-
-box "Foreground Tasks — Bitmap Path\n(CPU / SkiaSharp, same thread)" #E8F5E9
-    participant "DirectDrawingManager" as DDM
-    participant "RenderSurfaceHost\n<BitmapBackbuffer>" as RSH_Bitmap
-    participant "BitmapBackbuffer" as BitmapBB
-    participant "RenderSurfaceAdapterBase\n(WinForms/Avalonia Bitmap)" as BitmapAdapter
-end box
-
-box "Foreground Tasks — GPU Path\n(Engine records; GL replays)" #FFF3E0
-    participant "RenderSurfaceHost\n<GpuBackbuffer>" as RSH_Gpu
-    participant "GpuBackbuffer" as GpuBB
-    participant "RenderSurfaceAdapterBase\n(WinForms/Avalonia GPU)" as GpuAdapter
-end box
-
-box "GL / UI Thread" #FFF0F0
-    participant "SKGLControl /\nOpenGlControlBase\n(PaintSurface callback)" as GLThread
-end box
-
-== Engine Cycle ==
-
-Engine -> Dispatcher : Drain() — process queued lambdas
-
-Engine -> GamepadManager : UpdateConnections() [when cadence due]
-Engine -> GamepadManager : Poll() [when cadence due]
-
-group DoBackgroundTasks(tick)
-    Engine -> Engine : calculate deltaSeconds
-    Engine -> Engine : BeforeBackgroundTasksExecute?.Invoke()
-    Engine -> TimerPre : RaiseTimerEvents(PreCycle, tick)
-    Engine -> KB : PollForEvents(tick)
-    Engine -> Mouse : PollForEvents(tick)
-    Engine -> Gamepad : PollForEvents(tick)
-    Engine -> Anim : CycleAnimation(tick) [for each animating Tile]
-    Engine -> Sprites : MoveSprites(tick)
-    Engine -> Collision : Resolve() [for each SceneLayer in each Scene]
-    Engine -> Camera : UpdateCameras(deltaSeconds) [for each RenderSurfaceHost]
-    Engine -> Engine : AfterBackgroundTasksExecute?.Invoke()
-end
-
-alt TargetFPS <= 0 OR throttle elapsed
-
-    group DoForegroundTasks(tick)
-        Engine -> Engine : BeforeFrameRender?.Invoke()
-
-        Engine -> DDM : UpdateAll(tick)
-
-        group Bitmap Backbuffer Path (IsGlThreadRendered = false)
-            Engine -> RSH_Bitmap : RenderToBackbuffer(tick)
-            activate RSH_Bitmap
-                RSH_Bitmap -> BitmapBB : BeginFrame()
-                RSH_Bitmap -> BitmapBB : draw scene layers, tiles, sprites\n(via BackbufferBase.DrawTileFrame)
-                note right of BitmapBB
-                  DirectDrawings for each layer/view
-                  are also composed here
-                end note
-                RSH_Bitmap -> BitmapBB : EndFrame()
-            deactivate RSH_Bitmap
-
-            Engine -> RSH_Bitmap : PresentBackbufferToAdapter()
-            activate RSH_Bitmap
-                RSH_Bitmap -> BitmapBB : Snapshot() → SKImage
-                RSH_Bitmap -> BitmapAdapter : Present(bufferImage, bufferRect, destRect)
-                note right of BitmapAdapter
-                  Copies SKImage to the
-                  platform control surface
-                  (WinForms SKControl /
-                  Avalonia Image)
-                end note
-            deactivate RSH_Bitmap
-        end
-
-        group Desktop GPU snapshot production
-            Engine -> RSH_Gpu : ProduceRenderFrameSnapshot(tick)
-            RSH_Gpu -> RSH_Gpu : resolve scene, record immutable commands
-(CPU resources; no GPU surface)
-            RSH_Gpu -> RSH_Gpu : publish newest completed slot
-recycle replaced frame (three slots total)
-        end
-        Engine -> Engine : AfterFrameRender?.Invoke()
-        Engine -> TimerPost : RaiseTimerEvents(PostCycle, tick)
+alt Foreground render due
+  Engine -> Draw : Plugin pre-frame / BeforeFrameRender
+  Engine -> Draw : Update Effects for each surface
+  Engine -> Draw : DirectDrawingManager.UpdateAll(tick)
+  loop Each desktop GPU surface
+    Engine -> Host : ProduceRenderFrameSnapshot(tick)
+    Host -> Mail : TryBeginBuild()
+    alt Free slot
+      Mail --> Host : build slot
+      Host -> Recorder : Start / record full scene
+      Recorder --> Host : immutable SKPicture commands
+      Host -> Mail : Publish(slot, RenderFrameSnapshot)
+      note right of Mail
+        Retires an older published frame.
+        Active rendering slot stays owned.
+      end note
+    else No free slot
+      Mail --> Host : null (skip production)
     end
+  end
 
+  loop Each non-GL surface - bitmap render pass (all surfaces first)
+    Engine -> Host : RenderToBackbuffer(tick)
+    Host -> CPU : BeginFrame()
+    Host -> CPU : Render dirty scene regions\n(or no-op / overlay-only)
+  end
+  loop Each non-GL surface - bitmap presentation pass (after all renders)
+    Engine -> Host : PresentBackbufferToAdapter()
+    Host -> CPU : EndFrame()
+    Host -> CPU : Snapshot full / dirty rect as needed
+    Host -> CPUAdapter : Present(image, source, destination)
+    Host -> CPU : ClearDirtyRectangle / BeginFrame()
+  end
+  Engine -> GL : AfterFrameRender triggers repaint request
+  Engine -> Sim : PostCycle timers
+  Engine -> Sim : Plugin post-frame
 end
+Engine -> Sim : CPS / plugin post-cycle
 
-== GL Thread (independent, driven by OS/platform) ==
+== Desktop GPU GL paint (independent of engine cycle) ==
+GL -> GPU : EnsureInitialized(current GRContext)
+GL -> Host : GlRenderAndSnapshot()
+Host -> Mail : TryAcquire()
+alt Snapshot acquired and matching logical dimensions
+  Mail --> Host : most recent published frame
+  Host -> GPU : BeginFrame / Replay(SKPicture) / EndFrame
+  Host -> GPU : Snapshot() -> SKImage
+  Host -> Mail : Release(slot)
+else No snapshot or stale dimensions
+  Host -> GPU : Snapshot current frame
+  opt Stale snapshot slot
+    Host -> Mail : Release(slot)
+  end
+end
+Host --> GL : GPU-backed image
+GL -> GL : Draw image on GL framebuffer; dispose image
+GL -> GPU : RecordFrame()
 
-GLThread -> RSH_Gpu : GlRenderAndSnapshot() [called from PaintSurface]
-activate RSH_Gpu
-    RSH_Gpu -> GpuBB : Initialize(grContext, w, h) [on first call / resize]
-    RSH_Gpu -> RSH_Gpu : acquire latest completed RenderFrameSnapshot
-(no live Scene traversal / simulation gate)
-    RSH_Gpu -> GpuBB : BeginFrame()
-    RSH_Gpu -> GpuBB : replay immutable recorded commands
-    note right of GpuBB
-      Engine-resolved commands retain CPU resources;
-      only replay touches the GPU surface.
-    end note
-    RSH_Gpu -> GpuBB : EndFrame() — flushes GrContext
-    RSH_Gpu -> GpuBB : Snapshot() → SKImage
-    RSH_Gpu -> GpuBB : RecordFrame() — increments GPU FPS counter
-    RSH_Gpu -> RSH_Gpu : release rendering slot
-    RSH_Gpu --> GLThread : returns SKImage
-deactivate RSH_Gpu
+== Browser GPU path (no desktop snapshot mailbox) ==
+participant "SKGLView paint callback" as Browser
+Browser -> GPU : EnsureInitialized(current GRContext)
+Browser -> Engine : Tick() (StartTimerDriven) inside paint callback
+Browser -> Browser : ConsumeFrameRequest()
+alt New scene frame due, or GPU backbuffer recreated
+  Browser -> Host : GlRenderToCanvas(browserCanvas)
+  Host -> GPU : Live scene render / EndFrame
+  Host -> Browser : Draw current GPU surface into canvas
+else Presentation without a new scene frame
+  Browser -> Host : GlDrawCurrentFrameToCanvas(browserCanvas)
+  Host -> Browser : Draw existing GPU surface into canvas
+end
+Browser -> GPU : RecordFrame() on successful presentation
 
-GLThread -> GpuAdapter : Present(bufferImage, bufferRect, destRect)
-note right of GpuAdapter
-  Blits the SkiaSharp GPU image
-  to the OpenGL framebuffer
+note over Browser,Host
+  Blazor bitmap instead uses host OnAnimationFrame()
+  to drive Engine.Tick() from its own JS rAF loop.
+  Browser GPU paint owns the simulation Tick and
+  renders only when the backbuffer or frame is due.
 end note
-
 @enduml

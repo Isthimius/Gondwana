@@ -1,111 +1,82 @@
 @startuml architecture-diagram
-title Gondwana Engine — Architectural Diagram
+title Gondwana Engine - Runtime Architecture
+' Source: master, 2026-11-10. Logical architecture; not a literal call graph.
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+left to right direction
 
-skinparam defaultFontName Segoe UI
-skinparam backgroundColor #FAFAFA
-skinparam rectangle {
-    BackgroundColor #DDEEFF
-    BorderColor #336699
-}
-skinparam frame {
-    BackgroundColor #F5F5F5
-    BorderColor #555555
+package "Application" {
+  [Game logic / content] as Game
 }
 
-frame "Game Application" {
-    rectangle "Game Code\n(user's scenes, sprites, logic)" as gameCode #FFFACD
+package "Platform hosting" {
+  [GameHostBase] as HostBase
+  [WinForms game hosts\n(bitmap and GPU)] as WinHosts
+  [Avalonia game hosts\n(bitmap and GPU)] as AvHosts
+  [Blazor game hosts\n(bitmap and GPU)] as WebHosts
 }
 
-frame "Hosting Layer" {
-    rectangle "WinFormsGameHost\nWinFormsGpuGameHost" as wfHost #D5E8D4
-    rectangle "AvaloniaGameHost\nAvaloniaGpuGameHost" as avHost #D5E8D4
-    rectangle "GameHostBase\n(Initialize / Start / Stop)" as hostBase #C8E6C9
+package "Platform rendering and input adapters" {
+  [WinForms adapters\nSKControl / SKGLControl] as WinAdapter
+  [Avalonia adapters\nWriteableBitmap / OpenGL] as AvAdapter
+  [Blazor adapters\ncanvas / SKGLView] as WebAdapter
 }
 
-frame "Platform Adapter Layer" {
-    rectangle "WinFormBitmapRenderSurfaceAdapter\nWinFormGpuRenderSurfaceAdapter" as wfAdapters #FFF2CC
-    rectangle "AvaloniaBitmapRenderSurfaceAdapter\nAvaloniaGpuRenderSurfaceAdapter" as avAdapters #FFF2CC
+package "Companion UI library" {
+  [Gondwana.Widgets] as Widgets
 }
 
-frame "Core Engine Layer" {
-
-    frame "Engine Lifecycle" {
-        rectangle "Engine (singleton)\nInitialize / Start / Stop\nCycle / DoBackgroundTasks\nDoForegroundTasks" as engine #DAE8FC
-    }
-
-    frame "Rendering Subsystem" {
-        rectangle "RenderSurfaceHost<TBackbuffer>\n+ RenderSurfaceHostRegistry" as rsh #DAE8FC
-        rectangle "BitmapBackbuffer\n(CPU / SkiaSharp bitmap)" as bitmapBB #DAE8FC
-        rectangle "GpuBackbuffer\n(OpenGL / SkiaSharp GPU)" as gpuBB #DAE8FC
-        rectangle "ViewManager\n+ View + Camera + Viewport" as views #DAE8FC
-    }
-
-    frame "Scene & Content" {
-        rectangle "Scene\n+ SceneLayer\n+ SceneLayerTile" as scene #DAE8FC
-        rectangle "Tile (abstract)\n+ Sprite\n+ SceneLayerTile" as tiles #DAE8FC
-        rectangle "Tilesheet\n+ TilesheetRegistry\n+ Frame" as tilesheets #DAE8FC
-        rectangle "DirectDrawingManager\n(images, rects, text,\nparticles)" as direct #DAE8FC
-    }
-
-    frame "Input Subsystem" {
-        rectangle "KeyboardEventPoller\nMouseEventPoller\nGamepadEventPoller\n+ IGamepadManager" as input #E1D5E7
-    }
-
-    frame "Movement & Collision" {
-        rectangle "MovementController\n(scripted / integrated / follow)" as movement #E1D5E7
-        rectangle "CollisionResolver\nColliderRegistry\nICollider" as collision #E1D5E7
-    }
-
-    frame "Supporting Systems" {
-        rectangle "Timer\n(PreCycle / PostCycle)" as timers #F8CECC
-        rectangle "Animator\n+ Cycle + FrameSequence" as animator #F8CECC
-        rectangle "AudioResourceManager\n+ AudioResource" as audio #F8CECC
-        rectangle "EngineState\n(serialisable game state)" as state #F8CECC
-        rectangle "EngineConfiguration\n(gondwana.json)" as config #F8CECC
-    }
+package "Gondwana core" {
+  [Engine singleton\nsimulation and frame cadence] as Engine
+  [Input pollers / timers\nmovement / collisions] as Simulation
+  [Scene / SceneLayer / Tile\nSprite / Animation] as Content
+  [RenderSurfaceHost\nViewManager / Camera / Viewport] as Surface
+  [BitmapBackbuffer\nCPU dirty rectangles] as CPU
+  [GpuBackbuffer\nGPU full-surface rendering] as GPU
+  [RenderFrameSnapshot\n3-slot RenderFrameMailbox\nDESKTOP GPU ONLY] as Mailbox
+  [DirectDrawingManager\nEffectsManager] as Presentation
+  [EngineState / definitions\nEngineConfiguration] as Persistence
 }
 
-frame "Extension Packages" {
-    rectangle "Gondwana.Audio.Browser\nGondwana.Audio.Midi" as audioExt #E8E8E8
-    rectangle "Gondwana.Input.SDL2" as sdlExt #E8E8E8
-    rectangle "Gondwana.Video" as videoExt #E8E8E8
-}
+Game --> HostBase : application lifecycle
+WinHosts --|> HostBase
+AvHosts --|> HostBase
+WebHosts --|> HostBase
+HostBase --> Engine : initialize / start / stop
+WinHosts --> WinAdapter : bind
+AvHosts --> AvAdapter : bind
+WebHosts --> WebAdapter : bind
 
-' Flow
-gameCode --> hostBase : derives from
-wfHost --> hostBase
-avHost --> hostBase
-hostBase --> engine : owns / manages
+Engine --> Simulation : advance
+Engine --> Content : update state
+Engine --> Persistence : load / save / configure
+Engine --> Presentation : foreground updates
+Widgets --> Engine : depends on core
+Engine --> Surface : foreground rendering
+Surface --> Content : render bound scene
+Surface --> CPU : bitmap path
+Surface --> GPU : GPU path
+Surface --> Mailbox : record desktop GPU commands
 
-wfHost --> wfAdapters : creates
-avHost --> avAdapters : creates
+WinAdapter --> Surface : present / paint
+AvAdapter --> Surface : present / paint
+WebAdapter --> Surface : present / paint
 
-wfAdapters --> rsh : adapter for
-avAdapters --> rsh : adapter for
-
-engine --> rsh : iterates via\nRenderSurfaceHostRegistry
-engine --> input : polls
-engine --> timers : raises events
-engine --> scene : collision resolution
-engine --> state : reads/writes
-engine --> config : reads
-
-rsh --> bitmapBB : uses (CPU path)
-rsh --> gpuBB : uses (GPU path)
-rsh --> views : manages
-rsh --> scene : bound to
-
-scene --> tiles
-tiles --> tilesheets
-tiles --> animator
-tiles --> movement
-tiles --> collision
-
-engine --> direct : UpdateAll()
-direct --> rsh : drawn into
-
-audioExt --> audio : provides impl
-sdlExt --> input : provides impl
-videoExt --> gameCode : used by
-
+note right of CPU
+  CPU render and snapshot occur
+  on the engine thread. The UI
+  adapter presents the result.
+end note
+note right of Mailbox
+  Engine publishes immutable commands.
+  Desktop GL paint replays them.
+  No live scene traversal is required
+  in the desktop replay callback.
+end note
+note bottom of WebHosts
+  Blazor drives Engine.Tick() from browser frames
+  using StartTimerDriven(). Browser GPU painting
+  renders synchronously: no desktop mailbox.
+end note
 @enduml
