@@ -36,9 +36,12 @@ internal sealed class GameWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        // Match the intended 1280 x 720 client area independently of title-bar metrics.
-        Width += 1280 - _surface.Bounds.Width;
-        Height += 720 - _surface.Bounds.Height;
+        // GPU adapter dimensions are physical pixels, while Avalonia window bounds
+        // are DIPs. Account for display scaling (for example 150% on a 4K screen)
+        // so the initial 1280 x 720 presentation establishes a 1920 x 1080 buffer.
+        double scaling = RenderScaling > 0d ? RenderScaling : 1d;
+        Width += 1280d / scaling - _surface.Bounds.Width;
+        Height += 720d / scaling - _surface.Bounds.Height;
 
         // Allow the corrected layout to reach the GPU adapter before initialization.
         Dispatcher.UIThread.Post(() =>
