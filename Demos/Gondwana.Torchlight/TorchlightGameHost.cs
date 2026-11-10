@@ -108,7 +108,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
             _actorLayer[point.X, point.Y]!.CurrentFrame = DungeonArt.Get(DungeonArt.Sconce);
 
         foreach (Point point in new[] { new Point(9, 6), new Point(25, 14), new Point(34, 21) })
-            _floorLayer[point.X, point.Y]!.CurrentFrame = DungeonArt.Get(DungeonArt.Rune);
+            _actorLayer[point.X, point.Y]!.CurrentFrame = DungeonArt.Get(DungeonArt.Rune);
 
         foreach (Point point in new[] { new Point(4, 16), new Point(18, 4), new Point(36, 23) })
             _actorLayer[point.X, point.Y]!.CurrentFrame = DungeonArt.Get(DungeonArt.Stones);
