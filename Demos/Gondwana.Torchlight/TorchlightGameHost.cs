@@ -190,7 +190,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
             wall.Intensity = 0.82f;
             wall.FlickerEnabled = true;
             wall.FlickerAmount = 0.15f;
-            wall.FlickerRefreshHz = 9 + i % 4;
+            wall.FlickerRefreshHz = 7 + i;
             _wallLights.Add(wall);
         }
 
