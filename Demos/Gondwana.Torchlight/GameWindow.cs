@@ -12,9 +12,10 @@ internal sealed class GameWindow : Form
     {
         Text = "Gondwana: Torchlight Dungeon";
         ClientSize = new Size(960, 640);
-        FormBorderStyle = FormBorderStyle.FixedSingle;
+        FormBorderStyle = FormBorderStyle.Sizable;
         StartPosition = FormStartPosition.CenterScreen;
-        MaximizeBox = false;
+        MaximizeBox = true;
+        MinimumSize = new Size(760, 520);
         KeyPreview = true;
 
         _renderSurface.Dock = DockStyle.Fill;
