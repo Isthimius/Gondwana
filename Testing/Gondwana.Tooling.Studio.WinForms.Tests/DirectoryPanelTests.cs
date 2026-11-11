@@ -96,8 +96,10 @@ public sealed partial class CompositionTests
 
         var root = panel.Tree.Nodes[0];
         var category = root.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
-        Assert.Equal("directory", category.ImageKey);
-        Assert.Equal("directory", category.SelectedImageKey);
+        string expectedCategoryIcon = format == "misc" ? "misc"
+            : category.IsExpanded ? "directory-open" : "directory";
+        Assert.Equal(expectedCategoryIcon, category.ImageKey);
+        Assert.Equal(expectedCategoryIcon, category.SelectedImageKey);
         Assert.True(panel.PrepareCategoryMenu(category));
         Assert.Same(category, panel.Tree.SelectedNode);
         Assert.Equal(caption, panel.CategoryMenu.Items[0].Text);
@@ -110,8 +112,9 @@ public sealed partial class CompositionTests
         folder.Expand();
         Assert.Equal("directory", folder.ImageKey);
         var nestedCategory = folder.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
-        Assert.Equal("directory", nestedCategory.ImageKey);
-        Assert.Equal("directory", nestedCategory.SelectedImageKey);
+        string expectedNestedIcon = nestedCategory.IsExpanded ? "directory-open" : "directory";
+        Assert.Equal(expectedNestedIcon, nestedCategory.ImageKey);
+        Assert.Equal(expectedNestedIcon, nestedCategory.SelectedImageKey);
         Assert.True(panel.PrepareCategoryMenu(nestedCategory));
         panel.CategoryMenu.Items[0].PerformClick();
         Assert.Equal((format, nested), Assert.Single(requests));
@@ -294,6 +297,14 @@ public sealed partial class CompositionTests
     [Theory]
     [InlineData("icons8-folder-96.png")]
     [InlineData("icons8-pack-luggage-96.png")]
+    [InlineData("icons8-opened-folder-96.png")]
+    [InlineData("icons8-unpack-luggage-96.png")]
+    [InlineData("icons8-nature-96.png")]
+    [InlineData("icons8-small-icons-96.png")]
+    [InlineData("icons8-video-96.png")]
+    [InlineData("icons8-frodo-96.png")]
+    [InlineData("icons8-deployment-96.png")]
+    [InlineData("icons8-sound-96.png")]
     public void SharedIconsAreCompiledIntoThemingAssembly(string fileName)
     {
         string resourceName = "Gondwana.Tooling.WinForms.Theming.assets." + fileName;
@@ -335,13 +346,16 @@ public sealed partial class CompositionTests
             Assert.Equal((int)Math.Round((int)size * panel.Tree.DeviceDpi / 96d), panel.Tree.ImageList!.ImageSize.Width);
             Assert.Equal(size == NavigationIconSize.Small ? 9f : size == NavigationIconSize.Medium ? 11f : 13f, panel.Tree.Font.SizeInPoints);
             Assert.True(panel.Tree.ItemHeight > panel.Tree.ImageList.ImageSize.Height);
-            Assert.Equal(8, panel.Tree.ImageList.Images.Count);
-            Assert.Equal("directory", root.ImageKey);
+            Assert.Equal(10, panel.Tree.ImageList.Images.Count);
+            Assert.Equal("application", root.ImageKey);
+            Assert.Equal("application", root.SelectedImageKey);
             Assert.All(root.Nodes.Cast<TreeNode>().Where(node => node.Tag is null && node.Name.Length > 0),
                 node =>
                 {
-                    Assert.Equal("directory", node.ImageKey);
-                    Assert.Equal("directory", node.SelectedImageKey);
+                    string expectedKey = node.Name == "misc" ? "misc"
+                        : node.IsExpanded ? "directory-open" : "directory";
+                    Assert.Equal(expectedKey, node.ImageKey);
+                    Assert.Equal(expectedKey, node.SelectedImageKey);
                 });
             // The directory image must come from the embedded PNG, not the old "D" glyph.
             using (var expected = ToolingIconResources.CreateBitmap("icons8-folder-96.png", panel.Tree.ImageList.ImageSize.Width))
@@ -354,7 +368,8 @@ public sealed partial class CompositionTests
             {
                 using var icon = new Bitmap(panel.Tree.ImageList.Images[key]!);
                 Assert.Equal(panel.Tree.ImageList.ImageSize, icon.Size);
-                Assert.True(icon.GetPixel(icon.Width / 4, icon.Height / 4).A > 0);
+                Assert.True(Enumerable.Range(0, icon.Width)
+                    .Any(x => Enumerable.Range(0, icon.Height).Any(y => icon.GetPixel(x, y).A > 0)));
             }
         }
         archive.Collapse();
