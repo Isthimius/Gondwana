@@ -8,6 +8,16 @@ For audio, start with [[Audio]] and `Gondwana/Audio`: the core owns
 
 ---
 
+## Engine diagrams
+
+![Gondwana engine architecture](diagrams/architecture-diagram.svg)
+
+![Gondwana component dependencies](diagrams/component-diagram.svg)
+
+For the core class diagram and other rendering diagrams, see [[Architecture Diagrams]].
+
+---
+
 ## ⚡ Optional: Automated Dev Setup (Windows / PowerShell)
 
 If you're on Windows and want to get everything installed in one shot, run the [setup script](https://github.com/Isthimius/Gondwana/blob/master/Tooling/scripts/Setup-Gondwana-Dev.ps1) from anywhere inside the cloned repository:

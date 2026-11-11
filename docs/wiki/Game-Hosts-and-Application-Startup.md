@@ -6,6 +6,14 @@ This page focuses on using the host model as a game developer. For lower-level l
 
 ---
 
+## Platform hosting diagram
+
+![Gondwana platform hosting and frame ownership](diagrams/platform-hosting-diagram.svg)
+
+See [[Architecture Diagrams]] for the full set of diagrams.
+
+---
+
 ## The short version
 
 ```mermaid

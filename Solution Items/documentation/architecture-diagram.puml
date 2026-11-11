@@ -1,4 +1,5 @@
 @startuml architecture-diagram
+' SVG output: docs/wiki/diagrams/architecture-diagram.svg (generated from this source).
 title Gondwana Engine - Runtime Architecture
 ' Source: master, 2026-11-10. Logical architecture; not a literal call graph.
 skinparam componentStyle rectangle

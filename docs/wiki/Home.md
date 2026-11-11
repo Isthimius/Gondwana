@@ -6,6 +6,7 @@ Gondwana combines modern .NET with an explicit, predictable rendering model insp
 
 **Start here:** [[Make Your First Game in 30 Minutes]]  
 **Architecture:** [[Engine Architecture Overview]]  
+**Architecture diagrams:** [[Architecture Diagrams]]  
 **API reference:** https://isthimius.github.io/Gondwana/  
 **NuGet:** https://www.nuget.org/packages/Gondwana  
 **Source:** https://github.com/Isthimius/Gondwana

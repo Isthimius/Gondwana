@@ -10,6 +10,16 @@ See [[Bitmap Rendering Path]], [[GL Rendering Path]], and [[WebGL Rendering Path
 
 ---
 
+## Rendering pipeline diagrams
+
+![Gondwana overall rendering flow](diagrams/rendering-pipeline-flowchart.svg)
+
+![Gondwana rendering sequence](diagrams/rendering-pipeline-sequence.svg)
+
+See [[Architecture Diagrams]] for source files and additional pipeline diagrams.
+
+---
+
 ## The important separation: Backbuffer vs adapter
 
 The Backbuffer is Gondwana's logical rendering surface. The adapter is the window, control, framebuffer, or browser canvas that displays it.
