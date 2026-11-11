@@ -1,5 +1,12 @@
 Desktop WinForms and Avalonia use immutable **`RenderFrameSnapshot`** command streams to separate simulation from GPU rendering. Browser WebGL keeps its synchronous render path; see [[WebGL Rendering Path]].
 
+## Desktop GPU rendering diagram
+
+![Gondwana desktop GPU snapshot mailbox](diagrams/rendering-pipeline-flowchart-gpu-backbuffer.svg)
+
+See [[Architecture Diagrams]] for other rendering paths.
+
+
 ## Engine production and GL consumption
 
 At `TargetFPS` foreground cadence, the Engine updates effects and DirectDrawings, resolves visibility, ordering, animation frames, camera transforms, geometry, and presentation state, and records a complete frame for each desktop GPU surface. The snapshot contains a Skia picture, not Scene, View, Tile, Sprite, effect, or DirectDrawing references. Its ordered native commands preserve clipping, layers, opacity, transforms, and overlays without allocating a managed command object per drawable.

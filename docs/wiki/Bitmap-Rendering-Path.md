@@ -12,6 +12,14 @@ Unlike the GPU path, bitmap scene rendering uses SceneLayer RefreshQueues and Ba
 
 ---
 
+## Bitmap rendering diagram
+
+![Gondwana bitmap backbuffer rendering](diagrams/rendering-pipeline-flowchart-bitmap-backbuffer.svg)
+
+See [[Architecture Diagrams]] for more diagrams.
+
+---
+
 ## Architectural overview
 
 The bitmap path separates scene rendering from final platform presentation:
