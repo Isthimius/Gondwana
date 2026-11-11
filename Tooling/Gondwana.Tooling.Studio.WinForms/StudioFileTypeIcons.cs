@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Gondwana.Tooling.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 
@@ -42,6 +43,12 @@ internal static class StudioFileTypeIcons
         }
     }
 
+    /// <summary>Uses compiled artwork for asset packages and retains glyphs for other formats.</summary>
+    internal static Bitmap CreateFileTypeBitmap(int pixels, string key, string glyph, Color color) =>
+        key.Equals("gaf", StringComparison.OrdinalIgnoreCase)
+            ? ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png", pixels)
+            : CreateBitmap(pixels, glyph, color);
+
     /// <summary>Creates an independent 16-pixel icon for a Studio document.</summary>
     internal static Icon CreateDocumentIcon(string extension)
     {
@@ -52,7 +59,7 @@ internal static class StudioFileTypeIcons
             if (!category.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            using var bitmap = CreateBitmap(16, category.Glyph, category.Color);
+            using var bitmap = CreateFileTypeBitmap(16, category.Key, category.Glyph, category.Color);
             IntPtr handle = bitmap.GetHicon();
             try
             {
