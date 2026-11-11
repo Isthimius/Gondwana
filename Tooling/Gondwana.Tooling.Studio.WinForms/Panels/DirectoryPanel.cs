@@ -135,6 +135,10 @@ public sealed class DirectoryPanel : UserControl
                 FillDirectory(e.Node, directory.FullName);
         };
 
+        // Keep selected and normal artwork synchronized so selection does not switch icons.
+        Tree.AfterExpand += (_, e) => SetFolderIcon(e.Node, expanded: true);
+        Tree.AfterCollapse += (_, e) => SetFolderIcon(e.Node, expanded: false);
+
         Tree.NodeMouseDoubleClick += (_, e) =>
         {
             if (e.Button == MouseButtons.Left)
@@ -175,8 +179,8 @@ public sealed class DirectoryPanel : UserControl
             var root = new TreeNode(WorkingDirectory)
             {
                 Tag = new DirectoryInfo(WorkingDirectory),
-                ImageKey = "directory",
-                SelectedImageKey = "directory"
+                ImageKey = "application",
+                SelectedImageKey = "application"
             };
 
             Tree.Nodes.Add(root);
@@ -284,8 +288,8 @@ public sealed class DirectoryPanel : UserControl
                 {
                     // Keep the format identity separate from the shared folder artwork.
                     Name = category.Key,
-                    ImageKey = "directory",
-                    SelectedImageKey = "directory"
+                    ImageKey = category.Key == "misc" ? "misc" : "directory",
+                    SelectedImageKey = category.Key == "misc" ? "misc" : "directory"
                 });
             parent.Nodes.AddRange(Categories.Select(category => groups[category.Key]).ToArray());
 
@@ -313,7 +317,11 @@ public sealed class DirectoryPanel : UserControl
             }
 
             foreach (var group in groups.Values)
+            {
                 group.Expand();
+                // Ensure correct artwork even if the tree's native handle was not created yet.
+                SetFolderIcon(group, group.IsExpanded);
+            }
 
             var scan = FillPackedEntriesAsync(groups,
                 files.Where(file => Path.GetExtension(file).Equals(".gaf", StringComparison.OrdinalIgnoreCase))
@@ -555,23 +563,43 @@ public sealed class DirectoryPanel : UserControl
 
     internal void ApplyIconSize(NavigationIconSize size) => _sizing.Apply(size);
 
+    private static void SetFolderIcon(TreeNode node, bool expanded)
+    {
+        // Only folder/category artwork switches. The root is branded and Misc has its own icon.
+        if (node.ImageKey is not ("directory" or "directory-open"))
+            return;
+
+        string key = expanded ? "directory-open" : "directory";
+        node.ImageKey = key;
+        node.SelectedImageKey = key;
+    }
+
     private static ImageList CreateImages(int pixels)
     {
         var images = new ImageList { ImageSize = new Size(pixels, pixels), ColorDepth = ColorDepth.Depth32Bit };
         try
         {
-            AddFolderIcon(images);
+            // The same embedded .ico is also used for Studio's window/taskbar icon.
+            using (var applicationIcon = ToolingBranding.CreateIcon())
+            using (var scaledIcon = new Icon(applicationIcon, new Size(pixels, pixels)))
+            using (var bitmap = scaledIcon.ToBitmap())
+                images.Images.Add("application", bitmap);
+
+            AddEmbeddedIcon(images, "directory", "icons8-folder-96.png");
+            AddEmbeddedIcon(images, "directory-open", "icons8-opened-folder-96.png");
+
             foreach (var category in Categories)
                 AddIcon(images, category.Key, category.Glyph, category.Color);
+
             return images;
         }
         catch { images.Dispose(); throw; }
     }
 
-    private static void AddFolderIcon(ImageList images)
+    private static void AddEmbeddedIcon(ImageList images, string key, string fileName)
     {
-        using var bitmap = ToolingIconResources.CreateBitmap("icons8-folder-96.png", images.ImageSize.Width);
-        images.Images.Add("directory", bitmap);
+        using var bitmap = ToolingIconResources.CreateBitmap(fileName, images.ImageSize.Width);
+        images.Images.Add(key, bitmap);
 
         // Materialize the native copy before disposing the source bitmap.
         _ = images.Handle;
