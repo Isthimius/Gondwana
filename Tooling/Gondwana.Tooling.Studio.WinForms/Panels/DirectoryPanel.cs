@@ -579,7 +579,7 @@ public sealed class DirectoryPanel : UserControl
 
     private static void AddIcon(ImageList images, string key, string glyph, Color color)
     {
-        using var bitmap = StudioFileTypeIcons.CreateBitmap(images.ImageSize.Width, glyph, color);
+        using var bitmap = StudioFileTypeIcons.CreateFileTypeBitmap(images.ImageSize.Width, key, glyph, color);
         images.Images.Add(key, bitmap);
 
         // Materialize the native copy before disposing the source bitmap.
