@@ -59,7 +59,7 @@ public sealed partial class CompositionTests
                 else Assert.DoesNotContain(identity.AssetType, types.Take(5));
                 Assert.Equal(identity.EntryName, node.Text);
                 Assert.Equal($"Archive: {identity.ArchivePath}\nEntry: {identity.EntryName}\nAsset type: {identity.AssetType}", node.ToolTipText);
-                Assert.Equal(groups[group].ImageKey, node.ImageKey);
+                Assert.Equal(groups[group].Name, node.ImageKey);
                 Assert.Equal(node.ImageKey, node.SelectedImageKey);
                 Assert.True(panel.PrepareFileMenu(node)); // All packed resources support Find References.
                 Assert.Equal(group < 6, panel.FileMenu.Items[0].Available);
@@ -95,7 +95,9 @@ public sealed partial class CompositionTests
         panel.SetDirectory(directory);
 
         var root = panel.Tree.Nodes[0];
-        var category = root.Nodes.Cast<TreeNode>().Single(node => node.ImageKey == format && node.Tag is null);
+        var category = root.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
+        Assert.Equal("directory", category.ImageKey);
+        Assert.Equal("directory", category.SelectedImageKey);
         Assert.True(panel.PrepareCategoryMenu(category));
         Assert.Same(category, panel.Tree.SelectedNode);
         Assert.Equal(caption, panel.CategoryMenu.Items[0].Text);
@@ -106,7 +108,10 @@ public sealed partial class CompositionTests
         var folder = root.Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
         _ = panel.Tree.Handle;
         folder.Expand();
-        var nestedCategory = folder.Nodes.Cast<TreeNode>().Single(node => node.ImageKey == format && node.Tag is null);
+        Assert.Equal("directory", folder.ImageKey);
+        var nestedCategory = folder.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
+        Assert.Equal("directory", nestedCategory.ImageKey);
+        Assert.Equal("directory", nestedCategory.SelectedImageKey);
         Assert.True(panel.PrepareCategoryMenu(nestedCategory));
         panel.CategoryMenu.Items[0].PerformClick();
         Assert.Equal((format, nested), Assert.Single(requests));
@@ -129,7 +134,7 @@ public sealed partial class CompositionTests
 
         foreach (var format in new[] { "gts", "gani", "gscn", "gspr", "gsnd" })
         {
-            var category = folder.Nodes.Cast<TreeNode>().Single(node => node.ImageKey == format && node.Tag is null);
+            var category = folder.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
             Assert.True(browser.PrepareCategoryMenu(category));
             browser.CategoryMenu.Items[0].PerformClick();
             var document = studio.Documents.Last().Document;
@@ -287,6 +292,15 @@ public sealed partial class CompositionTests
     });
 
     [Fact]
+    public void FolderIconIsCompiledIntoSharedThemingAssembly()
+    {
+        const string resourceName = "Gondwana.Tooling.WinForms.Theming.assets.icons8-folder-96.png";
+        using var stream = typeof(ToolingIconResources).Assembly.GetManifestResourceStream(resourceName);
+        Assert.NotNull(stream);
+        Assert.True(stream!.Length > 0);
+    }
+
+    [Fact]
     public void BrowserResizesExistingNodesWithoutArchiveReadsAndDisposesImages() => RunSta(directory =>
     {
         WriteBrowserArchive(Path.Combine(directory, "tiles.gaf"), "entry.gts");
@@ -320,6 +334,13 @@ public sealed partial class CompositionTests
             Assert.Equal(size == NavigationIconSize.Small ? 9f : size == NavigationIconSize.Medium ? 11f : 13f, panel.Tree.Font.SizeInPoints);
             Assert.True(panel.Tree.ItemHeight > panel.Tree.ImageList.ImageSize.Height);
             Assert.Equal(8, panel.Tree.ImageList.Images.Count);
+            Assert.Equal("directory", root.ImageKey);
+            Assert.All(root.Nodes.Cast<TreeNode>().Where(node => node.Tag is null && node.Name.Length > 0),
+                node =>
+                {
+                    Assert.Equal("directory", node.ImageKey);
+                    Assert.Equal("directory", node.SelectedImageKey);
+                });
             // The directory image must come from the embedded PNG, not the old "D" glyph.
             using (var expected = ToolingIconResources.CreateBitmap("icons8-folder-96.png", panel.Tree.ImageList.ImageSize.Width))
             using (var actual = new Bitmap(panel.Tree.ImageList.Images["directory"]!))
