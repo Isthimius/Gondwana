@@ -12,7 +12,7 @@ The authoritative diagrams live in `Solution Items/documentation/*.puml`. Genera
 
 After merge, the existing `wiki-sync.yml` workflow publishes `docs/wiki/` unchanged, with no additional wiki credentials.
 
-PlantUML is pinned to **1.2026.8** and verified using SHA-256. The runner provides Java 21 and Graphviz.
+PlantUML is pinned to **1.2026.8** and verified using SHA-256. The runner provides Java 21. PlantUML uses its integrated Smetana fallback if Graphviz is unavailable.
 
 ## Local rendering
 
