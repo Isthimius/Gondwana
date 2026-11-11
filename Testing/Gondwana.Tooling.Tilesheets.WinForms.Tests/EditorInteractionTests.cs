@@ -180,6 +180,82 @@ public sealed partial class EditorInteractionTests
         Assert.Equal(editor.ImageSize ?? Size.Empty, dimensions.GetValue(inspector.SelectedObject));
     });
 
+    /// <summary>Definition and region rename buttons open modal editors and preserve history semantics.</summary>
+    [Fact]
+    public void ToolbarRenameButtons_UseModalsAndPreserveHistory() => RunSta(() =>
+    {
+        using var editor = Show(TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts")));
+        var document = editor.Document;
+        var bar = Descendants(editor).OfType<ToolStrip>()
+            .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
+        var renameDefinition = bar.Items.Find("RenameDefinition", false).Single();
+        var renameRegion = bar.Items.Find("RenameRegion", false).Single();
+        var members = bar.Items.OfType<ToolStripComboBox>().First();
+        var regions = Field<ToolStripComboBox>(editor.Editor, "_toolbarRegions");
+
+        Assert.Empty(bar.Items.OfType<ToolStripTextBox>());
+        string originalName = document.Definition.Name;
+
+        InteractWithRenameDialog("Rename definition", "ignored-cancelled", accept: false, renameDefinition.PerformClick);
+        Assert.Equal(originalName, document.Definition.Name);
+        Assert.False(document.IsDirty);
+
+        InteractWithRenameDialog("Rename definition", "renamed-definition", accept: true, renameDefinition.PerformClick);
+        Assert.Equal("renamed-definition", document.Definition.Name);
+        Assert.Equal("renamed-definition", members.SelectedItem);
+        Assert.True(document.History.CanUndo);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal(originalName, document.Definition.Name);
+        Assert.Equal(originalName, members.SelectedItem);
+
+        var region = Assert.IsType<TilesheetRegionDefinition>(regions.SelectedItem);
+        string originalRegionName = region.Name;
+        InteractWithRenameDialog("Rename region", "ignored-region", accept: false, renameRegion.PerformClick);
+        Assert.Equal(originalRegionName, region.Name);
+        InteractWithRenameDialog("Rename region", "renamed-region", accept: true, renameRegion.PerformClick);
+        Assert.Equal("renamed-region", region.Name);
+        Assert.Same(region, regions.SelectedItem);
+        Assert.Equal("renamed-region", regions.Text);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal(originalRegionName, region.Name);
+        Assert.Same(region, regions.SelectedItem);
+    });
+
+    private static void InteractWithRenameDialog(string title, string requested, bool accept, Action launch)
+    {
+        using var pump = new System.Windows.Forms.Timer { Interval = 10 };
+        bool handled = false;
+        pump.Tick += (_, _) =>
+        {
+            var dialog = Application.OpenForms.Cast<Form>()
+                .FirstOrDefault(form => form.Modal && form.Text == title);
+            if (dialog is null)
+                return;
+
+            pump.Stop();
+            handled = true;
+            var input = dialog.Controls.OfType<TextBox>().Single();
+            Assert.Equal("DefinitionRenameName", input.Name);
+            input.Text = requested;
+            var action = accept ? dialog.AcceptButton : dialog.CancelButton;
+            Assert.NotNull(action);
+            action!.PerformClick();
+        };
+
+        pump.Start();
+        try
+        {
+            launch();
+            Assert.True(handled, $"The {title} dialog did not open.");
+        }
+        finally
+        {
+            pump.Stop();
+        }
+    }
+
     /// <summary>Definition selection is shared by the toolbar and pane without causing edits.</summary>
     [Fact]
     public void DefinitionPaneSelector_SynchronizesWithToolbarAndPreservesCollapsibleSections() => RunSta(() =>
