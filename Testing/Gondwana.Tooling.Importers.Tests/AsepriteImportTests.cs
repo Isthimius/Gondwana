@@ -21,7 +21,7 @@ public sealed class AsepriteImportTests
         return memory.ToArray();
     }
     private static void Text(BinaryWriter w, string value) { byte[] bytes = Encoding.UTF8.GetBytes(value); w.Write((ushort)bytes.Length); w.Write(bytes); }
-    private static byte[] Fixture(int depth, int direction, bool unsupported = false, int repeat = 0, bool tags = true, int tagCount = 1)
+    private static byte[] Fixture(int depth, int direction, bool unsupported = false, int repeat = 0, bool tags = true, int tagCount = 1, bool referenceLayer = false)
     {
         using var memory = new MemoryStream(); using var w = new BinaryWriter(memory);
         w.Write(new byte[128]);
@@ -32,6 +32,8 @@ public sealed class AsepriteImportTests
             {
                 chunks.Add(Chunk(0x2004, c => { c.Write((ushort)1); c.Write((ushort)0); c.Write((ushort)0); c.Write(0u); c.Write((ushort)(unsupported ? 1 : 0)); c.Write((byte)255); c.Write(new byte[3]); Text(c, "Visible"); }));
                 chunks.Add(Chunk(0x2004, c => { c.Write((ushort)0); c.Write((ushort)0); c.Write((ushort)0); c.Write(0u); c.Write((ushort)0); c.Write((byte)255); c.Write(new byte[3]); Text(c, "Hidden"); }));
+                if (referenceLayer)
+                    chunks.Add(Chunk(0x2004, c => { c.Write((ushort)65); c.Write((ushort)0); c.Write((ushort)0); c.Write(0u); c.Write((ushort)1); c.Write((byte)255); c.Write(new byte[3]); Text(c, "Guide"); }));
                 if (depth == 8) chunks.Add(Chunk(0x2019, c => { c.Write(2u); c.Write(0u); c.Write(1u); c.Write(new byte[8]); c.Write((ushort)0); c.Write(new byte[] { 0, 0, 0, 255 }); c.Write((ushort)0); c.Write(new byte[] { 255, 0, 0, 255 }); }));
                 if (tags) chunks.Add(Chunk(0x2018, c => { c.Write((ushort)tagCount); c.Write(new byte[8]); for (int tag = 0; tag < tagCount; tag++) { c.Write((ushort)0); c.Write((ushort)2); c.Write((byte)direction); c.Write((ushort)repeat); c.Write(new byte[10]); Text(c, tag == 0 ? "Walk" : "Run"); } }));
             }
@@ -45,6 +47,15 @@ public sealed class AsepriteImportTests
                 if (frame == 0) c.Write(pixels);
                 else { using var z = new ZLibStream(c.BaseStream, CompressionLevel.Optimal, true); z.Write(pixels); }
             }));
+            if (referenceLayer)
+                chunks.Add(Chunk(0x2005, c =>
+                {
+                    c.Write((ushort)2); c.Write((short)0); c.Write((short)0);
+                    c.Write((byte)255); c.Write((ushort)0); c.Write((short)0); c.Write(new byte[5]);
+                    c.Write((ushort)2); c.Write((ushort)1);
+                    c.Write(depth == 32 ? new byte[] { 0, 0, 255, 255, 0, 0, 255, 255 } :
+                        throw new InvalidOperationException("Reference-layer fixture uses 32-bit pixels."));
+                }));
             w.Write((uint)(16 + chunks.Sum(c => c.Length))); w.Write((ushort)0xF1FA); w.Write((ushort)chunks.Count); w.Write((ushort)(100 + f * 100)); w.Write((ushort)0); w.Write(0u);
             foreach (var chunk in chunks) w.Write(chunk);
         }
@@ -106,6 +117,38 @@ public sealed class AsepriteImportTests
             Assert.Equal(members.Select(member => member.Key), Assert.Single(result.Analysis.Artifacts, artifact => artifact.Kind == "GANI").LogicalKeys);
             Assert.Equal(2, members.Select(member => member.Key).Distinct().Count());
             Assert.All(members, member => Assert.Empty(AnimationDefinitionValidator.Validate(member)));
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+
+    /// <summary>Reference-layer artwork and its blend mode are ignored without dropping ordinary cels.</summary>
+    [Fact]
+    public void ReferenceLayersWarnAndDoNotAppearInTheGeneratedAtlas()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "GondwanaAseReference-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string source = Path.Combine(directory, "hero.aseprite");
+            File.WriteAllBytes(source, Fixture(32, 0, referenceLayer: true));
+            var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+            var importer = new AsepriteImporter();
+            var analysis = importer.Analyze(request);
+            Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
+            Assert.Contains(analysis.Diagnostics, d =>
+                d.Code == "aseprite.layer.reference" &&
+                d.Severity == ExternalImportSeverity.Warning && d.Message.Contains("Guide"));
+            Assert.False(Directory.Exists(request.OutputDirectory));
+
+            var result = importer.Import(request);
+            Assert.True(result.Analysis.CanImport);
+            using var atlas = SKBitmap.Decode(Path.Combine(request.OutputDirectory, "hero.atlas.png"));
+            for (int frame = 0; frame < 3; frame++)
+            {
+                Assert.Equal(SKColors.Red, atlas.GetPixel(frame * 2, 0));
+                Assert.Equal(0, atlas.GetPixel(frame * 2 + 1, 0).Alpha);
+            }
+            Assert.NotNull(AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "hero.gani")));
         }
         finally { Directory.Delete(directory, true); }
     }
