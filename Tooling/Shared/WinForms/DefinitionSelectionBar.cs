@@ -245,44 +245,82 @@ internal static class DefinitionRenameDialog
 {
     internal static bool Show(IWin32Window? owner, string title, string currentName, Action<string> rename)
     {
+        // The toolbar can be hosted by Studio or a standalone editor at different DPI scales.
+        // Scale layout dimensions once against the owner; point-based fonts scale with DPI.
+        int dpi = owner is Control parent ? parent.DeviceDpi : 96;
+        int Px(int logical) => (int)Math.Round(logical * dpi / 96d, MidpointRounding.AwayFromZero);
+
+        using var dialogFont = new Font("Segoe UI", 10.5f, FontStyle.Regular, GraphicsUnit.Point);
+        using var inputFont = new Font("Segoe UI", 11.5f, FontStyle.Regular, GraphicsUnit.Point);
         using var dialog = new Form
         {
             Icon = ToolingBranding.CreateIcon(),
             Text = title,
             StartPosition = FormStartPosition.CenterParent,
             FormBorderStyle = FormBorderStyle.FixedDialog,
-            ClientSize = new Size(370, 112),
+            AutoScaleMode = AutoScaleMode.None, // Sizes below are already in physical pixels.
+            Font = dialogFont,
+            ClientSize = new Size(Px(460), Px(168)),
             MinimizeBox = false,
             MaximizeBox = false,
             ShowInTaskbar = false
         };
 
-        var label = new Label { Text = "Name", AutoSize = true, Location = new Point(12, 12) };
+        // Use layout rather than hard-coded coordinates so larger fonts and button sizes fit.
+        var layout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 3,
+            RowCount = 3,
+            Padding = new Padding(Px(18), Px(12), Px(18), Px(18))
+        };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(116)));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(116)));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, Px(30)));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, Px(48)));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+        var label = new Label
+        {
+            Text = "Name",
+            TextAlign = ContentAlignment.MiddleLeft,
+            Dock = DockStyle.Fill,
+            Margin = Padding.Empty
+        };
         var nameBox = new TextBox
         {
             Name = "DefinitionRenameName",
             Text = currentName,
-            Location = new Point(12, 33),
-            Size = new Size(346, 25),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Font = inputFont,
+            Dock = DockStyle.Top,
+            Margin = new Padding(0, Px(3), 0, 0)
         };
         var accept = new Button
         {
             Name = "ConfirmRename",
             Text = "Save",
-            Location = new Point(202, 72),
-            Size = new Size(75, 28),
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+            AutoSize = false,
+            Size = new Size(Px(108), Px(40)),
+            Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
+            Margin = new Padding(0, 0, Px(6), 0)
         };
         var cancel = new Button
         {
             Text = "Cancel",
             DialogResult = DialogResult.Cancel,
-            Location = new Point(283, 72),
-            Size = new Size(75, 28),
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+            AutoSize = false,
+            Size = new Size(Px(108), Px(40)),
+            Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
+            Margin = Padding.Empty
         };
 
+        layout.Controls.Add(label, 0, 0);
+        layout.SetColumnSpan(label, 3);
+        layout.Controls.Add(nameBox, 0, 1);
+        layout.SetColumnSpan(nameBox, 3);
+        layout.Controls.Add(accept, 1, 2);
+        layout.Controls.Add(cancel, 2, 2);
         accept.Click += (_, _) =>
         {
             string requested = nameBox.Text;
@@ -308,7 +346,7 @@ internal static class DefinitionRenameDialog
             }
         };
 
-        dialog.Controls.AddRange([label, nameBox, accept, cancel]);
+        dialog.Controls.Add(layout);
         dialog.AcceptButton = accept;
         dialog.CancelButton = cancel;
         dialog.Shown += (_, _) => { nameBox.Focus(); nameBox.SelectAll(); };
