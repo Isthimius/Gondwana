@@ -583,7 +583,11 @@ public sealed class DirectoryPanel : UserControl
             using (var applicationIcon = ToolingBranding.CreateIcon())
             using (var scaledIcon = new Icon(applicationIcon, new Size(pixels, pixels)))
             using (var bitmap = scaledIcon.ToBitmap())
+            {
                 images.Images.Add("application", bitmap);
+                // ImageList must own its native copy before the temporary bitmap is disposed.
+                _ = images.Handle;
+            }
 
             AddEmbeddedIcon(images, "directory", "icons8-folder-96.png");
             AddEmbeddedIcon(images, "directory-open", "icons8-opened-folder-96.png");
