@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Globalization;
+using System.IO.Compression;
 using System.Xml;
 using System.Xml.Linq;
 using Gondwana.Drawing;
@@ -37,6 +38,78 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
         Spacing Overhang, Dictionary<int, AnimationDefinition> Animations);
 
+    private const int MaxEmbeddedImageBytes = 64 * 1024 * 1024;
+
+    // Embedded Tiled image data contains encoded image bytes, not a raw pixel buffer.
+    // Normalize them into a generated PNG so native GTS files have a stable dependency.
+    private static (SKBitmap Bitmap, string ImageReference) LoadAtlasImage(
+        XElement image, string source, string filename, ImportPlan plan, CancellationToken token)
+    {
+        string? imageSource = (string?)image.Attribute("source");
+        XElement? data = image.Element("data");
+        if (imageSource is not null)
+        {
+            if (string.IsNullOrWhiteSpace(imageSource) || data is not null)
+                throw new InvalidDataException("Tiled atlas image must use either a source path or embedded data, not both.");
+            string path = Path.GetFullPath(imageSource, Path.GetDirectoryName(Path.GetFullPath(source))!);
+            plan.Dependencies.Add(path);
+            return (SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode atlas image: {path}"),
+                ImportNaming.RelativePath(plan.Request.OutputDirectory, path));
+        }
+        if (data is null)
+            throw new InvalidDataException("Tiled atlas image is missing both a source path and embedded data.");
+        string format = ((string?)image.Attribute("format") ?? "").TrimStart('.').ToLowerInvariant();
+        if (format is not ("png" or "jpg" or "jpeg" or "bmp" or "gif" or "webp"))
+            throw new InvalidDataException($"Unsupported embedded Tiled image format '{format}'; use a Skia-decodable raster format.");
+        if ((string?)data.Attribute("encoding") != "base64")
+            throw new InvalidDataException("Embedded Tiled atlas data must use base64 encoding.");
+        token.ThrowIfCancellationRequested();
+        if (data.Value.Length > MaxEmbeddedImageBytes * 2)
+            throw new InvalidDataException("Embedded Tiled atlas image exceeds the size limit.");
+        byte[] bytes = Convert.FromBase64String(data.Value);
+        if (bytes.Length > MaxEmbeddedImageBytes)
+            throw new InvalidDataException("Embedded Tiled atlas image exceeds the size limit.");
+        string? compression = (string?)data.Attribute("compression");
+        if (compression is not (null or "" or "zlib" or "gzip"))
+            throw new InvalidDataException($"Unsupported embedded Tiled atlas compression '{compression}'.");
+        if (compression is "zlib" or "gzip")
+        {
+            using var input = new MemoryStream(bytes);
+            using Stream decompressor = compression == "zlib"
+                ? new ZLibStream(input, CompressionMode.Decompress)
+                : new GZipStream(input, CompressionMode.Decompress);
+            using var output = new MemoryStream();
+            var buffer = new byte[8192];
+            int count;
+            while ((count = decompressor.Read(buffer)) > 0)
+            {
+                token.ThrowIfCancellationRequested();
+                if (output.Length + count > MaxEmbeddedImageBytes)
+                    throw new InvalidDataException("Decompressed Tiled atlas image exceeds the size limit.");
+                output.Write(buffer, 0, count);
+            }
+            bytes = output.ToArray();
+        }
+        token.ThrowIfCancellationRequested();
+        var bitmap = SKBitmap.Decode(bytes) ??
+            throw new InvalidDataException("Embedded Tiled atlas image cannot be decoded.");
+        try
+        {
+            if ((long)bitmap.Width * bitmap.Height > 64_000_000)
+                throw new InvalidDataException("Embedded Tiled atlas dimensions exceed the 64-million-pixel limit.");
+            using var png = bitmap.Encode(SKEncodedImageFormat.Png, 100) ??
+                throw new InvalidDataException("Cannot encode embedded Tiled atlas as PNG.");
+            string imageFilename = filename + "-atlas.png";
+            plan.Add(imageFilename, "PNG", null, png.ToArray());
+            return (bitmap, imageFilename);
+        }
+        catch
+        {
+            bitmap.Dispose();
+            throw;
+        }
+    }
+
     internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null)
     {
         token.ThrowIfCancellationRequested();
@@ -44,10 +117,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         if (root.Elements("image").Count() != 1 || root.Elements("tile").Any(t => t.Element("image") is not null))
             throw new InvalidDataException("Collection-of-images tilesets are unsupported; use a single atlas image.");
         var image = root.Element("image")!;
-        string imageSource = (string?)image.Attribute("source") ?? throw new InvalidDataException("Embedded tileset image data is unsupported.");
-        string imagePath = Path.GetFullPath(imageSource, Path.GetDirectoryName(Path.GetFullPath(source))!);
-        plan.Dependencies.Add(imagePath);
-        using var bitmap = SKBitmap.Decode(imagePath) ?? throw new InvalidDataException($"Cannot decode atlas image: {imagePath}");
+        var (decoded, imageReference) = LoadAtlasImage(image, source, filename, plan, token);
+        using var bitmap = decoded;
         int width = Int(root, "tilewidth"), height = Int(root, "tileheight");
         int spacing = Int(root, "spacing", 0), margin = Int(root, "margin", 0);
         int columns = Int(root, "columns"), count = Int(root, "tilecount");
@@ -108,7 +179,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         var grid = TilesheetDefinitionValidator.GridSize(region);
         if (grid.Columns != columns || count > grid.Columns * grid.Rows)
             throw new InvalidDataException("Tileset columns/tilecount do not fit the atlas geometry.");
-        var definition = new TilesheetDefinition { Name = name, Image = new() { FilePath = ImportNaming.RelativePath(plan.Request.OutputDirectory, imagePath) }, Regions = [region] };
+        var definition = new TilesheetDefinition { Name = name, Image = new() { FilePath = imageReference }, Regions = [region] };
         if (image.Attribute("trans") is { } transparent)
         {
             var color = transparent.Value.TrimStart('#');
