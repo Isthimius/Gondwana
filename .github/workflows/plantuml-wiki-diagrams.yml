@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: plantuml-wiki-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   render-diagrams:
@@ -24,12 +24,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Ensure Graphviz is installed
-        run: |
-          if ! command -v dot >/dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install -y graphviz
-          fi
       - name: Download pinned PlantUML
         shell: bash
         env:
