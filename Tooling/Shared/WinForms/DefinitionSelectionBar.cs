@@ -239,7 +239,7 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
     }
 }
 
- 
+
 /// <summary>A compact, themed rename prompt that applies a validated edit only on confirmation.</summary>
 internal static class DefinitionRenameDialog
 {
