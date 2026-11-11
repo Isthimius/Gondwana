@@ -308,7 +308,7 @@ public sealed partial class CompositionTests
         // ToolingBranding is linked into multiple referenced WinForms assemblies.
         // Read Studio's own compiled branding resource to avoid ambiguous type resolution.
         using (var logoStream = typeof(DirectoryPanel).Assembly.GetManifestResourceStream("Gondwana.Tooling.BrandingIcon"))
-        using (var logo = new Icon(Assert.IsType<Stream>(logoStream)))
+        using (var logo = new Icon(Assert.IsAssignableFrom<Stream>(logoStream)))
         using (var scaled = new Icon(logo, panel.Tree.ImageList!.ImageSize))
         using (var expected = scaled.ToBitmap())
         using (var actual = new Bitmap(panel.Tree.ImageList.Images["application"]!))
