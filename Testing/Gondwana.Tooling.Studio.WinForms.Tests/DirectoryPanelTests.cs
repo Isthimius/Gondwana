@@ -294,6 +294,54 @@ public sealed partial class CompositionTests
             Assert.Empty(group.Nodes.Cast<TreeNode>());
     });
 
+    [Fact]
+    public void BrowserChangesFolderArtworkOnExpandAndCollapse() => RunSta(directory =>
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "nested"));
+        using var panel = new DirectoryPanel(_ => { });
+        _ = panel.Tree.Handle;
+        panel.SetDirectory(directory);
+
+        var root = panel.Tree.Nodes[0];
+        Assert.Equal("application", root.ImageKey);
+        Assert.Equal("application", root.SelectedImageKey);
+        using (var logo = ToolingBranding.CreateIcon())
+        using (var scaled = new Icon(logo, panel.Tree.ImageList!.ImageSize))
+        using (var expected = scaled.ToBitmap())
+        using (var actual = new Bitmap(panel.Tree.ImageList.Images["application"]!))
+        {
+            int center = expected.Width / 2;
+            Assert.Equal(expected.GetPixel(center, center).ToArgb(), actual.GetPixel(center, center).ToArgb());
+        }
+
+        var category = root.Nodes.Cast<TreeNode>().Single(node => node.Name == "gts");
+        Assert.Equal("directory-open", category.ImageKey);
+        Assert.Equal("directory-open", category.SelectedImageKey);
+        category.Collapse();
+        Assert.Equal("directory", category.ImageKey);
+        Assert.Equal("directory", category.SelectedImageKey);
+        category.Expand();
+        Assert.Equal("directory-open", category.ImageKey);
+        Assert.Equal("directory-open", category.SelectedImageKey);
+
+        var nested = root.Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
+        Assert.Equal("directory", nested.ImageKey);
+        nested.Expand();
+        Assert.Equal("directory-open", nested.ImageKey);
+        Assert.Equal("directory-open", nested.SelectedImageKey);
+        nested.Collapse();
+        Assert.Equal("directory", nested.ImageKey);
+        Assert.Equal("directory", nested.SelectedImageKey);
+
+        var misc = root.Nodes.Cast<TreeNode>().Single(node => node.Name == "misc");
+        Assert.Equal("misc", misc.ImageKey);
+        Assert.Equal("misc", misc.SelectedImageKey);
+        misc.Collapse();
+        misc.Expand();
+        Assert.Equal("misc", misc.ImageKey);
+        Assert.Equal("application", root.ImageKey);
+    });
+
     [Theory]
     [InlineData("icons8-folder-96.png")]
     [InlineData("icons8-pack-luggage-96.png")]
