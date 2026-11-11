@@ -344,7 +344,12 @@ public sealed partial class CompositionTests
         var root = browser.Tree.Nodes[0];
         Assert.Equal(new[] { "Assets (.gaf)", "Tilesheets (.gts)", "Animations (.gani)", "Scenes (.gscn)", "Sprites (.gspr)", "Sound (.gsnd)", "Misc" },
             root.Nodes.Cast<TreeNode>().Select(node => node.Text));
-        Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.ImageKey).Distinct().Count());
+        Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.Name).Distinct().Count());
+        Assert.All(root.Nodes.Cast<TreeNode>(), node =>
+        {
+            Assert.Equal("directory", node.ImageKey);
+            Assert.Equal("directory", node.SelectedImageKey);
+        });
         Assert.Equal(9, root.Nodes.Cast<TreeNode>().Sum(node => node.Nodes.Count));
         Assert.False(browser.PrepareFileMenu(root));
         foreach (TreeNode group in root.Nodes)
@@ -352,7 +357,7 @@ public sealed partial class CompositionTests
             Assert.False(browser.PrepareFileMenu(group));
             foreach (TreeNode file in group.Nodes)
             {
-                Assert.Equal(group.ImageKey, file.ImageKey);
+                Assert.Equal(group.Name, file.ImageKey);
                 Assert.Equal(file.ImageKey, file.SelectedImageKey);
                 Assert.True(browser.Tree.ImageList!.Images.ContainsKey(file.ImageKey));
                 Assert.True(browser.PrepareFileMenu(file));
