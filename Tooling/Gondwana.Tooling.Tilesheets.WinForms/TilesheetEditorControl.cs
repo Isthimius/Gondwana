@@ -26,6 +26,7 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
     private readonly ComboBox _regions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
     private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
+    private ToolStripButton? _renameRegionButton;
     private readonly NumericUpDown _column = new() { Width = 80 };
     private readonly NumericUpDown _row = new() { Width = 80 };
     private readonly Label _gridSize = new() { AutoSize = true };
@@ -152,6 +153,7 @@ public sealed class TilesheetEditorControl : UserControl
             DisplayStyle = ToolStripItemDisplayStyle.Image
         };
         renameRegion.Click += (_, _) => RenameSelectedRegion();
+        _renameRegionButton = renameRegion;
         definitionBar.Items.Insert(5, renameRegion);
         definitionBar.SetGlyph(renameRegion, pixels =>
             ToolbarGlyphs.Definition(ToolbarGlyphs.DefinitionCommand.Rename, pixels, ToolingAppearance.Palette));
@@ -541,6 +543,8 @@ public sealed class TilesheetEditorControl : UserControl
         _toolbarRegions.Items.Clear();
         _toolbarRegions.Items.AddRange(regions);
         _toolbarRegions.SelectedItem = _regions.SelectedItem;
+        if (_renameRegionButton is not null)
+            _renameRegionButton.Enabled = SelectedRegion is not null;
 
         var (columns, rows) = SelectedRegion is { } r ? TilesheetDefinitionValidator.GridSize(r) : (0L, 0L);
 
