@@ -41,24 +41,9 @@ public sealed partial class CompositionTests
         Assert.Equal(new Size(16, 16), document.Icon.Size);
         using (var rendered = document.Icon.ToBitmap())
         {
-            if (format == "gaf")
-            {
-                using var expected = ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png", 16);
-                Assert.Equal(expected.GetPixel(8, 8).ToArgb(), rendered.GetPixel(8, 8).ToArgb());
-            }
-            else
-            {
-                var expectedColor = format switch
-                {
-                    "gts" => Color.DodgerBlue,
-                    "gani" => Color.MediumOrchid,
-                    "gsnd" => Color.Teal,
-                    "gscn" => Color.SeaGreen,
-                    "gspr" => Color.Coral,
-                    _ => throw new ArgumentOutOfRangeException(nameof(format))
-                };
-                Assert.Equal(expectedColor.ToArgb(), rendered.GetPixel(2, 2).ToArgb());
-            }
+            string fileName = Assert.IsType<string>(StudioFileTypeIcons.ResourceFileFor(format));
+            using var expected = ToolingIconResources.CreateBitmap(fileName, 16);
+            Assert.Equal(expected.GetPixel(8, 8).ToArgb(), rendered.GetPixel(8, 8).ToArgb());
         }
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
@@ -151,7 +136,7 @@ public sealed partial class CompositionTests
         // ZIP packages must receive the same assets icon as GAF packages.
         var archive = studio.NewDocument("gaf", Path.Combine(directory, "package.zip"));
         using var archiveIcon = archive.Icon.ToBitmap();
-        using var assetBitmap = ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png", 16);
+        using var assetBitmap = ToolingIconResources.CreateBitmap("icons8-unpack-luggage-96.png", 16);
         Assert.Equal(assetBitmap.GetPixel(8, 8).ToArgb(), archiveIcon.GetPixel(8, 8).ToArgb());
     });
 
@@ -354,13 +339,16 @@ public sealed partial class CompositionTests
         Assert.Equal(new[] { "Assets (.gaf)", "Tilesheets (.gts)", "Animations (.gani)", "Scenes (.gscn)", "Sprites (.gspr)", "Sound (.gsnd)", "Misc" },
             root.Nodes.Cast<TreeNode>().Select(node => node.Text));
         Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.Name).Distinct().Count());
+        Assert.Equal("application", root.ImageKey);
         Assert.All(root.Nodes.Cast<TreeNode>(), node =>
         {
-            Assert.Equal("directory", node.ImageKey);
-            Assert.Equal("directory", node.SelectedImageKey);
+            string expectedKey = node.Name == "misc" ? "misc"
+                : node.IsExpanded ? "directory-open" : "directory";
+            Assert.Equal(expectedKey, node.ImageKey);
+            Assert.Equal(expectedKey, node.SelectedImageKey);
         });
         Assert.Equal(9, root.Nodes.Cast<TreeNode>().Sum(node => node.Nodes.Count));
-        using (var expected = ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png",
+        using (var expected = ToolingIconResources.CreateBitmap("icons8-unpack-luggage-96.png",
                    browser.Tree.ImageList!.ImageSize.Width))
         using (var actual = new Bitmap(browser.Tree.ImageList.Images["gaf"]!))
         {
