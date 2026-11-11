@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'Solution Items/documentation/**/*.puml'
+      - '!Solution Items/documentation/old/**'
 
 permissions:
   contents: write
