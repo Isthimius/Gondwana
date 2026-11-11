@@ -291,10 +291,12 @@ public sealed partial class CompositionTests
             Assert.Empty(group.Nodes.Cast<TreeNode>());
     });
 
-    [Fact]
-    public void FolderIconIsCompiledIntoSharedThemingAssembly()
+    [Theory]
+    [InlineData("icons8-folder-96.png")]
+    [InlineData("icons8-pack-luggage-96.png")]
+    public void SharedIconsAreCompiledIntoThemingAssembly(string fileName)
     {
-        const string resourceName = "Gondwana.Tooling.WinForms.Theming.assets.icons8-folder-96.png";
+        string resourceName = "Gondwana.Tooling.WinForms.Theming.assets." + fileName;
         using var stream = typeof(ToolingIconResources).Assembly.GetManifestResourceStream(resourceName);
         Assert.NotNull(stream);
         Assert.True(stream!.Length > 0);
