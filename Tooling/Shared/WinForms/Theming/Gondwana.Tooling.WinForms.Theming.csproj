@@ -21,5 +21,10 @@
     <None Update="assets/icons8-folder-96.png"
           CopyToOutputDirectory="Never"
           CopyToPublishDirectory="Never" />
+    <EmbeddedResource Include="assets/icons8-pack-luggage-96.png"
+                      LogicalName="Gondwana.Tooling.WinForms.Theming.assets.icons8-pack-luggage-96.png" />
+    <None Update="assets/icons8-pack-luggage-96.png"
+          CopyToOutputDirectory="Never"
+          CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>
