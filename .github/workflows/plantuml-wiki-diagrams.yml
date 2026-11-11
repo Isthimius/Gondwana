@@ -1,0 +1,73 @@
+name: PlantUML wiki diagrams
+
+# Runs only for .puml source changes; not unrelated merges/wiki edits.
+on:
+  push:
+    paths:
+      - 'Solution Items/documentation/**/*.puml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plantuml-wiki-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render-diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Ensure Graphviz is installed
+        run: |
+          if ! command -v dot >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y graphviz
+          fi
+      - name: Download pinned PlantUML
+        shell: bash
+        env:
+          PLANTUML_VERSION: 1.2026.8
+          PLANTUML_SHA256: 5e1ecfa8ecd32c90b03bbf3b1eb6f020943f98ab0fcf4032be31a0002ee2c462
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar" \
+            -o "$RUNNER_TEMP/plantuml.jar"
+          printf '%s  %s\n' "$PLANTUML_SHA256" "$RUNNER_TEMP/plantuml.jar" | sha256sum --check
+      - name: Render SVGs and check syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 Tooling/scripts/plantuml-wiki/render.py --jar "$RUNNER_TEMP/plantuml.jar"
+      - name: Check committed SVGs on master
+        if: github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- docs/wiki/diagrams/
+          if ! git diff --cached --quiet; then
+            echo "::error::PlantUML SVGs on master differ from the sources. Commit rendered SVGs in the PR."
+            git diff --cached --stat
+            exit 1
+          fi
+      - name: Commit regenerated SVGs to source branch
+        if: github.ref != 'refs/heads/master'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- docs/wiki/diagrams/
+          if git diff --cached --quiet; then
+            echo "All SVGs match the PlantUML sources."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs(wiki): regenerate PlantUML SVGs [skip ci]"
+          git push origin "HEAD:${GITHUB_REF#refs/heads/}"
