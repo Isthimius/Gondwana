@@ -138,11 +138,13 @@ public sealed partial class EditorInteractionTests
         var definitionBar = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
 
-        Assert.IsType<ToolStripTextBox>(definitionBar.Items[0]);
-        Assert.Equal("RenameDefinition", definitionBar.Items[1].Name);
-        Assert.Equal("Definition", definitionBar.Items[3].Text);
-        Assert.Equal("Region", definitionBar.Items[5].Text);
-        Assert.Same(toolbar, definitionBar.Items[6]);
+        Assert.Empty(definitionBar.Items.OfType<ToolStripTextBox>());
+        Assert.Equal("Definition", definitionBar.Items[0].Text);
+        Assert.IsType<ToolStripComboBox>(definitionBar.Items[1]);
+        Assert.Equal("RenameDefinition", definitionBar.Items[2].Name);
+        Assert.Equal("Region", definitionBar.Items[3].Text);
+        Assert.Same(toolbar, definitionBar.Items[4]);
+        Assert.Equal("RenameRegion", definitionBar.Items[5].Name);
         var regionTools = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.Items.Cast<ToolStripItem>().Any(item => item.Text == "+ Region"));
         Assert.Contains(regionTools.Items.OfType<ToolStripControlHost>(), host => ReferenceEquals(host.Control, pane));
