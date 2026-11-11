@@ -136,10 +136,25 @@ public sealed class TilesheetEditorControl : UserControl
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gts", (path, select) => Document.ImportDefinitions(path, select));
 
-        definitionBar.Items.Insert(2, new ToolStripLabel("Region"));
-        definitionBar.Items.Insert(3, _toolbarRegions);
+        definitionBar.UseModalRenameAfterSelector();
+        definitionBar.Items.Insert(3, new ToolStripLabel("Region"));
+        definitionBar.Items.Insert(4, _toolbarRegions);
         definitionBar.SetLogicalWidth(_toolbarRegions, 180);
-        definitionBar.MoveRenameToFront();
+
+        var renameRegion = new ToolStripButton
+        {
+            Name = "RenameRegion",
+            Text = "Rename region",
+            ToolTipText = "Rename region",
+            AccessibleName = "Rename region",
+            AutoToolTip = false,
+            AutoSize = false,
+            DisplayStyle = ToolStripItemDisplayStyle.Image
+        };
+        renameRegion.Click += (_, _) => RenameSelectedRegion();
+        definitionBar.Items.Insert(5, renameRegion);
+        definitionBar.SetGlyph(renameRegion, pixels =>
+            ToolbarGlyphs.Definition(ToolbarGlyphs.DefinitionCommand.Rename, pixels, ToolingAppearance.Palette));
 
         Controls.Add(definitionBar);
 
@@ -341,6 +356,23 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshView();
         _regions.SelectedItem = region;
         RefreshProperties();
+    }
+
+    private void RenameSelectedRegion()
+    {
+        if (SelectedRegion is not { } region)
+            return;
+
+        DefinitionRenameDialog.Show(FindForm(), "Rename region", region.Name, requested =>
+        {
+            if (Document.Definition.Regions.Any(other =>
+                    !ReferenceEquals(other, region) &&
+                    string.Equals(other.Name, requested, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidDataException($"Duplicate region name '{requested}'.");
+
+            Document.Edit(region, "Rename region", () => region.Name = requested);
+            RefreshView();
+        });
     }
 
     private void RemoveRegion()
