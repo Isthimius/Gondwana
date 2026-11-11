@@ -282,8 +282,10 @@ public sealed class DirectoryPanel : UserControl
             var groups = Categories.ToDictionary(category => category.Key,
                 category => new TreeNode(category.Label)
                 {
-                    ImageKey = category.Key,
-                    SelectedImageKey = category.Key
+                    // Keep the format identity separate from the shared folder artwork.
+                    Name = category.Key,
+                    ImageKey = "directory",
+                    SelectedImageKey = "directory"
                 });
             parent.Nodes.AddRange(Categories.Select(category => groups[category.Key]).ToArray());
 
@@ -485,7 +487,7 @@ public sealed class DirectoryPanel : UserControl
         if (node.Tag is not null || node.Parent?.Tag is not DirectoryInfo directory)
             return false;
 
-        var category = Categories.FirstOrDefault(item => item.Key == node.ImageKey);
+        var category = Categories.FirstOrDefault(item => item.Key == node.Name);
         if (category.Key is null || !string.Equals(category.Label, node.Text, StringComparison.Ordinal))
             return false;
 
