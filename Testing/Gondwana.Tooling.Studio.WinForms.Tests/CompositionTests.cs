@@ -8,6 +8,7 @@ using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
@@ -40,17 +41,24 @@ public sealed partial class CompositionTests
         Assert.Equal(new Size(16, 16), document.Icon.Size);
         using (var rendered = document.Icon.ToBitmap())
         {
-            var expectedColor = format switch
+            if (format == "gaf")
             {
-                "gaf" => Color.Goldenrod,
-                "gts" => Color.DodgerBlue,
-                "gani" => Color.MediumOrchid,
-                "gsnd" => Color.Teal,
-                "gscn" => Color.SeaGreen,
-                "gspr" => Color.Coral,
-                _ => throw new ArgumentOutOfRangeException(nameof(format))
-            };
-            Assert.Equal(expectedColor.ToArgb(), rendered.GetPixel(2, 2).ToArgb());
+                using var expected = ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png", 16);
+                Assert.Equal(expected.GetPixel(8, 8).ToArgb(), rendered.GetPixel(8, 8).ToArgb());
+            }
+            else
+            {
+                var expectedColor = format switch
+                {
+                    "gts" => Color.DodgerBlue,
+                    "gani" => Color.MediumOrchid,
+                    "gsnd" => Color.Teal,
+                    "gscn" => Color.SeaGreen,
+                    "gspr" => Color.Coral,
+                    _ => throw new ArgumentOutOfRangeException(nameof(format))
+                };
+                Assert.Equal(expectedColor.ToArgb(), rendered.GetPixel(2, 2).ToArgb());
+            }
         }
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
@@ -143,7 +151,8 @@ public sealed partial class CompositionTests
         // ZIP packages must receive the same assets icon as GAF packages.
         var archive = studio.NewDocument("gaf", Path.Combine(directory, "package.zip"));
         using var archiveIcon = archive.Icon.ToBitmap();
-        Assert.Equal(Color.Goldenrod.ToArgb(), archiveIcon.GetPixel(2, 2).ToArgb());
+        using var assetBitmap = ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png", 16);
+        Assert.Equal(assetBitmap.GetPixel(8, 8).ToArgb(), archiveIcon.GetPixel(8, 8).ToArgb());
     });
 
     /// <summary>
@@ -351,6 +360,13 @@ public sealed partial class CompositionTests
             Assert.Equal("directory", node.SelectedImageKey);
         });
         Assert.Equal(9, root.Nodes.Cast<TreeNode>().Sum(node => node.Nodes.Count));
+        using (var expected = ToolingIconResources.CreateBitmap("icons8-pack-luggage-96.png",
+                   browser.Tree.ImageList!.ImageSize.Width))
+        using (var actual = new Bitmap(browser.Tree.ImageList.Images["gaf"]!))
+        {
+            int center = expected.Width / 2;
+            Assert.Equal(expected.GetPixel(center, center).ToArgb(), actual.GetPixel(center, center).ToArgb());
+        }
         Assert.False(browser.PrepareFileMenu(root));
         foreach (TreeNode group in root.Nodes)
         {
