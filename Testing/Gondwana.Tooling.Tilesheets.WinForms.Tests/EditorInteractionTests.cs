@@ -236,7 +236,26 @@ public sealed partial class EditorInteractionTests
 
             pump.Stop();
             handled = true;
-            var input = dialog.Controls.OfType<TextBox>().Single();
+            var layout = Assert.Single(dialog.Controls.OfType<TableLayoutPanel>());
+            var input = Assert.Single(layout.Controls.OfType<TextBox>());
+            var save = Assert.Single(layout.Controls.OfType<Button>(), button => button.Name == "ConfirmRename");
+            var cancel = Assert.Single(layout.Controls.OfType<Button>(), button => button.Text == "Cancel");
+            int scale(int logical) => (int)Math.Round(logical * dialog.DeviceDpi / 96d);
+
+            // Dialog controls remain legible and unclipped at the host monitor's DPI.
+            Assert.True(dialog.ClientSize.Width >= scale(460));
+            Assert.True(dialog.ClientSize.Height >= scale(168));
+            Assert.True(input.Font.SizeInPoints >= 11f);
+            Assert.True(input.Width >= scale(390));
+            Assert.True(save.Width >= scale(100));
+            Assert.True(cancel.Width >= scale(100));
+            Assert.True(save.Height >= scale(36));
+            Assert.True(cancel.Height >= scale(36));
+            Assert.True(input.Bottom < save.Top);
+            Assert.True(save.Right < cancel.Left);
+            Assert.True(cancel.Right <= layout.ClientSize.Width);
+            Assert.True(cancel.Bottom <= layout.ClientSize.Height);
+
             Assert.Equal("DefinitionRenameName", input.Name);
             input.Text = requested;
             var action = accept ? dialog.AcceptButton : dialog.CancelButton;
