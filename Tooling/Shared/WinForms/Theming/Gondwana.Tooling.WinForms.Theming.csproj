@@ -17,5 +17,9 @@
     <!-- Shared artwork for Studio and standalone WinForms editors. -->
     <EmbeddedResource Include="assets/icons8-folder-96.png"
                       LogicalName="Gondwana.Tooling.WinForms.Theming.assets.icons8-folder-96.png" />
+    <!-- The image is loaded from this assembly, never from a loose output asset. -->
+    <None Update="assets/icons8-folder-96.png"
+          CopyToOutputDirectory="Never"
+          CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>
