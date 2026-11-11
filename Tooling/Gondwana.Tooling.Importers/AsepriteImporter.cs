@@ -120,7 +120,8 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                 {
                     token.ThrowIfCancellationRequested();
                     var layer = sprite.Layers[i];
-                    if ((layer.Flags & 1) == 0) continue;
+                    // Reference layers are guides, not artwork to include in the generated atlas.
+                    if ((layer.Flags & (1 | 64)) != 1) continue;
                     if (layer.Type == 1)
                     {
                         using var group = RenderGroup(i);
