@@ -46,7 +46,10 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         XElement image, string source, string filename, ImportPlan plan, CancellationToken token)
     {
         string? imageSource = (string?)image.Attribute("source");
-        XElement? data = image.Element("data");
+        var dataElements = image.Elements("data").ToArray();
+        if (dataElements.Length > 1)
+            throw new InvalidDataException("Tiled atlas image must have only one data element.");
+        XElement? data = dataElements.SingleOrDefault();
         if (imageSource is not null)
         {
             if (string.IsNullOrWhiteSpace(imageSource) || data is not null)
@@ -91,12 +94,17 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             bytes = output.ToArray();
         }
         token.ThrowIfCancellationRequested();
-        var bitmap = SKBitmap.Decode(bytes) ??
+        // Query encoded dimensions before allocating a decoded bitmap. Small compressed
+        // images can otherwise expand into enormous allocations during analysis.
+        using var codec = SKCodec.Create(new MemoryStream(bytes)) ??
+            throw new InvalidDataException("Embedded Tiled atlas image cannot be decoded.");
+        if (codec.Info.Width <= 0 || codec.Info.Height <= 0 ||
+            (long)codec.Info.Width * codec.Info.Height > 64_000_000)
+            throw new InvalidDataException("Embedded Tiled atlas dimensions exceed the 64-million-pixel limit.");
+        var bitmap = SKBitmap.Decode(codec) ??
             throw new InvalidDataException("Embedded Tiled atlas image cannot be decoded.");
         try
         {
-            if ((long)bitmap.Width * bitmap.Height > 64_000_000)
-                throw new InvalidDataException("Embedded Tiled atlas dimensions exceed the 64-million-pixel limit.");
             using var png = bitmap.Encode(SKEncodedImageFormat.Png, 100) ??
                 throw new InvalidDataException("Cannot encode embedded Tiled atlas as PNG.");
             string imageFilename = filename + "-atlas.png";
