@@ -797,6 +797,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <returns>The corresponding position in layer grid coordinates.</returns>
     public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
 
+    /// <summary>Inverts the drawable anchor projection, retaining fractional coordinates even on hex layers.</summary>
+    public PointF WorldPxToContinuousGrid(PointF worldPx) => CoordinateSystem.GetContinuousGridAtPixel(this, worldPx);
+
     /// <summary>
     /// Returns the neighboring tile in the given direction, or null if the
     /// direction would move off the layer and wrapping is not enabled. The

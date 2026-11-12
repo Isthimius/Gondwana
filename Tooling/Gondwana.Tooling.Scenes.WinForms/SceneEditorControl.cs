@@ -170,7 +170,7 @@ public sealed partial class SceneEditorControl : UserControl
         _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
-        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+        var shortcuts = UndoRedoMenu.Route(this, () => SelectedSpriteHistory ?? Document.History, CommitPreviewHistoryEdits);
         Disposed += (_, _) => shortcuts.Dispose();
         Size = new Size(1400, 900);
         Dock = DockStyle.Fill;
@@ -217,6 +217,7 @@ public sealed partial class SceneEditorControl : UserControl
         _animationList.ItemActivate += (_, _) => AssignSelectedAnimation();
 
         WireResourceDragDrop();
+        WireSpritePlacement();
         _preview.NavigationKey += NavigateSelection;
         _properties.Enter += (_, _) => _preview.CancelGesture();
         _tileProperties.Enter += (_, _) => _preview.CancelGesture();
@@ -588,6 +589,7 @@ public sealed partial class SceneEditorControl : UserControl
         };
 
         bar.Items.Add(grid);
+        AddSpritePreviewButtons(bar);
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("View Scene", null, async (_, _) => await ViewSceneAsync());
         bar.Items.Add(new ToolStripSeparator());
@@ -797,6 +799,10 @@ public sealed partial class SceneEditorControl : UserControl
     /// <remarks>Also clears a cache supplied by the host. Does not save or change the authoring document.</remarks>
     public void ReloadSources()
     {
+        CancelSpritePlacement();
+        _preview.SetSprites([]);
+        _spriteArtwork.Dispose();
+        InvalidateSpriteOwners(reloadSaved: true);
         _preview.CancelGesture();
         ClearMultiSelection();
         _packages.Clear();
@@ -1587,6 +1593,7 @@ public sealed partial class SceneEditorControl : UserControl
             _selectedLayer,
             (int)_tileX.Value,
             (int)_tileY.Value);
+        InvalidateSpriteOwners();
     }
 
     private void SourceTreeBeforeExpand(
@@ -1798,6 +1805,7 @@ public sealed partial class SceneEditorControl : UserControl
 
     private void DocumentChanged(object? sender, EventArgs e)
     {
+        if (_spriteSelection is not null) ClearPreviewSpriteSelection();
         if (_gestureLayer is not null && !GestureTargetIsValid()) _preview.CancelGesture();
         if (_refreshPending || !IsHandleCreated)
             return;
@@ -1875,6 +1883,7 @@ public sealed partial class SceneEditorControl : UserControl
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
+        if (disposing) DisposeSpritePreview();
         if (disposing)
         {
             _preview.CancelGesture();
@@ -1915,7 +1924,8 @@ public sealed partial class SceneEditorControl : UserControl
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == Keys.Escape && _preview.HasGesture) { _preview.CancelGesture(); return true; }
-        return UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+        if (keyData == Keys.Escape && _preview.HasSpriteGesture) { CancelSpritePlacement(); return true; }
+        return UndoRedoMenu.TryShortcut(this, keyData, SelectedSpriteHistory ?? Document.History, CommitPreviewHistoryEdits) || base.ProcessCmdKey(ref msg, keyData);
     }
 
 }

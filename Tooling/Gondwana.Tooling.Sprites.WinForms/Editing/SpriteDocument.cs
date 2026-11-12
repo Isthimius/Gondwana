@@ -35,15 +35,18 @@ public sealed partial class SpriteDocument
     }
 
     /// <summary>Adds a validated packed scene dependency; rejects conflicting logical identities.</summary>
-    public void AddPackedSceneSource(string id, string archivePath, string entryName)
+    public void AddPackedSceneSource(string id, string archivePath, string entryName) =>
+        AddPackedSceneSource(Definition, id, archivePath, entryName);
+
+    private void AddPackedSceneSource(SpriteDefinition member, string id, string archivePath, string entryName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
-        if (Definition.SceneSources.Any(source => string.Equals(source.SceneId, id, StringComparison.Ordinal)))
+        if (member.SceneSources.Any(source => string.Equals(source.SceneId, id, StringComparison.Ordinal)))
             throw new InvalidOperationException($"A scene source named '{id}' already exists. Remove the existing source before adding another.");
-        var before = new ModelSnapshot(Definition.SceneSources);
-        Definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed(id,
+        var before = new ModelSnapshot(member.SceneSources);
+        member.SceneSources.Add(SpriteSceneSourceDefinition.Packed(id,
             Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
         before.Record(History, "Change scene sources");
     }
@@ -149,14 +152,16 @@ public sealed partial class SpriteDocument
     /// <param name="id">Logical scene ID, matched using case-sensitive comparison.</param>
     /// <param name="path">Loose GSCN file path; normalized against the process current directory and stored relative to the document.</param>
     /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
-    public void SetLooseSceneSource(string id, string path)
+    public void SetLooseSceneSource(string id, string path) => SetLooseSceneSource(Definition, id, path);
+
+    private void SetLooseSceneSource(SpriteDefinition member, string id, string path)
     {
         path = Path.GetFullPath(path);
-        if (Definition.SceneSources.Any(source => source.SceneId == id && source.Kind == SpriteSceneSourceKind.LooseDefinitionFile &&
+        if (member.SceneSources.Any(source => source.SceneId == id && source.Kind == SpriteSceneSourceKind.LooseDefinitionFile &&
             !string.IsNullOrWhiteSpace(source.GscnPath) && string.Equals(ResolveReferencePath(source.GscnPath), path, StringComparison.OrdinalIgnoreCase))) return;
-        var before = new ModelSnapshot(Definition.SceneSources);
-        Definition.SceneSources.RemoveAll(source => source.SceneId == id);
-        Definition.SceneSources.Add(SpriteSceneSourceDefinition.Loose(id, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
+        var before = new ModelSnapshot(member.SceneSources);
+        member.SceneSources.RemoveAll(source => source.SceneId == id);
+        member.SceneSources.Add(SpriteSceneSourceDefinition.Loose(id, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
         before.Record(History, "Change scene sources");
     }
 
@@ -260,7 +265,7 @@ public sealed partial class SpriteDocument
     {
         if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
         Definition = definition;
-        Changed?.Invoke(this, EventArgs.Empty);
+        NotifyChanged();
     }
 
     /// <summary>Adds and selects a new logical definition with a unique default identity.</summary>

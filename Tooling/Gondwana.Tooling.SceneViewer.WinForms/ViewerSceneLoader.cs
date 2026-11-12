@@ -67,13 +67,10 @@ internal sealed class ViewerSceneLoader
             }
         }
 
-        RegisterCycles();
-
         Scene? scene = null;
         try
         {
-            scene = SceneDefinitionSerializer.ToScene(definition);
-            var selected = _catalog.Sprites(scene.ID);
+            var selected = _catalog.Sprites(definition.ID);
             foreach (var candidate in selected)
             {
                 if (candidate.Sprite.Frame is not { } frame) continue;
@@ -92,6 +89,12 @@ internal sealed class ViewerSceneLoader
                     throw new InvalidDataException($"GSPR source '{document.Source}', sprite '{candidate.Sprite.Nickname}' / {candidate.Sprite.Id}: {ex.Message}", ex);
                 }
             }
+            foreach (var candidate in selected)
+                if (!string.IsNullOrWhiteSpace(candidate.Sprite.AnimationKey))
+                    LoadSpriteAnimation(candidate.Document, candidate.Sprite.AnimationKey);
+            RegisterCycles();
+            scene = SceneDefinitionSerializer.ToScene(definition);
+
             try
             {
                 SpriteDefinitionSerializer.ToSprites(new SpriteDefinition { Sprites = selected.Select(candidate => candidate.Sprite).ToList() });
@@ -108,6 +111,41 @@ internal sealed class ViewerSceneLoader
             scene?.Dispose();
             throw new InvalidDataException($"Scene '{path}' could not be materialized. Check its GTS/GANI/GSPR sources.\n{ex.Message}", ex);
         }
+    }
+
+    private void LoadSpriteAnimation(ViewerContentCatalog.SpriteDocument document, string key)
+    {
+        if (_animations.ContainsKey(key)) return;
+
+        var authored = document.Definition.AnimationSources.SingleOrDefault(source =>
+            string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase));
+        var discovered = _catalog.Animation(key);
+        if (authored is null && discovered is null)
+            throw new InvalidDataException($"GSPR source '{document.Source}' has no GANI source for '{key}'.");
+        bool packed = discovered?.Packed ?? authored?.Kind == SpriteAnimationSourceKind.PackedDefinitionFile;
+        string location = discovered?.Path ?? Resolve(packed ? authored!.AssetsFilePath : authored!.GaniPath,
+            Path.GetDirectoryName(document.Source.Path)!);
+        var entry = discovered?.Entry ?? authored?.AssetEntryName;
+        var animation = packed
+            ? AnimationDefinitionSerializer.Load(Archive(location), entry!, key)
+            : AnimationDefinitionSerializer.Load(location, key);
+        Validate(AnimationDefinitionValidator.Validate(animation), "GANI");
+        _animations.Add(animation.Key, animation);
+
+        foreach (var sheet in animation.TilesheetSources)
+            LoadTilesheet(sheet.Tilesheet, Path.GetDirectoryName(location)!,
+                sheet.Kind == AnimationTilesheetSourceKind.PackedDefinitionFile,
+                sheet.GtsPath, sheet.AssetsFilePath, sheet.AssetEntryName);
+        foreach (string name in animation.Frames.Select(frame => frame.Tilesheet).Distinct(StringComparer.Ordinal))
+        {
+            if (_tilesheets.ContainsKey(name)) continue;
+            var sheet = document.Definition.TilesheetSources.SingleOrDefault(source => source.Tilesheet == name);
+            LoadTilesheet(name, Path.GetDirectoryName(document.Source.Path)!,
+                sheet?.Kind == SpriteTilesheetSourceKind.PackedDefinitionFile, sheet?.GtsPath, sheet?.AssetsFilePath, sheet?.AssetEntryName);
+        }
+
+        if (!string.IsNullOrWhiteSpace(animation.NextCycleKey))
+            LoadSpriteAnimation(document, animation.NextCycleKey);
     }
 
     private void RegisterCycles()

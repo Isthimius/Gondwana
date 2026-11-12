@@ -257,6 +257,16 @@ outline continues to mark the fixed grid cell. Source GTS thumbnails and source
 atlas slicing are unchanged. GSCN stores the orientation per tile, with Identity
 as the default for older documents.
 
+## Place and move sprites
+
+**Show Sprites** displays visible GSPR instances on their assigned scene layers. Use **Sprite Sources…** to load a saved loose GSPR or the GSPR entries in a GAF. The preview also finds saved GSPR files and readable GAFs directly beside the scene. Saved sources are read-only until their owning GSPR is open in Studio. Hosts that supply a writable GSPR session can enable editing in the shared control.
+
+In Studio, open the GSPR and GSCN documents and arrange or float their tabs so both previews are visible. Save a new document before placing sprites. Select a visible layer in **Scene Structure**, then drag an existing row from the GSPR **Sprites** pane into **Scene Preview**. The outline follows the placement anchor. Release to assign the sprite to that scene and layer and set its position.
+
+Click a visible sprite to select it and its GSPR row. Drag the sprite to reposition it on its current layer. Whole grid coordinates are the default. Hold **Alt** for fractional placement, or press **Escape** to cancel a move. The current tile tool stays selected. A click on a sprite selects the sprite, and a click on an empty cell uses the current tile tool.
+
+Placement updates the owning GSPR. Undo and Redo while the sprite is selected use its GSPR history, including any scene-source registration created by the placement. Save the GSPR before using **View Scene** to verify the placement. Scene Viewer discovers GSPR files and GAF archives beside the GSCN or its containing archive. Studio shows an explanation when a GSPR outside that directory cannot be placed.
+
 ## Scene Preview and View Scene
 
 **Scene Preview** remains lightweight, editable, and definition-driven. It does not run an Engine and uses a representative/static GANI frame where applicable.

@@ -1,5 +1,6 @@
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Tilesheets.Sources;
@@ -54,6 +55,20 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
                     RequireEntry(source.AssetEntryName)),
             _ => throw new InvalidDataException($"Unsupported tilesheet source kind: {source.Kind}.")
         };
+
+    /// <summary>Converts a GSPR scene registration to its exact physical and logical address.</summary>
+    public static ResourceAddress SpriteSceneSource(SpriteSceneSourceDefinition source, string baseDirectory)
+    {
+        var resource = source.Kind switch
+        {
+            SpriteSceneSourceKind.LooseDefinitionFile => new AuthoringResource(
+                ResolvePath(source.GscnPath!, baseDirectory), AssetTypes.SceneDefinition),
+            SpriteSceneSourceKind.PackedDefinitionFile => new AuthoringResource(
+                ResolvePath(source.AssetsFilePath!, baseDirectory), AssetTypes.SceneDefinition, RequireEntry(source.AssetEntryName)),
+            _ => throw new InvalidDataException($"'{source.SceneId}' has an incomplete scene source reference.")
+        };
+        return new(resource, source.SceneId);
+    }
 
     private static string RequireEntry(string? entry) =>
         !string.IsNullOrWhiteSpace(entry) ? entry : throw new InvalidDataException("Packed source has no exact entry name.");
@@ -193,6 +208,14 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
         if (address.Location.AssetEntryName is null &&
             !string.Equals(Path.GetExtension(address.Location.Path), extension, StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException($"A loose source must be a {extension} file.");
+    }
+
+    /// <summary>Loads all logical sprite definitions from one exact loose or packed source.</summary>
+    public IReadOnlyList<SpriteDefinition> LoadSprites(AuthoringResource resource)
+    {
+        using var stream = Open(resource, AssetTypes.SpriteDefinition);
+        using var reader = new StreamReader(stream);
+        return SpriteDefinitionSerializer.FromDocumentJson(reader.ReadToEnd(), resource.EntryName ?? resource.Path).Definitions;
     }
 
     /// <summary>Lists saved logical members from an exact loose or packed definition address.</summary>
