@@ -1,7 +1,9 @@
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
@@ -10,6 +12,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     private const float ZoomStepFactor = 1.25f;
     private int _zoomWheelDelta;
     private bool _fitSelected;
+    private TilesheetFrameDrag? _pendingFrameDrag;
+    private Rectangle _dragThreshold;
+
+    internal Func<TilesheetRegionDefinition, Point, TilesheetFrameDrag?>? CreateFrameDrag { get; set; }
 
     /// <summary>Gets or sets the borrowed preview bitmap; the owner must dispose replaced images.</summary>
     public Bitmap? Image { get; set; }
@@ -212,14 +218,53 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     protected override void OnMouseDown(MouseEventArgs e)
     {
         base.OnMouseDown(e);
+        _pendingFrameDrag = null;
         Focus();
 
         if (Definition is null || e.Button != MouseButtons.Left)
             return;
 
         var point = new PointF((e.X - AutoScrollPosition.X) / Zoom, (e.Y - AutoScrollPosition.Y) / Zoom);
-        if (FrameGeometry.HitTest(Definition, SelectedRegion, point) is { } hit)
-            FrameSelected?.Invoke(hit.Region, hit.Frame);
+        if (FrameGeometry.HitTest(Definition, SelectedRegion, point) is not { } hit)
+            return;
+
+        FrameSelected?.Invoke(hit.Region, hit.Frame);
+        if (Image is null)
+            return;
+
+        _pendingFrameDrag = CreateFrameDrag?.Invoke(hit.Region, hit.Frame);
+        Size threshold = SystemInformation.DragSize;
+        _dragThreshold = new Rectangle(e.X - threshold.Width / 2, e.Y - threshold.Height / 2,
+            threshold.Width, threshold.Height);
+    }
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        if (e.Button == MouseButtons.Left && TakeFrameDrag(e.Location) is { } frame)
+            DoDragDrop(new ResourceDragData<TilesheetFrameDrag>(frame), DragDropEffects.Copy);
+    }
+
+    internal TilesheetFrameDrag? TakeFrameDrag(Point location)
+    {
+        if (_dragThreshold.Contains(location))
+            return null;
+
+        var frame = _pendingFrameDrag;
+        _pendingFrameDrag = null;
+        return frame;
+    }
+
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        _pendingFrameDrag = null;
+        base.OnMouseUp(e);
+    }
+
+    protected override void OnMouseCaptureChanged(EventArgs e)
+    {
+        _pendingFrameDrag = null;
+        base.OnMouseCaptureChanged(e);
     }
 
     /// <inheritdoc/>

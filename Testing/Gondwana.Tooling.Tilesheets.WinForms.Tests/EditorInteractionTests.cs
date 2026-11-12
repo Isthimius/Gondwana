@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
@@ -138,11 +139,13 @@ public sealed partial class EditorInteractionTests
         var definitionBar = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
 
-        Assert.IsType<ToolStripTextBox>(definitionBar.Items[0]);
-        Assert.Equal("RenameDefinition", definitionBar.Items[1].Name);
-        Assert.Equal("Definition", definitionBar.Items[3].Text);
-        Assert.Equal("Region", definitionBar.Items[5].Text);
-        Assert.Same(toolbar, definitionBar.Items[6]);
+        Assert.Empty(definitionBar.Items.OfType<ToolStripTextBox>());
+        Assert.Equal("Definition", definitionBar.Items[0].Text);
+        Assert.IsType<ToolStripComboBox>(definitionBar.Items[1]);
+        Assert.Equal("RenameDefinition", definitionBar.Items[2].Name);
+        Assert.Equal("Region", definitionBar.Items[3].Text);
+        Assert.Same(toolbar, definitionBar.Items[4]);
+        Assert.Equal("RenameRegion", definitionBar.Items[5].Name);
         var regionTools = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.Items.Cast<ToolStripItem>().Any(item => item.Text == "+ Region"));
         Assert.Contains(regionTools.Items.OfType<ToolStripControlHost>(), host => ReferenceEquals(host.Control, pane));
@@ -177,6 +180,101 @@ public sealed partial class EditorInteractionTests
         Assert.True(dimensions.IsReadOnly);
         Assert.Equal(editor.ImageSize ?? Size.Empty, dimensions.GetValue(inspector.SelectedObject));
     });
+
+    /// <summary>Definition and region rename buttons open modal editors and preserve history semantics.</summary>
+    [Fact]
+    public void ToolbarRenameButtons_UseModalsAndPreserveHistory() => RunSta(() =>
+    {
+        using var editor = Show(TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts")));
+        var document = editor.Document;
+        var bar = Descendants(editor).OfType<ToolStrip>()
+            .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
+        var renameDefinition = bar.Items.Find("RenameDefinition", false).Single();
+        var renameRegion = bar.Items.Find("RenameRegion", false).Single();
+        var members = bar.Items.OfType<ToolStripComboBox>().First();
+        var regions = Field<ToolStripComboBox>(editor.Editor, "_toolbarRegions");
+
+        Assert.Empty(bar.Items.OfType<ToolStripTextBox>());
+        string originalName = document.Definition.Name;
+
+        InteractWithRenameDialog("Rename definition", "ignored-cancelled", accept: false, renameDefinition.PerformClick);
+        Assert.Equal(originalName, document.Definition.Name);
+        Assert.False(document.IsDirty);
+
+        InteractWithRenameDialog("Rename definition", "renamed-definition", accept: true, renameDefinition.PerformClick);
+        Assert.Equal("renamed-definition", document.Definition.Name);
+        Assert.Equal("renamed-definition", members.SelectedItem);
+        Assert.True(document.History.CanUndo);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal(originalName, document.Definition.Name);
+        Assert.Equal(originalName, members.SelectedItem);
+
+        var region = Assert.IsType<TilesheetRegionDefinition>(regions.SelectedItem);
+        string originalRegionName = region.Name;
+        InteractWithRenameDialog("Rename region", "ignored-region", accept: false, renameRegion.PerformClick);
+        Assert.Equal(originalRegionName, region.Name);
+        InteractWithRenameDialog("Rename region", "renamed-region", accept: true, renameRegion.PerformClick);
+        Assert.Equal("renamed-region", region.Name);
+        Assert.Same(region, regions.SelectedItem);
+        Assert.Equal("renamed-region", regions.Text);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal(originalRegionName, region.Name);
+        Assert.Same(region, regions.SelectedItem);
+    });
+
+    private static void InteractWithRenameDialog(string title, string requested, bool accept, Action launch)
+    {
+        using var pump = new System.Windows.Forms.Timer { Interval = 10 };
+        bool handled = false;
+        pump.Tick += (_, _) =>
+        {
+            var dialog = Application.OpenForms.Cast<Form>()
+                .FirstOrDefault(form => form.Modal && form.Text == title);
+            if (dialog is null)
+                return;
+
+            pump.Stop();
+            handled = true;
+            var layout = Assert.Single(dialog.Controls.OfType<TableLayoutPanel>());
+            var input = Assert.Single(layout.Controls.OfType<TextBox>());
+            var save = Assert.Single(layout.Controls.OfType<Button>(), button => button.Name == "ConfirmRename");
+            var cancel = Assert.Single(layout.Controls.OfType<Button>(), button => button.Text == "Cancel");
+            int scale(int logical) => (int)Math.Round(logical * dialog.DeviceDpi / 96d);
+
+            // Dialog controls remain legible and unclipped at the host monitor's DPI.
+            Assert.True(dialog.ClientSize.Width >= scale(460));
+            Assert.True(dialog.ClientSize.Height >= scale(168));
+            Assert.True(input.Font.SizeInPoints >= 11f);
+            Assert.True(input.Width >= scale(390));
+            Assert.True(save.Width >= scale(100));
+            Assert.True(cancel.Width >= scale(100));
+            Assert.True(save.Height >= scale(36));
+            Assert.True(cancel.Height >= scale(36));
+            Assert.True(input.Bottom < save.Top);
+            Assert.True(save.Right < cancel.Left);
+            Assert.True(cancel.Right <= layout.ClientSize.Width);
+            Assert.True(cancel.Bottom <= layout.ClientSize.Height);
+
+            Assert.Equal("DefinitionRenameName", input.Name);
+            input.Text = requested;
+            var action = accept ? dialog.AcceptButton : dialog.CancelButton;
+            Assert.NotNull(action);
+            action!.PerformClick();
+        };
+
+        pump.Start();
+        try
+        {
+            launch();
+            Assert.True(handled, $"The {title} dialog did not open.");
+        }
+        finally
+        {
+            pump.Stop();
+        }
+    }
 
     /// <summary>Definition selection is shared by the toolbar and pane without causing edits.</summary>
     [Fact]
@@ -297,6 +395,44 @@ public sealed partial class EditorInteractionTests
         Assert.Contains(Items(grid), item => item.PropertyDescriptor?.Name == "XTile");
         Assert.Equal(before, TilesheetDefinitionSerializer.ToJson(document.Definition));
         Assert.False(document.IsDirty);
+    });
+
+    [Fact]
+    public void FrameDragHonorsWindowsThresholdAndKeepsClickSelection() => RunSta(() =>
+    {
+        using var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
+        using var host = Show(document);
+        var viewport = Field<ImageViewport>(host.Editor, "_viewport");
+        viewport.Fit();
+        var region = document.Definition.Regions.Last();
+        var bounds = FrameGeometry.Bounds(region, 0, 0);
+        var imagePoint = new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f);
+        var pointer = new Point((int)(imagePoint.X * viewport.Zoom) + viewport.AutoScrollPosition.X,
+            (int)(imagePoint.Y * viewport.Zoom) + viewport.AutoScrollPosition.Y);
+
+        Click(viewport, imagePoint);
+        Assert.Same(region, viewport.SelectedRegion);
+        Assert.Equal(Point.Empty, viewport.SelectedFrame);
+        Assert.Null(viewport.TakeFrameDrag(pointer));
+        typeof(ImageViewport).GetMethod("OnMouseUp", PrivateInstance)!.Invoke(viewport,
+            [new MouseEventArgs(MouseButtons.Left, 1, pointer.X, pointer.Y, 0)]);
+        var beyondThreshold = pointer + SystemInformation.DragSize;
+        Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
+
+        Click(viewport, imagePoint);
+        var drag = viewport.TakeFrameDrag(beyondThreshold);
+        Assert.NotNull(drag);
+        Assert.Equal(AssetTypes.TilesheetDefinition, drag.Address.Location.AssetType);
+        Assert.Equal(document.FilePath, drag.Address.Location.Path);
+        Assert.Equal(document.Definition.Name, drag.Address.Member);
+        Assert.Equal((region.Name, 0, 0), (drag.RegionName, drag.X, drag.Y));
+        Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
+        Assert.False(document.IsDirty);
+
+        document.MarkChanged();
+        Click(viewport, imagePoint);
+        Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
+        Assert.Equal(Point.Empty, viewport.SelectedFrame);
     });
 
     /// <summary>

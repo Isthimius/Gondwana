@@ -500,6 +500,28 @@ GSCN sparse-tile semantics are preserved. Selecting a grid cell does not create 
 tile entry; editing a property or assigning GTS/GANI content does. **Clear tile**
 removes that explicit entry again.
 
+### Dragging resources onto a scene
+
+Select a visible layer in **Scene Structure**, then drop an individual GTS frame
+or a GANI animation onto the highlighted cell in **Scene Preview**. Use the
+scene's **GTS frame sources** tree or **GANI animations** list in Studio or the
+standalone scene editor. In Studio, you can also drag from a saved GTS Image pane,
+from GANI's GTS frame sources, or from the **Drag animation** handle in a saved
+GANI Preview pane. Arrange or float the document tabs so both panes are visible.
+The handle uses the selected GANI definition.
+
+Each drop assigns one cell and keeps the current editing tool. A frame drop
+preserves any existing animation settings. An animation drop assigns its first
+frame and enables and starts the animator. Both preserve the cell's collision,
+transform, visibility, and other placement properties.
+
+The editor checks the saved source on release and reuses or registers its exact
+loose file or packed entry. An animation's explicit GTS dependencies take
+precedence over scene sources of the same name. If it has no explicit source for
+a frame, the scene must already declare that GTS member. One Undo or Redo
+includes the cell assignment and any source added by the drop. Check
+**Validation** for a rejected source.
+
 ### Visual map editing
 
 The shared Scene Preview toolbar in Studio and the standalone editor provides:
@@ -581,6 +603,14 @@ anonymous archives cannot produce path-based provenance. See
 [Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
 for collection ownership, generated identities, relative paths, and safe fallback.
 
+## Visual sprite placement
+
+Turn on **Show Sprites** in **Scene Preview** to see visible GSPR instances on their assigned layers. Studio uses open GSPR documents, including unsaved instance edits. The preview also discovers saved GSPR files and readable GAFs beside the scene. **Sprite Sources…** loads additional saved GSPR files or typed entries from a GAF. The standalone scene editor displays saved sources as read-only.
+
+Open and arrange the GSPR and GSCN tabs so both editors are visible. Select a visible scene layer, then drag an existing row from the GSPR **Sprites** list into the scene preview. Click a displayed sprite to select it, or drag it to reposition it on its current layer. Hold **Alt** to bypass whole-grid snapping, and press **Escape** to cancel a move. The sprite outline is green. The cell selection and current painting tool stay in place.
+
+Each placement is one Undo operation in the owning GSPR, including any new reference to the scene. The GSCN stays clean. Undo and Redo from the preview follow the selected sprite's history. Save the GSPR before launching **View Scene**. The Viewer discovers sprite files and archives directly beside the scene or its containing archive. Studio explains when a source falls outside that directory.
+
 ## Runtime Scene Viewer
 
 The reusable GSCN editor provides **View Scene** on its preview toolbar, both in standalone Scene tooling and in Gondwana Studio. It launches `Gondwana.Tooling.SceneViewer.WinForms` in a separate process, isolating Engine singleton state from the authoring application.
@@ -589,11 +619,11 @@ The reusable GSCN editor provides **View Scene** on its preview toolbar, both in
 Gondwana.Tooling.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
 ```
 
-The viewer resolves the saved GSCN's GTS and GANI dependencies (including GANI tilesheet sources) from local definitions with explicit authored source fallback, registers runtime content, and calls `SceneDefinitionSerializer.ToScene`. Gondwana owns animation playback, frame transforms and associated geometry, layer projection, wrapping, parallax, and rendering. The viewer uses the current WinForms GPU host lifecycle.
+The viewer resolves the saved GSCN's GTS and GANI dependencies (including GANI tilesheet sources) from local definitions with explicit authored source fallback, registers runtime content, and calls `SceneDefinitionSerializer.ToScene`. It also resolves the GTS frames and GANI cycles used by the discovered GSPR instances. Gondwana owns animation playback, frame transforms and associated geometry, layer projection, wrapping, parallax, and rendering. The viewer uses the current WinForms GPU host lifecycle.
 
 WASD or arrows move the camera continuously; Shift accelerates; the mouse wheel changes runtime viewport zoom; Home resets position/zoom; Esc closes. The resizable window uses normal runtime presentation scaling.
 
-Only saved files are viewed. New/dirty documents require confirmation and a successful save before launch. **Scene Preview** remains lightweight, editable, definition-driven, and Engine-free, with representative/static animation frames. It is not replaced by the viewer.
+Scene Viewer reads saved GSPR files. A new or dirty loose GSCN needs a successful save before launch. Studio can launch a packed GSCN from a temporary snapshot. **Scene Preview** remains lightweight, editable, definition-driven, and Engine-free, with representative/static animation frames. It is not replaced by the viewer.
 
 The Viewer content root is the directory containing the opened GSCN. It scans that directory non-recursively for loose GTS/GANI/GSPR files and typed definitions in adjacent GAFs. Logical GTS names and GANI keys resolve with **loose definition > packed definition > explicit source fallback**; GANI → GTS and GSPR → GTS follow the same policy. Fallback paths are relative to the containing definition/archive. Multiple same-precedence matches fail with candidate source diagnostics rather than choosing arbitrarily.
 

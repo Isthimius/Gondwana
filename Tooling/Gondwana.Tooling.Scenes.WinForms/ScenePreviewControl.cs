@@ -12,7 +12,7 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 /// Lightweight definition-driven GSCN preview. It uses SceneLayer's coordinate
 /// conversion implementation but does not create or register a runtime Scene.
 /// </summary>
-internal sealed class ScenePreviewControl : UserControl, IMessageFilter
+internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 {
     internal event Func<Keys, bool>? NavigationKey;
     internal bool SampleStroke { get; set; } = true;
@@ -34,6 +34,29 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     }
 
     internal void CancelGesture() => FinishGesture(cancel: true);
+
+    private (SceneLayerDefinition Layer, Point Cell)? _resourceDrop;
+    internal Point? ResourceDropCell => _resourceDrop?.Cell;
+
+    internal void SetResourceDropCell(SceneLayerDefinition? layer, Point cell = default)
+    {
+        (SceneLayerDefinition Layer, Point Cell)? next = layer is null ? null : (layer, cell);
+        if (_resourceDrop == next) return;
+        _resourceDrop = next;
+        Invalidate();
+    }
+
+    internal bool TryGetResourceDropCell(SceneLayerDefinition layer, Point screen, out Point cell)
+    {
+        cell = default;
+        Point client = PointToClient(screen);
+        if (!ClientRectangle.Contains(client) || _definition?.Layers.Contains(layer) != true ||
+            !ReferenceEquals(layer, _selectedLayer) || !IsLayerDisplayed(layer))
+            return false;
+
+        UpdateOffset();
+        return TryHitCell(layer, ScreenToWorld(client), out cell);
+    }
 
     private const float ZoomStepFactor = 1.25f;
     private const float PreviewMargin = 28f;
@@ -88,6 +111,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Func<SceneLayerDefinition, bool>? showLayer = null)
     {
         if (HasGesture) CancelGesture();
+        CancelSpriteGesture();
         _definition = definition;
         _findTilesheet = findTilesheet;
         _findAnimation = findAnimation;
@@ -111,6 +135,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     public void SetZoom(float zoom)
     {
         CancelGesture();
+        CancelSpriteGesture();
         PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
             ? null
             : new PointF(
@@ -159,6 +184,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     public void Fit()
     {
         CancelGesture();
+        CancelSpriteGesture();
         _fitToWindow = true;
         AutoScrollPosition = Point.Empty;
         UpdateExtent();
@@ -206,6 +232,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// <inheritdoc/>
     protected override void OnHandleDestroyed(EventArgs e)
     {
+        CancelSpriteGesture();
         Application.RemoveMessageFilter(this);
         base.OnHandleDestroyed(e);
     }
@@ -326,10 +353,27 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         foreach (var layer in visibleLayers)
             DrawLayer(e.Graphics, layer);
 
+        if (_spriteGhost is { } ghost)
+            DrawSprite(e.Graphics, ghost.Visual, ghost.Position, ghost: true);
+
+        if (_resourceDrop is { } drop && visibleLayers.Contains(drop.Layer) && ReferenceEquals(_selectedLayer, drop.Layer))
+        {
+            var points = TileOutline(GetProjection(drop.Layer), drop.Layer, drop.Cell.X, drop.Cell.Y)
+                .Select(ToScreen).ToArray();
+            if (points.Length >= 3)
+            {
+                using var fill = new SolidBrush(Color.FromArgb(55, Color.DeepSkyBlue));
+                using var border = new Pen(Color.DeepSkyBlue, 2f) { DashStyle = DashStyle.Dash };
+                e.Graphics.FillPolygon(fill, points);
+                e.Graphics.DrawPolygon(border, points);
+            }
+        }
+
         using var labelBrush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(
             $"Active layer: {_selectedLayer?.ID ?? "(none)"} - {visibleLayers.Count} visible layer(s)\n" +
-            $"{(long)_selectedCells.Width * _selectedCells.Height} cell(s) selected - Tile Properties edits active cell ({_selectedX},{_selectedY}) only",
+            $"{(long)_selectedCells.Width * _selectedCells.Height} cell(s) selected - Tile Properties edits active cell ({_selectedX},{_selectedY}) only" +
+            (SpriteStatus is { Length: > 0 } status ? $"\n{status}" : string.Empty),
             Font,
             labelBrush,
             new PointF(8, 8));
@@ -344,6 +388,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             return;
 
         UpdateOffset();
+        if (TryStartSpriteGesture(e.Location)) return;
         if (RequireSelectedLayer && (_selectedLayer is null ||
             !_definition.Layers.Contains(_selectedLayer) || !IsLayerDisplayed(_selectedLayer))) return;
 
@@ -570,6 +615,12 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     protected override void OnMouseMove(MouseEventArgs e)
     {
         base.OnMouseMove(e);
+        if (HasSpriteGesture)
+        {
+            if ((e.Button & MouseButtons.Left) == 0) CancelSpriteGesture();
+            else ContinueSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
+            return;
+        }
         if (!HasGesture) return;
         if ((e.Button & MouseButtons.Left) == 0) { CancelGesture(); return; }
         try { ContinueGesture(e.Location); }
@@ -580,6 +631,11 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     protected override void OnMouseUp(MouseEventArgs e)
     {
         base.OnMouseUp(e);
+        if (e.Button == MouseButtons.Left && HasSpriteGesture)
+        {
+            FinishSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
+            return;
+        }
         if (e.Button != MouseButtons.Left || !HasGesture) return;
         try { ContinueGesture(e.Location); FinishGesture(cancel: false); }
         catch { CancelGesture(); throw; }
@@ -597,12 +653,17 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     protected override void OnMouseCaptureChanged(EventArgs e)
     {
         base.OnMouseCaptureChanged(e);
-        if (!Capture) CancelGesture();
+        if (!Capture)
+        {
+            CancelGesture();
+            CancelSpriteGesture();
+        }
     }
 
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
+        if (keyData == Keys.Escape && HasSpriteGesture) { CancelSpriteGesture(); return true; }
         if (keyData == Keys.Escape && HasGesture) { CancelGesture(); return true; }
         if (Focused && NavigationKey?.Invoke(keyData) == true) return true;
         return base.ProcessCmdKey(ref msg, keyData);
@@ -664,6 +725,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             .ToList();
 
         _worldBounds = CalculateWorldBounds(visibleLayers);
+        IncludeSpriteBounds(visibleLayers);
     }
 
     private float CalculateFitZoom()
@@ -792,6 +854,10 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
                 sourceBounds,
                 GraphicsUnit.Pixel);
         }
+
+        // Authored GSCN tiles materialize at Z=0. GSPR instances start at Z=1.
+        foreach (var sprite in SpritesInDrawOrder(layer))
+            DrawSprite(graphics, sprite, sprite.Sprite.Position);
 
         if (ShowGridLines &&
             (layer.ShowGridLines || ReferenceEquals(layer, _selectedLayer)))
@@ -973,6 +1039,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         if (disposing)
         {
             CancelGesture();
+            CancelSpriteGesture();
             foreach (var cached in _projections.Values)
                 cached.Layer.Dispose();
             _projections.Clear();

@@ -19,7 +19,9 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
     // Packed saves disable the document while serialized bytes await archive readers.
     // Host commands must honor the same editing boundary as the disabled editor.
-    private Editing.EditHistory? ActiveHistory => ActiveDocument is { Enabled: true } active ? active.Document.History : null;
+    private Editing.EditHistory? ActiveHistory => ActiveDocument is { Enabled: true } active
+        ? (active.Document.Editor as Gondwana.Tooling.Scenes.WinForms.SceneEditorControl)?.SelectedSpriteHistory ?? active.Document.History
+        : null;
 
     /// <inheritdoc/>
     string Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
@@ -205,8 +207,12 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         var menu = new MenuStrip();
 
         Disposed += (_, _) => _undoRedo?.Dispose();
-        _undoRedo = new(() => ActiveHistory, () => ActiveDocument?.Document.CommitEdits() == true);
-        Workspace.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
+        _undoRedo = new(() => ActiveHistory, CommitActiveHistoryEdits);
+        Workspace.ActiveDocumentChanged += (_, _) =>
+        {
+            CancelInactiveSpritePlacements();
+            _undoRedo.Refresh();
+        };
 
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
@@ -525,11 +531,16 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         var document = new StudioDockDocument(model, ConfirmClose);
 
         if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
+        {
             sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
+            sceneEditor.SetSpriteOwners(GetSpriteOwners);
+            sceneEditor.SpriteHistorySelectionChanged += () => _undoRedo.Refresh();
+        }
 
         _documents.Add(document);
         model.Changed += ToolbarDocumentChanged;
         model.Changed += DependencySelectionChanged;
+        if (model.Kind == "sprite") model.Changed += SpriteDocumentChanged;
         var referencesMenu = new ContextMenuStrip();
 
         foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
@@ -571,10 +582,12 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         {
             model.Changed -= ToolbarDocumentChanged;
             model.Changed -= DependencySelectionChanged;
+            model.Changed -= SpriteDocumentChanged;
 
             referencesMenu.Dispose();
             _documents.Remove(document);
             _saves.Remove(document);
+            if (model.Kind == "sprite") SpriteRegistryChanged();
 
             foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray())
                 _paths.Remove(key);
@@ -583,6 +596,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         };
 
         document.Show(Workspace, DockState.Document);
+        if (model.Kind == "sprite") SpriteRegistryChanged();
         document.Activate();
         SyncActiveDocumentSelection();
         UpdateToolbarState();
@@ -664,6 +678,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 SyncActiveDocumentSelection();
 
                 _packages.Invalidate(destination);
+                if (model.Kind == "sprite") SpriteRegistryChanged();
                 _output.Log($"Saved {model.Tooltip}");
 
                 InvalidateDependencies();
@@ -882,5 +897,5 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     }
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, ActiveHistory, () => ActiveDocument?.Document.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(this, keyData, ActiveHistory, CommitActiveHistoryEdits) || base.ProcessCmdKey(ref msg, keyData);
 }

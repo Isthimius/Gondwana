@@ -25,7 +25,7 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// <summary>Gets image-load failure details, or null when no preview problem was recorded.</summary>
     public string? PreviewWarning { get; private set; }
 
-    private SpriteTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
+    internal SpriteTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
     {
         Resource = resource;
         BaseDirectory = resource.BaseDirectory;

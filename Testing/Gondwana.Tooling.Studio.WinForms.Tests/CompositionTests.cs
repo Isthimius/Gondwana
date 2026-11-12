@@ -38,20 +38,7 @@ public sealed partial class CompositionTests
         Assert.IsType(editorType, model.Editor);
         Assert.True(studio.Workspace.ShowDocumentIcon);
         Assert.Equal(new Size(16, 16), document.Icon.Size);
-        using (var rendered = document.Icon.ToBitmap())
-        {
-            var expectedColor = format switch
-            {
-                "gaf" => Color.Goldenrod,
-                "gts" => Color.DodgerBlue,
-                "gani" => Color.MediumOrchid,
-                "gsnd" => Color.Teal,
-                "gscn" => Color.SeaGreen,
-                "gspr" => Color.Coral,
-                _ => throw new ArgumentOutOfRangeException(nameof(format))
-            };
-            Assert.Equal(expectedColor.ToArgb(), rendered.GetPixel(2, 2).ToArgb());
-        }
+        Assert.NotNull(StudioFileTypeIcons.ResourceFileFor(format));
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
         Assert.Same(studio.Workspace, document.DockPanel);
@@ -133,17 +120,14 @@ public sealed partial class CompositionTests
     {
         using var studio = Host(directory);
         var scene = studio.NewDocument("gscn");
-        using var original = scene.Icon.ToBitmap();
-        studio.Browser.ApplyIconSize(NavigationIconSize.Large);
-        using var resized = scene.Icon.ToBitmap();
-
         Assert.Equal(new Size(16, 16), scene.Icon.Size);
-        Assert.Equal(original.GetPixel(2, 2), resized.GetPixel(2, 2));
+        studio.Browser.ApplyIconSize(NavigationIconSize.Large);
+        Assert.Equal(new Size(16, 16), scene.Icon.Size);
 
-        // ZIP packages must receive the same assets icon as GAF packages.
+        // ZIP packages continue to use the asset icon at the document-tab size.
         var archive = studio.NewDocument("gaf", Path.Combine(directory, "package.zip"));
-        using var archiveIcon = archive.Icon.ToBitmap();
-        Assert.Equal(Color.Goldenrod.ToArgb(), archiveIcon.GetPixel(2, 2).ToArgb());
+        Assert.Equal(new Size(16, 16), archive.Icon.Size);
+        Assert.Equal("icons8-unpack-luggage-96.png", StudioFileTypeIcons.ResourceFileFor("gaf"));
     });
 
     /// <summary>
@@ -344,15 +328,24 @@ public sealed partial class CompositionTests
         var root = browser.Tree.Nodes[0];
         Assert.Equal(new[] { "Assets (.gaf)", "Tilesheets (.gts)", "Animations (.gani)", "Scenes (.gscn)", "Sprites (.gspr)", "Sound (.gsnd)", "Misc" },
             root.Nodes.Cast<TreeNode>().Select(node => node.Text));
-        Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.ImageKey).Distinct().Count());
+        Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.Name).Distinct().Count());
+        Assert.Equal("application", root.ImageKey);
+        Assert.All(root.Nodes.Cast<TreeNode>(), node =>
+        {
+            string expectedKey = node.Name == "misc" ? "misc"
+                : node.IsExpanded ? "directory-open" : "directory";
+            Assert.Equal(expectedKey, node.ImageKey);
+            Assert.Equal(expectedKey, node.SelectedImageKey);
+        });
         Assert.Equal(9, root.Nodes.Cast<TreeNode>().Sum(node => node.Nodes.Count));
+        Assert.True(browser.Tree.ImageList!.Images.ContainsKey("gaf"));
         Assert.False(browser.PrepareFileMenu(root));
         foreach (TreeNode group in root.Nodes)
         {
             Assert.False(browser.PrepareFileMenu(group));
             foreach (TreeNode file in group.Nodes)
             {
-                Assert.Equal(group.ImageKey, file.ImageKey);
+                Assert.Equal(group.Name, file.ImageKey);
                 Assert.Equal(file.ImageKey, file.SelectedImageKey);
                 Assert.True(browser.Tree.ImageList!.Images.ContainsKey(file.ImageKey));
                 Assert.True(browser.PrepareFileMenu(file));

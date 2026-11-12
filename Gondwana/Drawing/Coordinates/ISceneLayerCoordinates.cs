@@ -43,6 +43,10 @@ internal interface ISceneLayerCoordinates
     /// <returns>The corresponding position in scene-layer grid coordinates.</returns>
     PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF worldPixelPt);
 
+    /// <summary>Inverts the drawable anchor projection without rounding to a cell.</summary>
+    PointF GetContinuousGridAtPixel(SceneLayer sceneLayer, PointF worldPixelPt) =>
+        GetSceneLayerCoordinatesAtPixel(sceneLayer, worldPixelPt);
+
     /// <summary>
     /// Returns a list of all layer points whose rendered pixel areas intersect
     /// the specified pixel-space rectangle, optionally including tiles with visual

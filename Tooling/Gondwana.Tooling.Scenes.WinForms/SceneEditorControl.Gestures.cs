@@ -36,10 +36,11 @@ public sealed partial class SceneEditorControl
             YTile = frame.YTile
         };
 
-    private static Action<SceneLayerTileDefinition> AnimationAssignment(SceneAnimationSource source)
+    private static Action<SceneLayerTileDefinition> AnimationAssignment(SceneAnimationSource source) =>
+        AnimationAssignment(source.Definition.Key, source.FirstPreviewFrame());
+
+    private static Action<SceneLayerTileDefinition> AnimationAssignment(string key, SceneFrameDefinition? frame)
     {
-        string key = source.Definition.Key;
-        var frame = source.FirstPreviewFrame();
         return tile =>
         {
             tile.AnimationKey = key;
@@ -150,6 +151,7 @@ public sealed partial class SceneEditorControl
 
     private void EditingContextChanging()
     {
+        ClearResourceDrop();
         _preview.CancelGesture();
         _selectedCells = Rectangle.Empty;
         UpdateSelectionDisplay();

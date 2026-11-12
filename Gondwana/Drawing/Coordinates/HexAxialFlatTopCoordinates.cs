@@ -20,22 +20,29 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         int width = sceneLayer.TileWidth;
         int height = sceneLayer.TileHeight;
 
-        // The layout uses even-q offset coordinates. Interpolate the
-        // staggered Y offset between the surrounding integer columns.
-        int baseColumn = (int)MathF.Floor(gp.X);
-        float columnProgress = gp.X - baseColumn;
-
-        // Preserve the existing integer-division behavior for odd tile heights.
-        float halfHeight = height / 2;
-        float currentColumnOffsetY = (baseColumn & 1) == 0 ? 0f : halfHeight;
-        float nextColumnOffsetY = ((baseColumn + 1) & 1) == 0 ? 0f : halfHeight;
-        float offsetY = currentColumnOffsetY + ((nextColumnOffsetY - currentColumnOffsetY) * columnProgress);
-
+        float offsetY = Stagger(gp.X, height / 2);
         var origin = sceneLayer.OriginPx;
         float x = -origin.X + (gp.X * width * 0.75f);
         float y = -origin.Y + (gp.Y * height) + offsetY;
 
         return new Point((int)MathF.Floor(x), (int)MathF.Floor(y));
+    }
+
+    public PointF GetContinuousGridAtPixel(SceneLayer sceneLayer, PointF pixel)
+    {
+        var origin = sceneLayer.OriginPx;
+        float column = (pixel.X + origin.X) / (sceneLayer.TileWidth * 0.75f);
+        float other = (pixel.Y + origin.Y - Stagger(column, sceneLayer.TileHeight / 2)) / sceneLayer.TileHeight;
+        return new PointF(column, other);
+    }
+
+    // Between adjacent rows or columns, interpolate the same even-offset
+    // stagger for both the drawable anchor and its continuous inverse.
+    private static float Stagger(float coordinate, int halfTile)
+    {
+        int whole = (int)MathF.Floor(coordinate);
+        float fraction = coordinate - whole;
+        return halfTile * ((whole & 1) == 0 ? fraction : 1f - fraction);
     }
 
     /// <summary>

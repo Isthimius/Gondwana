@@ -76,7 +76,10 @@ public sealed partial class AnimationDocument : IDisposable
     }
 
     /// <summary>Adds the same frame instance as one reversible operation.</summary>
-    public void AddFrame(AnimationFrameDefinition frame) => History.Insert("Add animation frame", Definition.Frames, Definition.Frames.Count, frame);
+    public void AddFrame(AnimationFrameDefinition frame) => InsertFrame(Definition.Frames.Count, frame);
+
+    internal void InsertFrame(int index, AnimationFrameDefinition frame) =>
+        History.Insert("Add animation frame", Definition.Frames, index, frame);
 
     /// <summary>Removes a frame and restores its identity and index on undo.</summary>
     public bool RemoveFrame(AnimationFrameDefinition frame) => History.Remove("Remove animation frame", Definition.Frames, frame);

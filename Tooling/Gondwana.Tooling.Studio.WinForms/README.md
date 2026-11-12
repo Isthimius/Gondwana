@@ -165,6 +165,11 @@ file commands, document tracking, and plugin contributions. Each
 | GSCN | `SceneEditorControl` | `SceneDocument` |
 | GSPR | `SpriteEditorControl` | `SpriteDocument` |
 
+Open a GSPR and a GSCN side by side to place existing sprites visually. Drag
+a row from **Sprites** onto the selected scene layer, then click and drag the
+sprite in **Scene Preview** to refine its position. Hold **Alt** for fractional
+placement. Save the GSPR after placement. [Scene editor guide](../Gondwana.Tooling.Scenes.WinForms/README.md#place-and-move-sprites)
+
 The internal `StudioDocument` adapter binds shell operations to those existing
 APIs. It owns no alternate format model, serializer, dependency resolver, or
 editor implementation. Studio directly references the six tooling projects.
@@ -356,8 +361,13 @@ Core navigation is independent of optional plugins. Project Diagnostics retains
 its separate validation scanner; the explorer uses `DefinitionReferenceDiscovery`
 and its semantic handlers rather than repeating that plugin's parser. Shared
 `ResourceAddress`, `DefinitionReferenceQuery`, and `IResourceNavigator` contracts
-live in `Gondwana.Tooling.Assets` and have no WinForms dependency. They can also
-serve later authoring workflows; this feature does not implement drag-and-drop.
+live in `Gondwana.Tooling.Assets` and have no WinForms dependency.
+
+Drag saved GTS, GANI, and GSCN resource nodes from **Working directory** or
+**Dependency Explorer** onto a compatible editor target. After release, Studio
+asks for any missing member, frame, or layer selection. GTS frames can go to a
+GANI frame list, GSCN cell, or GSPR sprite. GANI animations can go to a GSCN cell
+or GSPR sprite. GSCN layers can go to a GSPR sprite.
 
 
 GAF persistence and replay safeguards: normal standalone Save uses the same

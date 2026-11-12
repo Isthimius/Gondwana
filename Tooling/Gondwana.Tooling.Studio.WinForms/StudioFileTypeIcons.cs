@@ -42,6 +42,28 @@ internal static class StudioFileTypeIcons
         }
     }
 
+    /// <summary>Maps Studio formats to shared assembly-embedded artwork.</summary>
+    internal static string? ResourceFileFor(string key) => key.ToLowerInvariant() switch
+    {
+        "gaf" => "icons8-unpack-luggage-96.png",
+        "gts" => "icons8-small-icons-96.png",
+        "gani" => "icons8-video-96.png",
+        "gscn" => "icons8-nature-96.png",
+        "gspr" => "icons8-frodo-96.png",
+        "gsnd" => "icons8-sound-96.png",
+        "misc" => "icons8-deployment-96.png",
+        _ => null
+    };
+
+    /// <summary>Uses embedded artwork for known formats, retaining glyphs as a fallback.</summary>
+    internal static Bitmap CreateFileTypeBitmap(int pixels, string key, string glyph, Color color)
+    {
+        string? fileName = ResourceFileFor(key);
+        return fileName is null
+            ? CreateBitmap(pixels, glyph, color)
+            : ToolingIconResources.CreateBitmap(fileName, pixels);
+    }
+
     /// <summary>Creates an independent 16-pixel icon for a Studio document.</summary>
     internal static Icon CreateDocumentIcon(string extension)
     {
@@ -52,7 +74,7 @@ internal static class StudioFileTypeIcons
             if (!category.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            using var bitmap = CreateBitmap(16, category.Glyph, category.Color);
+            using var bitmap = CreateFileTypeBitmap(16, category.Key, category.Glyph, category.Color);
             IntPtr handle = bitmap.GetHicon();
             try
             {

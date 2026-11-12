@@ -63,6 +63,12 @@ public sealed partial class MainForm : IResourceNavigator
             _output.Log(result.Message);
             if (!result.Exact) _dependencies.SetStatus(result.Message);
         };
+        Browser.Tree.ItemDrag += (_, e) =>
+        {
+            if (e.Button == MouseButtons.Left && e.Item is TreeNode node && DirectoryDragAddress(node) is { } address)
+                StartResourceDrag(Browser.Tree, address);
+        };
+        _dependencies.ResourceDragRequested += StartResourceDrag;
         Browser.ReferencesRequested += (location, dependents) => ShowDependencies(new(location), follow: false, dependents);
         _dependencies.InspectRequested += (address, dependents) => ShowDependencies(address, follow: false, dependents);
     }

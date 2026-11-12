@@ -190,8 +190,27 @@ C# references are not discovered.
 The pane is built into Studio and does not require Project Diagnostics. That
 optional plugin continues to report validation problems; Dependency Explorer
 focuses on relationships and navigation. The shared identity, query, and navigation
-contracts are independent of the pane. No drag-and-drop or cross-document editing
-is included.
+contracts are independent of the pane. Dependency Explorer drags use the saved
+resource address and the assignment rules of the destination editor.
+
+## Resource drag and drop
+
+Drag a loose GTS, GANI, or GSCN file or a typed packed entry from **Working
+directory**. **Dependency Explorer** resource rows can also start a drag and
+retain any recorded definition member. Arrange the source and destination
+panes so both are visible.
+
+| Saved resource | Drop targets |
+| --- | --- |
+| GTS frame | GANI frame sequence, GSCN scene cell, GSPR sprite |
+| GANI animation | GSCN scene cell, GSPR sprite |
+| GSCN scene layer | GSPR sprite |
+
+On release, Studio asks for any missing selection. Multi-definition files
+require an exact member. GTS requires frame coordinates, and GSCN requires a
+layer. Canceling the picker leaves the destination unchanged. Whole archives
+and other file types are inactive as drag sources. These authoring drags stay
+within the same application instance.
 
 ## Docking model
 
@@ -258,6 +277,8 @@ The External Asset Importer plugin converts supported foreign authoring formats 
 The importer analyzes before writing, reports diagnostics, stages output, and validates native definitions. See [[External Asset Importing]] for the detailed support matrix.
 
 ## Scene Viewer integration
+
+In the GSCN **Scene Preview**, use **Show Sprites** to view authored GSPR instances. Arrange the GSPR and GSCN documents side by side and drag a sprite row onto the selected, visible scene layer. Click or drag an existing preview sprite to select or reposition it. Hold **Alt** for fractional grid positions. The GSPR document owns the placement, Undo and Redo, and saving. Save it beside the scene or its containing archive so Scene Viewer can discover it. See [visual sprite placement](GSCN-Files#visual-sprite-placement).
 
 The reusable GSCN editor includes **View Scene**, so the command is available in Studio as well as the standalone Scene editor.
 

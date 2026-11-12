@@ -26,7 +26,7 @@ internal sealed class SceneAnimationSource : IDisposable
     public IReadOnlyList<string> Diagnostics => _diagnostics;
     private readonly List<string> _diagnostics = [];
 
-    private SceneAnimationSource(AuthoringResource resource, AnimationDefinition definition, AssetPackageCatalog? packages = null)
+    internal SceneAnimationSource(AuthoringResource resource, AnimationDefinition definition, AssetPackageCatalog? packages = null)
     {
         Resource = resource;
         BaseDirectory = resource.BaseDirectory;
@@ -50,9 +50,11 @@ internal sealed class SceneAnimationSource : IDisposable
 
     /// <summary>Copies the first animation frame's tilesheet and grid reference without resolving its image.</summary>
     /// <returns>A new scene frame reference, or null if the animation has no frames.</returns>
-    public SceneFrameDefinition? FirstPreviewFrame()
+    public SceneFrameDefinition? FirstPreviewFrame() => FirstPreviewFrame(Definition);
+
+    internal static SceneFrameDefinition? FirstPreviewFrame(AnimationDefinition definition)
     {
-        var frame = Definition.Frames.FirstOrDefault();
+        var frame = definition.Frames.FirstOrDefault();
         if (frame is null)
             return null;
 
