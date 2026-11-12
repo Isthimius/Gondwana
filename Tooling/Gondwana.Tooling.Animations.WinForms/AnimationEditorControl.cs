@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Gondwana.Tooling.Animations.WinForms;
 
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GANI document.</summary>
-public sealed class AnimationEditorControl : UserControl
+public sealed partial class AnimationEditorControl : UserControl
 {
     /// <summary>Validates and adds one packed GTS member with its exact entry identity and preview.</summary>
     public void AddPackedTilesheetSource(PackedResourceSelection selection)
@@ -80,7 +80,7 @@ public sealed class AnimationEditorControl : UserControl
         ShowNodeToolTips = true
     };
 
-    private readonly ListView _frames = new()
+    private readonly FrameSequenceListView _frames = new()
     {
         Dock = DockStyle.Fill,
         View = View.Details,
@@ -161,6 +161,7 @@ public sealed class AnimationEditorControl : UserControl
 
         _properties.SelectedObject = _propertyAdapter;
 
+        WireFrameDragDrop();
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
         _sourceTree.AfterSelect += SourceTreeAfterSelect;
         _sourceTree.NodeMouseClick += (_, e) =>
@@ -550,6 +551,7 @@ public sealed class AnimationEditorControl : UserControl
     {
         var errors = Document.Validate().ToList();
         var lines = errors.Select(error => "ERROR: " + error).ToList();
+        if (_frameDropError is not null) lines.Add("WARNING: Frame drop rejected. " + _frameDropError);
         lines.AddRange(_sourceDiagnostics);
 
         for (int i = 0; i < Definition.Frames.Count; i++)

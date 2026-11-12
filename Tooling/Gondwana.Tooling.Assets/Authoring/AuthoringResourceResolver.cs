@@ -73,6 +73,33 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages)
         return TilesheetDefinitionSerializer.Load(stream, identity);
     }
 
+    /// <summary>Resolves a dragged frame against the exact persisted GTS member and its image.</summary>
+    /// <exception cref="InvalidDataException">The member, region, coordinates or image are invalid or unavailable.</exception>
+    public TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetFrameDrag frame)
+    {
+        if (string.IsNullOrWhiteSpace(frame.Address.Member) || string.IsNullOrWhiteSpace(frame.RegionName))
+            throw new InvalidDataException("Select a specific tilesheet definition and region before dragging a frame.");
+
+        var resource = frame.Address.Resource;
+        if (resource.EntryName is null && !string.Equals(Path.GetExtension(resource.Path), ".gts", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidDataException("A loose tilesheet source must be a .gts file.");
+
+        var definition = LoadTilesheet(resource, frame.Address.Member);
+        var region = definition.Regions.FirstOrDefault(candidate =>
+            string.Equals(candidate.Name, frame.RegionName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidDataException($"Region '{frame.RegionName}' was not found in '{definition.Name}'.");
+        var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+        if (frame.X < 0 || frame.Y < 0 || frame.X >= columns || frame.Y >= rows)
+            throw new InvalidDataException($"Frame ({frame.X}, {frame.Y}) is outside region '{region.Name}'.");
+
+        using var image = DecodeImage(definition, resource.BaseDirectory, resource.ArchivePath);
+        var errors = TilesheetDefinitionValidator.Validate(definition, image.Width, image.Height);
+        if (errors.Count > 0)
+            throw new InvalidDataException($"Tilesheet '{definition.Name}': {errors[0]}");
+
+        return region;
+    }
+
     /// <summary>Loads one logical animation definition from an explicit loose or packed resource.</summary>
     /// <param name="resource">Physical location with the expected AnimationDefinition asset type.</param>
     /// <param name="identity">Logical member identity, or null for a document containing exactly one member.</param>

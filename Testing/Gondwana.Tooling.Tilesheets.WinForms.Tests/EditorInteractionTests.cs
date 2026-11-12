@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
@@ -297,6 +298,44 @@ public sealed partial class EditorInteractionTests
         Assert.Contains(Items(grid), item => item.PropertyDescriptor?.Name == "XTile");
         Assert.Equal(before, TilesheetDefinitionSerializer.ToJson(document.Definition));
         Assert.False(document.IsDirty);
+    });
+
+    [Fact]
+    public void FrameDragHonorsWindowsThresholdAndKeepsClickSelection() => RunSta(() =>
+    {
+        using var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
+        using var host = Show(document);
+        var viewport = Field<ImageViewport>(host.Editor, "_viewport");
+        viewport.Fit();
+        var region = document.Definition.Regions.Last();
+        var bounds = FrameGeometry.Bounds(region, 0, 0);
+        var imagePoint = new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f);
+        var pointer = new Point((int)(imagePoint.X * viewport.Zoom) + viewport.AutoScrollPosition.X,
+            (int)(imagePoint.Y * viewport.Zoom) + viewport.AutoScrollPosition.Y);
+
+        Click(viewport, imagePoint);
+        Assert.Same(region, viewport.SelectedRegion);
+        Assert.Equal(Point.Empty, viewport.SelectedFrame);
+        Assert.Null(viewport.TakeFrameDrag(pointer));
+        typeof(ImageViewport).GetMethod("OnMouseUp", PrivateInstance)!.Invoke(viewport,
+            [new MouseEventArgs(MouseButtons.Left, 1, pointer.X, pointer.Y, 0)]);
+        var beyondThreshold = pointer + SystemInformation.DragSize;
+        Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
+
+        Click(viewport, imagePoint);
+        var drag = viewport.TakeFrameDrag(beyondThreshold);
+        Assert.NotNull(drag);
+        Assert.Equal(AssetTypes.TilesheetDefinition, drag.Address.Location.AssetType);
+        Assert.Equal(document.FilePath, drag.Address.Location.Path);
+        Assert.Equal(document.Definition.Name, drag.Address.Member);
+        Assert.Equal((region.Name, 0, 0), (drag.RegionName, drag.X, drag.Y));
+        Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
+        Assert.False(document.IsDirty);
+
+        document.MarkChanged();
+        Click(viewport, imagePoint);
+        Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
+        Assert.Equal(Point.Empty, viewport.SelectedFrame);
     });
 
     /// <summary>
