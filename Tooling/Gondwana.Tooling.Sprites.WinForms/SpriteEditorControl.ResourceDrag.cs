@@ -139,11 +139,11 @@ public sealed partial class SpriteEditorControl
         try
         {
             var reads = hover.Data.BeginRead();
-            if (hover.Data.Resolve(this) is not { } payload || !SameTarget())
+            var resolver = new AuthoringResourceResolver(_packages, reads.Observe);
+            if (hover.Data.Resolve(this, resolver) is not { } payload || !SameTarget())
                 return;
 
             var address = payload.Address;
-            var resolver = new AuthoringResourceResolver(_packages, reads.Observe);
             bool needsSource = NeedsDropSource(address);
             var validatedSheets = new List<(ResourceAddress Address, TilesheetDefinition Sheet)>();
             SpriteFrameDefinition? frame = null;

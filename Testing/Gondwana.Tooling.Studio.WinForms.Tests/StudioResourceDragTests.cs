@@ -161,4 +161,56 @@ public sealed partial class CompositionTests
         Assert.Equal(2, animationEditor.Document.Definition.Frames.Count);
         Assert.Single(animationEditor.Document.Definition.TilesheetSources);
     });
+
+    [Fact]
+    public void FramePickerRejectsAnImageReplacedDuringSelection() => RunSta(root =>
+    {
+        string image = Path.Combine(root, "atlas.png");
+        string gts = Path.Combine(root, "atlas.gts");
+        string gspr = Path.Combine(root, "sprites.gspr");
+        using (var bitmap = new Bitmap(16, 16))
+            bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        TilesheetDefinitionSerializer.SaveAll(gts, [new()
+        {
+            Name = "terrain",
+            Image = new() { FilePath = "atlas.png" },
+            Regions = [new() { Name = "ground", Area = new(0, 0, 16, 16), TileSize = new(16, 16) }]
+        }]);
+        using (var model = SpriteDocument.Create(root))
+        {
+            model.AddSprite();
+            model.Save(gspr, allowInvalid: true);
+        }
+
+        using var studio = Host(root);
+        var editor = Assert.IsType<SpriteEditorControl>(studio.OpenDocument(gspr).Document.Editor);
+        Application.DoEvents();
+        studio.ChooseDragCoordinates = (_, _, _) =>
+        {
+            var originalWriteTime = File.GetLastWriteTimeUtc(image);
+            using var replacement = new Bitmap(16, 16);
+            replacement.SetPixel(0, 0, Color.Red);
+            replacement.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+            File.SetLastWriteTimeUtc(image, originalWriteTime.AddSeconds(5));
+            return Point.Empty;
+        };
+
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        var list = (ListBox)typeof(SpriteEditorControl).GetField("_sprites", Private)!.GetValue(editor)!;
+        var point = list.PointToScreen(new Point(10, list.GetItemRectangle(0).Height / 2));
+        var address = new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, gts));
+        var args = new DragEventArgs(studio.CreateResourceDrag(address), 0, point.X, point.Y,
+            DragDropEffects.Copy, DragDropEffects.None);
+        typeof(Control).GetMethod("OnDragEnter", Private)!.Invoke(list, [args]);
+        Assert.Equal(DragDropEffects.Copy, args.Effect);
+        typeof(Control).GetMethod("OnDragDrop", Private)!.Invoke(list, [args]);
+
+        Assert.Equal(DragDropEffects.None, args.Effect);
+        var validation = (TextBox)typeof(SpriteEditorControl).GetField("_validation", Private)!.GetValue(editor)!;
+        Assert.Contains("'atlas.png' changed during the drag", validation.Text);
+        Assert.Null(Assert.Single(editor.Document.Definition.Sprites).Frame);
+        Assert.Empty(editor.Document.Definition.TilesheetSources);
+        Assert.False(editor.Document.IsDirty);
+        Assert.False(editor.Document.History.CanUndo);
+    });
 }

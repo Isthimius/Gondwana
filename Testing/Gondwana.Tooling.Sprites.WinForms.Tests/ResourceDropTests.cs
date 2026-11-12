@@ -163,7 +163,7 @@ public sealed partial class InteractionTests
         File.AppendAllText(animation.Address.Location.Path, Environment.NewLine);
         Reject(rows, AtSpriteRow(rows, stale, 0));
 
-        var canceled = AtSpriteRow(rows, new ResourceDragData<SceneLayerDrag>(layer.Address, _ => null), 1);
+        var canceled = AtSpriteRow(rows, new ResourceDragData<SceneLayerDrag>(layer.Address, (_, _) => null), 1);
         RaiseSpriteDrag(rows, "Enter", canceled);
         Assert.Equal(1, rows.DropIndex);
         RaiseSpriteDrag(rows, "Drop", canceled);
@@ -177,7 +177,7 @@ public sealed partial class InteractionTests
         RaiseSpriteDrag(rows, "Drop", left);
         Assert.Equal(DragDropEffects.None, left.Effect);
 
-        var selection = SpriteDragAt(preview, new ResourceDragData<SceneLayerDrag>(layer.Address, _ =>
+        var selection = SpriteDragAt(preview, new ResourceDragData<SceneLayerDrag>(layer.Address, (_, _) =>
         {
             editor.SelectSprite(second);
             return layer;

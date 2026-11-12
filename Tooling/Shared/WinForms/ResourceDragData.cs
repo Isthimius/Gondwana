@@ -27,10 +27,10 @@ public abstract class ResourceDragData : DataObject
         return reads;
     }
 
-    /// <summary>Completes any missing logical selection on release. Null means the user canceled.</summary>
-    public IAuthoringResourceDrag? Resolve(IWin32Window owner)
+    /// <summary>Completes any missing logical selection using the drop's resolver. Null means the user canceled.</summary>
+    public IAuthoringResourceDrag? Resolve(IWin32Window owner, AuthoringResourceResolver resolver)
     {
-        var payload = SelectPayload(owner);
+        var payload = SelectPayload(owner, resolver);
         if (payload is not null &&
             (payload.Address with { Member = Address.Member, FieldPath = null } != Address with { FieldPath = null } ||
              string.IsNullOrWhiteSpace(payload.Address.Member) ||
@@ -40,13 +40,13 @@ public abstract class ResourceDragData : DataObject
         return payload;
     }
 
-    private protected abstract IAuthoringResourceDrag? SelectPayload(IWin32Window owner);
+    private protected abstract IAuthoringResourceDrag? SelectPayload(IWin32Window owner, AuthoringResourceResolver resolver);
 }
 
 /// <summary>Carries one typed authoring resource between WinForms controls on the editor UI thread.</summary>
 public sealed class ResourceDragData<T> : ResourceDragData where T : class, IAuthoringResourceDrag
 {
-    private readonly Func<IWin32Window, T?>? _select;
+    private readonly Func<IWin32Window, AuthoringResourceResolver, T?>? _select;
 
     /// <summary>Gets the original payload if its logical selection was already complete.</summary>
     public T? Payload { get; }
@@ -55,8 +55,9 @@ public sealed class ResourceDragData<T> : ResourceDragData where T : class, IAut
     public ResourceDragData(T payload) : base(typeof(T), payload.Address, payload) => Payload = payload;
 
     /// <summary>Creates a drag that completes its selection only when released onto a compatible target.</summary>
-    public ResourceDragData(ResourceAddress address, Func<IWin32Window, T?> select)
+    public ResourceDragData(ResourceAddress address, Func<IWin32Window, AuthoringResourceResolver, T?> select)
         : base(typeof(T), address, address) => _select = select;
 
-    private protected override IAuthoringResourceDrag? SelectPayload(IWin32Window owner) => Payload ?? _select?.Invoke(owner);
+    private protected override IAuthoringResourceDrag? SelectPayload(IWin32Window owner, AuthoringResourceResolver resolver) =>
+        Payload ?? _select?.Invoke(owner, resolver);
 }

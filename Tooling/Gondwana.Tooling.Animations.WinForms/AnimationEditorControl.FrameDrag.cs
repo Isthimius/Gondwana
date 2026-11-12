@@ -140,12 +140,13 @@ public sealed partial class AnimationEditorControl
         try
         {
             var reads = frame.BeginRead();
-            if (frame.Resolve(this) is not TilesheetFrameDrag selected)
+            var resolver = new AuthoringResourceResolver(_packages, reads.Observe);
+            if (frame.Resolve(this, resolver) is not TilesheetFrameDrag selected)
                 return;
             if (!TargetUnchanged())
                 return;
             payload = selected;
-            candidate = ResolveFrameDrop(payload, new AuthoringResourceResolver(_packages, reads.Observe));
+            candidate = ResolveFrameDrop(payload, resolver);
             reads.Verify();
         }
         catch (Exception ex) when (IsFrameDropException(ex))

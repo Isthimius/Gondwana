@@ -34,23 +34,25 @@ public sealed partial class MainForm
 
     internal ResourceDragData? CreateResourceDrag(ResourceAddress address) => address.Location.AssetType switch
     {
-        AssetTypes.TilesheetDefinition => new ResourceDragData<TilesheetFrameDrag>(address, owner => PickFrame(owner, address)),
+        AssetTypes.TilesheetDefinition => new ResourceDragData<TilesheetFrameDrag>(address, (owner, resolver) =>
+            PickFrame(owner, address, resolver)),
         AssetTypes.AnimationDefinition when address.Member is not null => new ResourceDragData<AnimationDrag>(new(address)),
-        AssetTypes.AnimationDefinition => new ResourceDragData<AnimationDrag>(address, owner =>
-            PickMember(owner, address) is { } selected ? new(selected) : null),
-        AssetTypes.SceneDefinition => new ResourceDragData<SceneLayerDrag>(address, owner => PickLayer(owner, address)),
+        AssetTypes.AnimationDefinition => new ResourceDragData<AnimationDrag>(address, (owner, resolver) =>
+            PickMember(owner, address, resolver) is { } selected ? new(selected) : null),
+        AssetTypes.SceneDefinition => new ResourceDragData<SceneLayerDrag>(address, (owner, resolver) =>
+            PickLayer(owner, address, resolver)),
         _ => null
     };
 
     internal Func<IWin32Window, string, IReadOnlyList<string>, string?> ChooseDragItem { get; set; } = ChooseItem;
     internal Func<IWin32Window, long, long, Point?> ChooseDragCoordinates { get; set; } = ChooseCoordinates;
 
-    private ResourceAddress? PickMember(IWin32Window owner, ResourceAddress address)
+    private ResourceAddress? PickMember(IWin32Window owner, ResourceAddress address, AuthoringResourceResolver resolver)
     {
         if (address.Member is not null)
             return address;
 
-        var members = new AuthoringResourceResolver(_packages).GetMembers(address.Resource);
+        var members = resolver.GetMembers(address.Resource);
         if (members.Count == 0)
             throw new InvalidDataException("The dragged resource contains no saved definitions.");
 
@@ -58,12 +60,12 @@ public sealed partial class MainForm
         return member is null ? null : address with { Member = member };
     }
 
-    private TilesheetFrameDrag? PickFrame(IWin32Window owner, ResourceAddress address)
+    private TilesheetFrameDrag? PickFrame(IWin32Window owner, ResourceAddress address, AuthoringResourceResolver resolver)
     {
-        if (PickMember(owner, address) is not { } selected)
+        if (PickMember(owner, address, resolver) is not { } selected)
             return null;
 
-        var sheet = new AuthoringResourceResolver(_packages).LoadValidatedTilesheet(selected);
+        var sheet = resolver.LoadValidatedTilesheet(selected);
         var regions = sheet.Regions.Select(region => region.Name).ToArray();
         if (regions.Length == 0)
             throw new InvalidDataException("The tilesheet has no frame regions.");
@@ -78,12 +80,12 @@ public sealed partial class MainForm
             ? new(selected, region.Name, frame.X, frame.Y) : null;
     }
 
-    private SceneLayerDrag? PickLayer(IWin32Window owner, ResourceAddress address)
+    private SceneLayerDrag? PickLayer(IWin32Window owner, ResourceAddress address, AuthoringResourceResolver resolver)
     {
-        if (PickMember(owner, address) is not { } selected)
+        if (PickMember(owner, address, resolver) is not { } selected)
             return null;
 
-        var scene = new AuthoringResourceResolver(_packages).LoadScene(selected.Resource, selected.Member);
+        var scene = resolver.LoadScene(selected.Resource, selected.Member);
         var layers = scene.Layers.Select(layer => layer.ID).ToArray();
         if (layers.Length == 0)
             throw new InvalidDataException("The scene has no layers to assign.");

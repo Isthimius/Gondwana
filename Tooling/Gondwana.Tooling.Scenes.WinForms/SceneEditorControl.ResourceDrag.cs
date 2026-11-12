@@ -144,11 +144,12 @@ public sealed partial class SceneEditorControl
         try
         {
             var reads = hover.Data.BeginRead();
-            if (hover.Data.Resolve(this) is not { } payload ||
+            var resolver = new AuthoringResourceResolver(_packages, reads.Observe);
+            if (hover.Data.Resolve(this, resolver) is not { } payload ||
                 !TryGetDropCell(hover, e, out var selectedCell) || selectedCell != cell || SourceSignature() != beforeSources)
                 return;
             var address = payload.Address;
-            var assignment = ResolveDropAssignment(payload, new AuthoringResourceResolver(_packages, reads.Observe));
+            var assignment = ResolveDropAssignment(payload, resolver);
             bool needsSource = NeedsSource(address);
             if (!TryGetDropCell(hover, e, out var currentCell) || currentCell != cell || SourceSignature() != beforeSources)
                 return;
