@@ -1,6 +1,7 @@
 using System.Reflection;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites.GSPR;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 
@@ -101,6 +102,57 @@ public sealed partial class SceneEditorTests
             document.MarkChanged();
             Application.DoEvents();
             Assert.Null(preview.HitSprite(center));
+        });
+
+    [Fact]
+    public void EqualZSpriteHitTestingUsesTheFrameBottomOverhang() =>
+        WithResourceDropEditor((editor, preview, root) =>
+        {
+            var document = editor.Document;
+            var layer = document.Definition.Layers[0];
+            layer.Columns = 12;
+            layer.Rows = 12;
+            layer.TileWidth = 32;
+            layer.TileHeight = 24;
+            document.Save(Path.Combine(root, "scene.gscn"));
+
+            using (var bitmap = new Bitmap(32, 32))
+                bitmap.Save(Path.Combine(root, "atlas.png"));
+            TilesheetDefinitionSerializer.Save(Path.Combine(root, "atlas.gts"), new TilesheetDefinition
+            {
+                Name = "atlas",
+                Image = new() { FilePath = "atlas.png" },
+                Regions =
+                [
+                    new() { Name = "plain", Area = new(0, 0, 16, 16), TileSize = new(16, 16) },
+                    new() { Name = "overhang", Area = new(0, 0, 16, 16), TileSize = new(16, 16), Overhang = new(0, 0, 0, 12) }
+                ]
+            });
+            var front = Actor("plain", new(3, 3));
+            var back = Actor("overhang", new(3, 3.25f));
+            SpriteDefinitionSerializer.Save(Path.Combine(root, "actors.gspr"), new SpriteDefinition
+            {
+                Sprites = [front, back],
+                TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("atlas", "atlas.gts")]
+            });
+            editor.InvalidateSpriteOwners(reloadSaved: true);
+            Application.DoEvents();
+            preview.SetZoom(1);
+
+            var anchor = SpriteProjection(preview, layer).GridToWorldPx(front.Position);
+            var hit = preview.HitSprite(SpriteClient(preview, new(anchor.X + 16, anchor.Y + 12)));
+            Assert.Equal(front.Id, hit?.Sprite.Id);
+            Assert.NotNull(hit?.Artwork);
+
+            SpriteInstanceDefinition Actor(string region, PointF position) => new()
+            {
+                Id = Guid.NewGuid(),
+                Nickname = region,
+                SceneId = document.Definition.ID,
+                SceneLayerId = layer.ID,
+                Position = position,
+                Frame = new() { Tilesheet = "atlas", RegionName = region }
+            };
         });
 
     private static SceneLayer SpriteProjection(ScenePreviewControl preview, SceneLayerDefinition layer) =>

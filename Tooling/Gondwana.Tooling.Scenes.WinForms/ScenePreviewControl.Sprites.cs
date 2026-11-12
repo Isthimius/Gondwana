@@ -94,7 +94,7 @@ internal sealed partial class ScenePreviewControl
     private IEnumerable<SceneSpriteVisual> SpritesInDrawOrder(SceneLayerDefinition layer) => _showSprites
         ? _sprites.Where(visual => ReferenceEquals(visual.Layer, layer))
             .OrderBy(visual => visual.Sprite.ZOrder)
-            .ThenBy(visual => SpriteBounds(visual, visual.Sprite.Position).Bottom)
+            .ThenBy(visual => SpriteBounds(visual, visual.Sprite.Position).Bottom - (visual.Artwork?.BottomOverhang ?? 0) - 1)
             .ThenBy(visual => visual.Sprite.Position.X)
             .ThenBy(visual => visual.Sprite.Id)
         : [];

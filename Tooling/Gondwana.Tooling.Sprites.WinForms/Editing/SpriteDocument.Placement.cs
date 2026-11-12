@@ -54,7 +54,8 @@ public sealed partial class SpriteDocument
                 throw new InvalidDataException($"'{sceneId}' is already registered from a different scene source.");
         }
 
-        if (sprite.SceneId == sceneId && sprite.SceneLayerId == layerId && sprite.Position == position)
+        bool moves = sprite.SceneId != sceneId || sprite.SceneLayerId != layerId || sprite.Position != position;
+        if (!moves && references.Length != 0)
             return false;
 
         const string description = "Place sprite in scene";
@@ -66,12 +67,15 @@ public sealed partial class SpriteDocument
             else
                 SetLooseSceneSource(member, sceneId, scene.Location.Path);
         }
-        Edit(sprite, description, () =>
+        if (moves)
         {
-            sprite.SceneId = sceneId;
-            sprite.SceneLayerId = layerId;
-            sprite.Position = position;
-        });
+            Edit(sprite, description, () =>
+            {
+                sprite.SceneId = sceneId;
+                sprite.SceneLayerId = layerId;
+                sprite.Position = position;
+            });
+        }
         edit.Commit();
         return true;
     }

@@ -48,4 +48,28 @@ public sealed partial class InteractionTests
         Assert.Equal(scene.Location.Path, document.ResolveReferencePath(Assert.Single(member.SceneSources).AssetsFilePath!));
         Assert.False(document.IsDirty);
     });
+
+    [Fact]
+    public void DroppingAtTheCurrentPlacementRegistersAMissingSceneSource() => Sta(root =>
+    {
+        using var document = SpriteDocument.Create(root);
+        var sprite = document.AddSprite();
+        sprite.SceneId = "city";
+        sprite.SceneLayerId = "front";
+        sprite.Position = new(-2.25f, 4.5f);
+        document.Save(Path.Combine(root, "actors.gspr"));
+        var scene = new ResourceAddress(new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "city.gscn")), "city");
+        SpriteInstanceDrag Drag() => new(new ResourceAddress(document.Location!, document.Definition.Key), sprite.Id, document, document.Revision);
+
+        Assert.True(document.PlaceInstance(Drag(), scene, "front", sprite.Position));
+        Assert.Equal("city.gscn", Assert.Single(document.Definition.SceneSources).GscnPath);
+        Assert.False(document.PlaceInstance(Drag(), scene, "front", sprite.Position));
+
+        document.History.Undo();
+        Assert.Empty(document.Definition.SceneSources);
+        Assert.False(document.IsDirty);
+        Assert.Equal(("city", "front", new PointF(-2.25f, 4.5f)), (sprite.SceneId, sprite.SceneLayerId, sprite.Position));
+        document.History.Redo();
+        Assert.Equal("city.gscn", Assert.Single(document.Definition.SceneSources).GscnPath);
+    });
 }

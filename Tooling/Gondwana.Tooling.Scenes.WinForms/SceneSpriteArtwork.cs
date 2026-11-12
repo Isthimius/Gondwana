@@ -8,7 +8,7 @@ using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Scenes.WinForms;
 
-internal sealed record SceneSpriteArtwork(Bitmap Image, Rectangle Bounds);
+internal sealed record SceneSpriteArtwork(Bitmap Image, Rectangle Bounds, int BottomOverhang);
 
 internal sealed class SceneSpriteArtworkCache : IDisposable
 {
@@ -76,8 +76,8 @@ internal sealed class SceneSpriteArtworkCache : IDisposable
     }
 
     private static SceneSpriteArtwork? Artwork(SceneTilesheetSource? source, SceneFrameDefinition frame) =>
-        source?.Image is { } image && source.TryResolve(frame, out _, out var bounds) &&
-        new Rectangle(Point.Empty, image.Size).Contains(bounds) ? new(image, bounds) : null;
+        source?.Image is { } image && source.TryResolve(frame, out var region, out var bounds) &&
+        new Rectangle(Point.Empty, image.Size).Contains(bounds) ? new(image, bounds, region!.Overhang.Bottom) : null;
 
     private static SceneFrameDefinition Frame(string sheet, string region, int x, int y) =>
         new() { Tilesheet = sheet, RegionName = region, XTile = x, YTile = y };
