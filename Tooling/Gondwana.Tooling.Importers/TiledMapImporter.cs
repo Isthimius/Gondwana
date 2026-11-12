@@ -10,7 +10,7 @@ using static Gondwana.Tooling.Importers.TiledTilesetImporter;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>Converts finite orthogonal or isometric TMX maps and their tilesets into native scene, tilesheet, and animation definitions.</summary>
+/// <summary>Converts orthogonal or isometric TMX maps, including chunked layers, into native scene, tilesheet, and animation definitions.</summary>
 public sealed class TiledMapImporter : ExternalAssetImporter
 {
     /// <inheritdoc/>
@@ -20,12 +20,16 @@ public sealed class TiledMapImporter : ExternalAssetImporter
     /// <inheritdoc/>
     public override IReadOnlyList<string> SupportedExtensions => [".tmx"];
 
+    private sealed record ChunkedLayer(int MinX, int MinY, int Width, int Height,
+        List<(int X, int Y, uint Gid)> Tiles);
+
     /// <inheritdoc/>
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
     {
         var root = ReadXml(plan.Request.SourcePath);
         if (root.Name != "map") throw new InvalidDataException("Expected Tiled map XML root.");
-        if (Int(root, "infinite", 0) != 0) throw new InvalidDataException("Infinite/chunked maps are unsupported.");
+        // Tiled's "infinite" flag describes authoring/storage, not Gondwana topology.
+        // It permits zero map dimensions; chunk coordinates determine native bounds.
         var orientation = (string?)root.Attribute("orientation") switch
         {
             "orthogonal" => CoordinateSystemTypes.Orthogonal,
@@ -33,7 +37,9 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             _ => throw new InvalidDataException("Unsupported map orientation; only orthogonal and isometric maps are supported.")
         };
         int width = Int(root, "width"), height = Int(root, "height"), tw = Int(root, "tilewidth"), th = Int(root, "tileheight");
-        if (width <= 0 || height <= 0 || tw <= 0 || th <= 0) throw new InvalidDataException("Map dimensions must be positive.");
+        if (width < 0 || height < 0 || tw <= 0 || th <= 0 ||
+            (Int(root, "infinite", 0) == 0 && (width == 0 || height == 0)))
+            throw new InvalidDataException("Map dimensions must be nonnegative and tile dimensions positive.");
         if ((string?)root.Attribute("renderorder") is { } order && order != "right-down")
             throw new InvalidDataException($"Unsupported Tiled render order '{order}'.");
         if (Number(root, "parallaxoriginx", 0) != 0 || Number(root, "parallaxoriginy", 0) != 0)
@@ -92,51 +98,83 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 if (kind == "group") { Layers(element, shown, x, y, parallaxX, parallaxY); continue; }
                 if (Int(element, "x", 0) != 0 || Int(element, "y", 0) != 0)
                     throw new InvalidDataException("Nonzero legacy layer tile coordinates are unsupported; use pixel offsets.");
-                if (orientation == CoordinateSystemTypes.IsometricRhombic) x += (double)height * tw / 2.0;
-                if (x != Math.Truncate(x) || y != Math.Truncate(y)) throw new InvalidDataException("Fractional pixel layer offsets cannot be represented exactly.");
+                var data = element.Element("data") ?? throw new InvalidDataException("Missing layer data.");
+                if (element.Elements("data").Count() != 1)
+                    throw new InvalidDataException("A Tiled tile layer must contain exactly one data element.");
+                bool hasChunks = data.Elements("chunk").Any();
+                // Tiled may serialize an entirely empty infinite layer without chunks.
+                bool emptyUnbounded = Int(root, "infinite", 0) != 0 &&
+                    Int(element, "width", width) == 0 && Int(element, "height", height) == 0 &&
+                    !data.Elements().Any() && string.IsNullOrWhiteSpace(data.Value);
+                ChunkedLayer? chunked = hasChunks || emptyUnbounded ? DecodeChunks(data, token) : null;
+                int minX = chunked?.MinX ?? 0, minY = chunked?.MinY ?? 0;
+                int columns = chunked?.Width ?? Int(element, "width", width);
+                int rows = chunked?.Height ?? Int(element, "height", height);
+                if (columns <= 0 || rows <= 0 || (long)columns * rows > 16_000_000)
+                    throw new InvalidDataException("Layer bounds are empty or exceed 16 million native grid cells.");
+
+                if (orientation == CoordinateSystemTypes.IsometricRhombic)
+                {
+                    x += (double)height * tw / 2.0;
+                    // An odd-sized isometric cell cannot retain a half-pixel origin shift.
+                    // Pad a leading empty column instead, preserving every authored anchor.
+                    if (chunked is not null && ((tw | th) & 1) != 0 && (((long)minX - minY) & 1) != 0)
+                    {
+                        minX = checked(minX - 1);
+                        columns = checked(columns + 1);
+                        if ((long)columns * rows > 16_000_000)
+                            throw new InvalidDataException("Isometric origin padding exceeds 16 million native grid cells.");
+                    }
+                }
+                if (x != Math.Truncate(x) || y != Math.Truncate(y))
+                    throw new InvalidDataException("Fractional pixel layer offsets cannot be represented exactly.");
+                double shiftX = orientation == CoordinateSystemTypes.Orthogonal
+                    ? (double)minX * tw : ((double)minX - minY) * tw / 2;
+                double shiftY = orientation == CoordinateSystemTypes.Orthogonal
+                    ? (double)minY * th : ((double)minX + minY) * th / 2;
+                double originX = -x - shiftX, originY = -y - shiftY;
+                if (originX != Math.Truncate(originX) || originY != Math.Truncate(originY))
+                    throw new InvalidDataException("Chunk bounds require a fractional GSCN origin.");
                 if (parallaxX != parallaxY)
                     plan.Report(ExternalImportSeverity.Warning, "tiled.parallax", "Independent X/Y parallax cannot be represented; using 1.");
                 var layer = new SceneLayerDefinition
                 {
                     ID = $"{name}.layer.{scene.Layers.Count}",
-                    Columns = Int(element, "width", width),
-                    Rows = Int(element, "height", height),
+                    Columns = columns,
+                    Rows = rows,
                     TileWidth = tw,
                     TileHeight = th,
                     CoordinateSystemType = orientation,
                     Visible = shown,
                     ZOrder = scene.Layers.Count,
-                    OriginPx = new Point(checked((int)-x), checked((int)-y)),
+                    OriginPx = new Point(checked((int)originX), checked((int)originY)),
                     Parallax = parallaxX == parallaxY ? (float)parallaxX : 1
                 };
-                if (layer.Columns <= 0 || layer.Rows <= 0) throw new InvalidDataException("Layer dimensions must be positive.");
-                var gids = DecodeLayer(element.Element("data") ?? throw new InvalidDataException("Missing layer data."), checked(layer.Columns * layer.Rows));
-                for (int i = 0; i < gids.Length; i++)
+
+                void PlaceTile(uint rawGid, int tileX, int tileY, string context)
                 {
                     token.ThrowIfCancellationRequested();
-                    var (gid, transform, hasHexRotation) = TiledTileTransform.Decode(gids[i]);
-                    if (hasHexRotation) plan.Report(ExternalImportSeverity.Warning, "tiled.transform.hex", $"Layer {layer.ID}, cell {i}: hexagonal 120-degree flag is cleared and ignored for this orthogonal/isometric map.");
-                    if (gid == 0) continue;
+                    var (gid, transform, hasHexRotation) = TiledTileTransform.Decode(rawGid);
+                    if (hasHexRotation)
+                        plan.Report(ExternalImportSeverity.Warning, "tiled.transform.hex",
+                            $"Layer {layer.ID}, {context}: hexagonal 120-degree flag is cleared and ignored for this orthogonal/isometric map.");
+                    if (gid == 0) return;
                     var match = tilesets.LastOrDefault(t => t.First <= gid);
-                    if (match.Set is null || gid - match.First >= match.Set.Count) throw new InvalidDataException($"Unresolved tile GID {gid}.");
-                    // Gondwana rotates/flips the overhang rectangle with the
-                    // artwork, whereas Tiled keeps tile-layer artwork anchored in
-                    // the original bottom-left destination rectangle. Do not
-                    // silently shift oversized tiles when their transformed visual
-                    // footprint differs from the Tiled placement.
+                    if (match.Set is null || gid - match.First >= match.Set.Count)
+                        throw new InvalidDataException($"Unresolved tile GID {gid} at layer {layer.ID}, {context}.");
+                    // Tiled anchors oversized tile artwork bottom-left; Gondwana rotates
+                    // its overhang with the tile. Reject transforms that shift the artwork.
                     if ((match.Set.TileSize != new Size(tw, th) || !match.Set.Overhang.IsEmpty) &&
                         (TileTransformGeometry.TransformSize(new Size(tw, th), transform) != new Size(tw, th) ||
                          TileTransformGeometry.TransformSpacing(match.Set.Overhang, transform) != match.Set.Overhang))
-                    {
                         throw new InvalidDataException(
-                            $"Layer {layer.ID}, cell {i}: transformed oversized tile cannot preserve Tiled artwork anchoring.");
-                    }
+                            $"Layer {layer.ID}, {context}: transformed oversized tile cannot preserve Tiled artwork anchoring.");
                     int local = (int)(gid - match.First);
                     var tile = new SceneLayerTileDefinition
                     {
                         Transform = transform,
-                        X = i % layer.Columns,
-                        Y = i / layer.Columns,
+                        X = tileX,
+                        Y = tileY,
                         Frame = new() { Tilesheet = match.Set.Name, XTile = local % match.Set.Columns, YTile = local / match.Set.Columns }
                     };
                     if (match.Set.Animations.TryGetValue(local, out var animation))
@@ -146,6 +184,18 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                         tile.AnimationKey = animation.Key; tile.StartAnimation = true;
                     }
                     layer.Tiles.Add(tile);
+                }
+
+                if (chunked is not null)
+                {
+                    foreach (var tile in chunked.Tiles)
+                        PlaceTile(tile.Gid, tile.X - minX, tile.Y - minY, $"cell ({tile.X}, {tile.Y})");
+                }
+                else
+                {
+                    var gids = DecodeLayer(data, checked(columns * rows));
+                    for (int i = 0; i < gids.Length; i++)
+                        PlaceTile(gids[i], i % columns, i / columns, $"cell {i}");
                 }
                 scene.Layers.Add(layer);
             }
@@ -185,22 +235,76 @@ public sealed class TiledMapImporter : ExternalAssetImporter
     }
 
     /// <summary>
+    /// Converts Tiled's independently positioned chunks into sparse finite-layer
+    /// placements; no native wrapping or dynamic grid allocation is implied.
+    /// </summary>
+    private static ChunkedLayer DecodeChunks(XElement data, CancellationToken token)
+    {
+        if (data.Elements().Any(e => e.Name != "chunk") ||
+            data.Nodes().OfType<XText>().Any(t => !string.IsNullOrWhiteSpace(t.Value)))
+            throw new InvalidDataException("Chunked Tiled layer data cannot mix chunks with tile or inline data.");
+
+        var chunks = data.Elements("chunk").ToArray();
+        if (chunks.Length == 0) return new(0, 0, 1, 1, []);
+        if (chunks.Length > 16_384)
+            throw new InvalidDataException("Too many Tiled chunks in one layer (maximum 16,384).");
+
+        var rectangles = new List<(long Left, long Top, long Right, long Bottom)>();
+        var placed = new List<(int X, int Y, uint Gid)>();
+        long minX = long.MaxValue, minY = long.MaxValue, maxX = long.MinValue, maxY = long.MinValue;
+        long totalCells = 0;
+        foreach (var chunk in chunks)
+        {
+            token.ThrowIfCancellationRequested();
+            int x = Int(chunk, "x"), y = Int(chunk, "y");
+            int width = Int(chunk, "width"), height = Int(chunk, "height");
+            long cells = (long)width * height;
+            if (width <= 0 || height <= 0 || cells > 16_000_000 ||
+                totalCells + cells > 16_000_000)
+                throw new InvalidDataException("Tiled chunk sizes exceed 16 million source cells per layer.");
+            long right = (long)x + width, bottom = (long)y + height;
+            if (right > (long)int.MaxValue + 1 || bottom > (long)int.MaxValue + 1)
+                throw new InvalidDataException("Tiled chunk coordinates exceed the supported integer grid range.");
+            if (rectangles.Any(r => x < r.Right && right > r.Left && y < r.Bottom && bottom > r.Top))
+                throw new InvalidDataException($"Overlapping Tiled chunks at ({x}, {y}); tile placement is ambiguous.");
+            rectangles.Add((x, y, right, bottom));
+            minX = Math.Min(minX, x); minY = Math.Min(minY, y);
+            maxX = Math.Max(maxX, right); maxY = Math.Max(maxY, bottom);
+            totalCells += cells;
+            uint[] gids = DecodeLayer(data, chunk, checked((int)cells));
+            for (int i = 0; i < gids.Length; i++)
+            {
+                token.ThrowIfCancellationRequested();
+                if (gids[i] != 0)
+                    placed.Add((checked(x + i % width), checked(y + i / width), gids[i]));
+            }
+        }
+        long cols = maxX - minX, rows = maxY - minY;
+        if (cols > int.MaxValue || rows > int.MaxValue || cols * rows > 16_000_000)
+            throw new InvalidDataException("Tiled chunk bounds exceed 16 million native grid cells; split the map.");
+        return new(checked((int)minX), checked((int)minY), checked((int)cols), checked((int)rows), placed);
+    }
+
+    /// <summary>
     /// Decodes the tile identifiers in a Tiled map layer.
     /// </summary>
     /// <param name="data">The data to process.</param>
     /// <param name="expectedCount">The expected count.</param>
     /// <returns>The decoded tile identifiers in layer order.</returns>
-    public static uint[] DecodeLayer(XElement data, int expectedCount)
+    public static uint[] DecodeLayer(XElement data, int expectedCount) => DecodeLayer(data, data, expectedCount);
+
+    // Encoding/compression lives on the parent <data>; each <chunk> has its own payload.
+    private static uint[] DecodeLayer(XElement attributes, XElement payload, int expectedCount)
     {
         if (expectedCount <= 0 || expectedCount > 16_000_000) throw new InvalidDataException("Invalid or excessive layer size.");
         uint[] result;
-        switch ((string?)data.Attribute("encoding"))
+        switch ((string?)attributes.Attribute("encoding"))
         {
-            case null: result = data.Elements("tile").Select(t => uint.Parse((string?)t.Attribute("gid") ?? "0", CultureInfo.InvariantCulture)).ToArray(); break;
-            case "csv": result = data.Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => uint.Parse(s, CultureInfo.InvariantCulture)).ToArray(); break;
+            case null: result = payload.Elements("tile").Select(t => uint.Parse((string?)t.Attribute("gid") ?? "0", CultureInfo.InvariantCulture)).ToArray(); break;
+            case "csv": result = payload.Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => uint.Parse(s, CultureInfo.InvariantCulture)).ToArray(); break;
             case "base64":
-                using (var input = new MemoryStream(Convert.FromBase64String(data.Value)))
-                using (Stream stream = (string?)data.Attribute("compression") switch
+                using (var input = new MemoryStream(Convert.FromBase64String(payload.Value)))
+                using (Stream stream = (string?)attributes.Attribute("compression") switch
                 {
                     null or "" => input,
                     "zlib" => new ZLibStream(input, CompressionMode.Decompress),
