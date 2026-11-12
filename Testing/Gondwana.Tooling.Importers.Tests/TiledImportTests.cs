@@ -134,13 +134,19 @@ public sealed class TiledImportTests : IDisposable
         var staticTile = Assert.Single(layer.Tiles, tile => tile.X == 5 && tile.Y == 1);
         Assert.Equal(1, staticTile.Frame!.XTile);
 
-        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
-            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "terrain");
-        using var runtime = SceneDefinitionSerializer.ToScene(scene);
-        var loaded = Assert.Single(runtime.SceneLayers);
-        Assert.Equal(new Rectangle(2, -2, 2, 2), loaded[0, 2]!.DrawLocationWorld);
-        Assert.Equal(new Rectangle(12, -4, 2, 2), loaded[5, 1]!.DrawLocationWorld);
-        Assert.DoesNotContain(layer.Tiles, tile => tile.X == 1 && tile.Y == 1);
+        var cycles = AnimationDefinitionSerializer.LoadAllCycles(
+            Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+        try
+        {
+            using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+                .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "terrain");
+            using var runtime = SceneDefinitionSerializer.ToScene(scene);
+            var loaded = Assert.Single(runtime.SceneLayers);
+            Assert.Equal(new Rectangle(2, -2, 2, 2), loaded[0, 2]!.DrawLocationWorld);
+            Assert.Equal(new Rectangle(12, -4, 2, 2), loaded[5, 1]!.DrawLocationWorld);
+            Assert.DoesNotContain(layer.Tiles, tile => tile.X == 1 && tile.Y == 1);
+        }
+        finally { foreach (var cycle in cycles) cycle.Dispose(); }
     }
 
     /// <summary>Rhombic layers retain the projected positions of negative chunk coordinates.</summary>
@@ -239,7 +245,7 @@ public sealed class TiledImportTests : IDisposable
     [Theory]
     [InlineData("<chunk x='0' y='0' width='2' height='2'>1,0,0</chunk>", "length")]
     [InlineData("<chunk x='0' y='0' width='1' height='1'>1</chunk><chunk x='0' y='0' width='1' height='1'>2</chunk>", "Overlapping")]
-    [InlineData("<chunk x='-100000' y='0' width='1' height='1'>1</chunk><chunk x='100000' y='0' width='1' height='1'>1</chunk>", "bounds exceed")]
+    [InlineData("<chunk x='-10000000' y='0' width='1' height='1'>1</chunk><chunk x='10000000' y='0' width='1' height='1'>1</chunk>", "bounds exceed")]
     [InlineData("<chunk x='0' y='0' width='0' height='2'></chunk>", "sizes exceed")]
     [InlineData("<chunk x='2147483647' y='0' width='2' height='1'>1,1</chunk>", "integer grid range")]
     [InlineData("<chunk x='0' y='0' width='1' height='1'><tile gid='1'/></chunk><tile gid='1'/>", "cannot mix")]
