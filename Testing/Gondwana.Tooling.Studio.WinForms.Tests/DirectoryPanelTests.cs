@@ -321,6 +321,8 @@ public sealed partial class CompositionTests
         }
 
         var category = root.Nodes.Cast<TreeNode>().Single(node => node.Name == "gts");
+        category.Expand(); // Explicitly exercise the transition with an actual child node.
+        Assert.True(category.IsExpanded);
         Assert.Equal("directory-open", category.ImageKey);
         Assert.Equal("directory-open", category.SelectedImageKey);
         category.Collapse();
