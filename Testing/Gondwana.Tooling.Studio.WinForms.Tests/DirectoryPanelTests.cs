@@ -110,7 +110,8 @@ public sealed partial class CompositionTests
         var folder = root.Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
         _ = panel.Tree.Handle;
         folder.Expand();
-        Assert.Equal("directory", folder.ImageKey);
+        Assert.Equal("directory-open", folder.ImageKey);
+        Assert.Equal("directory-open", folder.SelectedImageKey);
         var nestedCategory = folder.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
         string expectedNestedIcon = nestedCategory.IsExpanded ? "directory-open" : "directory";
         Assert.Equal(expectedNestedIcon, nestedCategory.ImageKey);
@@ -298,6 +299,8 @@ public sealed partial class CompositionTests
     public void BrowserChangesFolderArtworkOnExpandAndCollapse() => RunSta(directory =>
     {
         Directory.CreateDirectory(Path.Combine(directory, "nested"));
+        // A TreeNode with no children cannot expand; add a file to exercise real transitions.
+        File.WriteAllText(Path.Combine(directory, "sample.gts"), "{}");
         using var panel = new DirectoryPanel(_ => { });
         _ = panel.Tree.Handle;
         panel.SetDirectory(directory);
