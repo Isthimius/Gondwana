@@ -215,6 +215,7 @@ public sealed partial class SceneEditorControl : UserControl
         _animationList.Columns.Add("Frames", 60, HorizontalAlignment.Right);
         _animationList.ItemActivate += (_, _) => AssignSelectedAnimation();
 
+        WireResourceDragDrop();
         _preview.NavigationKey += NavigateSelection;
         _properties.Enter += (_, _) => _preview.CancelGesture();
         _tileProperties.Enter += (_, _) => _preview.CancelGesture();
@@ -346,6 +347,7 @@ public sealed partial class SceneEditorControl : UserControl
         else
             lines.AddRange(errors.Select(error => "ERROR: " + error));
 
+        if (_resourceDropError is not null) lines.Add("WARNING: Resource drop rejected. " + _resourceDropError);
         lines.AddRange(_sourceDiagnostics);
 
         foreach (var layer in Definition.Layers)
@@ -354,7 +356,11 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 if (tile.Frame is { } frame)
                 {
-                    var source = FindTilesheet(frame.Tilesheet);
+                    var animation = tile.AnimationKey is { } key ? FindAnimation(key) : null;
+                    var representative = animation?.FirstPreviewFrame();
+                    var source = representative is not null && SceneDocument.FramesMatch(frame, representative) &&
+                        animation!.Definition.TilesheetSources.Any(item => item.Tilesheet == frame.Tilesheet)
+                        ? animation.FindTilesheet(frame.Tilesheet) : FindTilesheet(frame.Tilesheet);
                     if (source is null)
                     {
                         lines.Add(
@@ -1345,6 +1351,7 @@ public sealed partial class SceneEditorControl : UserControl
     private void StructureSelectionChanged()
     {
         if (_refreshingStructure) return;
+        if (!ReferenceEquals(_structure.SelectedNode?.Tag, _selectedLayer)) ClearResourceDrop();
         _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
 
         if (_structure.SelectedNode?.Tag is SceneLayerDefinition layer)
@@ -1481,30 +1488,7 @@ public sealed partial class SceneEditorControl : UserControl
                          source => source.Definition.Name,
                          StringComparer.OrdinalIgnoreCase))
             {
-                var root = new TreeNode(
-                    $"{source.Definition.Name}  [{Path.GetFileName(source.FilePath)}]")
-                {
-                    Tag = source,
-                    ToolTipText = source.FilePath
-                };
-
-                foreach (var region in source.Definition.Regions)
-                {
-                    var (columns, rows) =
-                        TilesheetDefinitionValidator.GridSize(region);
-
-                    var regionNode = new TreeNode(
-                        $"{region.Name}  ({columns} × {rows})")
-                    {
-                        Tag = new RegionTag(source, region)
-                    };
-
-                    if (columns > 0 && rows > 0)
-                        regionNode.Nodes.Add("Expand to load rows…");
-
-                    root.Nodes.Add(regionNode);
-                }
-
+                var root = CreateTilesheetSourceNode(source);
                 _sourceTree.Nodes.Add(root);
                 root.Expand();
             }
@@ -1515,6 +1499,34 @@ public sealed partial class SceneEditorControl : UserControl
             _sourceTree.EndUpdate();
             UpdatePaintSourceLabel();
         }
+    }
+
+    private static TreeNode CreateTilesheetSourceNode(SceneTilesheetSource source)
+    {
+        var root = new TreeNode(
+            $"{source.Definition.Name}  [{Path.GetFileName(source.FilePath)}]")
+        {
+            Tag = source,
+            ToolTipText = source.FilePath
+        };
+
+        foreach (var region in source.Definition.Regions)
+        {
+            var (columns, rows) =
+                TilesheetDefinitionValidator.GridSize(region);
+
+            var regionNode = new TreeNode(
+                $"{region.Name}  ({columns} × {rows})")
+            {
+                Tag = new RegionTag(source, region)
+            };
+
+            if (columns > 0 && rows > 0)
+                regionNode.Nodes.Add("Expand to load rows…");
+
+            root.Nodes.Add(regionNode);
+        }
+        return root;
     }
 
     private void RefreshAnimationList()

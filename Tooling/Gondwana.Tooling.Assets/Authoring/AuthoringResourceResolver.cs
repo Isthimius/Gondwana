@@ -75,27 +75,58 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages)
 
     /// <summary>Resolves a dragged frame against the exact persisted GTS member and its image.</summary>
     /// <exception cref="InvalidDataException">The member, region, coordinates or image are invalid or unavailable.</exception>
-    public TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetFrameDrag frame)
-    {
-        if (string.IsNullOrWhiteSpace(frame.Address.Member) || string.IsNullOrWhiteSpace(frame.RegionName))
-            throw new InvalidDataException("Select a specific tilesheet definition and region before dragging a frame.");
+    public TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetFrameDrag frame) =>
+        ResolveTilesheetFrame(frame, out _);
 
-        var resource = frame.Address.Resource;
+    /// <summary>Resolves a dragged frame and returns its validated GTS member for a preview.</summary>
+    public TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetFrameDrag frame, out TilesheetDefinition definition)
+    {
+        definition = LoadExplicitTilesheet(frame.Address);
+        var region = ResolveTilesheetFrame(definition, frame.RegionName, frame.X, frame.Y);
+        ValidateTilesheetImage(frame.Address.Resource, definition);
+        return region;
+    }
+
+    /// <summary>Loads an explicitly selected GTS member and validates its layout against its saved image.</summary>
+    public TilesheetDefinition LoadValidatedTilesheet(ResourceAddress address)
+    {
+        var definition = LoadExplicitTilesheet(address);
+        ValidateTilesheetImage(address.Resource, definition);
+        return definition;
+    }
+
+    private TilesheetDefinition LoadExplicitTilesheet(ResourceAddress address)
+    {
+        if (string.IsNullOrWhiteSpace(address.Member))
+            throw new InvalidDataException("Select a specific tilesheet definition before dragging a frame.");
+
+        var resource = address.Resource;
         if (resource.EntryName is null && !string.Equals(Path.GetExtension(resource.Path), ".gts", StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException("A loose tilesheet source must be a .gts file.");
 
-        var definition = LoadTilesheet(resource, frame.Address.Member);
-        var region = definition.Regions.FirstOrDefault(candidate =>
-            string.Equals(candidate.Name, frame.RegionName, StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidDataException($"Region '{frame.RegionName}' was not found in '{definition.Name}'.");
-        var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
-        if (frame.X < 0 || frame.Y < 0 || frame.X >= columns || frame.Y >= rows)
-            throw new InvalidDataException($"Frame ({frame.X}, {frame.Y}) is outside region '{region.Name}'.");
+        return LoadTilesheet(resource, address.Member);
+    }
 
+    private void ValidateTilesheetImage(AuthoringResource resource, TilesheetDefinition definition)
+    {
         using var image = DecodeImage(definition, resource.BaseDirectory, resource.ArchivePath);
         var errors = TilesheetDefinitionValidator.Validate(definition, image.Width, image.Height);
         if (errors.Count > 0)
             throw new InvalidDataException($"Tilesheet '{definition.Name}': {errors[0]}");
+    }
+
+    /// <summary>Resolves a region and coordinates against an already validated tilesheet.</summary>
+    public static TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetDefinition definition, string regionName, int x, int y)
+    {
+        if (string.IsNullOrWhiteSpace(regionName))
+            throw new InvalidDataException("Select a specific region before dragging a frame.");
+
+        var region = definition.Regions.FirstOrDefault(candidate =>
+            string.Equals(candidate.Name, regionName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidDataException($"Region '{regionName}' was not found in '{definition.Name}'.");
+        var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+        if (x < 0 || y < 0 || x >= columns || y >= rows)
+            throw new InvalidDataException($"Frame ({x}, {y}) is outside region '{region.Name}'.");
 
         return region;
     }

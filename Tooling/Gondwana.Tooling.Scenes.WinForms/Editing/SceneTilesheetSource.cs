@@ -24,7 +24,7 @@ internal sealed class SceneTilesheetSource : IDisposable
     /// <summary>Gets image-load failure details, or null when no preview problem was recorded.</summary>
     public string? PreviewWarning { get; private set; }
 
-    private SceneTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
+    internal SceneTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
     {
         Resource = resource;
         BaseDirectory = resource.BaseDirectory;

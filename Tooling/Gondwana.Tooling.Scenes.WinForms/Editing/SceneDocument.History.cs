@@ -83,14 +83,17 @@ public sealed partial class SceneDocument : IDisposable
         {
             var previousFrame = tile.Frame;
             change(tile);
-            if (previousFrame is not null && tile.Frame is { } frame && previousFrame.Tilesheet == frame.Tilesheet &&
-                previousFrame.RegionName == frame.RegionName && previousFrame.XTile == frame.XTile && previousFrame.YTile == frame.YTile)
+            if (tile.Frame is { } frame && FramesMatch(previousFrame, frame))
                 tile.Frame = previousFrame;
         });
         if (changed && existing is null) History.Insert(description, layer.Tiles, layer.Tiles.Count, tile);
         transaction.Commit();
         return changed;
     }
+
+    internal static bool FramesMatch(SceneFrameDefinition? previous, SceneFrameDefinition frame) =>
+        previous is not null && previous.Tilesheet == frame.Tilesheet && previous.RegionName == frame.RegionName &&
+        previous.XTile == frame.XTile && previous.YTile == frame.YTile;
 
     private void RememberReferenceOrigins()
     {
