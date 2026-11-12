@@ -59,6 +59,201 @@ public sealed class TiledImportTests : IDisposable
         File.WriteAllText(tsx, contents.Replace(external, embedded));
     }
 
+    private static string ChunkPayload(string encoding, string compression, params uint[] gids)
+    {
+        if (encoding == "xml")
+            return string.Concat(gids.Select(gid => $"<tile gid='{gid}'/>"));
+        if (encoding == "csv") return string.Join(",", gids);
+
+        var bytes = new byte[gids.Length * 4];
+        for (int i = 0; i < gids.Length; i++)
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(i * 4), gids[i]);
+        if (compression.Length != 0)
+        {
+            using var output = new MemoryStream();
+            using (Stream compressor = compression == "zlib"
+                ? new ZLibStream(output, CompressionLevel.Optimal, true)
+                : new GZipStream(output, CompressionLevel.Optimal, true))
+                compressor.Write(bytes);
+            bytes = output.ToArray();
+        }
+        return Convert.ToBase64String(bytes);
+    }
+
+    private string ChunkedMap(string chunks, string encoding = "csv", string compression = "",
+        string orientation = "orthogonal", int tileWidth = 2, int tileHeight = 2,
+        string layerAttributes = "", string mapAttributes = "")
+    {
+        string source = Path.Combine(directory, "chunked.tmx");
+        string attributes = encoding == "xml" ? "" : $" encoding='{encoding}'";
+        if (compression.Length != 0) attributes += $" compression='{compression}'";
+        File.WriteAllText(source, $"""
+            <map orientation='{orientation}' infinite='1' width='0' height='0' tilewidth='{tileWidth}' tileheight='{tileHeight}' {mapAttributes}>
+              <tileset firstgid='1' source='{(tileWidth == 2 ? "terrain.tsx" : "oversized.tsx")}'/>
+              <layer width='0' height='0' {layerAttributes}><data{attributes}>{chunks}</data></layer>
+            </map>
+            """);
+        return source;
+    }
+
+    /// <summary>Chunk payloads use the existing TMX decoders and retain original world positions.</summary>
+    [Theory]
+    [InlineData("xml", "")]
+    [InlineData("csv", "")]
+    [InlineData("base64", "")]
+    [InlineData("base64", "zlib")]
+    [InlineData("base64", "gzip")]
+    public void ChunkedLayersBecomeFiniteScenesWithoutImplicitWrapping(string encoding, string compression)
+    {
+        Tileset();
+        string chunks = $"<chunk x='-2' y='1' width='2' height='2'>{ChunkPayload(encoding, compression, 1, 0, 0, 0)}</chunk>" +
+            $"<chunk x='2' y='-1' width='2' height='2'>{ChunkPayload(encoding, compression, 0, 0, 0, 2)}</chunk>";
+        var request = new ExternalImportRequest(
+            ChunkedMap(chunks, encoding, compression, layerAttributes: "offsetx='6' offsety='-4'"),
+            Path.Combine(directory, "output"));
+        var importer = new TiledMapImporter();
+        var analysis = importer.Analyze(request);
+        Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
+        Assert.False(Directory.Exists(request.OutputDirectory));
+
+        var result = importer.Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "chunked.gscn"));
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        var layer = Assert.Single(scene.Layers);
+        Assert.Equal(6, layer.Columns);
+        Assert.Equal(4, layer.Rows);
+        Assert.Equal(new Point(-2, 6), layer.OriginPx);
+        Assert.False(layer.WrapHorizontally);
+        Assert.False(layer.WrapVertically);
+        Assert.Equal(2, layer.Tiles.Count);
+        var animated = Assert.Single(layer.Tiles, tile => tile.X == 0 && tile.Y == 2);
+        Assert.Equal("terrain.tile.0", animated.AnimationKey);
+        Assert.True(animated.StartAnimation);
+        Assert.Equal("terrain", animated.Frame!.Tilesheet);
+        var staticTile = Assert.Single(layer.Tiles, tile => tile.X == 5 && tile.Y == 1);
+        Assert.Equal(1, staticTile.Frame!.XTile);
+
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "terrain");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var loaded = Assert.Single(runtime.SceneLayers);
+        Assert.Equal(new Rectangle(2, -2, 2, 2), loaded[0, 2]!.DrawLocationWorld);
+        Assert.Equal(new Rectangle(12, -4, 2, 2), loaded[5, 1]!.DrawLocationWorld);
+        Assert.Null(loaded[1, 1]!.CurrentFrame);
+    }
+
+    /// <summary>Rhombic layers retain the projected positions of negative chunk coordinates.</summary>
+    [Fact]
+    public void ChunkedIsometricLayerPreservesWorldAnchors()
+    {
+        Tileset();
+        var chunks = "<chunk x='-3' y='-2' width='2' height='2'>1,0,0,2</chunk>";
+        var request = new ExternalImportRequest(
+            ChunkedMap(chunks, orientation: "isometric"), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var layer = Assert.Single(SceneDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+        Assert.Equal(new Point(1, 5), layer.OriginPx);
+        Assert.Equal(2, layer.Columns);
+        Assert.Equal(2, layer.Rows);
+        Assert.False(layer.WrapHorizontally || layer.WrapVertically);
+        Assert.Contains(layer.Tiles, tile => tile.X == 0 && tile.Y == 0);
+        Assert.Contains(layer.Tiles, tile => tile.X == 1 && tile.Y == 1);
+    }
+
+    /// <summary>Odd isometric dimensions use a blank column to preserve integer artwork anchors.</summary>
+    [Fact]
+    public void ChunkedOddIsometricCellsPadOriginInsteadOfMovingTiles()
+    {
+        OversizedTileset(3, 3);
+        var chunks = "<chunk x='-2' y='1' width='1' height='1'>1</chunk>";
+        var request = new ExternalImportRequest(
+            ChunkedMap(chunks, orientation: "isometric", tileWidth: 3, tileHeight: 3),
+            Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var layer = Assert.Single(SceneDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+        Assert.Equal(2, layer.Columns);
+        Assert.Equal(1, layer.Rows);
+        Assert.Equal(new Point(6, 3), layer.OriginPx);
+        var tile = Assert.Single(layer.Tiles);
+        Assert.Equal(1, tile.X);
+        Assert.Equal(0, tile.Y);
+        Assert.False(layer.WrapHorizontally || layer.WrapVertically);
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(
+            SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "chunked.gscn")));
+        Assert.Equal(new Rectangle(-6, -2, 3, 3), runtime.SceneLayers[0][1, 0]!.DrawLocationWorld);
+    }
+
+    /// <summary>Each chunked layer has independent finite bounds and world-space origin.</summary>
+    [Fact]
+    public void MultipleChunkedLayersKeepIndependentBoundsAndOrder()
+    {
+        Tileset();
+        var source = ChunkedMap("<chunk x='-1' y='-1' width='1' height='1'>1</chunk>");
+        string xml = File.ReadAllText(source);
+        xml = xml.Replace("</map>", """
+            <group offsetx='4' offsety='2' visible='0'>
+              <layer width='0' height='0'>
+                <data encoding='csv'><chunk x='8' y='7' width='1' height='1'>2</chunk></data>
+              </layer>
+            </group>
+            </map>
+            """);
+        File.WriteAllText(source, xml);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "chunked.gscn"));
+        Assert.Equal(2, scene.Layers.Count);
+        Assert.Equal(new Point(2, 2), scene.Layers[0].OriginPx);
+        Assert.Equal(new Point(-20, -16), scene.Layers[1].OriginPx);
+        Assert.Equal(1, scene.Layers[1].Columns);
+        Assert.Equal(1, scene.Layers[1].Rows);
+        Assert.False(scene.Layers[1].Visible);
+        Assert.Equal(new[] { 0, 1 }, scene.Layers.Select(l => l.ZOrder));
+    }
+
+    /// <summary>Empty infinite layers materialize as an empty, nonwrapping 1x1 grid.</summary>
+    [Fact]
+    public void EmptyChunkedLayerImportsWithoutInventingTiles()
+    {
+        Tileset();
+        var request = new ExternalImportRequest(ChunkedMap(""), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var layer = Assert.Single(SceneDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+        Assert.Equal(1, layer.Columns);
+        Assert.Equal(1, layer.Rows);
+        Assert.Empty(layer.Tiles);
+        Assert.False(layer.WrapHorizontally || layer.WrapVertically);
+    }
+
+    /// <summary>Invalid chunks fail before installing any generated GTS/GANI/GSCN outputs.</summary>
+    [Theory]
+    [InlineData("<chunk x='0' y='0' width='2' height='2'>1,0,0</chunk>", "length")]
+    [InlineData("<chunk x='0' y='0' width='1' height='1'>1</chunk><chunk x='0' y='0' width='1' height='1'>2</chunk>", "Overlapping")]
+    [InlineData("<chunk x='-100000' y='0' width='1' height='1'>1</chunk><chunk x='100000' y='0' width='1' height='1'>1</chunk>", "bounds exceed")]
+    [InlineData("<chunk x='0' y='0' width='0' height='2'></chunk>", "sizes exceed")]
+    [InlineData("<chunk x='2147483647' y='0' width='2' height='1'>1,1</chunk>", "integer grid range")]
+    [InlineData("<chunk x='0' y='0' width='1' height='1'><tile gid='1'/></chunk><tile gid='1'/>", "cannot mix")]
+    public void InvalidChunkStructuresRejectTransaction(string chunks, string diagnostic)
+    {
+        Tileset();
+        var request = new ExternalImportRequest(ChunkedMap(chunks), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains(diagnostic));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
     /// <summary>Computes logical cell coordinates without relying on internal engine geometry APIs.</summary>
     private static Rectangle LogicalCellBounds(SceneLayer layer, string orientation, int x = 0, int y = 0)
     {
