@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.IO.Compression;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -38,6 +39,25 @@ public sealed class TiledImportTests : IDisposable
         return path;
     }
 
+
+    private void EmbedAtlasInTileset(string tsx, string compression = "")
+    {
+        byte[] pixels = File.ReadAllBytes(Path.Combine(directory, "atlas.png"));
+        if (compression.Length != 0)
+        {
+            using var stream = new MemoryStream();
+            using (Stream compressor = compression == "zlib"
+                ? new ZLibStream(stream, CompressionLevel.Optimal, true)
+                : new GZipStream(stream, CompressionLevel.Optimal, true))
+                compressor.Write(pixels);
+            pixels = stream.ToArray();
+        }
+        const string external = "<image source=\"atlas.png\" width=\"7\" height=\"4\" trans=\"ff00ff\"/>";
+        string embedded = $"<image format=\"png\" width=\"7\" height=\"4\" trans=\"ff00ff\"><data encoding=\"base64\"{(compression.Length == 0 ? "" : $" compression=\"{compression}\"")}>{Convert.ToBase64String(pixels)}</data></image>";
+        string contents = File.ReadAllText(tsx);
+        Assert.Contains(external, contents);
+        File.WriteAllText(tsx, contents.Replace(external, embedded));
+    }
 
     /// <summary>Computes logical cell coordinates without relying on internal engine geometry APIs.</summary>
     private static Rectangle LogicalCellBounds(SceneLayer layer, string orientation, int x = 0, int y = 0)
@@ -432,6 +452,174 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal("level.gts", Assert.Single(SceneDefinitionSerializer.Load(
             Path.Combine(output, "level.gscn")).TilesheetSources).GtsPath);
         Assert.Equal("level.gts", Assert.Single(AnimationDefinitionSerializer.Load(legacyGani).TilesheetSources).GtsPath);
+    }
+
+    /// <summary>Embedded image bytes are normalized into a PNG dependency for standalone TSX.</summary>
+    [Theory]
+    [InlineData("")]
+    [InlineData("zlib")]
+    [InlineData("gzip")]
+    public void StandaloneTilesetImportsEmbeddedAtlasWithoutExternalDependency(string compression)
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx, compression);
+        File.Delete(Path.Combine(directory, "atlas.png"));
+        var importer = new TiledTilesetImporter();
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var analysis = importer.Analyze(request);
+        Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
+        Assert.Equal(3, analysis.Artifacts.Count);
+        Assert.DoesNotContain(analysis.Dependencies, p => p.EndsWith("atlas.png", StringComparison.Ordinal));
+        Assert.False(Directory.Exists(request.OutputDirectory));
+        var result = importer.Import(request);
+        Assert.Equal(3, result.WrittenFiles.Count);
+        string imagePath = Path.Combine(request.OutputDirectory, "terrain-atlas.png");
+        using (var atlas = SKBitmap.Decode(imagePath))
+        {
+            Assert.Equal(7, atlas.Width);
+            Assert.Equal(4, atlas.Height);
+            Assert.Equal(SKColors.Red, atlas.GetPixel(0, 0));
+        }
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"));
+        Assert.Equal("terrain-atlas.png", gts.Image.FilePath);
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 7, 4));
+        var gani = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+        Assert.Equal("terrain.gts", Assert.Single(gani.TilesheetSources).GtsPath);
+        byte[] original = File.ReadAllBytes(imagePath);
+        Assert.True(importer.Import(request with { Overwrite = true }).Analysis.CanImport);
+        Assert.Equal(original, File.ReadAllBytes(imagePath));
+    }
+
+    /// <summary>TMX inline atlas data retains grouped GTS/GANI/GSCN references.</summary>
+    [Fact]
+    public void MapImportsEmbeddedAtlasAndSceneReferences()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        string inline = File.ReadAllText(tsx).Replace("<tileset name=", "<tileset firstgid=\"1\" name=");
+        string tmx = Path.Combine(directory, "world.tmx");
+        File.WriteAllText(tmx, $"<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'>{inline}<layer width='1' height='1'><data encoding='csv'>1</data></layer></map>");
+        File.Delete(Path.Combine(directory, "atlas.png"));
+        var request = new ExternalImportRequest(tmx, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        string imagePath = Path.Combine(request.OutputDirectory, "world-tileset-1-atlas.png");
+        Assert.True(File.Exists(imagePath));
+        using (var atlas = SKBitmap.Decode(imagePath))
+            Assert.Equal(SKColors.Red, atlas.GetPixel(0, 0));
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "world.gts"), "terrain");
+        Assert.Equal("world-tileset-1-atlas.png", gts.Image.FilePath);
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "world.gscn"));
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        Assert.Equal("world.gts", Assert.Single(scene.TilesheetSources).GtsPath);
+        Assert.True(Assert.Single(Assert.Single(scene.Layers).Tiles).StartAnimation);
+        var animation = AnimationDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "world-tileset-1-animations.gani"), "terrain.tile.0");
+        Assert.Equal("world.gts", Assert.Single(animation.TilesheetSources).GtsPath);
+        Assert.Equal("world-tileset-1-animations.gani", Assert.Single(scene.AnimationSources).GaniPath);
+    }
+
+    /// <summary>Malformed or ambiguous embedded imagery blocks the transaction.</summary>
+    [Theory]
+    [InlineData("encoding=\"base64\"", "encoding=\"csv\"", "base64")]
+    [InlineData("encoding=\"base64\"", "encoding=\"base64\" compression=\"zstd\"", "compression")]
+    [InlineData("format=\"png\"", "format=\"svg\"", "format")]
+    public void UnsupportedEmbeddedAtlasAttributesRejectWithoutWrites(string oldValue, string newValue, string error)
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        File.WriteAllText(tsx, File.ReadAllText(tsx).Replace(oldValue, newValue));
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains(error));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Image-source and embedded-data attributes must not coexist.</summary>
+    [Fact]
+    public void EmbeddedAtlasRejectsImageSourceAlongsideData()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        xml.Root!.Element("image")!.SetAttributeValue("source", "atlas.png");
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("either a source path or embedded data"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Ambiguous multiple data payloads are never silently accepted.</summary>
+    [Fact]
+    public void EmbeddedAtlasRejectsMultipleDataElements()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        var image = xml.Root!.Element("image")!;
+        image.Add(new System.Xml.Linq.XElement("data", new System.Xml.Linq.XAttribute("encoding", "base64"),
+            Convert.ToBase64String([1, 2, 3, 4])));
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains("only one data element"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Oversized encoded dimensions are refused before bitmap allocation.</summary>
+    [Fact]
+    public void EmbeddedAtlasRejectsOversizedPngDimensionsBeforeDecode()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        var data = xml.Root!.Element("image")!.Element("data")!;
+        byte[] png = Convert.FromBase64String(data.Value);
+        // PNG IHDR: 4-byte width, 4-byte height and a CRC over type + 13-byte payload.
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(16, 4), 9000);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(20, 4), 9000);
+        uint crc = 0xffffffff;
+        foreach (byte value in png.AsSpan(12, 17))
+        {
+            crc ^= value;
+            for (int bit = 0; bit < 8; bit++)
+                crc = (crc >> 1) ^ ((crc & 1) != 0 ? 0xedb88320u : 0u);
+        }
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(png.AsSpan(29, 4), ~crc);
+        data.Value = Convert.ToBase64String(png);
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("64-million-pixel limit"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Corrupted base64 image bytes produce a source diagnostic without any output.</summary>
+    [Fact]
+    public void CorruptEmbeddedAtlasDataDoesNotWriteFiles()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        xml.Root!.Element("image")!.Element("data")!.Value = "this-is-not-base64";
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "source.invalid");
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
     /// <summary>

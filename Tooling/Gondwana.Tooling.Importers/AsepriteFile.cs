@@ -114,10 +114,12 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                         int blend = r.ReadUInt16(); byte opacity = r.ReadByte(); r.ReadBytes(3);
                         string layerName = ReadString(r);
                         if (type is not (0 or 1)) throw new InvalidDataException("Aseprite tilemap layers are unsupported.");
-                        if ((layerFlags & 64) != 0) throw new InvalidDataException("Aseprite reference layers are unsupported.");
+                        if ((layerFlags & 64) != 0)
+                            report(ExternalImportSeverity.Warning, "aseprite.layer.reference",
+                                $"Reference layer '{layerName}' is omitted from the rendered atlas.");
                         if (type == 1 && (flags & 2) == 0) { blend = 0; opacity = 255; }
                         else if (type == 0 && (flags & 1) == 0) opacity = 255;
-                        if (blend != 0) throw new InvalidDataException($"Aseprite blend mode {blend} is unsupported; only Normal is currently rendered.");
+                        if (blend != 0 && (layerFlags & 64) == 0) throw new InvalidDataException($"Aseprite blend mode {blend} is unsupported; only Normal is currently rendered.");
                         layers.Add(new(layerFlags, type, level, blend, opacity, layerName));
                         break;
                     case 0x2005:
