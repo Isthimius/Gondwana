@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Text;
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
-using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Scenes.GSCN;
