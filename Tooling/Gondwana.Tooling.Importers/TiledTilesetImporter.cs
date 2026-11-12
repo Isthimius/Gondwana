@@ -149,7 +149,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         }
         if (group.Elements().Any(e => e.Name.LocalName is not ("object" or "properties")) ||
             group.Element("properties") is not null ||
-            group.Attributes().Any(a => a.Name.LocalName is "class" or "type" &&
+            group.Attributes().Any(a => (a.Name.LocalName is "class" or "type") &&
                 !string.IsNullOrWhiteSpace(a.Value)))
         {
             Omit("collision object-group metadata cannot be represented");
@@ -197,9 +197,17 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             return null;
         }
 
+        double right = tileSize.Width - (x + width);
+        double bottom = tileSize.Height - (y + height);
+        if (right < int.MinValue || right > int.MaxValue ||
+            bottom < int.MinValue || bottom > int.MaxValue)
+        {
+            Omit("rectangle requires collision insets outside the supported integer range");
+            return null;
+        }
         var adjust = new CollisionAdjust(
-            top: (int)y, bottom: (int)(tileSize.Height - (y + height)),
-            left: (int)x, right: (int)(tileSize.Width - (x + width)));
+            top: (int)y, bottom: (int)bottom,
+            left: (int)x, right: (int)right);
         return new TileCollision(adjust, TileCollisionType.Blocking);
     }
 
