@@ -92,3 +92,20 @@ GAF-backed definitions opened through Studio.
 History edits authoring metadata. It does not modify external media, download URI
 sources, undo committed archive/file operations, or alter other documents.
 GAF Add/Import and Replace also have document-scoped history. Reviewed archive Rename/Move/Delete operations are not locally undoable; see [Studio's undo/redo contract](../Gondwana.Tooling.Studio.WinForms/README.md#undo-and-redo).
+
+### Assigning resources by drag and drop
+
+Drop a GTS frame, GANI animation, or GSCN layer onto a row in **Sprites**. You can
+also drop onto **Sprite preview** to assign the selected instance. The row or
+preview identifies the destination while you drag. Empty list space is inactive.
+
+In Studio, drag from the saved GTS image, GANI **Drag animation** handle, GSCN
+**Scene Structure** layer, or a compatible source pane. The sprite editor's GTS
+and scene/layer trees can also start drags in the standalone editor. Studio's
+**Working directory** and **Dependency Explorer** ask for any missing member,
+frame, or layer selection when you release over a compatible target.
+
+A frame drop preserves animation settings. An animation drop sets the key and
+retains the sprite's **StartAnimation** setting. A scene-layer drop sets both
+scene fields. A drop and any new source declaration are one Undo operation.
+Conflicting sources are reported in **Validation**.

@@ -7,6 +7,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../../Gondwana.Tooling.Assets/Gondwana.Tooling.Assets.csproj" />
     <Compile Include="../ResourceDragData.cs" Link="Controls/ResourceDragData.cs" />
     <Compile Include="../Dpi/*.cs" Link="Dpi/%(Filename)%(Extension)" />
     <Compile Include="../Navigation/*.cs" Link="Navigation/%(Filename)%(Extension)" />

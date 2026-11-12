@@ -10,8 +10,8 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 
 public sealed partial class SceneEditorControl
 {
-    private sealed record ResourceHover(object Payload, ResourceAddress Address, SceneDefinition Scene,
-        SceneLayerDefinition Layer, string? FilePath, AssetLocation? PackedLocation, (long Length, DateTime Modified) Stamp);
+    private sealed record ResourceHover(ResourceDragData Data, SceneDefinition Scene,
+        SceneLayerDefinition Layer, string? FilePath, AssetLocation? PackedLocation);
 
     private sealed record DropAssignment(SceneFrameDefinition Frame, TilesheetDefinition? Tilesheet, AnimationDefinition? Animation)
     {
@@ -43,6 +43,13 @@ public sealed partial class SceneEditorControl
             _animationList.DoDragDrop(new ResourceDragData<AnimationDrag>(payload), DragDropEffects.Copy);
         };
 
+        _structure.ItemDrag += (_, e) =>
+        {
+            if (e.Button == MouseButtons.Left && e.Item is TreeNode { Tag: SceneLayerDefinition layer } &&
+                CreateSceneLayerDrag(layer) is { } payload)
+                _structure.DoDragDrop(new ResourceDragData<SceneLayerDrag>(payload), DragDropEffects.Copy);
+        };
+
         _preview.AllowDrop = true;
         _preview.DragEnter += ResourceDragEnter;
         _preview.DragOver += ResourceDragOver;
@@ -50,33 +57,43 @@ public sealed partial class SceneEditorControl
         _preview.DragDrop += ResourceDragDrop;
     }
 
-    private static object? GetResourcePayload(DragEventArgs e) =>
-        (e.AllowedEffect & DragDropEffects.Copy) == 0 ? null : e.Data switch
-        {
-            ResourceDragData<TilesheetFrameDrag> frame => frame.Payload,
-            ResourceDragData<AnimationDrag> animation => animation.Payload,
-            _ => null
-        };
+    internal SceneLayerDrag? CreateSceneLayerDrag(SceneLayerDefinition layer)
+    {
+        if (Document.IsDirty || !Definition.Layers.Contains(layer) ||
+            string.IsNullOrWhiteSpace(Definition.ID) || string.IsNullOrWhiteSpace(layer.ID))
+            return null;
+
+        var location = Document.PackedLocation;
+        if (location is null && Document.FilePath is { } path)
+            location = new AssetLocation(AssetTypes.SceneDefinition, path);
+
+        return location is null ? null : new(new ResourceAddress(location, Definition.ID), layer.ID);
+    }
+
+    private static ResourceDragData? GetResourceData(DragEventArgs e) =>
+        (e.AllowedEffect & DragDropEffects.Copy) != 0 &&
+        e.Data is ResourceDragData<TilesheetFrameDrag> or ResourceDragData<AnimationDrag>
+            ? (ResourceDragData)e.Data : null;
 
     private void ResourceDragEnter(object? sender, DragEventArgs e)
     {
         ClearResourceDrop();
         e.Effect = DragDropEffects.None;
-        if (_preview.HasGesture || _selectedLayer is not { } layer || GetResourcePayload(e) is not { } payload)
+        if (_preview.HasGesture || _selectedLayer is not { } layer || GetResourceData(e) is not { } data)
             return;
 
         try
         {
-            var address = payload is TilesheetFrameDrag frame ? frame.Address : ((AnimationDrag)payload).Address;
-            var type = payload is TilesheetFrameDrag ? AssetTypes.TilesheetDefinition : AssetTypes.AnimationDefinition;
-            if (address.Location.AssetType != type || string.IsNullOrWhiteSpace(address.Member))
+            var address = data.Address;
+            var type = data is ResourceDragData<TilesheetFrameDrag> ? AssetTypes.TilesheetDefinition : AssetTypes.AnimationDefinition;
+            if (address.Location.AssetType != type)
                 throw new InvalidDataException("Drag a specific saved tilesheet frame or animation member.");
 
-            // Hover checks identity and placement. Reading content on release keeps
-            // image decoding and any archive authentication out of the OLE hover loop.
-            NeedsSource(address);
-            _resourceHover = new(payload, address, Definition, layer, Document.FilePath, Document.PackedLocation,
-                SourceStamp(address.Location.Path));
+            // Authentication and member selection happen on release.
+            if (address.Member is not null)
+                NeedsSource(address);
+            data.BeginRead();
+            _resourceHover = new(data, Definition, layer, Document.FilePath, Document.PackedLocation);
             SetResourceDropError(null);
             ResourceDragOver(sender, e);
         }
@@ -96,7 +113,7 @@ public sealed partial class SceneEditorControl
     private bool TryGetDropCell(ResourceHover? hover, DragEventArgs e, out Point cell)
     {
         cell = default;
-        return hover is not null && ReferenceEquals(hover.Payload, GetResourcePayload(e)) &&
+        return hover is not null && ReferenceEquals(hover.Data, GetResourceData(e)) &&
             !IsDisposed && !Disposing && Enabled && !_preview.HasGesture &&
             !Document.History.InTransaction && !Document.History.IsExecuting &&
             ReferenceEquals(Definition, hover.Scene) && ReferenceEquals(_selectedLayer, hover.Layer) &&
@@ -126,19 +143,14 @@ public sealed partial class SceneEditorControl
         bool committed = false;
         try
         {
-            var sourceStamps = new Dictionary<string, (long Length, DateTime Modified)>(StringComparer.OrdinalIgnoreCase)
-            {
-                [hover.Address.Location.Path] = hover.Stamp
-            };
-            var resolver = new AuthoringResourceResolver(_packages, path =>
-            {
-                if (!sourceStamps.TryGetValue(path, out var stamp))
-                    sourceStamps.Add(path, SourceStamp(path));
-                else
-                    CheckSourceStamp(path, stamp);
-            });
-            var assignment = ResolveDropAssignment(hover, resolver);
-            bool needsSource = NeedsSource(hover.Address);
+            var reads = hover.Data.BeginRead();
+            var resolver = new AuthoringResourceResolver(_packages, reads.Observe);
+            if (hover.Data.Resolve(this, resolver) is not { } payload ||
+                !TryGetDropCell(hover, e, out var selectedCell) || selectedCell != cell || SourceSignature() != beforeSources)
+                return;
+            var address = payload.Address;
+            var assignment = ResolveDropAssignment(payload, resolver);
+            bool needsSource = NeedsSource(address);
             if (!TryGetDropCell(hover, e, out var currentCell) || currentCell != cell || SourceSignature() != beforeSources)
                 return;
 
@@ -146,12 +158,11 @@ public sealed partial class SceneEditorControl
                 return;
 
             if (previewsCurrent)
-                newPreview = PrepareDropPreview(hover.Address.Resource, assignment);
+                newPreview = PrepareDropPreview(address.Resource, assignment);
 
             // Resolving an archive can ask for credentials and pump messages.
             // Recheck every dependency used by validation, along with the drop target.
-            foreach (var (path, stamp) in sourceStamps)
-                CheckSourceStamp(path, stamp);
+            reads.Verify();
             if (!TryGetDropCell(hover, e, out currentCell) || currentCell != cell || SourceSignature() != beforeSources)
                 return;
 
@@ -162,7 +173,7 @@ public sealed partial class SceneEditorControl
             using (var transaction = Document.History.BeginTransaction(description))
             {
                 if (needsSource)
-                    RegisterDropSource(hover.Address.Resource, assignment);
+                    RegisterDropSource(address.Resource, assignment);
                 Document.EditTile(hover.Layer, cell.X, cell.Y, description, apply);
                 transaction.Commit();
             }
@@ -186,6 +197,7 @@ public sealed partial class SceneEditorControl
             UpdateValidation();
             _preview.Focus();
         }
+        catch (OperationCanceledException) when (!committed) { }
         catch (Exception ex) when (!committed && IsAuthoringException(ex))
         {
             SetResourceDropError(ex.Message);
@@ -196,9 +208,9 @@ public sealed partial class SceneEditorControl
         }
     }
 
-    private DropAssignment ResolveDropAssignment(ResourceHover hover, AuthoringResourceResolver resolver)
+    private DropAssignment ResolveDropAssignment(IAuthoringResourceDrag payload, AuthoringResourceResolver resolver)
     {
-        if (hover.Payload is TilesheetFrameDrag drag)
+        if (payload is TilesheetFrameDrag drag)
         {
             var region = resolver.ResolveTilesheetFrame(drag, out var definition);
             return new(new SceneFrameDefinition
@@ -210,26 +222,7 @@ public sealed partial class SceneEditorControl
             }, definition, null);
         }
 
-        var resource = hover.Address.Resource;
-        if (resource.EntryName is null && !string.Equals(Path.GetExtension(resource.Path), ".gani", StringComparison.OrdinalIgnoreCase))
-            throw new InvalidDataException("A loose animation source must be a .gani file.");
-
-        var animation = resolver.LoadAnimation(resource, hover.Address.Member);
-        var errors = AnimationDefinitionValidator.Validate(animation);
-        if (errors.Count != 0)
-            throw new InvalidDataException($"Animation '{animation.Key}': {errors[0]}");
-
-        foreach (var frames in animation.Frames.GroupBy(frame => frame.Tilesheet, StringComparer.Ordinal))
-        {
-            var declared = animation.TilesheetSources.FirstOrDefault(source => source.Tilesheet == frames.Key);
-            var sheet = declared is null
-                ? DeclaredTilesheet(frames.Key) ?? throw new InvalidDataException($"Animation '{animation.Key}' needs a saved GTS source for '{frames.Key}'.")
-                : new ResourceAddress(AuthoringResourceResolver.TilesheetSource(declared, resource.BaseDirectory), frames.Key);
-            var definition = resolver.LoadValidatedTilesheet(sheet);
-            foreach (var frame in frames)
-                AuthoringResourceResolver.ResolveTilesheetFrame(definition, frame.RegionName, frame.XTile, frame.YTile);
-        }
-
+        var animation = resolver.ResolveAnimation((AnimationDrag)payload, DeclaredTilesheet);
         return new(SceneAnimationSource.FirstPreviewFrame(animation)!, null, animation);
     }
 
@@ -385,18 +378,6 @@ public sealed partial class SceneEditorControl
         rowNode.Expand();
         _sourceTree.SelectedNode = rowNode.Nodes[selection.X];
         _sourceTree.SelectedNode.EnsureVisible();
-    }
-
-    private static (long Length, DateTime Modified) SourceStamp(string path)
-    {
-        var info = new FileInfo(path);
-        return (info.Length, info.LastWriteTimeUtc);
-    }
-
-    private static void CheckSourceStamp(string path, (long Length, DateTime Modified) stamp)
-    {
-        if (SourceStamp(path) != stamp)
-            throw new InvalidDataException($"'{Path.GetFileName(path)}' changed during the drag. Start a new drag.");
     }
 
     private void SetResourceDropError(string? error)
