@@ -134,12 +134,12 @@ public sealed class TiledImportTests : IDisposable
         var staticTile = Assert.Single(layer.Tiles, tile => tile.X == 5 && tile.Y == 1);
         Assert.Equal(1, staticTile.Frame!.XTile);
 
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "terrain");
         var cycles = AnimationDefinitionSerializer.LoadAllCycles(
             Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
         try
         {
-            using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
-                .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "terrain");
             using var runtime = SceneDefinitionSerializer.ToScene(scene);
             var loaded = Assert.Single(runtime.SceneLayers);
             Assert.Equal(new Rectangle(2, -2, 2, 2), loaded[0, 2]!.DrawLocationWorld);
