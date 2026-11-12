@@ -394,6 +394,135 @@ public sealed partial class SceneEditorTests
             Assert.False(document.History.CanUndo);
         });
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AnimationDropRechecksEarlierDependenciesAfterPasswordPrompt(bool removeImage) =>
+        WithResourceDropEditor((editor, preview, root) =>
+        {
+            const string password = "locked";
+            var (looseFrame, cycle) = CreateDropResources(root, packed: false);
+            var (packedFrame, _) = CreateDropResources(Path.Combine(root, "packed"), packed: true, password: password);
+            var tilesheet = TilesheetDefinitionSerializer.Load(looseFrame.Address.Location.Path, "terrain");
+            tilesheet.Name = "earlier";
+            TilesheetDefinitionSerializer.Save(looseFrame.Address.Location.Path, tilesheet);
+            var animation = AnimationDefinitionSerializer.Load(cycle.Address.Location.Path, cycle.Address.Member);
+            animation.Frames[0].Tilesheet = "earlier";
+            animation.TilesheetSources[0].Tilesheet = "earlier";
+            animation.Frames.Add(new() { Tilesheet = "terrain", RegionName = "detail" });
+            animation.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Packed("terrain",
+                packedFrame.Address.Location.Path, packedFrame.Address.Location.AssetEntryName!));
+            AnimationDefinitionSerializer.SaveAll(cycle.Address.Location.Path, [animation]);
+
+            string deleted = removeImage ? Path.Combine(root, "atlas.png") : looseFrame.Address.Location.Path;
+            var catalog = (AssetPackageCatalog)typeof(SceneEditorControl)
+                .GetField("_packages", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor)!;
+            int prompts = 0;
+            catalog.PasswordProvider = _ =>
+            {
+                prompts++;
+                File.Delete(deleted);
+                return password;
+            };
+
+            var document = editor.Document;
+            var layer = Assert.Single(document.Definition.Layers);
+            document.History.ResetSaved();
+            var args = SceneDragAt(preview, new ResourceDragData<AnimationDrag>(cycle), PreviewCellPoint(preview, layer, 1, 1));
+            RaiseSceneDrag(preview, "Enter", args);
+            Assert.Equal(DragDropEffects.Copy, args.Effect);
+            RaiseSceneDrag(preview, "Drop", args);
+            Assert.Equal(1, prompts);
+            Assert.Equal(DragDropEffects.None, args.Effect);
+            Assert.Empty(layer.Tiles);
+            Assert.Empty(document.Definition.AnimationSources);
+            Assert.False(document.IsDirty);
+            Assert.False(document.History.CanUndo);
+        });
+
+    [Fact]
+    public void DropClearsOnlyTheRestoredDeclaredSourceWarning() =>
+        WithResourceDropEditor((editor, preview, root) =>
+        {
+            var document = editor.Document;
+            var layer = Assert.Single(document.Definition.Layers);
+            document.SetLooseTilesheetSource("terrain", Path.Combine(root, "atlas.gts"));
+            document.SetLooseTilesheetSource("unrelated", Path.Combine(root, "unrelated.gts"));
+            Application.DoEvents();
+            var validation = (TextBox)typeof(SceneEditorControl)
+                .GetField("_validation", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor)!;
+            Assert.Contains("Could not load GTS source 'terrain'", validation.Text);
+            Assert.Contains("Could not load GTS source 'unrelated'", validation.Text);
+
+            var (frame, _) = CreateDropResources(root, packed: false);
+            var args = SceneDragAt(preview, new ResourceDragData<TilesheetFrameDrag>(frame), PreviewCellPoint(preview, layer, 1, 1));
+            RaiseSceneDrag(preview, "Enter", args);
+            RaiseSceneDrag(preview, "Drop", args);
+            Assert.Equal(DragDropEffects.Copy, args.Effect);
+            Application.DoEvents();
+            Assert.DoesNotContain("Could not load GTS source 'terrain'", validation.Text);
+            Assert.Contains("Could not load GTS source 'unrelated'", validation.Text);
+            Assert.Equal(2, document.Definition.TilesheetSources.Count);
+        });
+
+    [Fact]
+    public void AnimationDropReplacesAFailedDependencyPreviewAfterRepair() =>
+        WithResourceDropEditor((editor, preview, root) =>
+        {
+            var (_, cycle) = CreateDropResources(root, packed: false);
+            string image = Path.Combine(root, "atlas.png");
+            File.Move(image, image + ".bak");
+            var document = editor.Document;
+            var layer = Assert.Single(document.Definition.Layers);
+            document.SetLooseAnimationSource("water.flow", cycle.Address.Location.Path);
+            Application.DoEvents();
+            var list = Descendants(editor).OfType<ListView>().Single(control => control.Items.Count == 1 &&
+                control.Items[0].Tag is SceneAnimationSource);
+            var cached = Assert.IsType<SceneAnimationSource>(list.Items[0].Tag);
+            Assert.NotEmpty(cached.Diagnostics);
+            Assert.Null(cached.FindTilesheet("terrain")?.Image);
+
+            File.Move(image + ".bak", image);
+            var args = SceneDragAt(preview, new ResourceDragData<AnimationDrag>(cycle), PreviewCellPoint(preview, layer, 1, 1));
+            RaiseSceneDrag(preview, "Enter", args);
+            RaiseSceneDrag(preview, "Drop", args);
+            Assert.Equal(DragDropEffects.Copy, args.Effect);
+            Application.DoEvents();
+            var repaired = Assert.IsType<SceneAnimationSource>(list.Items[0].Tag);
+            Assert.NotSame(cached, repaired);
+            Assert.Empty(repaired.Diagnostics);
+            Assert.NotNull(repaired.FindTilesheet("terrain")?.Image);
+            Assert.Single(document.Definition.AnimationSources);
+        });
+
+    [Fact]
+    public void DropPreservesThePaintFrameWhenReplacingItsTilesheetPreview() =>
+        WithPaintingEditor((editor, preview, sourceTree, root) =>
+        {
+            var layer = Assert.Single(editor.Definition.Layers);
+            SelectPaintFrame(sourceTree, x: 1, y: 1);
+            var oldSource = Assert.IsType<SceneTilesheetSource>(sourceTree.Nodes[0].Tag);
+            string path = Path.Combine(root, "terrain.gts");
+            var saved = TilesheetDefinitionSerializer.Load(path, "terrain");
+            saved.Regions.Add(new() { Name = "extra", Area = new(0, 0, 16, 16), TileSize = new(16, 16) });
+            TilesheetDefinitionSerializer.Save(path, saved);
+
+            var frame = new TilesheetFrameDrag(new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, path), "terrain"),
+                "detail", 0, 0);
+            var args = SceneDragAt(preview, new ResourceDragData<TilesheetFrameDrag>(frame), PreviewCellPoint(preview, layer, 1, 1));
+            RaiseSceneDrag(preview, "Enter", args);
+            RaiseSceneDrag(preview, "Drop", args);
+            Assert.Equal(DragDropEffects.Copy, args.Effect);
+            Application.DoEvents();
+            Assert.NotSame(oldSource, sourceTree.Nodes[0].Tag);
+
+            Tool(editor, "Paint").PerformClick();
+            ClickCell(preview, layer, 2, 2);
+            var painted = editor.Document.FindTile(layer, 2, 2);
+            Assert.NotNull(painted);
+            Assert.Equal(("terrain", "detail", 1, 1), FrameValues(painted));
+        });
+
     private static void WithResourceDropEditor(Action<SceneEditorControl, ScenePreviewControl, string> test) => RunSta(() =>
     {
         string root = Path.Combine(Path.GetTempPath(), "GscnResourceDrop-" + Guid.NewGuid());

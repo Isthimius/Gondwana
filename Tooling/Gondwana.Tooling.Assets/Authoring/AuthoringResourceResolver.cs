@@ -21,8 +21,12 @@ public sealed record AuthoringResource(string Path, AssetTypes AssetType, string
 
 /// <summary>Loads authoring data without engine initialization, runtime registration, or reference rewriting.</summary>
 /// <param name="packages">Borrowed package cache used for exact typed packed reads; the resolver does not dispose it.</param>
-public sealed class AuthoringResourceResolver(AssetPackageCatalog packages)
+/// <param name="beforeRead">Optional callback invoked with each physical file or archive path immediately before reading it.</param>
+public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Action<string>? beforeRead)
 {
+    /// <summary>Creates a resolver using a borrowed package cache.</summary>
+    public AuthoringResourceResolver(AssetPackageCatalog packages) : this(packages, null) { }
+
     /// <summary>Normalizes a resource path relative to an explicit base directory without checking existence.</summary>
     /// <param name="path">Nonempty resource path; absolute paths retain their root.</param>
     /// <param name="baseDirectory">Fully qualified directory used for relative paths.</param>
@@ -58,6 +62,7 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages)
     {
         if (resource.AssetType != expectedType)
             throw new InvalidDataException($"Expected {expectedType}, received {resource.AssetType} for '{resource.Path}'.");
+        beforeRead?.Invoke(resource.Path);
         return resource.EntryName is null ? File.OpenRead(resource.Path)
             : packages.OpenAsset(resource.Path, expectedType, RequireEntry(resource.EntryName));
     }
@@ -167,12 +172,13 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages)
             var archive = string.IsNullOrWhiteSpace(image.AssetsFilePath) ? containingArchive
                 : ResolvePath(image.AssetsFilePath, baseDirectory);
             if (archive is null) throw new InvalidDataException("Packed image has no archive source.");
-            using var stream = packages.OpenAsset(archive, AssetTypes.Image, image.AssetEntryName);
+            using var stream = Open(new AuthoringResource(archive, AssetTypes.Image, image.AssetEntryName), AssetTypes.Image);
             return SKBitmap.Decode(stream) ?? throw new InvalidDataException($"Packed image '{image.AssetEntryName}' in '{archive}' is unsupported or corrupt.");
         }
         if (!string.IsNullOrWhiteSpace(image.AssetsFilePath))
             throw new InvalidDataException("Packed image has no exact entry name.");
         var path = ResolvePath(image.FilePath!, baseDirectory);
+        beforeRead?.Invoke(path);
         return SKBitmap.Decode(path) ?? throw new InvalidDataException($"Image '{path}' is missing, unsupported or corrupt.");
     }
 }

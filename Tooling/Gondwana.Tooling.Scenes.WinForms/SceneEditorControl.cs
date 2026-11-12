@@ -133,6 +133,7 @@ public sealed partial class SceneEditorControl : UserControl
     private readonly List<SceneTilesheetSource> _tilesheetSources = [];
     private readonly List<SceneAnimationSource> _animationSources = [];
     private readonly List<string> _sourceDiagnostics = [];
+    private readonly Dictionary<object, string> _declaredSourceDiagnostics = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<string, DockContent> _panes =
         new(StringComparer.OrdinalIgnoreCase);
     private EditorDockWorkspace _workspace = null!;
@@ -349,6 +350,7 @@ public sealed partial class SceneEditorControl : UserControl
 
         if (_resourceDropError is not null) lines.Add("WARNING: Resource drop rejected. " + _resourceDropError);
         lines.AddRange(_sourceDiagnostics);
+        lines.AddRange(_declaredSourceDiagnostics.Values);
 
         foreach (var layer in Definition.Layers)
         {
@@ -800,9 +802,16 @@ public sealed partial class SceneEditorControl : UserControl
         _packages.Clear();
         foreach (var source in _tilesheetSources) source.Dispose();
         foreach (var source in _animationSources) source.Dispose();
-        _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+        _tilesheetSources.Clear(); _animationSources.Clear();
+        ClearSourceDiagnostics();
         LoadDeclaredSources();
         RefreshView();
+    }
+
+    private void ClearSourceDiagnostics()
+    {
+        _sourceDiagnostics.Clear();
+        _declaredSourceDiagnostics.Clear();
     }
 
     private void LoadDeclaredSources()
@@ -816,7 +825,7 @@ public sealed partial class SceneEditorControl : UserControl
                 {
                     _tilesheetSources.Add(SceneTilesheetSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.Tilesheet, _packages));
                 }
-                catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
+                catch (Exception ex) { _declaredSourceDiagnostics[source] = ex.Message; }
                 continue;
             }
 
@@ -830,16 +839,16 @@ public sealed partial class SceneEditorControl : UserControl
                         source.Tilesheet,
                         StringComparison.Ordinal))
                 {
-                    _sourceDiagnostics.Add(
-                        $"WARNING: GTS source '{source.Tilesheet}' resolves to definition '{loaded.Definition.Name}'.");
+                    _declaredSourceDiagnostics[source] =
+                        $"WARNING: GTS source '{source.Tilesheet}' resolves to definition '{loaded.Definition.Name}'.";
                 }
 
                 _tilesheetSources.Add(loaded);
             }
             catch (Exception ex) when (IsAuthoringException(ex))
             {
-                _sourceDiagnostics.Add(
-                    $"WARNING: Could not load GTS source '{source.Tilesheet}': {ex.Message}");
+                _declaredSourceDiagnostics[source] =
+                    $"WARNING: Could not load GTS source '{source.Tilesheet}': {ex.Message}";
             }
         }
 
@@ -852,7 +861,7 @@ public sealed partial class SceneEditorControl : UserControl
                 {
                     _animationSources.Add(SceneAnimationSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.AnimationKey, _packages));
                 }
-                catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
+                catch (Exception ex) { _declaredSourceDiagnostics[source] = ex.Message; }
                 continue;
             }
 
@@ -866,16 +875,16 @@ public sealed partial class SceneEditorControl : UserControl
                         source.AnimationKey,
                         StringComparison.OrdinalIgnoreCase))
                 {
-                    _sourceDiagnostics.Add(
-                        $"WARNING: GANI source '{source.AnimationKey}' resolves to definition '{loaded.Definition.Key}'.");
+                    _declaredSourceDiagnostics[source] =
+                        $"WARNING: GANI source '{source.AnimationKey}' resolves to definition '{loaded.Definition.Key}'.";
                 }
 
                 _animationSources.Add(loaded);
             }
             catch (Exception ex) when (IsAuthoringException(ex))
             {
-                _sourceDiagnostics.Add(
-                    $"WARNING: Could not load GANI source '{source.AnimationKey}': {ex.Message}");
+                _declaredSourceDiagnostics[source] =
+                    $"WARNING: Could not load GANI source '{source.AnimationKey}': {ex.Message}";
             }
         }
     }
@@ -1377,7 +1386,8 @@ public sealed partial class SceneEditorControl : UserControl
         ClearMultiSelection();
         foreach (var source in _tilesheetSources) source.Dispose();
         foreach (var source in _animationSources) source.Dispose();
-        _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+        _tilesheetSources.Clear(); _animationSources.Clear();
+        ClearSourceDiagnostics();
         LoadDeclaredSources(); RefreshView();
         _displayedDefinition = Definition; _displayedSources = SourceSignature();
     }
@@ -1811,7 +1821,8 @@ public sealed partial class SceneEditorControl : UserControl
                         string? selectedAnimation = _animationList.SelectedItems.Cast<ListViewItem>().Select(item => (item.Tag as SceneAnimationSource)?.Definition.Key).FirstOrDefault();
                         foreach (var source in _tilesheetSources) source.Dispose();
                         foreach (var source in _animationSources) source.Dispose();
-                        _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+                        _tilesheetSources.Clear(); _animationSources.Clear();
+                        ClearSourceDiagnostics();
                         LoadDeclaredSources(); RefreshSourceTree(); RefreshAnimationList();
                         if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is { } selectedTilesheetSource)
                             SelectTilesheetRoot(selectedTilesheetSource);

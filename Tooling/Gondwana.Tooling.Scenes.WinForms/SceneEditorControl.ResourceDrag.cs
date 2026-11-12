@@ -126,8 +126,18 @@ public sealed partial class SceneEditorControl
         bool committed = false;
         try
         {
-            CheckSourceStamp(hover);
-            var assignment = ResolveDropAssignment(hover);
+            var sourceStamps = new Dictionary<string, (long Length, DateTime Modified)>(StringComparer.OrdinalIgnoreCase)
+            {
+                [hover.Address.Location.Path] = hover.Stamp
+            };
+            var resolver = new AuthoringResourceResolver(_packages, path =>
+            {
+                if (!sourceStamps.TryGetValue(path, out var stamp))
+                    sourceStamps.Add(path, SourceStamp(path));
+                else
+                    CheckSourceStamp(path, stamp);
+            });
+            var assignment = ResolveDropAssignment(hover, resolver);
             bool needsSource = NeedsSource(hover.Address);
             if (!TryGetDropCell(hover, e, out var currentCell) || currentCell != cell || SourceSignature() != beforeSources)
                 return;
@@ -139,8 +149,9 @@ public sealed partial class SceneEditorControl
                 newPreview = PrepareDropPreview(hover.Address.Resource, assignment);
 
             // Resolving an archive can ask for credentials and pump messages.
-            // Check context and source declarations again before recording anything.
-            CheckSourceStamp(hover);
+            // Recheck every dependency used by validation, along with the drop target.
+            foreach (var (path, stamp) in sourceStamps)
+                CheckSourceStamp(path, stamp);
             if (!TryGetDropCell(hover, e, out currentCell) || currentCell != cell || SourceSignature() != beforeSources)
                 return;
 
@@ -185,9 +196,8 @@ public sealed partial class SceneEditorControl
         }
     }
 
-    private DropAssignment ResolveDropAssignment(ResourceHover hover)
+    private DropAssignment ResolveDropAssignment(ResourceHover hover, AuthoringResourceResolver resolver)
     {
-        var resolver = new AuthoringResourceResolver(_packages);
         if (hover.Payload is TilesheetFrameDrag drag)
         {
             var region = resolver.ResolveTilesheetFrame(drag, out var definition);
@@ -283,7 +293,7 @@ public sealed partial class SceneEditorControl
         if (assignment.Animation is { } animation)
         {
             var cached = FindAnimation(animation.Key);
-            if (cached is null ||
+            if (cached is null || cached.Diagnostics.Count != 0 ||
                 AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [cached.Definition] }) !=
                 AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [animation] }))
                 return new SceneAnimationSource(resource, animation, _packages);
@@ -309,6 +319,8 @@ public sealed partial class SceneEditorControl
             if (preview is SceneTilesheetSource sheet)
             {
                 var cached = FindTilesheet(sheet.Definition.Name);
+                var selectedFrame = _sourceTree.SelectedNode?.Tag is FrameTag frame && ReferenceEquals(frame.Source, cached)
+                    ? frame : (FrameTag?)null;
                 if (cached is not null)
                 {
                     _tilesheetSources.Remove(cached);
@@ -323,6 +335,11 @@ public sealed partial class SceneEditorControl
                     StringComparer.OrdinalIgnoreCase.Compare(((SceneTilesheetSource)existing.Tag!).Definition.Name, sheet.Definition.Name) <= 0).Count();
                 _sourceTree.Nodes.Insert(index, node);
                 node.Expand();
+                if (selectedFrame is { } selection)
+                    RestoreDropFrameSelection(node, selection);
+                var declaration = Definition.TilesheetSources.FirstOrDefault(source => source.Tilesheet == sheet.Definition.Name);
+                if (declaration is not null)
+                    _declaredSourceDiagnostics.Remove(declaration);
             }
             else if (preview is SceneAnimationSource animation)
             {
@@ -339,6 +356,10 @@ public sealed partial class SceneEditorControl
                 RefreshAnimationList();
                 if (wasSelected)
                     SelectAnimation(animation);
+                var declaration = Definition.AnimationSources.FirstOrDefault(source =>
+                    string.Equals(source.AnimationKey, animation.Definition.Key, StringComparison.OrdinalIgnoreCase));
+                if (declaration is not null)
+                    _declaredSourceDiagnostics.Remove(declaration);
             }
         }
         finally
@@ -348,16 +369,34 @@ public sealed partial class SceneEditorControl
         }
     }
 
+    private void RestoreDropFrameSelection(TreeNode root, FrameTag selection)
+    {
+        var regionNode = root.Nodes.Cast<TreeNode>().FirstOrDefault(node => node.Tag is RegionTag tag &&
+            string.Equals(tag.Region.Name, selection.Region.Name, StringComparison.OrdinalIgnoreCase));
+        if (regionNode?.Tag is not RegionTag region)
+            return;
+
+        var (columns, rows) = TilesheetDefinitionValidator.GridSize(region.Region);
+        if (selection.X >= columns || selection.Y >= rows)
+            return;
+
+        regionNode.Expand();
+        var rowNode = regionNode.Nodes[selection.Y];
+        rowNode.Expand();
+        _sourceTree.SelectedNode = rowNode.Nodes[selection.X];
+        _sourceTree.SelectedNode.EnsureVisible();
+    }
+
     private static (long Length, DateTime Modified) SourceStamp(string path)
     {
         var info = new FileInfo(path);
         return (info.Length, info.LastWriteTimeUtc);
     }
 
-    private static void CheckSourceStamp(ResourceHover hover)
+    private static void CheckSourceStamp(string path, (long Length, DateTime Modified) stamp)
     {
-        if (SourceStamp(hover.Address.Location.Path) != hover.Stamp)
-            throw new InvalidDataException("The saved source changed during the drag. Start a new drag.");
+        if (SourceStamp(path) != stamp)
+            throw new InvalidDataException($"'{Path.GetFileName(path)}' changed during the drag. Start a new drag.");
     }
 
     private void SetResourceDropError(string? error)
