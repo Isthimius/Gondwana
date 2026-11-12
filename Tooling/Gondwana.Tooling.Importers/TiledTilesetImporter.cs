@@ -7,6 +7,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Physics.Collisions;
 using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
@@ -35,8 +36,11 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         element.Attribute(name) is { } attribute ? int.Parse(attribute.Value, CultureInfo.InvariantCulture)
         : fallback ?? throw new InvalidDataException($"Missing {element.Name}.{name}.");
 
+    internal sealed record TileCollision(CollisionAdjust Adjust, TileCollisionType Type);
+
     internal sealed record Tileset(string Name, string GtsFilename, int Columns, int Count, Size TileSize,
-        Spacing Overhang, Dictionary<int, AnimationDefinition> Animations);
+        Spacing Overhang, Dictionary<int, AnimationDefinition> Animations,
+        Dictionary<int, TileCollision> Collisions);
 
     private const int MaxEmbeddedImageBytes = 64 * 1024 * 1024;
 
@@ -118,6 +122,105 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         }
     }
 
+    // Tiled's tile-local rectangle coordinates are measured from the atlas
+    // artwork's top-left corner. GTS collision adjustments are signed insets
+    // from the same artwork rectangle; negative insets preserve overhanging shapes.
+    private static TileCollision? ReadTileCollision(
+        XElement tile, string tilesetName, int tileId, Size tileSize,
+        bool sourceSizeIsDrawnSize, ImportPlan plan)
+    {
+        var groups = tile.Elements("objectgroup").ToArray();
+        if (groups.Length == 0) return null;
+
+        void Omit(string reason) =>
+            plan.Report(ExternalImportSeverity.Warning, "tiled.collision.unsupported",
+                $"Tileset '{tilesetName}', tile {tileId}: {reason}; collision shapes are omitted.");
+
+        if (groups.Length != 1)
+        {
+            Omit("multiple collision object groups are unsupported");
+            return null;
+        }
+        var group = groups[0];
+        if (!sourceSizeIsDrawnSize)
+        {
+            Omit("grid-rendered artwork changes source dimensions and collision scaling cannot be preserved");
+            return null;
+        }
+        if (group.Elements().Any(e => e.Name.LocalName is not ("object" or "properties")) ||
+            group.Element("properties") is not null ||
+            group.Attributes().Any(a => (a.Name.LocalName is "class" or "type") &&
+                !string.IsNullOrWhiteSpace(a.Value)))
+        {
+            Omit("collision object-group metadata cannot be represented");
+            return null;
+        }
+        foreach (string attribute in new[] { "x", "y", "offsetx", "offsety" })
+        {
+            if (Number(group, attribute, 0) != 0)
+            {
+                Omit($"collision object-group {attribute} offsets are unsupported");
+                return null;
+            }
+        }
+        var objects = group.Elements("object").ToArray();
+        if (objects.Length != 1)
+        {
+            Omit($"expected one rectangle, found {objects.Length} collision objects");
+            return null;
+        }
+        var rectangle = objects[0];
+        if (rectangle.Elements().Any(e => e.Name.LocalName != "properties") ||
+            rectangle.Element("properties") is not null ||
+            rectangle.Attribute("gid") is not null ||
+            rectangle.Attribute("template") is not null ||
+            (string?)rectangle.Attribute("class") is { Length: > 0 } ||
+            (string?)rectangle.Attribute("type") is { Length: > 0 } ||
+            Number(rectangle, "rotation", 0) != 0)
+        {
+            Omit("rotated, non-rectangular or custom collision objects are unsupported");
+            return null;
+        }
+
+        double x = Number(rectangle, "x", 0), y = Number(rectangle, "y", 0);
+        double width = Number(rectangle, "width", 0), height = Number(rectangle, "height", 0);
+        if (width <= 0 || height <= 0 ||
+            x != Math.Truncate(x) || y != Math.Truncate(y) ||
+            width != Math.Truncate(width) || height != Math.Truncate(height) ||
+            x < int.MinValue || x > int.MaxValue ||
+            y < int.MinValue || y > int.MaxValue ||
+            width > int.MaxValue || height > int.MaxValue ||
+            x + width < int.MinValue || x + width > int.MaxValue ||
+            y + height < int.MinValue || y + height > int.MaxValue)
+        {
+            Omit("rectangle must have positive, integral dimensions and representable pixel coordinates");
+            return null;
+        }
+
+        double right = tileSize.Width - (x + width);
+        double bottom = tileSize.Height - (y + height);
+        if (right < int.MinValue || right > int.MaxValue ||
+            bottom < int.MinValue || bottom > int.MaxValue)
+        {
+            Omit("rectangle requires collision insets outside the supported integer range");
+            return null;
+        }
+        var adjust = new CollisionAdjust(
+            top: (int)y, bottom: (int)bottom,
+            left: (int)x, right: (int)right);
+        return new TileCollision(adjust, TileCollisionType.Blocking);
+    }
+
+    private static double Number(XElement element, string attribute, double fallback)
+    {
+        double number = element.Attribute(attribute) is { } a
+            ? double.Parse(a.Value, CultureInfo.InvariantCulture)
+            : fallback;
+        if (!double.IsFinite(number))
+            throw new InvalidDataException($"Invalid Tiled collision {attribute}: must be finite.");
+        return number;
+    }
+
     internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null)
     {
         token.ThrowIfCancellationRequested();
@@ -195,7 +298,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             uint rgb = uint.Parse(color, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
             definition.Mask = new() { Red = (byte)(rgb >> 16), Green = (byte)(rgb >> 8), Blue = (byte)rgb, Alpha = 255, Tolerance = 0 };
         }
-        foreach (var feature in root.Descendants().Where(e => e.Name.LocalName is "wangsets" or "terraintypes" or "properties" or "objectgroup" or "transformations"))
+        foreach (var feature in root.Descendants().Where(e => e.Name.LocalName is "wangsets" or "terraintypes" or "properties" or "transformations"))
             plan.Report(ExternalImportSeverity.Warning, "tiled.metadata", $"{feature.Name} is not represented in native tilesheets and will be omitted.");
         if (root.Elements("tile").Any(t => t.Attributes().Any(a => a.Name.LocalName is "x" or "y" or "width" or "height")))
             throw new InvalidDataException("Per-tile atlas subrectangles are unsupported.");
@@ -204,6 +307,10 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         string gts = sharedGtsFilename ?? filename + ".gts";
         plan.Add(gts, definition);
         var animations = new Dictionary<int, AnimationDefinition>();
+        var collisions = new Dictionary<int, TileCollision>();
+        bool collisionDrawsAtSourceSize = mapCellSize is null ||
+            (string?)root.Attribute("tilerendersize") != "grid" ||
+            (mapCellSize.Value.Width == width && mapCellSize.Value.Height == height);
         var tileIds = new HashSet<int>();
         foreach (var tile in root.Elements("tile"))
         {
@@ -211,6 +318,18 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             int id = Int(tile, "id");
             if (id < 0 || id >= count) throw new InvalidDataException($"Tile ID {id} is outside tilecount.");
             if (!tileIds.Add(id)) throw new InvalidDataException($"Duplicate tile ID {id}.");
+            if (ReadTileCollision(tile, name, id, new Size(width, height),
+                collisionDrawsAtSourceSize, plan) is { } collision)
+            {
+                region.Frames.Add(new TilesheetFrameDefinition
+                {
+                    XTile = id % columns,
+                    YTile = id / columns,
+                    CollisionAdjust = collision.Adjust,
+                    CollisionType = collision.Type
+                });
+                collisions.Add(id, collision);
+            }
             if (tile.Element("animation") is not { } animation) continue;
             var gani = new AnimationDefinition
             {
@@ -229,6 +348,6 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             if (!animations.TryAdd(id, gani)) throw new InvalidDataException($"Duplicate animated tile ID {id}.");
             plan.Add($"{filename}-animations.gani", gani);
         }
-        return new(name, gts, columns, count, new(width, height), region.Overhang, animations);
+        return new(name, gts, columns, count, new(width, height), region.Overhang, animations, collisions);
     }
 }

@@ -3,6 +3,7 @@ using System.IO.Compression;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Physics.Collisions;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using SkiaSharp;
@@ -285,6 +286,16 @@ public sealed class TiledImportTests : IDisposable
               {tileOffset}
             </tileset>
             """);
+        return path;
+    }
+
+    private string CollisionTileset(string objects, string groupAttributes = "", string tilesetAttributes = "")
+    {
+        string path = OversizedTileset(40, 40, attributes: tilesetAttributes);
+        string source = File.ReadAllText(path);
+        Assert.Contains("</tileset>", source);
+        File.WriteAllText(path, source.Replace("</tileset>",
+            $"<tile id='0'><objectgroup {groupAttributes}>{objects}</objectgroup></tile></tileset>"));
         return path;
     }
 
@@ -653,6 +664,186 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal("level.gts", Assert.Single(SceneDefinitionSerializer.Load(
             Path.Combine(output, "level.gscn")).TilesheetSources).GtsPath);
         Assert.Equal("level.gts", Assert.Single(AnimationDefinitionSerializer.Load(legacyGani).TilesheetSources).GtsPath);
+    }
+
+    /// <summary>Tiled's single tile-local rectangle becomes a blocking GTS frame with exact signed insets.</summary>
+    [Theory]
+    [InlineData(5, 6, 20, 15, 6, 19, 5, 15)]
+    [InlineData(-2, -3, 44, 46, -3, -3, -2, -2)]
+    public void TiledTileRectangleBecomesFrameCollisionAdjust(
+        int x, int y, int width, int height, int top, int bottom, int left, int right)
+    {
+        string source = CollisionTileset(
+            $"<object id='1' x='{x}' y='{y}' width='{width}' height='{height}'/>");
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var importer = new TiledTilesetImporter();
+        var analysis = importer.Analyze(request);
+        Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
+        Assert.DoesNotContain(analysis.Diagnostics, d => d.Code == "tiled.metadata" &&
+            d.Message.Contains("objectgroup", StringComparison.OrdinalIgnoreCase));
+        Assert.False(Directory.Exists(request.OutputDirectory));
+        var result = importer.Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gts"));
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 40, 40));
+        var region = Assert.Single(gts.Regions);
+        var frame = Assert.Single(region.Frames);
+        Assert.Equal(0, frame.XTile);
+        Assert.Equal(0, frame.YTile);
+        Assert.Equal(TileCollisionType.Blocking, frame.CollisionType);
+        Assert.Equal(new CollisionAdjust(top, bottom, left, right), frame.CollisionAdjust);
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "oversized.gts"), "oversized");
+        var runtimeFrame = sheet.GetFrame(0, 0);
+        Assert.Equal(TileCollisionType.Blocking, runtimeFrame.CollisionType);
+        Assert.Equal(new Rectangle(x, y, width, height), runtimeFrame.CollisionArea);
+    }
+
+    /// <summary>A tile's authored rectangle survives the map-to-GSCN path and runtime collision activation.</summary>
+    [Fact]
+    public void TiledMapRetainsRectangleCollisionOnPlacedTileWithOverhang()
+    {
+        CollisionTileset("<object id='1' x='5' y='6' width='20' height='15'/>");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
+        var region = Assert.Single(TilesheetDefinitionSerializer.Load(gtsPath).Regions);
+        Assert.Equal(new Spacing(0, 16, 8, 0), region.Overhang);
+        Assert.Equal(TileCollisionType.Blocking, Assert.Single(region.Frames).CollisionType);
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+        var nativeTile = Assert.Single(scene.Layers[0].Tiles.Where(t => t.X == 0 && t.Y == 0));
+        Assert.Equal(TileCollisionType.Blocking, nativeTile.CollisionType);
+        Assert.Equal(new CollisionAdjust(6, 19, 5, 15), nativeTile.AdjustCollisionArea);
+        Assert.False(nativeTile.AdjustCollisionAreaByFrame);
+        Assert.False(nativeTile.CollisionTypeByFrame);
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(gtsPath, "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var tile = runtime.SceneLayers[0][0, 0]!;
+        Assert.True(tile.CollisionsEnabled);
+        Assert.Equal(TileCollisionType.Blocking, tile.CollisionType);
+        Assert.Equal(new Rectangle(0, -16, 40, 40), tile.DrawLocationWorld);
+        Assert.Equal(new Rectangle(5, -10, 20, 15), tile.CollisionArea);
+    }
+
+    /// <summary>Native tile transforms also transform the rectangle collision metadata.</summary>
+    [Fact]
+    public void FlippedTiledTileMirrorsCollisionRectangleInGscn()
+    {
+        CollisionTileset("<object id='1' x='5' y='6' width='20' height='15'/>");
+        string source = Path.Combine(directory, "flipped.tmx");
+        File.WriteAllText(source, """
+            <map orientation='orthogonal' width='1' height='1' tilewidth='40' tileheight='40'>
+              <tileset firstgid='1' source='oversized.tsx'/>
+              <layer width='1' height='1'><data encoding='csv'>2147483649</data></layer>
+            </map>
+            """);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "flipped.gscn"));
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "flipped.gts"), "oversized");
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        var tile = runtime.SceneLayers[0][0, 0]!;
+        Assert.True(tile.CollisionsEnabled);
+        Assert.Equal(new Rectangle(15, 6, 20, 15), tile.CollisionArea);
+    }
+
+    /// <summary>Animated TMX tiles retain collisions attached to their logical source tile ID.</summary>
+    [Fact]
+    public void AnimatedTiledTileRetainsOwningTileCollisionAcrossInitialFrame()
+    {
+        string tsx = Tileset();
+        File.WriteAllText(tsx, File.ReadAllText(tsx).Replace("<tile id=\"0\">",
+            "<tile id=\"0\"><objectgroup><object id='1' x='1' y='0' width='1' height='2'/></objectgroup>"));
+        string source = Path.Combine(directory, "animated-collision.tmx");
+        File.WriteAllText(source, """
+            <map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'>
+              <tileset firstgid='1' source='terrain.tsx'/>
+              <layer width='1' height='1'><data encoding='csv'>1</data></layer>
+            </map>
+            """);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "animated-collision.gts"));
+        var frame = Assert.Single(Assert.Single(gts.Regions).Frames);
+        Assert.Equal(0, frame.XTile);
+        Assert.Equal(TileCollisionType.Blocking, frame.CollisionType);
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "animated-collision.gscn"));
+        var tile = Assert.Single(Assert.Single(scene.Layers).Tiles);
+        Assert.True(tile.StartAnimation);
+        Assert.Equal(1, tile.Frame!.XTile);
+        Assert.Equal(TileCollisionType.Blocking, tile.CollisionType);
+        Assert.Equal(new CollisionAdjust(0, 0, 1, 0), tile.AdjustCollisionArea);
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
+            .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "animated-collision.gts"), "terrain");
+        var cycles = AnimationDefinitionSerializer.LoadAllCycles(
+            Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+        try
+        {
+            using var runtime = SceneDefinitionSerializer.ToScene(scene);
+            var placed = runtime.SceneLayers[0][0, 0]!;
+            Assert.True(placed.CollisionsEnabled);
+            Assert.Equal(new Rectangle(1, 0, 1, 2), placed.CollisionArea);
+        }
+        finally { foreach (var cycle in cycles) cycle.Dispose(); }
+    }
+
+    /// <summary>Unrepresentable shapes produce explicit warnings, never partial collision geometry.</summary>
+    [Theory]
+    [InlineData("<object id='1' x='1' y='1' width='4' height='4'/><object id='2' x='2' y='2' width='5' height='5'/>", "one rectangle")]
+    [InlineData("<object id='1' x='1' y='1' width='4' height='4' rotation='30'/>", "rotated")]
+    [InlineData("<object id='1' x='1' y='1' width='4' height='4'><ellipse/></object>", "non-rectangular")]
+    [InlineData("<object id='1' x='1' y='1' width='4' height='4'><polygon points='0,0 4,0 4,4'/></object>", "non-rectangular")]
+    [InlineData("<object id='1' x='1.5' y='1' width='4' height='4'/>", "integral")]
+    [InlineData("<object id='1' x='1' y='1' width='0' height='4'/>", "positive")]
+    [InlineData("<object id='1' x='1' y='1' width='4' height='4'><properties><property name='trigger' type='bool' value='true'/></properties></object>", "custom")]
+    public void UnsupportedTileCollisionsAreWarnedAndOmitted(string objects, string reason)
+    {
+        var source = CollisionTileset(objects);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Severity == ExternalImportSeverity.Warning &&
+            d.Code == "tiled.collision.unsupported" && d.Message.Contains(reason));
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gts"));
+        Assert.Empty(Assert.Single(gts.Regions).Frames);
+    }
+
+    /// <summary>Scaled grid rendering cannot safely preserve tile-local collision pixels.</summary>
+    [Fact]
+    public void GridRenderedCollisionRectangleWithDifferentDrawSizeWarns()
+    {
+        CollisionTileset("<object id='1' x='5' y='6' width='20' height='15'/>",
+            tilesetAttributes: "tilerendersize='grid'");
+        var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Code == "tiled.collision.unsupported" && d.Message.Contains("scaling"));
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gts"));
+        Assert.Empty(Assert.Single(gts.Regions).Frames);
+        Assert.All(Assert.Single(SceneDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "oversized.gscn")).Layers).Tiles,
+            tile => Assert.Equal(TileCollisionType.None, tile.CollisionType));
+    }
+
+    /// <summary>Invalid numeric collision metadata fails analysis before writing output.</summary>
+    [Theory]
+    [InlineData("NaN")]
+    [InlineData("Infinity")]
+    public void NonFiniteCollisionCoordinatesBlockImportWithoutWrites(string x)
+    {
+        string source = CollisionTileset($"<object id='1' x='{x}' y='0' width='4' height='4'/>");
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
     /// <summary>Embedded image bytes are normalized into a PNG dependency for standalone TSX.</summary>
