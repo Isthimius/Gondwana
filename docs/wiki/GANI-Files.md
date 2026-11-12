@@ -567,6 +567,12 @@ Animation
 
 The editor can validate and save the definition without needing to serialize a live `Animator`.
 
+### Dragging frames into an animation
+
+Select the desired GANI definition and drag an individual frame from **GTS frame sources** into **Animation frames**. In Studio, you can also drag from the **Image** pane of an open GTS document. Arrange the two document tabs side by side or float one so both panes are visible. Save the GTS first so the drag refers to the saved definition and frame.
+
+The insertion line shows where the frame will go. Drop below the last row to append. The new frame uses the animation's default duration. The editor checks the exact GTS member, region and coordinates, then records the source if needed. A loose source keeps its file reference, and a packed source keeps its full GAF entry name. Undo and redo apply to both the frame and any source it added. If the source cannot be used or the same logical name is already registered from another location, check the **Validation** pane for the reason.
+
 The WinForms GANI editor persists loose and packed GTS dependencies in `TilesheetSources` and reloads them automatically when a GANI document is reopened. **Add from GAF…** in the GTS frame sources pane selects an exact typed entry and logical member; its packed images feed the existing frame tree and previews, including images in the same archive. The shared picker supports password prompts and **Reload / retry**, and rejects conflicting logical source names. For older GANI files that do not yet contain source metadata, the editor performs a deliberately narrow migration check: it looks only beside the GANI file for a GTS definition whose logical `Name` matches the frame's `Tilesheet`. If exactly one match exists, it is loaded and the document is marked dirty so the recovered dependency is written on the next save. The editor does not recursively search the filesystem.
 
 Saving or **Save As** rebases loose dependency and archive paths relative to the new GANI location when both files are on the same filesystem root, preserving exact entry and logical member identities.

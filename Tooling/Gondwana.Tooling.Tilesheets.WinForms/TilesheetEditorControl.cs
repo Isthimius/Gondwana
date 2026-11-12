@@ -1,4 +1,6 @@
+using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
@@ -75,6 +77,7 @@ public sealed class TilesheetEditorControl : UserControl
         _assetPackages = assetPackages ?? new AssetPackageCatalog();
         _ownsAssetPackages = assetPackages is null;
         _viewport.Colors = _overlaySettings;
+        _viewport.CreateFrameDrag = CreateFrameDrag;
 
         Size = new Size(1000, 650);
         Dock = DockStyle.Fill;
@@ -166,6 +169,21 @@ public sealed class TilesheetEditorControl : UserControl
         Document.Changed += DocumentChanged;
         _overlaySettings.Changed += OverlayColorsChanged;
         RefreshView();
+    }
+
+    internal TilesheetFrameDrag? CreateFrameDrag(TilesheetRegionDefinition region, Point frame)
+    {
+        // The target uses saved resources. An unsaved grid or renamed member could
+        // otherwise refer to a different frame at the same coordinates on disk.
+        if (Document.IsDirty || !Document.Definition.Regions.Contains(region))
+            return null;
+
+        var location = Document.PackedLocation;
+        if (location is null && Document.FilePath is { } path)
+            location = new AssetLocation(AssetTypes.TilesheetDefinition, path);
+
+        return location is null ? null
+            : new(new ResourceAddress(location, Document.Definition.Name), region.Name, frame.X, frame.Y);
     }
 
     /// <summary>Reloads the image without modifying the document.</summary>

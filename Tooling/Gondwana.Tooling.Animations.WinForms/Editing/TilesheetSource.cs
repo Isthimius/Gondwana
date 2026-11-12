@@ -57,11 +57,13 @@ internal sealed class TilesheetSource : IDisposable
     public AnimationFrameDefinition CreateFrame(
         TilesheetRegionDefinition region,
         int x,
-        int y) =>
+        int y) => CreateFrame(Definition.Name, region.Name, x, y);
+
+    internal static AnimationFrameDefinition CreateFrame(string tilesheet, string region, int x, int y) =>
         new()
         {
-            Tilesheet = Definition.Name,
-            RegionName = region.Name,
+            Tilesheet = tilesheet,
+            RegionName = region,
             XTile = x,
             YTile = y
         };
