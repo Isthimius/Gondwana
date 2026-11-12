@@ -26,7 +26,7 @@ public sealed partial class SceneEditorControl
 
     private readonly AssetPackageCatalog _spriteDiscoveryPackages = new();
     private readonly SceneSpriteArtworkCache _spriteArtwork = new();
-    private readonly Dictionary<AssetLocation, IReadOnlyList<SpriteDefinition>> _savedSprites = [];
+    private readonly Dictionary<ResourceAddress, IReadOnlyList<SpriteDefinition>> _savedSprites = [];
     private readonly HashSet<string> _explicitSpriteSources = new(StringComparer.OrdinalIgnoreCase);
     private Func<IReadOnlyList<ISceneSpriteOwner>>? _getSpriteOwners;
     private IReadOnlyList<SceneSpriteVisual> _spriteVisuals = [];
@@ -172,9 +172,9 @@ public sealed partial class SceneEditorControl
                 };
                 foreach (var resource in resources)
                 {
-                    var location = new AssetLocation(resource.AssetType, resource.Path, resource.EntryName);
-                    if (owners.Any(owner => owner.Location == location)) continue;
-                    try { _savedSprites.Add(location, new AuthoringResourceResolver(packages).LoadSprites(resource)); }
+                    var address = new ResourceAddress(resource);
+                    if (owners.Any(owner => Owns(owner, address))) continue;
+                    try { _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource)); }
                     catch (Exception ex) when (IsAuthoringException(ex)) { _spriteDiscoveryWarning = ex.Message; }
                 }
             }
@@ -217,13 +217,16 @@ public sealed partial class SceneEditorControl
         return preferred.Length == 1 ? preferred[0] : null;
     }
 
+    private static bool Owns(ISceneSpriteOwner owner, ResourceAddress address) =>
+        owner.Location is { } location && new ResourceAddress(location) == address with { Member = null, FieldPath = null };
+
     private IReadOnlyList<ISceneSpriteOwner> LiveOwners() => _getSpriteOwners?.Invoke() ?? [];
 
     private IEnumerable<SpriteCandidate> Candidates(IReadOnlyList<ISceneSpriteOwner> owners)
     {
-        foreach (var (location, members) in _savedSprites)
-            if (!owners.Any(owner => owner.Location == location))
-                foreach (var candidate in FromMembers(location, members, null))
+        foreach (var (address, members) in _savedSprites)
+            if (!owners.Any(owner => Owns(owner, address)))
+                foreach (var candidate in FromMembers(address.Location, members, null))
                     yield return candidate;
 
         foreach (var owner in owners)
@@ -396,7 +399,8 @@ public sealed partial class SceneEditorControl
         !IsDisposed && !Disposing && Enabled && _preview.Visible && !_preview.HasGesture &&
         !Document.History.InTransaction && !Document.History.IsExecuting &&
         ReferenceEquals(Definition, gesture.Scene) && SceneAddress() == gesture.Target &&
-        Definition.Layers.Contains(gesture.Layer) && IsLayerVisibleInPreview(gesture.Layer) &&
+        Definition.Layers.Contains(gesture.Layer) && gesture.Layer.Columns > 0 && gesture.Layer.Rows > 0 &&
+        IsLayerVisibleInPreview(gesture.Layer) &&
         new LayerPlacementGeometry(gesture.Layer) == gesture.Geometry &&
         (!requireSelection || ReferenceEquals(_selectedLayer, gesture.Layer) && ReferenceEquals(_structure.SelectedNode?.Tag, gesture.Layer));
 
@@ -404,7 +408,7 @@ public sealed partial class SceneEditorControl
     {
         if (drag.SpriteId == Guid.Empty || drag.Address.Location.AssetType != AssetTypes.SpriteDefinition ||
             string.IsNullOrWhiteSpace(drag.Address.Member)) return null;
-        var owners = LiveOwners().Where(owner => owner.Location == drag.Address.Location).Take(2).ToArray();
+        var owners = LiveOwners().Where(owner => Owns(owner, drag.Address)).Take(2).ToArray();
         if (owners.Length != 1 || !owners[0].CanPlace || !ReferenceEquals(owners[0].Session, drag.Session) ||
             owners[0].Revision != drag.Revision || owners[0].History.InTransaction || owners[0].History.IsExecuting)
             return null;
@@ -469,6 +473,12 @@ public sealed partial class SceneEditorControl
         if (_selectedLayer is not { } layer || !ReferenceEquals(_structure.SelectedNode?.Tag, layer) || !IsLayerVisibleInPreview(layer))
         {
             UpdateSpriteStatus("Select a visible scene layer before placing the sprite.");
+            return;
+        }
+
+        if (SceneReferenceRestriction(sprite, target) is { } restriction)
+        {
+            UpdateSpriteStatus(restriction);
             return;
         }
 

@@ -32,8 +32,9 @@ public sealed partial class SpriteDocument
     /// <summary>Places an existing instance and records its validated scene reference in one history operation.</summary>
     public bool PlaceInstance(SpriteInstanceDrag source, ResourceAddress scene, string layerId, System.Drawing.PointF position)
     {
-        if (!ReferenceEquals(source.Session, this) || source.Revision != Revision || source.Address.Location != Location ||
-            source.Address.Member is not { } key || FindInstance(key, source.SpriteId) is not { } sprite)
+        if (!ReferenceEquals(source.Session, this) || source.Revision != Revision || Location is not { } location ||
+            source.Address.Member is not { } key || new ResourceAddress(location, key) != source.Address with { FieldPath = null } ||
+            FindInstance(key, source.SpriteId) is not { } sprite)
             throw new InvalidOperationException("The source sprite changed. Start a new placement.");
         if (scene.Location.AssetType != AssetTypes.SceneDefinition || string.IsNullOrWhiteSpace(scene.Member) ||
             string.IsNullOrWhiteSpace(layerId) || !float.IsFinite(position.X) || !float.IsFinite(position.Y))
