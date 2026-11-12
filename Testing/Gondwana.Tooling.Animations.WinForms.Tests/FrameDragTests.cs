@@ -104,6 +104,17 @@ public sealed partial class AnimationEditorTests
             Application.DoEvents();
 
             var frames = Field<FrameSequenceListView>(host.Editor, "_frames");
+            if (packed)
+            {
+                var basename = new AssetLocation(AssetTypes.TilesheetDefinition, drag.Address.Location.Path, "sheet.gts");
+                var incomplete = drag with { Address = new ResourceAddress(basename, drag.Address.Member) };
+                var rejected = DragAt(frames, new ResourceDragData<TilesheetFrameDrag>(incomplete), 50);
+                RaiseDrag(frames, "Enter", rejected);
+                Assert.Equal(DragDropEffects.None, rejected.Effect);
+                Assert.False(document.IsDirty);
+                Assert.False(document.History.CanUndo);
+            }
+
             var drop = DragAt(frames, new ResourceDragData<TilesheetFrameDrag>(drag), 50);
             RaiseDrag(frames, "Enter", drop);
             Assert.Equal(0, frames.InsertionIndex);

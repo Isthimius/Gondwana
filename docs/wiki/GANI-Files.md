@@ -552,7 +552,7 @@ Because animation definitions depend on tilesheet frames, applying `EngineStateP
 
 GANI is designed to be an authoring format, not merely an EngineState implementation detail.
 
-A future animation editor can work entirely against `AnimationDefinition`:
+The animation editor works against `AnimationDefinition`:
 
 ```text
 Animation
@@ -577,7 +577,7 @@ The WinForms GANI editor persists loose and packed GTS dependencies in `Tileshee
 
 Saving or **Save As** rebases loose dependency and archive paths relative to the new GANI location when both files are on the same filesystem root, preserving exact entry and logical member identities.
 
-That same separation makes GANI suitable for both a standalone WinForms animation tool and, later, an embedded Gondwana Studio editor.
+Gondwana Studio and the standalone WinForms animation tool share the same animation editor.
 
 ---
 
