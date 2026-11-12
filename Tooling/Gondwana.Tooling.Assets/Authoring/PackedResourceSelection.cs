@@ -13,16 +13,14 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
     public static IReadOnlyList<string> GetMembers(AssetPackageCatalog packages, AuthoringResource resource)
     {
         RequirePacked(resource);
-        using var stream = packages.OpenAsset(resource.Path, resource.AssetType, resource.EntryName!);
-        IReadOnlyList<string> members = resource.AssetType switch
+        if (resource.AssetType is AssetTypes.Audio or AssetTypes.Image)
         {
-            AssetTypes.TilesheetDefinition => TilesheetDefinitionSerializer.LoadAll(stream).Select(x => x.Name).ToArray(),
-            AssetTypes.AnimationDefinition => AnimationDefinitionSerializer.LoadAll(stream).Select(x => x.Key).ToArray(),
-            AssetTypes.SceneDefinition => SceneDefinitionSerializer.LoadAll(stream).Select(x => x.ID).ToArray(),
-            AssetTypes.Audio or AssetTypes.Image => [],
-            _ => throw new InvalidDataException($"Unsupported dependency type: {resource.AssetType}.")
-        };
-        if (members.Count == 0 && resource.AssetType is not (AssetTypes.Audio or AssetTypes.Image))
+            using var stream = packages.OpenAsset(resource.Path, resource.AssetType, resource.EntryName!);
+            return [];
+        }
+
+        var members = new AuthoringResourceResolver(packages).GetMembers(resource);
+        if (members.Count == 0)
             throw new InvalidDataException($"Entry '{resource.EntryName}' contains no logical definitions.");
         return members;
     }

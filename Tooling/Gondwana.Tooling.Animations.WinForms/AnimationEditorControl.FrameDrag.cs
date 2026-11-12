@@ -8,7 +8,7 @@ namespace Gondwana.Tooling.Animations.WinForms;
 
 public sealed partial class AnimationEditorControl
 {
-    private TilesheetFrameDrag? _hoveredFrame;
+    private ResourceDragData<TilesheetFrameDrag>? _hoveredFrame;
     private AnimationDefinition? _hoveredDefinition;
     private string? _frameDropError;
 
@@ -30,7 +30,7 @@ public sealed partial class AnimationEditorControl
         var handle = new ToolStripControlHost(label)
         {
             Name = "DragAnimation",
-            ToolTipText = "Save the GANI, then drag its selected animation to a scene cell."
+            ToolTipText = "Save the GANI, then drag its selected animation to a scene cell or sprite."
         };
         Rectangle threshold = Rectangle.Empty;
         AnimationDrag? pending = null;
@@ -91,9 +91,22 @@ public sealed partial class AnimationEditorControl
             return;
 
         var definition = Definition;
-        var candidate = ResolveFrameDrop(frame);
-        SetFrameDropError(candidate.Error);
-        if (candidate.Frame is null || IsDisposed || !ReferenceEquals(definition, Definition))
+        try
+        {
+            if (frame.Address.Location.AssetType != AssetTypes.TilesheetDefinition)
+                throw new InvalidDataException("Drag a saved GTS frame.");
+            var reads = frame.BeginRead();
+            if (frame.Payload is { } payload)
+                ResolveFrameDrop(payload, new AuthoringResourceResolver(_packages, reads.Observe));
+            SetFrameDropError(null);
+        }
+        catch (Exception ex) when (IsFrameDropException(ex))
+        {
+            SetFrameDropError(ex.Message);
+            return;
+        }
+
+        if (IsDisposed || Disposing || !ReferenceEquals(definition, Definition))
             return;
 
         _hoveredFrame = frame;
@@ -122,18 +135,33 @@ public sealed partial class AnimationEditorControl
         var frames = definition.Frames.ToArray();
         var filePath = Document.FilePath;
         var packedLocation = Document.PackedLocation;
-        var candidate = ResolveFrameDrop(frame);
-        SetFrameDropError(candidate.Error);
-        if (candidate.Frame is null || IsDisposed || Disposing ||
-            !ReferenceEquals(definition, Definition) || !definition.Frames.SequenceEqual(frames) ||
-            filePath != Document.FilePath || !ReferenceEquals(packedLocation, Document.PackedLocation))
+        TilesheetFrameDrag payload;
+        (AnimationFrameDefinition Frame, bool NeedsSource) candidate;
+        try
+        {
+            var reads = frame.BeginRead();
+            if (frame.Resolve(this) is not TilesheetFrameDrag selected)
+                return;
+            if (!TargetUnchanged())
+                return;
+            payload = selected;
+            candidate = ResolveFrameDrop(payload, new AuthoringResourceResolver(_packages, reads.Observe));
+            reads.Verify();
+        }
+        catch (Exception ex) when (IsFrameDropException(ex))
+        {
+            SetFrameDropError(ex.Message);
+            return;
+        }
+
+        if (!TargetUnchanged())
             return;
 
         using (var transaction = Document.History.BeginTransaction("Drop tilesheet frame"))
         {
             if (candidate.NeedsSource)
             {
-                var resource = frame.Address.Resource;
+                var resource = payload.Address.Resource;
                 if (resource.EntryName is { } entry)
                     Document.AddPackedTilesheetSource(candidate.Frame.Tilesheet, resource.Path, entry);
                 else
@@ -150,42 +178,39 @@ public sealed partial class AnimationEditorControl
         SelectFrame(index);
         _frames.Focus();
         e.Effect = DragDropEffects.Copy;
+
+        bool TargetUnchanged() => !IsDisposed && !Disposing && Enabled &&
+            !Document.History.InTransaction && !Document.History.IsExecuting &&
+            ReferenceEquals(definition, Definition) && definition.Frames.SequenceEqual(frames) &&
+            filePath == Document.FilePath && ReferenceEquals(packedLocation, Document.PackedLocation);
     }
 
-    private (AnimationFrameDefinition? Frame, bool NeedsSource, string? Error) ResolveFrameDrop(TilesheetFrameDrag drag)
+    private (AnimationFrameDefinition Frame, bool NeedsSource) ResolveFrameDrop(TilesheetFrameDrag drag, AuthoringResourceResolver resolver)
     {
-        try
+        var address = drag.Address;
+        if (address.Location.AssetType != AssetTypes.TilesheetDefinition || string.IsNullOrWhiteSpace(address.Member))
+            throw new InvalidDataException("Drag a frame from a specific saved GTS definition.");
+
+        var region = resolver.ResolveTilesheetFrame(drag);
+        var sources = Definition.TilesheetSources.Where(source => source.Tilesheet == address.Member).ToArray();
+        if (sources.Length > 1)
+            throw new InvalidDataException($"Multiple sources are registered for '{address.Member}'.");
+
+        if (sources.Length == 1)
         {
-            var address = drag.Address;
-            if (address.Location.AssetType != AssetTypes.TilesheetDefinition ||
-                string.IsNullOrWhiteSpace(address.Member))
-                return (null, false, "Drag a frame from a specific saved GTS definition.");
-
-            var region = new AuthoringResourceResolver(_packages).ResolveTilesheetFrame(drag);
-            var sources = Definition.TilesheetSources.Where(source => source.Tilesheet == address.Member).ToArray();
-            if (sources.Length > 1)
-                return (null, false, $"Multiple sources are registered for '{address.Member}'.");
-
-            if (sources.Length == 1)
-            {
-                var resource = AuthoringResourceResolver.TilesheetSource(sources[0], Document.BaseDirectory);
-                if (new ResourceAddress(resource, address.Member) != address with { FieldPath = null })
-                    return (null, false, $"'{address.Member}' is already registered from a different GTS source.");
-            }
-
-            return (TilesheetSource.CreateFrame(address.Member, region.Name, drag.X, drag.Y),
-                sources.Length == 0, null);
+            var resource = AuthoringResourceResolver.TilesheetSource(sources[0], Document.BaseDirectory);
+            if (new ResourceAddress(resource, address.Member) != address with { FieldPath = null })
+                throw new InvalidDataException($"'{address.Member}' is already registered from a different GTS source.");
         }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException
-            or ArgumentException or NotSupportedException or InvalidOperationException)
-        {
-            return (null, false, ex.Message);
-        }
+
+        return (TilesheetSource.CreateFrame(address.Member, region.Name, drag.X, drag.Y), sources.Length == 0);
     }
 
-    private static TilesheetFrameDrag? GetDraggedFrame(DragEventArgs e) =>
-        (e.AllowedEffect & DragDropEffects.Copy) != 0 &&
-        e.Data is ResourceDragData<TilesheetFrameDrag> data ? data.Payload : null;
+    private static bool IsFrameDropException(Exception ex) => ex is IOException or InvalidDataException or UnauthorizedAccessException
+        or ArgumentException or NotSupportedException or InvalidOperationException or OperationCanceledException;
+
+    private static ResourceDragData<TilesheetFrameDrag>? GetDraggedFrame(DragEventArgs e) =>
+        (e.AllowedEffect & DragDropEffects.Copy) != 0 ? e.Data as ResourceDragData<TilesheetFrameDrag> : null;
 
     private int HoveredInsertionIndex(DragEventArgs e) =>
         _hoveredFrame is not null && ReferenceEquals(GetDraggedFrame(e), _hoveredFrame) &&

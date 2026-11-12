@@ -266,7 +266,9 @@ public sealed partial class SceneEditorTests
             File.AppendAllText(frame.Address.Location.Path, Environment.NewLine);
             RaiseSceneDrag(preview, "Drop", args);
             Assert.Equal(DragDropEffects.None, args.Effect);
+            args = SceneDragAt(preview, new ResourceDragData<TilesheetFrameDrag>(frame), cell);
             RaiseSceneDrag(preview, "Enter", args);
+            Assert.Equal(DragDropEffects.Copy, args.Effect);
             File.Delete(frame.Address.Location.Path);
             RaiseSceneDrag(preview, "Drop", args);
             Assert.Equal(DragDropEffects.None, args.Effect);
@@ -304,6 +306,7 @@ public sealed partial class SceneEditorTests
             document.History.ResetSaved();
             animation.Frames.Add(new() { Tilesheet = "terrain", RegionName = "detail", XTile = 99 });
             AnimationDefinitionSerializer.SaveAll(path, [animation]);
+            args = SceneDragAt(preview, new ResourceDragData<AnimationDrag>(cycle), PreviewCellPoint(preview, layer, 1, 1));
             RaiseSceneDrag(preview, "Enter", args);
             RaiseSceneDrag(preview, "Drop", args);
             Assert.Equal(DragDropEffects.None, args.Effect);
@@ -313,6 +316,7 @@ public sealed partial class SceneEditorTests
 
             animation.Frames.RemoveAt(1);
             AnimationDefinitionSerializer.SaveAll(path, [animation]);
+            args = SceneDragAt(preview, new ResourceDragData<AnimationDrag>(cycle), PreviewCellPoint(preview, layer, 1, 1));
             RaiseSceneDrag(preview, "Enter", args);
             RaiseSceneDrag(preview, "Drop", args);
             Assert.Equal(DragDropEffects.Copy, args.Effect);

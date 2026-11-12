@@ -147,6 +147,67 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
         return AnimationDefinitionSerializer.Load(stream, identity);
     }
 
+    /// <summary>Resolves a saved animation and validates the tilesheet coordinates and image of each frame.</summary>
+    public AnimationDefinition ResolveAnimation(AnimationDrag drag, Func<string, ResourceAddress?> declaredTilesheet,
+        Action<ResourceAddress, TilesheetDefinition>? onValidatedTilesheet = null)
+    {
+        var resource = drag.Address.Resource;
+        RequireSavedMember(drag.Address, ".gani");
+        var animation = LoadAnimation(resource, drag.Address.Member);
+        var errors = AnimationDefinitionValidator.Validate(animation);
+        if (errors.Count != 0)
+            throw new InvalidDataException($"Animation '{animation.Key}': {errors[0]}");
+
+        foreach (var frames in animation.Frames.GroupBy(frame => frame.Tilesheet, StringComparer.Ordinal))
+        {
+            var source = animation.TilesheetSources.FirstOrDefault(item => item.Tilesheet == frames.Key);
+            var sheet = source is null
+                ? declaredTilesheet(frames.Key) ?? throw new InvalidDataException($"Animation '{animation.Key}' needs a saved GTS source for '{frames.Key}'.")
+                : new ResourceAddress(TilesheetSource(source, resource.BaseDirectory), frames.Key);
+            var definition = LoadValidatedTilesheet(sheet);
+            foreach (var frame in frames)
+                ResolveTilesheetFrame(definition, frame.RegionName, frame.XTile, frame.YTile);
+            onValidatedTilesheet?.Invoke(sheet, definition);
+        }
+
+        return animation;
+    }
+
+    /// <summary>Resolves a saved scene and verifies that the exact layer belongs to it.</summary>
+    public SceneDefinition ResolveSceneLayer(SceneLayerDrag drag)
+    {
+        RequireSavedMember(drag.Address, ".gscn");
+        var scene = LoadScene(drag.Address.Resource, drag.Address.Member);
+        if (string.IsNullOrWhiteSpace(drag.LayerId) || scene.Layers.Count(layer => layer.ID == drag.LayerId) != 1)
+            throw new InvalidDataException($"Layer '{drag.LayerId}' is missing or ambiguous in scene '{scene.ID}'.");
+        var errors = SceneDefinitionValidator.Validate(scene);
+        if (errors.Count != 0)
+            throw new InvalidDataException($"Scene '{scene.ID}': {errors[0]}");
+        return scene;
+    }
+
+    private static void RequireSavedMember(ResourceAddress address, string extension)
+    {
+        if (string.IsNullOrWhiteSpace(address.Member))
+            throw new InvalidDataException("Choose a specific saved definition.");
+        if (address.Location.AssetEntryName is null &&
+            !string.Equals(Path.GetExtension(address.Location.Path), extension, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidDataException($"A loose source must be a {extension} file.");
+    }
+
+    /// <summary>Lists saved logical members from an exact loose or packed definition address.</summary>
+    public IReadOnlyList<string> GetMembers(AuthoringResource resource)
+    {
+        using var stream = Open(resource, resource.AssetType);
+        return resource.AssetType switch
+        {
+            AssetTypes.TilesheetDefinition => TilesheetDefinitionSerializer.LoadAll(stream).Select(item => item.Name).ToArray(),
+            AssetTypes.AnimationDefinition => AnimationDefinitionSerializer.LoadAll(stream).Select(item => item.Key).ToArray(),
+            AssetTypes.SceneDefinition => SceneDefinitionSerializer.LoadAll(stream).Select(item => item.ID).ToArray(),
+            _ => throw new InvalidDataException($"Unsupported resource type: {resource.AssetType}.")
+        };
+    }
+
     /// <summary>Loads one logical scene definition from an explicit loose or packed resource.</summary>
     /// <param name="resource">Physical location with the expected SceneDefinition asset type.</param>
     /// <param name="identity">Logical member identity, or null for a document containing exactly one member.</param>

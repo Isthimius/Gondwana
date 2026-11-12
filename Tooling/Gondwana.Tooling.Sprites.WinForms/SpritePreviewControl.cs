@@ -12,6 +12,14 @@ namespace Gondwana.Tooling.Sprites.WinForms;
 internal sealed class SpritePreviewControl : UserControl
 {
     private readonly PreviewCanvas _canvas = new();
+    private readonly Label _dropTarget = new() { AutoSize = true, Visible = false };
+    internal Control DropSurface => _canvas;
+
+    internal void ShowDropTarget(string? name)
+    {
+        _dropTarget.Text = name is null ? "" : $"Assign to {name}";
+        _dropTarget.Visible = name is not null;
+    }
     internal float Zoom => _canvas.Zoom;
     /// <summary>Creates a sprite preview with explicit zoom and fit controls.</summary>
     public SpritePreviewControl()
@@ -29,7 +37,7 @@ internal sealed class SpritePreviewControl : UserControl
         _canvas.ZoomChanged += () => zoomSelector.Show(_canvas.Zoom, _canvas.IsFit);
         minus.Click += (_, _) => _canvas.SetZoom(_canvas.Zoom / 1.25f);
         plus.Click += (_, _) => _canvas.SetZoom(_canvas.Zoom * 1.25f);
-        bar.Controls.AddRange([minus, plus, zoom]);
+        bar.Controls.AddRange([minus, plus, zoom, _dropTarget]);
         Controls.Add(_canvas);
         Controls.Add(bar);
     }

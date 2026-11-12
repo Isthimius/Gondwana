@@ -21,6 +21,7 @@ internal sealed class DependencyExplorerPanel : UserControl
     internal event Action? RefreshRequested;
     internal event Action<bool>? ScopeRequested;
     internal event Action<ResourceAddress>? NavigateRequested;
+    internal event Action<Control, ResourceAddress>? ResourceDragRequested;
     internal event Action<ResourceAddress, bool>? InspectRequested;
     internal bool? RequestedSection { get; set; }
     internal string Status => _status.Text;
@@ -46,6 +47,11 @@ internal sealed class DependencyExplorerPanel : UserControl
         _menu.Opening += (_, e) => e.Cancel = _tree.SelectedNode?.Tag is not ResourceAddress;
         _tree.ContextMenuStrip = _menu;
         _tree.NodeMouseClick += (_, e) => { if (e.Button == MouseButtons.Right) _tree.SelectedNode = e.Node; };
+        _tree.ItemDrag += (_, e) =>
+        {
+            if (e.Button == MouseButtons.Left && e.Item is TreeNode { Tag: ResourceAddress address })
+                ResourceDragRequested?.Invoke(_tree, address);
+        };
         _tree.NodeMouseDoubleClick += (_, _) => OpenSelection();
         _tree.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) { OpenSelection(); e.Handled = true; } };
         Controls.Add(_tree);

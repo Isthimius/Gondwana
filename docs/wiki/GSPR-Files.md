@@ -152,6 +152,27 @@ existing frame, scene/layer, and representative animation previews.
 
 Preview uses engine projection math without a game host, live loop, or registered preview sprites/scenes/tilesheets. Structural errors are distinct from missing-source warnings. The shared docking infrastructure restores pane arrangement and visibility per application; standalone and Studio preferences are independent. View restores hidden panes and resets the active editor layout. No document session or zoom state is stored in GSPR or dock preferences.
 
+## Dragging authoring resources onto sprites
+
+Drop a GTS frame, GANI animation, or GSCN layer on a row in **Sprites** to
+assign that instance. Drop on **Sprite preview** to assign the selected
+instance. The editor highlights the destination during the drag. Empty list
+space does not create a sprite.
+
+In Studio, arrange the relevant panes so they are visible together. Drag a
+frame from the GTS image or a compatible frame source tree, use **Drag
+animation** in a saved GANI, or drag a layer from the saved GSCN **Scene
+Structure**. The sprite editor's GTS and GSCN source trees also start drags
+in the standalone editor.
+
+Working Directory and Dependency Explorer drags may require a definition,
+frame, or layer selection after release. The editor uses the exact selected
+member and nested archive entry. It validates the saved resource, registers
+it if absent, and reports conflicts in **Validation**. Undo or Redo covers both
+the assignment and any dependency it added. Frame drops preserve animation
+settings. Animation drops retain the sprite's **StartAnimation** value.
+Scene-layer drops assign both fields together.
+
 ## Preserving definition origins in EngineState
 
 `EngineStateSaveOptions` supports `DefinitionPersistence.PreserveSource` for this

@@ -38,10 +38,29 @@ public sealed partial class SpriteDocument : IDisposable
     /// <summary>Assigns a frame, suppressing assignments of the same logical frame.</summary>
     public bool AssignFrame(SpriteInstanceDefinition sprite, SpriteFrameDefinition frame)
     {
-        if (sprite.Frame is { } previous && previous.Tilesheet == frame.Tilesheet && previous.RegionName == frame.RegionName &&
-            previous.XTile == frame.XTile && previous.YTile == frame.YTile) return false;
+        if (FramesMatch(sprite.Frame, frame)) return false;
         return Edit(sprite, "Assign sprite frame", () => sprite.Frame = frame);
     }
+
+    internal static bool FramesMatch(SpriteFrameDefinition? previous, SpriteFrameDefinition frame) =>
+        previous is not null && previous.Tilesheet == frame.Tilesheet && previous.RegionName == frame.RegionName &&
+        previous.XTile == frame.XTile && previous.YTile == frame.YTile;
+
+    /// <summary>Assigns an animation key while retaining the sprite's authored startup preference.</summary>
+    public bool AssignAnimation(SpriteInstanceDefinition sprite, string? key) =>
+        Edit(sprite, "Change sprite animation", () =>
+        {
+            sprite.AnimationKey = key;
+            if (key is null) sprite.StartAnimation = false;
+        });
+
+    /// <summary>Assigns a scene and its layer together.</summary>
+    public bool AssignSceneLayer(SpriteInstanceDefinition sprite, string sceneId, string layerId) =>
+        Edit(sprite, "Assign sprite scene layer", () =>
+        {
+            sprite.SceneId = sceneId;
+            sprite.SceneLayerId = layerId;
+        });
 
     /// <summary>Removes matching tilesheet references, retaining their exact source metadata and positions.</summary>
     public int RemoveTilesheetSource(string name) => History.RemoveWhere("Remove tilesheet source", Definition.TilesheetSources, source => source.Tilesheet == name);

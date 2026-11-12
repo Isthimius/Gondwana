@@ -14,7 +14,7 @@ namespace Gondwana.Tooling.Sprites.WinForms.Tests;
 /// <summary>
 /// Contains regression tests for interaction.
 /// </summary>
-public sealed class InteractionTests
+public sealed partial class InteractionTests
 {
     /// <summary>
     /// Verifies source trees assign selected entry and preview responds to properties.
