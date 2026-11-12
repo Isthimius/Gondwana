@@ -14,6 +14,7 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
     private readonly Action<T> _select;
     private readonly Action _refresh;
     private bool _binding;
+    private bool _modalRename;
 
     /// <summary>Creates the shared member selector and edit commands.</summary>
     /// <param name="definitions">All document members.</param>
@@ -93,7 +94,20 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
         SetLogicalWidth(_members, 230);
         SetLogicalWidth(_identity, 180);
 
-        AddIconButton("Rename", "RenameDefinition", DefinitionCommand.Rename, () => Execute(() => rename(_identity.Text)));
+        AddIconButton("Rename", "RenameDefinition", DefinitionCommand.Rename, () =>
+        {
+            if (!_modalRename)
+            {
+                Execute(() => rename(_identity.Text));
+                return;
+            }
+
+            if (DefinitionRenameDialog.Show(FindForm(), "Rename definition", _name(_selected()), rename))
+            {
+                _refresh();
+                RefreshMembers(this, EventArgs.Empty);
+            }
+        });
 
         _members.SelectedIndexChanged += (_, _) =>
         {
@@ -106,15 +120,21 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
         ShowItemToolTips = true;
     }
 
-    /// <summary>Places the identity text and rename command before the definition picker for the GTS layout.</summary>
-    internal void MoveRenameToFront()
+    /// <summary>Places a modal rename button directly after the definition picker, without an inline name field.</summary>
+    internal void UseModalRenameAfterSelector()
     {
+        if (_modalRename)
+            return;
+
+        _modalRename = true;
         var renameButton = Items.Cast<ToolStripItem>().Single(item => item.Name == "RenameDefinition");
         Items.Remove(_identity);
         Items.Remove(renameButton);
-        Items.Insert(0, _identity);
-        Items.Insert(1, renameButton);
-        Items.Insert(2, new ToolStripSeparator());
+        var trailingSeparator = Items.OfType<ToolStripSeparator>().LastOrDefault();
+        if (trailingSeparator is not null)
+            Items.Remove(trailingSeparator);
+
+        Items.Insert(2, renameButton);
     }
 
     /// <summary>Refreshes displayed identities without changing selection or document dirty state.</summary>
@@ -216,5 +236,121 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
         {
             ThemedMessageBox.Show(FindForm(), ex.Message, "Definition", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+    }
+}
+
+
+/// <summary>A compact, themed rename prompt that applies a validated edit only on confirmation.</summary>
+internal static class DefinitionRenameDialog
+{
+    internal static bool Show(IWin32Window? owner, string title, string currentName, Action<string> rename)
+    {
+        // The toolbar can be hosted by Studio or a standalone editor at different DPI scales.
+        // Scale layout dimensions once against the owner; point-based fonts scale with DPI.
+        int dpi = owner is Control parent ? parent.DeviceDpi : 96;
+        int Px(int logical) => (int)Math.Round(logical * dpi / 96d, MidpointRounding.AwayFromZero);
+
+        using var dialogFont = new Font("Segoe UI", 10.5f, FontStyle.Regular, GraphicsUnit.Point);
+        using var inputFont = new Font("Segoe UI", 11.5f, FontStyle.Regular, GraphicsUnit.Point);
+        using var dialog = new Form
+        {
+            Icon = ToolingBranding.CreateIcon(),
+            Text = title,
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            AutoScaleMode = AutoScaleMode.None, // Sizes below are already in physical pixels.
+            Font = dialogFont,
+            ClientSize = new Size(Px(460), Px(168)),
+            MinimizeBox = false,
+            MaximizeBox = false,
+            ShowInTaskbar = false
+        };
+
+        // Use layout rather than hard-coded coordinates so larger fonts and button sizes fit.
+        var layout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 3,
+            RowCount = 3,
+            Padding = new Padding(Px(18), Px(12), Px(18), Px(18))
+        };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(116)));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(116)));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, Px(30)));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, Px(48)));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+        var label = new Label
+        {
+            Text = "Name",
+            TextAlign = ContentAlignment.MiddleLeft,
+            Dock = DockStyle.Fill,
+            Margin = Padding.Empty
+        };
+        var nameBox = new TextBox
+        {
+            Name = "DefinitionRenameName",
+            Text = currentName,
+            Font = inputFont,
+            Dock = DockStyle.Top,
+            Margin = new Padding(0, Px(3), 0, 0)
+        };
+        var accept = new Button
+        {
+            Name = "ConfirmRename",
+            Text = "Save",
+            AutoSize = false,
+            Size = new Size(Px(108), Px(40)),
+            Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
+            Margin = new Padding(0, 0, Px(6), 0)
+        };
+        var cancel = new Button
+        {
+            Text = "Cancel",
+            DialogResult = DialogResult.Cancel,
+            AutoSize = false,
+            Size = new Size(Px(108), Px(40)),
+            Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
+            Margin = Padding.Empty
+        };
+
+        layout.Controls.Add(label, 0, 0);
+        layout.SetColumnSpan(label, 3);
+        layout.Controls.Add(nameBox, 0, 1);
+        layout.SetColumnSpan(nameBox, 3);
+        layout.Controls.Add(accept, 1, 2);
+        layout.Controls.Add(cancel, 2, 2);
+        accept.Click += (_, _) =>
+        {
+            string requested = nameBox.Text;
+            if (requested == currentName)
+            {
+                dialog.DialogResult = DialogResult.Cancel;
+                dialog.Close();
+                return;
+            }
+
+            try
+            {
+                ArgumentException.ThrowIfNullOrWhiteSpace(requested);
+                rename(requested);
+                dialog.DialogResult = DialogResult.OK;
+                dialog.Close();
+            }
+            catch (Exception ex)
+            {
+                ThemedMessageBox.Show(dialog, ex.Message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                nameBox.Focus();
+                nameBox.SelectAll();
+            }
+        };
+
+        dialog.Controls.Add(layout);
+        dialog.AcceptButton = accept;
+        dialog.CancelButton = cancel;
+        dialog.Shown += (_, _) => { nameBox.Focus(); nameBox.SelectAll(); };
+        ToolingAppearance.Apply(dialog);
+        return dialog.ShowDialog(owner) == DialogResult.OK;
     }
 }

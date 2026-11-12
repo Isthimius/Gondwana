@@ -28,6 +28,7 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
     private readonly ComboBox _regions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
     private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
+    private ToolStripButton? _renameRegionButton;
     private readonly NumericUpDown _column = new() { Width = 80 };
     private readonly NumericUpDown _row = new() { Width = 80 };
     private readonly Label _gridSize = new() { AutoSize = true };
@@ -139,10 +140,26 @@ public sealed class TilesheetEditorControl : UserControl
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gts", (path, select) => Document.ImportDefinitions(path, select));
 
-        definitionBar.Items.Insert(2, new ToolStripLabel("Region"));
-        definitionBar.Items.Insert(3, _toolbarRegions);
+        definitionBar.UseModalRenameAfterSelector();
+        definitionBar.Items.Insert(3, new ToolStripLabel("Region"));
+        definitionBar.Items.Insert(4, _toolbarRegions);
         definitionBar.SetLogicalWidth(_toolbarRegions, 180);
-        definitionBar.MoveRenameToFront();
+
+        var renameRegion = new ToolStripButton
+        {
+            Name = "RenameRegion",
+            Text = "Rename region",
+            ToolTipText = "Rename region",
+            AccessibleName = "Rename region",
+            AutoToolTip = false,
+            AutoSize = false,
+            DisplayStyle = ToolStripItemDisplayStyle.Image
+        };
+        renameRegion.Click += (_, _) => RenameSelectedRegion();
+        _renameRegionButton = renameRegion;
+        definitionBar.Items.Insert(5, renameRegion);
+        definitionBar.SetGlyph(renameRegion, pixels =>
+            ToolbarGlyphs.Definition(ToolbarGlyphs.DefinitionCommand.Rename, pixels, ToolingAppearance.Palette));
 
         Controls.Add(definitionBar);
 
@@ -361,6 +378,23 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshProperties();
     }
 
+    private void RenameSelectedRegion()
+    {
+        if (SelectedRegion is not { } region)
+            return;
+
+        DefinitionRenameDialog.Show(FindForm(), "Rename region", region.Name, requested =>
+        {
+            if (Document.Definition.Regions.Any(other =>
+                    !ReferenceEquals(other, region) &&
+                    string.Equals(other.Name, requested, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidDataException($"Duplicate region name '{requested}'.");
+
+            Document.Edit(region, "Rename region", () => region.Name = requested);
+            RefreshView();
+        });
+    }
+
     private void RemoveRegion()
     {
         if (SelectedRegion is not { } region)
@@ -527,6 +561,8 @@ public sealed class TilesheetEditorControl : UserControl
         _toolbarRegions.Items.Clear();
         _toolbarRegions.Items.AddRange(regions);
         _toolbarRegions.SelectedItem = _regions.SelectedItem;
+        if (_renameRegionButton is not null)
+            _renameRegionButton.Enabled = SelectedRegion is not null;
 
         var (columns, rows) = SelectedRegion is { } r ? TilesheetDefinitionValidator.GridSize(r) : (0L, 0L);
 
