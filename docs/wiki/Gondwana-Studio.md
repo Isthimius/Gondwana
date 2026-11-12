@@ -278,6 +278,8 @@ The importer analyzes before writing, reports diagnostics, stages output, and va
 
 ## Scene Viewer integration
 
+In the GSCN **Scene Preview**, use **Show Sprites** to view authored GSPR instances. Arrange the GSPR and GSCN documents side by side and drag a sprite row onto the selected, visible scene layer. Click or drag an existing preview sprite to select or reposition it. Hold **Alt** for fractional grid positions. The GSPR document owns the placement, Undo and Redo, and saving. Save it beside the scene or its containing archive so Scene Viewer can discover it. See [visual sprite placement](GSCN-Files#visual-sprite-placement).
+
 The reusable GSCN editor includes **View Scene**, so the command is available in Studio as well as the standalone Scene editor.
 
 It launches `Gondwana.Tooling.SceneViewer.WinForms` as a separate process after ensuring the document is saved. The viewer then loads the saved GSCN into the real Gondwana runtime.

@@ -579,40 +579,27 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     /// <inheritdoc/>
     [JsonIgnore]
-    public override Rectangle DrawLocationWorld
+    public override Rectangle DrawLocationWorld =>
+        GetPlacementBounds(_sceneLayer, SceneLayerCoordinates, _renderSize, HorizAlign, VertAlign, new(NudgeX, NudgeY));
+
+    /// <summary>Computes the unrotated drawable bounds for a sprite position without materializing a sprite.</summary>
+    public static Rectangle GetPlacementBounds(SceneLayer layer, PointF position, Size size,
+        HorizontalAlignment horizontal, VerticalAlignment vertical, Point nudge)
     {
-        get
+        var anchor = layer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(layer, position);
+        int x = horizontal switch
         {
-            Point pxlPt = _sceneLayer.CoordinateSystem
-                .GetAnchorPixelAtSceneLayerCoordinates(
-                    _sceneLayer,
-                    SceneLayerCoordinates);
-
-            switch (HorizAlign)
-            {
-                case HorizontalAlignment.Center:
-                    pxlPt.X += (_sceneLayer.TileWidth - _renderSize.Width) / 2;
-                    break;
-                case HorizontalAlignment.Right:
-                    pxlPt.X += _sceneLayer.TileWidth - _renderSize.Width;
-                    break;
-            }
-
-            switch (VertAlign)
-            {
-                case VerticalAlignment.Middle:
-                    pxlPt.Y += (_sceneLayer.TileHeight - _renderSize.Height) / 2;
-                    break;
-                case VerticalAlignment.Bottom:
-                    pxlPt.Y += _sceneLayer.TileHeight - _renderSize.Height;
-                    break;
-            }
-
-            pxlPt.X += NudgeX;
-            pxlPt.Y += NudgeY;
-
-            return new Rectangle(pxlPt, _renderSize);
-        }
+            HorizontalAlignment.Center => (layer.TileWidth - size.Width) / 2,
+            HorizontalAlignment.Right => layer.TileWidth - size.Width,
+            _ => 0
+        };
+        int y = vertical switch
+        {
+            VerticalAlignment.Middle => (layer.TileHeight - size.Height) / 2,
+            VerticalAlignment.Bottom => layer.TileHeight - size.Height,
+            _ => 0
+        };
+        return new Rectangle(anchor.X + x + nudge.X, anchor.Y + y + nudge.Y, size.Width, size.Height);
     }
 
     /// <inheritdoc/>

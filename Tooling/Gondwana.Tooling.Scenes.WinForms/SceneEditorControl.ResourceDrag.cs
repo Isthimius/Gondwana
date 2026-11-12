@@ -79,7 +79,12 @@ public sealed partial class SceneEditorControl
     {
         ClearResourceDrop();
         e.Effect = DragDropEffects.None;
-        if (_preview.HasGesture || _selectedLayer is not { } layer || GetResourceData(e) is not { } data)
+        if (e.Data is ResourceDragData<SpriteInstanceDrag> sprite)
+        {
+            SpriteDragEnter(sprite, e);
+            return;
+        }
+        if (_preview.HasSpriteGesture || _preview.HasGesture || _selectedLayer is not { } layer || GetResourceData(e) is not { } data)
             return;
 
         try
@@ -105,6 +110,11 @@ public sealed partial class SceneEditorControl
 
     private void ResourceDragOver(object? sender, DragEventArgs e)
     {
+        if (e.Data is ResourceDragData<SpriteInstanceDrag>)
+        {
+            SpriteDragOver(e);
+            return;
+        }
         bool valid = TryGetDropCell(_resourceHover, e, out var cell);
         _preview.SetResourceDropCell(valid ? _resourceHover!.Layer : null, cell);
         e.Effect = valid ? DragDropEffects.Copy : DragDropEffects.None;
@@ -114,7 +124,7 @@ public sealed partial class SceneEditorControl
     {
         cell = default;
         return hover is not null && ReferenceEquals(hover.Data, GetResourceData(e)) &&
-            !IsDisposed && !Disposing && Enabled && !_preview.HasGesture &&
+            !IsDisposed && !Disposing && Enabled && !_preview.HasGesture && !_preview.HasSpriteGesture &&
             !Document.History.InTransaction && !Document.History.IsExecuting &&
             ReferenceEquals(Definition, hover.Scene) && ReferenceEquals(_selectedLayer, hover.Layer) &&
             ReferenceEquals(_structure.SelectedNode?.Tag, hover.Layer) && Definition.Layers.Contains(hover.Layer) &&
@@ -126,10 +136,16 @@ public sealed partial class SceneEditorControl
     {
         _resourceHover = null;
         _preview.SetResourceDropCell(null);
+        ClearSpriteDrop();
     }
 
     private void ResourceDragDrop(object? sender, DragEventArgs e)
     {
+        if (e.Data is ResourceDragData<SpriteInstanceDrag>)
+        {
+            SpriteDragDrop(e);
+            return;
+        }
         var hover = _resourceHover;
         bool valid = TryGetDropCell(hover, e, out var cell);
         ClearResourceDrop();

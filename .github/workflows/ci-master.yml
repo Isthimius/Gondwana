@@ -59,7 +59,11 @@ jobs:
           node-version: '22'
       - name: Install .NET 10 WebAssembly workload
         working-directory: ${{ runner.temp }}
-        run: dotnet workload install wasm-tools
+        run: |
+          mkdir -p blazor-workload
+          cd blazor-workload
+          echo '{"sdk":{"version":"10.0.100","rollForward":"latestFeature","allowPrerelease":false}}' > global.json
+          dotnet workload install wasm-tools
       - name: Install Chromium system dependencies
         run: npx --yes playwright@1.56.1 install-deps chromium
       - name: Pack, generate and test Blazor NuGet consumer

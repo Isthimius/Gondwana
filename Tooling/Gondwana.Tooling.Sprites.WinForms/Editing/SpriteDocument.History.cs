@@ -24,7 +24,7 @@ public sealed partial class SpriteDocument : IDisposable
     private void HistoryChanged(object? sender, EventArgs args)
     {
         RestoreReferenceOrigins();
-        Changed?.Invoke(this, EventArgs.Empty);
+        NotifyChanged();
     }
 
     /// <summary>Records changed scalar or value-type properties before notifying the editor.</summary>

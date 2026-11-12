@@ -17,8 +17,43 @@ public sealed partial class SpriteEditorControl
     private ResourceHover? _resourceHover;
     private string? _resourceDropError;
 
+    private Point? _spriteDragStart;
+    private SpriteInstanceDefinition? _spriteDragCandidate;
+
+    /// <summary>Creates a drag for an existing instance in the active saved GSPR member.</summary>
+    public SpriteInstanceDrag? CreateInstanceDrag(SpriteInstanceDefinition sprite)
+    {
+        if (Document.Location is not { } location || !ReferenceEquals(Document.FindInstance(Document.Definition.Key, sprite.Id), sprite))
+            return null;
+        return new(new ResourceAddress(location, Document.Definition.Key), sprite.Id, Document, Document.Revision);
+    }
+
     private void WireResourceDragDrop()
     {
+        _sprites.MouseDown += (_, e) =>
+        {
+            int index = _sprites.DropRow(e.Location);
+            _spriteDragCandidate = e.Button == MouseButtons.Left && index >= 0 ? _sprites.Items[index] as SpriteInstanceDefinition : null;
+            _spriteDragStart = _spriteDragCandidate is null ? null : e.Location;
+        };
+        _sprites.MouseUp += (_, _) => _spriteDragStart = null;
+        _sprites.MouseMove += (_, e) =>
+        {
+            if (e.Button != MouseButtons.Left || _spriteDragStart is not { } start || _spriteDragCandidate is not { } sprite)
+                return;
+            var threshold = SystemInformation.DragSize;
+            if (new Rectangle(start.X - threshold.Width / 2, start.Y - threshold.Height / 2, threshold.Width, threshold.Height).Contains(e.Location))
+                return;
+
+            _spriteDragStart = null;
+            _spriteDragCandidate = null;
+            if (!CommitEdits()) return;
+            if (CreateInstanceDrag(sprite) is { } drag)
+                _sprites.DoDragDrop(new ResourceDragData<SpriteInstanceDrag>(drag), DragDropEffects.Move);
+            else
+                SetResourceDropError("Save the GSPR document and use a sprite with a unique ID before dragging it into a scene.");
+        };
+
         _frames.ItemDrag += (_, e) =>
         {
             if (e.Button == MouseButtons.Left && e.Item is TreeNode { Tag: SpriteFrameDefinition frame } node &&

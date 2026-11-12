@@ -165,6 +165,11 @@ file commands, document tracking, and plugin contributions. Each
 | GSCN | `SceneEditorControl` | `SceneDocument` |
 | GSPR | `SpriteEditorControl` | `SpriteDocument` |
 
+Open a GSPR and a GSCN side by side to place existing sprites visually. Drag
+a row from **Sprites** onto the selected scene layer, then click and drag the
+sprite in **Scene Preview** to refine its position. Hold **Alt** for fractional
+placement. Save the GSPR after placement. [Scene editor guide](../Gondwana.Tooling.Scenes.WinForms/README.md#place-and-move-sprites)
+
 The internal `StudioDocument` adapter binds shell operations to those existing
 APIs. It owns no alternate format model, serializer, dependency resolver, or
 editor implementation. Studio directly references the six tooling projects.
