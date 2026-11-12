@@ -35,8 +35,8 @@ normal activation behavior; import does not discard unsaved editor changes.
 | Godot 3.x TileSet (`format=2`) | Text .tres resources, single tiles, atlas tiles, underlying autotile atlas geometry, multiple tile IDs/textures, region offsets, tile sizes and spacing → grouped GTS | No binary .res or .tscn scenes. Autotile bitmask/priority/fallback/icon-selection semantics are not preserved. Collision, navigation, occlusion, materials, normal maps, modulation, offsets, z-index and unfamiliar metadata are diagnosed and omitted. No GANI is generated; AnimatedTexture traversal is unsupported. |
 | Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, single- and multi-cell atlas tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → grouped GTS/GANI | No `.res` or scene collections; use the `.tscn` provider for tile scenes. Multi-cell tiles become named regions containing their full atlas rectangles; animation frames have distinct regions when needed. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
 | Godot 4 `.tscn` tile scene | Legacy TileMap (`format = 2` cell data) and TileMapLayer (version 0 byte records), external `.tres` and embedded TileSets, multiple atlas sources, animations, negative coordinates, integer translations, visibility, layer order, H/V/transpose flags → GSCN plus one grouped GTS and GANI per atlas source | Orthogonal cells only. A plain Node root and Node2D translation/visibility/z-order ancestors are supported. Nontrivial transforms, Y sorting, proxies, alternatives, undeclared tiles, incompatible artwork dimensions, transposed rectangular tiles with mixed-parity dimensions (which require half-pixel anchoring), and unsupported tile ancestors block import. No general scene conversion or scene instancing. Scripts, cameras, physics, navigation, terrain rules and appearance overrides are diagnosed and omitted. |
-| Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections or per-tile subrectangles. Embedded atlas images with base64 data (optionally zlib/gzip-compressed) are decoded and written as PNG outputs. Nonzero tile offsets still require TMX context. Wang/terrain, properties, collision objects and transformation metadata warn and are omitted. |
-| Tiled `.tmx` | Finite and chunked orthogonal/isometric maps normalized into finite GSCN layers, external/embedded atlas tilesets grouped into one GTS document per map, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No staggered, hexagonal or oblique maps. Tiled's infinite flag affects only source layout, never Gondwana wrapping or dynamic allocation. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Oversized atlas frames are mapped to GTS region overhang (top/right, with bottom-left tile-layer anchoring), subject to the current render-query culling fringe; tilesets using `tilerendersize="grid"` instead draw at map-cell size. Smaller-than-cell frames, drawing offsets requiring negative overhang and grid `preserve-aspect-fit` are unsupported. Representable drawing offsets are preserved as top/bottom/left/right OH. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
+| Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections or per-tile subrectangles. Embedded atlas images with base64 data (optionally zlib/gzip-compressed) are decoded and written as PNG outputs. Nonzero tile offsets still require TMX context. Wang/terrain, properties, and transformation metadata warn and are omitted. A single unrotated rectangular collision object per tile becomes GTS frame collision metadata; unsupported or ambiguous shapes warn and are omitted. |
+| Tiled `.tmx` | Finite and chunked orthogonal/isometric maps normalized into finite GSCN layers, single-rectangle tileset collisions, external/embedded atlas tilesets grouped into one GTS document per map, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No staggered, hexagonal or oblique maps. Tiled's infinite flag affects only source layout, never Gondwana wrapping or dynamic allocation. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Oversized atlas frames are mapped to GTS region overhang (top/right, with bottom-left tile-layer anchoring), subject to the current render-query culling fringe; tilesets using `tilerendersize="grid"` instead draw at map-cell size. Smaller-than-cell frames, drawing offsets requiring negative overhang and grid `preserve-aspect-fit` are unsupported. Representable drawing offsets are preserved as top/bottom/left/right OH. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
 | Aseprite `.ase` / `.aseprite` | RGBA, grayscale, indexed palettes/transparency, raw/zlib/linked cels, visibility, Normal blending, opacity, groups, cel z-order, tags and mixed timing → PNG/GTS/GANI | No tilemaps, non-Normal artwork blends, precise/scaled cel bounds, non-square pixel aspect ratios, external dependencies, ICC or custom gamma. Reference guide layers are omitted from the rendered PNG with warnings (including their blend mode and cels). Other metadata chunks are diagnosed and omitted. |
 
 Standalone TSX and embedded TMX tilesets may use an atlas `<image format="png">`
@@ -50,6 +50,34 @@ dependency is required. Compressed and decompressed input are limited to 64 MiB,
 and decoded images to 64 million pixels. Unsupported compression and malformed
 image data block import without writing files. Per-tile embedded images within
 image-collection tilesets remain unsupported.
+
+### Tiled tile collisions
+
+Tiled tileset `<tile><objectgroup><object ... /></objectgroup></tile>` data
+supports **one unrotated rectangle per tile**. The rectangle's integer
+`x`, `y`, `width`, and `height` coordinates are measured from the
+tile artwork's upper-left corner. The importer writes a per-frame
+`CollisionAdjust` and `CollisionType.Blocking` into GTS. Negative
+insets are supported when a rectangle extends outside the artwork bounds.
+Frames without collision objects retain `CollisionType.None`.
+This is a geometry conversion only: Tiled does not prescribe a runtime
+collision response, so ordinary rectangles are imported as solid/blocking.
+
+For TMX/GSCN imports, each placed tile that has supported collision
+metadata receives an explicit collision adjustment and Blocking type,
+including when the original tile is animated. The source tile's collision
+box stays fixed across its animation frames; native tile transforms also
+transform its collision bounds. Existing grid/collision defaults and
+scene collision profiles are unchanged.
+
+Multiple collision objects, polygons, ellipses, capsules, polylines,
+points, rotation, fractional coordinates, and custom object metadata are
+**not** approximated. These emit a `tiled.collision.unsupported` warning
+and the entire affected tile's collision geometry is omitted. Tile
+collision groups with nonzero offsets are similarly omitted. When
+`tilerendersize="grid"` changes the rendered size relative to the source
+tile image, collision scaling is omitted with a warning. Tiled map-level
+object layers remain unsupported, independent of tileset collisions.
 
 TMX supports XML tile elements, CSV, uncompressed base64, base64+zlib and
 base64+gzip, including each chunk's payload in Tiled infinite maps. Zstd is
