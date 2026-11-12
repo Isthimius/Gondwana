@@ -127,8 +127,8 @@ public sealed partial class ViewerTests
 
         using var scene = new ViewerSceneLoader().Load(ScenePath);
         Assert.True(Assert.Single(SpriteManager.Instance.AllSprites).TileAnimator.IsCycling);
-        var first = Assert.IsType<Cycle>(Cycle.GetAnimationCycle("walk"));
-        Assert.Equal("return", first.NextCycle?.CycleKey);
-        Assert.Equal("walk", first.NextCycle?.NextCycle?.CycleKey);
+        var first = Assert.Single(Cycle.GetAnimationCycles(), candidate => candidate.CycleKey == "walk");
+        Assert.Equal("return", first.NextCycle.CycleKey);
+        Assert.Same(first, first.NextCycle.NextCycle);
     }
 }
