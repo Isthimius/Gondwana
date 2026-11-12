@@ -130,7 +130,7 @@ public sealed partial class CompositionTests
         Assert.Equal("icons8-unpack-luggage-96.png", StudioFileTypeIcons.ResourceFileFor("gaf"));
     });
 
-premultiply helper    /// <summary>
+    /// <summary>
     /// Verifies mixed documents close cancel save and shutdown are transactional.
     /// </summary>
     [Fact]
