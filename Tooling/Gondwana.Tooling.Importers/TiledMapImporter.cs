@@ -173,7 +173,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     var tile = new SceneLayerTileDefinition
                     {
                         Transform = transform,
-                        X = tileX, Y = tileY,
+                        X = tileX,
+                        Y = tileY,
                         Frame = new() { Tilesheet = match.Set.Name, XTile = local % match.Set.Columns, YTile = local / match.Set.Columns }
                     };
                     if (match.Set.Animations.TryGetValue(local, out var animation))
