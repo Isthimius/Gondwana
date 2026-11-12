@@ -183,6 +183,14 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                         tile.Frame.XTile = frame.XTile; tile.Frame.YTile = frame.YTile;
                         tile.AnimationKey = animation.Key; tile.StartAnimation = true;
                     }
+                    // GSCN materialization applies explicit per-tile defaults after
+                    // resolving the frame. Retain the source tile's collision metadata
+                    // here, even if an animation starts on a different image frame.
+                    if (match.Set.Collisions.TryGetValue(local, out var collision))
+                    {
+                        tile.AdjustCollisionArea = collision.Adjust;
+                        tile.CollisionType = collision.Type;
+                    }
                     layer.Tiles.Add(tile);
                 }
 
