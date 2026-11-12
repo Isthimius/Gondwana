@@ -43,7 +43,7 @@ public sealed partial class CompositionTests
         {
             string fileName = Assert.IsType<string>(StudioFileTypeIcons.ResourceFileFor(format));
             using var expected = ToolingIconResources.CreateBitmap(fileName, 16);
-            Assert.Equal(expected.GetPixel(8, 8).ToArgb(), rendered.GetPixel(8, 8).ToArgb());
+            AssertIconPixelMatchesResource(expected.GetPixel(8, 8), rendered.GetPixel(8, 8));
         }
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
@@ -137,8 +137,20 @@ public sealed partial class CompositionTests
         var archive = studio.NewDocument("gaf", Path.Combine(directory, "package.zip"));
         using var archiveIcon = archive.Icon.ToBitmap();
         using var assetBitmap = ToolingIconResources.CreateBitmap("icons8-unpack-luggage-96.png", 16);
-        Assert.Equal(assetBitmap.GetPixel(8, 8).ToArgb(), archiveIcon.GetPixel(8, 8).ToArgb());
+        AssertIconPixelMatchesResource(assetBitmap.GetPixel(8, 8), archiveIcon.GetPixel(8, 8));
     });
+
+    /// <summary>Win32 HICON conversion stores translucent icon pixels in premultiplied-alpha format.</summary>
+    private static void AssertIconPixelMatchesResource(Color source, Color rendered)
+    {
+        Assert.True(source.A > 0);
+        Assert.Equal(source.A, rendered.A);
+
+        static int Premultiply(int channel, int alpha) => (channel * alpha + 127) / 255;
+        Assert.InRange(Math.Abs(rendered.R - Premultiply(source.R, source.A)), 0, 1);
+        Assert.InRange(Math.Abs(rendered.G - Premultiply(source.G, source.A)), 0, 1);
+        Assert.InRange(Math.Abs(rendered.B - Premultiply(source.B, source.A)), 0, 1);
+    }
 
     /// <summary>
     /// Verifies mixed documents close cancel save and shutdown are transactional.
