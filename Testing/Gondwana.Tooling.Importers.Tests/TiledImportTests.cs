@@ -140,7 +140,7 @@ public sealed class TiledImportTests : IDisposable
         var loaded = Assert.Single(runtime.SceneLayers);
         Assert.Equal(new Rectangle(2, -2, 2, 2), loaded[0, 2]!.DrawLocationWorld);
         Assert.Equal(new Rectangle(12, -4, 2, 2), loaded[5, 1]!.DrawLocationWorld);
-        Assert.Null(loaded[1, 1]!.CurrentFrame);
+        Assert.Null(loaded[1, 1]!.CurrentFrame.Tilesheet);
     }
 
     /// <summary>Rhombic layers retain the projected positions of negative chunk coordinates.</summary>
