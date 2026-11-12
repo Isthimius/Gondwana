@@ -12,6 +12,56 @@ public sealed partial class AnimationEditorControl
     private AnimationDefinition? _hoveredDefinition;
     private string? _frameDropError;
 
+    internal AnimationDrag? CreateAnimationDrag()
+    {
+        if (Document.IsDirty || string.IsNullOrWhiteSpace(Definition.Key))
+            return null;
+
+        var location = Document.PackedLocation;
+        if (location is null && Document.FilePath is { } path)
+            location = new AssetLocation(AssetTypes.AnimationDefinition, path);
+
+        return location is null ? null : new(new ResourceAddress(location, Definition.Key));
+    }
+
+    private ToolStripControlHost CreateAnimationDragHandle()
+    {
+        var label = new Label { Text = "Drag animation", AutoSize = true, Cursor = Cursors.Hand };
+        var handle = new ToolStripControlHost(label)
+        {
+            Name = "DragAnimation",
+            ToolTipText = "Save the GANI, then drag its selected animation to a scene cell."
+        };
+        Rectangle threshold = Rectangle.Empty;
+        AnimationDrag? pending = null;
+        label.MouseDown += (_, e) =>
+        {
+            pending = e.Button == MouseButtons.Left ? CreateAnimationDrag() : null;
+            if (pending is null)
+                return;
+
+            var size = SystemInformation.DragSize;
+            threshold = new Rectangle(e.X - size.Width / 2, e.Y - size.Height / 2, size.Width, size.Height);
+            label.Capture = true;
+        };
+        label.MouseMove += (_, e) =>
+        {
+            if (pending is not { } drag || e.Button != MouseButtons.Left || threshold.Contains(e.Location))
+                return;
+
+            pending = null;
+            label.Capture = false;
+            label.DoDragDrop(new ResourceDragData<AnimationDrag>(drag), DragDropEffects.Copy);
+        };
+        label.MouseUp += (_, _) => pending = null;
+        label.MouseCaptureChanged += (_, _) =>
+        {
+            if (!label.Capture)
+                pending = null;
+        };
+        return handle;
+    }
+
     private void WireFrameDragDrop()
     {
         _sourceTree.ItemDrag += (_, e) =>

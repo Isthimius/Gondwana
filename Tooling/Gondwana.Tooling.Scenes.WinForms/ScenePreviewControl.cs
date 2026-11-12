@@ -35,6 +35,29 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
     internal void CancelGesture() => FinishGesture(cancel: true);
 
+    private (SceneLayerDefinition Layer, Point Cell)? _resourceDrop;
+    internal Point? ResourceDropCell => _resourceDrop?.Cell;
+
+    internal void SetResourceDropCell(SceneLayerDefinition? layer, Point cell = default)
+    {
+        (SceneLayerDefinition Layer, Point Cell)? next = layer is null ? null : (layer, cell);
+        if (_resourceDrop == next) return;
+        _resourceDrop = next;
+        Invalidate();
+    }
+
+    internal bool TryGetResourceDropCell(SceneLayerDefinition layer, Point screen, out Point cell)
+    {
+        cell = default;
+        Point client = PointToClient(screen);
+        if (!ClientRectangle.Contains(client) || _definition?.Layers.Contains(layer) != true ||
+            !ReferenceEquals(layer, _selectedLayer) || !IsLayerDisplayed(layer))
+            return false;
+
+        UpdateOffset();
+        return TryHitCell(layer, ScreenToWorld(client), out cell);
+    }
+
     private const float ZoomStepFactor = 1.25f;
     private const float PreviewMargin = 28f;
     private SceneDefinition? _definition;
@@ -325,6 +348,19 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
         foreach (var layer in visibleLayers)
             DrawLayer(e.Graphics, layer);
+
+        if (_resourceDrop is { } drop && visibleLayers.Contains(drop.Layer) && ReferenceEquals(_selectedLayer, drop.Layer))
+        {
+            var points = TileOutline(GetProjection(drop.Layer), drop.Layer, drop.Cell.X, drop.Cell.Y)
+                .Select(ToScreen).ToArray();
+            if (points.Length >= 3)
+            {
+                using var fill = new SolidBrush(Color.FromArgb(55, Color.DeepSkyBlue));
+                using var border = new Pen(Color.DeepSkyBlue, 2f) { DashStyle = DashStyle.Dash };
+                e.Graphics.FillPolygon(fill, points);
+                e.Graphics.DrawPolygon(border, points);
+            }
+        }
 
         using var labelBrush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(

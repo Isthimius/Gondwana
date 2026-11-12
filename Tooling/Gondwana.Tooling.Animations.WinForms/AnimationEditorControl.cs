@@ -737,6 +737,9 @@ public sealed partial class AnimationEditorControl : UserControl
         bar.Items.Add(new ToolStripLabel("Zoom"));
         bar.Items.Add(zoom);
 
+        bar.Items.Add(new ToolStripSeparator());
+        bar.Items.Add(CreateAnimationDragHandle());
+
         return bar;
     }
 

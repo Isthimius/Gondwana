@@ -500,6 +500,28 @@ GSCN sparse-tile semantics are preserved. Selecting a grid cell does not create 
 tile entry; editing a property or assigning GTS/GANI content does. **Clear tile**
 removes that explicit entry again.
 
+### Dragging resources onto a scene
+
+Select a visible layer in **Scene Structure**, then drop an individual GTS frame
+or a GANI animation onto the highlighted cell in **Scene Preview**. Use the
+scene's **GTS frame sources** tree or **GANI animations** list in Studio or the
+standalone scene editor. In Studio, you can also drag from a saved GTS Image pane,
+from GANI's GTS frame sources, or from the **Drag animation** handle in a saved
+GANI Preview pane. Arrange or float the document tabs so both panes are visible.
+The handle uses the selected GANI definition.
+
+Each drop assigns one cell and keeps the current editing tool. A frame drop
+preserves any existing animation settings. An animation drop assigns its first
+frame and enables and starts the animator. Both preserve the cell's collision,
+transform, visibility, and other placement properties.
+
+The editor checks the saved source on release and reuses or registers its exact
+loose file or packed entry. An animation's explicit GTS dependencies take
+precedence over scene sources of the same name. If it has no explicit source for
+a frame, the scene must already declare that GTS member. One Undo or Redo
+includes the cell assignment and any source added by the drop. Check
+**Validation** for a rejected source.
+
 ### Visual map editing
 
 The shared Scene Preview toolbar in Studio and the standalone editor provides:
