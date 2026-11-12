@@ -524,7 +524,6 @@ public sealed class TiledImportTests : IDisposable
     [InlineData("encoding=\"base64\"", "encoding=\"csv\"", "base64")]
     [InlineData("encoding=\"base64\"", "encoding=\"base64\" compression=\"zstd\"", "compression")]
     [InlineData("format=\"png\"", "format=\"svg\"", "format")]
-    [InlineData("encoding=\"base64\"", "encoding=\"base64\" source=\"atlas.png\"", "either a source path or embedded data")]
     public void UnsupportedEmbeddedAtlasAttributesRejectWithoutWrites(string oldValue, string newValue, string error)
     {
         string tsx = Tileset();
@@ -534,6 +533,74 @@ public sealed class TiledImportTests : IDisposable
         var result = new TiledTilesetImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
         Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains(error));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Image-source and embedded-data attributes must not coexist.</summary>
+    [Fact]
+    public void EmbeddedAtlasRejectsImageSourceAlongsideData()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        xml.Root!.Element("image")!.SetAttributeValue("source", "atlas.png");
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("either a source path or embedded data"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Ambiguous multiple data payloads are never silently accepted.</summary>
+    [Fact]
+    public void EmbeddedAtlasRejectsMultipleDataElements()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        var image = xml.Root!.Element("image")!;
+        image.Add(new System.Xml.Linq.XElement("data", new System.Xml.Linq.XAttribute("encoding", "base64"),
+            Convert.ToBase64String([1, 2, 3, 4])));
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains("only one data element"));
+        Assert.Empty(result.WrittenFiles);
+        Assert.False(Directory.Exists(request.OutputDirectory));
+    }
+
+    /// <summary>Oversized encoded dimensions are refused before bitmap allocation.</summary>
+    [Fact]
+    public void EmbeddedAtlasRejectsOversizedPngDimensionsBeforeDecode()
+    {
+        string tsx = Tileset();
+        EmbedAtlasInTileset(tsx);
+        var xml = System.Xml.Linq.XDocument.Load(tsx);
+        var data = xml.Root!.Element("image")!.Element("data")!;
+        byte[] png = Convert.FromBase64String(data.Value);
+        // PNG IHDR: 4-byte width, 4-byte height and a CRC over type + 13-byte payload.
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(16, 4), 9000);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(20, 4), 9000);
+        uint crc = 0xffffffff;
+        foreach (byte value in png.AsSpan(12, 17))
+        {
+            crc ^= value;
+            for (int bit = 0; bit < 8; bit++)
+                crc = (crc >> 1) ^ ((crc & 1) != 0 ? 0xedb88320u : 0u);
+        }
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(png.AsSpan(29, 4), ~crc);
+        data.Value = Convert.ToBase64String(png);
+        xml.Save(tsx);
+        var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
+        var result = new TiledTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d =>
+            d.Message.Contains("64-million-pixel limit"));
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
