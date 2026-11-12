@@ -1,5 +1,7 @@
 var NAVTREEINDEX26 =
 {
+"namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6a1d85a557894c340c318493f33bfa8efb":[0,0,0,19,17,2],
+"namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6a4f1f6016fc9f3f2353c0cc7c67b292bd":[0,0,0,19,17,4],
 "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6a9146bfc669fddc88db2c4d89297d0e9a":[0,0,0,19,17,8],
 "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6a91b8ede24b7f93a98ae4dcaade15d468":[0,0,0,19,17,1],
 "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6a98e5a1c44509157ebcaf46c515c78875":[0,0,0,19,17,6],
@@ -247,7 +249,5 @@ var NAVTREEINDEX26 =
 "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#aad61ec655580e7868851767f031e0231":[1,0,0,12,0,2,4],
 "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#aaff69f970aa5073a5f2fe1d305a43e0b":[0,0,0,13,0,2,5],
 "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#aaff69f970aa5073a5f2fe1d305a43e0b":[1,0,0,12,0,2,5],
-"structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#adf5a98591abca6a2ef2ff0e3259af242":[0,0,0,13,0,2,1],
-"structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#adf5a98591abca6a2ef2ff0e3259af242":[1,0,0,12,0,2,1],
-"structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#ae7e05dbb2e3e27e97984de9e05b54093":[0,0,0,13,0,2,7]
+"structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#adf5a98591abca6a2ef2ff0e3259af242":[0,0,0,13,0,2,1]
 };

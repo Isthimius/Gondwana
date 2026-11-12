@@ -1,5 +1,7 @@
 var NAVTREEINDEX19 =
 {
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ac7e51b6838fa79702391fa71759406e9":[1,0,0,17,1,2,4],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ad86ab9110a59bd4937795c5df65035f3":[0,0,0,19,1,2,15],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ad86ab9110a59bd4937795c5df65035f3":[1,0,0,17,1,2,15],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ad86c5d92d33922a4295f1bbc090848d0":[0,0,0,19,1,2,16],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ad86c5d92d33922a4295f1bbc090848d0":[1,0,0,17,1,2,16],
@@ -247,7 +249,5 @@ var NAVTREEINDEX19 =
 "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ac94b4d2064460a393d9a6e5fc1ac8176":[1,0,0,17,3,0,8],
 "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ad34cf73a9f99533903698e619c640eeb":[0,0,0,19,3,0,4],
 "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ad34cf73a9f99533903698e619c640eeb":[1,0,0,17,3,0,4],
-"classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ad53bc821e14387a0c1add2a4e74596e6":[0,0,0,19,3,0,6],
-"classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ad53bc821e14387a0c1add2a4e74596e6":[1,0,0,17,3,0,6],
-"classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ae6e02c96637a42f0100bbdd1fd11642b":[0,0,0,19,3,0,3]
+"classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ad53bc821e14387a0c1add2a4e74596e6":[0,0,0,19,3,0,6]
 };

@@ -19,8 +19,9 @@ var searchData=
   ['winformsmouseadapter_16',['WinFormsMouseAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ac2734536da49a4d7031ee5a091fed073',1,'Gondwana::WinForms::Input::Mouse::WinFormsMouseAdapter']]],
   ['wipeeffect_17',['WipeEffect',['../classGondwana_1_1Effects_1_1WipeEffect.html#a45201916150b1655b59f04c284774672',1,'Gondwana::Effects::WipeEffect']]],
   ['withdeadzone_18',['WithDeadzone',['../structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#a50542303651732ef842febeae7fae56b',1,'Gondwana::Input::Gamepad::GamepadStickState']]],
-  ['worldpxtogrid_19',['WorldPxToGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1',1,'Gondwana::Scenes::SceneLayer']]],
-  ['worldpxtoscreenpx_20',['WorldPxToScreenPx',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#a6efebd46dd788a8587c492f2499b159d',1,'Gondwana::Rendering::Views::View']]],
-  ['worldrecttoscreenrect_21',['WorldRectToScreenRect',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865',1,'Gondwana::Rendering::Views::View']]],
-  ['wrapgrid_22',['WrapGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a1752ec1eb9abb1316ea8421f07f54006',1,'Gondwana::Scenes::SceneLayer']]]
+  ['worldpxtocontinuousgrid_19',['WorldPxToContinuousGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a6aaa4f7cc9ba98f934fa782bb88dabda',1,'Gondwana::Scenes::SceneLayer']]],
+  ['worldpxtogrid_20',['WorldPxToGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1',1,'Gondwana::Scenes::SceneLayer']]],
+  ['worldpxtoscreenpx_21',['WorldPxToScreenPx',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#a6efebd46dd788a8587c492f2499b159d',1,'Gondwana::Rendering::Views::View']]],
+  ['worldrecttoscreenrect_22',['WorldRectToScreenRect',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865',1,'Gondwana::Rendering::Views::View']]],
+  ['wrapgrid_23',['WrapGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a1752ec1eb9abb1316ea8421f07f54006',1,'Gondwana::Scenes::SceneLayer']]]
 ];

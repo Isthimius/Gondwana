@@ -116,6 +116,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8e484b10fcc567050632269596c987d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a grid coordinate (col,row) into the projection-defined world-space pixel anchor for that tile. Rectangular and oblique systems use the top-left corner of the image bounds; isometric systems use the diamond's top vertex.  <br /></td></tr>
 <tr class="memitem:a5a32b42fedf1dcf1365878805a4eeca1" id="r_a5a32b42fedf1dcf1365878805a4eeca1"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a32b42fedf1dcf1365878805a4eeca1">WorldPxToGrid</a> (PointF worldPx)</td></tr>
 <tr class="memdesc:a5a32b42fedf1dcf1365878805a4eeca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel position into this layer's grid coordinates. This uses the layer's active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles.  <br /></td></tr>
+<tr class="memitem:a6aaa4f7cc9ba98f934fa782bb88dabda" id="r_a6aaa4f7cc9ba98f934fa782bb88dabda"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6aaa4f7cc9ba98f934fa782bb88dabda">WorldPxToContinuousGrid</a> (PointF worldPx)</td></tr>
+<tr class="memdesc:a6aaa4f7cc9ba98f934fa782bb88dabda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inverts the drawable anchor projection, retaining fractional coordinates even on hex layers.  <br /></td></tr>
 <tr class="memitem:a03eb3422904f9f7d53c96b3da2e02fde" id="r_a03eb3422904f9f7d53c96b3da2e02fde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03eb3422904f9f7d53c96b3da2e02fde">GetAdjacentTile</a> (<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html">SceneLayerTile</a> tile, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5">CardinalDirections</a> direction)</td></tr>
 <tr class="memdesc:a03eb3422904f9f7d53c96b3da2e02fde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the neighboring tile in the given direction, or null if the direction would move off the layer and wrapping is not enabled. The meaning of N,S,E,W depends on the active coordinate system.  <br /></td></tr>
 <tr class="memitem:a1752ec1eb9abb1316ea8421f07f54006" id="r_a1752ec1eb9abb1316ea8421f07f54006"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1752ec1eb9abb1316ea8421f07f54006">WrapGrid</a> (PointF grid)</td></tr>
@@ -247,7 +249,7 @@ Clearing all event subscriptions </li>
 <p>After disposal, the layer should not be used. This method can be overridden in derived classes to add custom cleanup logic, but the base implementation should be called to ensure proper resource release. </p>
 <p>This method suppresses finalization to prevent the finalizer from running, as cleanup has already been performed. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01388">1388</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01391">1391</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -329,7 +331,7 @@ Clearing all event subscriptions </li>
 <p>Computes the world-space pixel bounding rectangle for this <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection. </p>
 <dl class="section return"><dt>Returns</dt><dd>The bounds of the layer in world pixels.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00875">875</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00878">878</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -363,7 +365,7 @@ Clearing all event subscriptions </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The world-pixel offsets for visible wrapped instances.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00858">858</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00861">861</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -422,7 +424,7 @@ Clearing all event subscriptions </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The requested scene layer tile, or <code>null</code> when unavailable.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00838">838</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00841">841</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -457,6 +459,25 @@ Clearing all event subscriptions </li>
 <p>The method raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event after updating both dimensions. </p>
 
 <p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00758">758</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6aaa4f7cc9ba98f934fa782bb88dabda" name="a6aaa4f7cc9ba98f934fa782bb88dabda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6aaa4f7cc9ba98f934fa782bb88dabda">&#9670;&#160;</a></span>WorldPxToContinuousGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PointF Gondwana.Scenes.SceneLayer.WorldPxToContinuousGrid </td>
+          <td>(</td>
+          <td class="paramtype">PointF</td>          <td class="paramname"><span class="paramname"><em>worldPx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inverts the drawable anchor projection, retaining fractional coordinates even on hex layers. </p>
 
 </div>
 </div>
@@ -510,7 +531,7 @@ Clearing all event subscriptions </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The equivalent grid position within the layer's wrapping period.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00817">817</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00820">820</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -678,7 +699,7 @@ ZOrder: int.MinValue </li>
 Parallax: 1.0 </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01431">1431</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01434">1434</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -979,7 +1000,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides bounds-checked access to tiles in the layer's grid. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Coordinates</a> outside the valid range (0 to GridColumnCount-1, 0 to GridRowCount-1) return <code>null</code>. Wrapping is not applied; use <a class="el" href="#a1752ec1eb9abb1316ea8421f07f54006" title="Resolves a virtual grid coordinate to canonical coordinates on enabled wrapping axes....">WrapGrid</a> first if wrapping behavior is desired. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01281">1281</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01284">1284</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1013,7 +1034,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient point-based access to tiles and internally uses the [x, y] indexer. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01295">1295</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01298">1298</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1047,7 +1068,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the truncated position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient access when working with floating-point grid coordinates, such as results from <a class="el" href="#a5a32b42fedf1dcf1365878805a4eeca1" title="Converts a world-space pixel position into this layer&#39;s grid coordinates. This uses the layer&#39;s activ...">WorldPxToGrid</a>. The coordinates are cast to integers, truncating toward zero. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01313">1313</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01316">1316</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>

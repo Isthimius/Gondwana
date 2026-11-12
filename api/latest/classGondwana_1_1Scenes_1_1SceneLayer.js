@@ -8,6 +8,7 @@ var classGondwana_1_1Scenes_1_1SceneLayer =
     [ "GridToWorldPx", "classGondwana_1_1Scenes_1_1SceneLayer.html#a8e484b10fcc567050632269596c987d4", null ],
     [ "ResolveWrappedTile", "classGondwana_1_1Scenes_1_1SceneLayer.html#a8d22137c0868c81e903c832449ed37a9", null ],
     [ "SetTileSize", "classGondwana_1_1Scenes_1_1SceneLayer.html#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12", null ],
+    [ "WorldPxToContinuousGrid", "classGondwana_1_1Scenes_1_1SceneLayer.html#a6aaa4f7cc9ba98f934fa782bb88dabda", null ],
     [ "WorldPxToGrid", "classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1", null ],
     [ "WrapGrid", "classGondwana_1_1Scenes_1_1SceneLayer.html#a1752ec1eb9abb1316ea8421f07f54006", null ],
     [ "ColliderRegistry", "classGondwana_1_1Scenes_1_1SceneLayer.html#a57de1732566a17fe38238c4ddd6b526c", null ],

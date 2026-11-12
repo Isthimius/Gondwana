@@ -166,6 +166,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a>? tile)</td></tr>
 <tr class="memdesc:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares this tile with another tile using their render ordering.  <br /></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a87fa1804c3422d5295f77fb4032c76d6" id="r_a87fa1804c3422d5295f77fb4032c76d6"><td class="memItemLeft" align="right" valign="top">static Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87fa1804c3422d5295f77fb4032c76d6">GetPlacementBounds</a> (<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> layer, PointF position, Size size, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778">HorizontalAlignment</a> horizontal, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Sprites.html#aaea16d478d36b47862f55443c2ac3587">VerticalAlignment</a> vertical, Point nudge)</td></tr>
+<tr class="memdesc:a87fa1804c3422d5295f77fb4032c76d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the unrotated drawable bounds for a sprite position without materializing a sprite.  <br /></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a5af76c96faa97a96da6ce2c3059d4e8a" id="r_a5af76c96faa97a96da6ce2c3059d4e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5af76c96faa97a96da6ce2c3059d4e8a">PositionSpace</a><code> [get]</code></td></tr>
@@ -366,7 +371,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022">Gondwana.Drawing.Tile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00673">673</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00660">660</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -409,6 +414,59 @@ Additional Inherited Members</h2></td></tr>
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b">Gondwana.Drawing.Tile</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00375">375</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="a87fa1804c3422d5295f77fb4032c76d6" name="a87fa1804c3422d5295f77fb4032c76d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87fa1804c3422d5295f77fb4032c76d6">&#9670;&#160;</a></span>GetPlacementBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Rectangle Gondwana.Drawing.Sprites.Sprite.GetPlacementBounds </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a></td>          <td class="paramname"><span class="paramname"><em>layer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PointF</td>          <td class="paramname"><span class="paramname"><em>position</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Size</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778">HorizontalAlignment</a></td>          <td class="paramname"><span class="paramname"><em>horizontal</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Sprites.html#aaea16d478d36b47862f55443c2ac3587">VerticalAlignment</a></td>          <td class="paramname"><span class="paramname"><em>vertical</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Point</td>          <td class="paramname"><span class="paramname"><em>nudge</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the unrotated drawable bounds for a sprite position without materializing a sprite. </p>
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00586">586</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -975,7 +1033,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00620">620</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00607">607</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1210,7 +1268,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00628">628</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00615">615</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1236,7 +1294,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00624">624</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00611">611</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1344,7 +1402,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00632">632</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00619">619</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
