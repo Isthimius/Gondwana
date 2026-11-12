@@ -94,11 +94,8 @@ public sealed partial class AnimationEditorControl
             transaction.Commit();
         }
 
-        if (candidate.NeedsSource)
-        {
-            _preview.ClearSourceFrame();
-            RefreshSelectedDefinition();
-        }
+        _preview.ClearSourceFrame();
+        RefreshSelectedDefinition();
 
         SelectFrame(index);
         _frames.Focus();
