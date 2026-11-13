@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../FixturePlugin.cs" Link="FixturePlugin.cs" />
+    <ProjectReference Include="../FirstDependency/FirstDependency.csproj" />
+    <ProjectReference Include="../../../../Tooling/Gondwana.Tooling.Studio.Core/Gondwana.Tooling.Studio.Core.csproj" />
+  </ItemGroup>
+</Project>

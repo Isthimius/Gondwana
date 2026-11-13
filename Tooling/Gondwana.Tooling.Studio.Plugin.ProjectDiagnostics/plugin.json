@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "gondwana.project-diagnostics",
+  "name": "Project Diagnostics",
+  "version": "1.0.0",
+  "entryAssembly": "Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll",
+  "contractVersion": 1,
+  "description": "Project validation and diagnostics",
+  "author": "Hidden Worlds Games"
+}

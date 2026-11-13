@@ -12,13 +12,17 @@ dotnet build Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport -c Release
 dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Release --no-build
 ```
 
-Build with the same configuration as Studio. The build copies the plugin DLL,
-its `.deps.json`, and `Gondwana.Tooling.Importers.dll` into Studio's `plugins/`
-directory. Core/WinForms contract assemblies and engine dependencies are supplied
-by Studio; do not deploy private copies. The plugin is not a NuGet package.
-Close Studio before rebuilding a loaded DLL. Discovery occurs at startup; use
-**View** to recover a hidden panel. Removing the plugin DLL disables this tool
-without affecting Studio's native editors.
+Build with the same configuration as Studio. The build deploys `plugin.json`,
+the entry DLL and its `.deps.json`, and `Gondwana.Tooling.Importers.dll` to
+Studio's `plugins/ExternalImport/` directory. Studio supplies the contracts,
+engine, SkiaSharp, and Newtonsoft.Json. To deploy manually, copy the complete package directory
+into the distribution's `plugins/` directory and restart Studio. To remove the
+plugin, close Studio and remove that package directory.
+
+The plugin contributes an **External Asset Importer** panel. Use the
+**Plugins** menu to show it and **View** to recover a hidden panel. See the
+[Studio plugin guide](https://github.com/Isthimius/Gondwana/wiki/Gondwana-Studio#plugins)
+for manifest compatibility and deployment details.
 
 ## Architecture and lifecycle
 

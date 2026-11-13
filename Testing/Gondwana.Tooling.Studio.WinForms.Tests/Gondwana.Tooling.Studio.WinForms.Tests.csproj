@@ -15,14 +15,24 @@
     <ProjectReference Include="../../Tooling/Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" Aliases="global,studio" />
     <ProjectReference Include="../../Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.csproj" />
     <ProjectReference Include="../../Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport/Gondwana.Tooling.Studio.Plugin.ExternalImport.csproj" />
+    <Compile Remove="PluginFixtures/**/*.cs" />
+    <ProjectReference Include="PluginFixtures/FirstPlugin/FirstPlugin.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="PluginFixtures/SecondPlugin/SecondPlugin.csproj" ReferenceOutputAssembly="false" />
     <Using Include="Xunit" />
   </ItemGroup>
+  <Target Name="CopyPluginFixtures" AfterTargets="Build">
+    <ItemGroup>
+      <FixturePlugin Include="FirstPlugin;SecondPlugin" />
+    </ItemGroup>
+    <Copy SourceFiles="PluginFixtures/%(FixturePlugin.Identity)/bin/$(Configuration)/net8.0/%(FixturePlugin.Identity).dll;PluginFixtures/%(FixturePlugin.Identity)/bin/$(Configuration)/net8.0/%(FixturePlugin.Identity).deps.json;PluginFixtures/%(FixturePlugin.Identity)/bin/$(Configuration)/net8.0/StudioPluginFixtures.PrivateDependency.dll"
+          DestinationFolder="$(TargetDir)plugin-test-assets/%(FixturePlugin.Identity)" SkipUnchangedFiles="true" />
+  </Target>
   <Target Name="DeployPluginForIntegrationTests" AfterTargets="Build">
     <ItemGroup>
       <DiagnosticsPlugin Include="@(ReferenceCopyLocalPaths)" Condition="'%(Filename)' == 'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics' and '%(Extension)' == '.dll'" />
     </ItemGroup>
-    <Copy SourceFiles="@(DiagnosticsPlugin)" DestinationFolder="$(TargetDir)plugins" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(TargetDir)Gondwana.Tooling.Studio.Plugin.ExternalImport.dll;$(TargetDir)Gondwana.Tooling.Importers.dll" DestinationFolder="$(TargetDir)plugins" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="../../Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport/bin/$(Configuration)/net8.0-windows/Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json" DestinationFolder="$(TargetDir)plugins" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(DiagnosticsPlugin);../../Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/plugin.json" DestinationFolder="$(TargetDir)plugins/ProjectDiagnostics" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)Gondwana.Tooling.Studio.Plugin.ExternalImport.dll;$(TargetDir)Gondwana.Tooling.Importers.dll;../../Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport/plugin.json" DestinationFolder="$(TargetDir)plugins/ExternalImport" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="../../Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport/bin/$(Configuration)/net8.0-windows/Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json" DestinationFolder="$(TargetDir)plugins/ExternalImport" SkipUnchangedFiles="true" />
   </Target>
 </Project>

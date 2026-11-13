@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>StudioPluginFixtures.PrivateDependency</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Remove="Nerdbank.GitVersioning" />
+    <Compile Include="../PrivateDependency.cs" Link="PrivateDependency.cs" />
+  </ItemGroup>
+</Project>

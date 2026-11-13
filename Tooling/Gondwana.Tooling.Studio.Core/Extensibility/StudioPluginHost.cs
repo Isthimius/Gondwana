@@ -14,6 +14,11 @@ public class StudioPluginHost
     private readonly List<LoadedPlugin> _plugins = [];
     private readonly Action<string> _log;
     private readonly Assembly[] _sharedContracts;
+    private readonly List<DiscoveryEntry> _discovery = [];
+    private readonly HashSet<string> _scannedPaths = new(
+        OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+    private readonly HashSet<string> _packageIds = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _implementations = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Creates a plugin host that shares the framework-neutral plugin contract assembly.</summary>
     /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
@@ -31,6 +36,10 @@ public class StudioPluginHost
     /// <summary>Gets a new snapshot of enabled plugin instances in discovery order.</summary>
     public IReadOnlyList<IStudioPlugin> Plugins =>
         _plugins.Where(p => p.Enabled).Select(p => p.Instance).ToArray();
+
+    /// <summary>Gets a read-only snapshot of package and legacy discovery results.</summary>
+    public IReadOnlyList<StudioPluginDiscovery> DiscoveryResults =>
+        Array.AsReadOnly(_discovery.Select(entry => entry.Snapshot()).ToArray());
 
     /// <summary>Attaches services to enabled plugins implementing <see cref="IStudioPluginHostServicesAware"/>.</summary>
     /// <param name="services">Borrowed host services supplied to each participating plugin.</param>
@@ -52,26 +61,110 @@ public class StudioPluginHost
     public void DiscoverAndLoad()
         => DiscoverAndLoad(Path.Combine(AppContext.BaseDirectory, "plugins"));
 
-    /// <summary>Loads DLLs directly in a directory and instantiates their concrete plugin types with parameterless constructors.</summary>
+    /// <summary>Discovers manifest packages and legacy flat DLLs.</summary>
     /// <param name="pluginDir">Plugin directory; relative paths are resolved against the process's current directory.</param>
     /// <remarks>
-    /// Missing directories and assembly or constructor failures are logged. Path normalization and directory enumeration
-    /// errors propagate. Repeated calls append instances without deduplication; existing plugins are not unloaded.
+    /// Call on the Studio UI thread. Discovery is additive and each source path is scanned once per host.
+    /// Restart Studio to apply changes to a previously scanned package or assembly.
     /// </remarks>
-    /// <exception cref="ArgumentNullException"><paramref name="pluginDir"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="pluginDir"/> is empty or is not a valid path.</exception>
     public void DiscoverAndLoad(string pluginDir)
     {
         pluginDir = Path.GetFullPath(pluginDir);
-
-        if (!Directory.Exists(pluginDir))
+        string[] directories;
+        string[] legacyAssemblies;
+        try
         {
-            _log($"[Plugin] Directory not found: {pluginDir}");
+            if (!Directory.Exists(pluginDir))
+            {
+                _log($"[Plugin] Directory not found: {pluginDir}");
+                return;
+            }
+
+            StudioPluginPackage.RejectLink(new DirectoryInfo(pluginDir));
+            directories = Directory.GetDirectories(pluginDir);
+            legacyAssemblies = Directory.GetFiles(pluginDir, "*.dll");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            _log($"Error: [Plugin] Cannot enumerate '{pluginDir}': {ex.Message}");
             return;
         }
 
-        foreach (var dllPath in Directory.EnumerateFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly))
-            LoadAssemblyPlugins(dllPath);
+        var packages = new List<(StudioPluginPackage Package, string? ManifestError)>();
+        foreach (var directory in directories.Order(StringComparer.Ordinal))
+        {
+            if (!_scannedPaths.Add(directory))
+                continue;
+
+            var package = new StudioPluginPackage(directory);
+            try
+            {
+                package.ReadManifest();
+                packages.Add((package, null));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException
+                or System.Text.Json.JsonException or InvalidDataException)
+            {
+                packages.Add((package, ex.Message));
+            }
+        }
+
+        var conflicts = packages.Where(candidate => candidate.Package.HasValidId)
+            .GroupBy(candidate => candidate.Package.Metadata!.Id!, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .ToDictionary(group => group.Key, group => string.Join(", ", group.Select(x => x.Package.DirectoryPath)),
+                StringComparer.Ordinal);
+
+        foreach (var (package, manifestError) in packages)
+        {
+            if (manifestError is not null)
+            {
+                Report(package.Result(StudioPluginStatus.InvalidPackage, manifestError));
+                continue;
+            }
+
+            try
+            {
+                package.Validate(IsProtectedAssembly);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+            {
+                if (package.HasValidId && conflicts.TryGetValue(package.Metadata!.Id!, out var paths))
+                    Report(package.Result(StudioPluginStatus.Duplicate, $"Multiple packages claim this ID: {paths}. {ex.Message}"));
+                else
+                    Report(package.Result(StudioPluginStatus.InvalidPackage, ex.Message));
+                continue;
+            }
+
+            var id = package.Metadata!.Id!;
+            if (conflicts.TryGetValue(id, out var conflictPaths))
+            {
+                Report(package.Result(StudioPluginStatus.Duplicate, $"Multiple packages claim this ID: {conflictPaths}. Keep one package and restart Studio."));
+                continue;
+            }
+
+            if (package.Compatibility == StudioPluginCompatibility.Incompatible)
+            {
+                Report(package.Result(StudioPluginStatus.Incompatible,
+                    $"The package targets Studio contract {package.Metadata.ContractVersion}. This host supports {StudioPluginPackage.CurrentContractVersion}."));
+                continue;
+            }
+
+            if (_packageIds.Contains(id))
+            {
+                Report(package.Result(StudioPluginStatus.Duplicate, $"ID '{id}' is already active. Keep one package and restart Studio."));
+                continue;
+            }
+
+            if (LoadAssemblyPlugins(package.EntryPath!, package))
+                _packageIds.Add(id);
+        }
+
+        foreach (var dllPath in legacyAssemblies.Order(StringComparer.Ordinal))
+        {
+            if (_scannedPaths.Add(dllPath))
+                LoadAssemblyPlugins(dllPath, null);
+        }
     }
 
     /// <summary>Notifies enabled plugins of the selected working directory, disabling and logging plugins that throw.</summary>
@@ -126,85 +219,123 @@ public class StudioPluginHost
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {
         plugin.Enabled = false;
-        _log($"Warning: [Plugin] Disabled '{plugin.Instance.Name}': {reason}");
+        plugin.DisableReason = reason;
+        _log($"Warning: [Plugin] Disabled '{plugin.DisplayName}': {reason}");
     }
 
-    private void LoadAssemblyPlugins(string dllPath)
+    private bool IsProtectedAssembly(string name) => StudioPluginLoadContext.IsProtectedAssembly(name, _sharedContracts);
+
+    private void Report(StudioPluginDiscovery result, LoadedPlugin[]? plugins = null)
     {
+        _discovery.Add(new DiscoveryEntry(result, plugins ?? []));
+        if (result.Diagnostic is not null)
+            _log($"Warning: [Plugin] {result.Status} in '{result.SourceDirectory}' ({result.EntryAssembly}): {result.Diagnostic}");
+    }
+
+    private bool LoadAssemblyPlugins(string dllPath, StudioPluginPackage? package)
+    {
+        var fileName = Path.GetFileName(dllPath);
+        StudioPluginDiscovery LegacyResult(StudioPluginStatus status, string? diagnostic = null,
+            string? id = null, string? name = null) => new(id, name, null,
+                Path.GetDirectoryName(dllPath)!, fileName, StudioPluginSource.LegacyAssembly,
+                StudioPluginCompatibility.Unknown, status, diagnostic);
+
+        var loaded = new List<LoadedPlugin>();
+        var failures = new List<string>();
+        var duplicates = new List<string>();
+
         try
         {
-            var loadContext = new PluginLoadContext(dllPath, _sharedContracts);
-            var assembly = loadContext.LoadFromAssemblyPath(dllPath);
-            var pluginTypes = assembly.GetTypes()
-                .Where(t => !t.IsAbstract && typeof(IStudioPlugin).IsAssignableFrom(t))
-                .ToArray();
+            var context = new StudioPluginLoadContext(dllPath, _sharedContracts, package?.DirectoryPath);
+            var assembly = context.LoadFromAssemblyPath(dllPath);
+            if (package is not null)
+                context.VerifyPackageReferences(assembly);
 
-            foreach (var type in pluginTypes)
+            var types = assembly.GetTypes()
+                .Where(type => !type.IsAbstract && typeof(IStudioPlugin).IsAssignableFrom(type))
+                .OrderBy(type => type.FullName, StringComparer.Ordinal);
+
+            foreach (var type in types)
             {
+                var id = $"legacy:{assembly.GetName().Name}:{type.FullName}";
+                if (_implementations.Contains(id))
+                {
+                    var diagnostic = $"Implementation '{type.FullName}' is already loaded.";
+                    duplicates.Add(diagnostic);
+                    if (package is null)
+                        Report(LegacyResult(StudioPluginStatus.Duplicate, diagnostic, id));
+                    continue;
+                }
+
+                LoadedPlugin plugin;
                 try
                 {
-                    if (Activator.CreateInstance(type) is IStudioPlugin plugin)
-                    {
-                        _plugins.Add(new LoadedPlugin(plugin, loadContext, dllPath));
-                        _log($"[Plugin] Loaded '{plugin.Name}' from {Path.GetFileName(dllPath)}");
-                    }
+                    var instance = (IStudioPlugin)Activator.CreateInstance(type)!;
+                    plugin = new LoadedPlugin(instance, context, dllPath) { DisplayName = instance.Name };
                 }
                 catch (Exception ex)
                 {
-                    _log($"Error: [Plugin] Failed to instantiate {type.FullName}: {ex.Message}");
+                    var diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}";
+                    failures.Add(diagnostic);
+                    if (package is null)
+                        Report(LegacyResult(StudioPluginStatus.FailedToLoad, diagnostic, id));
+                    continue;
                 }
+
+                _implementations.Add(id);
+                _plugins.Add(plugin);
+                loaded.Add(plugin);
+                _log($"[Plugin] Loaded '{plugin.DisplayName}' from {fileName}");
+                if (package is null)
+                    Report(LegacyResult(StudioPluginStatus.Loaded, id: id, name: plugin.DisplayName), [plugin]);
             }
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            _log($"Error: [Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
-            foreach (var loaderEx in ex.LoaderExceptions)
-                _log($"Error: [Plugin] Loader error: {loaderEx?.Message}");
         }
         catch (Exception ex)
         {
-            _log($"Error: [Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
+            var details = ex is ReflectionTypeLoadException reflection
+                ? string.Join(" ", reflection.LoaderExceptions.Select(error => error?.Message))
+                : ex.GetBaseException().Message;
+            var diagnostic = $"Failed loading {fileName}: {details}";
+            failures.Add(diagnostic);
+            if (package is null)
+                Report(LegacyResult(StudioPluginStatus.FailedToLoad, diagnostic));
         }
+
+        if (package is not null)
+        {
+            var diagnostics = failures.Concat(duplicates).ToArray();
+            var status = StudioPluginStatus.Loaded;
+            if (loaded.Count > 0 && diagnostics.Length > 0)
+                status = StudioPluginStatus.PartiallyLoaded;
+            else if (loaded.Count == 0)
+            {
+                status = failures.Count == 0 && duplicates.Count > 0
+                    ? StudioPluginStatus.Duplicate : StudioPluginStatus.FailedToLoad;
+                if (diagnostics.Length == 0)
+                    diagnostics = ["The entry assembly contains no concrete Studio plugin implementations."];
+            }
+
+            Report(package.Result(status, diagnostics.Length == 0 ? null : string.Join(" ", diagnostics)),
+                loaded.ToArray());
+        }
+
+        return loaded.Count > 0;
     }
 
-    private sealed class PluginLoadContext : AssemblyLoadContext
+    private sealed record DiscoveryEntry(StudioPluginDiscovery Result, LoadedPlugin[] Plugins)
     {
-        private readonly AssemblyDependencyResolver _resolver;
-        private readonly Assembly[] _sharedContracts;
-
-        /// <summary>Creates an isolated load context that resolves dependencies beside a plugin assembly.</summary>
-        /// <param name="dllPath">The full path to the plugin's main assembly.</param>
-        /// <param name="sharedContracts">Contract assemblies to reuse from the host.</param>
-        public PluginLoadContext(string dllPath, Assembly[] sharedContracts)
-            : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
+        internal StudioPluginDiscovery Snapshot()
         {
-            _resolver = new AssemblyDependencyResolver(dllPath);
-            _sharedContracts = sharedContracts;
-        }
+            var disabled = Plugins.Where(plugin => !plugin.Enabled).ToArray();
+            if (disabled.Length == 0)
+                return Result;
 
-        /// <summary>Reuses a host contract by simple name or loads a managed dependency resolved for this plugin.</summary>
-        /// <param name="assemblyName">The requested dependency identity.</param>
-        /// <returns>The shared or loaded assembly, or <see langword="null"/> to allow normal fallback resolution.</returns>
-        protected override Assembly? Load(AssemblyName assemblyName)
-        {
-            // Contracts must have host identity even when a plugin ships private copies.
-            var shared = _sharedContracts.FirstOrDefault(assembly =>
-                string.Equals(assembly.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
-
-            if (shared is not null)
-                return shared;
-
-            var path = _resolver.ResolveAssemblyToPath(assemblyName);
-            return path is not null ? LoadFromAssemblyPath(path) : null;
-        }
-
-        /// <summary>Loads a native dependency from the path resolved for this plugin.</summary>
-        /// <param name="unmanagedDllName">The native library name requested by the plugin.</param>
-        /// <returns>The loaded library handle, or zero to allow normal fallback resolution.</returns>
-        protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
-        {
-            var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            return path is not null ? LoadUnmanagedDllFromPath(path) : IntPtr.Zero;
+            var diagnostics = disabled.Select(plugin => $"{plugin.DisplayName}: {plugin.DisableReason}");
+            return Result with
+            {
+                Status = disabled.Length == Plugins.Length ? StudioPluginStatus.Disabled : StudioPluginStatus.PartiallyLoaded,
+                Diagnostic = string.Join(" ", new[] { Result.Diagnostic }.Concat(diagnostics).OfType<string>())
+            };
         }
     }
 
@@ -233,5 +364,8 @@ public class StudioPluginHost
 
         /// <summary>Gets or sets whether the plugin participates in host queries and lifecycle notifications; initially true.</summary>
         public bool Enabled { get; set; } = true;
+
+        internal string? DisplayName { get; init; }
+        internal string? DisableReason { get; set; }
     }
 }

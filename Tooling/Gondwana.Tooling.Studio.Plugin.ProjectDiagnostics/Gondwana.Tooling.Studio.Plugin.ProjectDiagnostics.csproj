@@ -14,6 +14,9 @@
     <MSBuild Projects="../Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)">
       <Output TaskParameter="TargetOutputs" ItemName="StudioTarget" />
     </MSBuild>
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="@(StudioTarget->'%(RootDir)%(Directory)plugins')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/plugin.json" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)plugin.json;$(TargetPath)" DestinationFolder="@(StudioTarget->'%(RootDir)%(Directory)plugins/ProjectDiagnostics')" SkipUnchangedFiles="true" />
+    <Delete Files="@(StudioTarget->'%(RootDir)%(Directory)plugins/$(AssemblyName).dll')" />
+    <Delete Files="@(StudioTarget->'%(RootDir)%(Directory)plugins/$(AssemblyName).deps.json')" />
   </Target>
 </Project>

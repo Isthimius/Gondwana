@@ -41,9 +41,25 @@ public sealed class ExternalImportTests
     [Fact]
     public void DiscoversExternalPluginAlongsideDiagnostics()
     {
-        var host = new StudioPluginHost(_ => { }); host.DiscoverAndLoad();
-        Assert.Contains(host.Plugins, p => p.Name == "External Asset Importer");
-        Assert.Contains(host.Plugins, p => p.Name == "Project Diagnostics");
+        var messages = new List<string>();
+        var host = new StudioPluginHost(messages.Add);
+        host.DiscoverAndLoad();
+        Assert.True(host.Plugins.Any(plugin => plugin.Name == "External Asset Importer"), string.Join(Environment.NewLine, messages));
+        Assert.True(host.Plugins.Any(plugin => plugin.Name == "Project Diagnostics"), string.Join(Environment.NewLine, messages));
+
+        var packages = host.DiscoveryResults.Where(result => result.Source == StudioPluginSource.ManifestPackage).ToArray();
+        Assert.Equal(new[] { "gondwana.external-import", "gondwana.project-diagnostics" }, packages.Select(package => package.Id));
+        Assert.All(packages, package =>
+        {
+            Assert.Equal(StudioPluginStatus.Loaded, package.Status);
+            Assert.Equal(StudioPluginCompatibility.Compatible, package.Compatibility);
+            Assert.DoesNotContain(Directory.GetFiles(package.SourceDirectory, "*.dll"),
+                path => Path.GetFileName(path) is "Gondwana.dll" or "Gondwana.Studio.Core.dll" or "Gondwana.Studio.WinForms.dll");
+        });
+
+        var importer = Assert.Single(packages, package => package.Id == "gondwana.external-import");
+        Assert.True(File.Exists(Path.Combine(importer.SourceDirectory, "Gondwana.Tooling.Importers.dll")));
+        Assert.True(File.Exists(Path.Combine(importer.SourceDirectory, Path.ChangeExtension(importer.EntryAssembly, ".deps.json")!)));
     }
 
     /// <summary>

@@ -260,6 +260,57 @@ Studio can discover optional plugins from its `plugins/` directory at startup.
 
 Plugins can contribute global panels and menu items and can receive working-directory lifecycle notifications. They do not replace Studio's six built-in editors.
 
+### Package layout
+
+Studio's Windows distribution includes the two official plugin packages. For manual deployment, close Studio and copy each complete package into its own immediate subdirectory under the application's `plugins/` directory. Keep the manifest beside its entry DLL.
+
+```text
+plugins/
+  ProjectDiagnostics/
+    plugin.json
+    Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll
+  ExternalImport/
+    plugin.json
+    Gondwana.Tooling.Studio.Plugin.ExternalImport.dll
+    Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json
+    Gondwana.Tooling.Importers.dll
+```
+
+A package manifest looks like this:
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "gondwana.project-diagnostics",
+  "name": "Project Diagnostics",
+  "version": "1.0.0",
+  "entryAssembly": "Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll",
+  "contractVersion": 1,
+  "description": "Project validation and diagnostics",
+  "author": "Hidden Worlds Games"
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `schemaVersion` | Manifest format. The current value is `1`. |
+| `id` | Stable package identity. Use lowercase ASCII letters, digits, dots, underscores or hyphens, starting with a letter or digit. |
+| `name` | Display name. |
+| `version` | Plugin release version in SemVer format. |
+| `entryAssembly` | DLL filename directly beside the manifest. The assembly supplies concrete plugin implementations with public parameterless constructors. |
+| `contractVersion` | Required Studio plugin contract generation. Studio currently accepts `1`, which covers the current Core and WinForms plugin interfaces. An incompatible interface change requires a new contract version. This value is independent of the plugin and engine release versions. |
+| `description`, `author` | Optional display metadata. |
+
+Each package has its own load context. Include the entry assembly's `.deps.json` and the private managed or native files it references when using private dependencies. Private versions can differ across packages. Studio supplies the .NET and Windows frameworks, `Gondwana.Studio.Core`, `Gondwana.Studio.WinForms`, `Gondwana`, `SkiaSharp`, and `Newtonsoft.Json`. Keep those and other host or engine assemblies out of the package. Package files and directories must be regular files and directories. Studio rejects links, reparse points, and dependency paths outside the package.
+
+### Discovery and troubleshooting
+
+Studio checks manifests and static managed references before constructing package plugins. Startup discovery considers packages in ordinal directory order, then legacy DLLs in ordinal filename order. If multiple packages claim an ID in the same scan, Studio rejects the conflicting packages. When two sources contain the same implementation, identified by assembly simple name and full type name, the first successful activation takes precedence. A working package therefore takes precedence over a stale flat copy at startup. Repeated scans leave previously processed sources and active instances in place.
+
+To deploy a legacy plugin, place its DLL and any required accompanying files directly in `plugins/` and restart Studio. Legacy entries derive their IDs from the assembly and implementation type and report unknown manifest version and compatibility. Studio retains the flat layout's original dependency resolution behavior.
+
+Look in Studio's **Output** window for manifest, compatibility, duplicate, and loading diagnostics. The host also exposes these results through `DiscoveryResults`. Close Studio before editing, replacing, or removing plugin files, then restart it to apply changes. Only run plugins from sources you trust. Load contexts isolate dependency versions, and plugin code executes with Studio's permissions.
+
 ### Project Diagnostics
 
 The Project Diagnostics plugin performs read-only inspection of the active working directory. It discovers GAF, GTS, GANI, GSND, GSCN, and GSPR files and reports explicit-reference, validation, missing-file, malformed-path, and missing packed-entry problems.

@@ -32,15 +32,29 @@ foreach ($app in $apps) {
 }
 
 $pluginFolder = Join-Path $ToolingRoot 'Gondwana.Tooling.Studio.WinForms/plugins'
-foreach ($file in @(
-    'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll',
-    'Gondwana.Tooling.Studio.Plugin.ExternalImport.dll',
-    'Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json',
-    'Gondwana.Tooling.Importers.dll'
-)) {
-    $path = Join-Path $pluginFolder $file
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-        throw "Missing Studio plugin or dependency: $path"
+$packages = @(
+    @{ Folder = 'ProjectDiagnostics'; Id = 'gondwana.project-diagnostics'; Files = @(
+        'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll'
+    ) }
+    @{ Folder = 'ExternalImport'; Id = 'gondwana.external-import'; Files = @(
+        'Gondwana.Tooling.Studio.Plugin.ExternalImport.dll',
+        'Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json',
+        'Gondwana.Tooling.Importers.dll'
+    ) }
+)
+
+foreach ($package in $packages) {
+    $packageFolder = Join-Path $pluginFolder $package.Folder
+    $expected = @('plugin.json') + $package.Files
+    $actual = @(Get-ChildItem -LiteralPath $packageFolder -Force | ForEach-Object Name)
+    if (Compare-Object $expected $actual) {
+        throw "Unexpected files in Studio plugin package: $packageFolder"
+    }
+
+    $manifest = Get-Content -LiteralPath (Join-Path $packageFolder 'plugin.json') -Raw | ConvertFrom-Json
+    if ($manifest.id -cne $package.Id -or $manifest.entryAssembly -cne $package.Files[0] -or
+        $manifest.schemaVersion -ne 1 -or $manifest.contractVersion -ne 1) {
+        throw "Invalid manifest in Studio plugin package: $packageFolder"
     }
 }
 

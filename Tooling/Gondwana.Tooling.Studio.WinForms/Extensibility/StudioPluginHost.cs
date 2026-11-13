@@ -8,9 +8,10 @@ namespace Gondwana.Tooling.Studio.WinForms.Extensibility;
 /// </summary>
 public sealed class StudioPluginHost : CoreHost
 {
-    /// <summary>Creates a host that shares both Core and WinForms plugin contracts with discovered assemblies.</summary>
+    /// <summary>Creates a host that shares the Studio contracts and approved engine dependencies with discovered assemblies.</summary>
     /// <param name="log">Callback receiving discovery, lifecycle, and UI-contribution diagnostics.</param>
-    public StudioPluginHost(Action<string> log) : base(log, typeof(IStudioPlugin).Assembly)
+    public StudioPluginHost(Action<string> log) : base(log, typeof(IStudioPlugin).Assembly, typeof(Engine).Assembly,
+        typeof(global::SkiaSharp.SKBitmap).Assembly, typeof(global::Newtonsoft.Json.JsonConvert).Assembly)
     {
     }
 
