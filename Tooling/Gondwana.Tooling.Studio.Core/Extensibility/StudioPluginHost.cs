@@ -144,8 +144,12 @@ public class StudioPluginHost
             var entry = Path.Combine(directory, manifest.EntryAssembly!);
             info = info with { EntryAssembly = entry };
             if (manifest.ContractVersion != PluginManifest.SupportedContractVersion)
-                return info with { Compatibility = PluginCompatibility.Incompatible, Status = PluginLoadStatus.Incompatible,
-                    Diagnostic = $"Contract {manifest.ContractVersion} is unsupported; this host supports contract {PluginManifest.SupportedContractVersion}. Obtain a compatible plugin." };
+                return info with
+                {
+                    Compatibility = PluginCompatibility.Incompatible,
+                    Status = PluginLoadStatus.Incompatible,
+                    Diagnostic = $"Contract {manifest.ContractVersion} is unsupported; this host supports contract {PluginManifest.SupportedContractVersion}. Obtain a compatible plugin."
+                };
             info = info with { Compatibility = PluginCompatibility.Compatible };
             if (!File.Exists(entry)) throw new FileNotFoundException($"Entry assembly not found: {entry}");
             PluginLoadContext.ValidateAssemblies(directory, _sharedAssemblies!);
@@ -254,8 +258,11 @@ public class StudioPluginHost
                     }
                     catch (Exception ex)
                     {
-                        row = row with { Status = PluginLoadStatus.FailedToLoad,
-                            Diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}" };
+                        row = row with
+                        {
+                            Status = PluginLoadStatus.FailedToLoad,
+                            Diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}"
+                        };
                     }
                 }
                 rows.Add(row);
@@ -272,8 +279,11 @@ public class StudioPluginHost
             var detail = ex is ReflectionTypeLoadException reflection
                 ? string.Join("; ", reflection.LoaderExceptions.Select(error => error?.Message))
                 : ex.GetBaseException().Message;
-            rows.Add(info with { Status = PluginLoadStatus.FailedToLoad,
-                Diagnostic = $"Failed loading {Path.GetFileName(dllPath)}: {detail}" });
+            rows.Add(info with
+            {
+                Status = PluginLoadStatus.FailedToLoad,
+                Diagnostic = $"Failed loading {Path.GetFileName(dllPath)}: {detail}"
+            });
             LogResult(rows[^1]);
         }
     }

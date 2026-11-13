@@ -236,7 +236,9 @@ public sealed class PluginPackageTests
             // Directory junction creation does not require the symbolic-link privilege.
             using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe")
             {
-                Arguments = $"/c mklink /J \"{link}\" \"{_root}\"", UseShellExecute = false, CreateNoWindow = true
+                Arguments = $"/c mklink /J \"{link}\" \"{_root}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true
             })!;
             process.WaitForExit();
             Assert.Equal(0, process.ExitCode);
@@ -304,7 +306,12 @@ public sealed class PluginPackageTests
     private static void Manifest(string directory, string id, string entry)
         => File.WriteAllText(Path.Combine(directory, "plugin.json"), JsonSerializer.Serialize(new
         {
-            schemaVersion = 1, id, name = "Fixture package", version = "1.0.0", entryAssembly = entry, contractVersion = 1
+            schemaVersion = 1,
+            id,
+            name = "Fixture package",
+            version = "1.0.0",
+            entryAssembly = entry,
+            contractVersion = 1
         }));
 
     private static void DependencyManifest(string directory, string assembly, int version)
