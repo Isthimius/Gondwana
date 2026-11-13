@@ -10,10 +10,15 @@
     <ProjectReference Include="../Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" />
     <ProjectReference Include="../Gondwana.Tooling.Importers/Gondwana.Tooling.Importers.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
   <Target Name="DeployStudioPlugin" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true'">
     <MSBuild Projects="../Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)">
       <Output TaskParameter="TargetOutputs" ItemName="StudioTarget" />
     </MSBuild>
-    <Copy SourceFiles="$(TargetPath);$(TargetDir)Gondwana.Tooling.Importers.dll;$(TargetDir)$(AssemblyName).deps.json" DestinationFolder="@(StudioTarget->'%(RootDir)%(Directory)plugins')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetPath);$(TargetDir)Gondwana.Tooling.Importers.dll;$(TargetDir)$(AssemblyName).deps.json;$(TargetDir)plugin.json" DestinationFolder="@(StudioTarget->'%(RootDir)%(Directory)plugins/ExternalImport')" SkipUnchangedFiles="true" />
+    <!-- Remove only this bundled plugin's obsolete flat deployment. -->
+    <Delete Files="@(StudioTarget->'%(RootDir)%(Directory)plugins/$(AssemblyName).dll');@(StudioTarget->'%(RootDir)%(Directory)plugins/$(AssemblyName).deps.json')" />
   </Target>
 </Project>

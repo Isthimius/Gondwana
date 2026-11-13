@@ -126,6 +126,7 @@
 
 - [[Studio & Desktop Tools|Studio-and-Desktop-Tools]]
 - [[Gondwana Studio]]
+    - [[Studio Plugin Packages]]
 - [[Standalone Desktop Tools]]
   - [Scene Viewer](Standalone-Desktop-Tools#scene-viewer)
 - <strong>Content Editors</strong>

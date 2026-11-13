@@ -260,6 +260,11 @@ Studio can discover optional plugins from its `plugins/` directory at startup.
 
 Plugins can contribute global panels and menu items and can receive working-directory lifecycle notifications. They do not replace Studio's six built-in editors.
 
+Studio loads manifest-based package directories and continues to support legacy
+flat DLL plugins. Invalid packages and compatibility/load failures are retained
+in a structured discovery snapshot and logged to Output. See [[Studio Plugin Packages|Studio-Plugin-Packages]] for manifests, dependency boundaries, duplicate
+precedence, manual deployment and trusted-code expectations.
+
 ### Project Diagnostics
 
 The Project Diagnostics plugin performs read-only inspection of the active working directory. It discovers GAF, GTS, GANI, GSND, GSCN, and GSPR files and reports explicit-reference, validation, missing-file, malformed-path, and missing packed-entry problems.

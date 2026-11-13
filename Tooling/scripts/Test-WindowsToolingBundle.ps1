@@ -33,14 +33,32 @@ foreach ($app in $apps) {
 
 $pluginFolder = Join-Path $ToolingRoot 'Gondwana.Tooling.Studio.WinForms/plugins'
 foreach ($file in @(
-    'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll',
-    'Gondwana.Tooling.Studio.Plugin.ExternalImport.dll',
-    'Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json',
-    'Gondwana.Tooling.Importers.dll'
+    'ProjectDiagnostics/plugin.json',
+    'ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.deps.json',
+    'ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll',
+    'ExternalImport/plugin.json',
+    'ExternalImport/Gondwana.Tooling.Studio.Plugin.ExternalImport.dll',
+    'ExternalImport/Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json',
+    'ExternalImport/Gondwana.Tooling.Importers.dll'
 )) {
     $path = Join-Path $pluginFolder $file
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         throw "Missing Studio plugin or dependency: $path"
+    }
+}
+
+foreach ($package in @('ProjectDiagnostics', 'ExternalImport')) {
+    $folder = Join-Path $pluginFolder $package
+    $manifest = Get-Content -LiteralPath (Join-Path $folder 'plugin.json') -Raw | ConvertFrom-Json
+    if ($manifest.schemaVersion -ne 1 -or $manifest.contractVersion -ne 1 -or
+        $manifest.entryAssembly -ne "Gondwana.Tooling.Studio.Plugin.$package.dll") {
+        throw "Invalid bundled plugin manifest: $folder"
+    }
+    foreach ($file in Get-ChildItem -LiteralPath $folder -Filter '*.dll' -Recurse) {
+        if ($file.Name -ne $manifest.entryAssembly -and
+            -not ($package -eq 'ExternalImport' -and $file.Name -eq 'Gondwana.Tooling.Importers.dll')) {
+            throw "Unexpected private library in bundled plugin: $($file.FullName)"
+        }
     }
 }
 

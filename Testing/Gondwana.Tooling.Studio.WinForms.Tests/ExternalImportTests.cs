@@ -41,9 +41,21 @@ public sealed class ExternalImportTests
     [Fact]
     public void DiscoversExternalPluginAlongsideDiagnostics()
     {
-        var host = new StudioPluginHost(_ => { }); host.DiscoverAndLoad();
+        var host = new Gondwana.Tooling.Studio.WinForms.Extensibility.StudioPluginHost(_ => { });
+        host.DiscoverAndLoad();
         Assert.Contains(host.Plugins, p => p.Name == "External Asset Importer");
         Assert.Contains(host.Plugins, p => p.Name == "Project Diagnostics");
+        Assert.Equal(2, host.Discovery.Count);
+        Assert.All(host.Discovery, row =>
+        {
+            Assert.False(row.IsLegacy);
+            Assert.Equal(PluginCompatibility.Compatible, row.Compatibility);
+            Assert.Equal(PluginLoadStatus.Loaded, row.Status);
+            Assert.Equal("1.0.0", row.Version);
+            Assert.True(File.Exists(Path.Combine(row.SourceDirectory, "plugin.json")));
+        });
+        host.DiscoverAndLoad();
+        Assert.Equal(2, host.Plugins.Count);
     }
 
     /// <summary>

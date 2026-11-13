@@ -14,6 +14,13 @@ public class StudioPluginHost
     private readonly List<LoadedPlugin> _plugins = [];
     private readonly Action<string> _log;
     private readonly Assembly[] _sharedContracts;
+    private IReadOnlyDictionary<string, Assembly>? _sharedAssemblies;
+    private readonly Dictionary<string, List<PluginDiscoveryInfo>> _discovery = new(PluginPackagePaths.Comparer);
+    private readonly HashSet<string> _implementations = new(StringComparer.Ordinal);
+
+    /// <summary>Gets an immutable snapshot including invalid packages and activation failures.</summary>
+    public IReadOnlyList<PluginDiscoveryInfo> Discovery =>
+        Array.AsReadOnly(_discovery.Values.SelectMany(rows => rows).ToArray());
 
     /// <summary>Creates a plugin host that shares the framework-neutral plugin contract assembly.</summary>
     /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
@@ -52,27 +59,106 @@ public class StudioPluginHost
     public void DiscoverAndLoad()
         => DiscoverAndLoad(Path.Combine(AppContext.BaseDirectory, "plugins"));
 
-    /// <summary>Loads DLLs directly in a directory and instantiates their concrete plugin types with parameterless constructors.</summary>
-    /// <param name="pluginDir">Plugin directory; relative paths are resolved against the process's current directory.</param>
+    /// <summary>Discovers immediate package directories, followed by legacy top-level DLLs.</summary>
+    /// <param name="pluginDir">Root containing packages and optional legacy DLLs.</param>
     /// <remarks>
-    /// Missing directories and assembly or constructor failures are logged. Path normalization and directory enumeration
-    /// errors propagate. Repeated calls append instances without deduplication; existing plugins are not unloaded.
+    /// Call on the UI thread. Sources are attempted once per host; restart after changing files.
+    /// Packages precede legacy copies, with ordinal source ordering. All colliding explicit IDs
+    /// are rejected before activation. A later collision disables the earlier instance without unloading it.
     /// </remarks>
-    /// <exception cref="ArgumentNullException"><paramref name="pluginDir"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="pluginDir"/> is empty or is not a valid path.</exception>
     public void DiscoverAndLoad(string pluginDir)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(pluginDir);
         pluginDir = Path.GetFullPath(pluginDir);
-
-        if (!Directory.Exists(pluginDir))
+        try
         {
-            _log($"[Plugin] Directory not found: {pluginDir}");
-            return;
-        }
+            if (!Directory.Exists(pluginDir))
+            {
+                _log($"[Plugin] Directory not found: {pluginDir}");
+                return;
+            }
+            _sharedAssemblies ??= PluginLoadContext.GetSharedAssemblies(_sharedContracts);
+            var candidates = new List<string>();
+            foreach (var directory in Directory.GetDirectories(pluginDir).Order(StringComparer.Ordinal))
+            {
+                if (_discovery.ContainsKey(directory)) continue;
+                var info = InspectPackage(directory);
+                _discovery.Add(directory, [info]);
+                candidates.Add(directory);
+            }
 
-        foreach (var dllPath in Directory.EnumerateFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly))
-            LoadAssemblyPlugins(dllPath);
+            var conflicts = _discovery.SelectMany(pair => pair.Value.Select(info => (Source: pair.Key, Info: info)))
+                .Where(row => !row.Info.IsLegacy && row.Info.Id is not null)
+                .GroupBy(row => row.Info.Id, StringComparer.Ordinal)
+                .Where(group => group.Select(row => row.Source).Distinct(PluginPackagePaths.Comparer).Count() > 1)
+                .ToArray();
+            foreach (var conflict in conflicts)
+            {
+                foreach (var source in conflict.Select(row => row.Source).Distinct(PluginPackagePaths.Comparer))
+                {
+                    _discovery[source] = _discovery[source].Select(info => info with
+                    {
+                        Status = PluginLoadStatus.Conflict,
+                        Diagnostic = $"Duplicate plugin id '{conflict.Key}'. Remove or rename the conflicting package and restart Studio."
+                    }).ToList();
+                    foreach (var loaded in _plugins.Where(p => PluginPackagePaths.Comparer.Equals(p.SourcePath, _discovery[source][0].EntryAssembly)))
+                        loaded.Enabled = false;
+                    LogResult(_discovery[source][0]);
+                }
+            }
+            foreach (var source in candidates)
+            {
+                var info = _discovery[source][0];
+                if (info.Status == PluginLoadStatus.Loaded) LoadAssemblyPlugins(source, info);
+                else LogResult(info);
+            }
+            foreach (var dll in Directory.GetFiles(pluginDir).Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).Order(StringComparer.Ordinal))
+            {
+                if (_discovery.ContainsKey(dll)) continue;
+                var info = new PluginDiscoveryInfo(null, null, null, pluginDir, dll, true,
+                    PluginCompatibility.Unknown, PluginLoadStatus.Loaded, null);
+                _discovery.Add(dll, [info]);
+                LoadAssemblyPlugins(dll, info);
+            }
+        }
+        catch (Exception ex)
+        {
+            var info = new PluginDiscoveryInfo(null, null, null, pluginDir, null, false,
+                PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, $"Cannot discover plugins: {ex.Message}");
+            // Preserve successful child records if root enumeration subsequently fails.
+            _discovery[pluginDir + Path.DirectorySeparatorChar] = [info];
+            LogResult(info);
+        }
     }
+
+    private PluginDiscoveryInfo InspectPackage(string directory)
+    {
+        var info = new PluginDiscoveryInfo(null, null, null, directory, null, false,
+            PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, null);
+        try
+        {
+            PluginPackagePaths.ValidateTree(directory);
+            var manifest = PluginManifest.Read(directory);
+            info = info with { Id = manifest.Id, DisplayName = manifest.Name, Version = manifest.Version };
+            manifest.Validate();
+            var entry = Path.Combine(directory, manifest.EntryAssembly!);
+            info = info with { EntryAssembly = entry };
+            if (manifest.ContractVersion != PluginManifest.SupportedContractVersion)
+                return info with { Compatibility = PluginCompatibility.Incompatible, Status = PluginLoadStatus.Incompatible,
+                    Diagnostic = $"Contract {manifest.ContractVersion} is unsupported; this host supports contract {PluginManifest.SupportedContractVersion}. Obtain a compatible plugin." };
+            info = info with { Compatibility = PluginCompatibility.Compatible };
+            if (!File.Exists(entry)) throw new FileNotFoundException($"Entry assembly not found: {entry}");
+            PluginLoadContext.ValidateAssemblies(directory, _sharedAssemblies!);
+            return info with { Status = PluginLoadStatus.Loaded };
+        }
+        catch (Exception ex)
+        {
+            return info with { Diagnostic = $"Invalid package: {ex.Message}" };
+        }
+    }
+
+    private void LogResult(PluginDiscoveryInfo info)
+        => _log($"{(info.Status == PluginLoadStatus.Loaded ? "" : "Error: ")}[Plugin] {info.Status}: {info.Id ?? info.SourceDirectory}: {info.Diagnostic}");
 
     /// <summary>Notifies enabled plugins of the selected working directory, disabling and logging plugins that throw.</summary>
     /// <param name="projectPath">The authoring directory path to pass unchanged to each plugin.</param>
@@ -126,85 +212,69 @@ public class StudioPluginHost
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {
         plugin.Enabled = false;
-        _log($"Warning: [Plugin] Disabled '{plugin.Instance.Name}': {reason}");
+        foreach (var source in _discovery.Keys.ToArray())
+            _discovery[source] = _discovery[source].Select(info =>
+                PluginPackagePaths.Comparer.Equals(info.EntryAssembly, plugin.SourcePath) && info.Implementation == plugin.Instance.GetType().FullName
+                    ? info with { Status = PluginLoadStatus.Disabled, Diagnostic = reason } : info).ToList();
+        var name = _discovery.Values.SelectMany(rows => rows)
+            .FirstOrDefault(info => info.EntryAssembly == plugin.SourcePath && info.Implementation == plugin.Instance.GetType().FullName)?.DisplayName
+            ?? plugin.Instance.GetType().FullName;
+        _log($"Warning: [Plugin] Disabled '{name}': {reason}");
     }
 
-    private void LoadAssemblyPlugins(string dllPath)
+    private void LoadAssemblyPlugins(string source, PluginDiscoveryInfo info)
     {
+        var rows = new List<PluginDiscoveryInfo>();
+        _discovery[source] = rows;
+        var dllPath = info.EntryAssembly!;
         try
         {
-            var loadContext = new PluginLoadContext(dllPath, _sharedContracts);
+            var loadContext = new PluginLoadContext(dllPath, _sharedAssemblies!, info.IsLegacy);
             var assembly = loadContext.LoadFromAssemblyPath(dllPath);
             var pluginTypes = assembly.GetTypes()
-                .Where(t => !t.IsAbstract && typeof(IStudioPlugin).IsAssignableFrom(t))
-                .ToArray();
-
+                .Where(t => !t.IsAbstract && !t.ContainsGenericParameters && typeof(IStudioPlugin).IsAssignableFrom(t))
+                .OrderBy(t => t.FullName, StringComparer.Ordinal).ToArray();
             foreach (var type in pluginTypes)
             {
-                try
+                var identity = $"{assembly.GetName().Name}:{Convert.ToHexString(assembly.GetName().GetPublicKeyToken() ?? [])}:{type.FullName}";
+                var row = info with { Id = info.Id ?? $"legacy:{identity}", Implementation = type.FullName };
+                if (!_implementations.Add(identity))
                 {
-                    if (Activator.CreateInstance(type) is IStudioPlugin plugin)
+                    row = row with { Status = PluginLoadStatus.Conflict, Diagnostic = $"Implementation '{identity}' was already discovered. Packages precede legacy DLLs; restart after removing redundant copies." };
+                }
+                else
+                {
+                    try
                     {
+                        var plugin = (IStudioPlugin)Activator.CreateInstance(type)!;
+                        var name = plugin.Name;
                         _plugins.Add(new LoadedPlugin(plugin, loadContext, dllPath));
-                        _log($"[Plugin] Loaded '{plugin.Name}' from {Path.GetFileName(dllPath)}");
+                        row = row with { DisplayName = row.DisplayName ?? name };
+                        _log($"[Plugin] Loaded '{name}' from {Path.GetFileName(dllPath)}");
+                    }
+                    catch (Exception ex)
+                    {
+                        row = row with { Status = PluginLoadStatus.FailedToLoad,
+                            Diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}" };
                     }
                 }
-                catch (Exception ex)
-                {
-                    _log($"Error: [Plugin] Failed to instantiate {type.FullName}: {ex.Message}");
-                }
+                rows.Add(row);
+                if (row.Status != PluginLoadStatus.Loaded) LogResult(row);
             }
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            _log($"Error: [Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
-            foreach (var loaderEx in ex.LoaderExceptions)
-                _log($"Error: [Plugin] Loader error: {loaderEx?.Message}");
+            if (rows.Count == 0)
+            {
+                rows.Add(info with { Status = PluginLoadStatus.FailedToLoad, Diagnostic = "No concrete IStudioPlugin implementation found in entry assembly." });
+                LogResult(rows[0]);
+            }
         }
         catch (Exception ex)
         {
-            _log($"Error: [Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
-        }
-    }
-
-    private sealed class PluginLoadContext : AssemblyLoadContext
-    {
-        private readonly AssemblyDependencyResolver _resolver;
-        private readonly Assembly[] _sharedContracts;
-
-        /// <summary>Creates an isolated load context that resolves dependencies beside a plugin assembly.</summary>
-        /// <param name="dllPath">The full path to the plugin's main assembly.</param>
-        /// <param name="sharedContracts">Contract assemblies to reuse from the host.</param>
-        public PluginLoadContext(string dllPath, Assembly[] sharedContracts)
-            : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
-        {
-            _resolver = new AssemblyDependencyResolver(dllPath);
-            _sharedContracts = sharedContracts;
-        }
-
-        /// <summary>Reuses a host contract by simple name or loads a managed dependency resolved for this plugin.</summary>
-        /// <param name="assemblyName">The requested dependency identity.</param>
-        /// <returns>The shared or loaded assembly, or <see langword="null"/> to allow normal fallback resolution.</returns>
-        protected override Assembly? Load(AssemblyName assemblyName)
-        {
-            // Contracts must have host identity even when a plugin ships private copies.
-            var shared = _sharedContracts.FirstOrDefault(assembly =>
-                string.Equals(assembly.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
-
-            if (shared is not null)
-                return shared;
-
-            var path = _resolver.ResolveAssemblyToPath(assemblyName);
-            return path is not null ? LoadFromAssemblyPath(path) : null;
-        }
-
-        /// <summary>Loads a native dependency from the path resolved for this plugin.</summary>
-        /// <param name="unmanagedDllName">The native library name requested by the plugin.</param>
-        /// <returns>The loaded library handle, or zero to allow normal fallback resolution.</returns>
-        protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
-        {
-            var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            return path is not null ? LoadUnmanagedDllFromPath(path) : IntPtr.Zero;
+            var detail = ex is ReflectionTypeLoadException reflection
+                ? string.Join("; ", reflection.LoaderExceptions.Select(error => error?.Message))
+                : ex.GetBaseException().Message;
+            rows.Add(info with { Status = PluginLoadStatus.FailedToLoad,
+                Diagnostic = $"Failed loading {Path.GetFileName(dllPath)}: {detail}" });
+            LogResult(rows[^1]);
         }
     }
 
