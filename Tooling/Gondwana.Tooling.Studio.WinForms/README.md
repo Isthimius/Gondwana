@@ -1,383 +1,138 @@
 # Gondwana Studio
 
-Gondwana Studio is the Windows authoring shell for `.gaf` / `.zip` asset
-containers, `.gts` tilesheets, `.gani` animations, `.gsnd` sounds, `.gspr` sprite collections, and `.gscn`
-scenes. It hosts the same public editor controls as the standalone utilities.
-It does not require a GameHost or a running game loop.
+Gondwana Studio is the Windows (WinForms) workspace for authoring Gondwana assets.
+It brings the standalone editors together in one dockable, multi-document interface:
 
-## Undo and redo
+- **Assets:** `.gaf` and `.zip` containers
+- **Tilesheets:** `.gts`
+- **Animations:** `.gani`
+- **Sound:** `.gsnd`
+- **Scenes:** `.gscn`
+- **Sprites:** `.gspr`
 
-**Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
-active GAF/ZIP, GTS, GSCN, GANI, GSPR, or GSND document in both Studio and the standalone editors.
-Ctrl+Shift+Z also redoes. Textboxes and property-grid fields with pending text edits retain local
-text undo. Commit the value before using keyboard document history; menu commands
-commit valid pending property edits first. Non-editing grid values, trees, lists,
-canvases, and drop-down-only selectors route to the document.
-Selection, zoom, and preview-only visibility are not document edits.
-
-Undoing back to the last successful save clears the dirty marker; undoing past
-that save makes it dirty again. Save and Save As retain history and establish a
-checkpoint only after success. New unsaved documents remain dirty. Editing after
-Undo discards the redo branch. Each document retains up to 200 committed operations
-by default; evicting history never makes an unreachable saved state clean.
-
-History includes in-memory edits to loose and GAF-backed GTS/GSCN/GANI/GSPR/GSND definitions.
-It cannot reverse committed archive relocation, file deletion, or cross-file
-reference rewrites. GAF Add/Import (including dependencies) is one step per approved
-import; Replace retains the exact typed entry and payload. Identical replacements
-and zero-addition imports create no step. Scene painting and fill tools are not included. Audio history changes
-GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
-
-GAF histories retain only affected entry bytes, capped at 64 MiB across Undo and
-Redo as well as 200 operations. Oldest applied entries, then furthest redo entries,
-are pruned. An edit larger than the budget prompts before committing: approval
-performs it without Undo and clears earlier history only after success. Cancel or
-ordinary failure preserves earlier history. No plaintext history spill files are used.
-Closing, pruning, or abandoning redo releases retained payload references.
-
-Studio GAF Save As adopts the new path and establishes a checkpoint; retained
-native payload references rebase from their capture origin during replay. Undo
-changes the adopted archive. Standalone GAF Save As creates a separate copy, keeps
-the source active, and does **not** advance its checkpoint. Normal Save does.
-Failed persistence leaves checkpoints unchanged. Search retains native text Undo.
-
-Successful reviewed Rename/Move/Delete commits are **not locally undoable** and
-reset the refreshed archive to a clean baseline. Failed or cancelled transactions
-retain history. Callers mutating a borrowed `AssetsFile` must call `MarkChanged()`,
-which discards stale history and marks the archive dirty. A packed-child save is
-an external refresh for a clean parent GAF, so its obsolete history is cleared;
-the child keeps its own independent history. Pending archive saves block replay.
-
+Studio reuses the standalone editor controls. It does not require a running game
+or `GameHost`.
 
 ## Running
+
+From the repository root on Windows:
 
 ```console
 dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms --configuration Release
 ```
 
-Choose **File > Open working directory…** to browse authoring files. Directories
-expand lazily, with files grouped under **Assets (.gaf)**, **Tilesheets (.gts)**,
-**Animations (.gani)**, **Scenes (.gscn)**, **Sprites (.gspr)**, **Sound (.gsnd)**,
-and **Misc** in each directory. Each type has a distinct placeholder icon;
-ZIP asset containers share the Assets group. Empty groups remain visible.
-Entries inside each `.gaf` in the displayed directory are loaded in the background
-and appended after loose files, grouped by stored asset type (the five native
-definition types use their existing groups; other types use Misc). Labels retain
-the full internal entry name followed by `(archive.gaf)`, and tooltips show the
-absolute archive path, entry name, and type. Identical loose and packed names,
-including entries from different archives, remain separate.
+## Working with files
 
-Double-click a native packed definition, or choose **Open**, to edit it in a normal
-document tab. All five formats are supported, including multi-definition entries.
-Packed binary entries have no Open command, and Open External is unavailable for
-all packed entries. Loose and packed GTS/GANI/GSCN/GSPR documents can preview their explicit
-packed dependencies through the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md)
-without loose copies or reference rewriting. Refresh rereads archive contents;
-subdirectories are scanned only when expanded. Unreadable, corrupt, or protected
-archives are logged and skipped without password prompts. Explicitly opening an
-encrypted GAF asks for its password; after authentication, refresh can list its
-entries using session credentials without prompting again. No files are extracted
-or changed. Scans use detached `AssetsFile` instances, disposed after each archive;
-the existing loader buffers one archive's payloads at a time, so large archives
-may take time to appear. Navigating or refreshing discards stale scan results.
-Studio GAF saves cancel obsolete scans and asynchronously wait for the active
-archive reader to release its handle before writing. The affected document is
-temporarily disabled, duplicate save requests share the pending save, and
-save-on-close/shutdown waits for success. The UI continues processing messages;
-no synchronous wait or change to GAF serialization is involved. Browsing refreshes
-after the write attempt.
+Choose **File > Open working directory…** to browse a folder. The **Working
+directory** pane groups loose files and entries from `.gaf` archives by asset
+type. Double-click a supported definition to open it in a document tab; the
+active tab is also highlighted in the directory tree when present.
+
+Use **File > New** to create a document, or right-click a type group in the
+working directory and choose **Add New …**. **File > Open…** opens an existing
+file directly. Each document has its own editor panes; use **View** to reveal
+hidden panes.
+
+**Save** writes the active document, **Save As** chooses a new destination,
+and `*` on a tab indicates unsaved changes. Closing a dirty document prompts
+you to save or discard its changes.
 
 ## Editing packed definitions
 
-Tabs identify packed entries as `entry.gts (archive.gaf)`; tooltips include the full
-archive path, stored asset type, and exact entry name. Identity uses `AssetLocation`,
-not the caption. Reopening the same typed entry activates its existing tab, while
-loose duplicates and entries from different archives remain separate documents.
-The existing editor models load all members through the native serializers and
-retain their physical packed origin separately from logical definition identities.
+Studio can open `.gts`, `.gani`, `.gsnd`, `.gscn`, and `.gspr` definitions
+stored inside a `.gaf` archive, including files containing multiple definitions.
+Select the entry under the archive in **Working directory** and open it as you
+would a loose file. Dependencies can be previewed without unpacking the archive.
 
-**Save** commits and validates the complete document, then replaces just its typed
-entry in a freshly loaded archive. Studio stages and validates a sibling GAF,
-flushes it, and installs it by atomic file replacement. Unrelated entry payloads,
-encryption, and dependency references are preserved. Failed validation, conflict,
-or persistence leaves the original archive and dirty document intact. Existing
-editor rules still allow explicitly saving incomplete drafts; duplicate logical
-identities remain invalid.
+- **Save** updates that entry in its original archive while preserving other entries.
+- **Save As** writes a loose file, switches the tab to the new file, and leaves
+  the original archive entry unchanged.
+- If the archive or entry changes elsewhere, Studio can reject a conflicting save.
+  Use **File > Reload document from disk** or **Save As** as appropriate.
 
-Studio serializes GAF and packed-document saves through the directory browser's
-existing asynchronous scan/save gate. Whole-archive fingerprints detect external
-changes; per-entry baselines detect conflicting changes by another Studio editor.
-Sequential saves to different entries preserve each other's changes. A dirty GAF
-editor must be saved before a child can save. A clean parent refreshes after a
-child saves; unsaved child edits are never replaced. If the parent changes that
-child's entry, the child's save is rejected. Use **File > Reload document from
-disk** to accept the saved contents (with confirmation before discarding edits),
-or **Save As** to preserve the current edits separately.
+Encrypted archives require a password to open. Non-definition binary entries
+are not edited as native Studio documents.
 
-For a packed definition, **Save As** writes a loose file and adopts it as the tab's
-new editing location. The original GAF entry is unchanged. Relative dependencies
-are rebased from the archive directory to the final loose-file directory, including
-images that implicitly used their containing archive. Save As into another GAF
-entry is not offered.
+## Editing and navigating
 
-Successful saves invalidate the shared package catalog. Editors using that archive
-show `[reload]`; **File > Reload dependency previews** refreshes previews without
-discarding edits. A changed document entry requires **Reload document from disk**;
-reloading previews cannot clear that conflict indication. The separate Scene Viewer
-still accepts loose scene files only; packed scenes use Studio's built-in preview,
-or can be adopted as loose files with Save As before launching that viewer.
+**Edit > Undo / Redo** (Ctrl+Z / Ctrl+Y; Ctrl+Shift+Z also redoes) supports
+document edits in the built-in editors. File relocation, deletion, and other
+committed cross-file operations are not covered by document history; not every
+canvas tool participates in undo.
 
-Right-click a file for **Open** in the built-in editor (except Misc), or
-**Open External** to choose an application using Windows' Open with dialog
-(except `.gaf`). External opening uses the saved file on disk.
-Double-click supported files or use **File > Open…**; opening a path already
-in the workspace activates its existing document. Selecting a document tab also
-selects and reveals its corresponding entry in **Working directory**, expanding
-only necessary folders. This works for loose files and typed packed GAF entries,
-including entries that finish loading after the tab becomes active. Refresh and
-Save As update the highlight; untitled documents and files outside the working
-directory leave nothing selected. Switching tabs does not move keyboard focus
-from the editor. **File > New** offers all six formats. Right-click a type group
-in **Working directory** (including a nested folder) to use **Add New Sprite**,
-**Add New Scene**, etc. These invoke the same new-document workflow; Save defaults
-to the chosen folder. GAF creation asks for a destination and optional password
-protection. Right-click a loose file or packed entry for **Show Dependencies** or
-**Show Dependents** to inspect that exact resource in Dependency Explorer.
+Use **File > Find References**, **Show Dependencies**, or **Show Dependents**
+to inspect relationships among authoring resources. Right-click a working-directory
+entry for the same commands.
 
-**Save**, **Save As**, and **Close** operate on the active outer document. A `*`
-marks unsaved changes. Save As adopts the destination and updates open-document
-tracking; dependency rebasing remains the responsibility of each format's own
-document model. Validation errors require confirmation before saving. Closing a
-dirty document or exiting offers Save / Don't Save / Cancel.
+### Dependency Explorer
 
-## Hosting architecture
+**View > Dependency Explorer** restores the results pane. Open a result to
+navigate to the referenced document or definition. **Refresh / Rescan** rebuilds
+the reference index after saved files change. Results cover saved definitions in
+the current working directory, not unsaved edits or arbitrary game code;
+incomplete scans report diagnostics rather than implying a resource has no users.
 
-`MainForm` owns the outer DockPanelSuite workspace, Working directory, Output,
-file commands, document tracking, and plugin contributions. Each
-`StudioDockDocument` contains exactly one reusable `UserControl`:
+### Drag and drop
 
-| Format | Hosted control | Authoritative document |
-| --- | --- | --- |
-| GAF / ZIP | `AssetEditorControl` | `AssetsFile` |
-| GTS | `TilesheetEditorControl` | Tooling `TilesheetDocument` |
-| GANI | `AnimationEditorControl` | `AnimationDocument` |
-| GSND | `AudioEditorControl` | `AudioDocument` |
-| GSCN | `SceneEditorControl` | `SceneDocument` |
-| GSPR | `SpriteEditorControl` | `SpriteDocument` |
+Drag compatible tilesheet, animation, or scene resources from **Working
+directory** or **Dependency Explorer** onto supported editor targets. Studio
+prompts for a member, frame, or layer when a selection is needed.
 
-Open a GSPR and a GSCN side by side to place existing sprites visually. Drag
-a row from **Sprites** onto the selected scene layer, then click and drag the
-sprite in **Scene Preview** to refine its position. Hold **Alt** for fractional
-placement. Save the GSPR after placement. [Scene editor guide](../Gondwana.Tooling.Scenes.WinForms/README.md#place-and-move-sprites)
-
-The internal `StudioDocument` adapter binds shell operations to those existing
-APIs. It owns no alternate format model, serializer, dependency resolver, or
-editor implementation. Studio directly references the six tooling projects.
-The existing project path and `Gondwana.Studio.WinForms` assembly name remain.
-
-Each editor owns its **inner** docking surface. Its panes stay inside that
-editor; they are not global Studio tools. **View** restores global tools and
-uses the active editor's `PaneNames`, `IsPaneVisible`, `ShowPane`, and
-`ShowAllPanes` APIs to recover hidden panes. Restoration reuses the existing
-contents and arrangement. Newly opened documents use the last saved layout for their editor type.
-
-On close, Studio detaches document change handlers and disposes the editor,
-including its inner dock contents and preview resources. Asset documents and
-packed-image previews use detached `AssetsFile` instances, so opening authoring
-files does not register runtime asset packages. Studio owns its shared packed
-resource catalog and disposes it at shutdown. The GAF editor owns replacement
-packages adopted through `AcceptSavedArchive`; Studio retains ownership of
-the originally supplied package.
-
-## Plugins and scope
-
-`Studio.Core` retains shell/plugin infrastructure and Output state. Plugins in
-the application's `plugins/` directory can implement the Core `IStudioPlugin`
-contract and its WinForms extension to contribute global panels and menu items.
-The working-directory lifecycle invokes the existing project-open/close hooks;
-this does not imply an EngineState project format.
-
-[Project Diagnostics](../Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
-is the first working plugin and the reference for writing another one. It adds a
-dockable authoring-file/reference report and **Plugins > Project Diagnostics >
-Rescan**. Building its project or the solution automatically deploys its DLL
-under Studio's output `plugins/` directory. Build that project before the run
-command above to include it. Studio works without it; all six editors remain
-built in. The loader shares Core and WinForms contracts with the host to preserve
-interface identity across plugin load contexts. See the plugin README for
-lifecycle, deployment, dependency rules, and a minimal plugin example.
-
-The deprecated Studio Avalonia prototype and duplicate Studio format editors
-have been retired. The runtime Avalonia adapters and game templates are
-unaffected. EngineState project composition is a separate follow-up. Studio
-does not replace the standalone utilities or introduce Studio-owned file formats.
-
-## Validation
-
-The optional **External Asset Importer** plugin converts supported Godot 3.x and 4.x
-TileSets, Tiled TSX/TMX content and Aseprite sprites into native authoring files.
-Build `Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport` with Studio's matching
-Debug/Release configuration, then restart Studio. Its build deploys the plugin and
-headless importer dependency into Studio's `plugins/` directory. See the
-[plugin README](../Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md) for
-deployment, lifecycle, analysis/import workflow and supported-format limits.
-
-`Testing/Gondwana.Tooling.Studio.WinForms.Tests` exercises actual controls on STA
-threads: outer/inner ownership, all format adapters, dirty state, saving and
-path adoption, duplicate activation, pane recovery, cancellation, encryption,
-and disposal. Run it on Windows alongside the standalone interaction suites
-and the baseline `Gondwana.Tests` suite.
-
-## Dock layout preferences
-
-DockPanelSuite layouts are saved per user under
-`%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
-Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN, GSPR) have separate
-profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
-survive restart. Studio and the standalone executables use independent profiles.
-New documents use their editor type's last saved arrangement, regardless of file path.
-
-Use **View → Reset application layout** to restore the outer tool arrangement, or
-**View → Reset active editor layout** to restore the active editor type's defaults.
-Individual View commands and **Show all … panes** recover hidden panes without resetting.
-Reset does not change document data. Open sibling editors keep their current layouts;
-the next newly opened editor uses the reset profile until another layout is changed.
-
-These are UI preferences only: no Gondwana content files or EngineState are modified,
-the dock XML stores no source-document paths or unsaved content. Document reopening
-is handled by the separate workspace-session preference. Missing or corrupt preferences fall back to defaults without a dialog.
-Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
-Changes are saved after a short settling interval and flushed on disposal.
-
-## Acknowledgments
-
-Gondwana Studio uses [DockPanel Suite](https://github.com/dockpanelsuite/dockpanelsuite),
-the Visual Studio-inspired docking library for .NET WinForms originally created by
-**Weifen Luo** and developed further by its open-source contributors. Many thanks
-to Weifen Luo and the DockPanel Suite contributors for making the library
-available to the .NET community.
+For visual sprite placement, open a GSPR and GSCN side by side. Drag a sprite
+from **Sprites** onto the desired scene layer, then reposition it in **Scene
+Preview**. Hold **Alt** for fractional placement and save the GSPR afterward.
+See [Place and move sprites](../Gondwana.Tooling.Scenes.WinForms/README.md#place-and-move-sprites).
 
 ## Workspace session restoration
 
-Studio and the six standalone editors remember their own working directory,
-open saved document paths, tab order, and active document. Each application stores
-`workspace-session.json` under its existing per-user preference directory, beside
-`Docking/`. Studio uses its previous project-folder preference as a fallback when
-no session file exists. Dock layouts remain independent.
+Studio remembers the working directory, saved documents, tab order, and active
+document between launches. It reloads documents from disk; **unsaved changes
+are not recovered**.
 
-Use **File > Restore workspace on startup** to turn restoration off. Use
-**File > Start empty on next launch**, hold **Shift** while launching, or pass
-`--empty-workspace` to bypass restoration. The menu's one-time request is consumed
-at the next startup. Preference-write failures are reported in Studio Output or
-a standalone warning dialog, including after startup and during shutdown. Failed
-option writes leave the previous setting selected. For example:
+Use **File > Restore workspace on startup** to enable or disable restoration.
+To start without reopening the previous session, choose **File > Start empty on
+next launch**, hold **Shift** during startup, or pass `--empty-workspace`:
 
 ```console
 dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -- --empty-workspace
 ```
 
-Documents reopen through normal editor loaders using their current disk contents.
-Missing, unreadable, corrupt, or unsupported files are skipped; Studio reports the
-reason in Output and standalones show one summary. Encrypted archives request their
-password again; canceling skips that archive and continues. Restoring never creates
-missing archives or writes source content. A disabled plugin does not prevent the
-built-in editors from reopening.
+Unavailable files are skipped, and encrypted archives may ask for their
+password again. Session preferences are separate from content files.
 
-Only an approved shutdown captures a session, before documents are disposed and
-after save prompts have completed. Canceling exit preserves the previous session;
-Save/Save As adopts the final saved path. Untitled documents and unsaved edits are
-not recovered. Session metadata contains no document contents, passwords, archive
-payloads, runtime EngineState, or editor-local selection/camera state. Packed
-documents record archive path, asset type, and entry name, including the active
-packed tab. Older loose-only session preferences remain compatible. Missing or
-renamed entries are skipped with a diagnostic while unrelated documents restore.
+## Layout and appearance
 
-Passwords verified while loading dependency previews are also reused for document
-opens and preview reloads during the session. During startup restoration, a failed
-or canceled archive authentication skips the remaining documents from that archive
-without repeating the prompt. Other archives and loose documents still restore;
-explicitly opening the failed archive afterward allows another attempt.
+Dock layouts persist per application and editor type. Use **View > Reset
+application layout** for Studio's outer panes or **View > Reset active editor
+layout** for the current editor.
 
-## Output severity colors
+**View > Theme** offers Dark, Dark Blue, and Light. Theme selection is shared
+with the standalone WinForms editors and takes effect on the next launch.
+See [shared WinForms themes](../Shared/WinForms/Theming/README.md) and
+[workspace preferences](../Shared/WinForms/README.md) for implementation details.
 
-The bottom **Output** tool pane keeps timestamps and messages as plain text,
-but colors each complete line according to a leading severity marker (after the
-timestamp, case-insensitive):
+## Optional plugins
 
-- `Error:`, `Critical:`, `Fatal:`, `[ERROR]` — red.
-- `Warning:`, `Warn:`, `[WARNING]`, `[WARN]` — yellow/amber.
-- `Important:`, `Info:`, `[IMPORTANT]`, `[INFO]` — blue.
-- Unmarked lines — the active theme's normal foreground color.
+Studio's six editors are built in. Optional plugins can add tools to the
+workspace:
 
-Colors have separate shades for **Dark**, **Dark Blue**, and **Light** themes.
-Studio marks exceptions, validation failures, plugin loading errors, and
-unreadable browsing entries with appropriate severities; successful validation
-and working-directory changes use the blue informational marker. Plugins can
-use the same markers via their existing `Log(string)` host service. This is
-presentation-only in the pane: the Output model remains a plain-text collection,
-and messages tagged at their source retain those markers in copied text.
-Resetting or editing the line collection reapplies the colors.
+- [Project Diagnostics](../Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
+  scans authoring files and references.
+- [External Asset Importer](../Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md)
+  imports supported Tiled, Godot, and Aseprite content.
 
-## Appearance
+Each plugin's README explains how to build, deploy, and use it. Studio runs
+without either plugin.
 
-Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
-## Dependency Explorer
+## Development
 
-Use **File > Find References**, **Show Dependencies**, or **Show Dependents**, or
-the equivalent document-tab and working-directory context menus. **View >
-Dependency Explorer** restores the dockable pane. Double-click a result or choose
-**Open Referenced Definition** to activate its editor and select its logical
-member. Inspection alone does not navigate. The **Selected Member / Whole
-Document** query selector switches between one logical definition and every
-member in its physical document, using the same completed scan. The selected
-member remains available when switching back; when inspection starts from a
-working-directory file or packed entry without a member, only **Whole Document**
-is available until a member-scoped query is started from an editor using **Find
-References**, **Show Dependencies**, or **Show Dependents**. **Refresh / Rescan**
-rebuilds the saved-content snapshot, independently of query scope.
+Studio owns the outer docked workspace, file handling, and plugin integration;
+the standalone WinForms projects supply the actual format editors. Shared
+resource resolution is documented in
+[Gondwana.Tooling.Assets](../Gondwana.Tooling.Assets/README.md).
 
-Results show full physical paths, typed GAF entry names (including nested paths),
-logical identities, and reference field paths. Already-open editors are activated
-without reload, including dirty editors. Unsupported field selection falls back
-to the logical member and reports the exact reference path. Non-definition media
-and remote URIs are displayed but do not have native definition editors.
+Windows UI tests live in `Testing/Gondwana.Tooling.Studio.WinForms.Tests`.
+Studio uses [DockPanel Suite](https://github.com/dockpanelsuite/dockpanelsuite)
+for docking (originally created by Weifen Luo).
 
-The scope is the current working directory, with the shared scanner's exclusions
-and link safety checks. Scanning runs off the UI thread and completed results are
-reused across selections. Saves, reviewed asset operations, and workspace changes
-invalidate results; use Refresh / Rescan afterward. Obsolete scans are cancelled
-and cannot replace newer results. There is no filesystem watcher.
-
-Discovery uses saved native GTS/GANI/GSCN/GSPR/GSND content, not unsaved editor
-models or arbitrary C# code. The pane warns when editors have unsaved changes.
-Failures are shown as incomplete results with missing, ambiguous, inaccessible,
-invalid, or authentication diagnostics. A failed member may have undiscovered
-references; an empty partial result does not establish that there are no users.
-Open an encrypted archive with its correct password, then rescan. Targets outside
-scope are identified explicitly; inbound results cover only inspected sources.
-Physical references without selectors are never presented as exact member matches.
-
-Core navigation is independent of optional plugins. Project Diagnostics retains
-its separate validation scanner; the explorer uses `DefinitionReferenceDiscovery`
-and its semantic handlers rather than repeating that plugin's parser. Shared
-`ResourceAddress`, `DefinitionReferenceQuery`, and `IResourceNavigator` contracts
-live in `Gondwana.Tooling.Assets` and have no WinForms dependency.
-
-Drag saved GTS, GANI, and GSCN resource nodes from **Working directory** or
-**Dependency Explorer** onto a compatible editor target. After release, Studio
-asks for any missing member, frame, or layer selection. GTS frames can go to a
-GANI frame list, GSCN cell, or GSPR sprite. GANI animations can go to a GSCN cell
-or GSPR sprite. GSCN layers can go to a GSPR sprite.
-
-
-GAF persistence and replay safeguards: normal standalone Save uses the same
-version-checked, encrypted sibling staging as Studio; it never invalidates the
-live archive buffer on a failed write. Retained native payloads track only their
-own physical dependencies. Save As updates those targets from the copied
-inventory at adoption, independently of the current Undo position; replay does
-not build archive-wide relocation maps. Filesystem path comparisons follow the
-platform's case sensitivity, while typed entry names remain case-insensitive.
-Malformed or unsupported raw native replacements remain opaque and replay their
-exact bytes after Save As; those opaque versions cannot promise reference rebasing.
-A failed post-commit refresh blocks saving stale buffers, but discard/close,
-shutdown, and confirmed Reload document remain available.
+For the broader authoring toolset, see the [Tooling overview](../README.md).
