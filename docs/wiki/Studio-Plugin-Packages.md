@@ -187,11 +187,13 @@ absolute paths, traversal segments, Windows device names or case-colliding names
 Standard single-volume ZIP archives only: ZIP64 is not needed/supported. Limits
 are 4096 filesystem/archive entries, 256 MiB archive and expanded content, 4 MiB
 ZIP central directory, 16 relative path components, 240 relative path characters,
-and 64 KiB for the manifest. Directory packages use the same content/path limits.
+64 KiB for the manifest, and 4 MiB per dependency metadata file. Directory packages use the same content/path limits.
 
 Validation reuses the manifest schema, contract and shared-assembly rules below.
 It also checks readable managed entry metadata, detectable private assembly
-references and declared dependency assets. Missing libraries are named where
+references and declared dependency assets relevant to this runtime. Native and
+transitive assets owned by shared host libraries resolve through the host and
+need not be privately bundled. Missing libraries are named where
 available. Corrupt archives, conflicting IDs, stale destinations and unsafe paths
 are rejected before installed files are changed. Native/lazy binding and arbitrary
 plugin behavior still require runtime testing; passing validation does not certify

@@ -139,12 +139,15 @@ internal sealed partial class PluginManagerPanel
         _operations.Refresh();
         var selected = (PendingGrid.CurrentRow?.Tag as PluginPackageOperation)?.PluginId;
         PendingGrid.Rows.Clear();
+        DataGridViewRow? restore = null;
         foreach (var operation in _operations.Operations)
         {
             var index = PendingGrid.Rows.Add(operation.Name, operation.Kind, operation.State, operation.Diagnostic ?? "Applies before discovery at the next safe startup.");
             PendingGrid.Rows[index].Tag = operation;
-            if (operation.PluginId == selected) PendingGrid.CurrentCell = PendingGrid.Rows[index].Cells[0];
+            if (operation.PluginId == selected) restore = PendingGrid.Rows[index];
         }
+        if (PendingGrid.Rows.Count > 0) PendingGrid.CurrentCell = (restore ?? PendingGrid.Rows[0]).Cells[0];
+        UpdateActions();
     }
 
     private void UpdateActions()

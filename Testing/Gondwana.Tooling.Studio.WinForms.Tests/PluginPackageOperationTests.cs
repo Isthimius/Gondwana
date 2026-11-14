@@ -495,4 +495,28 @@ public sealed partial class PluginPackageTests
         Assert.False(Directory.Exists(InstallRoot));
     }
 
+    [Fact]
+    public void DependencyAssetsRespectSharedHostLibrariesAndRuntimeSelection()
+    {
+        var source = SourcePackage();
+        var current = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
+        var other = OperatingSystem.IsWindows() ? "linux-x64" : "win-x64";
+        var target = new Dictionary<string, object>
+        {
+            ["Host/1.0.0"] = new { runtime = new Dictionary<string, object> { [typeof(IStudioPlugin).Assembly.GetName().Name + ".dll"] = new { } }, dependencies = new { HostNative = "1.0.0" } },
+            ["HostNative/1.0.0"] = new { native = new Dictionary<string, object> { ["host-native.dll"] = new { } } },
+            ["Private/1.0.0"] = new { runtimeTargets = new Dictionary<string, object>
+            {
+                ["runtimes/" + current + "/native/private.bin"] = new { rid = current, assetType = "native" },
+                ["runtimes/" + other + "/native/other.bin"] = new { rid = other, assetType = "native" }
+            } }
+        };
+        File.WriteAllText(Path.Combine(source, "assets.deps.json"), JsonSerializer.Serialize(new { targets = new Dictionary<string, object> { [".NETCoreApp,Version=v8.0"] = target } }));
+        File.WriteAllText(Path.Combine(source, "private.bin"), "native asset fixture");
+        using var service = Operations();
+        var preview = service.Preview(source); service.Discard(preview);
+        File.Delete(Path.Combine(source, "private.bin"));
+        Assert.Contains("private.bin", Assert.Throws<InvalidDataException>(() => service.Preview(source)).Message);
+    }
+
 }

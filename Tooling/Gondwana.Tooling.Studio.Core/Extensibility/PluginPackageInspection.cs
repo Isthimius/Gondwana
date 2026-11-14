@@ -1,11 +1,12 @@
 using System.IO.Compression;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace Gondwana.Tooling.Studio.Core.Extensibility;
 
@@ -121,9 +122,13 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         foreach (var file in files.Where(f => f.EndsWith(".deps.json", StringComparison.OrdinalIgnoreCase)))
         {
             using var stream = File.OpenRead(file);
+            if (stream.Length > 4 * 1024 * 1024) throw new InvalidDataException("Dependency metadata exceeds 4 MiB.");
             using var document = JsonDocument.Parse(stream);
             if (!document.RootElement.TryGetProperty("targets", out var targets)) continue;
             foreach (var target in targets.EnumerateObject())
+            {
+                var hostLibraries = HostLibraries(target.Value);
+                var targetRelevant = !target.Name.Contains('/') || RelevantRid(target.Name.Split('/').Last());
                 foreach (var library in target.Value.EnumerateObject())
                     foreach (var groupName in new[] { "runtime", "native", "runtimeTargets" })
                     {
@@ -131,14 +136,54 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                         foreach (var asset in group.EnumerateObject())
                         {
                             SafeRelative(asset.Name);
+                            if (!targetRelevant || hostLibraries.Contains(library.Name) ||
+                                (asset.Value.TryGetProperty("rid", out var rid) && !RelevantRid(rid.GetString()!))) continue;
                             var name = asset.Name.Split('/').Last();
                             if (name == "_._" || PluginLoadContext.IsReserved(Path.GetFileNameWithoutExtension(name), _shared)) continue;
                             if (!files.Any(f => Path.GetFileName(f).Equals(name, StringComparison.OrdinalIgnoreCase)))
                                 throw new InvalidDataException($"Missing dependency asset '{asset.Name}' declared by '{Path.GetFileName(file)}'.");
                         }
                     }
+            }
         }
         return manifest;
+    }
+
+    // Shared managed libraries resolve their native/transitive dependencies in the host's
+    // default context. A plugin's deps file can list those without shipping private copies.
+    private HashSet<string> HostLibraries(JsonElement target)
+    {
+        var libraries = target.EnumerateObject().ToArray();
+        var byName = libraries.GroupBy(l => l.Name.Split('/')[0], StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.ToArray(), StringComparer.OrdinalIgnoreCase);
+        var owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var pending = new Queue<JsonProperty>();
+        foreach (var library in libraries)
+            foreach (var groupName in new[] { "runtime", "runtimeTargets" })
+            {
+                if (!library.Value.TryGetProperty(groupName, out var group)) continue;
+                if (group.EnumerateObject().Any(asset =>
+                    _shared.ContainsKey(Path.GetFileNameWithoutExtension(asset.Name)) ||
+                    _framework.Contains(Path.GetFileNameWithoutExtension(asset.Name)))) pending.Enqueue(library);
+            }
+        while (pending.TryDequeue(out var library))
+        {
+            if (!owned.Add(library.Name) || !library.Value.TryGetProperty("dependencies", out var dependencies)) continue;
+            foreach (var dependency in dependencies.EnumerateObject())
+                if (byName.TryGetValue(dependency.Name, out var matches))
+                    foreach (var match in matches) pending.Enqueue(match);
+        }
+        return owned;
+    }
+
+    private static bool RelevantRid(string rid)
+    {
+        var current = RuntimeInformation.RuntimeIdentifier;
+        if (rid == current || rid == "any") return true;
+        var platform = OperatingSystem.IsWindows() ? "win" : OperatingSystem.IsMacOS() ? "osx" : "linux";
+        if (rid == platform || (platform != "win" && rid == "unix")) return true;
+        return rid.StartsWith(platform, StringComparison.Ordinal) &&
+            rid.EndsWith("-" + RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant(), StringComparison.Ordinal);
     }
 
     internal static void CopyDirectory(string source, string destination)
