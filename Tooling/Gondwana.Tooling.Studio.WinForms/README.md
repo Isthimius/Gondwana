@@ -117,7 +117,12 @@ Open **Plugins > Manage Plugins…** or **View > Plugin Manager** to inspect ins
 plugins, metadata and copyable failure diagnostics. **Enabled at next startup**
 saves a per-user preference immediately; the current runtime changes only after
 restarting Studio. The pane shows pending restart changes and participates in
-normal dock-layout persistence.
+normal dock-layout persistence. Install local ZIP/directory packages with **Install
+Plugin…**, replace third-party packages with **Update from File…**, or queue
+**Uninstall…**. Review and confirm each operation; pending changes apply before
+discovery on the next startup after all Studio instances exit. The manager shows
+pending operations and allows cancellation. Bundled plugins are disable-only;
+legacy flat DLLs remain manually deployed.
 
 Studio's six editors are built in. Optional plugins can add tools to the
 workspace:

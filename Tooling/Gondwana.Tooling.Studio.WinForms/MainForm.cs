@@ -81,7 +81,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     /// <remarks>Registers workspace restoration for the Shown event and starts layout persistence. Construct on the UI thread.</remarks>
     public MainForm() : this(loadPlugins: true) { }
 
-    internal MainForm(bool loadPlugins, string? pluginDirectory = null)
+    internal MainForm(bool loadPlugins, string? pluginDirectory = null, Core.Extensibility.PluginPackageOperations? packageOperations = null)
     {
         Icon = ToolingBranding.CreateIcon();
         Text = "Gondwana Studio";
@@ -105,7 +105,15 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         _layout = new DockLayoutPersistence(Workspace, "shell");
         _pluginPreferences = PluginPreferenceStore.Open(_output.Log);
         _plugins = new StudioPluginHost(_output.Log, _pluginPreferences.WasEnabledAtStartup);
-        PluginManager = new PluginManagerPanel(_plugins, _pluginPreferences);
+        if (loadPlugins && pluginDirectory is null && packageOperations is null)
+            packageOperations = PluginPackageStore.Open(message =>
+            {
+                if (IsDisposed) return;
+                if (IsHandleCreated && InvokeRequired) BeginInvoke(() => { if (!IsDisposed) _output.Log(message); });
+                else _output.Log(message);
+            });
+        packageOperations?.StartSession(); // Transactions finish before any plugin construction.
+        PluginManager = new PluginManagerPanel(_plugins, _pluginPreferences, packageOperations);
         Browser = new DirectoryPanel(_output.Log);
 
         NavigationSizing.SynchronizeOnActivation(this);
@@ -192,9 +200,10 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         _view.DropDownOpening += (_, _) => RebuildViewMenu();
 
-        if (loadPlugins)
+        if (loadPlugins && (packageOperations is null || packageOperations.CanDiscover))
         {
-            if (pluginDirectory is null) _plugins.DiscoverAndLoad();
+            if (packageOperations is not null) _plugins.DiscoverAndLoad(packageOperations.PluginRoot);
+            else if (pluginDirectory is null) _plugins.DiscoverAndLoad();
             else _plugins.DiscoverAndLoad(pluginDirectory);
             _plugins.AttachHostServices(this);
             AttachPlugins();

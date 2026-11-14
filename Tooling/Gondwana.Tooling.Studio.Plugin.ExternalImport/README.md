@@ -60,3 +60,14 @@ discovery, analysis/import state, overwrite protection, host services and lifecy
 dotnet test Testing/Gondwana.Tooling.Importers.Tests -c Release
 dotnet test Testing/Gondwana.Tooling.Studio.WinForms.Tests -c Release
 ```
+
+## Studio distribution and Plugin Manager
+
+This is a bundled Studio plugin. Plugin Manager protects its manifest ID and
+standard deployment folder from installation, updating and uninstallation. Use
+**Plugins > Manage Plugins…** to inspect diagnostics or disable it for the next
+startup. The Studio build/release process deploys its package; changes to the
+Studio distribution must happen while all Studio instances are closed.
+
+Third-party plugins can use the documented [local ZIP/directory package workflow](../../docs/wiki/Studio-Plugin-Packages.md), including reviewed updates, pending
+removal and startup rollback. Activation preferences survive removal/reinstallation.

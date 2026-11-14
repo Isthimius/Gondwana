@@ -2,8 +2,8 @@
 
 Studio discovers optional tools at startup under `<application directory>/plugins/`.
 The six native editors remain built in and independent of plugin discovery.
-Close Studio before replacing files; restart after any package change. There is
-no installation UI or hot reload. Activation preferences are managed in Studio.
+Use Plugin Manager for reviewed local package changes. Close all Studio instances
+and restart to apply them; there is no hot reload or automatic restart.
 
 ## Plugin Manager and activation
 
@@ -22,7 +22,8 @@ redundant legacy copies use the same preference identity as their packaged sourc
 Change **Enabled at next startup** to save immediately. Loaded instances, menus,
 panels and lifecycle participation remain unchanged until Studio is closed and
 started again. **Restart required** appears while any requested choice differs
-from the choices used at startup; changing every choice back clears it. Studio
+from the choices used at startup or a package change is pending. Reverting every
+activation choice clears the notice only when no package changes remain. Studio
 does not restart automatically or unload assemblies.
 
 At the next startup, user-disabled implementations are discovered but never
@@ -65,6 +66,136 @@ A missing file means all plugins are enabled. Corrupt, unreadable or unsupported
 settings also default to enabled with a warning. To avoid destroying preferences
 for missing plugins, saving is blocked until the file is repaired or removed and
 Studio restarted. The manager identifies the settings path and corrective action.
+
+## Installing, updating and removing local packages
+
+Use **Install Plugin…** and choose **ZIP archive…** or **Package directory…**.
+The directory must contain `plugin.json` directly. A ZIP may contain the package
+contents at its root or one enclosing directory, with nothing alongside that
+directory. Studio copies the source to inactive staging and inspects metadata;
+preview does not execute plugin code, including constructors or module initializers.
+
+Review the name, ID, version, author, description, entry assembly, contract,
+dependency/support-file summary, destination and operation type. Read the trusted
+code warning, check the explicit confirmation box, and choose **Confirm for next
+startup**. Cancelling this dialog leaves installed files and pending operations
+unchanged. New installations use `plugins/package-<manifest-id>/`. Installation
+of an already-present ID becomes a reviewed update of its existing directory.
+
+Select a third-party manifest package and choose **Update from File…** (ZIP or
+package directory). Its ID must match. The preview shows old/new versions and
+labels upgrades, same-version replacements and downgrades using SemVer precedence
+(including prereleases; build metadata does not affect precedence). Every change
+requires explicit consent, including replacements and downgrades. A higher version
+does not override contract validation. Replacement uses exactly the new package
+contents; obsolete files are not merged into it.
+
+**Uninstall…** previews the selected package's name, version and location. Confirm
+to queue removal of that directory at startup. Saved activation preferences remain;
+reinstalling the same ID restores the previous enabled/disabled choice.
+
+Project Diagnostics and External Import are Studio-distributed packages. Their
+manifest IDs and standard deployment directory names are protected from package
+installation, replacement and removal. Use their activation checkboxes to disable
+them; Studio's own distribution process owns their files. This is a simple
+protection policy, not cryptographic publisher verification. Legacy flat DLLs
+remain supported for discovery and activation preferences, but these package
+file-management actions require manifests. Legacy deployment remains manual while
+Studio is stopped.
+
+### Pending changes and progress
+
+The lower grid lists pending installation/update/removal independently of the
+current discovery list, including installations not yet discoverable. Select an
+operation for copyable diagnostics and its destination. Current plugin instances,
+menus and panels remain unchanged. Inspection/staging runs in background work;
+controls are disabled while an operation is in progress, and the status line
+reports inspection or journal saving. Errors also go to Output.
+
+**Cancel Pending Operation** removes a queued or safely rolled-back failed change.
+Activation preferences are unaffected. Contradictory operations on one ID are
+rejected; cancel the existing change first. A pending update can be replaced by
+another explicitly reviewed update. Pending changes survive normal shutdown and
+unexpected process exit. Failed operations are retained for attention and do not
+retry automatically. Recovery-required records cannot be cancelled until their
+backup data is resolved.
+
+### Transactions, coordination and recovery
+
+Staging, backup directories, lock files and the schema-version-1 `operations.json`
+journal reside in `<application directory>/.plugins.operations/`, alongside the
+active `plugins/` tree. Files are never silently redirected to another plugin root.
+This location is installation-wide; activation preferences remain per user.
+Journal saves flush to disk and atomically replace the previous journal. Confirmed
+operations contain stable IDs, safe child folder names and SHA-256 content
+fingerprints, rather than arbitrary source/destination paths.
+
+At startup, before discovery, Studio obtains an exclusive writer gate and attempts
+an exclusive installation lease. Every running Studio holds a reader lease for
+its entire process lifetime (closing a pane or form does not unload assemblies).
+If another instance is running, package changes are deferred: close **all** Studio
+instances and launch again. An operation competing for the writer gate reports a
+busy/permissions error and can be retried. This coordination is independent of
+incidental DLL file locks. Older Studio versions and external deployment tools do
+not participate; close them before managing packages.
+
+Source packages on other volumes are copied fully into inactive staging first.
+Stage, backup and destination then share the same installation volume. Before
+applying, Studio revalidates the staged package, hashes and destination identity.
+It writes an Applying journal record before moving the old directory to backup,
+then moves the complete replacement into place, then records Committed before
+cleaning the old backup. Removal uses the same backup/commit boundary. No partial
+copy is exposed as an installed package.
+
+A failed/interrupted operation restores the verified original when possible and
+becomes Failed; unrelated operations and plugin discovery continue. If external
+changes prevent safe rollback, RecoveryRequired retains the journal and backup,
+with paths and diagnostics. Close all Studio instances before manually inspecting
+these files; preserve unknown content, restore the verified backup to the stated
+package directory if appropriate, and retain a copy of the journal before repairing
+its affected record. Do not delete the entire plugin root or unrelated transaction
+folders. RecoveryRequired records do not retry automatically. A Committed record
+with cleanup diagnostics means the change applied but obsolete data was retained.
+
+Cancellation and normal completion clean known staging/backup content. Unexpected
+or altered content is retained with a warning rather than deleted. Abandoned
+previews from a process killed before confirmation are not applied; unreferenced
+transaction directories may be inspected and removed manually while Studio is
+closed. Unrecognized files are never treated as pending operations.
+
+The application directory must permit creation of the coordination/staging area
+and modification of managed package directories. Fix permissions or use a writable
+Studio installation; do not run untrusted plugins elevated merely to install them.
+If Studio cannot establish its process lease, it withholds optional plugin loading
+and reports the reason, while the built-in editors and Plugin Manager remain
+available. This avoids an unregistered reader racing a package writer. Corrupt or
+unsupported journals are reported and left intact; installed packages are not
+modified.
+
+### Distributing and validating a ZIP
+
+Keep `plugin.json`, the entry DLL and dependency metadata at the package root,
+with permitted private dependencies at the locations described by that metadata.
+For example, after preparing `ExamplePlugin/`:
+
+```powershell
+Compress-Archive -Path ./ExamplePlugin/* -DestinationPath ./ExamplePlugin.zip
+```
+
+Do not include host/framework/engine DLL copies, nested packages, links/junctions,
+absolute paths, traversal segments, Windows device names or case-colliding names.
+Standard single-volume ZIP archives only: ZIP64 is not needed/supported. Limits
+are 4096 filesystem/archive entries, 256 MiB archive and expanded content, 4 MiB
+ZIP central directory, 16 relative path components, 240 relative path characters,
+and 64 KiB for the manifest. Directory packages use the same content/path limits.
+
+Validation reuses the manifest schema, contract and shared-assembly rules below.
+It also checks readable managed entry metadata, detectable private assembly
+references and declared dependency assets. Missing libraries are named where
+available. Corrupt archives, conflicting IDs, stale destinations and unsafe paths
+are rejected before installed files are changed. Native/lazy binding and arbitrary
+plugin behavior still require runtime testing; passing validation does not certify
+security or complete compatibility.
 
 ## Package layout and manifest
 
