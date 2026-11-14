@@ -47,6 +47,11 @@ public sealed class PluginPreferences
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(FilePath))!);
+            // Keep the lock file in place: deleting it could let another process lock
+            // a different file while a waiting writer still holds the original handle.
+            using var saveLock = new FileStream(FilePath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            if (!ReadSettings().SetEquals(_disabled))
+                throw new IOException("Plugin preferences changed in another Studio instance or outside Studio. Restart Studio to load the latest choices before editing them.");
             var bytes = JsonSerializer.SerializeToUtf8Bytes(new Settings
             {
                 SchemaVersion = 1,
@@ -63,7 +68,7 @@ public sealed class PluginPreferences
         }
         catch (Exception ex)
         {
-            error = $"Could not save plugin preferences to '{FilePath}'. Check folder permissions and available disk space. {ex.Message}";
+            error = $"Could not save plugin preferences to '{FilePath}'. Close other Studio instances, then retry; check folder permissions and available disk space. {ex.Message}";
             _log($"Error: [Plugin preferences] {error}");
             return false;
         }
@@ -78,6 +83,20 @@ public sealed class PluginPreferences
     {
         try
         {
+            return ReadSettings();
+        }
+        catch (Exception ex)
+        {
+            _readError = ex.Message;
+            _log($"Warning: [Plugin preferences] Could not read '{FilePath}'; plugins default to enabled. {ex.Message}");
+            return new(StringComparer.Ordinal);
+        }
+    }
+
+    private HashSet<string> ReadSettings()
+    {
+        try
+        {
             using var stream = File.OpenRead(FilePath);
             var settings = JsonSerializer.Deserialize<Settings>(stream);
             if (settings?.SchemaVersion != 1 || settings.DisabledPluginIds is null || settings.DisabledPluginIds.Any(string.IsNullOrWhiteSpace))
@@ -86,12 +105,6 @@ public sealed class PluginPreferences
         }
         catch (FileNotFoundException) { return new(StringComparer.Ordinal); }
         catch (DirectoryNotFoundException) { return new(StringComparer.Ordinal); }
-        catch (Exception ex)
-        {
-            _readError = ex.Message;
-            _log($"Warning: [Plugin preferences] Could not read '{FilePath}'; plugins default to enabled. {ex.Message}");
-            return new(StringComparer.Ordinal);
-        }
     }
 
     private sealed class Settings

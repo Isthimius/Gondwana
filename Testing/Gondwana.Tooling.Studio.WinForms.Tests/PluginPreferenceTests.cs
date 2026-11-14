@@ -94,6 +94,41 @@ public sealed class PluginPreferenceTests : IDisposable
         Assert.False(next.IsEnabled("missing.plugin"));
     }
 
+    [Fact]
+    public void StaleInstanceCannotOverwriteAnotherInstancesSavedChoice()
+    {
+        var first = new PluginPreferences(FilePath, _ => { });
+        var second = new PluginPreferences(FilePath, _ => { });
+        Assert.True(first.TrySetEnabled("sample.first", false, out _));
+        Assert.False(second.TrySetEnabled("sample.second", false, out var error));
+        Assert.Contains("changed in another Studio instance", error);
+        Assert.False(second.RestartRequired);
+        var latest = new PluginPreferences(FilePath, _ => { });
+        Assert.False(latest.IsEnabled("sample.first"));
+        Assert.True(latest.IsEnabled("sample.second"));
+        Assert.True(latest.TrySetEnabled("sample.second", false, out _));
+        var saved = new PluginPreferences(FilePath, _ => { });
+        Assert.False(saved.IsEnabled("sample.first"));
+        Assert.False(saved.IsEnabled("sample.second"));
+    }
+
+    [Fact]
+    public void ConcurrentWriterLockRejectsSaveWithoutLosingChoicesAndAllowsRetry()
+    {
+        var preferences = new PluginPreferences(FilePath, _ => { });
+        Directory.CreateDirectory(_root);
+        using (var saveLock = new FileStream(FilePath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+        {
+            Assert.False(preferences.TrySetEnabled("sample.plugin", false, out var error));
+            Assert.NotNull(error);
+            Assert.True(preferences.IsEnabled("sample.plugin"));
+            Assert.False(preferences.RestartRequired);
+            Assert.False(File.Exists(FilePath));
+        }
+        Assert.True(preferences.TrySetEnabled("sample.plugin", false, out _));
+        Assert.False(new PluginPreferences(FilePath, _ => { }).IsEnabled("sample.plugin"));
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_root)) Directory.Delete(_root, recursive: true);

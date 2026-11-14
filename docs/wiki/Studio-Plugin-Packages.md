@@ -55,7 +55,11 @@ token and full implementation type, independent of installation path and display
 name. Preferences for missing plugins are retained for reinstallation. New plugins
 are enabled by default. Writes flush a temporary sibling file before atomically
 replacing the settings file; a failed save leaves the requested choice unchanged
-and reports the error in the manager and Output.
+and reports the error in the manager and Output. A sibling `.lock` file coordinates
+writers across Studio instances. If another instance changed the saved choices,
+a stale save is rejected rather than overwriting them; restart Studio to load the
+latest choices before editing again. A busy save lock reports an error and allows
+retrying.
 
 A missing file means all plugins are enabled. Corrupt, unreadable or unsupported
 settings also default to enabled with a warning. To avoid destroying preferences
