@@ -9,7 +9,7 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
     private readonly IReadOnlyDictionary<string, Assembly> _shared;
     private readonly string _directory;
     private readonly bool _legacy;
-    private static readonly HashSet<string> FrameworkAssemblies = GetFrameworkAssemblies();
+    private static readonly HashSet<string> FrameworkAssemblies = FrameworkAssemblyCatalog.ReadRuntime();
 
     internal PluginLoadContext(string entry, IReadOnlyDictionary<string, Assembly> shared, bool legacy)
         : base($"studio-plugin:{entry}", isCollectible: false)
@@ -89,15 +89,4 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
         throw new DllNotFoundException($"Native dependency '{unmanagedDllName}' is missing from package '{_directory}'.");
     }
 
-    private static HashSet<string> GetFrameworkAssemblies()
-    {
-        var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
-        // Self-contained apps place framework and application DLLs in the same directory.
-        // Do not turn every app-local assembly into a framework fallback in that layout.
-        return Directory.EnumerateFiles(runtimeDirectory, "*.dll")
-            .Select(Path.GetFileNameWithoutExtension)
-            .Where(name => name is "mscorlib" or "netstandard" or "System" or "Microsoft.CSharp" or "Microsoft.VisualBasic" or "Microsoft.VisualBasic.Core" ||
-                name!.StartsWith("System.", StringComparison.Ordinal))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase)!;
-    }
 }

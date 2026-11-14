@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
   </ItemGroup>
 

@@ -231,19 +231,7 @@ public sealed class PluginPackageTests
     {
         var entry = Package("bad", "sample.bad");
         var link = Path.Combine(Path.GetDirectoryName(entry)!, "escape");
-        if (OperatingSystem.IsWindows())
-        {
-            // Directory junction creation does not require the symbolic-link privilege.
-            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe")
-            {
-                Arguments = $"/c mklink /J \"{link}\" \"{_root}\"",
-                UseShellExecute = false,
-                CreateNoWindow = true
-            })!;
-            process.WaitForExit();
-            Assert.Equal(0, process.ExitCode);
-        }
-        else Directory.CreateSymbolicLink(link, _root);
+        CreateDirectoryLink(link, _root);
         var host = new Host(_ => { });
         host.DiscoverAndLoad(_root);
         Assert.Equal(PluginLoadStatus.InvalidPackage, Assert.Single(host.Discovery).Status);
@@ -290,6 +278,141 @@ public sealed class PluginPackageTests
         Assert.Equal(2, host.Discovery.Count);
         Assert.Contains(host.Discovery, row => row.Implementation == "Bad" && row.Status == PluginLoadStatus.FailedToLoad);
         Assert.Contains(host.Discovery, row => row.Implementation == "Good" && row.Status == PluginLoadStatus.Loaded);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void FrameworkCatalogUsesDeploymentMetadataRatherThanAssemblyNamePrefixes(bool selfContained)
+    {
+        Directory.CreateDirectory(_root);
+        var frameworkLibraries = new Dictionary<string, object>
+        {
+            ["runtimepack.Microsoft.NETCore.App.Runtime.win-x64/8.0.0"] = new
+            {
+                runtime = new Dictionary<string, object> { ["System.Runtime.dll"] = new { }, ["Microsoft.Win32.Registry.dll"] = new { } }
+            },
+            ["runtimepack.Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.0"] = new
+            {
+                runtime = new Dictionary<string, object> { ["WindowsFormsIntegration.dll"] = new { } }
+            }
+        };
+        var applicationLibraries = new Dictionary<string, object>
+        {
+            ["System.PrivateApplicationLibrary/1.0.0"] = new
+            {
+                runtime = new Dictionary<string, object> { ["System.PrivateApplicationLibrary.dll"] = new { } }
+            }
+        };
+        var frameworkFile = Path.Combine(_root, "Microsoft.WindowsDesktop.App.deps.json");
+        var applicationFile = Path.Combine(_root, "Application.deps.json");
+        if (selfContained)
+            foreach (var library in frameworkLibraries) applicationLibraries.Add(library.Key, library.Value);
+        else WriteDeps(frameworkFile, frameworkLibraries);
+        WriteDeps(applicationFile, applicationLibraries);
+        var catalog = FrameworkAssemblyCatalog.Read(selfContained ? [applicationFile] : [frameworkFile, applicationFile]);
+        Assert.Contains("WindowsFormsIntegration", catalog);
+        Assert.Contains("Microsoft.Win32.Registry", catalog);
+        Assert.Contains("System.Runtime", catalog);
+        Assert.DoesNotContain("System.PrivateApplicationLibrary", catalog);
+    }
+
+    [Fact]
+    public void RuntimeCatalogIncludesEnabledFrameworks()
+    {
+        var catalog = FrameworkAssemblyCatalog.ReadRuntime();
+        Assert.Contains("System.Runtime", catalog);
+        // This test project enables Windows Desktop; it must authorize framework
+        // assemblies beyond those already referenced by the Studio host itself.
+        if (OperatingSystem.IsWindows()) Assert.Contains("WindowsFormsIntegration", catalog);
+    }
+
+    [Fact]
+    public void PackagedPluginCanReferenceUnsharedWindowsDesktopAssembly()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+        var windowsForms = System.Reflection.Assembly.Load("System.Windows.Forms").Location;
+        var integration = Path.Combine(Path.GetDirectoryName(windowsForms)!, "WindowsFormsIntegration.dll");
+        Package("desktop", "sample.desktop", source: PluginSource("Desktop", "typeof(System.Windows.Forms.Integration.ElementHost).FullName!"), dependency: integration);
+        // The Core-only host does not share WinForms or WPF contracts. Framework
+        // metadata must allow this reference without a private framework copy.
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(_root);
+        Assert.Equal("System.Windows.Forms.Integration.ElementHost", Assert.Single(host.Plugins).Name);
+    }
+
+    [Fact]
+    public void LinkedChildDoesNotHideDuplicateManifestId()
+    {
+        var entry = Package("invalid", "sample.same");
+        CreateDirectoryLink(Path.Combine(Path.GetDirectoryName(entry)!, "escape"), _root);
+        Package("valid", "sample.same");
+        Package("independent", "sample.independent");
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(_root);
+        Assert.Single(host.Plugins);
+        Assert.Equal(2, host.Discovery.Count(row => row.Id == "sample.same" && row.Status == PluginLoadStatus.Conflict));
+    }
+
+    [Fact]
+    public void AssemblyNameCasingDoesNotAllowDuplicateImplementations()
+    {
+        Package("first", "sample.first", "ExamplePlugin", PluginSource("SameType"));
+        Package("second", "sample.second", "exampleplugin", PluginSource("SameType"));
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(_root);
+        Assert.Single(host.Plugins);
+        Assert.Single(host.Discovery, row => row.Status == PluginLoadStatus.Conflict);
+    }
+
+    [Fact]
+    public void ImplementationTypeNamesRemainCaseSensitive()
+    {
+        Package("first", "sample.first", "ExamplePlugin", PluginSource("ExampleType"));
+        Package("second", "sample.second", "exampleplugin", PluginSource("exampletype"));
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(_root);
+        Assert.Equal(2, host.Plugins.Count);
+        Assert.All(host.Discovery, row => Assert.Equal(PluginLoadStatus.Loaded, row.Status));
+    }
+
+    [Fact]
+    public void LegacyDependencyLibrariesAreNotReportedAsFailedPlugins()
+    {
+        Directory.CreateDirectory(_root);
+        var dependency = Path.Combine(_root, "LegacyHelper.dll");
+        Compile(dependency, "public static class Helper { public static string Value => \"legacy-helper\"; }");
+        Compile(Path.Combine(_root, "Legacy.dll"), PluginSource("Legacy", "Helper.Value"), dependency);
+        var messages = new List<string>();
+        var host = new Host(messages.Add);
+        host.DiscoverAndLoad(_root);
+        host.DiscoverAndLoad(_root);
+        Assert.Equal("legacy-helper", Assert.Single(host.Plugins).Name);
+        Assert.Equal(PluginLoadStatus.Loaded, Assert.Single(host.Discovery).Status);
+        Assert.DoesNotContain(messages, message => message.StartsWith("Error:", StringComparison.Ordinal));
+    }
+
+    private static void WriteDeps(string path, Dictionary<string, object> libraries)
+        => File.WriteAllText(path, JsonSerializer.Serialize(new
+        {
+            targets = new Dictionary<string, object> { [".NETCoreApp,Version=v8.0/win-x64"] = libraries }
+        }));
+
+    private static void CreateDirectoryLink(string link, string target)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            // Directory junction creation does not require the symbolic-link privilege.
+            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe")
+            {
+                Arguments = $"/c mklink /J \"{link}\" \"{target}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true
+            })!;
+            process.WaitForExit();
+            Assert.Equal(0, process.ExitCode);
+        }
+        else Directory.CreateSymbolicLink(link, target);
     }
 
     private string Package(string folder, string id, string? assembly = null, string? source = null, string? dependency = null)

@@ -137,9 +137,11 @@ public class StudioPluginHost
             PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, null);
         try
         {
-            PluginPackagePaths.ValidateTree(directory);
+            PluginPackagePaths.EnsureNoLinks(directory);
+            PluginPackagePaths.EnsureNoLinks(Path.Combine(directory, "plugin.json"));
             var manifest = PluginManifest.Read(directory);
             info = info with { Id = manifest.Id, DisplayName = manifest.Name, Version = manifest.Version };
+            PluginPackagePaths.ValidateTree(directory);
             manifest.Validate();
             var entry = Path.Combine(directory, manifest.EntryAssembly!);
             info = info with { EntryAssembly = entry };
@@ -240,7 +242,7 @@ public class StudioPluginHost
                 .OrderBy(t => t.FullName, StringComparer.Ordinal).ToArray();
             foreach (var type in pluginTypes)
             {
-                var identity = $"{assembly.GetName().Name}:{Convert.ToHexString(assembly.GetName().GetPublicKeyToken() ?? [])}:{type.FullName}";
+                var identity = $"{assembly.GetName().Name!.ToUpperInvariant()}:{Convert.ToHexString(assembly.GetName().GetPublicKeyToken() ?? [])}:{type.FullName}";
                 var row = info with { Id = info.Id ?? $"legacy:{identity}", Implementation = type.FullName };
                 if (!_implementations.Add(identity))
                 {
@@ -268,7 +270,7 @@ public class StudioPluginHost
                 rows.Add(row);
                 if (row.Status != PluginLoadStatus.Loaded) LogResult(row);
             }
-            if (rows.Count == 0)
+            if (rows.Count == 0 && !info.IsLegacy)
             {
                 rows.Add(info with { Status = PluginLoadStatus.FailedToLoad, Diagnostic = "No concrete IStudioPlugin implementation found in entry assembly." });
                 LogResult(rows[0]);

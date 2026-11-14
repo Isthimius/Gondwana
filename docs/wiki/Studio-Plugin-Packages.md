@@ -71,7 +71,9 @@ the application. Native libraries must be resolved from package dependency metad
 
 The host shares the Core contract, supplied platform contracts, and their available
 transitive host dependencies from the default context. Framework assemblies also
-retain runtime identity. Packages may not contain private copies of these, or
+retain runtime identity. The runtime-provided dependency manifests identify
+framework assets, including Windows Desktop and self-contained runtime packs;
+application-local `System.*` filenames do not authorize shared fallback. Packages may not contain private copies of these, or
 Gondwana engine/host assemblies. Both filenames and managed assembly identities
 are checked, including nested DLLs. `Gondwana.Tooling.Studio.Plugin.*` entrypoints
 and the private `Gondwana.Tooling.Importers` library are allowed unless they are
@@ -96,7 +98,7 @@ JSON, missing entrypoints, and unsupported contracts remain visible as failures.
    of them. Invalid/incompatible packages with readable IDs also participate.
 3. Activate eligible packages in ordinal order, then inspect top-level DLLs in
    ordinal order as legacy sources.
-4. Identify implementations by assembly simple name, public-key token, and full
+4. Identify implementations by case-normalized assembly simple name, public-key token, and case-sensitive full
    type name, ignoring assembly version. Only the first attempted implementation
    is eligible. Packages therefore precede legacy copies; two differently named
    packages containing the same implementation use the first ordinal source.
@@ -104,7 +106,8 @@ JSON, missing entrypoints, and unsupported contracts remain visible as failures.
 Legacy flat DLLs continue to use the original default-context dependency fallback
 and shared contract identity, including when private contract copies exist beside
 them. Legacy discovery derives `legacy:<assembly>:<public-key-token>:<type>` IDs;
-manifest version and compatibility are **unknown**, not guessed. Legacy names
+manifest version and compatibility are **unknown**, not guessed. Legacy dependency DLLs with no plugin types are ignored rather than reported
+as failed plugins. Legacy names
 come from `IStudioPlugin.Name` after successful construction.
 
 Discovery is additive, but every source is attempted only once per host. Correcting
