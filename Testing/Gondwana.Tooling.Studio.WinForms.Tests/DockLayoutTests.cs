@@ -238,7 +238,7 @@ public sealed class DockLayoutTests
         using (var studio = Studio())
         {
             Assert.Empty(studio.Documents);
-            Assert.Equal(3, studio.Workspace.Contents.Count);
+            Assert.Equal(4, studio.Workspace.Contents.Count);
             Assert.NotNull(Tool(studio, "Dependency Explorer"));
             var working = Tool(studio, "Working directory");
             Assert.True(working.IsHidden);
@@ -279,7 +279,7 @@ public sealed class DockLayoutTests
         if (corrupt) File.WriteAllText(Layout("shell"), "not XML");
         else File.WriteAllText(Layout("shell"), File.ReadAllText(Layout("shell")).Replace("shell.working-directory", "plugin.uninstalled"));
         using var restored = Studio();
-        Assert.Equal(3, restored.Workspace.Contents.Count);
+        Assert.Equal(4, restored.Workspace.Contents.Count);
         Assert.False(Tool(restored, "Working directory").IsHidden);
         Assert.Equal(!corrupt, Tool(restored, "Output").IsHidden);
     });

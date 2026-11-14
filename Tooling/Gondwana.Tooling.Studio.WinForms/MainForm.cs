@@ -48,6 +48,10 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     ];
 
     private readonly StudioPluginHost _plugins;
+    private readonly Core.Extensibility.PluginPreferences _pluginPreferences;
+    private readonly DockContent _pluginManagerTool;
+    internal PluginManagerPanel PluginManager { get; }
+    internal StudioPluginHost PluginHost => _plugins;
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly AssetPackageCatalog _packages = new();
     private readonly Dictionary<AssetLocation, StudioDockDocument> _paths = new(DocumentLocationComparer.Instance);
@@ -77,7 +81,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     /// <remarks>Registers workspace restoration for the Shown event and starts layout persistence. Construct on the UI thread.</remarks>
     public MainForm() : this(loadPlugins: true) { }
 
-    internal MainForm(bool loadPlugins)
+    internal MainForm(bool loadPlugins, string? pluginDirectory = null)
     {
         Icon = ToolingBranding.CreateIcon();
         Text = "Gondwana Studio";
@@ -99,7 +103,9 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         };
 
         _layout = new DockLayoutPersistence(Workspace, "shell");
-        _plugins = new StudioPluginHost(_output.Log);
+        _pluginPreferences = PluginPreferenceStore.Open(_output.Log);
+        _plugins = new StudioPluginHost(_output.Log, _pluginPreferences.WasEnabledAtStartup);
+        PluginManager = new PluginManagerPanel(_plugins, _pluginPreferences);
         Browser = new DirectoryPanel(_output.Log);
 
         NavigationSizing.SynchronizeOnActivation(this);
@@ -131,6 +137,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
 
         InitializeDependencies();
+        _pluginManagerTool = AddTool("shell.plugin-manager", "Plugin Manager", PluginManager, DockState.DockRight, showByDefault: false);
 
         Workspace.ActiveDocumentChanged += DependencySelectionChanged;
         AskSave = document => ThemedMessageBox.Show(this, $"Save changes to {document.Caption}?",
@@ -187,7 +194,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         if (loadPlugins)
         {
-            _plugins.DiscoverAndLoad();
+            if (pluginDirectory is null) _plugins.DiscoverAndLoad();
+            else _plugins.DiscoverAndLoad(pluginDirectory);
             _plugins.AttachHostServices(this);
             AttachPlugins();
         }
@@ -248,7 +256,15 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         _session.AddMenu(file);
 
-        menu.Items.AddRange([file, _view, _undoRedo.Menu, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
+        var plugins = new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" };
+        Add(plugins, "Manage Plugins…", Keys.None, () =>
+        {
+            PluginManager.RefreshSnapshot();
+            _pluginManagerTool.Show(Workspace);
+            _pluginManagerTool.Activate();
+        }).Name = "ManagePlugins";
+        plugins.DropDownItems.Add(new ToolStripSeparator());
+        menu.Items.AddRange([file, _view, _undoRedo.Menu, plugins]);
 
         return menu;
     }
@@ -834,7 +850,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         }
     }
 
-    private DockContent AddTool(string id, string title, Control control, DockState state)
+    private DockContent AddTool(string id, string title, Control control, DockState state, bool showByDefault = true)
     {
         var tool = new PersistentDockContent(id)
         {
@@ -847,8 +863,13 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         tool.Controls.Add(control);
         _tools.Add(tool);
-        _layout.Register(tool, () => tool.Show(Workspace, state));
-        tool.Show(Workspace, state);
+        void Place()
+        {
+            tool.Show(Workspace, state);
+            if (!showByDefault) tool.Hide();
+        }
+        _layout.Register(tool, Place);
+        Place();
 
         return tool;
     }

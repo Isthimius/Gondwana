@@ -34,11 +34,14 @@ public sealed class PluginManifest
             ?? throw new InvalidDataException("plugin.json must contain an object.");
     }
 
+    internal static bool IsValidId(string? id) => id is not null &&
+        Regex.IsMatch(id, @"\A[a-z0-9]+(?:[.-][a-z0-9]+)*\z", RegexOptions.CultureInvariant);
+
     internal void Validate()
     {
         if (SchemaVersion != SupportedSchemaVersion)
             throw new InvalidDataException($"Unsupported schemaVersion {SchemaVersion}; expected {SupportedSchemaVersion}.");
-        if (Id is null || !Regex.IsMatch(Id, @"\A[a-z0-9]+(?:[.-][a-z0-9]+)*\z", RegexOptions.CultureInvariant))
+        if (!IsValidId(Id))
             throw new InvalidDataException("id must be a stable lowercase identifier using letters, digits, dots and hyphens.");
         if (string.IsNullOrWhiteSpace(Name))
             throw new InvalidDataException("name is required.");
