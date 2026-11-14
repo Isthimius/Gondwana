@@ -57,7 +57,8 @@ internal sealed class PluginManagerPanel : UserControl
         foreach (var title in new[] { "Plugin", "Version", "Current state", "Next startup", "Compatibility", "Source" })
             Grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = title, SortMode = DataGridViewColumnSortMode.NotSortable });
         Grid.Columns[0].MinimumWidth = 150;
-        Grid.SelectionChanged += (_, _) => ShowSelection();
+        // SelectionChanged can fire before CurrentRow moves; bind details to the committed current cell.
+        Grid.CurrentCellChanged += (_, _) => ShowSelection();
         EnabledChoice.CheckedChanged += (_, _) => ChangePreference();
         _host.DiscoveryChanged += DiscoveryChanged;
         RefreshSnapshot();
