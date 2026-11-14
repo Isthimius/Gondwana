@@ -16,8 +16,8 @@ public sealed partial class PluginPackageTests
         Package("disabled", "sample.disabled");
         Package("runtime", "sample.runtime");
         Package("failed", "sample.failed", source: PluginSource("Failed", constructor: "throw new System.Exception(\"Constructor needs a dependency\");"));
-        Package("conflict-a", "sample.conflict");
-        Package("conflict-b", "sample.conflict");
+        Package("conflictA", "sample.conflict");
+        Package("conflictB", "sample.conflict");
         Directory.CreateDirectory(Path.Combine(_root, "invalid"));
         var incompatible = Package("incompatible", "sample.incompatible");
         var path = Path.Combine(Path.GetDirectoryName(incompatible)!, "plugin.json");
@@ -138,7 +138,8 @@ public sealed partial class PluginPackageTests
             var pane = studio.Workspace.Contents.OfType<DockContent>().Single(tool => tool.Text == "Plugin Manager");
             Assert.False(pane.IsHidden);
             pane.Show(studio.Workspace, DockState.DockBottom);
-            pane.Close();
+            pane.Activate();
+            pane.Pane.CloseActiveContent(); // Exercise the dock caption close action (honors HideOnClose).
             Assert.True(pane.IsHidden);
             Assert.False(pane.IsDisposed);
         }
