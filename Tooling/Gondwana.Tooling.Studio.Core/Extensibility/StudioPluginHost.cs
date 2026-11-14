@@ -60,7 +60,7 @@ public class StudioPluginHost
         {
             if (plugin.Instance is not IStudioPluginHostServicesAware aware) continue;
             try { aware.AttachHostServices(services); }
-            catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex.Message}"); }
+            catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex}"); }
         }
     }
 
@@ -134,7 +134,7 @@ public class StudioPluginHost
         catch (Exception ex)
         {
             var info = new PluginDiscoveryInfo(null, null, null, pluginDir, null, false,
-                PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, $"Cannot discover plugins: {ex.Message}");
+                PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, $"Cannot discover plugins: {ex}");
             // Preserve successful child records if root enumeration subsequently fails.
             _discovery[pluginDir + Path.DirectorySeparatorChar] = [info];
             LogResult(info);
@@ -186,7 +186,7 @@ public class StudioPluginHost
         }
         catch (Exception ex)
         {
-            return info with { Diagnostic = $"Invalid package: {ex.Message}" };
+            return info with { Diagnostic = $"Invalid package: {ex}" };
         }
     }
 
@@ -206,7 +206,7 @@ public class StudioPluginHost
             }
             catch (Exception ex)
             {
-                DisablePlugin(plugin, $"OnProjectOpened threw: {ex.Message}");
+                DisablePlugin(plugin, $"OnProjectOpened threw: {ex}");
             }
         }
     }
@@ -223,7 +223,7 @@ public class StudioPluginHost
             }
             catch (Exception ex)
             {
-                DisablePlugin(plugin, $"OnProjectClosed threw: {ex.Message}");
+                DisablePlugin(plugin, $"OnProjectClosed threw: {ex}");
             }
         }
     }
@@ -304,7 +304,7 @@ public class StudioPluginHost
                         row = row with
                         {
                             Status = PluginLoadStatus.FailedToLoad,
-                            Diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}"
+                            Diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}{Environment.NewLine}{ex}"
                         };
                     }
                 }
@@ -320,8 +320,8 @@ public class StudioPluginHost
         catch (Exception ex)
         {
             var detail = ex is ReflectionTypeLoadException reflection
-                ? string.Join("; ", reflection.LoaderExceptions.Select(error => error?.Message))
-                : ex.GetBaseException().Message;
+                ? string.Join("; ", reflection.LoaderExceptions.Select(error => error?.ToString()))
+                : ex.ToString();
             rows.Add(info with
             {
                 Status = PluginLoadStatus.FailedToLoad,

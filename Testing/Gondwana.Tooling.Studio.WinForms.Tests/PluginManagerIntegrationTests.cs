@@ -37,6 +37,8 @@ public sealed partial class PluginPackageTests
             Assert.Contains(manager.Grid.Rows.Cast<DataGridViewRow>(), row => row.Cells[2].Value?.ToString() == status);
         Select(manager, "sample.failed");
         Assert.Contains("Constructor needs a dependency", manager.DetailsBox.Text);
+        Assert.Contains("System.Exception", manager.DetailsBox.Text);
+        Assert.Contains("Suggested action:", manager.DetailsBox.Text);
         Assert.Contains("Entry assembly:", manager.DetailsBox.Text);
         Assert.True(manager.DetailsBox.ReadOnly);
         manager.DetailsBox.SelectAll();
@@ -80,11 +82,8 @@ public sealed partial class PluginPackageTests
         Package("one", "sample.one");
         var path = Path.Combine(_root, "preferences.json");
         var preferences = new PluginPreferences(path, _ => { });
-        Directory.CreateDirectory(path);
         var host = new Host(_ => { });
-        host.DiscoverAndLoad(Path.Combine(_root, "absent"));
         // Discover only the valid package root before the obstructing settings directory is added.
-        Directory.Delete(path);
         host.DiscoverAndLoad(_root);
         Directory.CreateDirectory(path);
         using var manager = new PluginManagerPanel(host, preferences);
