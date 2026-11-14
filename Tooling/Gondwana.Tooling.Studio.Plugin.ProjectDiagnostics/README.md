@@ -20,12 +20,15 @@ dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Release --no-bu
 
 The plugin targets only `net8.0-windows`, matching the current WinForms contract.
 Building the plugin (including through `Gondwana.sln`) builds Studio and copies
-the plugin DLL to the matching Studio output's `plugins/` directory. For the
+the manifest, plugin DLL, and `.deps.json` to the matching Studio output's
+`plugins/ProjectDiagnostics/` directory. For the
 default Release build this is:
 
 ```text
-Tooling/Gondwana.Tooling.Studio.WinForms/bin/Release/net8.0-windows/plugins/
+Tooling/Gondwana.Tooling.Studio.WinForms/bin/Release/net8.0-windows/plugins/ProjectDiagnostics/
+  plugin.json
   Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll
+  Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.deps.json
 ```
 
 The configurations must match. A Release plugin is not discovered by a Debug
@@ -39,17 +42,17 @@ dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Debug --no-buil
 
 An empty **Plugins** menu means that this Studio executable discovered no menu-
 contributing plugin. Confirm that its own output directory contains
-`plugins/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll`, then restart
+`plugins/ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll`, then restart
 Studio; discovery occurs only at startup.
 
 Studio itself has no reference to this project. Building only Studio leaves
 plugin deployment unchanged; build the plugin again after editing it. Close
 Studio before rebuilding a loaded DLL. To remove the plugin, close Studio and
-remove its DLL from `plugins/`; building the plugin again reinstalls it.
+remove its `plugins/ProjectDiagnostics/` directory; building the plugin again reinstalls it.
 
 The project is intentionally not a NuGet package. For a separately published
-Studio distribution, place the built plugin DLL in that application's
-`plugins/` directory. Plugin packaging/version distribution policy is a follow-up.
+Studio distribution, copy the complete `ProjectDiagnostics` package directory
+beneath that application's `plugins/` directory.
 
 ## What is checked
 
@@ -122,29 +125,17 @@ failures in its panel and observes abandoned task faults through `Trace`.
 
 ## Discovery and dependency identity
 
-At startup, `StudioPluginHost` enumerates top-level `*.dll` files in
-`<Studio application directory>/plugins/`. Each assembly is inspected for
-concrete Core `IStudioPlugin` implementations with public parameterless
-constructors. WinForms contributions additionally require its derived interface.
-Load/constructor failures are logged; a synchronous lifecycle failure disables
-that plugin. Panel/menu contribution failures are logged. An absent `plugins/`
-directory is supported. There is no enable/disable settings UI or hot reload.
+At startup the host discovers manifest-based packages, then legacy top-level DLLs.
+This package has no private libraries: Studio supplies its engine and contract
+dependencies. Its `plugin.json` declares schema 1, contract 1, and a package
+SemVer version independent of the engine release. The build removes obsolete
+flat copies of this plugin's entry DLL and dependency metadata.
 
-Each plugin assembly gets a `PluginLoadContext` using
-`AssemblyDependencyResolver`. The host now explicitly shares
-`Gondwana.Studio.Core` and `Gondwana.Studio.WinForms` from its own context **before**
-private resolution. This prevents duplicate interface identities even if a
-plugin accidentally ships private contract copies. Platform hosts can supply
-their own additional contract assemblies to the Core host constructor.
-
-This plugin has no private dependencies: Studio already provides Gondwana and
-the serializers' dependencies. Its build copies only the plugin DLL. Do not copy
-the whole build output into `plugins/`, especially host/engine assemblies.
-For another plugin with private dependencies, deploy its dependency files and
-matching `.deps.json` so `AssemblyDependencyResolver` can locate managed/native
-libraries, while keeping host contracts out of that private set. Test against
-the Studio version you intend to support. Load contexts provide dependency
-isolation, not a security sandbox; install only trusted plugins.
+See [Studio plugin packages](../../docs/wiki/Studio-Plugin-Packages.md) for the
+manifest schema, shared/private dependency rules, duplicate precedence,
+read-only discovery snapshots, failure handling and manual legacy deployment.
+Load contexts provide dependency isolation, not a security sandbox; install only
+trusted plugins. There is no installation UI or hot reload.
 
 ## Minimal plugin
 
@@ -167,7 +158,9 @@ public sealed class ExamplePlugin : IStudioPlugin
 }
 ```
 
-Deploy its DLL beneath Studio's `plugins/` directory, then restart Studio.
+Create a package directory containing its DLL and `plugin.json` beneath Studio's
+`plugins/` directory, then restart Studio. Flat DLL deployment remains supported
+for legacy plugins, with unknown version/compatibility metadata.
 Use this project's plugin, scanner and panel as the full working example.
 
 ## Tests and intentional limits
@@ -183,6 +176,6 @@ with plugin loading disabled. The solution also builds on non-Windows CI with
 Windows targeting; WinForms tests execute only in the Windows job.
 
 Future work may include incremental scanning, packed-definition traversal,
-password handling, richer navigation and distribution policy. Filesystem
+password handling, and richer navigation. Filesystem
 watching, editing, runtime semantic validation, and a dependency graph visualizer
 are deliberately outside this first plugin.

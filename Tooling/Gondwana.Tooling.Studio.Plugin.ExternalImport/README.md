@@ -13,12 +13,18 @@ dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Release --no-bu
 ```
 
 Build with the same configuration as Studio. The build copies the plugin DLL,
-its `.deps.json`, and `Gondwana.Tooling.Importers.dll` into Studio's `plugins/`
-directory. Core/WinForms contract assemblies and engine dependencies are supplied
+its `.deps.json`, `plugin.json`, and `Gondwana.Tooling.Importers.dll` into Studio's
+`plugins/ExternalImport/` directory. Core/WinForms contract assemblies and engine dependencies are supplied
 by Studio; do not deploy private copies. The plugin is not a NuGet package.
 Close Studio before rebuilding a loaded DLL. Discovery occurs at startup; use
-**View** to recover a hidden panel. Removing the plugin DLL disables this tool
+**View** to recover a hidden panel. Removing the package directory disables this tool
 without affecting Studio's native editors.
+
+The manifest declares schema 1, contract 1, and an independent SemVer package
+version. The build removes obsolete flat entrypoint copies. See
+[Studio plugin packages](../../docs/wiki/Studio-Plugin-Packages.md) for the
+manifest schema, compatibility, dependency isolation, discovery diagnostics and
+legacy support. Install only trusted plugins; load contexts are not a sandbox.
 
 ## Architecture and lifecycle
 

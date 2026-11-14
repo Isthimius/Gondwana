@@ -36,8 +36,9 @@ foreach ($tool in $tools) {
 # Plugins are intentionally external to Studio's single-file/hosting decisions.
 # They use the Studio assembly identity from the host, not private contract copies.
 $plugins = @(
-    @{ Name = 'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics'; Files = @('Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll') }
-    @{ Name = 'Gondwana.Tooling.Studio.Plugin.ExternalImport'; Files = @(
+    @{ Name = 'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics'; Folder = 'ProjectDiagnostics'; Files = @('plugin.json', 'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll', 'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.deps.json') }
+    @{ Name = 'Gondwana.Tooling.Studio.Plugin.ExternalImport'; Folder = 'ExternalImport'; Files = @(
+        'plugin.json',
         'Gondwana.Tooling.Studio.Plugin.ExternalImport.dll',
         'Gondwana.Tooling.Studio.Plugin.ExternalImport.deps.json',
         'Gondwana.Tooling.Importers.dll'
@@ -55,12 +56,18 @@ foreach ($plugin in $plugins) {
     }
 
     $built = Join-Path $repositoryRoot "Tooling/$($plugin.Name)/bin/Release/net8.0-windows"
+    $packageDestination = Join-Path $pluginDestination $plugin.Folder
+    New-Item -ItemType Directory -Path $packageDestination -Force | Out-Null
     foreach ($file in $plugin.Files) {
         $source = Join-Path $built $file
         if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
             throw "Plugin output is missing: $source"
         }
-        Copy-Item -LiteralPath $source -Destination $pluginDestination -Force
+        Copy-Item -LiteralPath $source -Destination $packageDestination -Force
+        if ($file -ne 'plugin.json') {
+            $legacy = Join-Path $pluginDestination $file
+            if (Test-Path -LiteralPath $legacy -PathType Leaf) { Remove-Item -LiteralPath $legacy -Force }
+        }
     }
 }
 

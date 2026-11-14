@@ -122,7 +122,8 @@ workspace:
   imports supported Tiled, Godot, and Aseprite content.
 
 Each plugin's README explains how to build, deploy, and use it. Studio runs
-without either plugin.
+without either plugin. See [plugin package conventions](../../docs/wiki/Studio-Plugin-Packages.md)
+for manifests, legacy compatibility, dependency boundaries, and structured status.
 
 ## Development
 
