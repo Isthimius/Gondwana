@@ -1,11 +1,11 @@
 using System.IO.Compression;
-using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
+using System.Reflection;
 using System.Runtime.Loader;
+using System.Security.Cryptography;
+using System.Text.Json;
+using System.Text;
 
 namespace Gondwana.Tooling.Studio.Core.Extensibility;
 
@@ -31,7 +31,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         }
     }
 
-    internal static string[] Files(string directory)
+    internal static string[] Files(string directory, List<string>? directories = null)
     {
         PluginPackagePaths.EnsureNoLinks(directory);
         var files = new List<string>();
@@ -46,7 +46,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 SafeRelative(relative);
                 if (!names.Add(relative)) throw new InvalidDataException($"Case-colliding package path: {relative}");
                 if (names.Count > MaximumEntries) throw new InvalidDataException("Package exceeds the 4096-entry limit.");
-                if (Directory.Exists(path)) Walk(path);
+                if (Directory.Exists(path)) { directories?.Add(path); Walk(path); }
                 else
                 {
                     size = checked(size + new FileInfo(path).Length);
@@ -62,8 +62,9 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
     internal static string Fingerprint(string directory)
     {
         using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-        var files = Files(directory);
-        foreach (var child in Directory.EnumerateDirectories(directory, "*", SearchOption.AllDirectories).Order(StringComparer.Ordinal))
+        var directories = new List<string>();
+        var files = Files(directory, directories);
+        foreach (var child in directories.Order(StringComparer.Ordinal))
             hash.AppendData(Encoding.UTF8.GetBytes(Path.GetRelativePath(directory, child).Replace(Path.DirectorySeparatorChar, '/') + "/\0"));
         foreach (var file in files)
         {
@@ -146,8 +147,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         destination = Path.GetFullPath(destination);
         if ((destination + Path.DirectorySeparatorChar).StartsWith(source, StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException("The selected source contains the staging destination. Select only the package directory.");
-        var files = Files(source);
-        var directories = Directory.GetDirectories(source, "*", SearchOption.AllDirectories);
+        var directories = new List<string>();
+        var files = Files(source, directories);
         Directory.CreateDirectory(destination);
         foreach (var child in directories)
             Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, child)));
