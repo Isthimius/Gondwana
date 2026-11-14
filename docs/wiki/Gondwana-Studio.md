@@ -256,6 +256,12 @@ Studio and the standalone applications keep independent layout profiles.
 
 ## Plugins
 
+Open **Plugins > Manage Plugins…** or **View > Plugin Manager** to inspect installed
+plugins, metadata and copyable failure diagnostics. **Enabled at next startup**
+saves a per-user preference immediately; the current runtime changes only after
+restarting Studio. The pane shows pending restart changes and participates in
+normal dock-layout persistence.
+
 Studio can discover optional plugins from its `plugins/` directory at startup.
 
 Plugins can contribute global panels and menu items and can receive working-directory lifecycle notifications. They do not replace Studio's six built-in editors.

@@ -113,6 +113,12 @@ See [shared WinForms themes](../Shared/WinForms/Theming/README.md) and
 
 ## Optional plugins
 
+Open **Plugins > Manage Plugins…** or **View > Plugin Manager** to inspect installed
+plugins, metadata and copyable failure diagnostics. **Enabled at next startup**
+saves a per-user preference immediately; the current runtime changes only after
+restarting Studio. The pane shows pending restart changes and participates in
+normal dock-layout persistence.
+
 Studio's six editors are built in. Optional plugins can add tools to the
 workspace:
 

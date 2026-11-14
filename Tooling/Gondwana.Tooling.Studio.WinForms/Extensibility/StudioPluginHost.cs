@@ -10,9 +10,13 @@ public sealed class StudioPluginHost : CoreHost
 {
     /// <summary>Creates a host that shares both Core and WinForms plugin contracts with discovered assemblies.</summary>
     /// <param name="log">Callback receiving discovery, lifecycle, and UI-contribution diagnostics.</param>
-    public StudioPluginHost(Action<string> log) : base(log, typeof(IStudioPlugin).Assembly)
+    public StudioPluginHost(Action<string> log) : this(log, _ => true)
     {
     }
+
+    /// <summary>Creates a WinForms host applying startup preferences before plugin construction.</summary>
+    public StudioPluginHost(Action<string> log, Func<string, bool> isEnabled)
+        : base(log, isEnabled, typeof(IStudioPlugin).Assembly) { }
 
     /// <summary>Calls each enabled WinForms plugin to obtain its panel, logging and skipping failed or null contributions.</summary>
     /// <returns>The contributed controls paired with their plugin display names, for the caller to host and dispose.</returns>

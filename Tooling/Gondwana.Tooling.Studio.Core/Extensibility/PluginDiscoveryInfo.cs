@@ -16,7 +16,8 @@ public enum PluginLoadStatus
     InvalidPackage,
     FailedToLoad,
     Conflict,
-    Disabled
+    Disabled,
+    UserDisabled
 }
 
 /// <summary>
@@ -33,4 +34,11 @@ public sealed record PluginDiscoveryInfo(
     PluginCompatibility Compatibility,
     PluginLoadStatus Status,
     string? Diagnostic,
-    string? Implementation = null);
+    string? Implementation = null)
+{
+    public string? Description { get; init; }
+    public string? Author { get; init; }
+    /// <summary>Canonical activation key; redundant legacy copies share their packaged implementation's key.</summary>
+    public string? PreferenceId { get; init; }
+    public bool? EnabledAtStartup { get; init; }
+}

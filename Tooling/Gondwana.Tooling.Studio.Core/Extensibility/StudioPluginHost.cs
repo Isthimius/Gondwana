@@ -16,7 +16,12 @@ public class StudioPluginHost
     private readonly Assembly[] _sharedContracts;
     private IReadOnlyDictionary<string, Assembly>? _sharedAssemblies;
     private readonly Dictionary<string, List<PluginDiscoveryInfo>> _discovery = new(PluginPackagePaths.Comparer);
-    private readonly HashSet<string> _implementations = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> _implementations = new(StringComparer.Ordinal);
+    private readonly Func<string, bool> _isEnabled;
+    private readonly Dictionary<string, bool> _startupChoices = new(StringComparer.Ordinal);
+
+    /// <summary>Raised on the calling (Studio UI) thread after discovery or a lifecycle failure changes status.</summary>
+    public event EventHandler? DiscoveryChanged;
 
     /// <summary>Gets an immutable snapshot including invalid packages and activation failures.</summary>
     public IReadOnlyList<PluginDiscoveryInfo> Discovery =>
@@ -24,13 +29,18 @@ public class StudioPluginHost
 
     /// <summary>Creates a plugin host that shares the framework-neutral plugin contract assembly.</summary>
     /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
-    public StudioPluginHost(Action<string> log) : this(log, []) { }
+    public StudioPluginHost(Action<string> log) : this(log, _ => true, []) { }
 
     /// <summary>Creates a host sharing the core contract and the supplied platform contracts.</summary>
     /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
     /// <param name="sharedContracts">Host assemblies to reuse by simple name instead of loading private plugin copies.</param>
-    public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts)
+    public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts) : this(log, _ => true, sharedContracts) { }
+
+    /// <summary>Creates a host using the supplied startup activation policy before constructing any plugin.</summary>
+    public StudioPluginHost(Action<string> log, Func<string, bool> isEnabled, params Assembly[] sharedContracts)
     {
+        ArgumentNullException.ThrowIfNull(isEnabled);
+        _isEnabled = isEnabled;
         _log = log;
         _sharedContracts = [typeof(IStudioPlugin).Assembly, .. sharedContracts];
     }
@@ -129,6 +139,15 @@ public class StudioPluginHost
             _discovery[pluginDir + Path.DirectorySeparatorChar] = [info];
             LogResult(info);
         }
+        finally { DiscoveryChanged?.Invoke(this, EventArgs.Empty); }
+    }
+
+    private PluginDiscoveryInfo StartupChoice(PluginDiscoveryInfo info, string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return info;
+        if (!_startupChoices.TryGetValue(id, out var enabled))
+            _startupChoices[id] = enabled = _isEnabled(id);
+        return info with { PreferenceId = id, EnabledAtStartup = enabled };
     }
 
     private PluginDiscoveryInfo InspectPackage(string directory)
@@ -140,7 +159,15 @@ public class StudioPluginHost
             PluginPackagePaths.EnsureNoLinks(directory);
             PluginPackagePaths.EnsureNoLinks(Path.Combine(directory, "plugin.json"));
             var manifest = PluginManifest.Read(directory);
-            info = info with { Id = manifest.Id, DisplayName = manifest.Name, Version = manifest.Version };
+            info = info with
+            {
+                Id = manifest.Id,
+                DisplayName = manifest.Name,
+                Version = manifest.Version,
+                Description = manifest.Description,
+                Author = manifest.Author
+            };
+            info = StartupChoice(info, PluginManifest.IsValidId(manifest.Id) ? manifest.Id : null);
             PluginPackagePaths.ValidateTree(directory);
             manifest.Validate();
             var entry = Path.Combine(directory, manifest.EntryAssembly!);
@@ -164,7 +191,7 @@ public class StudioPluginHost
     }
 
     private void LogResult(PluginDiscoveryInfo info)
-        => _log($"{(info.Status == PluginLoadStatus.Loaded ? "" : "Error: ")}[Plugin] {info.Status}: {info.Id ?? info.SourceDirectory}: {info.Diagnostic}");
+        => _log($"{(info.Status is PluginLoadStatus.Loaded or PluginLoadStatus.UserDisabled ? "" : "Error: ")}[Plugin] {info.Status}: {info.Id ?? info.SourceDirectory}: {info.Diagnostic}");
 
     /// <summary>Notifies enabled plugins of the selected working directory, disabling and logging plugins that throw.</summary>
     /// <param name="projectPath">The authoring directory path to pass unchanged to each plugin.</param>
@@ -226,6 +253,7 @@ public class StudioPluginHost
             .FirstOrDefault(info => info.EntryAssembly == plugin.SourcePath && info.Implementation == plugin.Instance.GetType().FullName)?.DisplayName
             ?? plugin.Instance.GetType().FullName;
         _log($"Warning: [Plugin] Disabled '{name}': {reason}");
+        DiscoveryChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void LoadAssemblyPlugins(string source, PluginDiscoveryInfo info)
@@ -244,12 +272,25 @@ public class StudioPluginHost
             {
                 var identity = $"{assembly.GetName().Name!.ToUpperInvariant()}:{Convert.ToHexString(assembly.GetName().GetPublicKeyToken() ?? [])}:{type.FullName}";
                 var row = info with { Id = info.Id ?? $"legacy:{identity}", Implementation = type.FullName };
-                if (!_implementations.Add(identity))
+                if (_implementations.TryGetValue(identity, out var existingKey))
                 {
+                    row = StartupChoice(row, info.IsLegacy ? existingKey : row.Id);
                     row = row with { Status = PluginLoadStatus.Conflict, Diagnostic = $"Implementation '{identity}' was already discovered. Packages precede legacy DLLs; restart after removing redundant copies." };
                 }
                 else
                 {
+                    row = StartupChoice(row, row.Id);
+                    _implementations.Add(identity, row.PreferenceId!);
+                    if (row.EnabledAtStartup == false)
+                    {
+                        rows.Add(row with
+                        {
+                            Status = PluginLoadStatus.UserDisabled,
+                            Diagnostic = "Disabled by user preference at startup. Enable it in Plugin Manager and restart Studio to activate it."
+                        });
+                        LogResult(rows[^1]);
+                        continue;
+                    }
                     try
                     {
                         var plugin = (IStudioPlugin)Activator.CreateInstance(type)!;

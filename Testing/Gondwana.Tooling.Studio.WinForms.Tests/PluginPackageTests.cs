@@ -8,7 +8,7 @@ using Host = Gondwana.Tooling.Studio.Core.Extensibility.StudioPluginHost;
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
 /// <summary>Real assemblies exercise package validation and load-context boundaries without UI automation.</summary>
-public sealed class PluginPackageTests
+public sealed partial class PluginPackageTests
 {
     private readonly string _root = Path.Combine(AppContext.BaseDirectory, "plugin-fixtures", Guid.NewGuid().ToString("N"));
     private static readonly MetadataReference[] References = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)

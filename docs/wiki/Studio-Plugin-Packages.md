@@ -3,7 +3,64 @@
 Studio discovers optional tools at startup under `<application directory>/plugins/`.
 The six native editors remain built in and independent of plugin discovery.
 Close Studio before replacing files; restart after any package change. There is
-no installation UI, persistent enable/disable preference, or hot reload yet.
+no installation UI or hot reload. Activation preferences are managed in Studio.
+
+## Plugin Manager and activation
+
+Open **Plugins > Manage Plugins…** or **View > Plugin Manager**. The built-in,
+dockable pane works even when the plugins directory is absent or every plugin
+fails. Its position and visibility follow normal workspace layout persistence;
+closing it hides it, and either menu can reopen it.
+
+The list shows name, version, current state, next-startup preference, compatibility,
+and packaged/legacy source. Select a row for manifest description and author,
+stable ID, entry assembly, locations, implementation records, and complete
+selectable/copyable diagnostics. Missing legacy metadata is shown as unavailable.
+Multiple implementations in one package share one row and activation choice;
+redundant legacy copies use the same preference identity as their packaged source.
+
+Change **Enabled at next startup** to save immediately. Loaded instances, menus,
+panels and lifecycle participation remain unchanged until Studio is closed and
+started again. **Restart required** appears while any requested choice differs
+from the choices used at startup; changing every choice back clears it. Studio
+does not restart automatically or unload assemblies.
+
+At the next startup, user-disabled implementations are discovered but never
+constructed, given host services, queried for contributions, or notified of
+project lifecycle events. Validation, compatibility checks and duplicate checks
+still run. Enabling an incompatible, invalid or conflicting package does not
+bypass those checks. A runtime failure is distinct from a user-disabled preference
+and does not silently change that preference.
+
+### Settings and identity
+
+Preferences are independent of the working directory and stored at:
+
+```text
+%LOCALAPPDATA%\Hidden Worlds Games\Gondwana\Tooling\Gondwana.Studio.WinForms\Studio\plugin-preferences.json
+```
+
+This uses Studio's existing application-settings root (including any configured
+application/root override). The versioned file records only explicit disables:
+
+```json
+{
+  "schemaVersion": 1,
+  "disabledPluginIds": ["gondwana.project-diagnostics"]
+}
+```
+
+Packaged plugins use manifest IDs. Legacy IDs use assembly simple name, public-key
+token and full implementation type, independent of installation path and display
+name. Preferences for missing plugins are retained for reinstallation. New plugins
+are enabled by default. Writes flush a temporary sibling file before atomically
+replacing the settings file; a failed save leaves the requested choice unchanged
+and reports the error in the manager and Output.
+
+A missing file means all plugins are enabled. Corrupt, unreadable or unsupported
+settings also default to enabled with a warning. To avoid destroying preferences
+for missing plugins, saving is blocked until the file is repaired or removed and
+Studio restarted. The manager identifies the settings path and corrective action.
 
 ## Package layout and manifest
 
@@ -123,15 +180,19 @@ redundant legacy copies are also prevented from activating twice by the host.
 `PluginDiscoveryInfo` rows: ID, name, known version, source directory, entrypoint,
 legacy flag, compatibility, implementation, status and diagnostic. Statuses are
 `Loaded`, `Incompatible`, `InvalidPackage`, `FailedToLoad`, `Conflict`, and
-`Disabled` (after a lifecycle failure). A failed constructor does not stop other
+`Disabled` (after a lifecycle failure), and `UserDisabled` (startup preference). A failed constructor does not stop other
 types or packages. Load/type-inspection failures reject that entry assembly.
 Missing dependencies referenced only by later plugin operations may fail at that
 operation rather than startup; .NET loads assemblies lazily.
 
 The existing Output log remains active. Lifecycle failures disable the affected
 instance; panel/menu failures retain their existing logging/skip behavior.
-Snapshots are for inspection, not mutable configuration. The Plugin Manager UI
-and restart-based activation preferences are follow-up work.
+The manager reads this same discovery snapshot; it does not scan independently.
+For missing assemblies/dependencies, restore the named files from the plugin's
+publisher. Correct invalid manifests or conflicting IDs, and obtain a compatible
+package for unsupported contracts. Constructor and lifecycle failures retain full
+exception details for troubleshooting; consult Output and the package author.
+User-disabled status is informational, not a loading error.
 
 **Install only trusted executable code.** `AssemblyLoadContext` provides dependency
 isolation, not a security sandbox. Layout checks do not make malicious code safe,
