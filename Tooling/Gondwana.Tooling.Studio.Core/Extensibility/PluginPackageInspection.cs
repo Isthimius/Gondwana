@@ -142,9 +142,14 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
 
     internal static void CopyDirectory(string source, string destination)
     {
+        source = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        destination = Path.GetFullPath(destination);
+        if ((destination + Path.DirectorySeparatorChar).StartsWith(source, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidDataException("The selected source contains the staging destination. Select only the package directory.");
         var files = Files(source);
+        var directories = Directory.GetDirectories(source, "*", SearchOption.AllDirectories);
         Directory.CreateDirectory(destination);
-        foreach (var child in Directory.EnumerateDirectories(source, "*", SearchOption.AllDirectories))
+        foreach (var child in directories)
             Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, child)));
         long copied = 0;
         foreach (var file in files)
@@ -221,7 +226,10 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         long copied = 0;
         foreach (var entry in archive.Entries)
         {
-            var target = Path.Combine(destination, entry.FullName.Replace('/', Path.DirectorySeparatorChar));
+            var root = Path.GetFullPath(destination).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            var target = Path.GetFullPath(Path.Combine(root, entry.FullName.Replace('/', Path.DirectorySeparatorChar)));
+            if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException("ZIP entry escapes the staging directory.");
             if (entry.FullName.EndsWith('/')) { Directory.CreateDirectory(target); continue; }
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             using var input = entry.Open();

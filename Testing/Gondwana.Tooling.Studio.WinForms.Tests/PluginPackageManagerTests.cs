@@ -35,8 +35,14 @@ public sealed partial class PluginPackageTests
         Assert.Empty(host.Plugins);
         Assert.True(panel.CancelButton.Enabled);
         preferences.TrySetEnabled("temporarily.missing", false, out _);
-        panel.CancelButton.PerformClick();
-        WaitForPackageCondition(() => panel.PendingGrid.Rows.Count == 0);
+        var context = SynchronizationContext.Current;
+        SynchronizationContext.SetSynchronizationContext(null);
+        try
+        {
+            panel.CancelButton.PerformClick();
+            WaitForPackageCondition(() => panel.PendingGrid.Rows.Count == 0);
+        }
+        finally { SynchronizationContext.SetSynchronizationContext(context); }
         Assert.Contains("Restart required", panel.StatusLabel.Text);
         preferences.TrySetEnabled("temporarily.missing", true, out _);
         panel.RefreshSnapshot();

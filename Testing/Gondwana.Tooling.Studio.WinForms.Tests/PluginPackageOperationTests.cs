@@ -98,6 +98,7 @@ public sealed partial class PluginPackageTests
     }
 
     [Theory]
+    [InlineData("1.0.0--1", "1.0.0-0", 1)]
     [InlineData("1.0.0-alpha.9", "1.0.0-alpha.10", -1)]
     [InlineData("1.0.0-beta", "1.0.0-9", 1)]
     [InlineData("1.0.0", "1.0.0-rc.1", 1)]
@@ -479,6 +480,18 @@ public sealed partial class PluginPackageTests
         File.WriteAllBytes(zip, bytes);
         using var service = Operations();
         Assert.Contains("CRC", Assert.Throws<InvalidDataException>(() => service.Preview(zip)).Message);
+        Assert.False(Directory.Exists(InstallRoot));
+    }
+
+    [Fact]
+    public void SourceCannotContainItsStagingDestination()
+    {
+        var source = SourcePackage();
+        var target = Path.Combine(source, "stage", "payload");
+        Assert.Throws<InvalidDataException>(() => PluginPackageInspection.CopyDirectory(source, target));
+        Assert.False(Directory.Exists(target));
+        using var service = Operations();
+        Assert.Throws<InvalidDataException>(() => service.Preview(_root));
         Assert.False(Directory.Exists(InstallRoot));
     }
 

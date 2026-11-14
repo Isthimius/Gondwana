@@ -7,6 +7,7 @@ internal sealed partial class PluginManagerPanel
 {
     private readonly PluginPackageOperations? _operations;
     private bool _busy;
+    private readonly int _uiThread = Environment.CurrentManagedThreadId;
     internal Button InstallButton { get; } = new() { Text = "Install Plugin…", AutoSize = true };
     internal Button UpdateButton { get; } = new() { Text = "Update from File…", AutoSize = true };
     internal Button RemoveButton { get; } = new() { Text = "Uninstall…", AutoSize = true };
@@ -74,8 +75,8 @@ internal sealed partial class PluginManagerPanel
             try
             {
                 preview = await Task.Run(() => remove ? _operations!.PreviewRemoval(id!) : _operations!.Preview(source!, id));
-                if (IsDisposed || !ConfirmPackage(preview)) return;
-                StatusLabel.Text = "Saving reviewed package operation…";
+                if (!await OnUi(() => ConfirmPackage(preview))) return;
+                await OnUi(() => { StatusLabel.Text = "Saving reviewed package operation…"; return true; });
                 await Task.Run(() => _operations!.Queue(preview, confirmed: true, replacementConfirmed: true));
             }
             finally
@@ -85,21 +86,50 @@ internal sealed partial class PluginManagerPanel
         });
     }
 
+    // Embedded hosts may not install a SynchronizationContext. Dispatch explicitly.
+    private Task<T> OnUi<T>(Func<T> action)
+    {
+        if (IsDisposed || Disposing) return Task.FromResult(default(T)!);
+        if (Environment.CurrentManagedThreadId == _uiThread) return Task.FromResult(action());
+        var completion = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            BeginInvoke(() =>
+            {
+                try { completion.SetResult(IsDisposed || Disposing ? default! : action()); }
+                catch (Exception ex) { completion.SetException(ex); }
+            });
+        }
+        catch (InvalidOperationException) when (IsDisposed || Disposing || !IsHandleCreated) { completion.SetResult(default!); }
+        return completion.Task;
+    }
+
     private async Task RunBusy(Func<Task> operation)
     {
-        if (_busy || _operations is null) return;
-        _busy = true;
-        _saveError = null;
-        UpdateActions();
-        EnabledChoice.Enabled = false;
-        StatusLabel.Text = "Inspecting and staging plugin files. Current plugins remain unchanged…";
-        UseWaitCursor = true;
+        if (!await OnUi(() =>
+        {
+            if (_busy || _operations is null) return false;
+            _busy = true;
+            _saveError = null;
+            UpdateActions();
+            EnabledChoice.Enabled = false;
+            StatusLabel.Text = "Inspecting and staging plugin files. Current plugins remain unchanged…";
+            UseWaitCursor = true;
+            return true;
+        })) return;
+        string? failure = null;
         try { await operation(); }
-        catch (Exception ex) { _saveError = "Package operation failed: " + ex.Message; _operations.ReportFailure(ex.ToString()); }
+        catch (Exception ex) { failure = "Package operation failed: " + ex.Message; _operations!.ReportFailure(ex.ToString()); }
         finally
         {
-            _busy = false;
-            if (!IsDisposed) { UseWaitCursor = false; RefreshSnapshot(); }
+            await OnUi(() =>
+            {
+                _busy = false;
+                _saveError = failure;
+                UseWaitCursor = false;
+                RefreshSnapshot();
+                return true;
+            });
         }
     }
 

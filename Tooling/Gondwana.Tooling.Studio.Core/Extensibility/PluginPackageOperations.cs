@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 
@@ -36,7 +37,7 @@ public sealed record PluginPackagePreview(PluginPackageOperation Operation, Plug
 /// </summary>
 public sealed class PluginPackageOperations : IDisposable
 {
-    private readonly PluginPackageInspection _inspection;
+    private readonly Lazy<PluginPackageInspection> _inspection;
     private readonly Action<string> _log;
     private FileStream? _session;
     private bool _started;
@@ -59,7 +60,7 @@ public sealed class PluginPackageOperations : IDisposable
         var parent = Path.GetDirectoryName(PluginRoot) ?? throw new ArgumentException("Plugin root must have a parent.");
         WorkRoot = Path.Combine(parent, "." + Path.GetFileName(PluginRoot) + ".operations");
         _log = log;
-        _inspection = new([typeof(IStudioPlugin).Assembly, .. sharedContracts]);
+        _inspection = new(() => new PluginPackageInspection([typeof(IStudioPlugin).Assembly, .. sharedContracts]));
     }
 
     public static bool IsBundled(string? id, string? directory = null) =>
@@ -171,7 +172,7 @@ public sealed class PluginPackageOperations : IDisposable
                 Directory.Move(package, payload);
                 if (Directory.Exists(extracted)) Directory.Delete(extracted);
             }
-            var manifest = _inspection.Validate(payload);
+            var manifest = _inspection.Value.Validate(payload);
             if (IsBundled(manifest.Id)) throw new InvalidDataException("Studio-distributed plugins cannot be installed or updated here. Use Studio's distribution/update process; disabling remains available.");
             if (updateId is not null && manifest.Id != updateId) throw new InvalidDataException("The replacement manifest ID must match the selected plugin.");
             var installed = FindInstalled(manifest.Id!);
@@ -312,7 +313,7 @@ public sealed class PluginPackageOperations : IDisposable
 
     private void ValidatePayload(PluginPackageOperation operation)
     {
-        var manifest = _inspection.Validate(Payload(operation));
+        var manifest = _inspection.Value.Validate(Payload(operation));
         if (manifest.Id != operation.PluginId || manifest.Version != operation.Version || PluginPackageInspection.Fingerprint(Payload(operation)) != operation.PackageHash)
             throw new InvalidDataException("Staged package changed since review. Cancel and review the source again.");
     }
@@ -506,7 +507,7 @@ public sealed class PluginPackageOperations : IDisposable
         var ap = a[1].Split('.'); var bp = b[1].Split('.');
         for (var i = 0; i < Math.Min(ap.Length, bp.Length); i++)
         {
-            var an = BigInteger.TryParse(ap[i], out var av); var bn = BigInteger.TryParse(bp[i], out var bv);
+            var an = BigInteger.TryParse(ap[i], NumberStyles.None, CultureInfo.InvariantCulture, out var av); var bn = BigInteger.TryParse(bp[i], NumberStyles.None, CultureInfo.InvariantCulture, out var bv);
             var c = an && bn ? av.CompareTo(bv) : an != bn ? an ? -1 : 1 : StringComparer.Ordinal.Compare(ap[i], bp[i]);
             if (c != 0) return c;
         }
