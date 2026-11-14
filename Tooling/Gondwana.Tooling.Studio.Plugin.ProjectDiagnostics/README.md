@@ -47,8 +47,8 @@ Studio; discovery occurs only at startup.
 
 Studio itself has no reference to this project. Building only Studio leaves
 plugin deployment unchanged; build the plugin again after editing it. Close
-Studio before rebuilding a loaded DLL. To remove the plugin, close Studio and
-remove its `plugins/ProjectDiagnostics/` directory; building the plugin again reinstalls it.
+Studio before rebuilding a loaded DLL. Users should disable this bundled plugin
+in Plugin Manager; its package is maintained by the Studio distribution/build process.
 
 The project is intentionally not a NuGet package. For a separately published
 Studio distribution, copy the complete `ProjectDiagnostics` package directory
@@ -135,7 +135,7 @@ See [Studio plugin packages](../../docs/wiki/Studio-Plugin-Packages.md) for the
 manifest schema, shared/private dependency rules, duplicate precedence,
 read-only discovery snapshots, failure handling and manual legacy deployment.
 Load contexts provide dependency isolation, not a security sandbox; install only
-trusted plugins. There is no installation UI or hot reload.
+trusted plugins. Plugin Manager supports reviewed local package operations for third-party packages; there is no hot reload.
 
 ## Minimal plugin
 
@@ -179,3 +179,14 @@ Future work may include incremental scanning, packed-definition traversal,
 password handling, and richer navigation. Filesystem
 watching, editing, runtime semantic validation, and a dependency graph visualizer
 are deliberately outside this first plugin.
+
+## Studio distribution and Plugin Manager
+
+This is a bundled Studio plugin. Plugin Manager protects its manifest ID and
+standard deployment folder from installation, updating and uninstallation. Use
+**Plugins > Manage Plugins…** to inspect diagnostics or disable it for the next
+startup. The Studio build/release process deploys its package; changes to the
+Studio distribution must happen while all Studio instances are closed.
+
+Third-party plugins can use the documented [local ZIP/directory package workflow](../../docs/wiki/Studio-Plugin-Packages.md), including reviewed updates, pending
+removal and startup rollback. Activation preferences survive removal/reinstallation.
