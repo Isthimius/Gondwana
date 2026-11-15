@@ -67,7 +67,7 @@ Checks the machine and development toolchain. This is the broad environment chec
 Checks performed:
 
 - Git and its version
-- .NET SDK and its version (.NET 8 or later is required)
+- .NET SDK and its version (.NET 10 is required for current Gondwana tooling)
 - the repository-local `nbgv` tool
 - the Gondwana CLI global tool
 - Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor`)
@@ -178,7 +178,7 @@ Adds a supported feature package using the project's existing aligned Gondwana v
 
 The command makes no changes if the requested feature is already referenced. It also avoids making assumptions when it cannot safely determine which package or version to use.
 
-For a standard cross-platform Avalonia project targeting `net8.0`, `add audio` and `add midi` do not automatically add a desktop audio backend. Instead, the CLI explains that a compatible backend must be selected explicitly and leaves the project unchanged.
+For a standard cross-platform Avalonia project targeting `net10.0`, `add audio` and `add midi` do not automatically add a desktop audio backend. Instead, the CLI explains that a compatible backend must be selected explicitly and leaves the project unchanged.
 
 The CLI will not retarget an Avalonia project to Windows automatically. Windows-specific NAudio or MIDI packages are selected automatically only when all of the project's target frameworks are Windows targets.
 
@@ -524,7 +524,7 @@ Runs the desktop target of a project.
 gondwana run
 gondwana run -p ./src/MyGame
 gondwana run -c Release
-gondwana run -f net8.0
+gondwana run -f net10.0
 ```
 
 ---
@@ -545,7 +545,7 @@ Builds and runs the Blazor WebAssembly/WebGL project, then opens its development
 ```sh
 gondwana run blazor
 gondwana run blazor -p ./src/MyGame
-gondwana run blazor -f net8.0-browser --skip-workload
+gondwana run blazor -f net10.0-browser --skip-workload
 ```
 
 ---
@@ -601,7 +601,7 @@ Checks/installs `wasm-tools`, publishes the selected browser target, optionally 
 gondwana publish blazor
 gondwana publish blazor -p ./src/MyGame
 gondwana publish blazor --base-href /games/mygame/
-gondwana publish blazor -f net8.0-browser --skip-workload
+gondwana publish blazor -f net10.0-browser --skip-workload
 ```
 
 The normal output is `bin/<Configuration>/<framework>/publish/wwwroot/` (with an additional runtime directory when applicable).
@@ -731,7 +731,7 @@ It supports local absolute base-href subpaths and requires no Node or Python ins
 gondwana publish blazor
 gondwana serve
 gondwana serve --project ./src/MyGame --port 5001 --no-open
-gondwana serve -c Release -f net8.0-browser
+gondwana serve -c Release -f net10.0-browser
 gondwana serve --root ./artifacts/publish/wwwroot --no-open
 ```
 
@@ -769,10 +769,9 @@ not a statement about the latest or recommended release.
 
 The two switches are mutually exclusive. Explicit selection uses
 `dotnet new install Gondwana.Templates::<VERSION> --force`.
-The `::` separator supports SDK 8–10; newer SDKs (9.0.200 and later) also
-recognize `@`, but SDK 8 does not.
-The CLI resolves `--prerelease` through NuGet so it also works with .NET SDK
-8–10 (where the SDK's own `dotnet new install --prerelease` is not supported).
+The `::` separator remains valid with the .NET 10 SDK; `@` is also supported.
+The CLI resolves `--prerelease` through NuGet rather than depending on
+`dotnet new install --prerelease`. Earlier SDK 8 compatibility is historical; the current CLI targets .NET 10.
 For an exact prerelease version, `--version` is the reproducible choice.
 The separate `gondwana templates update` command retains its current
 stable-only update behavior.

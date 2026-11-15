@@ -18,14 +18,14 @@ dotnet build Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics -c Releas
 dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Release --no-build
 ```
 
-The plugin targets only `net8.0-windows`, matching the current WinForms contract.
+The plugin targets only `net10.0-windows`, matching the current WinForms contract.
 Building the plugin (including through `Gondwana.sln`) builds Studio and copies
 the manifest, plugin DLL, and `.deps.json` to the matching Studio output's
 `plugins/ProjectDiagnostics/` directory. For the
 default Release build this is:
 
 ```text
-Tooling/Gondwana.Tooling.Studio.WinForms/bin/Release/net8.0-windows/plugins/ProjectDiagnostics/
+Tooling/Gondwana.Tooling.Studio.WinForms/bin/Release/net10.0-windows/plugins/ProjectDiagnostics/
   plugin.json
   Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll
   Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.deps.json
@@ -139,7 +139,7 @@ trusted plugins. Plugin Manager supports reviewed local package operations for t
 
 ## Minimal plugin
 
-Create a non-packable `net8.0-windows` class library with `UseWindowsForms=true`
+Create a non-packable `net10.0-windows` class library with `UseWindowsForms=true`
 and a reference to the current Studio WinForms project/assembly. The current
 interface signatures are:
 

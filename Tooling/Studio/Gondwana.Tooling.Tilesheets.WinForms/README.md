@@ -9,7 +9,7 @@ Image decoding and package access are shared with the other authoring editors
 through [Gondwana.Tooling.Assets](../Gondwana.Tooling.Assets/README.md).
 **Reload image** refreshes changed packed images without altering their references.
 
-Standalone .NET 8 Windows editor for `.gts` definitions backed by loose images or image entries in Gondwana asset packages (`.gaf` / `.zip`). Open this project in
+Standalone .NET 10 Windows editor for `.gts` definitions backed by loose images or image entries in Gondwana asset packages (`.gaf` / `.zip`). Open this project in
 Visual Studio, or run from the repository root:
 
 ```console

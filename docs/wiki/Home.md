@@ -1,6 +1,6 @@
 # Gondwana Game Engine
 
-> A code-first 2D and 2.5D game engine for C# and .NET 8, targeting Windows, Linux, macOS, and WebAssembly.
+> A code-first 2D and 2.5D game engine for C# and .NET 10, targeting Windows, Linux, macOS, and WebAssembly.
 
 Gondwana combines modern .NET with an explicit, predictable rendering model inspired by classic game and graphics programming. It provides first-class scenes, layers, cameras, viewports, sprites, tiles, movement, collisions, input, audio, particles, widgets, and platform hosting; without requiring developers to surrender control to an editor-driven workflow.
 
@@ -33,7 +33,7 @@ Gondwana combines modern .NET with an explicit, predictable rendering model insp
 
 # What Is Gondwana?
 
-Gondwana is a cross-platform 2D and 2.5D game and rendering engine written in C# for .NET 8.
+Gondwana is a cross-platform 2D and 2.5D game and rendering engine written in C# for .NET 10.
 
 It is designed primarily for developers who want to build games in code while retaining direct control over engine lifecycle, scene composition, rendering, timing, input, and game state. Gondwana supplies the runtime and the engine primitives; the game remains ordinary C# code.
 
@@ -83,7 +83,7 @@ The platform adapter projects handle render-surface creation, presentation, nati
 
 | Technology | Role |
 |---|---|
-| .NET 8 / C# | Primary language and runtime |
+| .NET 10 / C# | Primary language and runtime |
 | SkiaSharp | Cross-platform bitmap and GPU-backed 2D rendering |
 | NAudio | Optional Windows audio backend in `Gondwana.Audio.NAudio` |
 | HTML5 Audio / Web Audio / JavaScript interop | Browser backend in `Gondwana.Audio.Browser`, using the common core audio API |

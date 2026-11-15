@@ -5,7 +5,7 @@ inside a GAF, use [Gondwana Studio](../Gondwana.Tooling.Studio.WinForms/README.m
 which hosts this same editor. Packed documents retain all logical members and their
 source references; Save updates the typed archive entry, while Save As adopts a loose copy.
 
-Standalone .NET 8 Windows editor for Gondwana `.gscn` scene definitions.
+Standalone .NET 10 Windows editor for Gondwana `.gscn` scene definitions.
 
 Run from the repository root:
 

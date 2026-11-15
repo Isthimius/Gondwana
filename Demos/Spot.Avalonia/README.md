@@ -22,7 +22,7 @@ settings behavior all come from the same shared implementation.
 
 ## Audio
 
-This project targets cross-platform `net8.0`, so it does not reference the
+This project targets cross-platform `net10.0`, so it does not reference the
 Windows-only `Gondwana.Audio.NAudio` backend. When no compatible audio backend has
 been configured, Spot still runs normally without sound and the Music and Sound
 Effects menu items are disabled.

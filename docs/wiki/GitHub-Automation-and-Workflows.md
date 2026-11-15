@@ -195,7 +195,7 @@ Although Gondwana contains Windows-targeting projects, CI builds from Linux usin
 /p:EnableWindowsTargeting=true
 ```
 
-This allows Windows-targeted assemblies to be built from Linux. The separate WinForms tooling interaction test job runs on `windows-latest`. The Blazor NuGet consumer job uses `ubuntu-24.04`, .NET 8 plus .NET 10, the `wasm-tools` workload, and Playwright/Chromium.
+This allows Windows-targeted assemblies to be built from Linux. The separate WinForms tooling interaction test job runs on `windows-latest`. The Blazor NuGet consumer job currently installs both .NET 8 and .NET 10 on `ubuntu-24.04`, with the `wasm-tools` workload and Playwright/Chromium. Gondwana 2.7.0 projects now target .NET 10; workflow steps still selecting only SDK 8 must be migrated separately.
 
 ---
 
@@ -281,7 +281,7 @@ Scheduled runs validate current `master`; manually dispatched runs validate the 
 
 The job:
 
-1. checks out the source with full history and sets up .NET 8
+1. checks out the source with full history and currently sets up .NET 8 (legacy workflow configuration; the 2.7.0 project build requires SDK 10)
 2. restores workloads and dependencies
 3. builds the solution in Release configuration
 4. runs `dotnet pack --no-build` to create NuGet packages in `nupkgs/`

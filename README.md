@@ -10,7 +10,7 @@
 
 <img alt="Gondwana logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
 
-**Gondwana** is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. It gives developers fine-grained control over rendering, timing, movement, input, collision detection, scene composition, and game architecture without requiring an editor to own the project.
+**Gondwana** is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 10. It gives developers fine-grained control over rendering, timing, movement, input, collision detection, scene composition, and game architecture without requiring an editor to own the project.
 
 Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based rendering, with integrations for WinForms, Avalonia, and Blazor. It supports CPU bitmap and GPU-backed rendering, including OpenGL on desktop and a dedicated WebGL path for Blazor/WebAssembly. Layered worlds support multiple views, parallax, stable z-ordering, particles, multiple grid projections, game UI widgets, audio, video, gamepad input, and reusable content definitions.
 
@@ -33,7 +33,7 @@ The engine carries forward the predictability of classic rendering systems—exp
 
 ## Get Started
 
-Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```console
 dotnet new install Gondwana.Templates

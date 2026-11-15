@@ -12,7 +12,7 @@ New browser code can therefore use the same `AudioResourceManager` and `AudioRes
 dotnet add package Gondwana.Audio.Browser
 ```
 
-The package targets `net8.0-browser` and includes `gondwana-audio.js` as NuGet content.
+The package targets `net10.0-browser` and includes `gondwana-audio.js` as NuGet content.
 
 Before using browser audio, import that module during browser startup:
 

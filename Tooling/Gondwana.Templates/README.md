@@ -32,7 +32,7 @@ dotnet run
 
 This scaffolds a ready-to-run WinForms project containing:
 
-- `MyGame.csproj` — targets `net8.0-windows` with the four Gondwana packages pre-referenced
+- `MyGame.csproj` — targets `net10.0-windows` with the four Gondwana packages pre-referenced
 - `Program.cs` — `[STAThread]` WinForms entry point
 - `GameWindow.cs` — `Form` wired to the engine lifecycle (`OnLoad` → host, `OnShown` → `Initialize`, `OnFormClosed` → `Dispose`)
 - `MyGameHost.cs` — `WinFormsGameHost` subclass (or `WinFormsGpuGameHost` with `--Backbuffer gpu`) with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
@@ -48,7 +48,7 @@ dotnet run
 
 This scaffolds a ready-to-run Avalonia project containing:
 
-- `MyGame.csproj` — targets `net8.0` with the Gondwana and `Avalonia.Desktop` packages pre-referenced
+- `MyGame.csproj` — targets `net10.0` with the Gondwana and `Avalonia.Desktop` packages pre-referenced
 - `Program.cs` — Avalonia `AppBuilder` entry point using `UsePlatformDetect()`
 - `App.cs` — `Application` subclass that creates the main window on startup
 - `GameWindow.cs` — `Window` wired to the engine lifecycle (`OnOpened` → host + `Initialize`, `OnClosed` → `Dispose`)
@@ -84,8 +84,7 @@ When creating projects with `gondwana new blazor`, the CLI validates the selecte
 
 New Blazor projects require a **.NET 10 SDK (10.0.100 or later in the 10.0 line)**.
 Use the latest serviced .NET 10 SDK and its `wasm-tools` workload. Run these
-commands from the generated project directory, outside this repository's SDK 8
-`global.json` scope:
+commands from the generated project directory, using a .NET 10 SDK (the repository's `global.json` also selects .NET 10):
 
 ```bash
 dotnet new gondwana-blazor -n MyGame
@@ -152,15 +151,14 @@ for the SDK 10 workload. See Microsoft's
 [WebAssembly build tools guidance](https://learn.microsoft.com/aspnet/core/blazor/webassembly-build-tools-and-aot?view=aspnetcore-10.0).
 
 The runtime libraries, template packaging project, WinForms template and Avalonia
-template remain on .NET 8. Desktop targets do not use the WebAssembly native-link
-toolchain and need no framework retargeting for this fix. A wider framework and
-support-lifecycle migration should be evaluated separately.
+template now target .NET 10. Desktop targets do not require the WebAssembly
+native-link toolchain; the browser template still requires a matching `wasm-tools` workload.
 
 Audio uses the common `Engine.Managers.AudioResources` API with a platform backend:
 
 - WinForms hosts configure `Gondwana.Audio.NAudio` before `LoadAssets`; the backend is a transitive dependency, so no extra package or initialization is required.
 - Blazor `Program.cs` imports the audio module and calls `Engine.Instance.UseBrowserAudio()`. Load URI assets with `LoadFromUri`, placing files under `wwwroot/assets`, and start playback from a user gesture handler. Browser autoplay policy and codec support apply.
-- Cross-platform Avalonia (`net8.0`) has no default desktop audio backend. Configure a compatible backend before loading audio. `gondwana add audio` and `gondwana add midi` explain the limitation without retargeting the project. NAudio and the current MIDI implementation require Windows targets.
+- Cross-platform Avalonia (`net10.0`) has no default desktop audio backend. Configure a compatible backend before loading audio. `gondwana add audio` and `gondwana add midi` explain the limitation without retargeting the project. NAudio and the current MIDI implementation require Windows targets.
 
 ## Documentation
 

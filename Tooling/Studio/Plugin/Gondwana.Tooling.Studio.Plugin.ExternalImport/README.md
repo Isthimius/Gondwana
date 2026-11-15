@@ -37,7 +37,7 @@ Changing working directory, cancellation and disposal invalidate pending results
 Abandoned task faults are observed. Cancellation is cooperative between parsing,
 rendering and filesystem operations and does not block the UI.
 
-`Gondwana.Tooling.Importers` targets net8.0 without WinForms. Its shared pipeline
+`Gondwana.Tooling.Importers` targets net10.0 without WinForms. Its shared pipeline
 owns diagnostics, naming, native validation/serialization, conflict detection,
 staging and rollback. Providers contain all foreign-format knowledge. Native
 editors and runtime factories remain unaware of foreign formats.

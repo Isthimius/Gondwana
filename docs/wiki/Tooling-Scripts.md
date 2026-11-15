@@ -146,7 +146,9 @@ The script currently performs thirteen setup or verification steps:
 12. installs `butler` from itch.io's Broth CDN when missing and adds its install directory to the current shell's `PATH`
 13. runs `gondwana doctor` when the command is available
 
-Steps 8 through 12 are optional-development dependencies and can be skipped together. The repository's `global.json` continues selecting .NET 8 for the solution and desktop development. When .NET 10 is already installed there is no SDK installation prompt; when missing, interactive Windows users can accept or decline an optional SDK 10 installation. Non-interactive execution skips the prompt. Workload checks run under the isolated .NET 10 SDK context, not the repository's SDK 8 pin. `gondwana doctor` run from the repository may still show the .NET 8 workload; step 8 separately verifies the Blazor toolchain.
+Steps 8 through 12 are optional-development dependencies and can be skipped together. The repository's `global.json` now selects .NET 10 for the solution and desktop development, although the script still assumes the earlier SDK 8 pin. When .NET 10 is already installed there is no SDK installation prompt; when missing, interactive Windows users can accept or decline an optional SDK 10 installation. Non-interactive execution skips the prompt. Workload checks run under an isolated .NET 10 SDK context; `gondwana doctor` run from the repository also selects .NET 10. Step 8 separately verifies the Blazor toolchain.
+
+**Gondwana 2.7.0 migration note:** The repository now pins .NET 10. The current setup script still checks/installs SDK 8 at step 2 and treats SDK 10 as optional at step 8; these steps need a script update. Install the .NET 10 SDK before building the 2.7.0 solution. A successful SDK 8 check is not sufficient.
 
 ## Parameters
 
