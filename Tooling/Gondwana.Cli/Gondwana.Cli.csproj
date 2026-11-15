@@ -48,7 +48,7 @@
         <Content Include="gondwana-asset-types.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Pack>true</Pack>
-            <PackagePath>tools/net8.0/any/</PackagePath>
+            <PackagePath>tools/net10.0/any/</PackagePath>
         </Content>
     </ItemGroup>
 
