@@ -191,11 +191,7 @@ internal sealed partial class PluginManagerPanel : UserControl
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _host.DiscoveryChanged -= DiscoveryChanged;
-            SourceMenu.Dispose();
-        }
+        if (disposing) _host.DiscoveryChanged -= DiscoveryChanged;
         base.Dispose(disposing);
     }
 }
