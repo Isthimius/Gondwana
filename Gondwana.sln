@@ -223,7 +223,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Win
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Sprites.WinForms", "Tooling\Studio\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj", "{186A7D6E-C8B3-4FB8-8E59-F766B6BB7A21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Sprites.WinForms.Tests", "Testing\Studio\Gondwana.Tooling.Sprites.WinForms.Tests\Gondwana.Tooling.Sprites.WinForms.Tests.csproj", "{D9E094B7-5EF1-42F0-BC10-4685E6A34565}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Sprites.WinForms.Tests", "Testing\Gondwana.Tooling.Sprites.WinForms.Tests\Gondwana.Tooling.Sprites.WinForms.Tests.csproj", "{D9E094B7-5EF1-42F0-BC10-4685E6A34565}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Importers", "Tooling\Gondwana.Tooling.Importers\Gondwana.Tooling.Importers.csproj", "{F323CE2C-57FB-4F47-B3D2-6B73C9BECC0A}"
 EndProject

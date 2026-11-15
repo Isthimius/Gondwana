@@ -13,7 +13,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <ProjectReference Include="../../Tooling/Gondwana.Tooling.SceneViewer.WinForms/Gondwana.Tooling.SceneViewer.WinForms.csproj" />
+    <ProjectReference Include="../../Tooling/Studio/Gondwana.Tooling.SceneViewer.WinForms/Gondwana.Tooling.SceneViewer.WinForms.csproj" />
     <ProjectReference Include="../../Gondwana.Widgets/Gondwana.Widgets.csproj" />
     <ProjectReference Include="../../Gondwana.Avalonia/Gondwana.Avalonia.csproj" />
     <Using Include="Xunit" />

@@ -8,6 +8,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../Tooling/Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" />
+    <ProjectReference Include="../../Tooling/Studio/Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" />
   </ItemGroup>
 </Project>
