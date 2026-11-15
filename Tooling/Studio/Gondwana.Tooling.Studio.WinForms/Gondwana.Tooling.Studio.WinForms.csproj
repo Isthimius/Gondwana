@@ -1,43 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        
+        <!-- Retain SystemAware until mixed-monitor docking/canvas compatibility is verified. -->
+        <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>Gondwana.Studio.WinForms</RootNamespace>
+        <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <!-- Retain SystemAware until mixed-monitor docking/canvas compatibility is verified. -->
-    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <IsPackable>false</IsPackable>
-    <RootNamespace>Gondwana.Studio.WinForms</RootNamespace>
-    <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
-  </PropertyGroup>
+    <!-- The outer shell uses the same DockPanelSuite theme family as its hosted editors. -->
+    <ItemGroup>
+        <PackageReference Include="DockPanelSuite" Version="3.1.1" />
+        <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+    </ItemGroup>
 
-  <!-- The outer shell uses the same DockPanelSuite theme family as its hosted editors. -->
-  <ItemGroup>
-    <Compile Include="../Shared/WinForms/WorkspaceSessionStore.cs" Link="Session/WorkspaceSessionStore.cs" />
-    <Compile Include="../Shared/WinForms/WorkspaceSessionController.cs" Link="Session/WorkspaceSessionController.cs" />
-    <Compile Include="../Shared/WinForms/DockLayoutStore.cs" Link="Docking/DockLayoutStore.cs" />
-    <Compile Include="../Shared/WinForms/DockLayoutPersistence.cs" Link="Docking/DockLayoutPersistence.cs" />
-    <PackageReference Include="DockPanelSuite" Version="3.1.1" />
-    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
-    <ProjectReference Include="..\Gondwana.Tooling.Studio.Core\Gondwana.Tooling.Studio.Core.csproj" />
-    <ProjectReference Include="..\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Animations.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana.Tooling.Audio.WinForms\Gondwana.Tooling.Audio.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Scenes.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
-    <Using Include="Gondwana.Tooling.WinForms.Theming" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../Shared/WinForms/UndoRedoMenu.cs" Link="Editing/UndoRedoMenu.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Core\Gondwana.Tooling.Studio.Core.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Animations.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Audio.WinForms\Gondwana.Tooling.Audio.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Scenes.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj" />
+        <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
+    </ItemGroup>
 </Project>

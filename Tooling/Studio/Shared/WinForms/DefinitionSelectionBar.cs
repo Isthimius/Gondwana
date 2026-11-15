@@ -1,10 +1,8 @@
-using DefinitionCommand = Gondwana.Tooling.Studio.Shared.WinForms.ToolbarGlyphs.DefinitionCommand;
-
 namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>A compact shared selector for logical definitions inside one physical editor document.</summary>
 /// <typeparam name="T">The definition model.</typeparam>
-public sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
+public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
 {
     private readonly ToolStripComboBox _members = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 230 };
     private readonly ToolStripTextBox _identity = new() { Width = 180 };

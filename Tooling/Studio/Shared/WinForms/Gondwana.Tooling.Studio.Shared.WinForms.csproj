@@ -6,16 +6,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <!-- Owned by the separate Theming assembly -->
-        <Compile Remove="Theming\**\*.cs" />
-        
-        <ProjectReference Include="Theming\Gondwana.Tooling.WinForms.Theming.csproj" />
+        <!-- Theming is a separate project; exclude its files entirely -->
+        <Compile Remove="Theming\**\*" />
+        <EmbeddedResource Remove="Theming\**\*" />
+        <None Remove="Theming\**\*" />
+        <Content Remove="Theming\**\*" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="../../../../assets/gondwana-logo.ico"
-                          LogicalName="Gondwana.Tooling.BrandingIcon" />
+      <ProjectReference Include="Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
     </ItemGroup>
 </Project>

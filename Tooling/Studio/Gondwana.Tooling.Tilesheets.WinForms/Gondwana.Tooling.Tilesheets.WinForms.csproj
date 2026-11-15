@@ -1,44 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <!-- Retain SystemAware until mixed-monitor docking/canvas compatibility is verified. -->
-    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
 
-  <ItemGroup>
-    <Compile Include="../Shared/WinForms/WorkspaceSessionStore.cs" Link="Session/WorkspaceSessionStore.cs" />
-    <Compile Include="../Shared/WinForms/WorkspaceSessionController.cs" Link="Session/WorkspaceSessionController.cs" />
-    <Compile Include="../Shared/WinForms/ZoomSelector.cs" Link="Controls/ZoomSelector.cs" />
-    <InternalsVisibleTo Include="Gondwana.Tooling.Tilesheets.WinForms.Tests" />
-    <Compile Include="..\Shared\WinForms\EditorDockWorkspace.cs" Link="Docking\EditorDockWorkspace.cs" />
-    <Compile Include="..\Shared\WinForms\DockLayoutStore.cs" Link="Docking\DockLayoutStore.cs" />
-    <Compile Include="..\Shared\WinForms\DockLayoutPersistence.cs" Link="Docking\DockLayoutPersistence.cs" />
-    <PackageReference Include="DockPanelSuite" Version="3.1.1" />
-    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
-    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
-  </ItemGroup>
+        <!-- Retain SystemAware until mixed-monitor docking/canvas compatibility is verified. -->
+        <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="../Shared/WinForms/DefinitionImport.cs" Link="Editing/DefinitionImport.cs" />
-    <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../Gondwana.Tooling.Assets/Gondwana.Tooling.Assets.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../Shared/WinForms/AuthoringPreviewImage.cs" Link="Authoring/AuthoringPreviewImage.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
-    <Using Include="Gondwana.Tooling.WinForms.Theming" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../Shared/WinForms/UndoRedoMenu.cs" Link="Editing/UndoRedoMenu.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="Gondwana.Tooling.Tilesheets.WinForms.Tests" />
+        <PackageReference Include="DockPanelSuite" Version="3.1.1" />
+        <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+        <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
+        <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
+    </ItemGroup>
 </Project>
