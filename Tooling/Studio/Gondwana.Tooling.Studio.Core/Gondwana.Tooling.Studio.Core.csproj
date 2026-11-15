@@ -12,7 +12,11 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.10.94" />
     </ItemGroup>
 
 </Project>

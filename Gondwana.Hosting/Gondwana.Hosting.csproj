@@ -30,4 +30,8 @@
 		<None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Update="Nerdbank.GitVersioning" Version="3.10.94" />
+	</ItemGroup>
+
 </Project>

@@ -2,7 +2,7 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Animations.Editing;
 

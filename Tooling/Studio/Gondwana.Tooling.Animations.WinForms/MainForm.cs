@@ -1,5 +1,8 @@
 using Gondwana.Tooling.Animations.Editing;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Session;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Animations.WinForms;
@@ -35,7 +38,7 @@ internal sealed class MainForm : Form
     /// <summary>Creates the standalone animations editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
-        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
+        Icon = ToolingBranding.CreateIcon();
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Animations — GANI editor";
         Size = new Size(1450, 900);

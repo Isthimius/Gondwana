@@ -5,8 +5,11 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 
 namespace Gondwana.Tooling.Animations.WinForms;
 

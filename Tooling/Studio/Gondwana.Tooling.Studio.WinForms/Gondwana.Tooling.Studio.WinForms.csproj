@@ -30,4 +30,8 @@
         <ProjectReference Include="..\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj" />
         <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.10.94" />
+    </ItemGroup>
 </Project>

@@ -40,6 +40,6 @@
   <ItemGroup>
     <ProjectReference Include="../../Gondwana.Video.Widgets/Gondwana.Video.Widgets.csproj" />
     <ProjectReference Include="../../Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj" />
-    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23.1" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.24" />
   </ItemGroup>
 </Project>
