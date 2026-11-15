@@ -13,4 +13,9 @@
         
         <ProjectReference Include="Theming\Gondwana.Tooling.WinForms.Theming.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="../../../../assets/gondwana-logo.ico"
+                          LogicalName="Gondwana.Tooling.BrandingIcon" />
+    </ItemGroup>
 </Project>
