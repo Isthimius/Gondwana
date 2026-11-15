@@ -11,5 +11,7 @@
     <InternalsVisibleTo Include="Gondwana.Tooling.SceneViewer.WinForms.Tests" />
     <ProjectReference Include="../../Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj" />
     <ProjectReference Include="../../Gondwana.Widgets/Gondwana.Widgets.csproj" />
+    <ProjectReference Include="..\..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
+    <ProjectReference Include="..\..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
   </ItemGroup>
 </Project>

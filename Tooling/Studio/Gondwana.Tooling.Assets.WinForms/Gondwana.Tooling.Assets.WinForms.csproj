@@ -20,6 +20,8 @@
     <Compile Include="..\Shared\WinForms\DockLayoutPersistence.cs" Link="Docking\DockLayoutPersistence.cs" />
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+    <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 

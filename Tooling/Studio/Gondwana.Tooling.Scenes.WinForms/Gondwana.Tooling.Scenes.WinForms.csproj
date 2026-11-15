@@ -22,20 +22,18 @@
     <Compile Include="..\Shared\WinForms\DockLayoutPersistence.cs" Link="Docking\DockLayoutPersistence.cs" />
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
-    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Shared/WinForms/DefinitionImport.cs" Link="Editing/DefinitionImport.cs" />
     <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../Gondwana.Tooling.Assets/Gondwana.Tooling.Assets.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="../Shared/WinForms/AuthoringPreviewImage.cs" Link="Authoring/AuthoringPreviewImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
+    <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
     <Using Include="Gondwana.Tooling.WinForms.Theming" />
   </ItemGroup>
   <ItemGroup>
