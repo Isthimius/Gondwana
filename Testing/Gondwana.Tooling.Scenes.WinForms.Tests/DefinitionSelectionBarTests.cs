@@ -22,7 +22,7 @@ public sealed class DefinitionSelectionBarTests
 
         var bar = Assert.Single(editor.Controls.OfType<ToolStrip>()
             .Where(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal)));
-        int pixels = Gondwana.Tooling.Studio.Shared.WinForms.ToolbarSizing.Pixels(32, bar.DeviceDpi);
+        int pixels = ToolbarSizing.Pixels(32, bar.DeviceDpi);
         Assert.Equal(new Size(pixels, pixels), bar.ImageScalingSize);
         Assert.True(bar.ShowItemToolTips);
         Assert.Single(bar.Items.OfType<ToolStripComboBox>());

@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Gondwana.Assets;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
