@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using System.Globalization;
 using Gondwana.Tooling.Studio.ViewModels;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
