@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 
 /// <summary>One atomic per-user navigation preference for Studio and all standalone editors.</summary>
 public sealed class NavigationPreferenceStore
@@ -52,7 +52,7 @@ public sealed class NavigationPreferenceStore
     }
 
     // Keep migration publication separate so another tool's explicit save can win the race.
-    internal NavigationIconSize? Migrate(NavigationIconSize size)
+    public NavigationIconSize? Migrate(NavigationIconSize size)
     {
         if (Write(size, overwrite: false))
             return size;

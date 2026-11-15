@@ -1,13 +1,13 @@
 using Gondwana.Tooling.Editing;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 
 /// <summary>Shared host routing; history remains in the active document and text input retains local undo.</summary>
-internal sealed class UndoRedoMenu : IDisposable
+public sealed class UndoRedoMenu : IDisposable
 {
     // Register at the editor boundary: a child (notably PropertyGrid's internal
     // controls) may consume a command before it reaches a parent's ProcessCmdKey.
-    internal static IDisposable Route(Control editor, Func<EditHistory?> history, Func<bool> commit) =>
+    public static IDisposable Route(Control editor, Func<EditHistory?> history, Func<bool> commit) =>
         new ShortcutFilter(editor, history, commit);
 
     private sealed class ShortcutFilter : IMessageFilter, IDisposable
@@ -16,7 +16,7 @@ internal sealed class UndoRedoMenu : IDisposable
         private readonly Func<EditHistory?> _history;
         private readonly Func<bool> _commit;
 
-        internal ShortcutFilter(Control editor, Func<EditHistory?> history, Func<bool> commit)
+        public ShortcutFilter(Control editor, Func<EditHistory?> history, Func<bool> commit)
         {
             _editor = editor;
             _history = history;
@@ -89,7 +89,7 @@ internal sealed class UndoRedoMenu : IDisposable
 
     private void Changed(object? sender, EventArgs e) => Refresh();
 
-    internal static bool TryShortcut(Control owner, Keys keys, EditHistory? history, Func<bool> commit)
+    public static bool TryShortcut(Control owner, Keys keys, EditHistory? history, Func<bool> commit)
     {
         if (!owner.Enabled)
             return false;

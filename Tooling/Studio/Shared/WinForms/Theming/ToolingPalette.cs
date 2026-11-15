@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 public enum ToolingTheme { Dark, DarkBlue, Light }
 

@@ -1,7 +1,7 @@
 namespace Gondwana.Tooling.Editing;
 
 /// <summary>Prepares independent import batches before an editor mutates its document.</summary>
-internal static class DefinitionImport
+public static class DefinitionImport
 {
     /// <summary>Loads, selects, clones, and uniquely names an import batch atomically.</summary>
     /// <typeparam name="T">The definition type.</typeparam>
@@ -15,7 +15,7 @@ internal static class DefinitionImport
     /// <param name="fallback">The default identity for an unnamed legacy singleton.</param>
     /// <returns>The prepared batch, empty when canceled or unselected.</returns>
 #pragma warning disable S107
-    internal static List<T> Prepare<T>(string path,
+    public static List<T> Prepare<T>(string path,
                                        IReadOnlyList<T> existing,
                                        Func<string, IReadOnlyList<T>> load,
                                        Func<IReadOnlyList<T>, IReadOnlyList<int>?>? select,
@@ -68,6 +68,6 @@ internal static class DefinitionImport
     /// <param name="sourceDirectory">The original document directory.</param>
     /// <param name="destinationDirectory">The current editor directory.</param>
     /// <returns>A destination-relative path, or an absolute path across volumes.</returns>
-    internal static string? Rebase(string? path, string sourceDirectory, string destinationDirectory) =>
+    public static string? Rebase(string? path, string sourceDirectory, string destinationDirectory) =>
         string.IsNullOrWhiteSpace(path) ? path : Path.GetRelativePath(destinationDirectory, Path.GetFullPath(path, sourceDirectory));
 }

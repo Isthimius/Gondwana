@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>Atomic, per-user preference shared by every tooling executable, independent of layouts and sessions.</summary>
 public sealed class ThemePreferenceStore

@@ -1,6 +1,6 @@
 using System.Drawing.Drawing2D;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 
 /// <summary>Converts 96-DPI logical toolbar measurements directly to device pixels.</summary>
 public static class ToolbarSizing
@@ -32,8 +32,8 @@ public class DpiToolStrip : ToolStrip
 {
     private sealed class Glyph(Func<int, Bitmap> create)
     {
-        internal readonly Func<int, Bitmap> Create = create;
-        internal Bitmap? Image;
+        public readonly Func<int, Bitmap> Create = create;
+        public Bitmap? Image;
     }
 
     private readonly Dictionary<ToolStripItem, Glyph> _glyphs = [];

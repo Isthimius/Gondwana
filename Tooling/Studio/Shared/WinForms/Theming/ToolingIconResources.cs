@@ -1,11 +1,11 @@
 using System.Drawing.Drawing2D;
 
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>Loads shared PNG artwork as independently owned, DPI-sized bitmaps.</summary>
 public static class ToolingIconResources
 {
-    private const string ResourcePrefix = "Gondwana.Tooling.WinForms.Theming.assets.";
+    private const string ResourcePrefix = "Gondwana.Tooling.Studio.Shared.WinForms.Theming.assets.";
 
     /// <summary>Returns an owned bitmap sized for the requesting control's effective DPI.</summary>
     public static Bitmap CreateBitmap(string fileName, int pixels)

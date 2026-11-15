@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>One immutable appearance per process. Preference changes only affect the next launch.</summary>
 public static class ToolingAppearance
@@ -45,7 +45,7 @@ public static class ToolingAppearance
         return theme == ToolingTheme.DarkBlue ? new DarkBlueDockTheme() : new VS2015DarkTheme();
     }
 
-    internal static void ConfigureDarkBlue(ThemeBase result)
+    public static void ConfigureDarkBlue(ThemeBase result)
     {
         var p = ToolingPalette.For(ToolingTheme.DarkBlue);
         var d = result.ColorPalette;
@@ -136,7 +136,7 @@ public static class ToolingAppearance
 
         Applied.Add(control, new());
 
-        // DockPanel Suite owns its chrome; never overwrite its internal controls or change a live theme.
+        // DockPanel Suite owns its chrome; never overwrite its public controls or change a live theme.
         if (control is DockPanel dock)
         {
             foreach (var content in dock.Contents.OfType<Control>())
@@ -353,7 +353,7 @@ public static class ToolingAppearance
                 break;
         }
 
-        // PropertyGrid owns specialized internal colors; its own properties above style them.
+        // PropertyGrid owns specialized public colors; its own properties above style them.
         if (control is PropertyGrid)
         {
             foreach (var toolbar in control.Controls.OfType<ToolStrip>())

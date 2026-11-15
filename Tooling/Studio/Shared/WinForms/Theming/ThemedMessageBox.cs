@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>Tooling-owned modal messages use the same appearance and standard WinForms dialog results.</summary>
 public static class ThemedMessageBox

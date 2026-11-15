@@ -3,17 +3,17 @@ using System.Xml;
 using System.Xml.Linq;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
-internal sealed class PersistentDockContent(string persistenceId) : DockContent
+public sealed class PersistentDockContent(string persistenceId) : DockContent
 {
-    internal string PersistenceId { get; } = persistenceId;
+    public string PersistenceId { get; } = persistenceId;
     /// <inheritdoc/>
     protected override string GetPersistString() => PersistenceId;
 }
 
 /// <summary>Uses DockPanelSuite's layout format and resolves only owned, existing panes.</summary>
-internal sealed class DockLayoutPersistence : IDisposable
+public sealed class DockLayoutPersistence : IDisposable
 {
     private readonly DockPanel _panel;
     private readonly DockLayoutStore _store;
@@ -25,18 +25,18 @@ internal sealed class DockLayoutPersistence : IDisposable
     private bool _disposed;
     private double[] _defaultPortions = [];
 
-    internal DockLayoutPersistence(DockPanel panel, string profile)
+    public DockLayoutPersistence(DockPanel panel, string profile)
     {
         _panel = panel;
         _store = new DockLayoutStore(profile);
         _timer.Tick += (_, _) => Observe();
     }
 
-    internal void Register(PersistentDockContent pane, Action place) =>
+    public void Register(PersistentDockContent pane, Action place) =>
         _panes.Add(pane.PersistenceId, (pane, place));
 
     // Call after every expected pane and its default placement have been registered.
-    internal void Start()
+    public void Start()
     {
         if (_started)
             return;
@@ -134,7 +134,7 @@ internal sealed class DockLayoutPersistence : IDisposable
             entry.Place();
     }
 
-    internal void Reset()
+    public void Reset()
     {
         // Keep open documents alive. Reset is layout-only, even with unsaved documents.
         bool enabled = _panel.Enabled;

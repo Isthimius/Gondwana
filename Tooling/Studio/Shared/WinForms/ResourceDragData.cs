@@ -1,6 +1,6 @@
 using Gondwana.Tooling.Assets;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>Managed transport for a saved resource and any selection needed on release.</summary>
 /// <remarks>Targets match this object directly. External OLE data is never decoded as an authoring payload.</remarks>

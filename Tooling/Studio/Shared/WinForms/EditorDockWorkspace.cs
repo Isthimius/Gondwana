@@ -1,12 +1,12 @@
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>
 /// Editor-owned docking surface, source-linked by the standalone tooling projects.
 /// Content belongs to this workspace even while hidden. Layouts are per editor type.
 /// </summary>
-internal sealed class EditorDockWorkspace : UserControl
+public sealed class EditorDockWorkspace : UserControl
 {
     private readonly DockLayoutPersistence _layout;
     private readonly string _profile;
@@ -15,11 +15,11 @@ internal sealed class EditorDockWorkspace : UserControl
     private readonly Dictionary<string, DockContent> _contentsByTitle =
         new(StringComparer.OrdinalIgnoreCase);
 
-    internal DockPanel DockPanel { get; }
-    internal IReadOnlyList<string> PaneTitles =>
+    public DockPanel DockPanel { get; }
+    public IReadOnlyList<string> PaneTitles =>
         _contents.Select(content => content.Text).ToArray();
 
-    internal EditorDockWorkspace(string profile)
+    public EditorDockWorkspace(string profile)
     {
         Dock = DockStyle.Fill;
         DockPanel = new DockPanel
@@ -35,7 +35,7 @@ internal sealed class EditorDockWorkspace : UserControl
     }
 
     // The controls are passed in WinForms z-order: fill content, then top toolbars.
-    internal DockContent AddPane(string id, string title, params Control[] controls)
+    public DockContent AddPane(string id, string title, params Control[] controls)
     {
         var pane = new PersistentDockContent(_profile + "." + id)
         {
@@ -58,16 +58,16 @@ internal sealed class EditorDockWorkspace : UserControl
         return pane;
     }
 
-    internal void Place(DockContent pane, Action placement)
+    public void Place(DockContent pane, Action placement)
     {
         _layout.Register((PersistentDockContent)pane, placement);
     }
 
-    internal void InitializeLayout() => _layout.Start();
+    public void InitializeLayout() => _layout.Start();
 
-    internal void ResetLayout() => _layout.Reset();
+    public void ResetLayout() => _layout.Reset();
 
-    internal bool ShowPane(string title)
+    public bool ShowPane(string title)
     {
         if (!_contentsByTitle.TryGetValue(title, out var pane) ||
             pane.IsDisposed)
@@ -80,12 +80,12 @@ internal sealed class EditorDockWorkspace : UserControl
         return true;
     }
 
-    internal bool IsPaneVisible(string title) =>
+    public bool IsPaneVisible(string title) =>
         _contentsByTitle.TryGetValue(title, out var pane) &&
         !pane.IsDisposed &&
         !pane.IsHidden;
 
-    internal void ShowAllPanes()
+    public void ShowAllPanes()
     {
         foreach (var pane in _contents)
         {

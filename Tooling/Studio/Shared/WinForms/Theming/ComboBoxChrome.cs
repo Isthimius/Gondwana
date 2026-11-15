@@ -1,7 +1,7 @@
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>Paints the native combo arrow after Windows paints, retaining native keyboard/dropdown behavior.</summary>
-internal sealed class ComboBoxChrome(ComboBox combo) : NativeWindow
+public sealed class ComboBoxChrome(ComboBox combo) : NativeWindow
 {
     public static void Attach(ComboBox combo)
     {

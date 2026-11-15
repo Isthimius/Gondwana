@@ -1,12 +1,12 @@
 using System.Diagnostics;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 
 /// <summary>Debug-output snapshots only; no release subscriptions or UI.</summary>
-internal static class DpiDiagnostics
+public static class DpiDiagnostics
 {
     [Conditional("DEBUG")]
-    internal static void Attach(ToolStrip strip)
+    public static void Attach(ToolStrip strip)
     {
 #if DEBUG
         string? previous = null;

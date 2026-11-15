@@ -1,10 +1,10 @@
 using WeifenLuo.WinFormsUI.Docking;
 using WeifenLuo.WinFormsUI.ThemeVS2012;
 
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>Retains the dark VS2015 factories, with navy surfaces and regenerated blue indicator/button images.</summary>
-internal sealed class DarkBlueDockTheme : VS2015DarkTheme
+public sealed class DarkBlueDockTheme : VS2015DarkTheme
 {
     private bool _disposed;
 

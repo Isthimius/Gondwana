@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 
 /// <summary>Logical navigation icon sizes at 96 DPI, paired with 9, 11, and 13 point fonts.</summary>
 public enum NavigationIconSize

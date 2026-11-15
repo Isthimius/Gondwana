@@ -1,10 +1,10 @@
-using DefinitionCommand = Gondwana.Tooling.WinForms.ToolbarGlyphs.DefinitionCommand;
+using DefinitionCommand = Gondwana.Tooling.Studio.Shared.WinForms.ToolbarGlyphs.DefinitionCommand;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>A compact shared selector for logical definitions inside one physical editor document.</summary>
 /// <typeparam name="T">The definition model.</typeparam>
-internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
+public sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
 {
     private readonly ToolStripComboBox _members = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 230 };
     private readonly ToolStripTextBox _identity = new() { Width = 180 };
@@ -29,7 +29,7 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
     /// <param name="extension">The accepted native definition extension.</param>
     /// <param name="import">Imports a file using the shared member picker.</param>
 #pragma warning disable S107
-    internal DefinitionSelectionBar(Func<IReadOnlyList<T>> definitions,
+    public DefinitionSelectionBar(Func<IReadOnlyList<T>> definitions,
                                     Func<T> selected,
                                     Func<T, string> name,
                                     Action<T> select,
@@ -121,7 +121,7 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
     }
 
     /// <summary>Places a modal rename button directly after the definition picker, without an inline name field.</summary>
-    internal void UseModalRenameAfterSelector()
+    public void UseModalRenameAfterSelector()
     {
         if (_modalRename)
             return;
@@ -140,7 +140,7 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
     /// <summary>Refreshes displayed identities without changing selection or document dirty state.</summary>
     /// <param name="sender">The change source.</param>
     /// <param name="e">The change event.</param>
-    internal void RefreshMembers(object? sender, EventArgs e)
+    public void RefreshMembers(object? sender, EventArgs e)
     {
         _binding = true;
         try
@@ -190,7 +190,7 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
 
         using var dialog = new Form
         {
-            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
+            Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon(),
             Text = "Import definitions",
             StartPosition = FormStartPosition.CenterParent,
             ClientSize = new Size(460, 340),
@@ -241,9 +241,9 @@ internal sealed class DefinitionSelectionBar<T> : DpiToolStrip where T : class
 
 
 /// <summary>A compact, themed rename prompt that applies a validated edit only on confirmation.</summary>
-internal static class DefinitionRenameDialog
+public static class DefinitionRenameDialog
 {
-    internal static bool Show(IWin32Window? owner, string title, string currentName, Action<string> rename)
+    public static bool Show(IWin32Window? owner, string title, string currentName, Action<string> rename)
     {
         // The toolbar can be hosted by Studio or a standalone editor at different DPI scales.
         // Scale layout dimensions once against the owner; point-based fonts scale with DPI.

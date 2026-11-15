@@ -1,15 +1,15 @@
 using System.Text.Json;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Session;
 
 /// <summary>Only saved document identities belong here, never editor models or content.</summary>
-internal sealed record WorkspaceSessionDocument(string Path, string Format, int? AssetType = null, string? EntryName = null)
+public sealed record WorkspaceSessionDocument(string Path, string Format, int? AssetType = null, string? EntryName = null)
 {
-    internal bool SameIdentity(WorkspaceSessionDocument other) =>
+    public bool SameIdentity(WorkspaceSessionDocument other) =>
         string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase) && AssetType == other.AssetType &&
         string.Equals(EntryName, other.EntryName, StringComparison.OrdinalIgnoreCase);
 
-    internal static WorkspaceSessionDocument? FromPath(string? path)
+    public static WorkspaceSessionDocument? FromPath(string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
             return null;
@@ -29,7 +29,7 @@ internal sealed record WorkspaceSessionDocument(string Path, string Format, int?
     }
 }
 
-internal sealed record WorkspaceSession
+public sealed record WorkspaceSession
 {
     /// <summary>Gets the persisted session schema version; the reader currently accepts only version 1.</summary>
     public int Version { get; init; } = 1;
@@ -48,18 +48,18 @@ internal sealed record WorkspaceSession
 }
 
 /// <summary>Recoverable, atomic per-application preferences independent of docking and content files.</summary>
-internal sealed class WorkspaceSessionStore
+public sealed class WorkspaceSessionStore
 {
     private readonly Action<string> _report;
-    internal string FilePath { get; }
+    public string FilePath { get; }
 
-    internal WorkspaceSessionStore(Action<string> report, string? applicationId = null, string? settingsRoot = null)
+    public WorkspaceSessionStore(Action<string> report, string? applicationId = null, string? settingsRoot = null)
     {
         _report = report;
         FilePath = Path.Combine(DockLayoutStore.ApplicationDirectory(applicationId, settingsRoot), "workspace-session.json");
     }
 
-    internal WorkspaceSession Read()
+    public WorkspaceSession Read()
     {
         try
         {
@@ -84,7 +84,7 @@ internal sealed class WorkspaceSessionStore
         }
     }
 
-    internal bool Write(WorkspaceSession session)
+    public bool Write(WorkspaceSession session)
     {
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
@@ -116,10 +116,10 @@ internal sealed class WorkspaceSessionStore
 }
 
 /// <summary>Reopens current files through host adapters; failures are isolated to one document.</summary>
-internal static class WorkspaceSessionRestore
+public static class WorkspaceSessionRestore
 {
 #pragma warning disable S107
-    internal static void Restore(WorkspaceSession session,
+    public static void Restore(WorkspaceSession session,
                                  IReadOnlyCollection<string> supportedFormats,
                                  Action<string> setDirectory,
                                  Action<WorkspaceSessionDocument> open,

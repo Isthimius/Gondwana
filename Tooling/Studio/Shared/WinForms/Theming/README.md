@@ -26,7 +26,7 @@ partition theme preferences.
 
 ## Implementation and extensions
 
-`Gondwana.Tooling.WinForms.Theming` is a small Windows-only shared library, with
+`Gondwana.Tooling.Studio.Shared.WinForms.Theming` is a small Windows-only shared library, with
 no editor or runtime dependencies. All seven applications reference the same
 assembly, so Studio and embedded editors use one immutable process-wide theme.
 `ToolingPalette` owns semantic colors; add future themes there and to the enum

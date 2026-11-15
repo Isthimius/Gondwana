@@ -2,12 +2,12 @@ using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>Shared dependency picker, linked into standalone controls and reused by Studio.</summary>
-internal static class PackedResourcePicker
+public static class PackedResourcePicker
 {
-    internal static AssetPackageCatalog CreateCatalog(IWin32Window owner)
+    public static AssetPackageCatalog CreateCatalog(IWin32Window owner)
     {
         var catalog = new AssetPackageCatalog();
         var credentials = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -36,7 +36,7 @@ internal static class PackedResourcePicker
         return catalog;
     }
 
-    internal static void PickAndApply(IWin32Window owner, AssetPackageCatalog catalog, string directory,
+    public static void PickAndApply(IWin32Window owner, AssetPackageCatalog catalog, string directory,
         AssetTypes type, Action<PackedResourceSelection> apply)
     {
         using var open = new OpenFileDialog
@@ -50,7 +50,7 @@ internal static class PackedResourcePicker
         dialog.ShowDialog(owner);
     }
 
-    internal static Form CreateDialog(AssetPackageCatalog catalog, string archivePath,
+    public static Form CreateDialog(AssetPackageCatalog catalog, string archivePath,
         AssetTypes type, Action<PackedResourceSelection> apply)
     {
         var dialog = new Form

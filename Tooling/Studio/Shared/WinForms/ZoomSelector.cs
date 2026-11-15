@@ -1,12 +1,12 @@
 using System.Globalization;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>
 /// Synchronizes a read-only zoom selector with preview magnification, including
 /// wheel-generated percentages outside the fixed choices.
 /// </summary>
-internal sealed class ZoomSelector
+public sealed class ZoomSelector
 {
     private static readonly float[] Presets = [.25f, .5f, 1f, 2f, 4f];
     private readonly ComboBox _combo;
@@ -18,7 +18,7 @@ internal sealed class ZoomSelector
     /// <summary>Initializes preset and Fit choices on an existing combo box.</summary>
     /// <param name="combo">The read-only WinForms combo box.</param>
     /// <param name="setZoom">Receives a preset zoom or null when Fit is chosen.</param>
-    internal ZoomSelector(ComboBox combo, Action<float?> setZoom)
+    public ZoomSelector(ComboBox combo, Action<float?> setZoom)
     {
         _combo = combo;
         _setZoom = setZoom;
@@ -30,7 +30,7 @@ internal sealed class ZoomSelector
     /// <summary>Displays the actual percentage, or Fit while auto fitting is active.</summary>
     /// <param name="zoom">Current preview magnification.</param>
     /// <param name="fit">Whether Fit mode is active.</param>
-    internal void Show(float zoom, bool fit)
+    public void Show(float zoom, bool fit)
     {
         _updating = true;
         try

@@ -1,14 +1,14 @@
 using System.Runtime.CompilerServices;
-using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 
 /// <summary>Explicit opt-in navigation sizing; never walks editor controls or changes theme infrastructure.</summary>
 public static class NavigationSizing
 {
     private static readonly ConditionalWeakTable<TreeView, TreeNavigationSizing> Trees = new();
     private static readonly ConditionalWeakTable<Form, NavigationPreferenceStore> ShellStores = new();
-    internal static event Action<string>? PreferenceChanged;
+    public static event Action<string>? PreferenceChanged;
 
     /// <summary>Registers a tree for immediate size changes and DPI updates, releasing resources when it is disposed.</summary>
     /// <param name="tree">Navigation tree to resize.</param>
@@ -52,7 +52,7 @@ public static class NavigationSizing
         return registered;
     }
 
-    internal static bool SamePreferenceFile(NavigationPreferenceStore first, NavigationPreferenceStore second) =>
+    public static bool SamePreferenceFile(NavigationPreferenceStore first, NavigationPreferenceStore second) =>
         string.Equals(first.FilePath, second.FilePath, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Refreshes scaled copies after a tree's original thumbnail list changes, without rebuilding its nodes.</summary>

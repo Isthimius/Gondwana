@@ -1,6 +1,6 @@
-namespace Gondwana.Tooling.WinForms.Theming;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-internal sealed class ThemeStripRenderer(ToolingPalette palette) : ToolStripProfessionalRenderer(new ThemeColorTable(palette))
+public sealed class ThemeStripRenderer(ToolingPalette palette) : ToolStripProfessionalRenderer(new ThemeColorTable(palette))
 {
     protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
     {
@@ -15,7 +15,7 @@ internal sealed class ThemeStripRenderer(ToolingPalette palette) : ToolStripProf
     }
 }
 
-internal sealed class ThemeColorTable(ToolingPalette p) : ProfessionalColorTable
+public sealed class ThemeColorTable(ToolingPalette p) : ProfessionalColorTable
 {
     public override Color ToolStripDropDownBackground => p.Surface;
     public override Color ToolStripBorder => p.Border;

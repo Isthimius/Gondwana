@@ -4,10 +4,10 @@ using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
 using SkiaSharp;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>Shared Skia decoding/masking and owned GDI bitmap conversion for authoring controls.</summary>
-internal static class AuthoringPreviewImage
+public static class AuthoringPreviewImage
 {
     /// <summary>Decodes a tilesheet image, applies its alpha mask, and copies it into an independent GDI bitmap.</summary>
     /// <param name="definition">Tilesheet providing the image reference and optional mask.</param>

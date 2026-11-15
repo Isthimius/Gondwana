@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 
 /// <summary>Owns a navigation tree's scaled presentation while retaining its nodes, selection, and original images.</summary>
 public sealed class TreeNavigationSizing : IDisposable
@@ -17,7 +17,7 @@ public sealed class TreeNavigationSizing : IDisposable
     /// <summary>Gets the applied logical size, or null while the original control defaults are in use.</summary>
     public NavigationIconSize? Size { get; private set; }
 
-    internal TreeNavigationSizing(TreeView tree, Func<int, ImageList>? createImages, NavigationIconSize? defaultSize,
+    public TreeNavigationSizing(TreeView tree, Func<int, ImageList>? createImages, NavigationIconSize? defaultSize,
         NavigationPreferenceStore? store)
     {
         _tree = tree;
@@ -35,7 +35,7 @@ public sealed class TreeNavigationSizing : IDisposable
         ReadPreference();
     }
 
-    internal bool UsesStore(NavigationPreferenceStore store) => NavigationSizing.SamePreferenceFile(_store, store);
+    public bool UsesStore(NavigationPreferenceStore store) => NavigationSizing.SamePreferenceFile(_store, store);
 
     private void PreferenceChanged(string filePath)
     {

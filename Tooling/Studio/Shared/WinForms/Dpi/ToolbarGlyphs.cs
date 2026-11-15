@@ -1,7 +1,7 @@
 using System.Drawing.Drawing2D;
-using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.WinForms;
+namespace Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 
 public static partial class ToolbarGlyphs
 {
