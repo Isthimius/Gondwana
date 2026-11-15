@@ -330,12 +330,12 @@ The production service uses:
 Tooling/Gondwana.Mcp/Dockerfile
 ```
 
-**2.7.0 migration note:** The MCP project now targets .NET 10, but the checked-in Dockerfile still uses .NET 8 build and runtime images. Update both images to `10.0` before building or redeploying the 2.7.0 service. The image names immediately below document the current Dockerfile, not a validated .NET 10 deployment.
+**Gondwana 2.7.0:** The Dockerfile now builds with the pinned .NET 10.0.401 SDK image and runs on ASP.NET Core 10. Rebuild and validate the container before deploying this update to Render.
 
 ### Build stage
 
 ```text
-mcr.microsoft.com/dotnet/sdk:8.0
+mcr.microsoft.com/dotnet/sdk:10.0.401-noble
 ```
 
 It copies these root build files first:
@@ -361,7 +361,7 @@ dotnet publish Tooling/Gondwana.Mcp/Gondwana.Mcp.csproj
 The runtime image is:
 
 ```text
-mcr.microsoft.com/dotnet/aspnet:8.0
+mcr.microsoft.com/dotnet/aspnet:10.0-noble
 ```
 
 The container configures:

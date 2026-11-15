@@ -51,9 +51,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          global-json-file: global.json
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -146,7 +144,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          global-json-file: global.json
       # Restore/build only selected test projects and their transitive dependencies.
       - name: Select affected WinForms editor suites
         id: select
@@ -245,7 +243,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          global-json-file: global.json
 
       - name: Restore workloads
         run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
