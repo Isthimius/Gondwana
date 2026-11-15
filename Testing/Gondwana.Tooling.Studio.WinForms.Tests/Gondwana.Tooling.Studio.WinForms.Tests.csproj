@@ -14,6 +14,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
     <ProjectReference Include="../../Tooling/Studio/Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" Aliases="global,studio" />
+    <ProjectReference Include="../../Tooling/Studio/Shared/WinForms/Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
     <ProjectReference Include="../../Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.csproj" />
     <ProjectReference Include="../../Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ExternalImport/Gondwana.Tooling.Studio.Plugin.ExternalImport.csproj" />
     <Using Include="Xunit" />

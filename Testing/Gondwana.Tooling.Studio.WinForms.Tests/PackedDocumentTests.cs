@@ -15,7 +15,7 @@ using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Tilesheets.WinForms;
-using WorkspaceSessionStore = studio::Gondwana.Tooling.Studio.Shared.WinForms.WorkspaceSessionStore;
+using WorkspaceSessionStore = global::Gondwana.Tooling.Studio.Shared.WinForms.Session.WorkspaceSessionStore;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
