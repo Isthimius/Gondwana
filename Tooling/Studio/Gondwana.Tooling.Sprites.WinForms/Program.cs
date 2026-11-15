@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Sprites.WinForms;
 
 internal static class Program

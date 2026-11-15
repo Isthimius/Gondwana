@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Sprites.Editing;
 using WeifenLuo.WinFormsUI.Docking;
 
