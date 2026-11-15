@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Importers;
 using Gondwana.Tooling.Studio.Core.Extensibility;
 
@@ -24,15 +25,19 @@ public sealed class ExternalImportPanel : UserControl
     private bool importing;
 
     /// <summary>Gets or sets borrowed services for logging, refreshing, and opening imported files; null disables host integration.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IStudioPluginHostServices? HostServices { get; set; }
 
     /// <summary>Gets or sets the external source file text; changing it cancels tracked work and clears the analysis.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string SourcePath { get => source.Text; set => source.Text = value; }
 
     /// <summary>Gets or sets the destination directory text; changing it cancels tracked work and clears the analysis.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string OutputDirectory { get => output.Text; set => output.Text = value; }
 
     /// <summary>Gets or sets permission to overwrite generated files; changing it cancels tracked work and clears the analysis.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool Overwrite { get => overwrite.Checked; set => overwrite.Checked = value; }
 
     /// <summary>Gets whether the Import button is enabled by a successful analysis that permits importing.</summary>
