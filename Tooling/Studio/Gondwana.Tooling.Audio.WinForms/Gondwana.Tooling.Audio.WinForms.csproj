@@ -27,7 +27,7 @@
     <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
+    <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
     <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
     <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
     <Using Include="Gondwana.Tooling.WinForms.Theming" />

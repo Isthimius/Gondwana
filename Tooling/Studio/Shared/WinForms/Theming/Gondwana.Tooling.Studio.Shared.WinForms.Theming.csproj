@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Shared DPI and navigation components -->
+        <Compile Include="../Dpi/*.cs"
+                 Link="Dpi/%(Filename)%(Extension)" />
+        <Compile Include="../Navigation/*.cs"
+                 Link="Navigation/%(Filename)%(Extension)" />
+
+        <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
+
+        <PackageReference Include="DockPanelSuite" Version="3.1.1" />
+        <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Embed everything under assets into the Theming DLL -->
+        <None Remove="assets/**/*" />
+
+        <EmbeddedResource Include="assets/**/*"
+                          LogicalName="Gondwana.Tooling.Studio.Shared.WinForms.Theming.assets.%(Filename)%(Extension)" />
+    </ItemGroup>
+</Project>

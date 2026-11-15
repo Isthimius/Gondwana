@@ -6,9 +6,11 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+
     <ItemGroup>
-      <Compile Remove="Theming\**" />
-      <EmbeddedResource Remove="Theming\**" />
-      <None Remove="Theming\**" />
+        <!-- Owned by the separate Theming assembly -->
+        <Compile Remove="Theming\**\*.cs" />
+        
+        <ProjectReference Include="Theming\Gondwana.Tooling.WinForms.Theming.csproj" />
     </ItemGroup>
 </Project>

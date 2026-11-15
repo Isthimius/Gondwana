@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
+		global.json = global.json
 		gondwana-logo.png = gondwana-logo.png
 		README.md = README.md
 		version.json = version.json
@@ -242,7 +243,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spot.Tests", "Testing\Spot.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Assets", "Tooling\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj", "{B1A5F2D1-9212-45C6-B24B-78B8DAA4A206}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.WinForms.Theming", "Tooling\Studio\Shared\WinForms\Theming\Gondwana.Tooling.WinForms.Theming.csproj", "{CCF2B60E-22E0-439C-95EE-A6F62679AE1A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Shared.WinForms.Theming", "Tooling\Studio\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj", "{CCF2B60E-22E0-439C-95EE-A6F62679AE1A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Breakout.Shared", "Demos\Gondwana.Breakout.Shared\Gondwana.Breakout.Shared.csproj", "{71B8D2FC-12FA-4D8B-90EE-1A9942A53F01}"
 EndProject
