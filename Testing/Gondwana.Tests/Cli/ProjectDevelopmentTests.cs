@@ -37,20 +37,20 @@ public sealed class ProjectDevelopmentTests : IDisposable
     /// Verifies that Doctor enforces the SDK baseline of Gondwana 2.7.
     /// </summary>
     [Theory]
-    [InlineData("8.0.428", CheckStatus.Fail)]
-    [InlineData("9.0.308", CheckStatus.Fail)]
-    [InlineData("10.0.99", CheckStatus.Fail)]
-    [InlineData("10.0.100", CheckStatus.Ok)]
-    [InlineData("10.0.401", CheckStatus.Ok)]
-    [InlineData("11.0.100", CheckStatus.Ok)]
-    [InlineData("10.0.401-preview.1", CheckStatus.Fail)]
-    [InlineData("not a version", CheckStatus.Fail)]
-    [InlineData(null, CheckStatus.Fail)]
-    public void DoctorRequiresStableNet10OrNewerSdk(string? version, CheckStatus status)
+    [InlineData("8.0.428", false)]
+    [InlineData("9.0.308", false)]
+    [InlineData("10.0.99", false)]
+    [InlineData("10.0.100", true)]
+    [InlineData("10.0.401", true)]
+    [InlineData("11.0.100", true)]
+    [InlineData("10.0.401-preview.1", false)]
+    [InlineData("not a version", false)]
+    [InlineData(null, false)]
+    public void DoctorRequiresStableNet10OrNewerSdk(string? version, bool isSupported)
     {
         var result = DoctorCommand.EvaluateDotNetSdkVersion(version, exitCode: 0);
-        Assert.Equal(status, result.Status);
-        if (status == CheckStatus.Fail)
+        Assert.Equal(isSupported ? CheckStatus.Ok : CheckStatus.Fail, result.Status);
+        if (!isSupported)
             Assert.Contains(".NET 10", result.Detail);
     }
 
