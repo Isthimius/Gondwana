@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
@@ -45,7 +46,9 @@ public sealed partial class MainForm
         _ => null
     };
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<IWin32Window, string, IReadOnlyList<string>, string?> ChooseDragItem { get; set; } = ChooseItem;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<IWin32Window, long, long, Point?> ChooseDragCoordinates { get; set; } = ChooseCoordinates;
 
     private ResourceAddress? PickMember(IWin32Window owner, ResourceAddress address, AuthoringResourceResolver resolver)

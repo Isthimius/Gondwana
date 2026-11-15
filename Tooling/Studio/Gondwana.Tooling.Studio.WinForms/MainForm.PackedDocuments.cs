@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
@@ -11,7 +12,9 @@ public sealed partial class MainForm
     private readonly Dictionary<string, string?> _archivePasswords = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _failedRestoreArchives = new(StringComparer.OrdinalIgnoreCase);
     private HashSet<string>? _loadingDependencies;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action? BeforeArchiveInstall { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<StudioDocument, bool> ConfirmReload { get; set; } = model =>
         ThemedMessageBox.Show($"Discard unsaved changes and reload {model.Caption}?", "Reload document",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;

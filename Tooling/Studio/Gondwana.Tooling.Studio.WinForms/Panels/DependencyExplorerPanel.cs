@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
@@ -24,6 +25,7 @@ internal sealed class DependencyExplorerPanel : UserControl
     internal event Action<ResourceAddress>? NavigateRequested;
     internal event Action<Control, ResourceAddress>? ResourceDragRequested;
     internal event Action<ResourceAddress, bool>? InspectRequested;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool? RequestedSection { get; set; }
     internal string Status => _status.Text;
 

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Studio.WinForms.Panels;
@@ -19,6 +20,7 @@ public sealed partial class MainForm : IResourceNavigator
     internal DefinitionReferenceDiscovery? DependencyScan => _dependencyScan;
     internal DependencyExplorerPanel DependencyPanel => _dependencies;
     internal Task DependencyRefresh { get; private set; } = Task.CompletedTask;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<string, Func<string, string?>, CancellationToken, Task<DefinitionReferenceDiscovery>> InspectDependencies { get; set; } =
         (scope, credentials, token) => Task.Run(() => DefinitionReferenceDiscovery.Inspect(scope, credentials, token));
 

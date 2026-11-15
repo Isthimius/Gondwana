@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Documents;
@@ -27,10 +28,13 @@ public sealed class DirectoryPanel : UserControl
     private readonly SemaphoreSlim _archiveGate = new(1, 1);
     private readonly SynchronizationContext _uiContext = new WindowsFormsSynchronizationContext();
     internal Task PendingArchiveLoads { get; private set; } = Task.CompletedTask;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string> OpenExternal { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string>? ArchiveOpened { get; set; }
 
     // Called only on the UI thread; must return session credentials without prompting.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<string, string?> KnownArchivePassword { get; set; } = _ => null;
 
     private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories = StudioFileTypeIcons.Categories;

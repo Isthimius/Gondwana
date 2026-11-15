@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Assets.WinForms;
@@ -75,10 +76,15 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     internal DirectoryPanel Browser { get; }
     internal IReadOnlyList<StudioDockDocument> Documents => _documents;
     internal StudioDockDocument? ActiveDocument => Workspace.ActiveDocument as StudioDockDocument;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<StudioDocument, DialogResult> AskSave { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<StudioDocument, string?> SavePath { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<IReadOnlyList<string>, bool> AllowInvalidSave { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<Exception> ReportError { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<string, string?> AssetPassword { get; set; }
 
     /// <summary>Creates the Studio workspace, discovers plugins, and selects the saved or fallback working directory.</summary>

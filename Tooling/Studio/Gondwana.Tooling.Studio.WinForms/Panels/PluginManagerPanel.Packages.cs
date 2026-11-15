@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using System.Text;
 using Gondwana.Tooling.Studio.Core.Extensibility;
@@ -28,6 +29,7 @@ internal sealed partial class PluginManagerPanel
         AccessibleName = "Pending plugin package operations",
         ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText
     };
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<PluginPackagePreview, bool> ConfirmPackage { get; set; } = ShowPreview;
 
     private Control CreatePackageActions()

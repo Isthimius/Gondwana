@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Documents;
@@ -5,6 +6,7 @@ namespace Gondwana.Tooling.Studio.WinForms.Documents;
 internal sealed class StudioDockDocument : DockContent
 {
     internal StudioDocument Document { get; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool CloseApproved { get; set; }
     private readonly Func<StudioDockDocument, Task<bool>> _confirmClose;
     private bool _closePending;
