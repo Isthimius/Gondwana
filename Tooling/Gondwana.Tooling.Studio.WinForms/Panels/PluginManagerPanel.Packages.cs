@@ -6,6 +6,8 @@ namespace Gondwana.Tooling.Studio.WinForms.Panels;
 internal sealed partial class PluginManagerPanel
 {
     private readonly PluginPackageOperations? _operations;
+    internal ContextMenuStrip SourceMenu { get; } = new();
+    private string? _sourceUpdateId;
     private bool _busy;
     private readonly int _uiThread = Environment.CurrentManagedThreadId;
     internal Button InstallButton { get; } = new() { Text = "Install Plugin…", AutoSize = true };
@@ -44,6 +46,21 @@ internal sealed partial class PluginManagerPanel
         PendingGrid.CurrentCellChanged += (_, _) => { UpdateActions(); if (PendingGrid.Focused) ShowPendingDetails(); };
         PendingGrid.Enter += (_, _) => ShowPendingDetails();
         Grid.Enter += (_, _) => ShowSelection();
+        // Keep the menu alive through WinForms' close/click handling and any file picker.
+        // Install and Update share it; their current target is captured per selection.
+        SourceMenu.Items.Add("ZIP archive…", null, async (_, _) =>
+        {
+            var updateId = _sourceUpdateId;
+            using var dialog = new OpenFileDialog { Filter = "Plugin ZIP archives (*.zip)|*.zip", Title = "Select local plugin package" };
+            if (dialog.ShowDialog(this) == DialogResult.OK) await RunPackageChange(dialog.FileName, updateId);
+        });
+        SourceMenu.Items.Add("Package directory…", null, async (_, _) =>
+        {
+            var updateId = _sourceUpdateId;
+            using var dialog = new FolderBrowserDialog { Description = "Select the package directory containing plugin.json", UseDescriptionForTitle = true };
+            if (dialog.ShowDialog(this) == DialogResult.OK) await RunPackageChange(dialog.SelectedPath, updateId);
+        });
+        ToolingAppearance.Apply(SourceMenu);
         return actions;
     }
 
@@ -51,20 +68,8 @@ internal sealed partial class PluginManagerPanel
 
     private void ChooseSource(Control button, string? updateId)
     {
-        var menu = new ContextMenuStrip();
-        menu.Items.Add("ZIP archive…", null, async (_, _) =>
-        {
-            using var dialog = new OpenFileDialog { Filter = "Plugin ZIP archives (*.zip)|*.zip", Title = "Select local plugin package" };
-            if (dialog.ShowDialog(this) == DialogResult.OK) await RunPackageChange(dialog.FileName, updateId);
-        });
-        menu.Items.Add("Package directory…", null, async (_, _) =>
-        {
-            using var dialog = new FolderBrowserDialog { Description = "Select the package directory containing plugin.json", UseDescriptionForTitle = true };
-            if (dialog.ShowDialog(this) == DialogResult.OK) await RunPackageChange(dialog.SelectedPath, updateId);
-        });
-        menu.Closed += (_, _) => menu.Dispose();
-        ToolingAppearance.Apply(menu);
-        menu.Show(button, new Point(0, button.Height));
+        _sourceUpdateId = updateId;
+        SourceMenu.Show(button, new Point(0, button.Height));
     }
 
     internal async Task RunPackageChange(string? source, string? id, bool remove = false)
