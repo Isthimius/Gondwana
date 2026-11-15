@@ -9,6 +9,6 @@
         <ProjectReference Include="../../Gondwana/Gondwana.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Update="Nerdbank.GitVersioning" Version="3.10.94" />
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.9.50" />
     </ItemGroup>
 </Project>
