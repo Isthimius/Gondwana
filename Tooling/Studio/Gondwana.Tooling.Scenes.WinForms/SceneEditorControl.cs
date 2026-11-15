@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using Gondwana.Assets;
 using Gondwana.Drawing;
@@ -155,8 +156,10 @@ public sealed partial class SceneEditorControl : UserControl
     public SceneDefinition Definition => Document.Definition;
 
     /// <summary>Gets or sets the optional synchronous save callback used before launching the separate Scene Viewer; true indicates a successful save.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<bool>? SaveRequested { get; set; }
     /// <summary>Gets or sets the asynchronous save callback used before launching the separate Scene Viewer; takes precedence over the synchronous callback and must return true on success.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<Task<bool>>? SaveRequestedAsync { get; set; }
 
     /// <summary>Creates an editor with its own asset-package cache.</summary>

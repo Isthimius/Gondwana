@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -16,24 +17,30 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     private TilesheetFrameDrag? _pendingFrameDrag;
     private Rectangle _dragThreshold;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<TilesheetRegionDefinition, Point, TilesheetFrameDrag?>? CreateFrameDrag { get; set; }
 
     /// <summary>Gets or sets the borrowed preview bitmap; the owner must dispose replaced images.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Bitmap? Image { get; set; }
 
     /// <summary>Gets or sets the tilesheet definition supplying regions and overlays, or null when unavailable.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public TilesheetDefinition? Definition { get; set; }
 
     /// <summary>Gets or sets the region highlighted and prioritized for hit testing, or null for no region selection.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public TilesheetRegionDefinition? SelectedRegion { get; set; }
 
     /// <summary>Gets or sets the selected frame column and row within the selected region, or null for no frame selection.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Point? SelectedFrame { get; set; }
 
     /// <summary>Gets the mutable set of overlay-kind names enabled for painting.</summary>
     public HashSet<string> Overlays { get; } = Enum.GetNames<OverlayKind>().ToHashSet();
 
     /// <summary>Gets or sets the shared color settings used to paint overlays.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public OverlaySettings Colors { get; set; } = OverlaySettings.Default;
 
     /// <summary>Occurs after a frame hit, supplying its region and zero-based column and row.</summary>
@@ -49,6 +56,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     internal event Action? ZoomChanged;
 
     /// <summary>Gets or sets the placeholder text displayed when no preview image is available.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Message { get; set; } = "Choose a loose image to preview.";
 
     /// <summary>Creates a scrollable, double-buffered image viewport at one-to-one magnification.</summary>

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
@@ -47,6 +48,7 @@ public sealed class TilesheetEditorControl : UserControl
     public Size? ImageSize => _viewport.Image?.Size;
 
     /// <summary>Gets or sets the host picker invoked with the dialog owner to select a packed image; returning null cancels selection.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<IWin32Window, PackedImageSource?>? PackedImagePicker { get; set; }
 
     /// <summary>Creates a tilesheet editor with its own package cache.</summary>

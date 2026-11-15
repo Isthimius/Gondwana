@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Sprites.GSPR;
@@ -26,6 +27,7 @@ internal sealed partial class ScenePreviewControl
     internal event Action<SceneSpriteVisual, PointF>? SpriteMoved;
     internal event Action? SpriteMoveCanceled;
     internal bool HasSpriteGesture => _spriteGesture is not null;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal string? SpriteStatus { get; set; }
 
     internal void SetSprites(IReadOnlyList<SceneSpriteVisual> sprites)

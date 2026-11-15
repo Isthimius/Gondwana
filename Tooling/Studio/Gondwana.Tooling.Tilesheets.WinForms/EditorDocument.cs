@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
@@ -18,6 +19,7 @@ internal sealed class EditorDocument : DockContent
     /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public TilesheetEditorControl Editor { get; }
     /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool CloseApproved { get; set; }
     /// <summary>Gets the loaded preview dimensions, or null when no image preview is available.</summary>
     public Size? ImageSize => Editor.ImageSize;

@@ -44,18 +44,24 @@ public sealed class AssetEditorControl : UserControl
     public event EventHandler? Changed;
 
     /// <summary>Gets or sets host routing for Save and Save As; the argument is false for Save and true for Save As. Null uses the standalone save flow.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Action<bool>? SaveRequested { get; set; }
 
     /// <summary>Notifies a host that the underlying package or a saved copy changed.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Action WorkspaceChanged { get; set; } = () => { };
 
     /// <summary>Allows a host to prevent Save As from colliding with another open document.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<string, bool> IsDocumentOpen { get; set; } = _ => false;
     /// <summary>Suggested directory or archive scope for semantic moves and deletions; the user reviews it.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<string>? RelocationScope { get; set; }
     /// <summary>Allows a host to require other in-scope documents to be saved and closed.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Action<AssetRelocationPlan>? ValidateRelocation { get; set; }
     /// <summary>Allows the host to protect other open authoring documents before deletion.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Action<AssetDeletionPlan>? ValidateDeletion { get; set; }
     private readonly BindingList<AssetRecord> _records = new();
 

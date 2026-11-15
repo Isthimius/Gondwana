@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
@@ -10,7 +11,9 @@ namespace Gondwana.Tooling.Assets.WinForms;
 internal sealed class AssetEditorDocument : DockContent
 {
     private readonly AssetsFile _assetsFile;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool CloseApproved { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<DialogResult> AskSave { get; set; }
 
     /// <summary>Gets the editor control owned by this dock tab.</summary>

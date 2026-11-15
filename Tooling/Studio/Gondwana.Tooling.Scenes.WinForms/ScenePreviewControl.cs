@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
@@ -16,8 +17,11 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 {
     internal event Func<Keys, bool>? NavigationKey;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool SampleStroke { get; set; } = true;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool SingleCellGesture { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool RequireSelectedLayer { get; set; }
 
     internal event Func<SceneLayerDefinition, int, int, bool>? GestureStarting;
@@ -82,6 +86,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     /// <summary>Occurs when magnification or Fit state changes.</summary>
     internal event Action? ZoomChanged;
     /// <summary>Gets or sets whether cell outlines are drawn during the next repaint.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool ShowGridLines { get; set; } = true;
 
     /// <summary>Occurs on a successful cell hit, supplying its layer, zero-based column, and zero-based row.</summary>

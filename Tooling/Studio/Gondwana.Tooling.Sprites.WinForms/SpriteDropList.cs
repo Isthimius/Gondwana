@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Sprites.WinForms;
 
@@ -5,6 +6,7 @@ internal sealed class SpriteDropList : ListBox
 {
     private int _dropIndex = -1;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal int DropIndex
     {
         get => _dropIndex;

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes.GSCN;
 
@@ -6,6 +7,7 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 public sealed partial class SceneEditorControl
 {
     // Confirmation happens before any mutation or transaction. Tests can exercise both decisions.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<long, bool>? ConfirmLargeEdit { get; set; }
     private bool ConfirmArea(long count) => count <= 10000 || (ConfirmLargeEdit?.Invoke(count) ??
         MessageBox.Show(this, $"This operation affects {count:N0} cells and may take time and evict older undo history. Continue?",

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.Studio.Shared.WinForms;
@@ -17,6 +18,7 @@ internal sealed class MainForm : Form
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string> ReportSessionError { get; set; }
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
