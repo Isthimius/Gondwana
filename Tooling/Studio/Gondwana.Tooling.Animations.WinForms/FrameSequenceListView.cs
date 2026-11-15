@@ -1,9 +1,11 @@
+using System.ComponentModel;
 namespace Gondwana.Tooling.Animations.WinForms;
 
 internal sealed class FrameSequenceListView : ListView
 {
     private int _insertionIndex = -1;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal int InsertionIndex
     {
         get => _insertionIndex;

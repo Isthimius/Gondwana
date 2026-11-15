@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gondwana.Tooling.Animations.Editing;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -12,6 +13,7 @@ internal sealed class AnimationEditorDocument : DockContent
     /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public AnimationEditorControl Editor { get; }
     /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool CloseApproved { get; set; }
 
     /// <summary>Creates a dock tab hosting the supplied document and tracking its dirty state in the caption.</summary>
