@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
