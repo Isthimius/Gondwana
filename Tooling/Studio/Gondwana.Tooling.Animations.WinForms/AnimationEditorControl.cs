@@ -266,7 +266,10 @@ public sealed partial class AnimationEditorControl : UserControl
             }
 
         }
-        finally { transaction.Commit(); }
+        finally
+        {
+            transaction.Commit();
+        }
     }
 
     /// <summary>Loads every tilesheet member from a loose GTS file and records their sources in the document.</summary>
