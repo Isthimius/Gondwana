@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Tooling.Studio.WinForms\Gondwana.Tooling.Studio.WinForms.csproj" />
   </ItemGroup>
   <!-- All dependencies are supplied by Studio. Never deploy private contract copies. -->
   <ItemGroup>

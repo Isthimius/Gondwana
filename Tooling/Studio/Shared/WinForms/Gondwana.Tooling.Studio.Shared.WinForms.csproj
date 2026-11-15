@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <!-- Theming is a separate project; exclude its files entirely -->
         <Compile Remove="Theming\**\*" />
@@ -16,6 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
+        <ProjectReference Include="Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
     </ItemGroup>
 </Project>
