@@ -4,7 +4,7 @@ using Gondwana.Tooling.Studio.Core.Extensibility;
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>Inspects the host snapshot and edits next-startup choices without rediscovering or activating code.</summary>
-internal sealed class PluginManagerPanel : UserControl
+internal sealed partial class PluginManagerPanel : UserControl
 {
     private readonly StudioPluginHost _host;
     private readonly PluginPreferences _preferences;
@@ -37,22 +37,27 @@ internal sealed class PluginManagerPanel : UserControl
     internal CheckBox EnabledChoice { get; } = new() { AutoSize = true, Text = "Enabled at next startup" };
     internal Label StatusLabel { get; } = new() { AutoSize = true, Dock = DockStyle.Fill };
 
-    internal PluginManagerPanel(StudioPluginHost host, PluginPreferences preferences)
+    internal PluginManagerPanel(StudioPluginHost host, PluginPreferences preferences, PluginPackageOperations? operations = null)
     {
+        _operations = operations;
         _host = host;
         _preferences = preferences;
         AutoScaleMode = AutoScaleMode.Dpi;
         Padding = new Padding(8);
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4 };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 45));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 55));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 30));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 45));
         layout.Controls.Add(StatusLabel, 0, 0);
-        layout.Controls.Add(Grid, 0, 1);
-        layout.Controls.Add(EnabledChoice, 0, 2);
-        layout.Controls.Add(DetailsBox, 0, 3);
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 25));
+        layout.Controls.Add(CreatePackageActions(), 0, 1);
+        layout.Controls.Add(Grid, 0, 2);
+        layout.Controls.Add(EnabledChoice, 0, 3);
+        layout.Controls.Add(DetailsBox, 0, 4);
+        layout.Controls.Add(PendingGrid, 0, 5);
         Controls.Add(layout);
         foreach (var title in new[] { "Plugin", "Version", "Current state", "Next startup", "Compatibility", "Source" })
             Grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = title, SortMode = DataGridViewColumnSortMode.NotSortable });
@@ -69,6 +74,7 @@ internal sealed class PluginManagerPanel : UserControl
     internal void RefreshSnapshot()
     {
         var selected = SelectedRecords?.FirstOrDefault();
+        RefreshOperations();
         _updating = true;
         try
         {
@@ -91,11 +97,15 @@ internal sealed class PluginManagerPanel : UserControl
                     ? record.PreferenceId == selected.PreferenceId : record.SourceDirectory == selected.SourceDirectory)));
             if (restore is not null) Grid.CurrentCell = restore.Cells[0];
             else if (Grid.Rows.Count > 0) Grid.CurrentCell = Grid.Rows[0].Cells[0];
-            StatusLabel.Text = _saveError ?? (_preferences.ReadError is { } error
+            StatusLabel.Text = _saveError ?? _operations?.Diagnostic ?? (_preferences.ReadError is { } error
                 ? $"Preferences unavailable; startup defaults to enabled. Repair or remove '{_preferences.FilePath}' and restart. {error}"
-                : _preferences.RestartRequired ? "Restart required. Saved choices apply at the next Studio startup; current plugins remain unchanged."
+                : (_preferences.RestartRequired || _operations?.RestartRequired == true) ? "Restart required. Saved choices apply at the next Studio startup; current plugins remain unchanged."
                 : Grid.Rows.Count == 0 ? "No plugins discovered. Plugin packages are loaded when Studio starts."
                 : "Changes apply at the next Studio startup. No restart is currently required.");
+            if ((_preferences.RestartRequired || _operations?.RestartRequired == true) && !StatusLabel.Text.Contains("Restart required", StringComparison.Ordinal))
+                StatusLabel.Text += " Restart required: saved activation/package changes are pending.";
+            if (_operations?.Operations.Any(o => o.State is PluginPackageOperationState.Failed or PluginPackageOperationState.RecoveryRequired) == true)
+                StatusLabel.Text += " Package operation failed; select its pending-operation row for diagnostics.";
         }
         finally { _updating = false; }
         ShowSelection();
@@ -111,7 +121,8 @@ internal sealed class PluginManagerPanel : UserControl
         {
             var records = SelectedRecords;
             var id = records?.FirstOrDefault()?.PreferenceId;
-            EnabledChoice.Enabled = id is not null && _preferences.ReadError is null;
+            EnabledChoice.Enabled = !_busy && id is not null && _preferences.ReadError is null;
+            UpdateActions();
             EnabledChoice.Checked = id is not null && _preferences.IsEnabled(id);
             var details = new StringBuilder();
             if (records is not null)
@@ -153,6 +164,7 @@ internal sealed class PluginManagerPanel : UserControl
                     if (action is not null) details.AppendLine($"Suggested action: {action}");
                 }
             }
+            details.AppendLine("Package management: legacy flat DLLs are inspection/activation-only. Bundled Studio plugins are protected; disabling remains available.");
             DetailsBox.Text = details.ToString();
         }
         finally { _updating = false; }
