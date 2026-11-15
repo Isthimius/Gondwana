@@ -125,7 +125,7 @@ internal static class TemplatePackageHelper
             try
             {
                 // --prerelease on dotnet new install requires SDK 11; resolve the exact
-                // version ourselves so the Gondwana CLI also works with SDKs 8-10.
+                // version ourselves to support the repository's .NET 10 SDK.
                 using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
                 var index = await http.GetFromJsonAsync<JsonElement>(
                     "https://api.nuget.org/v3-flatcontainer/gondwana.templates/index.json",
@@ -199,8 +199,8 @@ internal static class TemplatePackageHelper
 
     /// <summary>
     /// Returns the external dotnet command arguments for stable or exact version installs.
-    /// The double-colon separator works with .NET SDK 8 through 10; @ was added
-    /// in .NET 9.0.200 and breaks on .NET 8.
+    /// The double-colon version separator works with .NET 10. We preserve it
+    /// for compatibility with older template-install commands and scripts.
     /// </summary>
     internal static string[] InstallArguments(string? version = null) =>
         version is null

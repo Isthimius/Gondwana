@@ -18,7 +18,7 @@ MyGameHost.OnInitializing before loading sounds in LoadAssets, for example:
 
     Engine.Managers.AudioResources.LoadFromFile("name", "assets/your-audio.mp3")
 
-The backend must support file/byte sources. This cross-platform net8.0 template
+The backend must support file/byte sources. This cross-platform net10.0 template
 has no default desktop audio backend. Gondwana.Audio.NAudio and Gondwana.Audio.Midi
 require Windows targeting; gondwana add audio/midi will explain this limitation
 without changing this project's target framework or adding those packages.
