@@ -67,7 +67,7 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {
@@ -104,7 +104,7 @@ internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

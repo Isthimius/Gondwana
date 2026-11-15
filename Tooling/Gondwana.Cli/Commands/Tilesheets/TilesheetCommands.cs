@@ -16,7 +16,7 @@ internal sealed class TilesheetSettings : CommandSettings
 internal sealed class TilesheetValidateCommand : Command<TilesheetSettings>
 {
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, TilesheetSettings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, TilesheetSettings settings, CancellationToken cancellationToken)
     {
         var results = TilesheetInspection.AllFromFile(settings.File);
         foreach (var result in results)
@@ -30,7 +30,7 @@ internal sealed class TilesheetValidateCommand : Command<TilesheetSettings>
 internal sealed class TilesheetInfoCommand : Command<TilesheetSettings>
 {
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, TilesheetSettings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, TilesheetSettings settings, CancellationToken cancellationToken)
     {
         var results = TilesheetInspection.AllFromFile(settings.File);
         foreach (var result in results)

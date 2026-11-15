@@ -136,7 +136,7 @@ internal sealed class CheckCommand : Command<CheckCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

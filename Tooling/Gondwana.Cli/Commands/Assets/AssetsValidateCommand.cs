@@ -6,7 +6,7 @@ namespace Gondwana.Cli.Commands.Assets;
 internal sealed class AssetsValidateCommand : Command<AssetsListCommand.Settings>
 {
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, AssetsListCommand.Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, AssetsListCommand.Settings settings, CancellationToken cancellationToken)
     {
         try
         {
@@ -23,5 +23,5 @@ internal sealed class AssetsValidateCommand : Command<AssetsListCommand.Settings
 internal sealed class AssetsInspectCommand : Command<AssetsListCommand.Settings>
 {
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, AssetsListCommand.Settings settings, CancellationToken cancellationToken) => AssetsListCommand.Display(settings, summary: true);
+    public override int Execute(CommandContext context, AssetsListCommand.Settings settings, CancellationToken cancellationToken) => AssetsListCommand.Display(settings, summary: true);
 }

@@ -18,7 +18,7 @@ internal sealed class TemplatesInstallCommand : AsyncCommand<TemplatesInstallCom
     }
 
     /// <inheritdoc/>
-    protected override Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (settings.Prerelease && settings.Version is not null)
         {

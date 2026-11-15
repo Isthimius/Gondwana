@@ -49,7 +49,7 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
