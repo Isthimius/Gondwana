@@ -22,7 +22,7 @@
         <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
         <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
         <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
-        <Using Include="Gondwana.Tooling.WinForms.Theming" />
+        <Using Include="Gondwana.Tooling.Studio.Shared.WinForms.Theming" />
     </ItemGroup>
 
     <ItemGroup>

@@ -3,7 +3,9 @@ using Gondwana.Audio.GSND;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Audio.WinForms;

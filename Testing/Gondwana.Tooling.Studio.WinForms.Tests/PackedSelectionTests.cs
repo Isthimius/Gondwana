@@ -65,7 +65,7 @@ public sealed partial class CompositionTests
         var archive = CreatePreviewArchive(root, "encrypted.gaf", Color.Blue);
         using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false)) package.Save();
         using var owner = new Form();
-        var type = typeof(AnimationEditorControl).Assembly.GetType("Gondwana.Tooling.WinForms.PackedResourcePicker")!;
+        var type = typeof(AnimationEditorControl).Assembly.GetType("Gondwana.Tooling.Studio.Shared.WinForms.PackedResourcePicker")!;
         using var packages = (AssetPackageCatalog)type.GetMethod("CreateCatalog", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, [owner])!;
         int prompts = 0;
         string password = "wrong";
@@ -293,7 +293,7 @@ public sealed partial class CompositionTests
         packages.PasswordProvider = _ => ++prompts == 1 ? "wrong" : "secret";
         packages.PasswordAccepted += (_, _) => accepted++;
         PackedResourceSelection? result = null;
-        var type = Assembly.Load($"Gondwana.Tooling.{assembly}.WinForms").GetType("Gondwana.Tooling.WinForms.PackedResourcePicker")!;
+        var type = Assembly.Load($"Gondwana.Tooling.{assembly}.WinForms").GetType("Gondwana.Tooling.Studio.Shared.WinForms.PackedResourcePicker")!;
         using var dialog = (Form)type.GetMethod("CreateDialog", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, [packages, locked, AssetTypes.TilesheetDefinition, (Action<PackedResourceSelection>)(selected => result = selected)])!;
         dialog.Show(); Application.DoEvents();

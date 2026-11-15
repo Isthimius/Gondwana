@@ -5,7 +5,7 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Sprites.Editing;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Sprites.WinForms;
 

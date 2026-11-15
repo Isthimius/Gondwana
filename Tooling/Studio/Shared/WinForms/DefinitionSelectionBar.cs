@@ -1,3 +1,6 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using DefinitionCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.DefinitionCommand;
+
 namespace Gondwana.Tooling.Studio.Shared.WinForms;
 
 /// <summary>A compact shared selector for logical definitions inside one physical editor document.</summary>

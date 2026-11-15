@@ -3,7 +3,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Sprites.Editing;
 

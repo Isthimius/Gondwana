@@ -3,7 +3,8 @@ using Gondwana.Assets;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

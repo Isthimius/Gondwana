@@ -5,8 +5,8 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Tilesheets.WinForms;
-using WorkspaceSessionDocument = studio::Gondwana.Tooling.WinForms.WorkspaceSessionDocument;
-using WorkspaceSessionStore = studio::Gondwana.Tooling.WinForms.WorkspaceSessionStore;
+using WorkspaceSessionDocument = studio::Gondwana.Tooling.Studio.Shared.WinForms.WorkspaceSessionDocument;
+using WorkspaceSessionStore = studio::Gondwana.Tooling.Studio.Shared.WinForms.WorkspaceSessionStore;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

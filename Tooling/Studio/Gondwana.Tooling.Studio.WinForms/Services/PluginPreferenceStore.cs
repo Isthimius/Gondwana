@@ -1,5 +1,5 @@
 using Gondwana.Tooling.Studio.Core.Extensibility;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Services;
 

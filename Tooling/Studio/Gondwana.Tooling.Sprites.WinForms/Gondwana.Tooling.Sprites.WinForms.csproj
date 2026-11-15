@@ -17,6 +17,7 @@
         <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
         <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
         <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
+        <ProjectReference Include="..\Shared\WinForms\Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
         <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
     </ItemGroup>
 

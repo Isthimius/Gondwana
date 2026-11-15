@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Audio.WinForms;
 
 internal sealed class UriPrompt : Form
@@ -13,7 +14,7 @@ internal sealed class UriPrompt : Form
     /// <summary>Creates a dialog for entering an audio key and URI without accessing the resource.</summary>
     public UriPrompt()
     {
-        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
+        Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon();
         Text = "Add URI audio";
         Width = 520;
         Height = 190;

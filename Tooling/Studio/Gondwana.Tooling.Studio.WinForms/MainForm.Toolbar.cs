@@ -1,5 +1,7 @@
 using Gondwana.Tooling.Scenes.WinForms;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 

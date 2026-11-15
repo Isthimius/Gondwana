@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Assets.WinForms;
 
 internal sealed class InputDialog : Form
@@ -13,7 +14,7 @@ internal sealed class InputDialog : Form
     /// <param name="initialValue">Initial text shown in the input box.</param>
     public InputDialog(string title, string prompt, string initialValue = "")
     {
-        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
+        Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon();
         Text = title;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;

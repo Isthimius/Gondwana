@@ -1,4 +1,4 @@
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tests;
 

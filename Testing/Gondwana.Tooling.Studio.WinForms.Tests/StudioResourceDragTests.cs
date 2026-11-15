@@ -11,7 +11,7 @@ using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Panels;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

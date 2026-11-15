@@ -1,5 +1,8 @@
 using Gondwana.Assets;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Assets.WinForms;
@@ -35,7 +38,7 @@ public sealed class MainForm : Form
     /// <summary>Creates the standalone assets editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
-        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
+        Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon();
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Assets — GAF editor";
         Size = new Size(1450, 900);

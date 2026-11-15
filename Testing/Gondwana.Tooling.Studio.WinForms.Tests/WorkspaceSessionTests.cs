@@ -10,9 +10,9 @@ using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
-using WorkspaceSessionController = studio::Gondwana.Tooling.WinForms.WorkspaceSessionController;
-using WorkspaceSessionDocument = studio::Gondwana.Tooling.WinForms.WorkspaceSessionDocument;
-using WorkspaceSessionStore = studio::Gondwana.Tooling.WinForms.WorkspaceSessionStore;
+using WorkspaceSessionController = studio::Gondwana.Tooling.Studio.Shared.WinForms.WorkspaceSessionController;
+using WorkspaceSessionDocument = studio::Gondwana.Tooling.Studio.Shared.WinForms.WorkspaceSessionDocument;
+using WorkspaceSessionStore = studio::Gondwana.Tooling.Studio.Shared.WinForms.WorkspaceSessionStore;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

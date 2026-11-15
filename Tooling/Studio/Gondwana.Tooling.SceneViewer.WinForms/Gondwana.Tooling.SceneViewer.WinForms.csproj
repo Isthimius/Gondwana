@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Shared\WinForms\Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
       <ProjectReference Include="..\..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
       <ProjectReference Include="..\..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
     </ItemGroup>

@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
 internal static class PasswordPrompt
@@ -12,7 +13,7 @@ internal static class PasswordPrompt
     {
         using var dialog = new Form
         {
-            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
+            Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon(),
             Text = "Asset package password",
             Size = new Size(480, 160),
             MinimumSize = new Size(400, 160),

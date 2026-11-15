@@ -2,8 +2,9 @@ using System.Diagnostics;
 using System.Reflection;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Panels;
-using Gondwana.Tooling.WinForms;
-using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -356,7 +357,7 @@ public sealed partial class CompositionTests
     [InlineData("icons8-sound-96.png")]
     public void SharedIconsAreCompiledIntoThemingAssembly(string fileName)
     {
-        string resourceName = "Gondwana.Tooling.WinForms.Theming.assets." + fileName;
+        string resourceName = "Gondwana.Tooling.Studio.Shared.WinForms.Theming.assets." + fileName;
         using var stream = typeof(ToolingIconResources).Assembly.GetManifestResourceStream(resourceName);
         Assert.NotNull(stream);
         Assert.True(stream!.Length > 0);

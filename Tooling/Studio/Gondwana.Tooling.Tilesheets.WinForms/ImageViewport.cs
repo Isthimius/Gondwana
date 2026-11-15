@@ -3,7 +3,8 @@ using System.Runtime.InteropServices;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 

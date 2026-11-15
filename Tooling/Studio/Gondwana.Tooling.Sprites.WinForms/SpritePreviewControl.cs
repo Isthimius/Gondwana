@@ -4,7 +4,8 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Sprites.Editing;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Sprites.WinForms;
 

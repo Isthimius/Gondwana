@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Studio.WinForms.Services;
 
 /// <summary>
@@ -16,7 +17,7 @@ internal static class InputDialog
     {
         using var form = new Form
         {
-            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
+            Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon(),
             Text = title,
             Width = 430,
             Height = 175,

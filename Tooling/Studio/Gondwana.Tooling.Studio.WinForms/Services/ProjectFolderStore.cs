@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Services;
 
