@@ -6,16 +6,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-
     <ItemGroup>
-        <Compile Remove="Theming\bin\**" />
-        <Compile Remove="Theming\obj\**" />
-
-        <EmbeddedResource Remove="Theming\bin\**" />
-        <EmbeddedResource Remove="Theming\obj\**" />
-        <EmbeddedResource Include="Theming\assets\**" />
-
-        <None Remove="Theming\bin\**" />
-        <None Remove="Theming\obj\**" />
+      <Compile Remove="Theming\**" />
+      <EmbeddedResource Remove="Theming\**" />
+      <None Remove="Theming\**" />
     </ItemGroup>
 </Project>
