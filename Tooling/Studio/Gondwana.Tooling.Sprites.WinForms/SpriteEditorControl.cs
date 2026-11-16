@@ -409,19 +409,19 @@ public sealed partial class SpriteEditorControl : UserControl
             var node = root.Nodes.Add(region.Name);
             var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
             for (int y = 0; y < rows; y++) for (int x = 0; x < columns; x++)
+            {
+                var frameNode = new TreeNode($"{x}, {y}") { Tag = source.CreateFrame(region, x, y) };
+                if (source.Image is { } image)
                 {
-                    var frameNode = new TreeNode($"{x}, {y}") { Tag = source.CreateFrame(region, x, y) };
-                    if (source.Image is { } image)
-                    {
-                        using var thumbnail = new Bitmap(32, 32);
-                        using var graphics = Graphics.FromImage(thumbnail);
-                        graphics.DrawImage(image, new Rectangle(0, 0, 32, 32), SpriteTilesheetSource.FrameBounds(region, x, y), GraphicsUnit.Pixel);
-                        _ = _thumbnails.Handle;
-                        _thumbnails.Images.Add(thumbnail);
-                        frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
-                    }
-                    node.Nodes.Add(frameNode);
+                    using var thumbnail = new Bitmap(32, 32);
+                    using var graphics = Graphics.FromImage(thumbnail);
+                    graphics.DrawImage(image, new Rectangle(0, 0, 32, 32), SpriteTilesheetSource.FrameBounds(region, x, y), GraphicsUnit.Pixel);
+                    _ = _thumbnails.Handle;
+                    _thumbnails.Images.Add(thumbnail);
+                    frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
                 }
+                node.Nodes.Add(frameNode);
+            }
         }
         NavigationSizing.RefreshImages(_frames);
         root.Expand();

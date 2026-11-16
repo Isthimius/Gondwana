@@ -1,5 +1,6 @@
 using SkiaSharp;
 namespace Gondwana.Demos.Pong;
+
 internal static class PongArt
 {
     internal const int FrameSize = 64;
