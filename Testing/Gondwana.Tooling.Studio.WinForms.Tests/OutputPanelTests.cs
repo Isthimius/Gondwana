@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Runtime.ExceptionServices;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Studio.ViewModels;
 using Gondwana.Tooling.Studio.WinForms.Panels;
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

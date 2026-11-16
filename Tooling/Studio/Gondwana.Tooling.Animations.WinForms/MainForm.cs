@@ -1,10 +1,9 @@
 using System.ComponentModel;
 using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
-using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Session;
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Animations.WinForms;

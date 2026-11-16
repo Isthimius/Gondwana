@@ -1,6 +1,6 @@
 using System.Runtime.ExceptionServices;
-using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Scenes.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Scenes.WinForms.Tests;

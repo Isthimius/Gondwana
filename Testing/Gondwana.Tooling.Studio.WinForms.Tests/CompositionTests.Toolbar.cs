@@ -2,9 +2,8 @@ using System.Text;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
-using Gondwana.Tooling.Studio.WinForms.Documents;
-using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using Gondwana.Tooling.Studio.WinForms.Documents;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

@@ -1,4 +1,3 @@
-using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 namespace Gondwana.Tooling.Assets.WinForms;

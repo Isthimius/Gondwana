@@ -2,12 +2,12 @@ using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.Studio.Shared.WinForms;
-using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
-using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;

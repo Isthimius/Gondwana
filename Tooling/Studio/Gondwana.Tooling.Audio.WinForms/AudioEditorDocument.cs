@@ -1,6 +1,6 @@
 using System.ComponentModel;
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Audio.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Audio.WinForms;

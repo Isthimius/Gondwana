@@ -10,8 +10,8 @@ using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Sprites.WinForms;
-using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.WinForms.Panels;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

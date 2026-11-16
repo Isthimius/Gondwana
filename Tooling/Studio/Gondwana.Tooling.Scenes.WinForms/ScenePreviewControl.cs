@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using Gondwana.Drawing;
@@ -7,6 +6,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Scenes.WinForms;
 

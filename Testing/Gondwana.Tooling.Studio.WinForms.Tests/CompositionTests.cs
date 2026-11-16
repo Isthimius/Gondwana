@@ -5,10 +5,9 @@ using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Tilesheets.WinForms;
-using Gondwana.Tooling.Studio.Shared.WinForms;
-using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;

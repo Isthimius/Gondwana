@@ -1,6 +1,6 @@
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using System.Text;
 using Gondwana.Tooling.Studio.Core.Extensibility;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
 

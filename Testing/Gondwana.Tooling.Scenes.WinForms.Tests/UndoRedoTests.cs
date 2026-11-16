@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Gondwana.Drawing;
 using Gondwana.Tooling.Scenes.Editing;
-using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 
 namespace Gondwana.Tooling.Scenes.WinForms.Tests;

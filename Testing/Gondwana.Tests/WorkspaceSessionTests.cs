@@ -1,4 +1,3 @@
-using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Session;
 
 namespace Gondwana.Tests;

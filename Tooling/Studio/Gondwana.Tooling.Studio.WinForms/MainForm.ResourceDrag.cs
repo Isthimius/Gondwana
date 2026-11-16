@@ -2,9 +2,9 @@ using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+using Gondwana.Tooling.Studio.WinForms.Panels;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 

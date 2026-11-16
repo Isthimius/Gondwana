@@ -1,5 +1,3 @@
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-
 namespace Gondwana.Tooling.Animations.WinForms;
 
 internal static class Program
