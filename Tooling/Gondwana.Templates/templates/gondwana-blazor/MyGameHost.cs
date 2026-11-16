@@ -1,7 +1,10 @@
+using Gondwana.Assets;
+using Gondwana.Blazor.Input.Keyboard;
 using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Input.Keyboard;
 using Gondwana.Scenes;
 using Microsoft.JSInterop;
 
@@ -14,14 +17,20 @@ namespace MyGame;
 /// <remarks>
 /// Full lifecycle documentation:
 /// <see href="https://github.com/Isthimius/Gondwana/wiki">Gondwana Wiki</see>
-/// and the 1-hour guide at
-/// <see href="https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour">Make Your First Game in 1 Hour</see>.
+/// Browser asset loading:
+/// <see href="https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Blazor/README.md">Blazor README</see>.
 /// </remarks>
 internal sealed class MyGameHost : BlazorGpuGameHost
 {
-    internal MyGameHost(BlazorGpuRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
+    private readonly IReadOnlyDictionary<string, byte[]> _assetBytes;
+
+    internal MyGameHost(
+        BlazorGpuRenderSurfaceComponent renderSurface,
+        IJSRuntime jsRuntime,
+        IReadOnlyDictionary<string, byte[]> assetBytes)
         : base(renderSurface, jsRuntime)
     {
+        _assetBytes = assetBytes;
     }
 
     #region GameHostBase overrides
@@ -37,10 +46,8 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     /// <inheritdoc/>
     protected override void LoadAssets()
     {
-        // TODO: Load your tilesheets/sprites here.
-        // Example:
-        //   var sheet = new Tilesheet("hero", @"assets\hero.png", 32, 32);
-        //   TilesheetRegistry.Instance.Register(sheet);
+        // Downloads happen in GameRenderSurface before Initialize(). These hooks are
+        // synchronous: consume downloaded bytes here; never use async void.
 
         // TODO: Load audio files here.
         // Program.cs configures the browser backend before host initialization.
@@ -50,15 +57,37 @@ internal sealed class MyGameHost : BlazorGpuGameHost
         // Call theme.Play() from a user gesture handler after loading; browser
         // autoplay policy may block playback during startup. Codec support varies.
 
-        // TODO: Load fonts here.
-        // Example:
-        //   var font = Engine.Managers.Fonts.LoadFromFile("main", @"assets\font.ttf");
+        // For fonts/data, add their URLs to GameRenderSurface.DownloadAssetsAsync,
+        // then decode _assetBytes through a stream API, not a desktop file path.
     }
 
     // TODO: Load tilesheet definitions after other assets are available.
     /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
+        // PNG example: uncomment the matching URL in DownloadAssetsAsync first.
+        // using (var imageStream = new MemoryStream(_assetBytes["assets/spot_defaults.png"], writable: false))
+        // {
+        //     var bubble = Engine.Managers.Tilesheets.LoadFromStream("bubble", imageStream);
+        //     bubble.DefaultRegion.TileSize = new System.Drawing.Size(93, 96);
+        // }
+
+        // GAF example: alternative to the loose PNG above. The package must contain
+        // an Image entry named spot_defaults.png. Uncomment its download URL first.
+        // using (var packageStream = new MemoryStream(_assetBytes["assets/game.gaf"], writable: false))
+        // using (var package = AssetsFile.Load(packageStream))
+        // using (var imageStream = package.Get(AssetTypes.Image, "spot_defaults.png")
+        //     ?? throw new InvalidOperationException("Missing Image:spot_defaults.png in game.gaf"))
+        // {
+        //     var bubble = Engine.Managers.Tilesheets.LoadFromStream("bubble", imageStream);
+        //     bubble.DefaultRegion.TileSize = new System.Drawing.Size(93, 96);
+        // }
+
+        // Both examples register "bubble"; choose one for that tilesheet.
+        // Streams stay open until decoding completes. These examples consume the
+        // package here and dispose it immediately. If retaining a package for later
+        // hooks, keep it in a host field and dispose it during host cleanup.
+        // Retrieve the registered sheet in CreateSprites via Engine.Managers.Tilesheets["bubble"].
     }
 
     // TODO: Load animation cycle definitions after tilesheets are available.
@@ -144,9 +173,8 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     /// <inheritdoc/>
     protected override void UnhookEvents()
     {
-        // TODO: Unsubscribe from any events you hooked in OnKeyboardAdapterInitialized.
-        // Example:
-        //   Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+        if (Engine.Input.KeyboardEventPoller is { } keyboard)
+            keyboard.KeyDown -= OnKeyDown;
     }
 
     // TODO: Run just before the host begins disposing managed resources.
@@ -169,9 +197,29 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
-        // TODO: Subscribe to keyboard events.
-        // Example:
-        //   Engine.Input.KeyboardEventPoller.KeyDown += OnKeyDown;
+        if (Engine.Input.KeyboardEventPoller is not { } keyboard)
+            return;
+
+        keyboard.KeyDown += OnKeyDown;
+        // Browser codes, not System.Windows.Forms.Keys. Canvas focus is required.
+        // Uncomment the keys your game uses.
+        // keyboard.StartMonitoringKey((int)BlazorKey.ArrowLeft, nameof(BlazorKey.ArrowLeft));
+        // keyboard.StartMonitoringKey((int)BlazorKey.ArrowRight, nameof(BlazorKey.ArrowRight));
+        // keyboard.StartMonitoringKey((int)BlazorKey.ArrowUp, nameof(BlazorKey.ArrowUp));
+        // keyboard.StartMonitoringKey((int)BlazorKey.ArrowDown, nameof(BlazorKey.ArrowDown));
+    }
+
+    private void OnKeyDown(KeyDownEventArgs args)
+    {
+        if (args.KeyAction != KeyAction.Pressed)
+            return;
+
+        // switch (args.KeyConfig.Key)
+        // {
+        //     case nameof(BlazorKey.ArrowLeft):
+        //         // Move your player left here.
+        //         break;
+        // }
     }
 
     // TODO: Subscribe to mouse events here after the adapter is initialized.
