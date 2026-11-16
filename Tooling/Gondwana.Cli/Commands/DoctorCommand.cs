@@ -23,7 +23,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         AnsiConsole.MarkupLine("[bold]Gondwana Doctor[/]");
         AnsiConsole.WriteLine();
@@ -456,16 +456,26 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static CheckResult CheckDotNetSdk()
     {
         var output = ProcessHelper.Run("dotnet", "--version", out int exitCode);
+        return EvaluateDotNetSdkVersion(output, exitCode);
+    }
+
+    /// <summary>
+    /// Evaluates the SDK selected by dotnet, independent of any installed side-by-side SDKs.
+    /// </summary>
+    internal static CheckResult EvaluateDotNetSdkVersion(string? output, int exitCode)
+    {
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("dotnet SDK not found on PATH.");
+            return CheckResult.Fail("dotnet SDK not found or could not be selected. Install .NET 10 and check global.json.");
 
         var version = output.Trim();
-        if (!Version.TryParse(version.Split('-')[0], out var parsed))
-            return CheckResult.Ok(version);
+        if (version.Contains('-') || !Version.TryParse(version, out var parsed))
+            return CheckResult.Fail($"Cannot identify a stable .NET SDK from '{version}'. Install a stable .NET 10 SDK.");
 
-        return parsed.Major < 8
-            ? CheckResult.Warning($"{version} — Gondwana requires .NET 8 or later.")
-            : CheckResult.Ok(version);
+        var supported = parsed.Major > 10 ||
+            (parsed.Major == 10 && parsed.Minor == 0 && parsed.Build >= 100);
+        return supported
+            ? CheckResult.Ok(version)
+            : CheckResult.Fail($"{version} — Gondwana 2.7 requires a stable .NET 10 SDK (10.0.100+) or later. Check global.json.");
     }
 
     private static CheckResult CheckGondwanaTemplates()
@@ -505,12 +515,15 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (!ProjectHelper.TryGetInstalledWorkloadVersion("wasm-tools", out var version, out var error))
             return CheckResult.Fail(error);
 
-        if (!string.IsNullOrWhiteSpace(version))
+        if (New.BlazorScaffoldPrerequisites.IsCompatibleWorkload(version))
             return CheckResult.Ok(version);
 
+        var message = string.IsNullOrWhiteSpace(version)
+            ? "wasm-tools workload not installed."
+            : $"wasm-tools workload {version} is incompatible with .NET 10.";
         return ProjectHelper.IsCurrentDirectoryBlazorWebAssemblyProject()
-            ? CheckResult.Fail("wasm-tools workload not installed. Required for this Blazor/WASM project. Run: dotnet workload install wasm-tools")
-            : CheckResult.Warning("wasm-tools not installed; optional unless you build/publish Blazor/WASM projects.");
+            ? CheckResult.Fail($"{message} Required for this Blazor/WASM project. Run: dotnet workload install wasm-tools")
+            : CheckResult.Warning($"{message} Install the .NET 10 workload before building/publishing Blazor/WASM projects.");
     }
 
     private static CheckResult CheckGitCliff()

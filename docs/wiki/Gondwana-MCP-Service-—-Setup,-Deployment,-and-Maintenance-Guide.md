@@ -14,7 +14,7 @@
 
 ## 1. What the MCP Service Is
 
-`Gondwana.Mcp` is a small ASP.NET Core/.NET 8 web service that exposes **read-only Model Context Protocol tools** for the public Gondwana repository and official Gondwana GitHub wiki.
+`Gondwana.Mcp` is a small ASP.NET Core/.NET 10 web service that exposes **read-only Model Context Protocol tools** for the public Gondwana repository and official Gondwana GitHub wiki.
 
 Its purpose is to give ChatGPT, Codex, and other MCP-capable clients access to current Gondwana source and documentation without giving those clients GitHub write access.
 
@@ -99,7 +99,7 @@ Tooling/Gondwana.Mcp/
 
 | File | Purpose |
 |---|---|
-| `Tooling/Gondwana.Mcp/Gondwana.Mcp.csproj` | ASP.NET Core `.NET 8` web project; references `ModelContextProtocol.AspNetCore`. |
+| `Tooling/Gondwana.Mcp/Gondwana.Mcp.csproj` | ASP.NET Core `.NET 10` web project; references `ModelContextProtocol.AspNetCore`. |
 | `Tooling/Gondwana.Mcp/Program.cs` | Configures dependency injection, HTTP clients, MCP server, tools, `/health`, `/`, challenge endpoint, and `/mcp`. |
 | `Tooling/Gondwana.Mcp/Dockerfile` | Production container build used by Render. |
 | `Tooling/Gondwana.Mcp/appsettings.json` | Non-secret service limits and local/default host settings. |
@@ -330,12 +330,12 @@ The production service uses:
 Tooling/Gondwana.Mcp/Dockerfile
 ```
 
-The Dockerfile is a two-stage .NET 8 build.
+**Gondwana 2.7.0:** The Dockerfile now builds with the pinned .NET 10.0.401 SDK image and runs on ASP.NET Core 10. Rebuild and validate the container before deploying this update to Render.
 
 ### Build stage
 
 ```text
-mcr.microsoft.com/dotnet/sdk:8.0
+mcr.microsoft.com/dotnet/sdk:10.0.401-noble
 ```
 
 It copies these root build files first:
@@ -361,7 +361,7 @@ dotnet publish Tooling/Gondwana.Mcp/Gondwana.Mcp.csproj
 The runtime image is:
 
 ```text
-mcr.microsoft.com/dotnet/aspnet:8.0
+mcr.microsoft.com/dotnet/aspnet:10.0-noble
 ```
 
 The container configures:

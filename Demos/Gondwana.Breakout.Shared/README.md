@@ -6,9 +6,9 @@ All three hosts share one procedural SkiaSharp tilesheet, a 32-by-18 logical 60p
 
 ## Run from the repository root
 
-- WinForms (Windows, .NET 8): dotnet run --project Demos/Gondwana.Breakout.WinForms
-- Avalonia (Windows/macOS/Linux, .NET 8): dotnet run --project Demos/Gondwana.Breakout.Avalonia
-- Blazor (browser, repository-pinned .NET 8 SDK with matching wasm-tools): dotnet run --project Demos/Gondwana.Breakout.Blazor
+- WinForms (Windows, .NET 10): dotnet run --project Demos/Gondwana.Breakout.WinForms
+- Avalonia (Windows/macOS/Linux, .NET 10): dotnet run --project Demos/Gondwana.Breakout.Avalonia
+- Blazor (browser, repository-pinned .NET 10 SDK with matching wasm-tools): dotnet run --project Demos/Gondwana.Breakout.Blazor
 
 ## Controls
 

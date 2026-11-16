@@ -30,12 +30,12 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
         /// Gets or sets the framework.
         /// </summary>
         [CommandOption("-f|--framework")]
-        [Description("Target framework to run (e.g. 'net8.0'). Required when the project targets multiple frameworks.")]
+        [Description("Target framework to run (e.g. 'net10.0'). Required when the project targets multiple frameworks.")]
         public string? Framework { get; init; }
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var projectPath = settings.Project ?? Directory.GetCurrentDirectory();
 

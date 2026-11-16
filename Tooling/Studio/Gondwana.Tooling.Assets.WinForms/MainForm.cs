@@ -1,0 +1,418 @@
+using System.ComponentModel;
+using Gondwana.Assets;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
+using Gondwana.Tooling.Studio.Shared.WinForms.Session;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+using WeifenLuo.WinFormsUI.Docking;
+
+namespace Gondwana.Tooling.Assets.WinForms;
+
+/// <summary>Standalone asset-package editor shell managing document tabs, the workspace browser, and session persistence.</summary>
+public sealed class MainForm : Form
+{
+    private readonly UndoRedoMenu _undoRedo;
+    private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
+    private readonly DockPanel _dock;
+    private readonly DockLayoutPersistence _layout;
+    private readonly WorkspaceSessionController _session = new();
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal Action<string> ReportSessionError { get; set; }
+    private readonly PersistentDockContent _workspace = new("shell.workspace")
+    {
+        Text = "Asset files",
+        HideOnClose = true
+    };
+
+    private readonly AssetWorkspaceControl _workspaceControl;
+    private readonly List<AssetEditorDocument> _documents = [];
+
+    private AssetEditorDocument? ActiveEditor =>
+        _dock.ActiveDocument as AssetEditorDocument;
+
+    private bool IsDocumentOpen(string path) =>
+        _documents.Any(document =>
+            string.Equals(
+                document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Creates the standalone assets editor shell with its workspace browser, document docking, and session restoration.</summary>
+    public MainForm()
+    {
+        Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon();
+        ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
+        Text = "Gondwana Assets — GAF editor";
+        Size = new Size(1450, 900);
+        MinimumSize = new Size(900, 600);
+        StartPosition = FormStartPosition.CenterScreen;
+
+        _workspaceControl = new AssetWorkspaceControl(
+            Environment.CurrentDirectory);
+        _workspaceControl.OpenAssetFileRequested += OpenDocument;
+        _workspace.Controls.Add(_workspaceControl);
+
+        _dock = new DockPanel
+        {
+            Dock = DockStyle.Fill,
+            Theme = _theme,
+            DocumentStyle = DocumentStyle.DockingWindow
+        };
+
+        _layout = new DockLayoutPersistence(_dock, "shell");
+        _layout.Register(_workspace, () => _workspace.Show(_dock, DockState.DockLeft));
+
+        var menu = new MenuStrip();
+
+        var file = new ToolStripMenuItem("&File");
+        Add(file, "&New", Keys.Control | Keys.N, CreateNewAssetsFile);
+        Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
+        Add(
+            file,
+            "Open working &directory…",
+            Keys.Control | Keys.Shift | Keys.O,
+            () => _workspaceControl.ChooseDirectory(this));
+
+        file.DropDownItems.Add(new ToolStripSeparator());
+
+        Add(file, "&Save", Keys.Control | Keys.S, () => ActiveEditor?.Save());
+        Add(
+            file,
+            "Save &As…",
+            Keys.Control | Keys.Shift | Keys.S,
+            () => ActiveEditor?.SaveAs());
+        Add(file, "&Close", Keys.Control | Keys.W, () => ActiveEditor?.Close());
+
+        file.DropDownItems.Add(new ToolStripSeparator());
+        Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+
+        var view = new ToolStripMenuItem("&View");
+        view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
+        view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
+        var outerWorkspaceItem = Add(
+            view,
+            "Asset files",
+            Keys.None,
+            () => _workspace.Show());
+        Add(
+            view,
+            "Refresh directory",
+            Keys.F5,
+            _workspaceControl.RefreshDirectory);
+
+        view.DropDownItems.Add(new ToolStripSeparator());
+        var paneItems = new Dictionary<string, ToolStripMenuItem>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var paneName in AssetEditorControl.PaneNames)
+        {
+            string capturedName = paneName;
+            paneItems[capturedName] = Add(
+                view,
+                capturedName,
+                Keys.None,
+                () => ActiveEditor?.ShowPane(capturedName));
+        }
+
+        view.DropDownItems.Add(new ToolStripSeparator());
+        var showAllPanesItem = Add(
+            view,
+            "Show all asset panes",
+            Keys.None,
+            () => ActiveEditor?.ShowAllPanes());
+
+        Add(view, "Reset application layout", Keys.None, () => _layout.Reset());
+        var resetEditor = Add(view, "Reset active editor layout", Keys.None, () => ActiveEditor?.Editor.ResetLayout());
+
+        view.DropDownOpening += (_, _) =>
+        {
+            outerWorkspaceItem.Checked = !_workspace.IsHidden;
+            var editor = ActiveEditor;
+            foreach (var (paneName, item) in paneItems)
+            {
+                item.Enabled = editor is not null;
+                item.Checked = editor?.IsPaneVisible(paneName) == true;
+            }
+            showAllPanesItem.Enabled = editor is not null;
+            resetEditor.Enabled = editor is not null;
+        };
+
+        _session.AddMenu(file);
+        _undoRedo = new(() => ActiveEditor?.Editor.History, () => ActiveEditor?.Editor.Enabled == true);
+        _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
+        menu.Items.AddRange([file, _undoRedo.Menu, view]);
+        MainMenuStrip = menu;
+
+        Controls.Add(_dock);
+        Controls.Add(menu);
+
+        ToolingAppearance.Apply(this);
+        ToolingAppearance.Apply(_workspace);
+
+        Shown += (_, _) =>
+        {
+            _workspace.Show(_dock, DockState.DockLeft);
+            _layout.Start();
+            _workspaceControl.RefreshDirectory();
+            RestoreSession();
+        };
+
+        FormClosing += (_, e) =>
+        {
+            if (e.Cancel) return;
+            foreach (var document in _documents.ToArray())
+                if (!document.ConfirmClose()) { e.Cancel = true; return; }
+            SaveSession();
+            foreach (var document in _documents) document.CloseApproved = true;
+        };
+    }
+
+    private void RestoreSession()
+    {
+        var messages = new List<string>();
+        _session.Restore(["gaf"], path => _workspaceControl.SetWorkingDirectory(path),
+            document => OpenDocument(document.Path),
+            path => _documents.FirstOrDefault(document => string.Equals(document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
+            messages.Add, message => ReportSessionError(message));
+        WorkspaceSessionController.ShowStatus(this, messages);
+    }
+
+    private void SaveSession() => _session.Save(_workspaceControl.WorkingDirectory,
+        WorkspaceSessionController.DocumentOrder(_dock, _documents).Select(document => document.FilePath),
+        ActiveEditor?.FilePath);
+
+    private static ToolStripMenuItem Add(
+        ToolStripMenuItem menu,
+        string label,
+        Keys shortcut,
+        Action action)
+    {
+        var item = new ToolStripMenuItem(label)
+        {
+            ShortcutKeys = shortcut,
+            ForeColor = ToolingAppearance.Palette.Foreground
+        };
+
+        item.Click += (_, _) => action();
+        menu.DropDownItems.Add(item);
+        return item;
+    }
+
+    private void OpenFiles()
+    {
+        using var dialog = new OpenFileDialog
+        {
+            Title = "Open Asset File",
+            Filter = AssetWorkspaceControl.AssetFileFilter,
+            Multiselect = true,
+            InitialDirectory = _workspaceControl.WorkingDirectory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        foreach (var path in dialog.FileNames)
+            OpenDocument(path);
+    }
+
+    private void OpenDocument(string path)
+    {
+        path = Path.GetFullPath(path);
+        if (_session.IsRestoring && !File.Exists(path)) throw new FileNotFoundException("Asset file was removed.", path);
+
+        var existing = _documents.FirstOrDefault(document =>
+            string.Equals(
+                document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase));
+
+        if (existing is not null)
+        {
+            existing.Activate();
+            return;
+        }
+
+        AssetsFile? assetsFile = null;
+
+        try
+        {
+            try
+            {
+                assetsFile = AssetsFile.LoadOrCreate(path);
+                _ = assetsFile.GetAllEntries().ToList();
+            }
+            catch
+            {
+                assetsFile?.Dispose();
+                assetsFile = null;
+
+                var password = InputDialog.Show(
+                    this,
+                    "Password",
+                    "Enter password for this asset file:", password: true);
+
+                if (password is null)
+                {
+                    if (_session.IsRestoring) throw new OperationCanceledException("Password entry cancelled.");
+                    return;
+                }
+
+                assetsFile = AssetsFile.LoadOrCreate(
+                    path,
+                    password,
+                    encrypt: true);
+
+                _ = assetsFile.GetAllEntries().ToList();
+            }
+
+            ShowDocument(assetsFile);
+            assetsFile = null;
+        }
+        catch (Exception ex)
+        {
+            if (_session.IsRestoring) throw;
+            ShowError("Failed to open asset file.", ex);
+        }
+        finally
+        {
+            assetsFile?.Dispose();
+        }
+    }
+
+    private void CreateNewAssetsFile()
+    {
+        using var dialog = new SaveFileDialog
+        {
+            Title = "Create Asset File",
+            Filter = AssetWorkspaceControl.AssetFileFilter,
+            DefaultExt = "gaf",
+            InitialDirectory = _workspaceControl.WorkingDirectory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        var path = Path.GetFullPath(dialog.FileName);
+
+        var existing = _documents.FirstOrDefault(document =>
+            string.Equals(
+                document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase));
+
+        if (existing is not null)
+        {
+            existing.Activate();
+            return;
+        }
+
+        var encrypt = ThemedMessageBox.Show(
+            this,
+            "Enable password protection for this asset file?",
+            "Encryption",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question) == DialogResult.Yes;
+
+        string? password = null;
+
+        if (encrypt)
+        {
+            password = InputDialog.Show(
+                this,
+                "Password",
+                "Enter password for the new asset file:");
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ThemedMessageBox.Show(
+                    this,
+                    "A password is required when encryption is enabled.",
+                    "Password Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+        }
+
+        AssetsFile? assetsFile = null;
+
+        try
+        {
+            assetsFile = AssetsFile.LoadOrCreate(
+                path,
+                password,
+                encrypt);
+
+            assetsFile.Save();
+            ShowDocument(assetsFile);
+            assetsFile = null;
+
+            _workspaceControl.SetWorkingDirectory(
+                Path.GetDirectoryName(path) ??
+                _workspaceControl.WorkingDirectory);
+        }
+        catch (Exception ex)
+        {
+            ShowError("Failed to create asset file.", ex);
+        }
+        finally
+        {
+            assetsFile?.Dispose();
+        }
+    }
+
+    private AssetEditorDocument ShowDocument(
+        AssetsFile assetsFile)
+    {
+        var editor = new AssetEditorDocument(
+            assetsFile,
+            _workspaceControl.RefreshDirectory,
+            IsDocumentOpen);
+
+        _documents.Add(editor);
+        editor.Editor.RelocationScope = () => _workspaceControl.WorkingDirectory;
+        void ValidateContentOperation()
+        {
+            if (_documents.Any(document => document != editor))
+                throw new InvalidOperationException("Save and close other open archives before moving or deleting content.");
+        }
+        editor.Editor.ValidateRelocation = _ => ValidateContentOperation();
+        editor.Editor.ValidateDeletion = _ => ValidateContentOperation();
+        editor.FormClosed += (_, _) =>
+            _documents.Remove(editor);
+
+        editor.Show(_dock, DockState.Document);
+        return editor;
+    }
+
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Editor.History, () => ActiveEditor?.Editor.Enabled == true) || base.ProcessCmdKey(ref msg, keyData);
+
+    private void ShowError(
+        string message,
+        Exception ex)
+    {
+        ThemedMessageBox.Show(
+            this,
+            message + Environment.NewLine + Environment.NewLine + ex.Message,
+            "AssetFiles Editor",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _undoRedo.Dispose();
+            _layout.Dispose();
+            foreach (var document in _documents.ToArray()) document.Dispose();
+            _workspace.Dispose();
+        }
+        base.Dispose(disposing);
+        if (disposing) _theme.Dispose();
+    }
+}

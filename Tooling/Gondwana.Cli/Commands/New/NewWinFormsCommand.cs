@@ -34,7 +34,7 @@ internal sealed class NewWinFormsCommand : Command<NewWinFormsCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(settings.Name))
         {

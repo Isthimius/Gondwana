@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -29,8 +29,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Spectre.Console" Version="0.55.0" />
-        <PackageReference Include="Spectre.Console.Cli" Version="0.55.0" />
+        <PackageReference Include="Spectre.Console" Version="0.57.2" />
+        <PackageReference Include="Spectre.Console.Cli" Version="0.57.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -48,7 +48,7 @@
         <Content Include="gondwana-asset-types.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Pack>true</Pack>
-            <PackagePath>tools/net8.0/any/</PackagePath>
+            <PackagePath>tools/net10.0/any/</PackagePath>
         </Content>
     </ItemGroup>
 

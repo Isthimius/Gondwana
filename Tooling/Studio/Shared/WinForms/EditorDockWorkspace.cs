@@ -1,0 +1,118 @@
+using WeifenLuo.WinFormsUI.Docking;
+
+namespace Gondwana.Tooling.Studio.Shared.WinForms;
+
+/// <summary>
+/// Editor-owned docking surface, source-linked by the standalone tooling projects.
+/// Content belongs to this workspace even while hidden. Layouts are per editor type.
+/// </summary>
+public sealed class EditorDockWorkspace : UserControl
+{
+    private readonly DockLayoutPersistence _layout;
+    private readonly string _profile;
+    private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
+    private readonly List<DockContent> _contents = [];
+    private readonly Dictionary<string, DockContent> _contentsByTitle =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    public DockPanel DockPanel { get; }
+    public IReadOnlyList<string> PaneTitles =>
+        _contents.Select(content => content.Text).ToArray();
+
+    public EditorDockWorkspace(string profile)
+    {
+        Dock = DockStyle.Fill;
+        DockPanel = new DockPanel
+        {
+            Dock = DockStyle.Fill,
+            Theme = _theme,
+            DocumentStyle = DocumentStyle.DockingWindow,
+            DocumentTabStripLocation = DocumentTabStripLocation.Top
+        };
+        Controls.Add(DockPanel);
+        _profile = profile;
+        _layout = new DockLayoutPersistence(DockPanel, profile);
+    }
+
+    // The controls are passed in WinForms z-order: fill content, then top toolbars.
+    public DockContent AddPane(string id, string title, params Control[] controls)
+    {
+        var pane = new PersistentDockContent(_profile + "." + id)
+        {
+            Text = title,
+            HideOnClose = true,
+
+            // Use document-style split/tab groups throughout the inner workspace.
+            // Tool-window states move tabs to the bottom and make a fill-drop
+            // look like it replaced the original pane. Document-only contents
+            // keep top tabs consistently, and cannot float or auto-hide.
+            DockAreas = DockAreas.Document
+        };
+
+        pane.Controls.AddRange(controls);
+        ToolingAppearance.Apply(pane);
+
+        _contents.Add(pane);
+        _contentsByTitle.Add(title, pane);
+
+        return pane;
+    }
+
+    public void Place(DockContent pane, Action placement)
+    {
+        _layout.Register((PersistentDockContent)pane, placement);
+    }
+
+    public void InitializeLayout() => _layout.Start();
+
+    public void ResetLayout() => _layout.Reset();
+
+    public bool ShowPane(string title)
+    {
+        if (!_contentsByTitle.TryGetValue(title, out var pane) ||
+            pane.IsDisposed)
+        {
+            return false;
+        }
+
+        pane.Show();
+        pane.Activate();
+        return true;
+    }
+
+    public bool IsPaneVisible(string title) =>
+        _contentsByTitle.TryGetValue(title, out var pane) &&
+        !pane.IsDisposed &&
+        !pane.IsHidden;
+
+    public void ShowAllPanes()
+    {
+        foreach (var pane in _contents)
+        {
+            if (!pane.IsDisposed)
+                pane.Show();
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _layout.Dispose();
+
+            // Hidden contents need explicit ownership too; do not rely on the
+            // visible control hierarchy or DockPanel's pane disposal behavior.
+            foreach (var content in _contents)
+                content.Dispose();
+
+            _contents.Clear();
+            _contentsByTitle.Clear();
+        }
+
+        base.Dispose(disposing);
+
+        if (disposing)
+            _theme.Dispose();
+    }
+}

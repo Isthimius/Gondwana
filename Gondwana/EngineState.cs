@@ -901,14 +901,14 @@ public sealed partial class EngineState
             foreach (var group in groups) MergeAudio(null, group, null, overwriteExisting, baseDirectory);
         }
         else
-        if (parts.HasFlag(EngineStateParts.Audio))
-            MergeAudio(
-                snapshot.AssetsFiles?.Select(raw => FindAssetsFile(ResolvePath(raw.FilePath, baseDirectory)))
-                    .OfType<AssetsFile>().ToList(),
-                snapshot.Audio,
-                snapshot.SoundResources,
-                overwriteExisting,
-                baseDirectory);
+            if (parts.HasFlag(EngineStateParts.Audio))
+                MergeAudio(
+                    snapshot.AssetsFiles?.Select(raw => FindAssetsFile(ResolvePath(raw.FilePath, baseDirectory)))
+                        .OfType<AssetsFile>().ToList(),
+                    snapshot.Audio,
+                    snapshot.SoundResources,
+                    overwriteExisting,
+                    baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Tilesheets))
             MergeTilesheets(snapshot.Tilesheets, overwriteExisting, baseDirectory);

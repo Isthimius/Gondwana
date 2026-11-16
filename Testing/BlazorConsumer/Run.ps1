@@ -26,7 +26,7 @@ try {
     $env:DOTNET_SKIP_WORKLOAD_INTEGRITY_CHECK = '1'
     Push-Location $repo
     try {
-        # Keep the runtime libraries on the repository's SDK 8 build path.
+        # Pack the runtime libraries under the repository's pinned .NET 10 SDK.
         foreach ($project in @('Gondwana', 'Gondwana.Widgets', 'Gondwana.Hosting', 'Gondwana.Blazor', 'Gondwana.Blazor.Hosting', 'Gondwana.Audio.Browser', 'Tooling/Gondwana.Templates', 'Tooling/Gondwana.Cli')) {
             $name = Split-Path $project -Leaf
             Run dotnet @('pack', "$project/$name.csproj", '-c', 'Release', '-o', $feed.FullName, '--nologo')
@@ -56,7 +56,7 @@ try {
         $nuspec.Save("$WorkRoot/audio.nuspec")
     } finally { $zip.Dispose() }
 
-    # An independent global.json prevents the repository SDK 8 pin from leaking in.
+    # An independent global.json isolates the .NET 10 consumer test SDK selection.
     '{"sdk":{"version":"10.0.100","rollForward":"latestFeature","allowPrerelease":false}}' |
         Set-Content "$WorkRoot/global.json"
     $env:NUGET_PACKAGES = "$WorkRoot/packages"

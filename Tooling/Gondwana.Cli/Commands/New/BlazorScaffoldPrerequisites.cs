@@ -103,7 +103,7 @@ internal static class BlazorScaffoldPrerequisites
         return parsed.Major == 10 && parsed.Minor == 0 && parsed.Build >= 100;
     }
 
-    private static bool IsCompatibleWorkload(string? version)
+    internal static bool IsCompatibleWorkload(string? version)
     {
         if (string.IsNullOrWhiteSpace(version) ||
             !Version.TryParse(version.Split('/')[0].Split('-')[0], out var parsed))

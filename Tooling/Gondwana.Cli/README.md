@@ -78,7 +78,7 @@ projects can be checked but must manage package versions in their source reposit
 feature is already referenced. It refuses to guess a version for non-Gondwana
 projects. It adds references only; application setup remains in your code.
 
-A normal `net8.0` Avalonia project is left unchanged by `add audio` or `add midi`.
+A normal `net10.0` Avalonia project is left unchanged by `add audio` or `add midi`.
 The command explains that no cross-platform desktop audio backend is automatically
 selected. Explicitly choose/configure a compatible backend; the CLI never makes
 an Avalonia project Windows-only to install audio. A multi-target desktop project
@@ -339,7 +339,7 @@ gondwana new blazor MyGame --skip-workload
 Direct `dotnet new gondwana-blazor` usage does not run this CLI preflight;
 verify `dotnet --version`, `dotnet workload list`, and install `wasm-tools`
 manually if needed. Check ancestor `global.json` files when an older SDK is selected.
-The runtime libraries and desktop templates remain on .NET 8.
+The runtime libraries and desktop templates target .NET 10.
 
 ---
 
@@ -351,7 +351,7 @@ Runs the desktop build of the project in the current directory (or `--project`).
 gondwana run
 gondwana run --project ./src/MyGame
 gondwana run --configuration Release
-gondwana run --framework net8.0
+gondwana run --framework net10.0
 ```
 
 | Option | Short | Default | Description |
@@ -427,7 +427,7 @@ Publishes the **desktop** build of the project in the current directory (or `--p
 gondwana publish
 gondwana publish --project ./src/MyGame
 gondwana publish --runtime win-x64
-gondwana publish --framework net8.0 --self-contained
+gondwana publish --framework net10.0 --self-contained
 gondwana publish --runtime win-x64 --self-contained --publish-single-file
 ```
 
@@ -579,8 +579,7 @@ or recommended release. Both options install the version-pinned package via
 `dotnet new install Gondwana.Templates::<VERSION> --force`, replacing any
 previously installed template package as needed. They cannot be combined.
 The CLI uses the backward-compatible `::` version separator so version-pinned
-installs work on .NET SDK 8–10. The newer `@` separator requires SDK 9.0.200
-or later. Prerelease resolution does not require SDK 11.
+installs work with the repository's .NET 10 SDK. The `@` separator is also supported by .NET 10. Prerelease resolution does not require SDK 11.
 `templates update` remains unchanged and does not switch to a newer prerelease
 track automatically.
 `templates list` displays the locally installed `Gondwana.Templates` package
@@ -759,7 +758,7 @@ Displays information about the Gondwana project in the current directory.
 
 ```
 Project: MyGame
-Framework: net8.0
+Framework: net10.0
 Host: WinForms
 Gondwana: 2.2.0
 Adapters:

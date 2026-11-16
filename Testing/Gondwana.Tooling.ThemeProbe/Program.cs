@@ -1,7 +1,8 @@
 using System.Drawing.Imaging;
 using System.Reflection;
-using Gondwana.Tooling.WinForms.Theming;
-using Gondwana.Tooling.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using WeifenLuo.WinFormsUI.Docking;
 
 // Run once per theme in a fresh process: dotnet run --project Testing/Gondwana.Tooling.ThemeProbe -- Light <output-directory>

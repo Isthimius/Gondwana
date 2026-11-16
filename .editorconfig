@@ -147,11 +147,11 @@ dotnet_diagnostic.CA2201.severity = suggestion
 [Demos/Gondwana.Platformer/EnemyContact.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion
 
-[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/TilesheetDocument.cs]
+[Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/Editing/TilesheetDocument.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion
 
-[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/FrameGeometry.cs]
+[Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/Editing/FrameGeometry.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion
 
-[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/OverlaySettings.cs]
+[Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/Editing/OverlaySettings.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion

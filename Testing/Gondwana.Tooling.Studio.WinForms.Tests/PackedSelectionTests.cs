@@ -1,4 +1,3 @@
-using System.Reflection;
 using Gondwana.Assets;
 using Gondwana.Audio.GSND;
 using Gondwana.Drawing.Animation.GANI;
@@ -13,6 +12,7 @@ using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Sprites.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
@@ -65,8 +65,7 @@ public sealed partial class CompositionTests
         var archive = CreatePreviewArchive(root, "encrypted.gaf", Color.Blue);
         using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false)) package.Save();
         using var owner = new Form();
-        var type = typeof(AnimationEditorControl).Assembly.GetType("Gondwana.Tooling.WinForms.PackedResourcePicker")!;
-        using var packages = (AssetPackageCatalog)type.GetMethod("CreateCatalog", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, [owner])!;
+        using var packages = PackedResourcePicker.CreateCatalog(owner);
         int prompts = 0;
         string password = "wrong";
         using var timer = new System.Windows.Forms.Timer { Interval = 20 };
@@ -272,12 +271,8 @@ public sealed partial class CompositionTests
         using var exclusive = File.Open(archive, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
     });
 
-    [Theory]
-    [InlineData("Animations")]
-    [InlineData("Scenes")]
-    [InlineData("Sprites")]
-    [InlineData("Audio")]
-    public void SharedPickerListsExactEntriesRequiresMemberAndRetriesAuthentication(string assembly) => RunSta(root =>
+    [Fact]
+    public void SharedPickerListsExactEntriesRequiresMemberAndRetriesAuthentication() => RunSta(root =>
     {
         var archive = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
         var locked = Path.Combine(root, "locked.gaf");
@@ -293,9 +288,7 @@ public sealed partial class CompositionTests
         packages.PasswordProvider = _ => ++prompts == 1 ? "wrong" : "secret";
         packages.PasswordAccepted += (_, _) => accepted++;
         PackedResourceSelection? result = null;
-        var type = Assembly.Load($"Gondwana.Tooling.{assembly}.WinForms").GetType("Gondwana.Tooling.WinForms.PackedResourcePicker")!;
-        using var dialog = (Form)type.GetMethod("CreateDialog", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, [packages, locked, AssetTypes.TilesheetDefinition, (Action<PackedResourceSelection>)(selected => result = selected)])!;
+        using var dialog = PackedResourcePicker.CreateDialog(packages, locked, AssetTypes.TilesheetDefinition, selected => result = selected);
         dialog.Show(); Application.DoEvents();
         T Find<T>(string name) where T : Control => (T)dialog.Controls.Find(name, true).Single();
         Assert.Contains("password", Find<TextBox>("status").Text, StringComparison.OrdinalIgnoreCase);

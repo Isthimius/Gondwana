@@ -59,7 +59,7 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var path = Path.GetFullPath(settings.File);
 

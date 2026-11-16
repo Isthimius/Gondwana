@@ -107,7 +107,7 @@ public sealed class AuthoringHistoryTests : IDisposable
         using (var group = d.History.BeginTransaction("Many tiles"))
         {
             for (int x = 0; x < 30; x++) for (int y = 0; y < 10; y++)
-                    d.EditTile(layer, x, y, "Assign", tile => { tile.AnimationKey = "walk"; tile.EnableAnimator = true; tile.Transform = TileTransform.Rotate90; });
+                d.EditTile(layer, x, y, "Assign", tile => { tile.AnimationKey = "walk"; tile.EnableAnimator = true; tile.Transform = TileTransform.Rotate90; });
             group.Commit();
         }
         Assert.Equal(1, changes); Assert.Equal(300, layer.Tiles.Count);

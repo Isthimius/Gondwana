@@ -7,6 +7,39 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 public sealed partial class PluginPackageTests
 {
     [Fact]
+    public void InstallSourceMenuCanCloseAndReopenWithoutBeingDisposed() => OnSta(() =>
+    {
+        using var operations = Operations();
+        operations.StartSession();
+        var host = new Host(_ => { });
+        var preferences = new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { });
+        using var panel = new PluginManagerPanel(host, preferences, operations);
+        using var form = new Form();
+        form.Controls.Add(panel);
+        panel.Dock = DockStyle.Fill;
+        form.Show();
+        Application.DoEvents();
+
+        var menu = panel.SourceMenu;
+        Assert.Equal(2, menu.Items.Count);
+        panel.InstallButton.PerformClick();
+        Application.DoEvents();
+        Assert.True(menu.Visible);
+        menu.Close();
+        Application.DoEvents();
+        Assert.False(menu.IsDisposed);
+
+        panel.InstallButton.PerformClick();
+        Application.DoEvents();
+        Assert.True(menu.Visible);
+        menu.Close();
+        Assert.False(menu.IsDisposed);
+
+        panel.Dispose();
+        Assert.True(menu.IsDisposed);
+    });
+
+    [Fact]
     public void ManagerReviewsPackagesAndCancellationPreservesActivationRestartNotice() => OnSta(() =>
     {
         var source = SourcePackage();

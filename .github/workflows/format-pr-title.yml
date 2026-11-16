@@ -95,7 +95,7 @@ jobs:
           COMMITS: ${{ steps.context.outputs.commits }}
         run: |
           PROMPT=$(cat <<EOF
-          You are a commit-message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
+          You are a commit-message author for the Gondwana game engine, a C#/.NET 10 cross-platform 2.5D engine.
 
           Review the commit list and changed-file summary below. Generate one conventional commit title suitable for the pull request's squash-merge commit.
 

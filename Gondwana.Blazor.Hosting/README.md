@@ -21,7 +21,7 @@ dotnet add package Gondwana.Blazor.Hosting
 
 ## Usage
 
-The current Blazor game template targets `net10.0-browser` and requires the matching .NET 10 SDK and `wasm-tools` workload. The hosting library itself still targets .NET 8; this does not make the generated browser app a .NET 8 template.
+The current Blazor game template targets `net10.0-browser` and requires the matching .NET 10 SDK and `wasm-tools` workload. The hosting library targets .NET 10, consistent with the generated browser app.
 
 ```csharp
 public class MyGameHost : BlazorGpuGameHost

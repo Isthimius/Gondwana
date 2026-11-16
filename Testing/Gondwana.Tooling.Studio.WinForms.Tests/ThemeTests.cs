@@ -1,5 +1,5 @@
 using System.Runtime.ExceptionServices;
-using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;

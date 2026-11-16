@@ -144,12 +144,16 @@ public sealed class SceneViewerLauncherTests : IDisposable
     /// <summary>
     /// Verifies resolves matching repository build and published subfolder.
     /// </summary>
-    [Fact]
-    public void ResolvesMatchingRepositoryBuildAndPublishedSubfolder()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ResolvesMatchingRepositoryBuildAndPublishedSubfolder(bool relocated)
     {
-        string editor = Path.Combine(_directory, "Tooling", "Gondwana.Tooling.Scenes.WinForms", "bin", "Release", "net8.0-windows");
+        string toolingDirectory = Path.Combine(_directory, "Tooling");
+        if (relocated) toolingDirectory = Path.Combine(toolingDirectory, "Studio");
+        string editor = Path.Combine(toolingDirectory, "Gondwana.Tooling.Scenes.WinForms", "bin", "Release", "net10.0-windows");
         Directory.CreateDirectory(editor);
-        string viewer = Path.Combine(_directory, "Tooling", SceneViewerLauncher.Component, "bin", "Release", "net8.0-windows", SceneViewerLauncher.Component + ".exe");
+        string viewer = Path.Combine(toolingDirectory, SceneViewerLauncher.Component, "bin", "Release", "net10.0-windows", SceneViewerLauncher.Component + ".exe");
         Directory.CreateDirectory(Path.GetDirectoryName(viewer)!);
         File.WriteAllText(viewer, "");
         Assert.Equal(viewer, SceneViewerLauncher.Locate(editor));

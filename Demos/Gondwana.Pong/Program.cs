@@ -1,4 +1,5 @@
 namespace Gondwana.Demos.Pong;
+
 internal static class Program
 {
     [STAThread]

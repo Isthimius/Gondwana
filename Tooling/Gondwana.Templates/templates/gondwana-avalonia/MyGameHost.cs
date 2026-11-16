@@ -36,7 +36,7 @@ internal sealed class MyGameHost : AvaloniaBitmapGameHost
     protected override void OnInitializing()
     {
         // To use audio, configure a compatible backend here before LoadAssets.
-        // This cross-platform net8.0 template has no default desktop audio backend.
+        // This cross-platform net10.0 template has no default desktop audio backend.
         // Gondwana.Audio.NAudio and Gondwana.Audio.Midi require Windows targeting.
     }
 

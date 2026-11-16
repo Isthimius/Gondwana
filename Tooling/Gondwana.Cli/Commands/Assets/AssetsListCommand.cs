@@ -35,7 +35,7 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken) => Display(settings, summary: false);
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken) => Display(settings, summary: false);
 
     internal static int Display(Settings settings, bool summary)
     {

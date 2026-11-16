@@ -68,7 +68,7 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

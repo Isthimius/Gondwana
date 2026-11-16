@@ -1,6 +1,7 @@
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 namespace Gondwana.Demos.Pong;
+
 internal sealed class GameWindow : Form
 {
     private readonly WinFormBitmapRenderSurfaceControl _renderSurface = new();

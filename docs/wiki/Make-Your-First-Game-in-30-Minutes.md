@@ -45,7 +45,7 @@ Concepts covered:
 ## Prerequisites
 
 - Windows (this guide uses WinForms)
-- .NET 8 SDK
+- .NET 10 SDK
 - Visual Studio 2022 **or** the .NET CLI
 - An image for your sprite's Tilesheet. For this guide you can use [Spot defaults tilesheet](images/spot_defaults.png).
 

@@ -1,0 +1,179 @@
+# Gondwana Animations (WinForms)
+
+The standalone shell opens loose definition documents. To open and save a definition
+inside a GAF, use [Gondwana Studio](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions),
+which hosts this same editor. Packed documents retain all logical members and their
+source references; Save updates the typed archive entry, while Save As adopts a loose copy.
+
+Standalone .NET 10 Windows editor for Gondwana `.gani` animation definitions.
+
+Run from the repository root:
+
+```console
+dotnet run --project Tooling/Gondwana.Tooling.Animations.WinForms -c Release
+```
+
+## Design
+
+The editor is definition-driven. It edits `AnimationDefinition` directly and never
+boots a `GameHost`, creates a runtime `Animator`, or serializes runtime playback
+state.
+
+`AnimationEditorControl` is a public, hostable WinForms surface. The standalone
+application places that control inside a DockPanelSuite document, and Gondwana Studio already hosts the same editor surface without depending on the standalone `MainForm`.
+
+## Workflow
+
+- **File → New** creates a GANI definition with a repeating cycle and 0.1-second
+  throttle.
+- **File → Open GANI** opens one or more `.gani` documents.
+- **File → Add GTS source** loads one or more loose `.gts` definitions as authoring
+  sources for the active animation and records those dependencies in the GANI definition.
+- **Add from GAF…** in GTS frame sources selects an exact typed GTS entry and an
+  individual logical member. Packed images, including images in that same archive,
+  feed the existing frame tree and previews. Conflicting logical source names are rejected.
+- Reopening a GANI automatically reloads its recorded loose or packed GTS sources. Legacy GANI
+  files without source metadata can recover exactly one matching sibling GTS by logical
+  tilesheet name and are then marked dirty so the dependency is persisted on save.
+- The left source browser shows tilesheets, regions, rows and frames lazily. Expand
+  a row and single-click a frame to preview it; double-click the frame or its preview
+  image to append it. The **Add** action performs the same append explicitly.
+- The sequence panel provides **Add**, **Remove**, **Up**, and **Down** actions.
+- The property panel edits the GANI key, throttle, cycle type, hide-on-end flag and
+  next-cycle key.
+- **Play/Pause**, **Restart**, and **Step** preview the current sequence. Fit, 1x, 2x
+  and 4x preview scales use nearest-neighbor sampling.
+- Structural errors come from `AnimationDefinitionValidator`. Missing or
+  unresolvable loaded GTS sources appear as warnings because a GANI file is allowed
+  to reference content that is not currently open in the editor.
+- **Ctrl+S**, **Ctrl+Shift+S**, and **Ctrl+W** save, save as and close. Dirty documents
+  prompt on close.
+
+## GTS dependency model
+
+GANI keeps runtime frame identity logical:
+
+```text
+Tilesheet name
+Region name
+X/Y frame coordinates
+```
+
+It also persists lightweight `TilesheetSources` metadata so tooling can find the
+related GTS again. Loose GTS paths are saved relative to the GANI location whenever
+possible and are rebased by Save As. The source metadata does not embed the GTS or
+its image, and runtime `ToCycle` materialization still resolves frames only through
+`TilesheetRegistry`.
+
+Packed GTS entries (`AssetsFilePath` + `AssetEntryName`) are loaded by exact
+typed entry and logical tilesheet name. Their images may also be packed.
+Explicit packed sources take precedence over loose duplicates and remain unchanged.
+
+The editor refuses to load two GTS files with the same logical
+`TilesheetDefinition.Name` into one document because the resulting GANI references
+would be ambiguous.
+
+Loose and packed GTS images use the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md)
+and Skia decoding, with mask metadata applied for preview parity. **Reload sources**
+refreshes definitions, images, thumbnails and playback data without editing the GANI.
+
+## Studio direction
+
+The standalone executable is intentionally only one host:
+
+```text
+MainForm / DockPanel
+        |
+        v
+AnimationEditorControl
+        |
+        v
+AnimationDocument + AnimationDefinition
+```
+
+Studio already hosts `AnimationEditorControl` directly inside its own document and working-directory model.
+
+## Editor-local docking
+
+AnimationEditorControl remains a reusable WinForms UserControl. Each instance owns an
+inner DockPanelSuite surface with these panes: GTS frame sources, Preview, Animation frames, Animation properties, and Validation.
+The standalone application still hosts the entire editor as **one outer document**;
+the working-directory browser and other documents belong to the outer DockPanel.
+An embedding host does not need to create or manage the internal panes.
+
+The default layout follows the previous editor arrangement. Panes can be docked,
+tabbed, and split inside their own editor. All inner panes use document-style
+groups with tabs at the top, including panes initially placed at the sides or
+bottom. Floating and auto-hide are disabled for inner panes.
+Closing a pane using its close button hides it without closing the document.
+Use **View** to restore an individual pane in the active GANI document, or choose
+**Show all animation panes**. **View → Working directory** restores the outer
+workspace. A restored inner pane returns to its previous split/tab group for that
+open document. Layouts, including hidden panes, persist per editor type and entry application.
+
+The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
+by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
+inner dock contents (including hidden panes) and theme, and disposes them with the
+editor. Existing editor-specific model, image, preview, and event cleanup remains
+in each editor. Hosts should dispose the whole editor when closing its document.
+
+Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
+in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
+Windows CI job; GANI's existing interactions remain in its animation test project.
+
+## Dock layout preferences
+
+DockPanelSuite layouts are saved per user under
+`%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
+survive restart. Studio and the standalone executables use independent profiles.
+New documents use their editor type's last saved arrangement, regardless of file path.
+
+Use **View → Reset application layout** to restore the outer tool arrangement, or
+**View → Reset active editor layout** to restore the active editor type's defaults.
+Individual View commands and **Show all … panes** recover hidden panes without resetting.
+Reset does not change document data. Open sibling editors keep their current layouts;
+the next newly opened editor uses the reset profile until another layout is changed.
+
+These are UI preferences only: no Gondwana content files or EngineState are modified,
+the dock XML stores no source-document paths or unsaved content. Document reopening
+is handled by the separate workspace-session preference. Missing or corrupt preferences fall back to defaults without a dialog.
+Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
+Changes are saved after a short settling interval and flushed on disposal.
+
+## Workspace sessions
+
+This standalone application remembers its working directory, saved documents,
+tab order, and active document independently of Studio and the other editors.
+**File > Restore workspace on startup** controls restoration. **Start empty on
+next launch**, holding Shift at launch, or `--empty-workspace` bypasses it.
+Unsaved contents and untitled documents are not recovered. Missing/invalid files
+are skipped with a startup summary. See [workspace session restoration](../Gondwana.Tooling.Studio.WinForms/README.md#workspace-session-restoration)
+for storage, close behavior, encrypted archives, and recovery details.
+
+## Appearance
+
+Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
+
+## Undo and redo
+
+**Edit > Undo** (**Ctrl+Z**) and **Edit > Redo** (**Ctrl+Y** or **Ctrl+Shift+Z**)
+use the active document's shared history in both this application and Studio.
+Trees, lists, canvases, non-editing property values, and drop-down-only selectors
+support these shortcuts. Textboxes and property-grid fields with pending text
+edits retain native text undo. Commit text before using keyboard document undo;
+menu commands commit valid pending property edits first.
+
+Definition/member edits, authoring properties, and resource/source-reference
+changes are reversible. A grouped action is one step; selection, navigation,
+playback, and previews are not edits. Each document retains 200 committed actions
+by default. Undoing back to the last successful save clears its dirty marker;
+undoing past that checkpoint makes it dirty again. New unsaved documents stay
+dirty. Editing after undo discards the redo branch. Failed saves do not move the
+checkpoint. Save and Save As preserve history and reference targets, including
+GAF-backed definitions opened through Studio.
+
+History edits authoring metadata. It does not modify external media, download URI
+sources, undo committed archive/file operations, or alter other documents.
+GAF Add/Import and Replace also have document-scoped history. Reviewed archive Rename/Move/Delete operations are not locally undoable; see [Studio's undo/redo contract](../Gondwana.Tooling.Studio.WinForms/README.md#undo-and-redo).

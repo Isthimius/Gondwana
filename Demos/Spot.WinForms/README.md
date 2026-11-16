@@ -50,7 +50,7 @@ During the build, the canonical files from `Demos/Spot.Shared/assets` are packed
 
 ## Run the Windows version
 
-Spot! targets 64-bit Windows and is developed as part of the Gondwana repository. You will need the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+Spot! targets 64-bit Windows and is developed as part of the Gondwana repository. You will need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```console
 git clone https://github.com/Isthimius/Gondwana.git
@@ -99,7 +99,7 @@ The computer player is intentionally straightforward: it evaluates legal moves b
 
 ## About Gondwana
 
-[Gondwana](https://github.com/Isthimius/Gondwana) is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. Spot! serves both as a playable game and as a dogfooding project for Gondwana's Windows and browser stacks.
+[Gondwana](https://github.com/Isthimius/Gondwana) is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 10. Spot! serves both as a playable game and as a dogfooding project for Gondwana's Windows and browser stacks.
 
 The Gondwana source is released under the [MIT License](../../LICENSE). Third-party font, music, sound, and art attribution for Spot! is recorded in [`Spot.Shared/assets/sources.txt`](../Spot.Shared/assets/sources.txt) and [`Spot.Shared/assets/OFL.txt`](../Spot.Shared/assets/OFL.txt).
 

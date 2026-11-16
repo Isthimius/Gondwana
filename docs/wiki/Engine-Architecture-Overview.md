@@ -23,9 +23,9 @@ For the core class diagram and other rendering diagrams, see [[Architecture Diag
 If you're on Windows and want to get everything installed in one shot, run the [setup script](https://github.com/Isthimius/Gondwana/blob/master/Tooling/scripts/Setup-Gondwana-Dev.ps1) from anywhere inside the cloned repository:
 
 ```powershell
-# Full setup — installs .NET 8 SDK (if missing), restores packages, builds the
-# solution, installs the Gondwana CLI + templates, WASM workload, and checks
-# for optional native libraries (SDL2, LibVLC).
+# Gondwana 2.7.0 setup verifies/installs the required .NET 10 SDK,
+# restores/builds the solution, installs CLI/templates, and checks optional
+# WASM tooling and native dependencies (SDL2, LibVLC).
 .\Tooling\scripts\Setup-Gondwana-Dev.ps1
 
 # Core-only — skips the WASM workload, SDL2, and LibVLC checks

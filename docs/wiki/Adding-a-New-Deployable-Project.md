@@ -48,7 +48,7 @@ A typical library project includes:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net8.0</TargetFramework>
+  <TargetFramework>net10.0</TargetFramework>
   <OutputType>Library</OutputType>
   <RootNamespace>Your.Project.Name</RootNamespace>
   <AssemblyName>Your.Project.Name</AssemblyName>
@@ -70,7 +70,7 @@ A typical library project includes:
 </PropertyGroup>
 ```
 
-Use the real target framework for the project. Windows-only libraries commonly use `net8.0-windows`; browser projects may use `net8.0-browser`. Do not copy `net8.0` blindly from the example.
+Use the real target framework for the project. Windows-only libraries commonly use `net10.0-windows`; browser projects may use `net10.0-browser`. Do not copy `net10.0` blindly from the example.
 
 > **Package description rule**  
 > Keep `<Description>` specific to the package. Do not reuse the core engine description unless the package actually contains the core engine.

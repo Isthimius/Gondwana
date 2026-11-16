@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Gondwana.Tooling.SceneViewer.WinForms.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\WinForms\Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
+      <ProjectReference Include="..\..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
+      <ProjectReference Include="..\..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
+    </ItemGroup>
+</Project>

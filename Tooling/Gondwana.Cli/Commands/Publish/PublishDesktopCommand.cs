@@ -30,7 +30,7 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
         /// Gets or sets the framework.
         /// </summary>
         [CommandOption("-f|--framework")]
-        [Description("Desktop target framework to publish (for example 'net8.0' or 'net8.0-windows').")]
+        [Description("Desktop target framework to publish (for example 'net10.0' or 'net10.0-windows').")]
         public string? Framework { get; init; }
 
         /// <summary>
@@ -63,7 +63,7 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {

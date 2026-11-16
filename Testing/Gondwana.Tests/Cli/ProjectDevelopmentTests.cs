@@ -34,6 +34,38 @@ public sealed class ProjectDevelopmentTests : IDisposable
     }
 
     /// <summary>
+    /// Verifies that Doctor enforces the SDK baseline of Gondwana 2.7.
+    /// </summary>
+    [Theory]
+    [InlineData("8.0.428", false)]
+    [InlineData("9.0.308", false)]
+    [InlineData("10.0.99", false)]
+    [InlineData("10.0.100", true)]
+    [InlineData("10.0.401", true)]
+    [InlineData("11.0.100", true)]
+    [InlineData("10.0.401-preview.1", false)]
+    [InlineData("not a version", false)]
+    [InlineData(null, false)]
+    public void DoctorRequiresStableNet10OrNewerSdk(string? version, bool isSupported)
+    {
+        var result = DoctorCommand.EvaluateDotNetSdkVersion(version, exitCode: 0);
+        Assert.Equal(isSupported ? CheckStatus.Ok : CheckStatus.Fail, result.Status);
+        if (!isSupported)
+            Assert.Contains(".NET 10", result.Detail);
+    }
+
+    /// <summary>
+    /// Verifies SDK selection failures do not appear as successful Doctor checks.
+    /// </summary>
+    [Fact]
+    public void DoctorReportsSdkSelectionFailure()
+    {
+        var result = DoctorCommand.EvaluateDotNetSdkVersion(string.Empty, exitCode: 1);
+        Assert.Equal(CheckStatus.Fail, result.Status);
+        Assert.Contains("global.json", result.Detail);
+    }
+
+    /// <summary>
     /// Verifies doctor explains app local video runtime without claiming system probe validates it.
     /// </summary>
     /// <param name="package">The package value for this test case.</param>

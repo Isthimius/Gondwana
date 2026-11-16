@@ -265,12 +265,12 @@ public sealed partial class PluginPackageTests
         Directory.CreateDirectory(_root); var zip = Path.Combine(_root, "invalid.zip");
         if (reason == "corrupt") File.WriteAllText(zip, "not a zip");
         else using (var archive = ZipFile.Open(zip, ZipArchiveMode.Create))
-            {
-                if (reason == "duplicate") { archive.CreateEntry("plugin.json"); archive.CreateEntry("PLUGIN.JSON"); }
-                if (reason == "link") archive.CreateEntry("link").ExternalAttributes = unchecked((int)0xA1FF0000);
-                if (reason == "count") for (var i = 0; i <= PluginPackageInspection.MaximumEntries; i++) archive.CreateEntry("file" + i);
-                if (reason == "nested") archive.CreateEntry("one/two/plugin.json");
-            }
+        {
+            if (reason == "duplicate") { archive.CreateEntry("plugin.json"); archive.CreateEntry("PLUGIN.JSON"); }
+            if (reason == "link") archive.CreateEntry("link").ExternalAttributes = unchecked((int)0xA1FF0000);
+            if (reason == "count") for (var i = 0; i <= PluginPackageInspection.MaximumEntries; i++) archive.CreateEntry("file" + i);
+            if (reason == "nested") archive.CreateEntry("one/two/plugin.json");
+        }
         using var service = Operations(); Assert.ThrowsAny<Exception>(() => service.Preview(zip));
     }
 

@@ -1,6 +1,6 @@
 # Gondwana.Video
 
-Optional **native desktop** video playback for .NET 8: `DirectVideo` → `IVideoPlayer` →
+Optional **native desktop** video playback for .NET 10: `DirectVideo` → `IVideoPlayer` →
 `VlcVideoPlayer` → LibVLCSharp / LibVLC 3. Core Gondwana has no dependency on Video.
 Blazor/browser playback is not supported by this backend.
 
@@ -177,7 +177,7 @@ with `RenderSurface.Host.ViewManager.ConfigureSingleFullView()`. In
 `renderSurfaceHost = RenderSurface.Host` and `view = renderSurfaceHost.ViewManager.Views[0]`.
 Supply your own absolute media path. Run `dotnet run -c Release`; then
 `dotnet publish -c Release -r win-x64 --self-contained false` and run the published
-executable on a Windows machine with .NET 8 but **without VLC installed**. The
+executable on a Windows machine with .NET 10 but **without VLC installed**. The
 native NuGet supplies LibVLC; .NET itself is separate.
 
 For this branch, the ready-to-run template-based GPU demo is:

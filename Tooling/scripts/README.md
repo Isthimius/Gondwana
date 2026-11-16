@@ -18,22 +18,24 @@ This folder contains PowerShell helper scripts for building, publishing, and rel
 
 Idempotent one-shot setup script for new contributors to the Gondwana project. Run it once after cloning the repository to install everything needed to build, run, and develop Gondwana. Safe to re-run — install/restore steps also refresh to the latest available versions where applicable while retaining a newer already-installed `Gondwana.Templates` package.
 
+**Gondwana 2.7.0:** The repository pins .NET 10 in `global.json`. Setup requires a compatible .NET 10 SDK; WebAssembly tooling remains optional for developers who do not build browser projects.
+
 **What it does:**
 1. Verifies Git is available on `PATH`.
-2. Checks for the .NET 8 SDK; installs it via `winget` if missing (Windows only).
+2. Checks for the .NET 10 SDK, installing it via `winget` on Windows if missing, and verifies the SDK selected by `global.json`.
 3. Restores local .NET tools (`nbgv`) from `.config/dotnet-tools.json` with cache bypass.
 4. Restores NuGet packages for the solution with dependency reevaluation.
 5. Builds the solution in `Release` configuration.
 6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
 7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-blazor`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
-8. Detects an installed .NET 10 SDK, offering to install it via `winget` **only if it is missing** (with an explanation that the `net10.0-browser` Blazor template requires it). When a .NET 10 SDK is available, installs or updates its matching `wasm-tools` workload in an isolated SDK 10 context; the repository's .NET 8 SDK selection remains unchanged.
+8. Installs or updates the optional .NET 10 `wasm-tools` workload in an isolated SDK 10 context for browser development.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance (including the official SDL releases page) if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
 11. Ensures `git-cliff` is installed; updates it via `winget` when available on Windows.
 12. Installs `butler` (itch.io) by downloading the latest binary from the [broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, and extracting it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Adds the directory to the current session PATH and prints a reminder to add it permanently. Prints `butler login` instructions after install.
 13. Runs `gondwana doctor` to confirm the final environment state.
 
-**Blazor SDK behavior:** The main solution stays on SDK 8 via `global.json`. The script checks `dotnet --list-sdks` for .NET 10; if it is already present, **no installation prompt appears**. On Windows, an interactive session without SDK 10 offers to install it side-by-side using `winget`; declining or running non-interactively leaves ordinary desktop development intact. The .NET 10 workload is installed/verified separately. `gondwana doctor` launched from the repository still reports the SDK 8 workload because of `global.json`.
+**Blazor SDK behavior:** The main solution uses the SDK selected by `global.json`. A missing .NET 10 SDK is a setup failure (Windows setup attempts `winget` installation). The browser-only `wasm-tools` workload is verified or installed at step 8 unless `-SkipOptional` is supplied. `gondwana doctor` also runs under the repository's .NET 10 SDK.
 
 **Prerequisites:**
 - Git on `PATH`
@@ -44,7 +46,7 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 | Parameter | Description | Default |
 |---|---|---|
 | `-SkipBuild` | Skip step 5 (`dotnet build`). Restores packages and tools only. | — |
-| `-SkipOptional` | Skip steps 8–12 (optional .NET 10 / wasm-tools, SDL2, LibVLC, git-cliff, butler). | — |
+| `-SkipOptional` | Skip steps 8–12 (optional wasm-tools, SDL2, LibVLC, git-cliff, butler). | — |
 
 **Examples:**
 ```powershell
@@ -54,7 +56,7 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 # Skip building the solution
 .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
-# Install core tools only (no optional .NET 10/WASM, SDL2, LibVLC, git-cliff, or butler)
+# Install core tools only (no optional WASM, SDL2, LibVLC, git-cliff, or butler)
 .\Setup-Gondwana-Dev.ps1 -SkipOptional
 ```
 
@@ -71,7 +73,7 @@ Packs `Tooling/Gondwana.Cli` and reinstalls the global `gondwana` tool from an i
 4. Prints the installed `gondwana --version` output when available in the current shell.
 
 **Prerequisites:**
-- .NET 8 SDK
+- .NET 10 SDK
 - PowerShell 5.1 or later
 
 **Parameters:**
@@ -107,7 +109,7 @@ Packs `Tooling/Gondwana.Templates` and reinstalls the exact freshly packed templ
 5. Prints the installed template package version and the currently available Gondwana templates.
 
 **Prerequisites:**
-- .NET 8 SDK
+- .NET 10 SDK
 - PowerShell 5.1 or later
 
 **Parameters:**
@@ -287,7 +289,7 @@ Creates a new versioned release of Gondwana: updates the changelog, commits it, 
 > **This publishes immutable packages.** Once a version is published to NuGet it cannot be replaced. Use `-PreviewOnly` to inspect release notes and do not reuse a published tag. Beta/RC releases have replaceable *changelog sections*, not replaceable package versions.
 
 **Prerequisites:**
-- [.NET SDK 8.0+](https://dotnet.microsoft.com/download) on `PATH`.
+- [.NET SDK 10.0+](https://dotnet.microsoft.com/download) on `PATH`.
 - [`git`](https://git-scm.com/) on `PATH`.
 - [`nbgv`](https://github.com/dotnet/Nerdbank.GitVersioning) on `PATH` — install with `dotnet tool install -g nbgv`.
 - [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.

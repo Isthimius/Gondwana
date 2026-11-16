@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
     <PropertyGroup>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net10.0-windows</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>Gondwana.WinForms</RootNamespace>
         <AssemblyName>Gondwana.WinForms</AssemblyName>
@@ -36,6 +36,10 @@
 		<None Include="README.md" Pack="true" PackagePath="" />
 		<None Include="CHANGELOG.md" Pack="true" PackagePath="" />
 		<None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="Nerdbank.GitVersioning" Version="3.9.50" />
 	</ItemGroup>
 
 </Project>

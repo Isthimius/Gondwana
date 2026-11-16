@@ -1,24 +1,30 @@
 <Project>
-	<PropertyGroup Condition="'$(IsPackable)' == 'true'">
-		<!-- Symbols / Source Link — disabled for template packages (no compiled output to symbolize) -->
-		<IncludeSymbols Condition="'$(PackageType)' != 'Template'">true</IncludeSymbols>
-		<SymbolPackageFormat Condition="'$(PackageType)' != 'Template'">snupkg</SymbolPackageFormat>
+    <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+        <!-- Symbols / Source Link -->
+        <IncludeSymbols Condition="'$(PackageType)' != 'Template'">true</IncludeSymbols>
+        <SymbolPackageFormat Condition="'$(PackageType)' != 'Template'">snupkg</SymbolPackageFormat>
 
-		<!-- NuGet packaging and assets -->
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <!-- NuGet packaging -->
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 
-		<!-- URLs / repository -->
-		<RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-	</PropertyGroup>
+        <!-- Repository -->
+        <RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
 
-  <!-- Embed the Gondwana logo as the taskbar/executable icon and as a form resource. -->
-  <PropertyGroup Condition="'$(UseWindowsForms)' == 'true' and '$(OutputType)' == 'WinExe' and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
-    <ApplicationIcon>$(MSBuildThisFileDirectory)assets/gondwana-logo.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(UseWindowsForms)' == 'true' and '$(OutputType)' == 'WinExe' and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)assets/gondwana-logo.ico" LogicalName="Gondwana.Tooling.BrandingIcon" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tooling/Shared/WinForms/ToolingBranding.cs" Link="Branding/ToolingBranding.cs" />
-  </ItemGroup>
+    <!-- Set the application icon for WinForms tooling executables. -->
+    <PropertyGroup Condition="'$(UseWindowsForms)' == 'true'
+      and '$(OutputType)' == 'WinExe'
+      and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
+        <ApplicationIcon>$(MSBuildThisFileDirectory)assets/gondwana-logo.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <!-- Preserve the icon resource in each executable for compatibility. -->
+    <ItemGroup Condition="'$(UseWindowsForms)' == 'true'
+      and '$(OutputType)' == 'WinExe'
+      and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
+        <EmbeddedResource Include="$(MSBuildThisFileDirectory)assets/gondwana-logo.ico"
+                          LogicalName="Gondwana.Tooling.BrandingIcon" />
+    </ItemGroup>
 </Project>

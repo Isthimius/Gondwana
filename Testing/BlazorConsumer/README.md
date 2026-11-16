@@ -1,7 +1,7 @@
 # Blazor package-consumer regression
 
-Run with PowerShell 7, Node 22+, SDK 8 (repository build), and the latest serviced
-SDK 10. From a directory outside the repository's `global.json` scope, select
+Run with PowerShell 7, Node 22+, and the latest serviced .NET 10 SDK.
+From a directory outside the repository's `global.json` scope, select
 SDK 10 and install `dotnet workload install wasm-tools`. On Linux install
 Chromium's OS dependencies with `npx --yes playwright@1.56.1 install-deps chromium`.
 Then, from the repository:
@@ -16,7 +16,7 @@ feeds, browser downloads or npm installations belong in source control. The
 temporary directory is deliberately retained for diagnosis; remove it after use.
 
 The test packs the six required runtime packages, CLI and distributed templates
-with the repository SDK 8, then selects SDK 10 with an independent `global.json`.
+with the repository's pinned SDK 10, then selects SDK 10 with an independent `global.json`.
 It verifies `wasm-tools` is installed for that SDK, installs the local CLI and
 templates, generates `net10.0-browser` via `gondwana new blazor`,
 and pins every Gondwana reference to the actual packed NBGV version. An isolated
@@ -33,7 +33,9 @@ console errors and failed asset requests fail the test. HTTP 200 or a canvas
 alone cannot pass. Browser traces, screenshots, console/network logs and MSBuild
 binary logs remain in the temporary directory.
 
-## v2.6.2 audit
+## v2.6.2 audit (historical)
+
+The following observations describe the earlier 2.6.2 compatibility investigation; the 2.7.0 repository now targets .NET 10 across the engine, templates, and desktop projects.
 
 - The template explicitly enables `WasmBuildNative`. Clean SDK 10 CI passed
   published Skia/WebGL startup but reproduced `libSkiaSharp` loading failure

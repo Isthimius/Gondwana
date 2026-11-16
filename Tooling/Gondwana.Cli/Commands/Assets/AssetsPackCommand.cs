@@ -82,7 +82,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var source = Path.GetFullPath(settings.Source);
         var output = Path.GetFullPath(settings.Output);

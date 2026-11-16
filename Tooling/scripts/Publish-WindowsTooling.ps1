@@ -24,7 +24,7 @@ $tools = @(
 )
 
 foreach ($tool in $tools) {
-    $project = Join-Path $repositoryRoot "Tooling/$($tool.Name)/$($tool.Name).csproj"
+    $project = Join-Path $repositoryRoot "Tooling/Studio/$($tool.Name)/$($tool.Name).csproj"
     $destination = Join-Path $OutputRoot $tool.Name
     Write-Host "Publishing $($tool.Name) (win-x64, self-contained) ..."
     & dotnet publish $project -c Release -r win-x64 --self-contained true -o $destination --nologo /p:EnableWindowsTargeting=true /p:PublishTrimmed=false
@@ -48,14 +48,14 @@ $pluginDestination = Join-Path $OutputRoot 'Gondwana.Tooling.Studio.WinForms/plu
 New-Item -ItemType Directory -Path $pluginDestination -Force | Out-Null
 
 foreach ($plugin in $plugins) {
-    $project = Join-Path $repositoryRoot "Tooling/$($plugin.Name)/$($plugin.Name).csproj"
+    $project = Join-Path $repositoryRoot "Tooling/Studio/Plugin/$($plugin.Name)/$($plugin.Name).csproj"
     Write-Host "Building official Studio plugin $($plugin.Name) ..."
     & dotnet build $project -c Release --nologo /p:EnableWindowsTargeting=true
     if ($LASTEXITCODE -ne 0) {
         throw "Plugin build failed: $($plugin.Name)"
     }
 
-    $built = Join-Path $repositoryRoot "Tooling/$($plugin.Name)/bin/Release/net8.0-windows"
+    $built = Join-Path $repositoryRoot "Tooling/Studio/Plugin/$($plugin.Name)/bin/Release/net10.0-windows"
     $packageDestination = Join-Path $pluginDestination $plugin.Folder
     New-Item -ItemType Directory -Path $packageDestination -Force | Out-Null
     foreach ($file in $plugin.Files) {

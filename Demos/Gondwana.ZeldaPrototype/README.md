@@ -1,6 +1,6 @@
 # The Greenward Key
 
-The Greenward Key is a playable, code-first top-down action-RPG prototype built with Gondwana and .NET 8 for Windows. It supports optional imported *The Legend of Zelda: A Link to the Past* sprite sheets through Gondwana `.gts` definitions; generated artwork is the default.
+The Greenward Key is a playable, code-first top-down action-RPG prototype built with Gondwana and .NET 10 for Windows. It supports optional imported *The Legend of Zelda: A Link to the Past* sprite sheets through Gondwana `.gts` definitions; generated artwork is the default.
 
 ## Art source and redistribution
 
@@ -34,7 +34,7 @@ Use `GameArtMode.Generated` for the code-drawn artwork or `GameArtMode.Gts` for 
 ## Requirements
 
 - Windows 10 or 11
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - optional Xbox-compatible/XInput controller
 
 ## Run

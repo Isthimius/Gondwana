@@ -324,18 +324,30 @@ internal static class ProjectHelper
             return 1;
         }
 
-        if (!string.IsNullOrWhiteSpace(version))
+        if (New.BlazorScaffoldPrerequisites.IsCompatibleWorkload(version))
         {
-            AnsiConsole.MarkupLine($"[dim]wasm-tools already installed ({Markup.Escape(version)}).[/]");
+            AnsiConsole.MarkupLine($"[dim]wasm-tools already installed ({Markup.Escape(version!)}).[/]");
             return 0;
         }
 
-        AnsiConsole.MarkupLine("[dim]wasm-tools is not installed; installing workload...[/]");
+        if (!string.IsNullOrWhiteSpace(version))
+            AnsiConsole.MarkupLine($"[yellow]wasm-tools {Markup.Escape(version)} is incompatible with .NET 10.[/]");
+        AnsiConsole.MarkupLine("[dim]Installing the .NET 10 wasm-tools workload...[/]");
         var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
         if (workloadExit != 0)
+        {
             AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
+            return workloadExit;
+        }
 
-        return workloadExit;
+        if (!TryGetInstalledWorkloadVersion("wasm-tools", out var installedVersion, out var verifyError) ||
+            !New.BlazorScaffoldPrerequisites.IsCompatibleWorkload(installedVersion))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(verifyError ?? "A compatible .NET 10 wasm-tools workload was not detected after installation.")}[/]");
+            return 1;
+        }
+
+        return 0;
     }
 
     /// <summary>

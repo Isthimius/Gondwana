@@ -1,6 +1,6 @@
 using System.Reflection;
-using Gondwana.Tooling.WinForms;
-using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

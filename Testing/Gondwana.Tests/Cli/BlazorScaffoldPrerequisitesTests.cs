@@ -35,6 +35,22 @@ public sealed class BlazorScaffoldPrerequisitesTests
     }
 
     /// <summary>
+    /// Uses the same .NET 10 workload compatibility check for scaffolding,
+    /// Doctor, and browser run/publish commands.
+    /// </summary>
+    [Theory]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData("8.0.400", false)]
+    [InlineData("10.0.100", true)]
+    [InlineData("10.0.300/10.0.100", true)]
+    [InlineData("11.0.100", false)]
+    public void SharedWorkloadCompatibilityRequiresNet10(string? version, bool expected)
+    {
+        Assert.Equal(expected, BlazorScaffoldPrerequisites.IsCompatibleWorkload(version));
+    }
+
+    /// <summary>
     /// Does not prompt or install if a compatible SDK 10 workload is present.
     /// </summary>
     [Theory]

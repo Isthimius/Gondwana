@@ -12,7 +12,7 @@ NAudio is therefore an optional platform implementation rather than a dependency
 dotnet add package Gondwana.Audio.NAudio
 ```
 
-The package targets `net8.0-windows` and currently uses:
+The package targets `net10.0-windows` and currently uses:
 
 - NAudio 2.3.0
 - NAudio.Vorbis 1.5.0

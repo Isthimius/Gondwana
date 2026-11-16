@@ -84,7 +84,7 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
     }
 
     /// <inheritdoc/>
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var useLocal = !string.IsNullOrWhiteSpace(settings.WebRoot);
         var useRemote = !string.IsNullOrWhiteSpace(settings.RemoteHost) && !string.IsNullOrWhiteSpace(settings.RemotePath);

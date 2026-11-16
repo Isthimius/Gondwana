@@ -133,27 +133,29 @@ Basic usage:
 The script currently performs thirteen setup or verification steps:
 
 1. verifies Git is available on `PATH`
-2. verifies the .NET 8 SDK, installing it through `winget` on Windows when possible
+2. verifies the required .NET 10 SDK, installing it through `winget` on Windows when missing, and checks the repository-selected SDK
 3. restores repository-local .NET tools such as Nerdbank.GitVersioning
 4. restores NuGet packages for the solution with dependency reevaluation
 5. builds `Gondwana.sln` in Release configuration unless `-SkipBuild` is supplied
 6. installs or updates the global `Gondwana.Cli` tool
 7. installs or updates `Gondwana.Templates`, while retaining a newer already-installed local version instead of forcing a downgrade
-8. checks for .NET 10 (needed by the `net10.0-browser` Blazor template), offers a side-by-side `winget` install **only if SDK 10 is missing**, and installs/updates the matching .NET 10 `wasm-tools` workload in an isolated SDK 10 context
+8. installs/updates the optional .NET 10 `wasm-tools` workload in an isolated SDK 10 context for `net10.0-browser` development
 9. checks for SDL2 native binaries and prints guidance if they are missing
 10. checks for LibVLC and can install VLC through `winget` on Windows
 11. verifies `git-cliff` and can install/update it through `winget` on Windows
 12. installs `butler` from itch.io's Broth CDN when missing and adds its install directory to the current shell's `PATH`
 13. runs `gondwana doctor` when the command is available
 
-Steps 8 through 12 are optional-development dependencies and can be skipped together. The repository's `global.json` continues selecting .NET 8 for the solution and desktop development. When .NET 10 is already installed there is no SDK installation prompt; when missing, interactive Windows users can accept or decline an optional SDK 10 installation. Non-interactive execution skips the prompt. Workload checks run under the isolated .NET 10 SDK context, not the repository's SDK 8 pin. `gondwana doctor` run from the repository may still show the .NET 8 workload; step 8 separately verifies the Blazor toolchain.
+Steps 8 through 12 are optional-development dependencies and can be skipped together. The repository's `global.json` selects .NET 10 for the solution and desktop development. A compatible .NET 10 SDK is mandatory at step 2; an installed SDK that does not satisfy `global.json` must be updated. Workload checks run under an isolated .NET 10 SDK context. Step 8 separately verifies the browser toolchain, and `gondwana doctor` uses the repository-selected SDK.
+
+**Gondwana 2.7.0:** Setup now enforces the .NET 10 SDK; only the browser `wasm-tools` workload remains optional.
 
 ## Parameters
 
 | Parameter | Purpose |
 |---|---|
 | `-SkipBuild` | Skip the Release build |
-| `-SkipOptional` | Skip optional .NET 10/WASM, SDL2, LibVLC, `git-cliff`, and Butler setup |
+| `-SkipOptional` | Skip optional WASM, SDL2, LibVLC, `git-cliff`, and Butler setup |
 
 Examples:
 

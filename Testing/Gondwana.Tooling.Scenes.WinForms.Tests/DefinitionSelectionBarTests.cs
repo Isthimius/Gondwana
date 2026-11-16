@@ -1,6 +1,7 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Tooling.Scenes.Editing;
-using Gondwana.Tooling.WinForms.Theming;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Scenes.WinForms.Tests;
 
@@ -21,7 +22,7 @@ public sealed class DefinitionSelectionBarTests
 
         var bar = Assert.Single(editor.Controls.OfType<ToolStrip>()
             .Where(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal)));
-        int pixels = Gondwana.Tooling.WinForms.ToolbarSizing.Pixels(32, bar.DeviceDpi);
+        int pixels = ToolbarSizing.Pixels(32, bar.DeviceDpi);
         Assert.Equal(new Size(pixels, pixels), bar.ImageScalingSize);
         Assert.True(bar.ShowItemToolTips);
         Assert.Single(bar.Items.OfType<ToolStripComboBox>());

@@ -10,16 +10,14 @@
 
     Steps performed:
       1.  Verifies Git is available on PATH.
-      2.  Checks for the .NET 8 SDK; installs it via winget if missing (Windows only).
+      2.  Checks for the required .NET 10 SDK; installs it via winget if missing (Windows only).
       3.  Restores local .NET tools (nbgv) from .config/dotnet-tools.json.
       4.  Restores NuGet packages for the solution, forcing dependency
           reevaluation.
       5.  Builds the solution in Release configuration.
       6.  Installs/updates the Gondwana CLI global tool (Gondwana.Cli).
       7.  Installs/updates Gondwana project templates (Gondwana.Templates).
-      8.  Checks for the .NET 10 SDK required by Blazor templates, offers a
-          side-by-side install only if missing, and verifies/installs the matching
-          .NET 10 wasm-tools workload without changing the repo's .NET 8 SDK.
+      8.  Verifies/installs the optional .NET 10 wasm-tools workload for browser development.
       9.  Checks for SDL2 native binaries required by Gondwana.Input.SDL2.
       10. Explains app-local native LibVLC deployment for optional Gondwana.Video.
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
@@ -36,7 +34,7 @@
     Skip step 5 (dotnet build). Restores packages and tools only.
 
 .PARAMETER SkipOptional
-    Skip steps 8–12: optional .NET 10/wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
+    Skip steps 8–12: optional wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
 
 .EXAMPLE
     # Full setup — run from anywhere inside the cloned repository
@@ -47,7 +45,7 @@
     .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
 .EXAMPLE
-    # Install core tools only; skip .NET 10/WASM, SDL2, LibVLC, git-cliff, and butler
+    # Install core tools only; skip WASM, SDL2, LibVLC, git-cliff, and butler
     .\Setup-Gondwana-Dev.ps1 -SkipOptional
 #>
 param(
@@ -157,8 +155,8 @@ function Test-TemplatesInstalled {
 }
 
 function Get-DotNet10SdkVersion {
-    # The solution's global.json selects .NET 8, so inspect all installed SDKs
-    # rather than relying on 'dotnet --version' in the repository.
+    # Find installed .NET 10 SDKs, including when the repository's pinned SDK
+    # is not yet installed and `dotnet --version` cannot run in the repo.
     $lines = @(& dotnet --list-sdks 2>&1)
     if ($LASTEXITCODE -ne 0) {
         throw "Could not enumerate installed .NET SDKs."
@@ -194,8 +192,8 @@ function Ensure-DotNet10WasmTools {
     param([string] $SdkVersion)
 
     # dotnet workload commands select an SDK from the working directory.
-    # Use an isolated temporary global.json so the repository's .NET 8 pin
-    # cannot accidentally install/update the .NET 8 workload instead.
+    # Use an isolated temporary global.json to target exactly the selected
+    # .NET 10 SDK and keep workload selection predictable.
     $workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("gondwana-sdk10-" + [Guid]::NewGuid().ToString('N'))
     [System.IO.Directory]::CreateDirectory($workDir) | Out-Null
     $globalJson = '{"sdk":{"version":"' + $SdkVersion + '","rollForward":"latestPatch"}}'
@@ -274,29 +272,50 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 }
 OK "$(git --version)"
 
-# ─── Step 2: .NET 8 SDK ───────────────────────────────────────────────────────
+# ─── Step 2: .NET 10 SDK ──────────────────────────────────────────────────────
 
-Step '2/13  .NET 8 SDK'
+Step '2/13  .NET 10 SDK'
 $dotnetFound = $null -ne (Get-Command dotnet -ErrorAction SilentlyContinue)
-$hasSdk8     = $dotnetFound -and
-               (@((dotnet --list-sdks 2>&1) | Where-Object { $_ -match '^8\.' })).Count -gt 0
+$sdk10Version = if ($dotnetFound) { Get-DotNet10SdkVersion } else { $null }
 
-if ($hasSdk8) {
-    $sdk8Line = (dotnet --list-sdks 2>&1) | Where-Object { $_ -match '^8\.' } | Select-Object -Last 1
-    OK ".NET 8 SDK already installed: $($sdk8Line.Trim())"
-} elseif ($isWindowsOS) {
-    INFO '.NET 8 SDK not found — attempting install via winget...'
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        throw ".NET 8 SDK not found and winget is unavailable.`nDownload and install the .NET 8 SDK from https://dotnet.microsoft.com/download/dotnet/8 then rerun this script."
+if (-not $sdk10Version) {
+    if (-not $isWindowsOS) {
+        throw ".NET 10 SDK not found.`nInstall it from https://dotnet.microsoft.com/download/dotnet/10.0 or your package manager, then rerun setup."
     }
-    Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.8', '--silent',
+
+    INFO '.NET 10 SDK not found — attempting install via winget...'
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        throw ".NET 10 SDK not found and winget is unavailable.`nInstall it from https://dotnet.microsoft.com/download/dotnet/10.0 and rerun setup."
+    }
+
+    Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.10', '--exact', '--silent',
                         '--accept-source-agreements', '--accept-package-agreements')
-    # Append newly installed SDK paths while preserving this session's existing PATH
     Add-PersistedPathsToProcess
-    OK '.NET 8 SDK installed. Reopen your terminal if subsequent steps fail to find dotnet.'
-} else {
-    throw ".NET 8 SDK not found.`nInstall it via your package manager or from https://dotnet.microsoft.com/download/dotnet/8 then rerun this script."
+    $sdk10Version = Get-DotNet10SdkVersion
+    if (-not $sdk10Version) {
+        throw '.NET 10 was installed but is not visible to dotnet yet. Reopen your terminal and rerun setup.'
+    }
 }
+
+# An installed .NET 10 SDK is not enough when global.json pins a newer feature
+# band (or patch). Check what the repository actually selects before restoring.
+Push-Location $repoRoot
+try {
+    $selectedSdk = @(& dotnet --version 2>&1)
+    $sdkExitCode = $LASTEXITCODE
+} catch {
+    throw "Cannot resolve the SDK required by the repository's global.json. Install/update .NET 10 to match the pinned version.`n$_"
+} finally {
+    Pop-Location
+}
+
+if ($sdkExitCode -ne 0 -or $selectedSdk.Count -eq 0 -or
+    [string]$selectedSdk[0] -notmatch '^10\.0\.\d+$') {
+    throw "The repository requires a compatible .NET 10 SDK (see global.json).`nInstalled SDKs: $(dotnet --list-sdks | Out-String)`nUpdate .NET 10 and rerun setup."
+}
+
+$sdk10Version = ([string]$selectedSdk[0]).Trim()
+OK "Repository SDK ready: $sdk10Version"
 
 # ─── Step 3: Local .NET tools (nbgv) ──────────────────────────────────────────
 
@@ -417,64 +436,12 @@ if ($SkipOptional) {
 
     # ─── Step 8: WASM workload ────────────────────────────────────────────────
 
-    Step '8/13  .NET 10 Blazor SDK + WASM workload'
-    $sdk10Version = Get-DotNet10SdkVersion
-
-    if (-not $sdk10Version) {
-        WARN 'The Gondwana Blazor template targets net10.0-browser and requires a .NET 10 SDK plus matching wasm-tools.'
-        INFO 'The Gondwana repository still uses .NET 8; .NET 10 is installed side-by-side for Blazor projects.'
-
-        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            $canPrompt = $false
-            try {
-                $canPrompt = [Environment]::UserInteractive -and -not [Console]::IsInputRedirected
-            } catch {
-                $canPrompt = $false
-            }
-
-            if ($canPrompt) {
-                $answer = $null
-                try {
-                    $answer = Read-Host 'Install the .NET 10 SDK now with winget? [y/N]'
-                } catch {
-                    # PowerShell -NonInteractive can still report an interactive
-                    # console. A failed prompt must not abort optional setup.
-                    WARN 'Interactive input is unavailable; skipping optional .NET 10 installation.'
-                }
-                if ($answer -match '^(?i:y|yes)$') {
-                    try {
-                        Invoke-Cmd winget @('install', '--id', 'Microsoft.DotNet.SDK.10', '--exact',
-                                            '--silent', '--accept-source-agreements',
-                                            '--accept-package-agreements')
-                        Add-PersistedPathsToProcess
-                        $sdk10Version = Get-DotNet10SdkVersion
-                        if (-not $sdk10Version) {
-                            WARN '.NET 10 was installed but is not visible yet; reopen the terminal and rerun setup.'
-                        }
-                    } catch {
-                        WARN "Automatic .NET 10 installation failed: $_"
-                    }
-                } elseif ($null -ne $answer) {
-                    INFO '.NET 10 installation declined; Blazor workloads will be skipped.'
-                }
-            } else {
-                WARN 'Non-interactive session: skipping optional .NET 10 installation prompt.'
-            }
-        } else {
-            INFO 'Automatic .NET 10 installation requires winget on Windows; install the SDK manually.'
-        }
-    }
-
-    if ($sdk10Version) {
-        try {
-            Ensure-DotNet10WasmTools -SdkVersion $sdk10Version
-        } catch {
-            WARN "Could not set up the .NET 10 wasm-tools workload: $_"
-            INFO 'From outside this repository (which pins SDK 8), select SDK 10 and run: dotnet workload install wasm-tools'
-        }
-    } else {
-        WARN 'Skipping .NET 10 wasm-tools: .NET 10 SDK is not installed.'
-        INFO 'Install .NET 10 from https://dotnet.microsoft.com/download/dotnet/10.0 for Blazor template support.'
+    Step '8/13  .NET 10 WebAssembly workload'
+    try {
+        Ensure-DotNet10WasmTools -SdkVersion $sdk10Version
+    } catch {
+        WARN "Could not set up the .NET 10 wasm-tools workload: $_"
+        INFO 'From the repository root, run: dotnet workload install wasm-tools'
     }
 
     # ─── Step 9: SDL2 native library ──────────────────────────────────────────
@@ -679,7 +646,7 @@ if ($SkipOptional) {
 # ─── Step 13: gondwana doctor ─────────────────────────────────────────────────
 
 Step '13/13 gondwana doctor'
-INFO 'Doctor runs under the repository-pinned SDK 8; the .NET 10 Blazor toolchain is checked separately in step 8.'
+INFO 'Doctor runs under the repository-pinned .NET 10 SDK; the optional browser workload is checked in step 8.'
 if (Get-Command gondwana -ErrorAction SilentlyContinue) {
     gondwana doctor
 } else {

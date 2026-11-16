@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.401-noble AS build
 WORKDIR /src
 
 COPY ["Directory.Build.props", "."]
@@ -15,7 +15,7 @@ RUN dotnet publish "Tooling/Gondwana.Mcp/Gondwana.Mcp.csproj" \
     --no-restore \
     --output /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS final
 WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://+:8080

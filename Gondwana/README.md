@@ -1,6 +1,6 @@
 # Gondwana Game Engine
 
-**Gondwana** is a 2D and 2.5D game engine for C# / .NET 8 focused on
+**Gondwana** is a 2D and 2.5D game engine for C# / .NET 10 focused on
 tile-based worlds, layered rendering, and practical engine architecture.
 
 It provides fine-grained control over rendering, timing, and scene

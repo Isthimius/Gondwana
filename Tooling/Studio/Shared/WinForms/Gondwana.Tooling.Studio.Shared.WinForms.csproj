@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Theming is a separate project; exclude its files entirely -->
+        <Compile Remove="Theming\**\*" />
+        <EmbeddedResource Remove="Theming\**\*" />
+        <None Remove="Theming\**\*" />
+        <Content Remove="Theming\**\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp" Version="3.119.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
+        <ProjectReference Include="..\..\..\..\Gondwana\Gondwana.csproj" />
+        <ProjectReference Include="..\..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
+        <Using Include="Gondwana.Tooling.Studio.Shared.WinForms.Theming" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- ToolingBranding loads this icon from its own Shared.WinForms assembly. -->
+        <EmbeddedResource Include="..\..\..\..\assets\gondwana-logo.ico"
+                          LogicalName="Gondwana.Tooling.BrandingIcon" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.9.50" />
+    </ItemGroup>
+</Project>

@@ -7,8 +7,8 @@ using Gondwana.Physics.Collisions;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Sprites.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Sprites.WinForms.Tests;
 
