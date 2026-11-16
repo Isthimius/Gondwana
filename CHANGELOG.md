@@ -4,17 +4,285 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Gondwana
+
+### Added
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Audio.Browser
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Audio.Midi
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Audio.NAudio
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Avalonia
+
+### Added
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+
+
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Avalonia.Hosting
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Blazor
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Blazor.Hosting
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Hosting
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Input.SDL2
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Video
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Video.Widgets
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.Widgets
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.WinForms
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Gondwana.WinForms.Hosting
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
+
+### Added
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Cli
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Mcp
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Templates
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Assets.WinForms
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Animations.WinForms
+
+### Added
+- Add typed resource drag-and-drop foundation ([#561](https://github.com/Isthimius/Gondwana/pull/561))
+- Support GTS and GANI resource drag-and-drop ([#562](https://github.com/Isthimius/Gondwana/pull/562))
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+
+
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Audio.WinForms
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
 ## Tooling / Gondwana.Tooling.Studio.Core
 
 ### Added
 - Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+- Add plugin manager UI and activation preferences (#471, phase 2) ([#570](https://github.com/Isthimius/Gondwana/pull/570))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
 ## Tooling / Gondwana.Tooling.Studio.WinForms
 
 ### Added
 - Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Embedded icons and GTS rename dialogs ([#556](https://github.com/Isthimius/Gondwana/pull/556))
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+- Add plugin manager UI and activation preferences (#471, phase 2) ([#570](https://github.com/Isthimius/Gondwana/pull/570))
+
+
+
+### Documentation
+- Streamline the Studio WinForms README ([#567](https://github.com/Isthimius/Gondwana/pull/567))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Scenes.WinForms
+
+### Added
+- Support GTS and GANI resource drag-and-drop ([#562](https://github.com/Isthimius/Gondwana/pull/562))
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+
+
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+
+### Added
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Sprites.WinForms
+
+### Added
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+
+
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+
+### Added
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Add typed resource drag-and-drop foundation ([#561](https://github.com/Isthimius/Gondwana/pull/561))
+- Embedded icons and GTS rename dialogs ([#556](https://github.com/Isthimius/Gondwana/pull/556))
+
+
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
 ## Build / Repository
+
+### Added
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+
+
 
 ### Fixed
 - Align dev setup with .NET 10 Blazor prerequisites ([#550](https://github.com/Isthimius/Gondwana/pull/550))
@@ -23,6 +291,12 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Clarify blazor publishing and itch.io deployment ([#547](https://github.com/Isthimius/Gondwana/pull/547))
+- Refresh PlantUML architecture and rendering diagrams ([#555](https://github.com/Isthimius/Gondwana/pull/555))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
 
 

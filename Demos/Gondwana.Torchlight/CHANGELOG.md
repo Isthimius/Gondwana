@@ -8,3 +8,15 @@
 - Show a live GPU presentation FPS counter in the HUD using the runtime profiler.
 - Add mouse wheel and Z/X/C camera zoom controls, preserving the player-centered follow camera.
 - Make the WinForms window resizable and maximizable with aspect-preserving GPU presentation scaling.
+
+# [Unreleased]
+
+
+
+## Added
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+
+
+
+## Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
