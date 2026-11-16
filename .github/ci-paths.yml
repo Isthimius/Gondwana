@@ -39,8 +39,9 @@ blazor:
 
 # Job-level gate: any Windows editor-related source, test, or shared build change.
 winforms:
-  - 'Tooling/Gondwana.Tooling.*/**'
-  - 'Tooling/Shared/**'
+  - 'Tooling/Studio/**'
+  - 'Tooling/Gondwana.Tooling.Assets/**'
+  - 'Tooling/Gondwana.Tooling.Importers/**'
   # Only actual test suites, not the standalone ThemeProbe utility.
   - 'Testing/Gondwana.Tooling.*.Tests/**'
   - 'Testing/Shared/**'
@@ -88,7 +89,7 @@ winforms_shared:
   - 'Gondwana.Widgets/**'
   - 'Gondwana.WinForms/**'
   - 'Gondwana.WinForms.Hosting/**'
-  - 'Tooling/Shared/**'
+  - 'Tooling/Studio/Shared/**'
   - 'Tooling/Gondwana.Tooling.Assets/**'
   - 'Testing/Shared/**'
   - 'Testing/WinFormsEditorTests.slnf'
@@ -104,36 +105,38 @@ winforms_shared:
 
 # Direct editor tests. Keep transitive test/project references in these lists.
 winforms_tilesheets:
-  - 'Tooling/Gondwana.Tooling.Tilesheets.WinForms/**'
-  - 'Tooling/Gondwana.Tooling.Assets.WinForms/**'
-  - 'Tooling/Gondwana.Tooling.Animations.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Assets.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Animations.WinForms/**'
   - 'Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/**'
   - 'Demos/Gondwana.ZeldaPrototype/assets/*.gts'
   - 'Demos/Gondwana.ZeldaPrototype/assets/*.png'
 
 winforms_animations:
-  - 'Tooling/Gondwana.Tooling.Animations.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Animations.WinForms/**'
   - 'Testing/Gondwana.Tooling.Animations.WinForms.Tests/**'
 
 winforms_audio:
-  - 'Tooling/Gondwana.Tooling.Audio.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Audio.WinForms/**'
   - 'Testing/Gondwana.Tooling.Audio.WinForms.Tests/**'
 
 winforms_scenes:
-  - 'Tooling/Gondwana.Tooling.Scenes.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Scenes.WinForms/**'
   - 'Testing/Gondwana.Tooling.Scenes.WinForms.Tests/**'
 
 winforms_sprites:
-  - 'Tooling/Gondwana.Tooling.Sprites.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.Sprites.WinForms/**'
   - 'Testing/Gondwana.Tooling.Sprites.WinForms.Tests/**'
 
 winforms_scene_viewer:
-  - 'Tooling/Gondwana.Tooling.SceneViewer.WinForms/**'
+  - 'Tooling/Studio/Gondwana.Tooling.SceneViewer.WinForms/**'
   - 'Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests/**'
 
 # Studio references all standalone editors plus the plugin/asset/importer layers.
 winforms_studio:
-  - 'Tooling/Gondwana.Tooling.*/**'
+  - 'Tooling/Studio/**'
+  - 'Tooling/Gondwana.Tooling.Assets/**'
+  - 'Tooling/Gondwana.Tooling.Importers/**'
   - 'Testing/Gondwana.Tooling.Studio.WinForms.Tests/**'
   - 'Testing/Gondwana.Tooling.Importers.Tests/Fixtures/**'
 

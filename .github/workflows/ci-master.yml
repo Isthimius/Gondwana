@@ -245,6 +245,9 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Install .NET 10 WebAssembly workload
+        run: dotnet workload install wasm-tools
+
       - name: Restore workloads
         run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
       - name: Restore

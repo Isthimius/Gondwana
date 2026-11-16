@@ -93,10 +93,13 @@ internal static class SceneViewerLauncher
         // suffix of the running editor. Do not guess between stale build outputs.
         for (var directory = new DirectoryInfo(root); directory is not null; directory = directory.Parent)
         {
-            if (directory.Name != "bin" || directory.Parent?.Parent?.Name != "Tooling")
+            var toolingDirectory = directory.Parent?.Parent;
+            if (directory.Name != "bin" || toolingDirectory is null ||
+                (toolingDirectory.Name != "Tooling" &&
+                 (toolingDirectory.Name != "Studio" || toolingDirectory.Parent?.Name != "Tooling")))
                 continue;
             var suffix = Path.GetRelativePath(directory.FullName, root);
-            candidates.Add(Path.Combine(directory.Parent.Parent.FullName, Component, "bin", suffix, Component + ".exe"));
+            candidates.Add(Path.Combine(toolingDirectory.FullName, Component, "bin", suffix, Component + ".exe"));
             break;
         }
 
