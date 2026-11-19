@@ -34,7 +34,13 @@
 
 	<ItemGroup>
 		<!-- Pack all template files into content/ in the nupkg -->
-		<Content Include="templates/**" Exclude="&#xD;&#xA;			templates/**/obj/**;&#xD;&#xA;			templates/**/bin/**;&#xD;&#xA;			templates/**/.vs/**;&#xD;&#xA;			templates/**/*.user;&#xD;&#xA;			templates/**/*.suo" />
+		<Content Include="templates/**"
+		 Exclude="
+			templates/**/obj/**;
+			templates/**/bin/**;
+			templates/**/.vs/**;
+			templates/**/*.user;
+			templates/**/*.suo" />
 	</ItemGroup>
 
     <ItemGroup>
