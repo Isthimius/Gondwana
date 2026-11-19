@@ -537,108 +537,330 @@ On bitmap backbuffers, Gondwana's dirty-region queue limits CPU redraws. On this
 <details>
 <summary><strong>Blazor — WebAssembly browser (WebGL)</strong></summary>
 
-This version builds the same **Wanderer** game in your browser using Blazor WebAssembly, Gondwana's GPU-backed WebGL render surface, and the browser-safe asset handling introduced in PR #575. The finished game has an 8×8 grid, a bubble sprite, and arrow-key movement.
+This guide walks you through building a small browser game using the Gondwana engine. By the end, you will have a running WebAssembly game, a sprite on a grid, and keyboard-driven movement — all the pieces you need to start building something real.
 
-### Blazor — Prerequisites
+This version uses the **Gondwana CLI** and the **Blazor WebAssembly GPU render path (WebGL)**.
 
-- A **.NET 10 SDK** and the matching `wasm-tools` workload.
-- The Gondwana CLI and templates (install in Step 1 if needed).
+The completed example mirrors the basic gameplay structure of the **Spot** demo included in this repository (`Demos/Spot.Blazor/`). Spot is a good next read once you finish this guide.
+
+---
+
+<a id="blazor-contents"></a>
+## Contents
+
+- [What You'll Build](#blazor-what-youll-build)
+- [Prerequisites](#blazor-prerequisites)
+- [Step 1 — Install the Gondwana CLI and templates](#blazor-step-1)
+- [Step 2 — Scaffold a GPU-backed Blazor project](#blazor-step-2)
+- [Step 3 — Add your sprite](#blazor-step-3)
+- [Step 4 — Confirm the generated GPU host](#blazor-step-4)
+- [Step 5 — Understand the host lifecycle](#blazor-step-5)
+- [Step 6 — Fill in `WandererHost.cs`](#blazor-step-6)
+- [Step 7 — Run it](#blazor-step-7)
+- [What the Spot Demo adds](#blazor-spot-demo)
+- [Key mental model](#blazor-key-mental-model)
+- [Further reading](#blazor-further-reading)
+
+---
+
+<a id="blazor-what-youll-build"></a>
+## What You'll Build
+
+A tiny game called **Wanderer**: a colored bubble sits on an 8×8 grid. The player moves it one cell at a time with the arrow keys. The bubble animates smoothly between cells.
+
+Concepts covered:
+
+| Concept | Where it shows up |
+|---|---|
+| Project scaffolding | `gondwana new blazor` |
+| GPU render path | `BlazorGpuRenderSurfaceComponent` and `BlazorGpuGameHost` |
+| Browser asset downloads | `GameRenderSurface.DownloadAssetsAsync` |
+| `GameHostBase` lifecycle | Generated host override methods |
+| Tilesheets & sprites | `LoadTilesheets` and `CreateSprites` |
+| Scene & scene layer | `CreateInitialScene` |
+| Keyboard input | `OnKeyboardAdapterInitialized`, `BlazorKey`, and `OnKeyDown` |
+| Scripted movement | `MoveTo` and its `OnComplete` callback |
+| Clean shutdown | Generated `GameRenderSurface.razor` |
+
+---
+
+<a id="blazor-prerequisites"></a>
+## Prerequisites
+
+- A .NET 10 SDK.
+- The matching .NET 10 `wasm-tools` workload (the Gondwana CLI can help install it).
+- Visual Studio **or** the .NET CLI.
 - A WebGL-capable browser.
-- The [`spot_defaults.png` tilesheet](images/spot_defaults.png): five frames, each 93×96 pixels.
+- An image for your sprite's tilesheet. For this guide you can use the [Spot defaults tilesheet](images/spot_defaults.png).
 
-Unlike WinForms, this path can be developed on Windows, macOS, or Linux. Assets live under `wwwroot/assets/` and must be downloaded over HTTP rather than read from desktop filesystem paths.
+---
 
-### Blazor — Step 1: Install and scaffold
+<a id="blazor-step-1"></a>
+## Step 1 — Install the Gondwana CLI and templates
 
-Install the CLI and templates, if you have not already:
+Install the CLI as a .NET global tool:
 
 ```bash
 dotnet tool install --global Gondwana.Cli
+```
+
+Install the Gondwana project templates:
+
+```bash
 gondwana templates install
 ```
 
-Create your game:
+> You only need to do this once per machine. If the CLI is already installed, use `dotnet tool update --global Gondwana.Cli` when you want the latest version.
+
+The Blazor project uses the WebAssembly toolchain. `gondwana new blazor` verifies the selected .NET 10 SDK and offers to install `wasm-tools` if it is missing. To check or install the workload yourself:
+
+```bash
+dotnet --version
+dotnet workload install wasm-tools
+dotnet workload list
+```
+
+Make sure the SDK selected by `dotnet --version` is a .NET 10 SDK, and that `wasm-tools` appears in the workload list.
+
+---
+
+<a id="blazor-step-2"></a>
+## Step 2 — Scaffold a GPU-backed Blazor project
+
+Create a new Blazor WebAssembly Gondwana project:
 
 ```bash
 gondwana new blazor Wanderer
 cd Wanderer
 ```
 
-`gondwana new blazor` checks the selected .NET 10 SDK and offers to install `wasm-tools` when it is missing. If you use `dotnet new gondwana-blazor -n Wanderer` instead, install the workload manually with `dotnet workload install wasm-tools` under the .NET 10 SDK.
+The CLI creates the startup shell for you:
 
-The generated project includes:
-
-| File | Purpose |
+| File | What it contains |
 |---|---|
-| `Wanderer.csproj` | .NET 10 Blazor WebAssembly and Gondwana packages |
-| `Program.cs` | Browser bootstrap, base-address `HttpClient`, and audio backend setup |
-| `GameRenderSurface.razor` | GPU render surface, responsive 800×600 presentation, asynchronous asset downloads, startup/error UI, and disposal |
-| `WandererHost.cs` | `BlazorGpuGameHost` and the synchronous content, scene, sprite, and input hooks |
-| `wwwroot/assets/README.txt` | Browser asset placement and loading instructions |
+| `Wanderer.csproj` | .NET 10 browser target and Gondwana package references |
+| `Program.cs` | WebAssembly entry point, browser audio configuration, and app-relative `HttpClient` |
+| `GameRenderSurface.razor` | GPU render surface, responsive layout, HTTP asset downloads, and loading/error UI |
+| `WandererHost.cs` | Your generated `WandererHost` class with override stubs |
+| `wwwroot/assets/README.txt` | Notes for serving game assets from the browser |
 
-### Blazor — Step 2: Add the tilesheet to web assets
+This template uses the GPU-backed WebGL path. The generated render component and host should use:
 
-Create or use the generated `wwwroot/assets/` directory and put the image here:
-
-```text
-Wanderer/
-  wwwroot/
-    assets/
-      spot_defaults.png
+```razor
+<BlazorGpuRenderSurfaceComponent @ref="_renderSurface" />
 ```
 
-**Do not** put the image into a project-level `assets/` directory or add `CopyToOutputDirectory` to the `.csproj`. Blazor serves `wwwroot/` automatically. The corresponding **app-relative URL** is `assets/spot_defaults.png` (not `wwwroot/assets/spot_defaults.png` and not `/assets/spot_defaults.png`). Preserve filename case, especially for deployments to case-sensitive servers.
+```csharp
+internal sealed class WandererHost : BlazorGpuGameHost
+{
+    // The generated constructor also accepts IJSRuntime and downloaded assets.
+}
+```
 
-### Blazor — Step 3: Enable the download before host initialization
+You can also create the project directly with `dotnet new gondwana-blazor -n Wanderer`. When using `dotnet new`, ensure you have installed the `wasm-tools` workload yourself.
 
-Open `GameRenderSurface.razor`. In `DownloadAssetsAsync`, uncomment the PNG entry in its `paths` array:
+---
+
+<a id="blazor-step-3"></a>
+## Step 3 — Add your sprite
+
+Copy your PNG into the `wwwroot/assets/` subfolder.
+
+For this guide, the sprite is named:
+
+```text
+wwwroot/assets/spot_defaults.png
+```
+
+Blazor serves the files in `wwwroot/` as static web assets. You do **not** need a `CopyToOutputDirectory` entry in `Wanderer.csproj`.
+
+Open `GameRenderSurface.razor` and find `DownloadAssetsAsync`. Enable the PNG download in the `paths` array:
 
 ```csharp
 string[] paths =
 [
     "assets/spot_defaults.png",
-    // "assets/game.gaf", // Alternative packed-asset example (Step 7).
+    // "assets/game.gaf", // Optional packed-asset alternative.
 ];
 ```
 
-Leave the rest of the generated component alone. The template already:
+The request path is **`assets/spot_defaults.png`**, relative to the application base URL. Do not include `wwwroot/` or use a leading slash. Use forward slashes and the exact filename case.
 
-1. Downloads all enabled entries via the app-base-address `HttpClient` before constructing `WandererHost`.
-2. Passes the resulting `IReadOnlyDictionary<string, byte[]>` into the host constructor.
-3. Calls synchronous `Initialize()` only **after** the downloads finish.
-4. Maintains the loading/error overlay, cancels pending downloads on navigation, and disposes the host safely.
-5. Calls `ConfigureLogicalResolution(LogicalWidth, LogicalHeight)` for the default 800×600 game size.
+The generated component downloads the bytes *before* it creates and initializes the host. It passes the downloaded assets into `WandererHost` for use by synchronous content-loading hooks. The startup screen already reports loading/errors, and navigation cancels pending downloads.
 
-No custom `OnAfterRenderAsync` implementation or additional JavaScript is needed. The generated `WandererHost` constructor already accepts the downloaded asset dictionary; **do not replace it with a different constructor**.
+> The template also includes a commented packed `.gaf` loading example. Step 6a shows how to enable it instead of the loose PNG.
 
-### Blazor — Step 4: Load the PNG from memory
+---
 
-Open `WandererHost.cs`. Add any missing imports:
+<a id="blazor-step-4"></a>
+## Step 4 — Confirm the generated GPU host
+
+Open `WandererHost.cs`.
+
+The Blazor template gives you a host with several override stubs already in place. The important part is its base class and constructor:
+
+```csharp
+internal sealed class WandererHost : BlazorGpuGameHost
+{
+    private readonly IReadOnlyDictionary<string, byte[]> _assetBytes;
+
+    internal WandererHost(
+        BlazorGpuRenderSurfaceComponent renderSurface,
+        IJSRuntime jsRuntime,
+        IReadOnlyDictionary<string, byte[]> assetBytes)
+        : base(renderSurface, jsRuntime)
+    {
+        _assetBytes = assetBytes;
+    }
+}
+```
+
+This is the browser GPU path. **Keep the generated constructor and `_assetBytes` field**: they receive the image downloaded by `GameRenderSurface.razor`.
+
+You should also see override stubs similar to these:
+
+```csharp
+protected override void LoadTilesheets()
+{
+}
+
+protected override Scene CreateInitialScene()
+{
+    return Scene.Empty;
+}
+
+protected override void CreateSprites()
+{
+}
+
+protected override void OnKeyboardAdapterInitialized()
+{
+}
+
+protected override void UnhookEvents()
+{
+}
+```
+
+Those are the main hooks this guide will fill in.
+
+---
+
+<a id="blazor-step-5"></a>
+## Step 5 — Understand the host lifecycle
+
+The generated `GameRenderSurface.razor` handles browser startup and shutdown for you.
+
+At a high level:
+
+```text
+First render
+  → download enabled assets from wwwroot via HttpClient
+  → create the game host with downloaded bytes
+  → initialize the game host
+  → configure the logical render resolution
+
+Component disposal / navigation
+  → cancel pending downloads
+  → dispose the game host
+```
+
+The component maintains an 800×600 logical resolution by default (the `LogicalWidth` and `LogicalHeight` constants). It fits that canvas into the available browser viewport while preserving its aspect ratio. You can adjust the constants in `GameRenderSurface.razor` later.
+
+`WandererHost` initialization internally follows the sequence shown here:
+
+```text
+`fixed` — a non-overridable framework step.
+`↪ virtual` — extension point; subclasses may override it.
+
+Initialize                             fixed
+  → OnInitializing                     ↪ virtual
+  → ConfigurePlatform                  fixed
+        → OnConfigurePlatform          ↪ virtual
+  → ConfigureInput                     fixed
+        → OnKeyboardAdapterInitialized ↪ virtual
+        → OnMouseAdapterInitialized    ↪ virtual
+        → OnTouchAdapterInitialized    ↪ virtual
+  → LoadContent                        fixed
+        → LoadAssets                   ↪ virtual
+        → LoadTilesheets               ↪ virtual
+        → LoadAnimationCycles          ↪ virtual
+  → CreateSceneGraph                   fixed
+        → CreateInitialScene           ↪ virtual
+        → CreateInitialViews           ↪ virtual
+        → OnSceneGraphCreated          ↪ virtual
+  → BindScene                          fixed
+        → OnSceneBound                 ↪ virtual
+  → InitializeSceneObjects             fixed
+        → CreateSprites                ↪ virtual
+        → CreateDirectDrawings         ↪ virtual
+  → InitializeEngine                   fixed
+        → OnEngineInitialized          ↪ virtual
+  → StartEngine                        fixed
+        → OnEngineStarted              ↪ virtual
+  → OnInitialized                      ↪ virtual
+```
+
+For this first game, you only need to fill in a few game-specific methods:
+
+- `LoadTilesheets`
+- `CreateInitialScene`
+- `CreateSprites`
+- `OnKeyboardAdapterInitialized`
+- `UnhookEvents`
+- the movement handlers
+
+Everything else can stay as generated.
+
+**Important:** `LoadAssets` and `LoadTilesheets` are synchronous. Use the bytes already downloaded before `Initialize`; do not make either hook `async void`. The generated loading/error UI and disposal code need no changes.
+
+---
+
+<a id="blazor-step-6"></a>
+## Step 6 — Fill in `WandererHost.cs`
+
+Open `WandererHost.cs`.
+
+The generated host already includes several `using` statements. Add any of these that are missing:
 
 ```csharp
 using System.Drawing;
+using Gondwana.Assets;
+using Gondwana.Blazor.Hosting;
+using Gondwana.Blazor.Input.Keyboard;
+using Gondwana.Blazor.Rendering;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Tilesheets;
+using Gondwana.Input.Keyboard;
 using Gondwana.Physics.Movement.Easing;
+using Gondwana.Scenes;
+using Microsoft.JSInterop;
 ```
 
-The generated file already imports `Gondwana.Blazor.Input.Keyboard`, `Gondwana.Drawing.Coordinates`, `Gondwana.Drawing.Tilesheets`, `Gondwana.Input.Keyboard`, and `Gondwana.Scenes`.
-
-Add these fields to `WandererHost`, leaving the generated `_assetBytes` field and constructor intact:
+Then add these fields near the top of the class, alongside the generated `_assetBytes` field:
 
 ```csharp
 private const int Columns = 8;
-private const int Rows = 8;
-private const int CellPx = 64;
+private const int Rows    = 8;
+private const int CellPx  = 64;
 
 private Tilesheet _bubbleTilesheet = null!;
-private Sprite _sprite = null!;
-private int _gridX;
-private int _gridY;
-private bool _isMoving;
+private Sprite    _sprite          = null!;
+private int       _gridX           = 0;
+private int       _gridY           = 0;
+private bool      _isMoving        = false;
 ```
 
-Replace the body of `LoadTilesheets` with:
+---
+
+<a id="blazor-step-6a"></a>
+### Step 6a — Load the tilesheet
+
+A `Tilesheet` is an image atlas. Its `DefaultRegion.TileSize` specifies the size of each frame. The supplied [spot_defaults.png](images/spot_defaults.png) contains five 93×96 frames stacked vertically. Place it in your `wwwroot/assets/` directory and enable its URL in `GameRenderSurface.DownloadAssetsAsync` as described in Step 3.
+
+Fill in `LoadTilesheets`:
 
 ```csharp
 protected override void LoadTilesheets()
@@ -648,111 +870,13 @@ protected override void LoadTilesheets()
 
     _bubbleTilesheet =
         Engine.Managers.Tilesheets.LoadFromStream("bubble", imageStream);
-
     _bubbleTilesheet.DefaultRegion.TileSize = new Size(93, 96);
 }
 ```
 
-The bytes were downloaded by `GameRenderSurface.razor`. The tilesheet stream remains open until synchronous decoding completes, and is then disposed. **Do not use `LoadFromImageFile` or make `LoadTilesheets` / `LoadAssets` `async void`.**
+The PNG has been downloaded into memory before this hook runs; `LoadFromStream` decodes the tilesheet synchronously. If you substitute another image, set `DefaultRegion.TileSize` to the dimensions of one frame.
 
-### Blazor — Step 5: Create the scene and sprite
-
-The scene and sprite code is the same as WinForms. Replace `CreateInitialScene`:
-
-```csharp
-protected override Scene CreateInitialScene()
-{
-    var scene = new Scene();
-
-    scene.AddLayer(
-        columnCount: Columns,
-        rowCount: Rows,
-        width: CellPx,
-        height: CellPx,
-        zOrder: 10,
-        parallax: 1f,
-        coordinateSystem: CoordinateSystemTypes.Orthogonal);
-
-    scene[0].ShowGridLines = true;
-    return scene;
-}
-```
-
-Then replace `CreateSprites`:
-
-```csharp
-protected override void CreateSprites()
-{
-    var layer = Scene![0];
-    var frame = new Frame(_bubbleTilesheet, 0, 0);
-
-    _sprite = Engine.Managers.Sprites.CreateSprite(layer, frame);
-    _sprite.SetPosition(new(_gridX, _gridY));
-    _sprite.RenderSize = new Size(56, 56);
-    _sprite.VertAlign = VerticalAlignment.Middle;
-    _sprite.Visible = true;
-}
-```
-
-This places the first blue bubble in the top-left cell. Its 93×96 source frame is rendered at 56×56.
-
-### Blazor — Step 6: Handle browser arrow keys
-
-The **browser uses `BlazorKey`**, not `System.Windows.Forms.Keys`. The template has the right input hooks already; replace `OnKeyboardAdapterInitialized` and `OnKeyDown` with:
-
-```csharp
-protected override void OnKeyboardAdapterInitialized()
-{
-    if (Engine.Input.KeyboardEventPoller is not { } keyboard)
-        return;
-
-    keyboard.KeyDown += OnKeyDown;
-
-    keyboard.StartMonitoringKey((int)BlazorKey.ArrowLeft, nameof(BlazorKey.ArrowLeft));
-    keyboard.StartMonitoringKey((int)BlazorKey.ArrowRight, nameof(BlazorKey.ArrowRight));
-    keyboard.StartMonitoringKey((int)BlazorKey.ArrowUp, nameof(BlazorKey.ArrowUp));
-    keyboard.StartMonitoringKey((int)BlazorKey.ArrowDown, nameof(BlazorKey.ArrowDown));
-}
-
-private void OnKeyDown(KeyDownEventArgs args)
-{
-    if (args.KeyAction != KeyAction.Pressed || _isMoving)
-        return;
-
-    int newX = _gridX;
-    int newY = _gridY;
-
-    switch (args.KeyConfig.Key)
-    {
-        case nameof(BlazorKey.ArrowLeft):  newX--; break;
-        case nameof(BlazorKey.ArrowRight): newX++; break;
-        case nameof(BlazorKey.ArrowUp):    newY--; break;
-        case nameof(BlazorKey.ArrowDown):  newY++; break;
-        default: return;
-    }
-
-    if (newX < 0 || newX >= Columns || newY < 0 || newY >= Rows)
-        return;
-
-    _gridX = newX;
-    _gridY = newY;
-    _isMoving = true;
-
-    _sprite.Movement
-        .MoveTo(new(_gridX, _gridY), 0.15f, EasingKind.SmootherStep, 0f)
-        .OnComplete(() => _isMoving = false);
-}
-```
-
-Keep the template's `UnhookEvents` override, which detaches `keyboard.KeyDown -= OnKeyDown` during disposal. The `Pressed` filter makes each key press one movement, and `_isMoving` prevents overlapping moves. If arrow keys do not respond, **click the game canvas to give it focus**.
-
-### Blazor — Step 7 (optional): Load a packed GAF instead
-
-PR #575 also includes a **commented GAF example**. If you have a `game.gaf` package containing an `Image` entry named `spot_defaults.png`, you can use it *instead of* the loose PNG:
-
-1. Place the package at `wwwroot/assets/game.gaf`.
-2. In `GameRenderSurface.razor`, enable `"assets/game.gaf"` in `DownloadAssetsAsync` and disable `"assets/spot_defaults.png"` if it is no longer needed.
-3. In `WandererHost.LoadTilesheets`, replace the PNG implementation with:
+**Optional: packed GAF instead of a loose PNG.** Put `game.gaf` in `wwwroot/assets/`. The package must contain an `Image` entry named `spot_defaults.png`. In `GameRenderSurface.DownloadAssetsAsync`, enable `"assets/game.gaf"` and disable the PNG entry. Then use this **alternative** body for `LoadTilesheets`:
 
 ```csharp
 protected override void LoadTilesheets()
@@ -771,29 +895,256 @@ protected override void LoadTilesheets()
 }
 ```
 
-The generated host already imports `Gondwana.Assets`. Use **one** loading implementation for the `"bubble"` tilesheet; the examples are alternatives, not two required steps. This example disposes the package after decoding. If you retain an `AssetsFile` across hooks, retain and dispose it with the host instead.
+Choose **one** implementation for the `"bubble"` tilesheet. Both examples dispose their streams after synchronous decoding; this GAF example also disposes its package. If your game retains a package across content hooks, keep it alive and dispose it when the host shuts down.
 
-### Blazor — Step 8: Run it
+---
 
-From the `Wanderer` directory:
+<a id="blazor-step-6b"></a>
+### Step 6b — Build the scene
+
+Fill in `CreateInitialScene`:
+
+```csharp
+protected override Scene CreateInitialScene()
+{
+    var scene = new Scene();
+
+    scene.AddLayer(
+        columnCount:      Columns,
+        rowCount:         Rows,
+        width:            CellPx,
+        height:           CellPx,
+        zOrder:           10,
+        parallax:         1f,
+        coordinateSystem: CoordinateSystemTypes.Orthogonal);
+
+    scene[0].ShowGridLines = true;
+
+    return scene;
+}
+```
+
+This creates one 8×8 orthogonal layer. Each cell is 64×64 pixels.
+
+---
+
+<a id="blazor-step-6c"></a>
+### Step 6c — Place the sprite
+
+The template gives you `CreateSprites()` for this. Use this method to add your initial sprite:
+
+```csharp
+protected override void CreateSprites()
+{
+    var layer = Scene![0];
+
+    var frame = new Frame(_bubbleTilesheet, 0, 0);
+
+    _sprite = Engine.Managers.Sprites.CreateSprite(layer, frame);
+    _sprite.SetPosition(new(_gridX, _gridY));
+    _sprite.RenderSize = new Size(56, 56);
+    _sprite.VertAlign  = VerticalAlignment.Middle;
+    _sprite.Visible    = true;
+}
+```
+
+The sprite uses frame `(0, 0)` — the first, blue bubble — from the five-frame tilesheet.
+
+Also note that the tilesheet's `DefaultRegion.TileSize` is `(93, 96)` while the sprite's `RenderSize` is `(56, 56)`. Gondwana scales the source frame to the sprite's render size.
+
+---
+
+<a id="blazor-step-6d"></a>
+### Step 6d — Move the sprite with arrow keys
+
+Gondwana's keyboard event poller raises monitored-key events during the engine cycle. Override `OnKeyboardAdapterInitialized` to subscribe after the adapter is ready, then explicitly tell the poller which browser keys to watch.
+
+```csharp
+protected override void OnKeyboardAdapterInitialized()
+{
+    if (Engine.Input.KeyboardEventPoller is not { } keyboard)
+        return;
+
+    keyboard.KeyDown += OnKeyDown;
+
+    keyboard.StartMonitoringKey((int)BlazorKey.ArrowLeft, nameof(BlazorKey.ArrowLeft));
+    keyboard.StartMonitoringKey((int)BlazorKey.ArrowRight, nameof(BlazorKey.ArrowRight));
+    keyboard.StartMonitoringKey((int)BlazorKey.ArrowUp, nameof(BlazorKey.ArrowUp));
+    keyboard.StartMonitoringKey((int)BlazorKey.ArrowDown, nameof(BlazorKey.ArrowDown));
+}
+
+private void OnKeyDown(KeyDownEventArgs args)
+{
+    if (args.KeyAction != KeyAction.Pressed)
+        return;
+
+    if (_isMoving)
+        return;
+
+    int newX = _gridX;
+    int newY = _gridY;
+
+    switch (args.KeyConfig.Key)
+    {
+        case nameof(BlazorKey.ArrowLeft):
+            newX--;
+            break;
+
+        case nameof(BlazorKey.ArrowRight):
+            newX++;
+            break;
+
+        case nameof(BlazorKey.ArrowUp):
+            newY--;
+            break;
+
+        case nameof(BlazorKey.ArrowDown):
+            newY++;
+            break;
+
+        default:
+            return;
+    }
+
+    if (newX < 0 || newX >= Columns ||
+        newY < 0 || newY >= Rows)
+    {
+        // do not allow moving off of grid
+        return;
+    }
+
+    _gridX = newX;
+    _gridY = newY;
+    _isMoving = true;
+
+    _sprite.Movement
+        .MoveTo(
+            new(_gridX, _gridY),          // target
+            0.15f,                        // seconds
+            EasingKind.SmootherStep,      // easingKind
+            0f)                          // snapEpsilon
+        .OnComplete(() =>
+        {
+            _isMoving = false;
+        });
+}
+```
+
+The `_isMoving` guard prevents stacking movement commands while the current animation is still running. `KeyAction.Pressed` limits movement to one action per key press. The game canvas must have keyboard focus; click it if the arrow keys are not responding.
+
+---
+
+<a id="blazor-step-6e"></a>
+### Step 6e — Unhook events
+
+The host calls this hook during disposal, before it disposes the Engine. Unsubscribe from events registered during initialization.
+
+```csharp
+protected override void UnhookEvents()
+{
+    if (Engine.Input.KeyboardEventPoller is not null)
+        Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+}
+```
+
+Keep `GameRenderSurface.razor`'s generated `Dispose()` implementation too: it cancels any pending asset downloads and disposes the host when the user navigates away.
+
+---
+
+<a id="blazor-step-7"></a>
+## Step 7 — Run it
+
+From the project folder:
 
 ```bash
-dotnet restore
+gondwana run
+```
+
+Or use plain `dotnet`:
+
+```bash
 dotnet run
 ```
 
-Open the localhost URL printed by the development server. You should see the responsive game canvas with an 8×8 grid and a blue bubble; click the canvas, then move with the arrow keys.
+Open the local URL reported by the development server. You should see an 8×8 grid with a bubble in the top-left corner. Click the game canvas, then use the arrow keys to glide across the grid.
 
-For a production WebAssembly build:
+> **Tip:** The generated `GameRenderSurface.razor` calls `_host.Initialize(logLevel: LogLevel.Warning)`. Change the log level to `LogLevel.Debug` to see more engine messages in the browser developer console.
+
+To publish the browser game:
 
 ```bash
 gondwana publish blazor
 ```
 
-`dotnet publish -f net10.0-browser -c Release` is also supported. The published web files live under `bin/Release/net10.0-browser/publish/wwwroot/`. A static web server is needed to serve them; they are not desktop executables.
+Or use plain `dotnet`:
 
-If the game shows a loading error, check the browser network panel for a missing `assets/spot_defaults.png` or `assets/game.gaf`. If the build reports `NETSDK1147`, install the matching .NET 10 `wasm-tools` workload. If the browser reports `DllNotFoundException: libSkiaSharp`, check that the project targets `net10.0-browser` and the selected SDK/workload match.
+```bash
+dotnet publish -f net10.0-browser -c Release
+```
 
-**Next step:** Browse `Demos/Spot.Blazor/` to see a more complete browser game, or compare `Demos/Spot.WinForms/` to see how the same engine model is hosted on desktop.
+The published static web files are under `bin/Release/net10.0-browser/publish/wwwroot/` and must be served by a web server.
+
+If startup fails, check your browser's network panel for missing asset URLs and the console for exceptions. `NETSDK1147` generally indicates a missing `wasm-tools` workload; `DllNotFoundException: libSkiaSharp` warrants checking the selected .NET 10 SDK, `net10.0-browser` target, and matching workload.
+
+---
+
+<a id="blazor-spot-demo"></a>
+## What the Spot Demo adds
+
+Spot (`Demos/Spot.Blazor/`) is a direct extension of everything you just built:
+
+| Spot feature | The extra pieces it uses |
+|---|---|
+| Two-to-four players | `Player[]` array; `SpotGame.NewGame()` handles multi-player turn order |
+| Clone / Jump moves | `MovementType` enum + distance logic in `SpotGameField.GetMovementType()` |
+| Cell capture | `SpotGameField.CaptureAdjacentCells()` run after each move lands |
+| AI opponent | `SpotGameField.GetBestMovesForPlayer()` + engine timers |
+| Particle effects | `ParticleEmitter` / `ParticleSurface` during gameplay |
+| Score HUD | `TextBlock` and direct drawings |
+| Background music | Browser audio resources and the packaged assets |
+| Sprite animations | `sprite.StartJiggle()`, `sprite.PulseBy()`, `sprite.ResizeTo()` |
+| Browser host | `BlazorGpuGameHost`, WebGL render surface, and asynchronous asset loading |
+
+Read `Demos/Spot.Blazor/SpotGameHost.cs` and `SpotGameHost.Content.cs` for the browser host and content. The browser startup is in `Demos/Spot.Blazor/Pages/Index.razor`; the shared gameplay logic lives under `Demos/Spot.Shared/Host/`.
+
+---
+
+<a id="blazor-key-mental-model"></a>
+## Key mental model
+
+```text
+GameHostBase
+  └─ Engine
+       ├─ Scene
+       │    └─ SceneLayer
+       │         └─ SceneLayerTile → Sprite → Tilesheet frame
+       ├─ ViewManager
+       │    └─ View
+       ├─ DirectDrawingManager
+       └─ Input
+```
+
+For this guide, the Blazor host uses the **GPU render path**:
+
+```text
+BlazorGpuRenderSurfaceComponent
+  → BlazorGpuGameHost
+  → GpuBackbuffer
+  → WebGL-backed Skia surface
+```
+
+The game code works with scenes, layers, sprites, and input. `GameRenderSurface.razor` handles the browser's presentation lifecycle: it downloads assets before engine initialization, establishes the logical game resolution, and displays the current GPU-backed frame.
+
+The GPU renderer runs inside the WebGL canvas. The browser's canvas and viewport can resize independently of the game's logical 800×600 resolution, preserving the visible game area and input mapping.
+
+---
+
+<a id="blazor-further-reading"></a>
+## Further reading
+
+- **Engine Architecture Overview** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki/Engine-Architecture-Overview)
+- **Blazor rendering and input guide** — [Gondwana.Blazor README](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Blazor/README.md)
+- **Blazor template** — [Gondwana.Templates](https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Templates/templates/gondwana-blazor)
+- **API reference** — https://isthimius.github.io/Gondwana/
 
 </details>
