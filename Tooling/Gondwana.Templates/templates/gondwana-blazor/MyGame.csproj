@@ -40,13 +40,10 @@
     -->
 
 	<!--
-        Add your asset files here so they are copied to the output directory.
-        Example:
-        <ItemGroup>
-            <Content Include="assets\my-sprite.png">
-                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            </Content>
-        </ItemGroup>
+        Put browser assets in wwwroot/assets (PNG, GAF, fonts, audio, etc.).
+        The Blazor SDK includes wwwroot files as static web assets automatically.
+        CopyToOutputDirectory on a desktop assets folder does not expose a web URL.
+        See GameRenderSurface.razor for HTTP downloads before host initialization.
     -->
 
 </Project>

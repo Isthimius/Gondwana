@@ -4,6 +4,7 @@
 @implements IDisposable
 @inject ILogger<GameRenderSurface> Logger
 @inject IJSRuntime JsRuntime
+@inject HttpClient Http
 
 @* Update the logical dimensions below to match your game. They control both
    browser fitting and Gondwana's one-time logical resolution. *@
@@ -20,7 +21,7 @@
                 <div class="startup-progress" aria-hidden="true">
                     <div class="startup-progress-fill indeterminate"></div>
                 </div>
-                <div class="startup-percent manual">Initializing engine</div>
+                <div class="startup-percent manual">Loading assets and initializing engine</div>
                 <div class="startup-powered">Powered by Gondwana</div>
             </div>
         </div>
@@ -51,19 +52,29 @@
 
     private BlazorGpuRenderSurfaceComponent? _renderSurface;
     private MyGameHost? _host;
+    private readonly CancellationTokenSource _startupCancellation = new();
+    private bool _disposed;
     private bool _loading = true;
     private string? _errorMessage;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender || _renderSurface is null)
-            return Task.CompletedTask;
+            return;
 
         try
         {
-            _host = new MyGameHost(_renderSurface, JsRuntime);
+            var assets = await DownloadAssetsAsync(_startupCancellation.Token);
+            if (_disposed)
+                return;
+
+            _host = new MyGameHost(_renderSurface, JsRuntime, assets);
             _host.Initialize(logLevel: LogLevel.Warning);
             _host.ConfigureLogicalResolution(LogicalWidth, LogicalHeight);
+        }
+        catch (OperationCanceledException) when (_disposed)
+        {
+            // Navigating away cancels startup; do not initialize or update disposed UI.
         }
         catch (Exception ex)
         {
@@ -85,14 +96,39 @@
         finally
         {
             _loading = false;
-            StateHasChanged();
+            if (!_disposed)
+                StateHasChanged();
         }
+    }
 
-        return Task.CompletedTask;
+    private async Task<IReadOnlyDictionary<string, byte[]>> DownloadAssetsAsync(CancellationToken cancellationToken)
+    {
+        // Paths are relative to the app base URL (Program.cs configures HttpClient).
+        // Put files under wwwroot/assets; use forward slashes and exact filename case.
+        // Uncomment either or both examples, then the matching LoadTilesheets example.
+        string[] paths =
+        [
+            // PNG example: wwwroot/assets/spot_defaults.png
+            // "assets/spot_defaults.png",
+            // GAF example: wwwroot/assets/game.gaf, containing Image:spot_defaults.png
+            // "assets/game.gaf",
+        ];
+
+        var assets = new Dictionary<string, byte[]>(StringComparer.Ordinal);
+        foreach (var path in paths)
+            assets.Add(path, await Http.GetByteArrayAsync(path, cancellationToken));
+
+        return assets;
     }
 
     public void Dispose()
     {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+        _startupCancellation.Cancel();
+        _startupCancellation.Dispose();
         _host?.Dispose();
         _host = null;
     }
