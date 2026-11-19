@@ -4,9 +4,6 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
-## Fixed
-- Prepare Blazor template assets over HTTP before host initialization, cancel pending downloads on disposal, and include commented PNG/GAF loading and Blazor keyboard examples.
-
 
 
 ## Documentation
