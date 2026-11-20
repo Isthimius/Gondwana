@@ -7,7 +7,7 @@ using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Sprites.WinForms;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 
 /// <summary>Definition-only preview with an unregistered projection layer.</summary>
 internal sealed class SpritePreviewControl : UserControl

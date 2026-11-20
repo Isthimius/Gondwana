@@ -2,9 +2,9 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests;
 
 /// <summary>Guards descriptions on callback-backed and reflected GTS grid fields.</summary>
 public sealed class PropertyHelpTests

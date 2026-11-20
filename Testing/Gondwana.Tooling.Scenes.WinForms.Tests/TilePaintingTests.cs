@@ -8,7 +8,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 using Newtonsoft.Json;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 public sealed partial class SceneEditorTests
 {

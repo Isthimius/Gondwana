@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>Detached values; no document edits occur until the user confirms checked properties.</summary>
 internal sealed class BulkTilePropertiesDialog : Form

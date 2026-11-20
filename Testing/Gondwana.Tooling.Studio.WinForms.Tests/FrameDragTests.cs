@@ -2,10 +2,10 @@ using System.Reflection;
 using System.Text;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.Tooling.Animations.WinForms;
+using Gondwana.Tooling.Studio.Animations.WinForms;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms;
-using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

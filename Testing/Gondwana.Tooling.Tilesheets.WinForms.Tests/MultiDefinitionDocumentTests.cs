@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests;
 
 /// <summary>Verifies the editor owns the physical document independently of its active member.</summary>
 public sealed class MultiDefinitionDocumentTests

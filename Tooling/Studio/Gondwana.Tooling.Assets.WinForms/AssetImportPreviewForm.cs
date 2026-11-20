@@ -1,7 +1,7 @@
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Displays the fully prepared import before the archive is modified.</summary>
 internal sealed class AssetImportPreviewForm : Form

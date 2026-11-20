@@ -2,7 +2,7 @@ using System.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.Editing;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 /// <summary>UI-independent editing session for all definitions in a GTS document; browsing frames or changing geometry preserves existing frame metadata until explicitly pruned.</summary>
 public sealed partial class TilesheetDocument

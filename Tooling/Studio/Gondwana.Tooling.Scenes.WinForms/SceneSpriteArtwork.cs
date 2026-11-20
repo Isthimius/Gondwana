@@ -4,9 +4,9 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Scenes.Editing;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal sealed record SceneSpriteArtwork(Bitmap Image, Rectangle Bounds, int BottomOverhang);
 

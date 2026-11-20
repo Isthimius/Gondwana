@@ -5,7 +5,7 @@ using Gondwana.Physics.Collisions;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>
 /// PropertyGrid adapter that preserves sparse GSCN tiles: selecting a cell does

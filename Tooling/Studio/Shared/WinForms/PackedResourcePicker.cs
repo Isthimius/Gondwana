@@ -1,6 +1,6 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Studio.Shared.WinForms;
 

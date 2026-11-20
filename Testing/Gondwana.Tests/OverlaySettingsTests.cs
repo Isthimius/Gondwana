@@ -1,5 +1,5 @@
 using System.Drawing;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 namespace Gondwana.Tests;
 

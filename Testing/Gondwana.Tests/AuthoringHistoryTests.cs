@@ -7,8 +7,8 @@ using Gondwana.Physics.Collisions;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Scenes.Editing;
-using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 namespace Gondwana.Tests;
 

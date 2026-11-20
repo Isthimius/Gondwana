@@ -7,7 +7,7 @@ using Gondwana.Tooling.Studio.Shared.WinForms.Session;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Sprites.WinForms;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 
 internal sealed class MainForm : Form
 {

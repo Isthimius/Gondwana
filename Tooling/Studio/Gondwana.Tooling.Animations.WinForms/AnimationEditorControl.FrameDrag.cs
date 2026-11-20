@@ -4,7 +4,7 @@ using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 public sealed partial class AnimationEditorControl
 {

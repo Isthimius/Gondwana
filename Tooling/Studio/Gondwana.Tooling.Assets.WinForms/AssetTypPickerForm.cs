@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Reviews per-file types and destination names, and selects a dependency policy.</summary>
 internal sealed class AssetTypePickerForm : Form

@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal static class Program
 {

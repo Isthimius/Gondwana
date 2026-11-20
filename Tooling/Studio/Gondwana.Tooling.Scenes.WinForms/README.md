@@ -10,7 +10,7 @@ Standalone .NET 10 Windows editor for Gondwana `.gscn` scene definitions.
 Run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Scenes.WinForms -c Release
+dotnet run --project Tooling/Gondwana.Tooling.Studio.Scenes.WinForms -c Release
 ```
 
 ## Undo and redo
@@ -271,7 +271,7 @@ Placement updates the owning GSPR. Undo and Redo while the sprite is selected us
 
 **Scene Preview** remains lightweight, editable, and definition-driven. It does not run an Engine and uses a representative/static GANI frame where applicable.
 
-**View Scene**, on the preview toolbar, launches the separate [Scene Viewer](../Gondwana.Tooling.SceneViewer.WinForms/README.md). It loads GSCN content (or a temporary snapshot) and its explicit dependencies into a real Gondwana Scene, with actual Engine rendering, runtime frame transformations, real GANI playback, and camera navigation. New or dirty **loose** scenes must be saved first; canceling the save prevents launch. Packed scenes instead launch a temporary snapshot of the current edits without saving or adopting the packed document.
+**View Scene**, on the preview toolbar, launches the separate [Scene Viewer](../Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md). It loads GSCN content (or a temporary snapshot) and its explicit dependencies into a real Gondwana Scene, with actual Engine rendering, runtime frame transformations, real GANI playback, and camera navigation. New or dirty **loose** scenes must be saved first; canceling the save prevents launch. Packed scenes instead launch a temporary snapshot of the current edits without saving or adopting the packed document.
 
 The command is part of `SceneEditorControl`, so it also works when hosted in Studio. Hosts supply `SaveRequested` to reuse their normal save path. Build the viewer in the same configuration as the editor, or deploy its complete output under `SceneViewer/` beside the editor executable. See the viewer README for all supported layouts, controls, and current GSPR association limitations.
 

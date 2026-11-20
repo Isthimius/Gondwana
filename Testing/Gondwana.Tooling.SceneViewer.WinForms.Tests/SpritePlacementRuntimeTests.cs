@@ -6,7 +6,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 
 public sealed partial class ViewerTests
 {

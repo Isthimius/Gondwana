@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Gondwana.Physics.Collisions;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>Edits a complete value rather than mutating a boxed collision struct.</summary>
 internal sealed class CollisionAdjustConverter : ExpandableObjectConverter

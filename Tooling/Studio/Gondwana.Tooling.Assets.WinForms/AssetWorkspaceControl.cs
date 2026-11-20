@@ -1,6 +1,6 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>
 /// Hostable browser for Gondwana asset-package files. File opening is delegated to

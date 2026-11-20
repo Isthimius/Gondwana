@@ -4,7 +4,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Sprites.Editing;
 
-namespace Gondwana.Tooling.Sprites.WinForms;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 
 internal sealed class SpriteProperties(SpriteInstanceDefinition entry, SpriteDocument? document = null)
 {

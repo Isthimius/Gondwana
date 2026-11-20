@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal enum SceneEditorTool
 {

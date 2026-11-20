@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Gondwana.Drawing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>Displays effective scene tile margins and padding in CSS clockwise order.</summary>
 internal sealed class SceneSpacingConverter : ExpandableObjectConverter

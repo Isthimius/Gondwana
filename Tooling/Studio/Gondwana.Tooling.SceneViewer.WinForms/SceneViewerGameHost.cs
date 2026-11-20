@@ -13,7 +13,7 @@ using SkiaSharp;
 using GondwanaMouseEventArgs = Gondwana.Input.Mouse.MouseEventArgs;
 using GondwanaView = Gondwana.Rendering.Views.View;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 internal sealed class SceneViewerGameHost(
     WinFormGpuRenderSurfaceControl surface,

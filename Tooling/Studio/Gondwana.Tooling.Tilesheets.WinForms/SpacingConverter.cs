@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Gondwana.Drawing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>
 /// Expands a Spacing value into four editable edges in the GTS property grid.

@@ -4,7 +4,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Audio.WinForms;
-using Gondwana.Tooling.Sprites.WinForms;
+using Gondwana.Tooling.Studio.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 

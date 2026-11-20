@@ -7,10 +7,10 @@ using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GANI document.</summary>
 public sealed partial class AnimationEditorControl : UserControl

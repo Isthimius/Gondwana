@@ -2,7 +2,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 public sealed partial class SceneEditorControl
 {

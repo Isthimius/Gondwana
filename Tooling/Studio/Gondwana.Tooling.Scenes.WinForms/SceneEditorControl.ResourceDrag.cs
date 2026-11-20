@@ -6,7 +6,7 @@ using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 public sealed partial class SceneEditorControl
 {

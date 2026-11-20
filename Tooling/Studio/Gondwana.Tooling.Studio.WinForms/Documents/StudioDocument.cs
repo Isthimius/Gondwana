@@ -1,18 +1,18 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Animations.Editing;
-using Gondwana.Tooling.Animations.WinForms;
+using Gondwana.Tooling.Studio.Animations.WinForms;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Assets.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Scenes.Editing;
-using Gondwana.Tooling.Scenes.WinForms;
+using Gondwana.Tooling.Studio.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.Editing;
-using Gondwana.Tooling.Sprites.WinForms;
-using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.Sources;
-using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Sprites.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Documents;
 

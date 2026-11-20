@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 public sealed partial class SceneEditorControl
 {

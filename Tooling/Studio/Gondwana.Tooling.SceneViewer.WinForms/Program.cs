@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 internal static class Program
 {

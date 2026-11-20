@@ -3,9 +3,9 @@ using System.Reflection;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 internal enum Inheritance
 {
@@ -290,7 +290,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 // The property descriptors also compile into platform-neutral Gondwana.Tests.
                 // Resolve the Windows editor only when the UI assembly is available.
                 var editorType = Type.GetType(
-                    "Gondwana.Tooling.Tilesheets.WinForms.MaskColorEditor, Gondwana.Tooling.Tilesheets.WinForms",
+                    "Gondwana.Tooling.Studio.Tilesheets.WinForms.MaskColorEditor, Gondwana.Tooling.Studio.Tilesheets.WinForms",
                     throwOnError: false);
 
                 if (editorType?.BaseType is { } editorBaseType)

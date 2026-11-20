@@ -1,5 +1,5 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Common review and credential prompts for physical asset operations.</summary>
 internal static class AssetOperationDialog

@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Tooling.Animations.Editing;
 
-namespace Gondwana.Tooling.Animations.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Animations.WinForms.Tests;
 
 /// <summary>Verifies the editor owns the physical document independently of its active member.</summary>
 public sealed class MultiDefinitionDocumentTests

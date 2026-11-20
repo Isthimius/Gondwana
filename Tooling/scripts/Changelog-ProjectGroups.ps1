@@ -53,9 +53,9 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Audio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Audio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Core"; RootName = "Tooling / Gondwana.Tooling.Studio.Core"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Scenes.WinForms"; RootName = "Tooling / Gondwana.Tooling.Scenes.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.SceneViewer.WinForms"; RootName = "Tooling / Gondwana.Tooling.SceneViewer.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Sprites.WinForms"; RootName = "Tooling / Gondwana.Tooling.Sprites.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Scenes.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Scenes.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.SceneViewer.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Sprites.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Sprites.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Tilesheets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Tilesheets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     
     # root-only areas - no individual changelogs, but included in root changelog

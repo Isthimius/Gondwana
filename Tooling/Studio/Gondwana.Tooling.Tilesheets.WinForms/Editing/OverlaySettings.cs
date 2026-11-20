@@ -2,13 +2,13 @@ using System.Drawing;
 using System.Globalization;
 using System.Text.Json;
 
-namespace Gondwana.Tooling.Tilesheets.Editing;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 /// <summary>Application preferences, deliberately separate from GTS document serialization.</summary>
 internal sealed class OverlaySettings
 {
     private static readonly Lazy<OverlaySettings> Shared = new(() => Load(Path.Combine(
-        AppContext.BaseDirectory, "Gondwana.Tooling.Tilesheets.WinForms.settings.json")));
+        AppContext.BaseDirectory, "Gondwana.Tooling.Studio.Tilesheets.WinForms.settings.json")));
     /// <summary>Gets the shared settings loaded lazily from the application directory.</summary>
     public static OverlaySettings Default => Shared.Value;
     private readonly Dictionary<OverlayKind, Color> _colors = new()

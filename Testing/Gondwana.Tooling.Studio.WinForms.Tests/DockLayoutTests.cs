@@ -19,12 +19,12 @@ public sealed class DockLayoutTests
     /// </summary>
     /// <param name="editorType">The editor type value for this test case.</param>
     [Theory]
-    [InlineData(typeof(Gondwana.Tooling.Assets.WinForms.AssetEditorControl))]
-    [InlineData(typeof(Gondwana.Tooling.Tilesheets.WinForms.TilesheetEditorControl))]
-    [InlineData(typeof(Gondwana.Tooling.Animations.WinForms.AnimationEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl))]
     [InlineData(typeof(Gondwana.Tooling.Audio.WinForms.AudioEditorControl))]
-    [InlineData(typeof(Gondwana.Tooling.Scenes.WinForms.SceneEditorControl))]
-    [InlineData(typeof(Gondwana.Tooling.Sprites.WinForms.SpriteEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl))]
     public void StandaloneShellRestoresHiddenToolAndViewResetsIt(Type editorType) => Sta(() =>
     {
         Form Open()

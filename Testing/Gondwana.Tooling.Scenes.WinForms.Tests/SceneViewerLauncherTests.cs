@@ -2,7 +2,7 @@ using Gondwana.Assets;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 /// <summary>
 /// Contains regression tests for scene viewer launcher.
@@ -151,7 +151,7 @@ public sealed class SceneViewerLauncherTests : IDisposable
     {
         string toolingDirectory = Path.Combine(_directory, "Tooling");
         if (relocated) toolingDirectory = Path.Combine(toolingDirectory, "Studio");
-        string editor = Path.Combine(toolingDirectory, "Gondwana.Tooling.Scenes.WinForms", "bin", "Release", "net10.0-windows");
+        string editor = Path.Combine(toolingDirectory, "Gondwana.Tooling.Studio.Scenes.WinForms", "bin", "Release", "net10.0-windows");
         Directory.CreateDirectory(editor);
         string viewer = Path.Combine(toolingDirectory, SceneViewerLauncher.Component, "bin", "Release", "net10.0-windows", SceneViewerLauncher.Component + ".exe");
         Directory.CreateDirectory(Path.GetDirectoryName(viewer)!);
@@ -172,7 +172,7 @@ public sealed class SceneViewerLauncherTests : IDisposable
         Directory.CreateDirectory(Path.GetDirectoryName(viewer)!);
         File.WriteAllText(viewer, "");
 
-        foreach (string host in new[] { "Gondwana.Tooling.Studio.WinForms", "Gondwana.Tooling.Scenes.WinForms" })
+        foreach (string host in new[] { "Gondwana.Tooling.Studio.WinForms", "Gondwana.Tooling.Studio.Scenes.WinForms" })
         {
             string hostDirectory = Path.Combine(tooling, host);
             Directory.CreateDirectory(hostDirectory);

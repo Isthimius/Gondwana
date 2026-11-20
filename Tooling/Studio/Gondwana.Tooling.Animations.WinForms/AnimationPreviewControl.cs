@@ -4,7 +4,7 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Tooling.Animations.Editing;
 
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal sealed class AnimationPreviewControl : Control
 {

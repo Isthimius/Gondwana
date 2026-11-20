@@ -10,7 +10,7 @@ Standalone .NET 10 Windows editor for Gondwana `.gani` animation definitions.
 Run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Animations.WinForms -c Release
+dotnet run --project Tooling/Gondwana.Tooling.Studio.Animations.WinForms -c Release
 ```
 
 ## Design
@@ -118,7 +118,7 @@ editor. Existing editor-specific model, image, preview, and event cleanup remain
 in each editor. Hosts should dispose the whole editor when closing its document.
 
 Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
-in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
+in Testing/Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests as part of the existing
 Windows CI job; GANI's existing interactions remain in its animation test project.
 
 ## Dock layout preferences

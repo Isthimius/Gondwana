@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Shared deletion scope, credential, review, and explicit break-references confirmation.</summary>
 public static class AssetDeleteDialog

@@ -10,7 +10,7 @@ A Windows WinForms authoring tool for `.gspr` sprite collections. One file may c
 ## Launch and documents
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Sprites.WinForms
+dotnet run --project Tooling/Gondwana.Tooling.Studio.Sprites.WinForms
 ```
 
 Use File > New (Ctrl+N), Open (Ctrl+O), Save (Ctrl+S), Save As (Ctrl+Shift+S), and Close (Ctrl+W). Several documents can remain open at once. Modified documents show an asterisk and prompt before closing. Saving reports structural validation errors and uses a temporary file followed by replacement. Save As rebases relative GTS/GSCN authoring paths.

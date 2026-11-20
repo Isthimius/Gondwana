@@ -1,5 +1,5 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 internal static class Program
 {

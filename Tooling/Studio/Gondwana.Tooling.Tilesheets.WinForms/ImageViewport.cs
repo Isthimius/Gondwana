@@ -5,9 +5,9 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 {

@@ -633,7 +633,7 @@ public sealed partial class CompositionTests
         using var studio = Host(directory);
         WaitForArchives(studio.Browser);
         var document = studio.OpenDocument(path);
-        var editor = Assert.IsType<Gondwana.Tooling.Assets.WinForms.AssetEditorControl>(document.Document.Editor);
+        var editor = Assert.IsType<Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl>(document.Document.Editor);
         editor.AssetsFile.Add(AssetTypes.Misc, "changed.bin", new MemoryStream([2, 3]));
         editor.MarkChanged();
         using var opened = new ManualResetEventSlim();

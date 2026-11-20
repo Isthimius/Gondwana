@@ -5,7 +5,7 @@ A standalone utility that answers: what does this saved authored scene look like
 ## Launch
 
 ```powershell
-Gondwana.Tooling.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
+Gondwana.Tooling.Studio.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
 ```
 
 Relative paths resolve against the launch working directory. With no arguments, an Open File dialog selects a `.gscn`. Invalid arguments, unreadable files, invalid definitions, missing dependencies, and initialization failures produce an error dialog and a nonzero exit code. Detailed exceptions are sent to the .NET trace output.
@@ -13,8 +13,8 @@ Relative paths resolve against the launch working directory. With no arguments, 
 Build or run from the repository root:
 
 ```powershell
-dotnet build Tooling/Gondwana.Tooling.SceneViewer.WinForms -c Release
-dotnet run --project Tooling/Gondwana.Tooling.SceneViewer.WinForms -c Release -- --scene "Content\Scenes\level1.gscn"
+dotnet build Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms -c Release
+dotnet run --project Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms -c Release -- --scene "Content\Scenes\level1.gscn"
 ```
 
 ## Controls
@@ -92,7 +92,7 @@ The runtime viewer retains its loose-over-packed content-root precedence; Studio
 
 Each launch starts an independent process with safe `ProcessStartInfo.ArgumentList` arguments. Closing either application does not close the other. Multiple viewers can run independently. Engine configuration is in memory so unrelated working-directory game configuration/state is not loaded or modified.
 
-Development builds locate the viewer in its sibling tooling project's matching `bin/<configuration>/<framework>[/rid]` directory. Build the viewer in the same configuration as the editor. Published layouts may place the complete viewer output beside the editor, under `SceneViewer/`, under `Gondwana.Tooling.SceneViewer.WinForms/`, or in a sibling directory with that project name. Deploy the entire output, including runtime libraries. Missing installations produce an actionable error.
+Development builds locate the viewer in its sibling tooling project's matching `bin/<configuration>/<framework>[/rid]` directory. Build the viewer in the same configuration as the editor. Published layouts may place the complete viewer output beside the editor, under `SceneViewer/`, under `Gondwana.Tooling.Studio.SceneViewer.WinForms/`, or in a sibling directory with that project name. Deploy the entire output, including runtime libraries. Missing installations produce an actionable error.
 
 ## Scope and verification
 

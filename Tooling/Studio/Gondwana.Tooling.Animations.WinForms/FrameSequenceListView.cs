@@ -1,5 +1,5 @@
 using System.ComponentModel;
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal sealed class FrameSequenceListView : ListView
 {

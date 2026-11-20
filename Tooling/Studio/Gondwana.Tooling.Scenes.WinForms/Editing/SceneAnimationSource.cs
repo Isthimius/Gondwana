@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Scenes.Editing;
 

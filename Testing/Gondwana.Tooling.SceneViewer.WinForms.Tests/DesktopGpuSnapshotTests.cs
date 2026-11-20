@@ -6,7 +6,7 @@ using Gondwana.Scenes;
 using SkiaSharp;
 using Xunit.Abstractions;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in hardware check: GONDWANA_GPU_TESTS=1 dotnet test --filter DesktopGpuSnapshotTests.</summary>
 /// <param name="output">The output value for this test case.</param>

@@ -1,6 +1,6 @@
 using Gondwana.WinForms.Rendering;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 internal sealed class SceneViewerForm : Form
 {

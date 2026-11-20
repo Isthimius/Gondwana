@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.Editing;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 public sealed partial class TilesheetDocument : IDisposable
 {

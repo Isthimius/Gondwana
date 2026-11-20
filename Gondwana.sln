@@ -133,7 +133,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentat
 		Solution Items\documentation\rendering-pipeline-sequence.puml = Solution Items\documentation\rendering-pipeline-sequence.puml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Assets.WinForms", "Tooling\Studio\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj", "{F059118F-6A87-7D7B-03FE-2B7D24A12554}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Assets.WinForms", "Tooling\Studio\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Studio.Assets.WinForms.csproj", "{F059118F-6A87-7D7B-03FE-2B7D24A12554}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Templates", "Tooling\Gondwana.Templates\Gondwana.Templates.csproj", "{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1}"
 EndProject
@@ -185,13 +185,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spot.Shared", "Demos\Spot.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Widgets", "Gondwana.Widgets\Gondwana.Widgets.csproj", "{718CCF23-2105-4FDF-822C-8B12798A3A4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Animations.WinForms", "Tooling\Studio\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Animations.WinForms.csproj", "{A7E13F91-6C2A-4D68-9D5A-2F30C48BA681}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Animations.WinForms", "Tooling\Studio\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Studio.Animations.WinForms.csproj", "{A7E13F91-6C2A-4D68-9D5A-2F30C48BA681}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Audio.WinForms", "Tooling\Studio\Gondwana.Tooling.Audio.WinForms\Gondwana.Tooling.Audio.WinForms.csproj", "{6F4E5D2C-A7B8-4C91-9D0E-1F2A3B4C5D6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Scenes.WinForms", "Tooling\Studio\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Scenes.WinForms.csproj", "{9C7B4A11-52E3-4A9C-8E71-0CB0D5C41234}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Scenes.WinForms", "Tooling\Studio\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Studio.Scenes.WinForms.csproj", "{9C7B4A11-52E3-4A9C-8E71-0CB0D5C41234}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Tilesheets.WinForms", "Tooling\Studio\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj", "{638853CB-A9E9-4229-80F4-C4FCB4E71333}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Tilesheets.WinForms", "Tooling\Studio\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Studio.Tilesheets.WinForms.csproj", "{638853CB-A9E9-4229-80F4-C4FCB4E71333}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Flappy", "Demos\Gondwana.Flappy\Gondwana.Flappy.csproj", "{02A5433C-1A01-C200-451A-EF5786118425}"
 EndProject
@@ -221,7 +221,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WidgetsTest", "Demos\Widget
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.WinForms.Tests", "Testing\Gondwana.Tooling.Studio.WinForms.Tests\Gondwana.Tooling.Studio.WinForms.Tests.csproj", "{989F9429-9C56-4F29-88AB-D700C35108BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Sprites.WinForms", "Tooling\Studio\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj", "{186A7D6E-C8B3-4FB8-8E59-F766B6BB7A21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Sprites.WinForms", "Tooling\Studio\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Studio.Sprites.WinForms.csproj", "{186A7D6E-C8B3-4FB8-8E59-F766B6BB7A21}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Sprites.WinForms.Tests", "Testing\Gondwana.Tooling.Sprites.WinForms.Tests\Gondwana.Tooling.Sprites.WinForms.Tests.csproj", "{D9E094B7-5EF1-42F0-BC10-4685E6A34565}"
 EndProject
@@ -233,7 +233,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video.Widgets", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoTest", "Demos\VideoTest\VideoTest.csproj", "{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.SceneViewer.WinForms", "Tooling\Studio\Gondwana.Tooling.SceneViewer.WinForms\Gondwana.Tooling.SceneViewer.WinForms.csproj", "{36B2142B-22F9-481E-AA97-D4D4A9AB4194}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.SceneViewer.WinForms", "Tooling\Studio\Gondwana.Tooling.SceneViewer.WinForms\Gondwana.Tooling.Studio.SceneViewer.WinForms.csproj", "{36B2142B-22F9-481E-AA97-D4D4A9AB4194}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.SceneViewer.WinForms.Tests", "Testing\Gondwana.Tooling.SceneViewer.WinForms.Tests\Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj", "{23342145-F0A4-495D-BEF4-158033221135}"
 EndProject

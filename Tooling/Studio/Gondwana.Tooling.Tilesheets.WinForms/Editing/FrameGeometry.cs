@@ -1,7 +1,7 @@
 using System.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 
-namespace Gondwana.Tooling.Tilesheets.Editing;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 internal static class FrameGeometry
 {

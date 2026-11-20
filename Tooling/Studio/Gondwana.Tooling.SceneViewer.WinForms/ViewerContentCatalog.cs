@@ -3,7 +3,7 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 /// <summary>A non-recursive, deterministic index of the viewed scene's neighboring definitions.</summary>
 internal sealed class ViewerContentCatalog

@@ -1,7 +1,7 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>Default packed-image picker shared by standalone and embedded hosts.</summary>
 public static class PackedImagePicker

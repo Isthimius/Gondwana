@@ -1,7 +1,7 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests;
 
 public sealed partial class EditorInteractionTests
 {

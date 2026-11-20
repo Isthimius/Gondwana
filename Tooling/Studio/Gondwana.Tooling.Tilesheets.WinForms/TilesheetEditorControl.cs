@@ -6,11 +6,11 @@ using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>Hostable editor for the definitions in a tilesheet document, with image, region, frame, and validation panes.</summary>
 public sealed class TilesheetEditorControl : UserControl

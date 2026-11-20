@@ -1,9 +1,9 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>Browses loose GTS files, images, and packed image entries, delegating document actions to the host through events.</summary>
 public sealed class TilesheetWorkspaceControl : UserControl

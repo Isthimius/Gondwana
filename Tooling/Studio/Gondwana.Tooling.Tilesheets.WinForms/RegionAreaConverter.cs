@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>Shows only the editable X, Y, Width, and Height components of a GTS region area.</summary>
 public sealed class RegionAreaConverter : System.Drawing.RectangleConverter

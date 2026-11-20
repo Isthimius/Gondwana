@@ -1,7 +1,7 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>Independent visibility and color controls within the overlay dropdown.</summary>
 internal sealed class OverlayLegendRow : UserControl

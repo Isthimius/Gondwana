@@ -7,7 +7,7 @@ using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 
-namespace Gondwana.Tooling.Sprites.WinForms;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 
 public sealed partial class SpriteEditorControl
 {

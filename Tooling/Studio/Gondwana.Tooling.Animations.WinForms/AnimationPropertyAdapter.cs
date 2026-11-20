@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Gondwana.Drawing.Animation;
 using Gondwana.Tooling.Animations.Editing;
 
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal sealed class AnimationPropertyAdapter
 {

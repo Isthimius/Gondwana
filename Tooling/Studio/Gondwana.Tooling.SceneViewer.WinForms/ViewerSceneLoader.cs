@@ -7,7 +7,7 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 /// <summary>Resolves local and authored dependencies, then delegates materialization to the runtime.</summary>
 internal sealed class ViewerSceneLoader

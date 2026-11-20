@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Shared scope, destination, credential, and preview workflow for Studio and standalone moves.</summary>
 public static class AssetMoveDialog

@@ -13,7 +13,7 @@ Standalone .NET 10 Windows editor for `.gts` definitions backed by loose images 
 Visual Studio, or run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
+dotnet run --project Tooling/Gondwana.Tooling.Studio.Tilesheets.WinForms -c Release
 ```
 
 ## Undo and redo
@@ -78,7 +78,7 @@ frame-metadata pruning. Undo restores existing instances and sparse-frame absenc
   **Overlays / legend** toggles the individual overlays.
   Each row has a color swatch and **...** button that opens a color picker.
   Colors apply immediately to all open documents and persist in
-  `Gondwana.Tooling.Tilesheets.WinForms.settings.json` beside the executable.
+  `Gondwana.Tooling.Studio.Tilesheets.WinForms.settings.json` beside the executable.
   The file is created on the first color change and stores colors as `#RRGGBB`.
   Selected-region and selected-frame colors can be customized separately.
   Invalid settings fall back to defaults with a warning in the status panel;
@@ -176,7 +176,7 @@ disabling its inheritance does mark it dirty even if the value equals the defaul
 Windows interaction regressions also run in CI and can be run locally:
 
 ```console
-dotnet test Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests -c Release
+dotnet test Testing/Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests -c Release
 ```
 
 These tests open all five Zelda sample definitions, click frames across their regions,
@@ -207,7 +207,7 @@ editor. Existing editor-specific model, image, preview, and event cleanup remain
 in each editor. Hosts should dispose the whole editor when closing its document.
 
 Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
-in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
+in Testing/Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests as part of the existing
 Windows CI job; GANI's existing interactions remain in its animation test project.
 
 ## Dock layout preferences

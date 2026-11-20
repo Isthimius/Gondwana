@@ -2,7 +2,7 @@ using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using SkiaSharp;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 
 /// <summary>
 /// Contains regression tests for camera.

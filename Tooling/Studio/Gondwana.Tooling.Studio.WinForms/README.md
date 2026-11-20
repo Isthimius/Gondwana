@@ -81,7 +81,7 @@ prompts for a member, frame, or layer when a selection is needed.
 For visual sprite placement, open a GSPR and GSCN side by side. Drag a sprite
 from **Sprites** onto the desired scene layer, then reposition it in **Scene
 Preview**. Hold **Alt** for fractional placement and save the GSPR afterward.
-See [Place and move sprites](../Gondwana.Tooling.Scenes.WinForms/README.md#place-and-move-sprites).
+See [Place and move sprites](../Gondwana.Tooling.Studio.Scenes.WinForms/README.md#place-and-move-sprites).
 
 ## Workspace session restoration
 

@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Gondwana.Drawing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal sealed class TileTransformConverter : EnumConverter
 {

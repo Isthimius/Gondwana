@@ -7,7 +7,7 @@ renaming, and deleting assets stored through `AssetsFile`.
 Open this project in Visual Studio, or run it from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Assets.WinForms -c Release
+dotnet run --project Tooling/Gondwana.Tooling.Studio.Assets.WinForms -c Release
 ```
 
 This is development tooling, not a runtime dependency for a game.
@@ -207,7 +207,7 @@ should call `MarkChanged`. Authoring hosts can load packages with
 outside the runtime asset registry.
 
 Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
-in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
+in Testing/Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests as part of the existing
 Windows CI job; GANI's existing interactions remain in its animation test project.
 
 ## Dock layout preferences

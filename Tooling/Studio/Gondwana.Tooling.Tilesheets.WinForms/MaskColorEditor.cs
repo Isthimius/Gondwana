@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Drawing.Design;
-using MaskRgb = Gondwana.Tooling.Tilesheets.WinForms.PropertyFields.MaskRgb;
+using MaskRgb = Gondwana.Tooling.Studio.Tilesheets.WinForms.PropertyFields.MaskRgb;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>Edits the RGB components of a GTS mask with a single modal color picker.</summary>
 internal sealed class MaskColorEditor : UITypeEditor

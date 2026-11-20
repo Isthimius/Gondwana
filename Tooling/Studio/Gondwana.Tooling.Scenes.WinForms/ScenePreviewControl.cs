@@ -8,7 +8,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>
 /// Lightweight definition-driven GSCN preview. It uses SceneLayer's coordinate

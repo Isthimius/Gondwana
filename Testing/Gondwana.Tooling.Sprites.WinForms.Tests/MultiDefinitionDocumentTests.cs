@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Tooling.Sprites.Editing;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 /// <summary>Verifies the editor owns the physical document independently of its active member.</summary>
 public sealed class MultiDefinitionDocumentTests

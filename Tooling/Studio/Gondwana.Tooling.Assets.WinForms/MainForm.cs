@@ -7,7 +7,7 @@ using Gondwana.Tooling.Studio.Shared.WinForms.Session;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Standalone asset-package editor shell managing document tabs, the workspace browser, and session persistence.</summary>
 public sealed class MainForm : Form

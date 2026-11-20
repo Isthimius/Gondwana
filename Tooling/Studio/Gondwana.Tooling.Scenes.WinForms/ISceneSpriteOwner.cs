@@ -3,7 +3,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>A host's live GSPR document. The host retains ownership and controls persistence.</summary>
 public interface ISceneSpriteOwner

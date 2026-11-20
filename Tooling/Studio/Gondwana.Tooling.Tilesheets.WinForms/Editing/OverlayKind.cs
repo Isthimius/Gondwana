@@ -1,4 +1,4 @@
-namespace Gondwana.Tooling.Tilesheets.Editing;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 internal enum OverlayKind
 {

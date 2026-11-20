@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Gondwana.Tooling.Animations.Editing;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Animations.WinForms;
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal sealed class AnimationEditorDocument : DockContent
 {

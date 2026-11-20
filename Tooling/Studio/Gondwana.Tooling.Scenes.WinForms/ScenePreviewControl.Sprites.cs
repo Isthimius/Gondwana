@@ -5,7 +5,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal sealed record SceneSpriteVisual(ResourceAddress Address, SpriteInstanceDefinition Sprite,
     SceneLayerDefinition Layer, SceneSpriteArtwork? Artwork, ISceneSpriteOwner? Owner, string? Restriction)

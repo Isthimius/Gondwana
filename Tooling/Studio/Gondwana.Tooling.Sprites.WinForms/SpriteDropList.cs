@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-namespace Gondwana.Tooling.Sprites.WinForms;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 
 internal sealed class SpriteDropList : ListBox
 {

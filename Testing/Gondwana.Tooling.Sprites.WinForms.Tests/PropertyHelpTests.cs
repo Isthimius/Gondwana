@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Gondwana.Drawing.Sprites.GSPR;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 /// <summary>Guards the help shown for authored sprite properties.</summary>
 public sealed class PropertyHelpTests

@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Tooling.Sprites.Editing;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 /// <summary>Tests additive import, source isolation, selection, and resource paths.</summary>
 public sealed class DefinitionImportTests

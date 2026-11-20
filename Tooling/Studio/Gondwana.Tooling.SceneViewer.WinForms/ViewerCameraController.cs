@@ -1,7 +1,7 @@
 using Gondwana.Scenes;
 using View = Gondwana.Rendering.Views.View;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 internal sealed class ViewerCameraController
 {

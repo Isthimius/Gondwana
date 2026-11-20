@@ -1,6 +1,6 @@
 using Gondwana.Drawing.Coordinates;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms;
 
 internal sealed record SceneViewerStressOptions(
     int TileCount,
@@ -11,7 +11,7 @@ internal sealed record SceneViewerSceneOptions(string ScenePath, string? SceneId
 internal static class SceneViewerArguments
 {
     internal const string Usage =
-        "Usage: Gondwana.Tooling.SceneViewer.WinForms.exe --scene <file.gscn> [--scene-id <id>] " +
+        "Usage: Gondwana.Tooling.Studio.SceneViewer.WinForms.exe --scene <file.gscn> [--scene-id <id>] " +
         "[--content-root <directory>] [--temporary-scene] or --stress <tile-count> [--projection <coordinate-system>]";
 
     /// <summary>Parses a scene document path and validates an optional member selector.</summary>

@@ -2,11 +2,11 @@ using System.Diagnostics;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal static class SceneViewerLauncher
 {
-    internal const string Component = "Gondwana.Tooling.SceneViewer.WinForms";
+    internal const string Component = "Gondwana.Tooling.Studio.SceneViewer.WinForms";
 
     /// <summary>Opens a saved scene document in the viewer.</summary>
     /// <param name="scenePath">The physical document path.</param>

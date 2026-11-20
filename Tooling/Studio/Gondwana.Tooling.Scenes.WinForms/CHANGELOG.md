@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Gondwana.Tooling.Scenes.WinForms are documented here.
+All notable changes to Gondwana.Tooling.Studio.Scenes.WinForms are documented here.
 
 ## [Unreleased]
 

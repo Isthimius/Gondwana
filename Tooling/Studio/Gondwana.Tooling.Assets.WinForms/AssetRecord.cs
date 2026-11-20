@@ -1,6 +1,6 @@
 using Gondwana.Assets;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 internal sealed class AssetRecord
 {

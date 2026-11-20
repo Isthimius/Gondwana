@@ -14,7 +14,7 @@ edit those formats rather than introducing Studio-specific equivalents.
 | --- | --- |
 | Edit multiple Gondwana asset types in one application | [Gondwana Studio](./Gondwana.Tooling.Studio.WinForms/README.md) |
 | Edit one asset type without launching Studio | [Standalone content editors](#standalone-content-editors) |
-| See how a saved scene actually renders in the engine | [Scene Viewer](./Gondwana.Tooling.SceneViewer.WinForms/README.md) |
+| See how a saved scene actually renders in the engine | [Scene Viewer](./Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md) |
 | Pack, inspect, publish, or deploy from the command line | [Gondwana CLI](./Gondwana.Cli/README.md) |
 | Create a new game project | [Project templates](./Gondwana.Templates/README.md) |
 
@@ -27,7 +27,7 @@ archive, keeping the application directories under `Tooling/` together:
   including the official Project Diagnostics and External Asset Importer plugins under `plugins/`.
 - `Gondwana.Tooling.{Assets,Animations,Audio,Scenes,Sprites,Tilesheets}.WinForms/` —
   standalone editors, each with its own executable and runtime dependencies.
-- `Gondwana.Tooling.SceneViewer.WinForms/` — GPU-backed scene viewer shared by
+- `Gondwana.Tooling.Studio.SceneViewer.WinForms/` — GPU-backed scene viewer shared by
   Studio and the standalone Scene editor.
 
 The Windows x64 applications are published **self-contained**, so they do not
@@ -62,11 +62,11 @@ control is also hosted in Studio.
 
 | Format | Standalone editor | Purpose |
 | --- | --- | --- |
-| GAF / ZIP | [Assets](./Gondwana.Tooling.Assets.WinForms/README.md) | Package management; semantic import/export, reference-aware move/delete, entries, and encryption |
-| GTS | [Tilesheets](./Gondwana.Tooling.Tilesheets.WinForms/README.md) | Image-backed tilesheets, frames, regions, and collision metadata |
-| GANI | [Animations](./Gondwana.Tooling.Animations.WinForms/README.md) | Animation cycles, frame sequences, GTS dependencies, and preview |
-| GSCN | [Scenes](./Gondwana.Tooling.Scenes.WinForms/README.md) | Scenes, layers, sparse tile placements, GTS/GANI sources, and authoring preview |
-| GSPR | [Sprites](./Gondwana.Tooling.Sprites.WinForms/README.md) | Sprite collections, scene/layer and frame assignments, properties, and preview |
+| GAF / ZIP | [Assets](./Gondwana.Tooling.Studio.Assets.WinForms/README.md) | Package management; semantic import/export, reference-aware move/delete, entries, and encryption |
+| GTS | [Tilesheets](./Gondwana.Tooling.Studio.Tilesheets.WinForms/README.md) | Image-backed tilesheets, frames, regions, and collision metadata |
+| GANI | [Animations](./Gondwana.Tooling.Studio.Animations.WinForms/README.md) | Animation cycles, frame sequences, GTS dependencies, and preview |
+| GSCN | [Scenes](./Gondwana.Tooling.Studio.Scenes.WinForms/README.md) | Scenes, layers, sparse tile placements, GTS/GANI sources, and authoring preview |
+| GSPR | [Sprites](./Gondwana.Tooling.Studio.Sprites.WinForms/README.md) | Sprite collections, scene/layer and frame assignments, properties, and preview |
 | GSND | [Audio](./Gondwana.Tooling.Audio.WinForms/README.md) | Sound definitions, audio source references, and playback settings |
 
 All five native definition formats (GTS, GANI, GSCN, GSPR, and GSND) support
@@ -75,7 +75,7 @@ follow the editor links above.
 
 ### Runtime scene preview
 
-[**Gondwana.Tooling.SceneViewer.WinForms**](./Gondwana.Tooling.SceneViewer.WinForms/README.md)
+[**Gondwana.Tooling.Studio.SceneViewer.WinForms**](./Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md)
 loads a saved GSCN into a real GPU-backed Gondwana Engine host. It is separate
 from the GSCN editor's lightweight, definition-driven preview. Scene Viewer
 provides camera movement and zoom, animation pause, and F3 runtime diagnostics;

@@ -3,7 +3,7 @@ using Gondwana.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>
 /// Standalone-app docking wrapper for <see cref="AssetEditorControl"/>.

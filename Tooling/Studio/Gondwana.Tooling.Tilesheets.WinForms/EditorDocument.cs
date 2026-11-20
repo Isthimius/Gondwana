@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
-using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 /// <summary>
 /// Standalone-app docking wrapper for <see cref="TilesheetEditorControl"/>.

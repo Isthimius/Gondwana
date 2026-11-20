@@ -4,7 +4,7 @@ using System.Windows.Forms.Design;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 /// <summary>Intercepts model writes before PropertyGrid overwrites values, including modal collection edits.</summary>
 internal sealed class ScenePropertyView(SceneDocument document, object model) : CustomTypeDescriptor
