@@ -31,12 +31,14 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private Sprite? _movingSprite;
     private bool _showGrid = true;
     private bool _fitRequested = true;
+    private Size _clientSize;
     private bool _started;
     private bool _won;
     private long _lastStatusTicks;
 
     internal SliderGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface)
     {
+        _clientSize = surface.ClientSize;
         surface.SizeChanged += OnSurfaceSizeChanged;
     }
 
@@ -65,7 +67,10 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private void OnSurfaceSizeChanged(object? sender, EventArgs args)
     {
         lock (_requestGate)
+        {
+            _clientSize = RenderSurface.ClientSize;
             _fitRequested = true;
+        }
     }
 
     protected override void LoadAssets()
@@ -284,14 +289,18 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void FitPuzzle()
     {
+        Size size;
+        lock (_requestGate)
+            size = _clientSize;
+
         if (_renderer.WidthPx <= 0 || _renderer.HeightPx <= 0 ||
-            RenderSurface.ClientSize.Width <= 0 || RenderSurface.ClientSize.Height <= 0)
+            size.Width <= 0 || size.Height <= 0)
             return;
 
         var view = RenderSurface.Host.ViewManager.Views[0];
         float zoom = Math.Min(
-            RenderSurface.ClientSize.Width / (float)_renderer.WidthPx,
-            RenderSurface.ClientSize.Height / (float)_renderer.HeightPx) * 0.92f;
+            size.Width / (float)_renderer.WidthPx,
+            size.Height / (float)_renderer.HeightPx) * 0.92f;
         view.Viewport.SnapZoom(Math.Max(0.05f, zoom));
         float center = WorldTiles * WorldTileSize / 2f;
         view.Camera.CenterOn(new PointF(center, center));
