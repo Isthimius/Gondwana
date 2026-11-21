@@ -71,13 +71,11 @@ internal sealed class MyGameHost : WinFormsGameHost
     {
     }
 
-    // TODO: Subscribe to touch/gesture events here after the adapter is initialized.
-    // Note: WinForms does not currently provide a built-in touch adapter. Override
-    // ConfigureTouch() upstream to assign a custom adapter via Engine.Input.TouchAdapter,
-    // then use this hook to attach gesture recognizers.
+    // Touch is initialized and polled automatically by the WinForms game host.
+    // Widgets consume touch input through WidgetInputRouter. Override this hook
+    // only to subscribe to game-specific touch/gesture events.
     // Example:
-    //   var tap = new TapGestureRecognizer(Engine.Input.TouchEventPoller!);
-    //   tap.Tapped += (_, e) => { /* handle tap at e.Position */ };
+    //   Engine.Input.TouchEventPoller!.TouchEvent += OnTouchGesture;
     /// <inheritdoc/>
     protected override void OnTouchAdapterInitialized()
     {
