@@ -146,9 +146,11 @@ protected override void UnhookEvents()
 
 Keep the router reference for cleanup: `GameHostBase.Dispose()` disposes
 its router before calling `UnhookEvents()`. `GameHostBase.InitializeWidgetInput`
-starts mouse monitoring; the built-in WinForms/Avalonia/Blazor game hosts also
-initialize touch and start its poller. Custom hosts must initialize a touch
-adapter and call `StartMonitoringTouch()` explicitly. The event **does not
+starts mouse monitoring; Avalonia/Blazor game hosts also initialize touch.
+WinForms GameHosts opt into native touch with
+`protected override bool EnableNativeTouch => true;`.
+Custom hosts must initialize a touch adapter and call
+`StartMonitoringTouch()` explicitly. The event **does not
 automatically select sprites**; games use the logical position and reported
 view to hit-test tiles, sprites, or objects. Game-specific rules such as
 turn ownership or modal state remain the game's responsibility. WinForms now
