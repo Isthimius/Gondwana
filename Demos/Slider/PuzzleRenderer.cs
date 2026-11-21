@@ -44,8 +44,9 @@ internal sealed class PuzzleRenderer : IDisposable
         if (image.Width < board.Columns || image.Height < board.Rows)
             throw new InvalidDataException("The source image must be at least one pixel per puzzle cell.");
 
-        // Preserve the image's aspect ratio. Rounding to whole cell sizes introduces
-        // at most a fraction of a cell of distortion and guarantees exact frame slices.
+        // Round frame boundaries to integral cell sizes for atlas indexing.
+        // The full image is fitted proportionally inside that atlas (with padding),
+        // so even extremely panoramic or tall images are never stretched.
         float scale = Math.Min(900f / image.Width, 650f / image.Height);
         int cellWidth = Math.Max(1, (int)Math.Round(image.Width * scale / board.Columns));
         int cellHeight = Math.Max(1, (int)Math.Round(image.Height * scale / board.Rows));
@@ -57,7 +58,14 @@ internal sealed class PuzzleRenderer : IDisposable
         {
             canvas.Clear(SKColors.Black);
             using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High };
-            canvas.DrawBitmap(image, new SKRect(0, 0, atlasWidth, atlasHeight), paint);
+            float proportionalScale = Math.Min(
+                atlasWidth / (float)image.Width, atlasHeight / (float)image.Height);
+            float drawWidth = image.Width * proportionalScale;
+            float drawHeight = image.Height * proportionalScale;
+            var destination = new SKRect(
+                (atlasWidth - drawWidth) / 2f, (atlasHeight - drawHeight) / 2f,
+                (atlasWidth + drawWidth) / 2f, (atlasHeight + drawHeight) / 2f);
+            canvas.DrawBitmap(image, destination, paint);
             canvas.Flush();
         }
 
