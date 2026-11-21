@@ -1,7 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 ### Changed
 - Expose dirty/change notifications and host-routed saves; support path-adopting SaveTo with encryption and explicit package ownership for Studio.

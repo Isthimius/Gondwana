@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 ### Added
 

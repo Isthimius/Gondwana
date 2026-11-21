@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 ### Added
 - Browse, select, preview, and validate images stored in Gondwana `.gaf` / `.zip` asset packages without extracting them.

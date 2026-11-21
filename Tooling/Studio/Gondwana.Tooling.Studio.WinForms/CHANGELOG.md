@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 - Support the optional Project Diagnostics reference plugin, including real discovery, lifecycle and docking integration tests; share the WinForms plugin contract with external load contexts.
 

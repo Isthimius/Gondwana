@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 - Discover adjacent loose and packed GTS/GANI/GSPR definitions with deterministic loose-first resolution, authored fallback, and current-scene sprite materialization ([#438](https://github.com/Isthimius/Gondwana/pull/438)).
 

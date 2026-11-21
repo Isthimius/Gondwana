@@ -1,8 +1,10 @@
 # Changelog
 
-All notable changes to Gondwana.Tooling.Audio.WinForms are documented here.
+All notable changes to Gondwana.Tooling.Studio.Audio.WinForms are documented here.
 
-## [Unreleased]
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 ### Added
 - Add the standalone, hostable WinForms GSND audio-definition editor.

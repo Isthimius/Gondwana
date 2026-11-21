@@ -2,7 +2,9 @@
 
 All notable changes to Gondwana.Tooling.Studio.Scenes.WinForms are documented here.
 
-## [Unreleased]
+## Historical implementation notes
+
+> Retained from the manually maintained changelog before automated release-note generation.
 
 ### Added
 - Standalone and hostable WinForms editor for GSCN scene definitions.
