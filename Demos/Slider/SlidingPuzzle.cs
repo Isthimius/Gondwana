@@ -33,6 +33,29 @@ internal sealed class SlidingPuzzle
     internal bool IsSolved => CorrectPieces == TotalPieces;
     internal IReadOnlyList<int> Cells => Array.AsReadOnly(_cells);
 
+    // The original row-major piece ID is its home cell, irrespective of shuffling.
+    internal (int Column, int Row) HomeOf(int piece)
+    {
+        if (piece < 0 || piece >= TotalPieces)
+            throw new ArgumentOutOfRangeException(nameof(piece));
+        return (piece % Columns, piece / Columns);
+    }
+
+    internal static SlidingPuzzle Restore(int columns, int rows, int[]? cells, int moves)
+    {
+        var board = new SlidingPuzzle(columns, rows);
+        if (cells is null || cells.Length != columns * rows || moves < 0 ||
+            cells.Count(value => value == -1) != 1 ||
+            !cells.OrderBy(value => value).SequenceEqual(
+                Enumerable.Range(-1, columns * rows)))
+            throw new InvalidDataException("The saved puzzle has invalid pieces or move count.");
+
+        Array.Copy(cells, board._cells, cells.Length);
+        board._blank = Array.IndexOf(board._cells, -1);
+        board.MoveCount = moves;
+        return board;
+    }
+
     internal int PieceAt(int column, int row)
         => column >= 0 && column < Columns && row >= 0 && row < Rows
             ? _cells[row * Columns + column]
