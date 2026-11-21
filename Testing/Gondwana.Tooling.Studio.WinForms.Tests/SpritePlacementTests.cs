@@ -7,8 +7,8 @@ using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Scenes.WinForms;
-using Gondwana.Tooling.Studio.Sprites.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Sprites.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
