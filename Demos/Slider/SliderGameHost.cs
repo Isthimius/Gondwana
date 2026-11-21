@@ -336,7 +336,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private void OnKeyDown(KeyDownEventArgs args)
     {
         if (args.KeyAction != KeyAction.Pressed || _movingSprite is not null || _shuffleMoves is not null ||
-            _won || _menu?.HasOpenDialog == true || _sidebar?.IsEditingDimensions == true ||
+            _won || HasMenuOrDialogOpen || _sidebar?.IsEditingDimensions == true ||
             !Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key))
             return;
 
@@ -484,7 +484,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
             result + Environment.NewLine +
             "Correct: " + _board.CorrectPieces + " / " + _board.TotalPieces + Environment.NewLine +
             "Moves: " + _board.MoveCount + Environment.NewLine +
-            "Time: " + (_elapsedBeforeResume + _timer.Elapsed).ToString(@"mm\:ss"));
+            "Time: " + SliderPersistence.FormatElapsed(_elapsedBeforeResume + _timer.Elapsed));
     }
 
     protected override void UnhookEvents()
