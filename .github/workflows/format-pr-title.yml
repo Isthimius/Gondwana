@@ -105,7 +105,6 @@ jobs:
           - Preferred scopes: rendering, scenes, input, audio, collisions, physics, tilesheets, widgets, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, blazor, studio, tooling, midi, sdl2, core
           - A different concise lowercase scope is allowed when it fits better
           - Use imperative mood
-          - Keep the description lowercase
           - Do not end with a period
           - Keep the description at or below 60 characters
           - For a breaking change, append ! after the scope
@@ -159,7 +158,6 @@ jobs:
               description = valid.group("description")
               if (
                   3 <= len(description) <= 60
-                  and description == description.lower()
                   and not description.endswith(".")
               ):
                   print(title)
