@@ -97,3 +97,21 @@ winforms_studio:
 winforms_importers:
   - 'Tooling/Gondwana.Tooling.Importers/**'
   - 'Testing/Gondwana.Tooling.Importers.Tests/**'
+
+# Demo-only test runs: select the owning demo when its sources/assets or
+# its dedicated tests change. Engine/global changes are covered nightly.
+# Add a new filter and demo-tests step for future demo suites (e.g. Slider).
+demo:
+  - 'Demos/Spot.*/**'
+  - 'Testing/Spot.Tests/**'
+  - 'Demos/Gondwana.Platformer/**'
+  - 'Testing/Platformer.Tests/**'
+
+demo_spot:
+  - 'Demos/Spot.*/**'
+  - 'Testing/Spot.Tests/**'
+
+demo_platformer:
+  - 'Demos/Gondwana.Platformer/**'
+  - 'Testing/Platformer.Tests/**'
+

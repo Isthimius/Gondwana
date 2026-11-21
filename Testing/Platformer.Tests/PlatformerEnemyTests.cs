@@ -1,7 +1,6 @@
 using System.Drawing;
-using Gondwana.Demos.Platformer;
 
-namespace Gondwana.Tests;
+namespace Gondwana.Demos.Platformer.Tests;
 
 /// <summary>
 /// Contains regression tests for platformer enemy.
