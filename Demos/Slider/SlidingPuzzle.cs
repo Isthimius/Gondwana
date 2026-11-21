@@ -57,6 +57,16 @@ internal sealed class SlidingPuzzle
     /// Shuffling uses legal moves, so the resulting arrangement is always solvable.
     /// Avoid immediate reversals, and don't count shuffle operations as player moves.
     /// </summary>
+    internal bool TryMovePiece(int piece, out PuzzleMove move)
+    {
+        int index = Array.IndexOf(_cells, piece);
+        if (index >= 0)
+            return TryMove(index % Columns, index / Columns, out move);
+
+        move = default;
+        return false;
+    }
+
     internal void Shuffle(int moves, Random? random = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(moves);
