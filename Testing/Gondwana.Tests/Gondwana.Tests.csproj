@@ -44,6 +44,8 @@
         <Compile Include="../../Gondwana.Audio.NAudio/StereoPanSampleProvider.cs" Link="Audio/StereoPanSampleProvider.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/EnemyContact.cs" Link="Demos/EnemyContact.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/PlatformerArt.cs" Link="Demos/PlatformerArt.cs" />
+        <!-- Native WinForms touch contact buffering is independently testable on Linux CI. -->
+        <Compile Include="../../Gondwana.WinForms/Input/Touch/WinFormsTouchState.cs" Link="WinFormsInput/WinFormsTouchState.cs" />
         <!-- Exercise XInput state projection without requiring a Windows controller or native call. -->
         <Compile Include="../../Gondwana.WinForms/Input/Gamepad/XInput/XInput.cs" Link="WinFormsInput/XInput.cs" />
         <Compile Include="../../Gondwana.WinForms/Input/Gamepad/XInput/XInputGamepadAdapter.cs" Link="WinFormsInput/XInputGamepadAdapter.cs" />
