@@ -226,20 +226,21 @@ dotnet build \
 
 CI always checks whitespace and selected style diagnostics, builds the solution in Release configuration, and runs:
 
-- `Testing/Gondwana.Tests/Gondwana.Tests.csproj` core unit tests
+- `Testing/Gondwana.Tests/Gondwana.Tests.csproj` core unit tests (excluding demo-specific test suites)
 - fast Node.js browser-side tests in `Testing/BlazorPresentationTests.mjs` and `Testing/browser-audio.test.mjs`
 
 The **integration jobs are change-aware** for PRs and pushes to `master`:
 
 - `blazor-consumer` packs the engine and browser dependencies, installs the CLI/templates into an isolated consumer environment, generates a Blazor project, then performs Debug/Release builds, publishing, and Chromium smoke tests. It runs when a relevant engine, Blazor, browser-audio, CLI, template, CLI asset dependency, or build/test input changes.
 - `winforms-editor-tests` runs on PRs and `master` only when Studio editors, their tooling dependencies (assets/importers), or their test projects/fixtures change. It selects affected suites from Tilesheets, Animations, Audio, Scenes, Sprites, Scene Viewer, Studio, and Importers. It generates `Testing/SelectedWinFormsEditorTests.slnf` and restores/builds only those test projects and their dependencies.
+- `demo-tests` runs independently when Spot or Platformer demo sources/assets or their dedicated tests change. It runs only the corresponding test project, `Testing/Spot.Tests` or `Testing/Platformer.Tests`. Demo tests are not part of the core `Gondwana.Tests` execution. Other demo projects have no dedicated test suite yet.
 - `changelog-tests` runs for changes affecting changelog scripts, release preparation, and related CI/release configuration.
 
 All path filters are maintained centrally in **`.github/ci-paths.yml`** and evaluated by the `changes` job using `dorny/paths-filter`. Studio composition tests cover changes to the referenced standalone editors and tooling plugins. Changes to shared Studio code or test infrastructure select all eight editor suites; standalone editor changes select their affected suite(s). Changes outside Studio tooling, such as engine/runtime code, build configuration, CI configuration, or demo asset fixtures, do **not** trigger this Windows test job on ordinary PRs or `master` pushes; the nightly full suite catches cross-project regressions.
 
 Newly added test suites or cross-project dependencies must be reflected in the filter file and the selector in `ci-master.yml`.
 
-**Full integration coverage** runs nightly, through manual dispatch, and for a tagged release before packaging. Those modes run all eight Windows suites, Blazor consumer validation, and changelog integration tests, even if no matching paths changed. The standalone weekly changelog workflow still validates changelog generation before writing generated files.
+**Full integration coverage** runs nightly at 2:15 AM Eastern, through manual dispatch, and for a tagged release before packaging. Those modes run both demo test projects, all eight Windows suites, Blazor consumer validation, and changelog integration tests, even if no matching paths changed. When the new Slider tests from PR #579 land, they must be moved out of `Gondwana.Tests` to a `Slider.Tests` project and wired into these demo path filters and the `demo-tests` job. The standalone weekly changelog workflow still validates changelog generation before writing generated files.
 
 The Linux build/test job and Windows editor-test job are separate CI jobs. The Linux job's broad sequence is:
 
@@ -1687,7 +1688,7 @@ Pull Request
 └── build + selective integration tests for normal code changes
 
 Nightly at 2:15 AM Eastern
-└── full CI suite (including Blazor consumer + all WinForms editors)
+└── full CI suite (including demo tests, Blazor consumer + all WinForms editors)
 
 master
 ├── build + test normal code changes
