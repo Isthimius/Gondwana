@@ -124,8 +124,8 @@ protected override void OnSceneGraphCreated()
 
 protected override void OnTouchAdapterInitialized()
 {
-    // GameHostBase starts mouse monitoring automatically, but touch monitoring
-    // must be started explicitly for touch taps to reach UnhandledPrimaryAction.
+    // Custom hosts must start touch polling after configuring an adapter.
+    // Built-in Avalonia/Blazor hosts already do this, as does an opted-in WinForms host.
     Engine.Input.TouchEventPoller?.StartMonitoringTouch();
 }
 
