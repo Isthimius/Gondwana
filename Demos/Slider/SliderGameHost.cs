@@ -3,13 +3,11 @@ using Gondwana.Audio;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Keyboard;
-using Gondwana.Input.Mouse;
 using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Scenes;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;
-using MouseEventArgs = Gondwana.Input.Mouse.MouseEventArgs;
 using View = Gondwana.Rendering.Views.View;
 
 namespace Gondwana.Demos.Slider;
@@ -17,6 +15,10 @@ namespace Gondwana.Demos.Slider;
 /// <summary>Owns Gondwana startup, input, graphics, audio, and engine-thread puzzle state.</summary>
 internal sealed partial class SliderGameHost : WinFormsGpuGameHost
 {
+    // Native WM_TOUCH is routed through WidgetInputRouter, avoiding both double taps
+    // and a second independent gameplay mouse handler.
+    protected override bool EnableNativeTouch => true;
+
     private const int WorldTiles = 20;
     private const int WorldTileSize = 64;
     private const float PlayerSlideSeconds = 0.15f;
@@ -146,13 +148,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
             onShuffle: RequestShuffle,
             onGridChanged: RequestGrid);
         CreateMenu();
-    }
-
-    protected override void OnMouseAdapterInitialized()
-    {
-        var mouse = Engine.Input.MouseEventPoller!;
-        mouse.MouseEvent += OnMouse;
-        mouse.StartMonitoringMouse(trackMouseMovement: false, timeBetweenEvents: 0);
+        WidgetInputRouter!.UnhandledPrimaryAction += OnPrimaryPointerAction;
     }
 
     protected override void OnKeyboardAdapterInitialized()
@@ -288,23 +284,6 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         _won = false;
         _timer.Reset();
         PublishStatus();
-    }
-
-    private void OnMouse(MouseEventArgs args)
-    {
-        if (!args.IsButtonJustPressed(MouseButton.Left) || _movingSprite is not null || _shuffleMoves is not null || _won || _menu?.HasOpenDialog == true)
-            return;
-
-        // Sprite picking must never run over the widget sidebar.
-        if (!_gameView.Viewport.TargetRectPx.Contains(args.CurrentPosition))
-            return;
-
-        Sprite? sprite = Engine.Managers.Sprites
-            .GetSpritesAtViewPixel(_gameView, args.CurrentPosition, _layer)
-            .FirstOrDefault();
-
-        if (sprite is not null && int.TryParse(sprite.Nickname, out int piece))
-            TryMovePiece(piece);
     }
 
     private void OnKeyDown(KeyDownEventArgs args)
@@ -463,8 +442,8 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
 
     protected override void UnhookEvents()
     {
-        if (Engine.Input.MouseEventPoller is not null)
-            Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
+        if (WidgetInputRouter is not null)
+            WidgetInputRouter.UnhandledPrimaryAction -= OnPrimaryPointerAction;
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
         Engine.BeforeBackgroundTasksExecute -= OnTick;
