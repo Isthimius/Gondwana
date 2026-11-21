@@ -37,8 +37,16 @@ Engine.Instance.Input.TouchEventPoller?.StartMonitoringTouch();
 beginnings/endings so fast taps survive engine polling, and converts positions
 to logical Backbuffer pixels. It supports both bitmap and GPU render controls.
 
-`WinFormsGameHostBase` initializes and starts touch monitoring automatically,
-**before** it creates the normal `WidgetInputRouter`. Game code can subscribe
+`WinFormsGameHostBase` supports opt-in native touch. To enable it for a
+widget-driven WinForms game host, override:
+
+```csharp
+protected override bool EnableNativeTouch => true;
+```
+
+Touch is then initialized and polled **before** creating `WidgetInputRouter`.
+It is disabled by default so existing games using Windows' touchscreen-to-mouse
+emulation do not lose their mouse-only gameplay controls. Game code can subscribe
 to `WidgetInputRouter.UnhandledPrimaryAction` for mouse clicks and touch taps
 without duplicating input logic. The WinForms mouse adapter ignores only
 Windows compatibility mouse events promoted from touchscreen contacts when
