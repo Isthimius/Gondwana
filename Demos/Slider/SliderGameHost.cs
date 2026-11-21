@@ -18,6 +18,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 {
     private const int WorldTiles = 20;
     private const int WorldTileSize = 64;
+    private const float PlayerSlideSeconds = 0.15f;
+    private const float MaxShuffleSlideSeconds = 0.06f;
     private readonly object _requestGate = new();
     private readonly Queue<PuzzleRequest> _requests = new();
     private readonly Stopwatch _timer = new();
@@ -28,6 +30,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private AudioResource? _slideSound;
     private AudioResource? _winSound;
     private Sprite? _movingSprite;
+    private IEnumerator<PuzzleMove>? _shuffleMoves;
+    private float _shuffleSlideSeconds;
     private bool _showGrid = true;
     private bool _fitRequested = true;
     private Size _clientSize;
@@ -148,11 +152,16 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
                 {
                     case PuzzleCommand.Shuffle:
                         CancelAnimation();
-                        _board.Shuffle(_board.TotalPieces * 12);
-                        _renderer.SnapToBoard(_board);
                         _timer.Reset();
                         _started = false;
                         _won = false;
+                        // Use the previous demo's legal-move shuffle count. Animate
+                        // each move, with a shorter duration than a player slide.
+                        int shuffleCount = _board.Columns * _board.Rows * 3;
+                        _shuffleSlideSeconds = Math.Min(
+                            MaxShuffleSlideSeconds, 15f / shuffleCount);
+                        _shuffleMoves = _board.ShuffleSteps(shuffleCount).GetEnumerator();
+                        StartNextShuffleMove();
                         PublishStatus();
                         break;
                     case PuzzleCommand.ShowGrid:
@@ -203,7 +212,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void OnMouse(MouseEventArgs args)
     {
-        if (!args.IsButtonJustPressed(MouseButton.Left) || _movingSprite is not null || _won)
+        if (!args.IsButtonJustPressed(MouseButton.Left) || _movingSprite is not null || _shuffleMoves is not null || _won)
             return;
 
         var view = RenderSurface.Host.ViewManager.Views[0];
@@ -217,7 +226,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (args.KeyAction != KeyAction.Pressed || _movingSprite is not null || _won ||
+        if (args.KeyAction != KeyAction.Pressed || _movingSprite is not null || _shuffleMoves is not null || _won ||
             !Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key))
             return;
 
@@ -240,11 +249,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void TryMovePiece(int piece)
     {
-        Sprite? sprite = _renderer.GetPiece(piece);
-        if (sprite is null)
-            return;
-
-        if (!_board.TryMovePiece(piece, out PuzzleMove move))
+        if (_renderer.GetPiece(piece) is null ||
+            !_board.TryMovePiece(piece, out PuzzleMove move))
             return;
 
         if (!_started)
@@ -253,20 +259,51 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             _timer.Start();
         }
 
+        AnimateMove(move, PlayerSlideSeconds);
+        PublishStatus();
+    }
+
+    private void StartNextShuffleMove()
+    {
+        if (_shuffleMoves is null)
+            return;
+
+        if (!_shuffleMoves.MoveNext())
+        {
+            _shuffleMoves.Dispose();
+            _shuffleMoves = null;
+            return;
+        }
+
+        AnimateMove(_shuffleMoves.Current, _shuffleSlideSeconds);
+    }
+
+    private void AnimateMove(PuzzleMove move, float durationSeconds)
+    {
+        Sprite sprite = _renderer.GetPiece(move.PieceId)
+            ?? throw new InvalidOperationException("Shuffle references a missing puzzle piece.");
         _movingSprite = sprite;
         sprite.Movement.ScriptedMovementStopped += OnMoveStopped;
         sprite.Movement.MoveTo(_renderer.PositionForIndex(move.DestinationIndex),
-            0.15f, null, 0.01f);
+            durationSeconds, null, 0.01f);
         _slideSound?.Play();
-        PublishStatus();
     }
 
     private void OnMoveStopped(ScriptedMovement movement)
     {
         if (_movingSprite is null)
             return;
+
         _movingSprite.Movement.ScriptedMovementStopped -= OnMoveStopped;
         _movingSprite = null;
+        _slideSound?.Stop();
+
+        if (_shuffleMoves is not null)
+        {
+            StartNextShuffleMove();
+            if (_shuffleMoves is not null)
+                return;
+        }
 
         if (_board.IsSolved && _started)
         {
@@ -280,10 +317,19 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void CancelAnimation()
     {
-        if (_movingSprite is null)
-            return;
-        _movingSprite.Movement.ScriptedMovementStopped -= OnMoveStopped;
-        _movingSprite = null;
+        _shuffleMoves?.Dispose();
+        _shuffleMoves = null;
+
+        if (_movingSprite is not null)
+        {
+            Sprite sprite = _movingSprite;
+            _movingSprite = null;
+            sprite.Movement.ScriptedMovementStopped -= OnMoveStopped;
+            sprite.Movement.CancelScript();
+            _renderer.SnapToBoard(_board);
+        }
+
+        _slideSound?.Stop();
     }
 
     private void FitPuzzle()
@@ -308,7 +354,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private void PublishStatus()
     {
         _lastStatusTicks = Stopwatch.GetTimestamp();
-        string result = _won ? "Solved!" : _started ? "In progress" : "Ready";
+        string result = _shuffleMoves is not null ? "Shuffling..." :
+            _won ? "Solved!" : _started ? "In progress" : "Ready";
         StatusChanged?.Invoke(
             result + Environment.NewLine +
             "Correct: " + _board.CorrectPieces + " / " + _board.TotalPieces + Environment.NewLine +
