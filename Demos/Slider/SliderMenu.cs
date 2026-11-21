@@ -108,7 +108,7 @@ internal sealed class SliderMenu : IDisposable
         dialog.TitleBar.SetColor(Color.FromArgb(255, 46, 63, 85));
 
         var labelBounds = new Rectangle(bounds.X + 18, bounds.Y + 48,
-            bounds.Width - 36, bounds.Height - 68);
+            bounds.Width - 36, bounds.Height - 106);
         var text = new LabelWidget(_host, _gameView, labelBounds, content,
                 "slider.dialog.content")
             .SetFont(SKTypeface.Default, 16f)
@@ -120,6 +120,18 @@ internal sealed class SliderMenu : IDisposable
         text.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         text.MouseWheelScrollPixels = 52;
         dialog.Add(text, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(18, 48));
+
+        var close = new ButtonWidget(_host, _gameView,
+            new Rectangle(bounds.X + (bounds.Width - 110) / 2, bounds.Bottom - 48, 110, 32),
+            "Close", "slider.dialog.close")
+            .SetBackgroundColors(Color.FromArgb(255, 52, 71, 94),
+                Color.FromArgb(255, 71, 92, 119), Color.FromArgb(255, 38, 54, 75))
+            .SetTextColor(Color.White)
+            .SetButtonZOrder(10_030);
+        close.Clicked += () => dialog.Close(DialogResult.Close);
+        dialog.Add(close, keepCurrentOffset: false,
+            explicitLocalOffsetPx: new Vector2((bounds.Width - 110) / 2, bounds.Height - 48));
+
         OpenDialog(dialog);
     }
 
