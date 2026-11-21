@@ -3,22 +3,32 @@ using Gondwana.Input.Touch;
 namespace Gondwana.WinForms.Input.Touch;
 
 /// <summary>
-/// Thread-safe contact state shared by WinForms UI messages and the engine's touch poller.
-/// Keeps complete begin/end queues so a fast tap is not lost between engine ticks.
+/// Thread-safe Windows touch contact buffer. A poll reads a coherent prefix of
+/// chronological native transitions, never two successive lifecycles for the
+/// same contact ID in one tick. This preserves rapid taps and ID reuse with
+/// the existing began/ended polling contract.
 /// </summary>
-internal sealed class WinFormsTouchState
+internal sealed class WinFormsTouchState : ITouchAdapter
 {
     private readonly object _sync = new();
-    private readonly Dictionary<int, TouchPoint> _active = [];
-    private readonly Queue<TouchPoint> _began = new();
-    private readonly Queue<TouchPoint> _ended = [];
+    private readonly Dictionary<int, TouchPoint> _nativeActive = [];
+    private readonly Dictionary<int, TouchPoint> _reportedActive = [];
+    private readonly Queue<TouchPoint> _pending = [];
+    private TouchPoint[] _batchBeginnings = [];
+    private TouchPoint[] _batchEndings = [];
+    private TouchPoint[] _snapshot = [];
 
-    internal IReadOnlyList<TouchPoint> ActiveTouches
+    /// <summary>
+    /// The contact snapshot corresponding to the last consumed lifecycle
+    /// batch, not newer native events that have not yet been handed to the
+    /// poller. This prevents phantom rediscovery of deferred contacts.
+    /// </summary>
+    public IReadOnlyList<TouchPoint> ActiveTouches
     {
         get
         {
             lock (_sync)
-                return _active.Values.ToArray();
+                return _snapshot;
         }
     }
 
@@ -26,12 +36,12 @@ internal sealed class WinFormsTouchState
     {
         lock (_sync)
         {
-            if (_active.ContainsKey(id))
+            if (_nativeActive.ContainsKey(id))
                 return;
 
             var point = new TouchPoint(id, position, TouchPhase.Began);
-            _active.Add(id, point);
-            _began.Enqueue(point);
+            _nativeActive.Add(id, point);
+            _pending.Enqueue(point);
         }
     }
 
@@ -39,8 +49,12 @@ internal sealed class WinFormsTouchState
     {
         lock (_sync)
         {
-            if (_active.ContainsKey(id))
-                _active[id] = new TouchPoint(id, position, TouchPhase.Moved);
+            if (!_nativeActive.ContainsKey(id))
+                return;
+
+            var point = new TouchPoint(id, position, TouchPhase.Moved);
+            _nativeActive[id] = point;
+            _pending.Enqueue(point);
         }
     }
 
@@ -48,10 +62,10 @@ internal sealed class WinFormsTouchState
     {
         lock (_sync)
         {
-            if (!_active.Remove(id))
+            if (!_nativeActive.Remove(id))
                 return;
 
-            _ended.Enqueue(new TouchPoint(id, position,
+            _pending.Enqueue(new TouchPoint(id, position,
                 cancelled ? TouchPhase.Cancelled : TouchPhase.Ended));
         }
     }
@@ -60,36 +74,82 @@ internal sealed class WinFormsTouchState
     {
         lock (_sync)
         {
-            foreach (TouchPoint point in _active.Values)
-                _ended.Enqueue(point with { Phase = TouchPhase.Cancelled });
+            foreach (TouchPoint point in _nativeActive.Values)
+                _pending.Enqueue(point with { Phase = TouchPhase.Cancelled });
 
-            _active.Clear();
-        }
-    }
-
-    internal IReadOnlyList<TouchPoint> ConsumeBeginnings()
-    {
-        lock (_sync)
-        {
-            TouchPoint[] snapshot = _began.ToArray();
-            _began.Clear();
-            return snapshot;
-        }
-    }
-
-    internal IReadOnlyList<TouchPoint> ConsumeEndings()
-    {
-        lock (_sync)
-        {
-            TouchPoint[] snapshot = _ended.ToArray();
-            _ended.Clear();
-            return snapshot;
+            _nativeActive.Clear();
         }
     }
 
     /// <summary>
-    /// Windows adds the MI_WP_SIGNATURE to mouse messages promoted from touch or pen.
-    /// Bit 7 differentiates touch from pen; genuine mouse and pen input must remain intact.
+    /// Starts an atomic snapshot for one engine poll. Native callbacks after
+    /// this call append to the pending queue and cannot affect the endings or
+    /// active contacts returned for the current poll.
+    /// </summary>
+    public IReadOnlyList<TouchPoint> ConsumeBeganTouches()
+    {
+        lock (_sync)
+        {
+            var beginnings = new List<TouchPoint>();
+            var endings = new List<TouchPoint>();
+            bool reachedEnding = false;
+
+            // The original poller emits all beginnings before all endings.
+            // Stop before the next beginning after any ending, so separate
+            // taps never look like simultaneous fingers. This also prevents
+            // a reused native ID being deduplicated within a single tick.
+            while (_pending.Count > 0)
+            {
+                TouchPoint next = _pending.Peek();
+                if (reachedEnding && next.Phase == TouchPhase.Began)
+                    break;
+
+                _pending.Dequeue();
+                switch (next.Phase)
+                {
+                    case TouchPhase.Began:
+                        beginnings.Add(next);
+                        _reportedActive[next.Id] = next;
+                        break;
+                    case TouchPhase.Ended:
+                    case TouchPhase.Cancelled:
+                        endings.Add(next);
+                        _reportedActive.Remove(next.Id);
+                        reachedEnding = true;
+                        break;
+                    case TouchPhase.Moved:
+                        if (_reportedActive.ContainsKey(next.Id))
+                            _reportedActive[next.Id] = next;
+                        break;
+                }
+            }
+
+            _batchBeginnings = beginnings.ToArray();
+            _batchEndings = endings.ToArray();
+            _snapshot = _reportedActive.Values.ToArray();
+            return _batchBeginnings;
+        }
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<TouchPoint> ConsumeEndedTouches()
+    {
+        lock (_sync)
+        {
+            TouchPoint[] result = _batchEndings;
+            _batchEndings = [];
+            _batchBeginnings = [];
+            return result;
+        }
+    }
+
+    // Existing internal names retained for direct contact-state unit tests.
+    internal IReadOnlyList<TouchPoint> ConsumeBeginnings() => ConsumeBeganTouches();
+    internal IReadOnlyList<TouchPoint> ConsumeEndings() => ConsumeEndedTouches();
+
+    /// <summary>
+    /// Windows adds MI_WP_SIGNATURE to synthesized pointer mouse messages.
+    /// The touch bit distinguishes fingers from pen and genuine mouse input.
     /// </summary>
     internal static bool IsPromotedTouchMouseMessage(long extraInfo)
     {
