@@ -19,6 +19,7 @@ internal sealed class SliderMenu : IDisposable
     private DialogBox? _dialog;
 
     internal bool HasOpenDialog => _dialog is { IsClosed: false };
+    internal bool HasOpenMenu => _menu.OpenMenuIndex >= 0;
 
     internal SliderMenu(RenderSurfaceHostBase host, View uiView, View gameView,
         Action newPuzzle, Action openPicture, Action shuffle,
