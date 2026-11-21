@@ -7,8 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Gondwana.Demos.Slider</RootNamespace>
     <IsPackable>false</IsPackable>
+    <ApplicationIcon>assets/gondwana_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="../Spot.Shared/assets/gondwana-logo-text.png" Link="assets/gondwana-logo-text.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
