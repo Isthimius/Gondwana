@@ -47,7 +47,7 @@ internal sealed class PuzzleRenderer : IDisposable
         int atlasWidth = cellWidth * board.Columns;
         int atlasHeight = cellHeight * board.Rows;
 
-        using var resized = new SKBitmap(atlasWidth, atlasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+        var resized = new SKBitmap(atlasWidth, atlasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
         using (var canvas = new SKCanvas(resized))
         {
             canvas.Clear(SKColors.Black);
@@ -56,7 +56,7 @@ internal sealed class PuzzleRenderer : IDisposable
             canvas.Flush();
         }
 
-        using var outlined = new SKBitmap(atlasWidth, atlasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+        var outlined = new SKBitmap(atlasWidth, atlasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
         using (var canvas = new SKCanvas(outlined))
         {
             canvas.DrawBitmap(resized, 0f, 0f);
@@ -131,8 +131,10 @@ internal sealed class PuzzleRenderer : IDisposable
     }
 
     private Vector2 PositionAt(int column, int row)
-        => new(column * _cellWidth / (float)SceneTileSize,
-               row * _cellHeight / (float)SceneTileSize);
+        => new(((WorldSize - WidthPx) / 2f + column * _cellWidth) / SceneTileSize,
+               ((WorldSize - HeightPx) / 2f + row * _cellHeight) / SceneTileSize);
+
+    private const int WorldSize = 20 * SceneTileSize;
 
     internal void Clear()
     {
