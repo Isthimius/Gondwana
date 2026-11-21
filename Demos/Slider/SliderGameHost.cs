@@ -46,6 +46,8 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private Size _requestedLogicalSize;
     private bool _started;
     private bool _won;
+    private PuzzleRequest? _pendingPictureLoad;
+    private bool _hideLoadingOnNextTick;
     private long _lastStatusTicks;
 
     internal SliderGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface)
@@ -177,6 +179,31 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
 
     private void OnTick()
     {
+        // Stage image loading across frames so the Widgets progress indicator is
+        // actually presented before potentially expensive decoding/atlas creation.
+        if (_hideLoadingOnNextTick)
+        {
+            _sidebar?.SetLoading(-1f);
+            _hideLoadingOnNextTick = false;
+        }
+        else if (_pendingPictureLoad is { } picture)
+        {
+            _pendingPictureLoad = null;
+            try
+            {
+                _sidebar?.SetLoading(0.65f);
+                LoadPicture(picture);
+                _cameraFitPending = true;
+                _sidebar?.SetLoading(1f);
+                _hideLoadingOnNextTick = true;
+            }
+            catch (Exception ex)
+            {
+                _sidebar?.SetLoading(-1f);
+                _sidebar?.SetStatus("Unable to load puzzle: " + ex.Message);
+            }
+        }
+
         List<PuzzleRequest> pending = [];
         bool resized;
         Size newSize;
@@ -229,8 +256,8 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
                         _renderer.ShowGrid(_showGrid);
                         break;
                     case null:
-                        LoadPicture(request);
-                        _cameraFitPending = true;
+                        _pendingPictureLoad = request;
+                        _sidebar?.SetLoading(0.15f);
                         break;
                 }
             }
