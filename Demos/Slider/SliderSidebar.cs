@@ -25,6 +25,8 @@ internal sealed class SliderSidebar : IDisposable
     private readonly ComboBoxWidget _columns;
     private readonly ComboBoxWidget _rows;
     private readonly LabelWidget _status;
+    private readonly LabelWidget _loadingLabel;
+    private readonly ProgressBarWidget _loadingProgress;
 
     internal int Columns => int.TryParse(_columns.SelectedItem, out int value) ? value : 4;
     internal int Rows => int.TryParse(_rows.SelectedItem, out int value) ? value : 3;
@@ -44,40 +46,63 @@ internal sealed class SliderSidebar : IDisposable
             new Rectangle(0, 0, Width, Math.Max(1, height)), BackgroundColor, "slider.sidebar")
             .SetPanelZOrder(1000);
 
-        AddLabel(host, view, new Rectangle(18, 17, 208, 48), "SLIDER", 30f, SKColors.White, "slider.title");
-        AddLabel(host, view, new Rectangle(18, 77, 204, 23), "Columns", 17f, SKColors.LightGray, "slider.columnsLabel");
-        _columns = new ComboBoxWidget(host, view, new Rectangle(18, 101, 202, 33),
+        AddLabel(host, view, new Rectangle(18, 47, 208, 48), "SLIDER", 30f, SKColors.White, "slider.title");
+        AddLabel(host, view, new Rectangle(18, 105, 204, 23), "Columns", 17f, SKColors.LightGray, "slider.columnsLabel");
+        _columns = new ComboBoxWidget(host, view, new Rectangle(18, 129, 202, 33),
             Dimensions, dropDownHeight: 220, nickname: "slider.columns");
-        _panel.AddWidget(_columns, new Point(18, 101));
+        _panel.AddWidget(_columns, new Point(18, 129));
         _columns.SetComboBoxZOrder(1200);
         _columns.SetHeaderTextColor(Color.White);
         _columns.SelectedIndex = 1; // 4 columns
 
-        AddLabel(host, view, new Rectangle(18, 145, 204, 23), "Rows", 17f, SKColors.LightGray, "slider.rowsLabel");
-        _rows = new ComboBoxWidget(host, view, new Rectangle(18, 169, 202, 33),
+        AddLabel(host, view, new Rectangle(18, 171, 204, 23), "Rows", 17f, SKColors.LightGray, "slider.rowsLabel");
+        _rows = new ComboBoxWidget(host, view, new Rectangle(18, 195, 202, 33),
             Dimensions, dropDownHeight: 220, nickname: "slider.rows");
-        _panel.AddWidget(_rows, new Point(18, 169));
+        _panel.AddWidget(_rows, new Point(18, 195));
         _rows.SetComboBoxZOrder(1200);
         _rows.SetHeaderTextColor(Color.White);
         _rows.SelectedIndex = 0; // 3 rows
 
-        AddButton(host, view, 222, "New puzzle", "slider.newPuzzle", onNewPuzzle);
-        AddButton(host, view, 267, "Open picture...", "slider.openPicture", () => onOpenPicture(Columns, Rows));
-        AddButton(host, view, 312, "Shuffle", "slider.shuffle", onShuffle);
+        AddButton(host, view, 246, "New puzzle", "slider.newPuzzle", onNewPuzzle);
+        AddButton(host, view, 291, "Open picture...", "slider.openPicture", () => onOpenPicture(Columns, Rows));
+        AddButton(host, view, 336, "Shuffle", "slider.shuffle", onShuffle);
 
-        var grid = new CheckBoxWidget(host, view, new Rectangle(18, 370, 205, 29),
+        var grid = new CheckBoxWidget(host, view, new Rectangle(18, 394, 205, 29),
             "Show piece outlines", isChecked: true, nickname: "slider.grid")
             .SetTextColor(SKColors.White);
         grid.CheckedChanged += onGridChanged;
-        _panel.AddWidget(grid, new Point(18, 370));
+        _panel.AddWidget(grid, new Point(18, 394));
 
-        AddLabel(host, view, new Rectangle(18, 416, 207, 60),
+        AddLabel(host, view, new Rectangle(18, 444, 207, 48),
             "Arrow keys or click a tile beside the empty square.", 15f, SKColors.LightGray, "slider.instructions")
             .EnableWrapping();
 
-        _status = AddLabel(host, view, new Rectangle(18, 496, 205, 120),
+        _status = AddLabel(host, view, new Rectangle(18, 502, 205, 88),
             "Starting...", 17f, SKColors.White, "slider.status");
+        _loadingLabel = AddLabel(host, view, new Rectangle(18, 590, 204, 21),
+            "Loading picture...", 13f, SKColors.LightGray, "slider.loadingLabel");
+        _loadingProgress = new ProgressBarWidget(host, view,
+            new Rectangle(18, 615, 204, 12), nickname: "slider.loadingProgress")
+            .SetProgressZOrder(1400);
+        _panel.AddWidget(_loadingProgress, new Point(18, 615));
+
         _panel.Show();
+        SetLoading(-1f);
+    }
+
+    internal void SetLoading(float progress)
+    {
+        bool show = progress >= 0f;
+        if (!show)
+        {
+            _loadingLabel.Hide();
+            _loadingProgress.Hide();
+            return;
+        }
+
+        _loadingProgress.Value = Math.Clamp(progress, 0f, 1f);
+        _loadingLabel.Show();
+        _loadingProgress.Show();
     }
 
     internal void SetStatus(string status) => _status.SetText(status);
