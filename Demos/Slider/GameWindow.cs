@@ -35,6 +35,9 @@ internal sealed class GameWindow : Form
         base.OnLoad(e);
         _host = new SliderGameHost(_surface);
         _host.OpenPictureRequested += OnOpenPictureRequested;
+        _host.SaveGameRequested += OnSaveGameRequested;
+        _host.LoadGameRequested += OnLoadGameRequested;
+        _host.ExitRequested += OnExitRequested;
     }
 
     protected override void OnShown(EventArgs e)
@@ -87,11 +90,90 @@ internal sealed class GameWindow : Form
         }
     }
 
+
+    private void RunOnUiThread(Action callback)
+    {
+        if (Disposing || IsDisposed || !IsHandleCreated)
+            return;
+
+        try
+        {
+            BeginInvoke((Action)(() =>
+            {
+                if (!Disposing && !IsDisposed)
+                    callback();
+            }));
+        }
+        catch (InvalidOperationException) when (Disposing || IsDisposed || !IsHandleCreated)
+        {
+            // The window may close while an engine-thread callback is queued.
+        }
+    }
+
+    private void OnSaveGameRequested(SliderSave snapshot)
+    {
+        RunOnUiThread(() =>
+        {
+            using var dialog = new SaveFileDialog
+            {
+                Filter = "Slider saved puzzle (*.slider.json)|*.slider.json|JSON files (*.json)|*.json",
+                DefaultExt = "slider.json",
+                AddExtension = true,
+                FileName = "My Puzzle.slider.json",
+                Title = "Save Slider puzzle"
+            };
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            try
+            {
+                SliderPersistence.Save(dialog.FileName, snapshot);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+            {
+                MessageBox.Show(this, ex.Message, "Could not save puzzle",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            _surface.Focus();
+        });
+    }
+
+    private void OnLoadGameRequested()
+    {
+        RunOnUiThread(() =>
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Filter = "Slider saved puzzle (*.slider.json)|*.slider.json|JSON files (*.json)|*.json",
+                CheckFileExists = true,
+                Title = "Load Slider puzzle"
+            };
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            try
+            {
+                _host?.RequestRestore(SliderPersistence.Load(dialog.FileName));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or System.Text.Json.JsonException)
+            {
+                MessageBox.Show(this, ex.Message, "Could not load puzzle",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            _surface.Focus();
+        });
+    }
+
+    private void OnExitRequested() => RunOnUiThread(Close);
+
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         if (_host is not null)
         {
             _host.OpenPictureRequested -= OnOpenPictureRequested;
+            _host.SaveGameRequested -= OnSaveGameRequested;
+            _host.LoadGameRequested -= OnLoadGameRequested;
+            _host.ExitRequested -= OnExitRequested;
             _host.Dispose();
             _host = null;
         }
