@@ -19,6 +19,10 @@ internal sealed class PuzzleRenderer : IDisposable
     private readonly Dictionary<int, Sprite> _pieces = [];
     private Tilesheet? _plain;
     private Tilesheet? _outlined;
+    private Tilesheet? _labeledPlain;
+    private Tilesheet? _labeledOutlined;
+    private bool _showGrid;
+    private bool _showDestinations;
     private int _columns;
     private int _rows;
     private int _cellWidth;
@@ -76,6 +80,21 @@ internal sealed class PuzzleRenderer : IDisposable
             canvas.Flush();
         }
 
+        // The diagnostic text is part of each piece's atlas frame. It therefore follows
+        // the piece through shuffles and animations, always showing the HOME coordinate.
+        var labeledPlain = new SKBitmap(atlasWidth, atlasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+        var labeledOutlined = new SKBitmap(atlasWidth, atlasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+        using (var plainCanvas = new SKCanvas(labeledPlain))
+        using (var outlinedCanvas = new SKCanvas(labeledOutlined))
+        {
+            plainCanvas.DrawBitmap(resized, 0f, 0f);
+            outlinedCanvas.DrawBitmap(outlined, 0f, 0f);
+            DrawHomeLabels(plainCanvas, board, cellWidth, cellHeight);
+            DrawHomeLabels(outlinedCanvas, board, cellWidth, cellHeight);
+            plainCanvas.Flush();
+            outlinedCanvas.Flush();
+        }
+
         // Release existing sprite references before removing the source atlases.
         Clear();
 
@@ -83,15 +102,20 @@ internal sealed class PuzzleRenderer : IDisposable
         _rows = board.Rows;
         _cellWidth = cellWidth;
         _cellHeight = cellHeight;
+        _showGrid = showGrid;
         _plain = _registry.LoadFromBitmap("slider-plain-" + Guid.NewGuid().ToString("N"), resized);
         _outlined = _registry.LoadFromBitmap("slider-grid-" + Guid.NewGuid().ToString("N"), outlined);
+        _labeledPlain = _registry.LoadFromBitmap("slider-labels-" + Guid.NewGuid().ToString("N"), labeledPlain);
+        _labeledOutlined = _registry.LoadFromBitmap("slider-grid-labels-" + Guid.NewGuid().ToString("N"), labeledOutlined);
         _plain.DefaultRegion.TileSize = new Size(cellWidth, cellHeight);
         _outlined.DefaultRegion.TileSize = new Size(cellWidth, cellHeight);
+        _labeledPlain.DefaultRegion.TileSize = new Size(cellWidth, cellHeight);
+        _labeledOutlined.DefaultRegion.TileSize = new Size(cellWidth, cellHeight);
 
         for (int piece = 0; piece < board.TotalPieces; piece++)
         {
             Sprite sprite = _sprites.CreateSprite(_layer,
-                FrameFor(piece, showGrid), piece.ToString());
+                FrameFor(piece, showGrid, _showDestinations), piece.ToString());
             sprite.HorizAlign = SpriteHorizontalAlignment.Left;
             sprite.VertAlign = SpriteVerticalAlignment.Top;
             sprite.RenderSize = new Size(cellWidth, cellHeight);
@@ -121,14 +145,57 @@ internal sealed class PuzzleRenderer : IDisposable
 
     internal void ShowGrid(bool show)
     {
-        foreach (var (piece, sprite) in _pieces)
-            sprite.CurrentFrame = FrameFor(piece, show);
+        _showGrid = show;
+        RefreshFrames();
     }
 
-    private Frame FrameFor(int piece, bool show)
+    internal void ShowDestinations(bool visible)
     {
-        var atlas = show ? _outlined : _plain;
+        if (_showDestinations == visible)
+            return;
+        _showDestinations = visible;
+        RefreshFrames();
+    }
+
+    private void RefreshFrames()
+    {
+        foreach (var (piece, sprite) in _pieces)
+            sprite.CurrentFrame = FrameFor(piece, _showGrid, _showDestinations);
+    }
+
+    private Frame FrameFor(int piece, bool showGrid, bool showDestinations)
+    {
+        var atlas = showDestinations
+            ? showGrid ? _labeledOutlined : _labeledPlain
+            : showGrid ? _outlined : _plain;
         return atlas![piece % _columns, piece / _columns];
+    }
+
+    private static void DrawHomeLabels(SKCanvas canvas, SlidingPuzzle board, int cellWidth, int cellHeight)
+    {
+        float fontSize = Math.Clamp(Math.Min(cellWidth, cellHeight) * 0.26f, 9f, 25f);
+        using var textPaint = new SKPaint
+        {
+            IsAntialias = true,
+            Color = SKColors.White,
+            TextSize = fontSize,
+            TextAlign = SKTextAlign.Center,
+            Typeface = SKTypeface.Default
+        };
+        using var backgroundPaint = new SKPaint { Color = new SKColor(9, 14, 22, 215), IsAntialias = true };
+
+        for (int piece = 0; piece < board.TotalPieces; piece++)
+        {
+            (int col, int row) = board.HomeOf(piece);
+            string label = $"{col},{row}";
+            float x = (col + 0.5f) * cellWidth;
+            float y = (row + 0.5f) * cellHeight;
+            float width = Math.Min(cellWidth - 2f, label.Length * fontSize * 0.63f + 10f);
+            float height = Math.Min(cellHeight - 2f, fontSize + 12f);
+            canvas.DrawRoundRect(new SKRect(x - width / 2, y - height / 2,
+                x + width / 2, y + height / 2), 4f, 4f, backgroundPaint);
+            canvas.DrawText(label, x, y + fontSize * 0.36f, textPaint);
+        }
     }
 
     private Vector2 PositionAt(int column, int row)
@@ -147,8 +214,14 @@ internal sealed class PuzzleRenderer : IDisposable
             _registry.Remove(_plain.Name, dispose: true);
         if (_outlined is not null)
             _registry.Remove(_outlined.Name, dispose: true);
+        if (_labeledPlain is not null)
+            _registry.Remove(_labeledPlain.Name, dispose: true);
+        if (_labeledOutlined is not null)
+            _registry.Remove(_labeledOutlined.Name, dispose: true);
         _plain = null;
         _outlined = null;
+        _labeledPlain = null;
+        _labeledOutlined = null;
     }
 
     public void Dispose() => Clear();
