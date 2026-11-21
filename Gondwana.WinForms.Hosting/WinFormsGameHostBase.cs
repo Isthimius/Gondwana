@@ -64,9 +64,10 @@ public abstract class WinFormsGameHostBase : GameHostBase
 
     /// <summary>
     /// Configures native WinForms touch input before creating the widget input router.
-    /// Both GPU and bitmap hosts share the same touch/pointer behavior.
+    /// Both GPU and bitmap hosts share the same touch/pointer behavior. Derived hosts
+    /// may override this for a custom touch adapter, as before.
     /// </summary>
-    protected sealed override void ConfigureTouch()
+    protected override void ConfigureTouch()
     {
         Engine.Instance.InitializeWinFormsTouchAdapter(_renderSurface);
         Engine.Input.TouchEventPoller?.StartMonitoringTouch();
