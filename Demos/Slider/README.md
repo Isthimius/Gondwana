@@ -26,7 +26,7 @@ Requires the .NET 10 SDK and the repository's normal Gondwana native GPU depende
 
 Rows and columns can each be set from **3 to 20**. The board's size is chosen to preserve the source picture's aspect ratio, and the GPU camera automatically fits it when the window is resized. The status panel shows correctly positioned pieces, player move count, elapsed solving time, and completion.
 
-Shuffle makes legal moves instantly; deliberate player moves are animated. Moves are disabled during their animation, so rapid clicks cannot race with the board update. Shuffle resets the move counter and timer; the victory sound plays only when the player solves the puzzle.
+Shuffle visibly animates legal moves one at a time, faster than normal player slides. Input is disabled during shuffling and while a piece is moving, so rapid clicks cannot race with board updates. The sliding sound starts with each moving piece and stops on arrival or cancellation. Shuffle resets the move counter and timer; the victory sound plays only when the player solves the puzzle.
 
 ## Architecture
 
