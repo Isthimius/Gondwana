@@ -71,9 +71,11 @@ internal sealed class MyGameHost : WinFormsGameHost
     {
     }
 
-    // Touch is initialized and polled automatically by the WinForms game host.
-    // Widgets consume touch input through WidgetInputRouter. Override this hook
-    // only to subscribe to game-specific touch/gesture events.
+    // Native touch is opt-in so legacy mouse-only games retain touchscreen mouse
+    // emulation. For widget-driven games, uncomment the following property:
+    // protected override bool EnableNativeTouch => true;
+    // Widgets then consume touch input through WidgetInputRouter. Override this
+    // hook only to subscribe to game-specific touch/gesture events.
     // Example:
     //   Engine.Input.TouchEventPoller!.TouchEvent += OnTouchGesture;
     /// <inheritdoc/>
