@@ -100,6 +100,11 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(18, 23, 35);
+
+        // The board is centered within a larger fixed world. When a very wide or
+        // tall window makes the visible world larger than that world's bounds,
+        // camera clamping would pin one edge rather than keep the puzzle centered.
+        RenderSurface.Host.ViewManager.Views[0].Camera.WorldBoundsPx = RectangleF.Empty;
     }
 
     protected override void CreateSprites()
