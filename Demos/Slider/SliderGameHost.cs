@@ -15,7 +15,7 @@ using View = Gondwana.Rendering.Views.View;
 namespace Gondwana.Demos.Slider;
 
 /// <summary>Owns Gondwana startup, input, graphics, audio, and engine-thread puzzle state.</summary>
-internal sealed class SliderGameHost : WinFormsGpuGameHost
+internal sealed partial class SliderGameHost : WinFormsGpuGameHost
 {
     private const int WorldTiles = 20;
     private const int WorldTileSize = 64;
@@ -61,7 +61,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     internal void RequestPuzzle(string? imagePath, int columns, int rows)
     {
         lock (_requestGate)
-            _requests.Enqueue(new PuzzleRequest(imagePath, columns, rows, null));
+            _requests.Enqueue(new PuzzleRequest(imagePath, columns, rows, null,
+                ImagePng: imagePath is null ? _imagePng : null));
     }
 
     internal void RequestShuffle()
@@ -144,6 +145,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             onOpenPicture: (columns, rows) => OpenPictureRequested?.Invoke(columns, rows),
             onShuffle: RequestShuffle,
             onGridChanged: RequestGrid);
+        CreateMenu();
     }
 
     protected override void OnMouseAdapterInitialized()
@@ -210,6 +212,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
                     case PuzzleCommand.Shuffle:
                         CancelAnimation();
                         _timer.Reset();
+                        _elapsedBeforeResume = TimeSpan.Zero;
                         _started = false;
                         _won = false;
                         // Use the previous demo's legal-move shuffle count. Animate
@@ -220,6 +223,9 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
                         _shuffleMoves = _board.ShuffleSteps(shuffleCount).GetEnumerator();
                         StartNextShuffleMove();
                         PublishStatus();
+                        break;
+                    case PuzzleCommand.Restore:
+                        RestoreSavedGame(request.SavedGame!);
                         break;
                     case PuzzleCommand.ShowGrid:
                     case PuzzleCommand.HideGrid:
@@ -250,6 +256,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             _cameraFitPending = false;
         }
 
+        UpdateShiftLabels();
+
         // Refresh the clock without touching any WinForms control from the engine thread.
         if (_timer.IsRunning && Stopwatch.GetTimestamp() - _lastStatusTicks >= Stopwatch.Frequency / 4)
             PublishStatus();
@@ -261,16 +269,21 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             throw new ArgumentOutOfRangeException(nameof(request), "Rows and columns must be 3–20.");
 
         // Decode first. An invalid file must not destroy the currently playable board.
-        using SKBitmap image = request.ImagePath is null
-            ? CreateSampleImage()
-            : SKBitmap.Decode(request.ImagePath)
-                ?? throw new InvalidDataException("Unsupported or corrupt picture.");
+        using SKBitmap image = request.ImagePath is not null
+            ? SKBitmap.Decode(request.ImagePath)
+                ?? throw new InvalidDataException("Unsupported or corrupt picture.")
+            : request.ImagePng is { Length: > 0 }
+                ? SKBitmap.Decode(request.ImagePng)
+                    ?? throw new InvalidDataException("The current picture could not be decoded.")
+                : CreateSampleImage();
 
         var replacement = new SlidingPuzzle(request.Columns, request.Rows);
         CancelAnimation();
         _renderer.Load(image, replacement, _showGrid);
         _board = replacement;
         _picturePath = request.ImagePath;
+        CapturePicture(image);
+        _elapsedBeforeResume = TimeSpan.Zero;
         _started = false;
         _won = false;
         _timer.Reset();
@@ -279,7 +292,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void OnMouse(MouseEventArgs args)
     {
-        if (!args.IsButtonJustPressed(MouseButton.Left) || _movingSprite is not null || _shuffleMoves is not null || _won)
+        if (!args.IsButtonJustPressed(MouseButton.Left) || _movingSprite is not null || _shuffleMoves is not null || _won || _menu?.HasOpenDialog == true)
             return;
 
         // Sprite picking must never run over the widget sidebar.
@@ -297,7 +310,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private void OnKeyDown(KeyDownEventArgs args)
     {
         if (args.KeyAction != KeyAction.Pressed || _movingSprite is not null || _shuffleMoves is not null ||
-            _won || _sidebar?.IsEditingDimensions == true ||
+            _won || _menu?.HasOpenDialog == true || _sidebar?.IsEditingDimensions == true ||
             !Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key))
             return;
 
@@ -381,6 +394,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             _timer.Stop();
             _won = true;
             _winSound?.Play();
+            RecordHighScore();
         }
 
         PublishStatus();
@@ -444,7 +458,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             result + Environment.NewLine +
             "Correct: " + _board.CorrectPieces + " / " + _board.TotalPieces + Environment.NewLine +
             "Moves: " + _board.MoveCount + Environment.NewLine +
-            "Time: " + _timer.Elapsed.ToString(@"mm\:ss"));
+            "Time: " + (_elapsedBeforeResume + _timer.Elapsed).ToString(@"mm\:ss"));
     }
 
     protected override void UnhookEvents()
@@ -456,6 +470,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
         Engine.BeforeBackgroundTasksExecute -= OnTick;
         RenderSurface.SizeChanged -= OnSurfaceSizeChanged;
         CancelAnimation();
+        _menu?.Dispose();
+        _menu = null;
         _sidebar?.Dispose();
         _sidebar = null;
         _renderer?.Dispose();
@@ -518,6 +534,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
         return image;
     }
 
-    private enum PuzzleCommand { Shuffle, ShowGrid, HideGrid }
-    private sealed record PuzzleRequest(string? ImagePath, int Columns, int Rows, PuzzleCommand? Command);
+    private enum PuzzleCommand { Shuffle, ShowGrid, HideGrid, Restore }
+    private sealed record PuzzleRequest(string? ImagePath, int Columns, int Rows,
+        PuzzleCommand? Command, SliderSave? SavedGame = null, byte[]? ImagePng = null);
 }
