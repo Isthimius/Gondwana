@@ -80,7 +80,7 @@ internal sealed class SliderSidebar : IDisposable
         _status = AddLabel(host, view, new Rectangle(18, 502, 205, 88),
             "Starting...", 17f, SKColors.White, "slider.status");
         _loadingLabel = AddLabel(host, view, new Rectangle(18, 590, 204, 21),
-            "Loading picture...", 13f, SKColors.LightGray, "slider.loadingLabel");
+            "Loading puzzle...", 13f, SKColors.LightGray, "slider.loadingLabel");
         _loadingProgress = new ProgressBarWidget(host, view,
             new Rectangle(18, 615, 204, 12), nickname: "slider.loadingProgress")
             .SetProgressZOrder(1400);
