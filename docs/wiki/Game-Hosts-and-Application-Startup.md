@@ -112,7 +112,7 @@ The Blazor host waits for the first real canvas size rather than its initial
 1×1 WebGL placeholder, establishes `RenderScale` once, and automatically
 cleans up its resize handler. Later browser resizing adjusts presentation and
 mouse/touch coordinate transforms rather than resizing the game backbuffer.
-The call is optional for games with dynamic logical dimensions.
+The call is optional for games with dynamic logical dimensions. This Blazor host helper is **not** the same as `RenderSurfaceHost<TBackbuffer>.RequestLogicalResolution(width, height)`: `ConfigureLogicalResolution` establishes a fixed logical size during startup via `RenderScale`, while `RequestLogicalResolution` is an explicit, one-time request for exact dimensions on a particular render surface. An application that intentionally follows viewport size must request subsequent logical resizes itself; normal browser layout changes still affect presentation only. See [[Backbuffers]].
 
 Use aspect-preserving browser CSS separately. The `gondwana-blazor` template
 demonstrates a `Fit` layout capped at desktop size (`LogicalWidth`/
