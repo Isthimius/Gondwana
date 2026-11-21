@@ -1008,7 +1008,9 @@ Engine.InitializeWinFormsTouchAdapter(control);
 Engine.Input.TouchEventPoller?.StartMonitoringTouch();
 ```
 
-Normal WinForms GPU and bitmap GameHosts initialize and start native touch polling automatically.
+WinForms GPU and bitmap GameHosts initialize and start native touch polling only
+when the derived host overrides `EnableNativeTouch => true`. The default
+remains mouse emulation for compatibility with older WinForms demos.
 The adapter registers the render control and its child HWNDs for `WM_TOUCH`, queues
 full begin/end lifecycles, and converts coordinates to logical render pixels.
 Windows-promoted touch mouse events are filtered so the same tap does not become
