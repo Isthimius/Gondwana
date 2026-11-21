@@ -34,7 +34,9 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private float _shuffleSlideSeconds;
     private bool _showGrid = true;
     private bool _fitRequested = true;
+    private bool _cameraFitPending;
     private Size _clientSize;
+    private Size _requestedLogicalSize;
     private bool _started;
     private bool _won;
     private long _lastStatusTicks;
@@ -135,13 +137,25 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     private void OnTick()
     {
         List<PuzzleRequest> pending = [];
-        bool fit;
+        bool resized;
+        Size newSize;
         lock (_requestGate)
         {
             while (_requests.Count > 0)
                 pending.Add(_requests.Dequeue());
-            fit = _fitRequested;
+            resized = _fitRequested;
+            newSize = _clientSize;
             _fitRequested = false;
+        }
+
+        // Normal Gondwana surface resizing is presentation-only. Slider instead has a
+        // fluid playfield: request a matching logical resolution so GPU presentation
+        // fills the entire control, with no inherited letterbox/pillarbox bars.
+        if (resized && newSize.Width > 0 && newSize.Height > 0)
+        {
+            _requestedLogicalSize = newSize;
+            RenderSurface.Host.RequestLogicalResolution(newSize.Width, newSize.Height);
+            _cameraFitPending = true;
         }
 
         foreach (PuzzleRequest request in pending)
@@ -171,7 +185,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
                         break;
                     case null:
                         LoadPicture(request);
-                        fit = true;
+                        _cameraFitPending = true;
                         break;
                 }
             }
@@ -181,8 +195,17 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             }
         }
 
-        if (fit)
+        // GPU resize is applied asynchronously on the owning GL thread. Calculate
+        // the camera fit only after its logical viewport has actually resized;
+        // using the control's newer size against an older viewport clips pieces.
+        if (_cameraFitPending &&
+            (_requestedLogicalSize.IsEmpty ||
+             RenderSurface.Host.Backbuffer.Width == _requestedLogicalSize.Width &&
+             RenderSurface.Host.Backbuffer.Height == _requestedLogicalSize.Height))
+        {
             FitPuzzle();
+            _cameraFitPending = false;
+        }
 
         // Refresh the clock without touching any WinForms control from the engine thread.
         if (_timer.IsRunning && Stopwatch.GetTimestamp() - _lastStatusTicks >= Stopwatch.Frequency / 4)
@@ -334,18 +357,17 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     private void FitPuzzle()
     {
-        Size size;
-        lock (_requestGate)
-            size = _clientSize;
-
+        // This must use the actual logical viewport, not WinForms ClientSize.
+        // The adapter may resize before the GPU backbuffer and Viewport catch up.
+        var view = RenderSurface.Host.ViewManager.Views[0];
+        Rectangle viewport = view.Viewport.TargetRectPx;
         if (_renderer.WidthPx <= 0 || _renderer.HeightPx <= 0 ||
-            size.Width <= 0 || size.Height <= 0)
+            viewport.Width <= 0 || viewport.Height <= 0)
             return;
 
-        var view = RenderSurface.Host.ViewManager.Views[0];
         float zoom = Math.Min(
-            size.Width / (float)_renderer.WidthPx,
-            size.Height / (float)_renderer.HeightPx) * 0.92f;
+            viewport.Width / (float)_renderer.WidthPx,
+            viewport.Height / (float)_renderer.HeightPx) * 0.96f;
         view.Viewport.SnapZoom(Math.Max(0.05f, zoom));
         float center = WorldTiles * WorldTileSize / 2f;
         view.Camera.CenterOn(new PointF(center, center));
