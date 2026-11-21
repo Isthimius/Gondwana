@@ -24,9 +24,11 @@ public sealed class SlidingPuzzleTests
         Assert.False(board.TryMove(3, 2, out _));
         Assert.False(board.TryMove(2, 2, out _));
 
-        Assert.True(board.TryMove(2, 1, out PuzzleMove move));
+        Assert.True(board.TryMovePiece(5, out PuzzleMove move));
         Assert.Equal(new PuzzleMove(5, 5, 8), move);
         Assert.Equal(-1, board.PieceAt(2, 1));
+        Assert.False(board.TryMovePiece(0, out _));
+        Assert.False(board.TryMove(0, 2, out _)); // Never wrap across row boundaries.
         Assert.False(board.IsSolved);
         Assert.Equal(1, board.MoveCount);
 
