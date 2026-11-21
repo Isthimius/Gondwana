@@ -240,16 +240,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
         if (sprite is null)
             return;
 
-        // Sprite position is a presentation detail; only the board determines legality.
-        var position = sprite.GetPosition();
-        int col = (int)MathF.Round((position.X * WorldTileSize -
-            (WorldTiles * WorldTileSize - _renderer.WidthPx) / 2f) /
-            (_renderer.WidthPx / (float)_board.Columns));
-        int row = (int)MathF.Round((position.Y * WorldTileSize -
-            (WorldTiles * WorldTileSize - _renderer.HeightPx) / 2f) /
-            (_renderer.HeightPx / (float)_board.Rows));
-
-        if (!_board.TryMove(col, row, out PuzzleMove move) || move.PieceId != piece)
+        if (!_board.TryMovePiece(piece, out PuzzleMove move))
             return;
 
         if (!_started)
