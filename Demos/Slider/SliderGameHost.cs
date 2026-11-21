@@ -119,7 +119,7 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
             SliderSidebar.Width, logical.Height);
         views.AddView(new Rectangle(SliderSidebar.Width, 0,
             Math.Max(1, logical.Width - SliderSidebar.Width), logical.Height),
-            worldBoundsPx: RectangleF.Empty);
+            zOrder: 1, worldBoundsPx: RectangleF.Empty);
         _gameView = views.Views[^1];
 
         // A camera clamped to world bounds would push a puzzle off-center when
