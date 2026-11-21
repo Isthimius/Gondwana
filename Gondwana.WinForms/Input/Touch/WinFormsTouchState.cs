@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Input.Touch;
 
 namespace Gondwana.WinForms.Input.Touch;
@@ -23,7 +22,7 @@ internal sealed class WinFormsTouchState
         }
     }
 
-    internal void Begin(int id, Point position)
+    internal void Begin(int id, System.Drawing.Point position)
     {
         lock (_sync)
         {
@@ -36,7 +35,7 @@ internal sealed class WinFormsTouchState
         }
     }
 
-    internal void Move(int id, Point position)
+    internal void Move(int id, System.Drawing.Point position)
     {
         lock (_sync)
         {
@@ -45,7 +44,7 @@ internal sealed class WinFormsTouchState
         }
     }
 
-    internal void End(int id, Point position, bool cancelled = false)
+    internal void End(int id, System.Drawing.Point position, bool cancelled = false)
     {
         lock (_sync)
         {
