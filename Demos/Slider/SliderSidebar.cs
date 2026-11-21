@@ -1,5 +1,5 @@
 using Gondwana.Rendering;
-using Gondwana.Rendering.Views;
+using View = Gondwana.Rendering.Views.View;
 using Gondwana.Widgets.Controls;
 using SkiaSharp;
 
