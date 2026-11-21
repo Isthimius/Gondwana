@@ -17,6 +17,7 @@
     <ProjectReference Include="../../Tooling/Studio/Shared/WinForms/Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
     <ProjectReference Include="../../Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.csproj" />
     <ProjectReference Include="../../Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ExternalImport/Gondwana.Tooling.Studio.Plugin.ExternalImport.csproj" />
+    <ProjectReference Include="..\..\Tooling\Studio\Gondwana.Tooling.Studio.Core\Gondwana.Tooling.Studio.Core.csproj" />
     <Using Include="Xunit" />
   </ItemGroup>
   <Target Name="DeployPluginForIntegrationTests" AfterTargets="Build">
