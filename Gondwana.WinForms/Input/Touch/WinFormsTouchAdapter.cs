@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Runtime.InteropServices;
 using Gondwana.Input.Touch;
 using Gondwana.WinForms.Rendering;
