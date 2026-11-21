@@ -32,10 +32,11 @@ Shuffle visibly animates legal moves one at a time, faster than normal player sl
 
 - `SlidingPuzzle.cs`: independent, testable board rules and legal-move shuffle. The logical board, **not sprite coordinates**, is authoritative.
 - `PuzzleRenderer.cs`: builds two SkiaSharp tilesheet variants (outlined and plain) and projects board state into GPU-rendered sprites.
-- `SliderGameHost.cs`: `WinFormsGpuGameHost` lifecycle, input, scripted animation, audio, timing, and background-thread request processing.
-- `GameWindow.cs`: resizable WinForms UI, file dialog, puzzle settings and marshalled status updates.
+- `SliderGameHost.cs`: `WinFormsGpuGameHost` lifecycle, two non-overlapping Views, puzzle input, scripted animation, audio, timing, and background-thread request processing.
+- `SliderSidebar.cs`: **Gondwana.Widgets** `PanelWidget`, `ComboBoxWidget`, `ButtonWidget`, `CheckBoxWidget`, and `LabelWidget` for all persistent controls, settings, and status.
+- `GameWindow.cs`: a minimal WinForms shell containing **only one `WinFormGpuRenderSurfaceControl`**; the native `OpenFileDialog` is opened on the WinForms UI thread when requested by the widget UI.
 
-The host starts **once**. Changing pictures, shuffling, or resizing updates live game state rather than starting or stopping the engine again. External UI commands are queued and processed by the engine thread, while status updates are marshalled to the form.
+The host starts **once**. Changing pictures, shuffling, or resizing updates live game state rather than starting or stopping the engine again. Widget actions remain in the engine; the picture chooser is the sole native dialog and is marshalled to the UI thread. The sidebar is a fixed 240-pixel Gondwana View, while the puzzle View occupies the remaining logical GPU area. After resizing, both Viewports are laid out again and the puzzle camera fits the right-hand viewport. The WinForms form has no labels, text boxes, buttons, checkboxes, or layout panels.
 
 Pure logic regression tests live in `Testing/Gondwana.Tests/Demos/SlidingPuzzleTests.cs`.
 
