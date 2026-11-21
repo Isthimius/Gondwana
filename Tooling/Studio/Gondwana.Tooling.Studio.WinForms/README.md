@@ -147,4 +147,6 @@ Windows UI tests live in `Testing/Gondwana.Tooling.Studio.WinForms.Tests`.
 Studio uses [DockPanel Suite](https://github.com/dockpanelsuite/dockpanelsuite)
 for docking (originally created by Weifen Luo).
 
-For the broader authoring toolset, see the [Tooling overview](../../README.md).
+For the other Studio applications and shared projects, see the
+[Studio overview](../README.md); for CLI, templates, and other developer utilities,
+see the [Tooling overview](../../README.md).
