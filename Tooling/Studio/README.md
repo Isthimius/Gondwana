@@ -126,6 +126,11 @@ The Studio shell and each editor format have separate layout profiles under
 Use **View > Reset application layout** or **Reset active editor layout**
 to restore default panes.
 
+For compatibility, Studio retains `Gondwana.Studio.WinForms` as its persisted
+application ID even though its executable is now named
+`Gondwana.Tooling.Studio.WinForms.exe`. Existing layouts and plugin preferences
+therefore remain available without migration.
+
 Studio can also restore its working directory and previously saved documents
 at startup. Unsaved edits and untitled documents are **not** recovered.
 These preferences do not modify Gondwana asset files. See the

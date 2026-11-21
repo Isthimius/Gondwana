@@ -20,7 +20,7 @@ Close Studio before rebuilding a loaded DLL. Discovery occurs at startup; use
 **View** to recover a hidden panel. Removing the package directory disables this tool
 without affecting Studio's native editors.
 
-The manifest declares schema 1, contract 1, and an independent SemVer package
+The manifest declares schema 1, contract 2, and an independent SemVer package
 version. The build removes obsolete flat entrypoint copies. See
 [Studio plugin packages](../../../../docs/wiki/Studio-Plugin-Packages.md) for the
 manifest schema, compatibility, dependency isolation, discovery diagnostics and

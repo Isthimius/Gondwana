@@ -7,7 +7,7 @@ namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 /// <summary>Application preferences, deliberately separate from GTS document serialization.</summary>
 internal sealed class OverlaySettings
 {
-    private static readonly Lazy<OverlaySettings> Shared = new(() => Load(Path.Combine(
+    private static readonly Lazy<OverlaySettings> Shared = new(() => LoadWithLegacyFallback(Path.Combine(
         AppContext.BaseDirectory, "Gondwana.Tooling.Studio.Tilesheets.WinForms.settings.json")));
     /// <summary>Gets the shared settings loaded lazily from the application directory.</summary>
     public static OverlaySettings Default => Shared.Value;
@@ -60,6 +60,25 @@ internal sealed class OverlaySettings
             settings.Warning = "Could not load overlay settings; using defaults. " + ex.Message;
         }
         return settings;
+    }
+
+    /// <summary>Reads the previous standalone editor's color preferences if the renamed file does not exist.</summary>
+    /// <remarks>The current filename takes precedence; legacy data remains untouched as a backup.
+    /// On the next color change, preferences are saved under the new filename.</remarks>
+    internal static OverlaySettings LoadWithLegacyFallback(string path)
+    {
+        var current = Load(path);
+        if (File.Exists(current.FilePath)) return current;
+
+        var legacyPath = Path.Combine(Path.GetDirectoryName(current.FilePath)!,
+            "Gondwana.Tooling.Tilesheets.WinForms.settings.json");
+        if (!File.Exists(legacyPath)) return current;
+
+        var legacy = Load(legacyPath);
+        foreach (var (kind, color) in legacy._colors)
+            current._colors[kind] = color;
+        current.Warning = legacy.Warning;
+        return current;
     }
 
     /// <summary>Persists an opaque RGB color before updating memory, clears the warning, and raises the change event.</summary>

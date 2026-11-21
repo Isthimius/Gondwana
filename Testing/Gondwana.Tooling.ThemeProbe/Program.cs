@@ -1,8 +1,8 @@
 using System.Drawing.Imaging;
 using System.Reflection;
-using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
 
 // Run once per theme in a fresh process: dotnet run --project Testing/Gondwana.Tooling.ThemeProbe -- Light <output-directory>
@@ -44,8 +44,9 @@ internal static class Program
         }
         foreach (var app in new[] { "Studio", "Assets", "Tilesheets", "Animations", "Audio", "Scenes", "Sprites" })
         {
-            var assembly = Assembly.Load(app == "Studio" ? "Gondwana.Studio.WinForms" : $"Gondwana.Tooling.{app}.WinForms");
-            var type = assembly.GetType($"Gondwana.Tooling.{app}.WinForms.MainForm", throwOnError: true)!;
+            var assembly = Assembly.Load(app == "Studio" ? "Gondwana.Tooling.Studio.WinForms" : $"Gondwana.Tooling.Studio.{app}.WinForms");
+            // Audio retains its historical MainForm namespace; resolve the shell by type rather than guessing it.
+            var type = assembly.GetTypes().Single(t => t.Name == "MainForm" && typeof(Form).IsAssignableFrom(t));
             using var form = (Form)Activator.CreateInstance(type, nonPublic: true)!;
             form.Show();
             Application.DoEvents();

@@ -127,7 +127,7 @@ failures in its panel and observes abandoned task faults through `Trace`.
 
 At startup the host discovers manifest-based packages, then legacy top-level DLLs.
 This package has no private libraries: Studio supplies its engine and contract
-dependencies. Its `plugin.json` declares schema 1, contract 1, and a package
+dependencies. Its `plugin.json` declares schema 1, contract 2, and a package
 SemVer version independent of the engine release. The build removes obsolete
 flat copies of this plugin's entry DLL and dependency metadata.
 

@@ -16,8 +16,11 @@ any editor or shell**:
 - `Gondwana.Tooling.ApplicationId`: a stable application directory name.
 
 Ordinary hosts need no configuration: `Assembly.GetEntryAssembly()` keeps Studio
-independent from each standalone executable. The shared xUnit isolation attribute
-sets both values before every WinForms test, using a unique temporary root. The
+independent from each standalone executable. Studio sets its application ID to
+`Gondwana.Studio.WinForms` at process startup to preserve existing docking,
+workspace-session, and plugin preferences across the executable rename.
+The shared xUnit isolation attribute sets both values before every WinForms
+test, using a unique temporary root. The
 store also accepts explicit root/application arguments for isolated use.
 
 `EditorDockWorkspace` receives a profile key, creates panes with dedicated logical

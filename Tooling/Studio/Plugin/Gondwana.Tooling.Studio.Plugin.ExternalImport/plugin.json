@@ -4,7 +4,7 @@
   "name": "External Asset Importer",
   "version": "1.0.0",
   "entryAssembly": "Gondwana.Tooling.Studio.Plugin.ExternalImport.dll",
-  "contractVersion": 1,
+  "contractVersion": 2,
   "description": "External Asset Importer for Gondwana Studio",
   "author": "Hidden Worlds Games"
 }
