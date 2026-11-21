@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
-using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Editing;
-using Gondwana.Tooling.Scenes.WinForms;
-using Gondwana.Tooling.Sprites.WinForms;
-using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Animations.WinForms;
+using Gondwana.Tooling.Studio.Scenes.WinForms;
+using Gondwana.Tooling.Studio.Sprites.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

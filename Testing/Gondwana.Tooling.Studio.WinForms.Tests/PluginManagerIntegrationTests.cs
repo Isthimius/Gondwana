@@ -21,7 +21,7 @@ public sealed partial class PluginPackageTests
         Directory.CreateDirectory(Path.Combine(_root, "invalid"));
         var incompatible = Package("incompatible", "sample.incompatible");
         var path = Path.Combine(Path.GetDirectoryName(incompatible)!, "plugin.json");
-        File.WriteAllText(path, File.ReadAllText(path).Replace("\"contractVersion\":1", "\"contractVersion\":2", StringComparison.Ordinal));
+        File.WriteAllText(path, File.ReadAllText(path).Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal));
         var preferences = new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { });
         preferences.TrySetEnabled("sample.disabled", false, out _);
         preferences = new PluginPreferences(preferences.FilePath, _ => { });

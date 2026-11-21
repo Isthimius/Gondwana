@@ -248,8 +248,9 @@ public sealed partial class CompositionTests
         Environment.CurrentDirectory = directory;
         try
         {
-            var assembly = Assembly.Load($"Gondwana.Tooling.{app}.WinForms");
-            var type = assembly.GetType($"Gondwana.Tooling.{app}.WinForms.MainForm", throwOnError: true)!;
+            var assembly = Assembly.Load($"Gondwana.Tooling.Studio.{app}.WinForms");
+            // The shell type namespace is not necessarily the same as its assembly identity.
+            var type = assembly.GetTypes().Single(t => t.Name == "MainForm" && typeof(Form).IsAssignableFrom(t));
             using var shell = (Form)Activator.CreateInstance(type, nonPublic: true)!;
             shell.Opacity = 0;
             shell.ShowInTaskbar = false;

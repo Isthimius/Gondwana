@@ -327,18 +327,18 @@ Reusable, engine-rendered UI and gameplay widgets. This package depends on the c
 - `Tooling/Gondwana.Templates/`
   - `dotnet new` templates for WinForms, Avalonia, and Blazor projects
 
-- `Tooling/Gondwana.Tooling.Studio.Core/`
+- `Tooling/Studio/Gondwana.Tooling.Studio.Core/`
   - Framework-neutral Studio view models, services, and extension contracts
 
-- `Tooling/Gondwana.Tooling.Studio.WinForms/`
+- `Tooling/Studio/Gondwana.Tooling.Studio.WinForms/`
   - WinForms-based Gondwana Studio
   - Built-in GAF/GTS/GANI/GSND/GSCN/GSPR authoring editors
 
-- `Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/`
+- `Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/`
   - Optional dockable diagnostics for authoring files and their explicit references
-  - [Reference implementation for Studio plugins](https://github.com/Isthimius/Gondwana/blob/master/Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md): lifecycle, panels, menus, and `plugins/` deployment
+  - [Reference implementation for Studio plugins](https://github.com/Isthimius/Gondwana/blob/master/Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md): lifecycle, panels, menus, and `plugins/` deployment
 
-- `Tooling/Gondwana.Assets.WinForms/`
+- `Tooling/Studio/Gondwana.Tooling.Studio.Assets.WinForms/`
   - WinForms asset tooling
 
 Gondwana Studio is supplemental tooling. Gondwana projects remain ordinary .NET projects and do not require Studio to build or run.

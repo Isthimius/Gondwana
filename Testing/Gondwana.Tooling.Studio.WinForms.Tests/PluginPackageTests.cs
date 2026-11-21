@@ -128,7 +128,7 @@ public sealed partial class PluginPackageTests
         switch (error)
         {
             case "schema": data["schemaVersion"] = 2; break;
-            case "contract": data["contractVersion"] = 2; break;
+            case "contract": data["contractVersion"] = 1; break;
             case "version": data["version"] = "1.0"; break;
             case "prerelease": data["version"] = "1.0.0-01"; break;
             case "missing-contract": data.Remove("contractVersion"); break;
@@ -434,7 +434,7 @@ public sealed partial class PluginPackageTests
             name = "Fixture package",
             version = "1.0.0",
             entryAssembly = entry,
-            contractVersion = 1
+            contractVersion = PluginManifest.SupportedContractVersion
         }));
 
     private static void DependencyManifest(string directory, string assembly, int version)

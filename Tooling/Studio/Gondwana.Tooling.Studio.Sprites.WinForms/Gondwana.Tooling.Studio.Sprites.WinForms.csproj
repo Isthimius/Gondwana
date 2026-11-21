@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        
+        <!-- Retain SystemAware until mixed-monitor docking/canvas compatibility is verified. -->
+        <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Gondwana.Tooling.Sprites.WinForms.Tests" />
+        <PackageReference Include="DockPanelSuite" Version="3.1.1" />
+        <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+        <ProjectReference Include="..\..\..\Gondwana\Gondwana.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Tooling.Assets\Gondwana.Tooling.Assets.csproj" />
+        <ProjectReference Include="..\Shared\WinForms\Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
+        <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.9.50" />
+    </ItemGroup>
+</Project>

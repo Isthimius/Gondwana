@@ -6,12 +6,12 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Tooling.Animations.Editing;
-using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Sprites.Editing;
-using Gondwana.Tooling.Sprites.WinForms;
+using Gondwana.Tooling.Studio.Animations.WinForms;
+using Gondwana.Tooling.Studio.Sprites.WinForms;
 
 namespace Gondwana.Tests;
 

@@ -8,8 +8,8 @@ installed copy of the originating applications.
 ## Build and deploy
 
 ```console
-dotnet build Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport -c Release
-dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Release --no-build
+dotnet build Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ExternalImport -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.WinForms -c Release --no-build
 ```
 
 Build with the same configuration as Studio. The build copies the plugin DLL,
@@ -20,9 +20,9 @@ Close Studio before rebuilding a loaded DLL. Discovery occurs at startup; use
 **View** to recover a hidden panel. Removing the package directory disables this tool
 without affecting Studio's native editors.
 
-The manifest declares schema 1, contract 1, and an independent SemVer package
+The manifest declares schema 1, contract 2, and an independent SemVer package
 version. The build removes obsolete flat entrypoint copies. See
-[Studio plugin packages](../../docs/wiki/Studio-Plugin-Packages.md) for the
+[Studio plugin packages](../../../../docs/wiki/Studio-Plugin-Packages.md) for the
 manifest schema, compatibility, dependency isolation, discovery diagnostics and
 legacy support. Install only trusted plugins; load contexts are not a sandbox.
 
@@ -50,7 +50,7 @@ Services are called only from UI-thread completion polling.
 
 Choose source/output, Analyze, review diagnostics and proposed files, then Import.
 Overwrite is opt-in. Errors prevent writing; warnings explain omitted behavior.
-See the [support matrix](../../docs/wiki/External-Asset-Importing.md) for exact limits, naming, relative image dependencies and playback semantics.
+See the [support matrix](../../../../docs/wiki/External-Asset-Importing.md) for exact limits, naming, relative image dependencies and playback semantics.
 
 Headless tests generate their own XML, PNG and binary ASE fixtures; they assert
 native definitions, timing, geometry and pixels. Studio integration tests cover
@@ -69,5 +69,5 @@ standard deployment folder from installation, updating and uninstallation. Use
 startup. The Studio build/release process deploys its package; changes to the
 Studio distribution must happen while all Studio instances are closed.
 
-Third-party plugins can use the documented [local ZIP/directory package workflow](../../docs/wiki/Studio-Plugin-Packages.md), including reviewed updates, pending
+Third-party plugins can use the documented [local ZIP/directory package workflow](../../../../docs/wiki/Studio-Plugin-Packages.md), including reviewed updates, pending
 removal and startup rollback. Activation preferences survive removal/reinstallation.

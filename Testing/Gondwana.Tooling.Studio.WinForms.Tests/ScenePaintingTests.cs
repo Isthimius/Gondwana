@@ -1,6 +1,6 @@
 using System.Reflection;
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.Tooling.Scenes.WinForms;
+using Gondwana.Tooling.Studio.Scenes.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

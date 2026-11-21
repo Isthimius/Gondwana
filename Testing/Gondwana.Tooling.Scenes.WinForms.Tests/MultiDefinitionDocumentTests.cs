@@ -1,7 +1,7 @@
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 /// <summary>Verifies the editor owns the physical document independently of its active member.</summary>
 public sealed class MultiDefinitionDocumentTests

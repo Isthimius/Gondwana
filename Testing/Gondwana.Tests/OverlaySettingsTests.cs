@@ -1,5 +1,5 @@
 using System.Drawing;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 
 namespace Gondwana.Tests;
 
@@ -66,6 +66,38 @@ public sealed class OverlaySettingsTests : IDisposable
         Assert.Equal(Color.FromArgb(0x12, 0x34, 0x56).ToArgb(), settings[OverlayKind.Frames].ToArgb());
         Assert.Equal(Color.Tomato.ToArgb(), settings[OverlayKind.Collision].ToArgb());
         Assert.NotNull(settings.Warning);
+    }
+
+    /// <summary>Legacy standalone colors load into the new preference scope without modifying the old file.</summary>
+    [Fact]
+    public void LegacyFilename_LoadsAndSavesToCurrentFilename()
+    {
+        var legacyPath = Path.Combine(_directory, "Gondwana.Tooling.Tilesheets.WinForms.settings.json");
+        var currentPath = Path.Combine(_directory, "Gondwana.Tooling.Studio.Tilesheets.WinForms.settings.json");
+        File.WriteAllText(legacyPath, """{"OverlayColors":{"Frames":"#123456"}}""");
+
+        var settings = OverlaySettings.LoadWithLegacyFallback(currentPath);
+        Assert.Equal(currentPath, settings.FilePath);
+        Assert.Equal(Color.FromArgb(0x12, 0x34, 0x56).ToArgb(), settings[OverlayKind.Frames].ToArgb());
+        Assert.False(File.Exists(currentPath));
+
+        settings.SetColor(OverlayKind.Collision, Color.Red);
+        Assert.Equal(Color.Red.ToArgb(), OverlaySettings.LoadWithLegacyFallback(currentPath)[OverlayKind.Collision].ToArgb());
+        Assert.Equal(Color.FromArgb(0x12, 0x34, 0x56).ToArgb(), OverlaySettings.Load(currentPath)[OverlayKind.Frames].ToArgb());
+        Assert.Equal("""{"OverlayColors":{"Frames":"#123456"}}""", File.ReadAllText(legacyPath));
+    }
+
+    /// <summary>Current settings always win over an older file.</summary>
+    [Fact]
+    public void CurrentFilename_WinsOverLegacyFilename()
+    {
+        File.WriteAllText(Path.Combine(_directory, "Gondwana.Tooling.Tilesheets.WinForms.settings.json"),
+            """{"OverlayColors":{"Frames":"#123456"}}""");
+        var currentPath = Path.Combine(_directory, "Gondwana.Tooling.Studio.Tilesheets.WinForms.settings.json");
+        File.WriteAllText(currentPath, """{"OverlayColors":{"Frames":"#ABCDEF"}}""");
+
+        var settings = OverlaySettings.LoadWithLegacyFallback(currentPath);
+        Assert.Equal(Color.FromArgb(0xAB, 0xCD, 0xEF).ToArgb(), settings[OverlayKind.Frames].ToArgb());
     }
 
     /// <summary>

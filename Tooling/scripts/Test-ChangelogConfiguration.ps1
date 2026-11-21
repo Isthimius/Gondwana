@@ -24,13 +24,16 @@ try {
     $rootHistory = "# [v1.0.0] - 2000-01-01`r`n`r`nReleased root text — preserved.`r`n"
     $projectHistory = "# v1.0.0 - January 01, 2000`r`n`r`nReleased project text — preserved.`r`n"
     [IO.File]::WriteAllText("$fixture/CHANGELOG.md", "# Changelog`r`n`r`n$rootHistory")
+    New-Item LegacyBoth -ItemType Directory | Out-Null
+    Set-Content LegacyBoth/code.txt 'initial (old project path)'
     $metadata = '$ChangelogProjects = @(' + "`n"
     foreach ($name in @('Both', 'ProjectOnly', 'RootOnly', 'Neither')) {
         New-Item $name -ItemType Directory | Out-Null
         Set-Content "$name/code.txt" 'initial'
         $generate = $name -in @('Both', 'ProjectOnly')
         $include = $name -in @('Both', 'RootOnly')
-        $metadata += "[pscustomobject]@{ Path = '$name'; RootName = '$name'; GenerateChangelog = `$$generate; IncludeInRootChangelog = `$$include; IncludePaths = @('$name/**/*') }`n"
+        $globs = if ($name -eq 'Both') { "'Both/**/*', 'LegacyBoth/**/*'" } else { "'$name/**/*'" }
+        $metadata += "[pscustomobject]@{ Path = '$name'; RootName = '$name'; GenerateChangelog = `$$generate; IncludeInRootChangelog = `$$include; IncludePaths = @($globs) }`n"
     }
     $metadata += ')'
     Set-Content Tooling/scripts/Changelog-ProjectGroups.ps1 $metadata
@@ -44,6 +47,9 @@ try {
         Invoke-TestGit add .
         Invoke-TestGit commit -qm "feat: update $name"
     }
+    Add-Content LegacyBoth/code.txt 'legacy change'
+    Invoke-TestGit add LegacyBoth/code.txt
+    Invoke-TestGit commit -qm 'fix: legacy Both path'
     $env:CHANGELOG_PR_NUMBER = '123'
     $env:CHANGELOG_PR_COMMITS = '|' + ((& git rev-list v1.0.0..HEAD) -join '|') + '|'
     $root = './Tooling/scripts/Generate-Root-Changelog.ps1'
@@ -60,12 +66,15 @@ try {
         Assert (($content -match "(?m)^## $name\r?$") -eq ($name -in @('Both', 'RootOnly'))) "Wrong root output for $name"
     }
     Assert ($content.Contains('https://github.com/Isthimius/Gondwana/pull/123')) 'Missing PR link'
+    Assert ($content.Contains('Legacy Both path')) 'Root changelog lost pre-rename source path changes'
+    Assert ((Get-Content Both/CHANGELOG.md -Raw).Contains('Legacy Both path')) 'Project changelog lost pre-rename source path changes'
     Assert ($content.EndsWith($rootHistory)) 'Root released history changed'
     Assert ((Get-Content Both/CHANGELOG.md -Raw) -match '# v1.0.0') 'Bootstrap lost tagged history'
     # Existing custom history is authoritative, including CRLF and punctuation.
-    [IO.File]::WriteAllText("$fixture/Both/CHANGELOG.md", "# Changelog`r`n`r`n# [Unreleased]`r`n`r`nStale`r`n`r`n$projectHistory")
+    [IO.File]::WriteAllText("$fixture/Both/CHANGELOG.md", "# Changelog`r`n`r`n## Historical implementation notes`r`n`r`n- Manual note preserved`r`n`r`n# [Unreleased]`r`n`r`nStale`r`n`r`n$projectHistory")
     & $projects
     Assert ((Get-Content Both/CHANGELOG.md -Raw).EndsWith($projectHistory)) 'Project released history changed'
+    Assert ((Get-Content Both/CHANGELOG.md -Raw).Contains('Manual note preserved')) 'Project refresh lost manually maintained notes'
     $first = Get-Content Both/CHANGELOG.md -Raw
     & $projects
     & $root

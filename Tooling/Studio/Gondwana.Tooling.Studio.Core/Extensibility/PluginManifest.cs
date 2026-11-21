@@ -4,11 +4,11 @@ using System.Text.RegularExpressions;
 
 namespace Gondwana.Tooling.Studio.Core.Extensibility;
 
-/// <summary>Version 1 of the Studio package manifest. Contract versions are independent of engine releases.</summary>
+/// <summary>Schema version 1 of the Studio package manifest. Contract versions are independent of engine releases.</summary>
 public sealed class PluginManifest
 {
     public const int SupportedSchemaVersion = 1;
-    public const int SupportedContractVersion = 1;
+    public const int SupportedContractVersion = 2;
 
     [JsonPropertyName("schemaVersion")]
     public int SchemaVersion { get; init; }

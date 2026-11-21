@@ -2,7 +2,7 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 /// <summary>Regression tests for GANI-dependent GTS frame previews in the GSCN editor.</summary>
 public sealed class SceneAnimationSourceTests

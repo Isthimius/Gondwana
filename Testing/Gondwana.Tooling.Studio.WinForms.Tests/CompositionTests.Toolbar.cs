@@ -1,7 +1,7 @@
 using System.Text;
 using Gondwana.Assets;
-using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 

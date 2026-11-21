@@ -9,8 +9,8 @@
         <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
-        <RootNamespace>Gondwana.Studio.WinForms</RootNamespace>
-        <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
+        <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     </PropertyGroup>
 
     <!-- The outer shell uses the same DockPanelSuite theme family as its hosted editors. -->
@@ -21,13 +21,13 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Audio.WinForms\Gondwana.Tooling.Studio.Audio.WinForms.csproj" />
         <ProjectReference Include="..\Gondwana.Tooling.Studio.Core\Gondwana.Tooling.Studio.Core.csproj" />
-        <ProjectReference Include="..\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj" />
-        <ProjectReference Include="..\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj" />
-        <ProjectReference Include="..\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Animations.WinForms.csproj" />
-        <ProjectReference Include="..\Gondwana.Tooling.Audio.WinForms\Gondwana.Tooling.Audio.WinForms.csproj" />
-        <ProjectReference Include="..\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Scenes.WinForms.csproj" />
-        <ProjectReference Include="..\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Assets.WinForms\Gondwana.Tooling.Studio.Assets.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Tilesheets.WinForms\Gondwana.Tooling.Studio.Tilesheets.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Animations.WinForms\Gondwana.Tooling.Studio.Animations.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Scenes.WinForms\Gondwana.Tooling.Studio.Scenes.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana.Tooling.Studio.Sprites.WinForms\Gondwana.Tooling.Studio.Sprites.WinForms.csproj" />
         <ProjectReference Include="..\Shared\WinForms\Gondwana.Tooling.Studio.Shared.WinForms.csproj" />
         <ProjectReference Include="..\Shared\WinForms\Theming\Gondwana.Tooling.Studio.Shared.WinForms.Theming.csproj" />
     </ItemGroup>

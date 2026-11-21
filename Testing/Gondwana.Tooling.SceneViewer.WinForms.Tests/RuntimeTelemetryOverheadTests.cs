@@ -4,7 +4,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.WinForms.Rendering;
 using Xunit.Abstractions;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in comparable baseline/revised native workload; reflection keeps it compilable on master.</summary>
 /// <param name="output">Test output for measured results, without performance assertions.</param>

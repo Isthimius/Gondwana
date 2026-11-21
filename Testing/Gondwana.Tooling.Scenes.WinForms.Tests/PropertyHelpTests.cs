@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 /// <summary>Ensures scene and tile property grids give actionable help.</summary>
 public sealed class PropertyHelpTests

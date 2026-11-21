@@ -14,8 +14,8 @@ remove any editing functionality or prevent Studio from starting.
 On Windows, from the repository root:
 
 ```console
-dotnet build Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics -c Release
-dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Release --no-build
+dotnet build Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.WinForms -c Release --no-build
 ```
 
 The plugin targets only `net10.0-windows`, matching the current WinForms contract.
@@ -25,7 +25,7 @@ the manifest, plugin DLL, and `.deps.json` to the matching Studio output's
 default Release build this is:
 
 ```text
-Tooling/Gondwana.Tooling.Studio.WinForms/bin/Release/net10.0-windows/plugins/ProjectDiagnostics/
+Tooling/Studio/Gondwana.Tooling.Studio.WinForms/bin/Release/net10.0-windows/plugins/ProjectDiagnostics/
   plugin.json
   Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll
   Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.deps.json
@@ -36,8 +36,8 @@ Studio because each application output has its own `plugins/` directory. For a
 normal Visual Studio/F5 or default `dotnet run` session, build the Debug plugin:
 
 ```console
-dotnet build Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics -c Debug
-dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Debug --no-build
+dotnet build Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics -c Debug
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.WinForms -c Debug --no-build
 ```
 
 An empty **Plugins** menu means that this Studio executable discovered no menu-
@@ -127,11 +127,11 @@ failures in its panel and observes abandoned task faults through `Trace`.
 
 At startup the host discovers manifest-based packages, then legacy top-level DLLs.
 This package has no private libraries: Studio supplies its engine and contract
-dependencies. Its `plugin.json` declares schema 1, contract 1, and a package
+dependencies. Its `plugin.json` declares schema 1, contract 2, and a package
 SemVer version independent of the engine release. The build removes obsolete
 flat copies of this plugin's entry DLL and dependency metadata.
 
-See [Studio plugin packages](../../docs/wiki/Studio-Plugin-Packages.md) for the
+See [Studio plugin packages](../../../../docs/wiki/Studio-Plugin-Packages.md) for the
 manifest schema, shared/private dependency rules, duplicate precedence,
 read-only discovery snapshots, failure handling and manual legacy deployment.
 Load contexts provide dependency isolation, not a security sandbox; install only
@@ -188,5 +188,5 @@ standard deployment folder from installation, updating and uninstallation. Use
 startup. The Studio build/release process deploys its package; changes to the
 Studio distribution must happen while all Studio instances are closed.
 
-Third-party plugins can use the documented [local ZIP/directory package workflow](../../docs/wiki/Studio-Plugin-Packages.md), including reviewed updates, pending
+Third-party plugins can use the documented [local ZIP/directory package workflow](../../../../docs/wiki/Studio-Plugin-Packages.md), including reviewed updates, pending
 removal and startup rollback. Activation preferences survive removal/reinstallation.

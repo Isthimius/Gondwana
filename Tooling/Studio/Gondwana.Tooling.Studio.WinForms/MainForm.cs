@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Assets.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
@@ -25,7 +25,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     // Packed saves disable the document while serialized bytes await archive readers.
     // Host commands must honor the same editing boundary as the disabled editor.
     private Editing.EditHistory? ActiveHistory => ActiveDocument is { Enabled: true } active
-        ? (active.Document.Editor as Gondwana.Tooling.Scenes.WinForms.SceneEditorControl)?.SelectedSpriteHistory ?? active.Document.History
+        ? (active.Document.Editor as Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl)?.SelectedSpriteHistory ?? active.Document.History
         : null;
 
     /// <inheritdoc/>
@@ -565,7 +565,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     {
         var document = new StudioDockDocument(model, ConfirmClose);
 
-        if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
+        if (model.Editor is Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl sceneEditor)
         {
             sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
             sceneEditor.SetSpriteOwners(GetSpriteOwners);

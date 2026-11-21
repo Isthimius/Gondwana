@@ -8,7 +8,7 @@
     paths via --include-path. Each project gets its own CHANGELOG.md placed in
     its project folder.
 
-    Excluded from generation: Demos and test-only projects.
+    Project selection is configured centrally; test-only projects are excluded.
 
     Behaviour:
       - If the project's CHANGELOG.md is new/empty, the complete project history
@@ -73,9 +73,9 @@ if ($Projects) {
         }
     }
 }
-$Projects = @($ChangelogProjects | Where-Object {
+$selectedGroups = @($ChangelogProjects | Where-Object {
     $_.GenerateChangelog -and (-not $Projects -or $_.Path -in $Projects)
-} | ForEach-Object { $_.Path })
+})
 
 # Resolve the repo root from the script's location:
 # Tooling/scripts/ -> Tooling/ -> root
@@ -219,14 +219,15 @@ function Write-Utf8NoBom {
 
 $failed = @()
 
-foreach ($project in $Projects) {
+foreach ($group in $selectedGroups) {
+    $project = $group.Path
     $projectFolder = Join-Path $repoRoot $project
     if (-not (Test-Path $projectFolder)) {
         Write-Warning "Project folder not found, skipping: $projectFolder"
         continue
     }
 
-    $includePath = "$($project -replace '\\', '/')/**/*"
+    $includePaths = @($group.IncludePaths)
     $changelogPath = Join-Path $projectFolder "CHANGELOG.md"
     $existingContent = if (Test-Path $changelogPath) {
         Get-Content $changelogPath -Raw
@@ -248,18 +249,17 @@ foreach ($project in $Projects) {
 
     Write-Host ""
     Write-Host "--- $project ---"
-    Write-Host "  include-path : $includePath"
+    Write-Host "  include-path : $($includePaths -join ', ')"
     Write-Host "  changelog    : $changelogPath"
     Write-Host "  mode         : $mode"
 
-    $baseCliffArgs = @(
-        "--config", $CliffConfigPath,
-        "--repository", ".",
-        # Keep the glob in the same argv token as the option. PowerShell expands
+    $baseCliffArgs = @("--config", $CliffConfigPath, "--repository", ".")
+    foreach ($includePath in $includePaths) {
+        # Keep each glob in the same argv token as the option. PowerShell expands
         # a splatted bare glob into matching working-tree paths before invoking
         # a native command, which prevents git-cliff from grouping commits by tag.
-        "--include-path=$includePath"
-    )
+        $baseCliffArgs += "--include-path=$includePath"
+    }
 
     try {
         if ($changelogIsNew) {

@@ -88,7 +88,11 @@ gondwana-mcp:
 gondwana-assets:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Assets*/**'
+      - 'Tooling/Gondwana.Tooling.Assets/**'
+      - '!**/CHANGELOG.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.Assets.WinForms/**'
       - '!**/CHANGELOG.md'
 
 gondwana-importers:
@@ -104,7 +108,7 @@ gondwana-importers:
 gondwana-studio:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Studio.*/**'
+      - 'Tooling/Studio/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -114,7 +118,7 @@ gondwana-studio:
 gondwana-tilesheets-editor:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Tilesheets.WinForms/**'
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -124,7 +128,7 @@ gondwana-tilesheets-editor:
 gondwana-animations-editor:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Animations.WinForms/**'
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.Animations.WinForms/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -134,7 +138,7 @@ gondwana-animations-editor:
 gondwana-audio-editor:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Audio.WinForms/**'
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -144,7 +148,7 @@ gondwana-audio-editor:
 gondwana-scenes-editor:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Scenes.WinForms/**'
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.Scenes.WinForms/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -154,7 +158,7 @@ gondwana-scenes-editor:
 gondwana-sprites-editor:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.Sprites.WinForms/**'
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.Sprites.WinForms/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -164,7 +168,7 @@ gondwana-sprites-editor:
 gondwana-scene-viewer:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Gondwana.Tooling.SceneViewer.WinForms/**'
+      - 'Tooling/Studio/Gondwana.Tooling.Studio.SceneViewer.WinForms/**'
       - '!**/CHANGELOG.md'
   - changed-files:
     - all-globs-to-any-file:
@@ -174,7 +178,7 @@ gondwana-scene-viewer:
 gondwana-tooling-shared:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Tooling/Shared/**'
+      - 'Tooling/Studio/Shared/**'
       - '!**/CHANGELOG.md'
 
 tooling:

@@ -11,7 +11,7 @@ using SkiaSharp;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 
-namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 
 /// <summary>
 /// Contains regression tests for viewer.

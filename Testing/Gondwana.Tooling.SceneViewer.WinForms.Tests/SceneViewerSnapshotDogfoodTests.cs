@@ -4,7 +4,7 @@ using Gondwana.Widgets.Hud;
 using Gondwana.WinForms.Rendering;
 using Xunit.Abstractions;
 
-namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in, process-isolated Scene Viewer run using the actual Engine and platform paint loop.</summary>
 /// <param name="output">The output value for this test case.</param>

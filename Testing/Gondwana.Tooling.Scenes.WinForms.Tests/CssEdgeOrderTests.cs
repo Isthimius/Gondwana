@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Gondwana.Drawing;
 using Gondwana.Physics.Collisions;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 /// <summary>Guards clockwise display and conversion of scene tile edge values.</summary>
 public sealed class CssEdgeOrderTests

@@ -117,7 +117,7 @@ public sealed partial class PluginPackageTests
     {
         var entry = Package("incompatible", "sample.incompatible");
         var manifestPath = Path.Combine(Path.GetDirectoryName(entry)!, "plugin.json");
-        File.WriteAllText(manifestPath, File.ReadAllText(manifestPath).Replace("\"contractVersion\":1", "\"contractVersion\":2", StringComparison.Ordinal));
+        File.WriteAllText(manifestPath, File.ReadAllText(manifestPath).Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal));
         Package("a", "sample.duplicate");
         Package("b", "sample.duplicate");
         var host = new Host(_ => { }, _ => true);

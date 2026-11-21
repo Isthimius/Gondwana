@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 /// <summary>Guards the CSS-style presentation order for sprite collision insets.</summary>
 public sealed class CssEdgeOrderTests

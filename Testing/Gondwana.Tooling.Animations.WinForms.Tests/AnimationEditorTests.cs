@@ -6,7 +6,7 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
 using SkiaSharp;
 
-namespace Gondwana.Tooling.Animations.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Animations.WinForms.Tests;
 
 /// <summary>
 /// Contains regression tests for animation editor.

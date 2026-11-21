@@ -2,8 +2,8 @@ using System.Drawing;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
-using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 using SkiaSharp;
 
 namespace Gondwana.Tests;

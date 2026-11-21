@@ -131,10 +131,10 @@ dotnet_diagnostic.CA2201.severity = suggestion
 dotnet_diagnostic.CA1001.severity = suggestion
 dotnet_diagnostic.CA1806.severity = suggestion
 
-[Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/**/*.cs]
+[Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/**/*.cs]
 dotnet_diagnostic.CA1001.severity = suggestion
 
-[Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/ProjectDiagnosticsPlugin.cs]
+[Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/ProjectDiagnosticsPlugin.cs]
 dotnet_diagnostic.CA1001.severity = suggestion
 
 # Native allocation failure is intentionally surfaced as OutOfMemoryException.
@@ -147,11 +147,11 @@ dotnet_diagnostic.CA2201.severity = suggestion
 [Demos/Gondwana.Platformer/EnemyContact.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion
 
-[Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/Editing/TilesheetDocument.cs]
+[Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/Editing/TilesheetDocument.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion
 
-[Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/Editing/FrameGeometry.cs]
+[Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/Editing/FrameGeometry.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion
 
-[Tooling/Studio/Gondwana.Tooling.Tilesheets.WinForms/Editing/OverlaySettings.cs]
+[Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/Editing/OverlaySettings.cs]
 dotnet_diagnostic.IDE0005.severity = suggestion

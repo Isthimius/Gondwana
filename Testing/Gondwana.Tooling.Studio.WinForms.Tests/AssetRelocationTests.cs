@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Assets.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

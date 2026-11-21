@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Assets.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 
@@ -176,10 +176,10 @@ public sealed partial class MainForm
         {
             switch (document.Document.Editor)
             {
-                case Gondwana.Tooling.Tilesheets.WinForms.TilesheetEditorControl editor: editor.ReloadImage(); break;
-                case Gondwana.Tooling.Animations.WinForms.AnimationEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Scenes.WinForms.SceneEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Sprites.WinForms.SpriteEditorControl editor: editor.ReloadSources(); break;
+                case Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor: editor.ReloadImage(); break;
+                case Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor: editor.ReloadSources(); break;
+                case Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor: editor.ReloadSources(); break;
+                case Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor: editor.ReloadSources(); break;
             }
             document.Document.PreviewStale = false;
             document.UpdateCaption();

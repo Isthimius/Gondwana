@@ -4,9 +4,10 @@ using System.Runtime.ExceptionServices;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests;
 
 /// <summary>Exercise real Windows controls; descriptor-only tests cannot verify editing or focus.</summary>
 [Collection("WinForms interaction")]
@@ -521,14 +522,14 @@ public sealed partial class EditorInteractionTests
             }
 
             var document = TilesheetDocument.Create(directory);
-            using var catalog = new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
+            using var catalog = new AssetPackageCatalog();
             using var form = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
             using var editor = new TilesheetEditorControl(document, catalog);
             form.Controls.Add(editor);
             form.Show();
             Application.DoEvents();
 
-            editor.ChoosePackedImage(new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(gaf, "forest-packed.png"));
+            editor.ChoosePackedImage(new PackedImageSource(gaf, "forest-packed.png"));
             Assert.NotNull(editor.ImageSize);
             Assert.True(editor.ImageSize!.Value.Width > 0);
             Assert.Empty(editor.UpdateValidation());
@@ -574,10 +575,10 @@ public sealed partial class EditorInteractionTests
             }
 
             using var catalog =
-                new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
+                new AssetPackageCatalog();
 
             var staleReference =
-                new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(
+                new PackedImageSource(
                     gaf,
                     "forest.png");
 
@@ -592,7 +593,7 @@ public sealed partial class EditorInteractionTests
                 StringComparison.OrdinalIgnoreCase);
 
             var exactReference =
-                new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(
+                new PackedImageSource(
                     gaf,
                     "FOREST.JPG");
 

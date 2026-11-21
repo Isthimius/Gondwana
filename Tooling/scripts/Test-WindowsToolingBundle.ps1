@@ -9,14 +9,14 @@ $ErrorActionPreference = 'Stop'
 $ToolingRoot = (Resolve-Path -LiteralPath $ToolingRoot).Path
 
 $apps = @(
-    @{ Folder = 'Gondwana.Tooling.Studio.WinForms'; Exe = 'Gondwana.Studio.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.Assets.WinForms'; Exe = 'Gondwana.Tooling.Assets.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.Animations.WinForms'; Exe = 'Gondwana.Tooling.Animations.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.Audio.WinForms'; Exe = 'Gondwana.Tooling.Audio.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.Scenes.WinForms'; Exe = 'Gondwana.Tooling.Scenes.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.SceneViewer.WinForms'; Exe = 'Gondwana.Tooling.SceneViewer.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.Sprites.WinForms'; Exe = 'Gondwana.Tooling.Sprites.WinForms' }
-    @{ Folder = 'Gondwana.Tooling.Tilesheets.WinForms'; Exe = 'Gondwana.Tooling.Tilesheets.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.WinForms'; Exe = 'Gondwana.Tooling.Studio.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.Assets.WinForms'; Exe = 'Gondwana.Tooling.Studio.Assets.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.Animations.WinForms'; Exe = 'Gondwana.Tooling.Studio.Animations.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.Audio.WinForms'; Exe = 'Gondwana.Tooling.Studio.Audio.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.Scenes.WinForms'; Exe = 'Gondwana.Tooling.Studio.Scenes.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.SceneViewer.WinForms'; Exe = 'Gondwana.Tooling.Studio.SceneViewer.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.Sprites.WinForms'; Exe = 'Gondwana.Tooling.Studio.Sprites.WinForms' }
+    @{ Folder = 'Gondwana.Tooling.Studio.Tilesheets.WinForms'; Exe = 'Gondwana.Tooling.Studio.Tilesheets.WinForms' }
 )
 
 foreach ($app in $apps) {
@@ -63,9 +63,9 @@ foreach ($package in @('ProjectDiagnostics', 'ExternalImport')) {
 }
 
 # Validate the sibling layout recognized by SceneViewerLauncher.Locate.
-$viewer = Join-Path $ToolingRoot 'Gondwana.Tooling.SceneViewer.WinForms/Gondwana.Tooling.SceneViewer.WinForms.exe'
-foreach ($hostFolder in @('Gondwana.Tooling.Studio.WinForms', 'Gondwana.Tooling.Scenes.WinForms')) {
-    $fromHost = [System.IO.Path]::GetFullPath((Join-Path (Join-Path $ToolingRoot $hostFolder) "../Gondwana.Tooling.SceneViewer.WinForms/Gondwana.Tooling.SceneViewer.WinForms.exe"))
+$viewer = Join-Path $ToolingRoot 'Gondwana.Tooling.Studio.SceneViewer.WinForms/Gondwana.Tooling.Studio.SceneViewer.WinForms.exe'
+foreach ($hostFolder in @('Gondwana.Tooling.Studio.WinForms', 'Gondwana.Tooling.Studio.Scenes.WinForms')) {
+    $fromHost = [System.IO.Path]::GetFullPath((Join-Path (Join-Path $ToolingRoot $hostFolder) "../Gondwana.Tooling.Studio.SceneViewer.WinForms/Gondwana.Tooling.Studio.SceneViewer.WinForms.exe"))
     if ($fromHost -ne [System.IO.Path]::GetFullPath($viewer) -or -not (Test-Path -LiteralPath $fromHost -PathType Leaf)) {
         throw "Scene Viewer is not discoverable from $hostFolder"
     }

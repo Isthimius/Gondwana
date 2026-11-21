@@ -468,7 +468,7 @@ This makes the definition model suitable for scene tooling: editors can inspect 
 
 ## Standalone GSCN editor
 
-`Tooling/Gondwana.Tooling.Scenes.WinForms` provides the standalone Windows GSCN
+`Tooling/Studio/Gondwana.Tooling.Studio.Scenes.WinForms` provides the standalone Windows GSCN
 editor. Its public `SceneEditorControl` is also the reusable surface intended for
 Gondwana Studio.
 
@@ -613,10 +613,10 @@ Each placement is one Undo operation in the owning GSPR, including any new refer
 
 ## Runtime Scene Viewer
 
-The reusable GSCN editor provides **View Scene** on its preview toolbar, both in standalone Scene tooling and in Gondwana Studio. It launches `Gondwana.Tooling.SceneViewer.WinForms` in a separate process, isolating Engine singleton state from the authoring application.
+The reusable GSCN editor provides **View Scene** on its preview toolbar, both in standalone Scene tooling and in Gondwana Studio. It launches `Gondwana.Tooling.Studio.SceneViewer.WinForms` in a separate process, isolating Engine singleton state from the authoring application.
 
 ```powershell
-Gondwana.Tooling.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
+Gondwana.Tooling.Studio.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
 ```
 
 The viewer resolves the saved GSCN's GTS and GANI dependencies (including GANI tilesheet sources) from local definitions with explicit authored source fallback, registers runtime content, and calls `SceneDefinitionSerializer.ToScene`. It also resolves the GTS frames and GANI cycles used by the discovered GSPR instances. Gondwana owns animation playback, frame transforms and associated geometry, layer projection, wrapping, parallax, and rendering. The viewer uses the current WinForms GPU host lifecycle.

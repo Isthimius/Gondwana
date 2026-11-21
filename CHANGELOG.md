@@ -149,12 +149,12 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.Assets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Assets.WinForms
 
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.Animations.WinForms
+## Tooling / Gondwana.Tooling.Studio.Animations.WinForms
 
 ### Added
 - Add typed resource drag-and-drop foundation ([#561](https://github.com/Isthimius/Gondwana/pull/561))
@@ -215,7 +215,7 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.Scenes.WinForms
+## Tooling / Gondwana.Tooling.Studio.Scenes.WinForms
 
 ### Added
 - Support GTS and GANI resource drag-and-drop ([#562](https://github.com/Isthimius/Gondwana/pull/562))
@@ -232,7 +232,7 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+## Tooling / Gondwana.Tooling.Studio.SceneViewer.WinForms
 
 ### Added
 - Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
@@ -242,7 +242,7 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.Sprites.WinForms
+## Tooling / Gondwana.Tooling.Studio.Sprites.WinForms
 
 ### Added
 - Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
@@ -258,7 +258,7 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Tilesheets.WinForms
 
 ### Added
 - Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
@@ -375,7 +375,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Preflight blazor scaffolding prerequisites ([#541](https://github.com/Isthimius/Gondwana/pull/541))
 
-## Tooling / Gondwana.Tooling.Assets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Assets.WinForms
 
 ### Added
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
@@ -403,7 +403,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
-## Tooling / Gondwana.Tooling.Animations.WinForms
+## Tooling / Gondwana.Tooling.Studio.Animations.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
@@ -506,7 +506,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
-## Tooling / Gondwana.Tooling.Scenes.WinForms
+## Tooling / Gondwana.Tooling.Studio.Scenes.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
@@ -546,7 +546,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
-## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+## Tooling / Gondwana.Tooling.Studio.SceneViewer.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
@@ -564,7 +564,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
-## Tooling / Gondwana.Tooling.Sprites.WinForms
+## Tooling / Gondwana.Tooling.Studio.Sprites.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
@@ -598,7 +598,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
-## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Tilesheets.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
@@ -920,7 +920,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2
 ### Other Changes
 - Add xml comments to public and protected memebers
 
-## Tooling / Gondwana.Tooling.Assets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Assets.WinForms
 
 ### Added
 - Modernize Assets editor workspace ([#370](https://github.com/Isthimius/Gondwana/pull/370))
@@ -942,7 +942,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2
 ### Other Changes
 - Add xml comments to public and protected memebers
 
-## Tooling / Gondwana.Tooling.Animations.WinForms
+## Tooling / Gondwana.Tooling.Studio.Animations.WinForms
 
 ### Added
 - Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
@@ -1017,7 +1017,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2
 ### Other Changes
 - Add xml comments to public and protected memebers
 
-## Tooling / Gondwana.Tooling.Scenes.WinForms
+## Tooling / Gondwana.Tooling.Studio.Scenes.WinForms
 
 ### Added
 - Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
@@ -1032,12 +1032,12 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2
 ### Other Changes
 - Add xml comments to public and protected memebers
 
-## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+## Tooling / Gondwana.Tooling.Studio.SceneViewer.WinForms
 
 ### Other Changes
 - Add xml comments to public and protected memebers
 
-## Tooling / Gondwana.Tooling.Sprites.WinForms
+## Tooling / Gondwana.Tooling.Studio.Sprites.WinForms
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
@@ -1047,7 +1047,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.1...v2.6.2
 ### Other Changes
 - Add xml comments to public and protected memebers
 
-## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Tilesheets.WinForms
 
 ### Added
 - Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
@@ -1588,7 +1588,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.0...v2.6.1
 ### Maintenance
 - Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
-## Tooling / Gondwana.Tooling.Assets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Assets.WinForms
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
@@ -1631,7 +1631,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.0...v2.6.1
 ### Maintenance
 - Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
-## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+## Tooling / Gondwana.Tooling.Studio.Tilesheets.WinForms
 
 ### Added
 - Add standalone gts editor ([#357](https://github.com/Isthimius/Gondwana/pull/357))

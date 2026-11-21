@@ -1,0 +1,412 @@
+using System.Diagnostics;
+using System.Drawing.Drawing2D;
+using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Tooling.Animations.Editing;
+
+namespace Gondwana.Tooling.Studio.Animations.WinForms;
+
+internal sealed class AnimationPreviewControl : Control
+{
+    private readonly System.Windows.Forms.Timer _timer = new()
+    {
+        Interval = 10
+    };
+
+    private readonly Stopwatch _clock = new();
+    private Func<AnimationFrameDefinition, FramePreview?>? _resolver;
+    private AnimationDefinition? _definition;
+    private int _index;
+    private int _direction = 1;
+    private double _lastAdvanceSeconds;
+    private bool _hiddenAtEnd;
+    private float? _zoom;
+    private bool _sourcePreviewActive;
+    private FramePreview? _sourcePreview;
+    private string? _sourcePreviewCaption;
+
+    /// <summary>
+    /// Gets whether playback is active.
+    /// </summary>
+    public bool IsPlaying => _timer.Enabled;
+    /// <summary>
+    /// Gets the current frame index.
+    /// </summary>
+    public int CurrentFrameIndex => _index;
+    /// <summary>Gets whether a source selection is displayed instead of the animation playback frame.</summary>
+    public bool IsShowingSourceFrame => _sourcePreviewActive;
+
+    /// <summary>
+    /// Occurs when the current preview frame changes.
+    /// </summary>
+    public event EventHandler? CurrentFrameChanged;
+
+    /// <summary>Creates a double-buffered animation preview with playback initially paused.</summary>
+    public AnimationPreviewControl()
+    {
+        ToolingAppearance.PreserveColors(this);
+        Dock = DockStyle.Fill;
+        DoubleBuffered = true;
+        ResizeRedraw = true;
+        BackColor = Color.FromArgb(30, 30, 30);
+        ForeColor = Color.Gainsboro;
+        _timer.Tick += (_, _) => TickPreview();
+    }
+
+    /// <summary>Assigns the preview definition and resolver, clamps the current frame index, and requests a repaint.</summary>
+    /// <param name="definition">The mutable definition read during playback.</param>
+    /// <param name="resolver">Resolves a frame to borrowed preview data, or null when unavailable.</param>
+    public void Configure(
+        AnimationDefinition definition,
+        Func<AnimationFrameDefinition, FramePreview?> resolver)
+    {
+        _definition = definition;
+        _resolver = resolver;
+        _hiddenAtEnd = false;
+        if (_index >= definition.Frames.Count)
+            _index = Math.Max(0, definition.Frames.Count - 1);
+
+        Invalidate();
+    }
+
+    /// <summary>Pauses playback and displays a source frame independently of the animation frame index.</summary>
+    /// <param name="preview">Borrowed preview data, or null for an unavailable frame.</param>
+    /// <param name="caption">Text identifying the source selection.</param>
+    public void ShowSourceFrame(
+        FramePreview? preview,
+        string caption)
+    {
+        Pause();
+        _sourcePreviewActive = true;
+        _sourcePreview = preview;
+        _sourcePreviewCaption = caption;
+        _hiddenAtEnd = false;
+        Invalidate();
+    }
+
+    /// <summary>
+    /// Clears the frame displayed from the source tilesheet.
+    /// </summary>
+    public void ClearSourceFrame()
+    {
+        if (!_sourcePreviewActive)
+            return;
+
+        _sourcePreviewActive = false;
+        _sourcePreview = null;
+        _sourcePreviewCaption = null;
+        Invalidate();
+    }
+
+    /// <summary>
+    /// Toggles animation preview playback.
+    /// </summary>
+    public void TogglePlay()
+    {
+        if (IsPlaying)
+            Pause();
+        else
+            Play();
+    }
+
+    /// <summary>Starts playback from the current frame, or stays paused when no frames or a valid positive duration are available.</summary>
+    public void Play()
+    {
+        ClearSourceFrame();
+        if (_definition is null ||
+            _definition.Frames.Count == 0 ||
+            EffectiveDuration <= 0 ||
+            !double.IsFinite(EffectiveDuration))
+        {
+            Pause();
+            Invalidate();
+            return;
+        }
+
+        _hiddenAtEnd = false;
+        _clock.Restart();
+        _lastAdvanceSeconds = 0;
+        _timer.Start();
+        Invalidate();
+    }
+
+    /// <summary>
+    /// Pauses playback at the current position.
+    /// </summary>
+    public void Pause()
+    {
+        _timer.Stop();
+        _clock.Stop();
+        Invalidate();
+    }
+
+    /// <summary>Resets to the first frame and forward traversal while preserving whether playback is running or paused.</summary>
+    public void Restart()
+    {
+        ClearSourceFrame();
+        _index = 0;
+        _direction = 1;
+        _hiddenAtEnd = false;
+        _lastAdvanceSeconds = 0;
+        CurrentFrameChanged?.Invoke(this, EventArgs.Empty);
+        Invalidate();
+
+        if (IsPlaying)
+        {
+            _clock.Restart();
+            _lastAdvanceSeconds = 0;
+        }
+    }
+
+    /// <summary>Pauses playback and advances once using the configured cycle traversal behavior.</summary>
+    public void Step()
+    {
+        ClearSourceFrame();
+        Pause();
+        Advance();
+        Invalidate();
+    }
+
+    /// <summary>Sets magnification and requests a repaint.</summary>
+    /// <param name="zoom">Explicit scale factor, or null to fit the current preview.</param>
+    public void SetZoom(float? zoom)
+    {
+        _zoom = zoom;
+        Invalidate();
+    }
+
+    private void TickPreview()
+    {
+        if (_definition is null ||
+            _definition.Frames.Count == 0)
+        {
+            Pause();
+            return;
+        }
+
+        var throttle = EffectiveDuration;
+        if (throttle <= 0 || !double.IsFinite(throttle))
+        {
+            Pause();
+            return;
+        }
+
+        var elapsed = _clock.Elapsed.TotalSeconds;
+        int guard = 0;
+
+        while (elapsed - _lastAdvanceSeconds >= throttle &&
+               guard++ < 100)
+        {
+            _lastAdvanceSeconds += throttle;
+            if (!Advance())
+                break;
+            throttle = EffectiveDuration;
+            if (throttle <= 0 || !double.IsFinite(throttle))
+            {
+                Pause();
+                break;
+            }
+        }
+
+        Invalidate();
+    }
+
+    private double EffectiveDuration => _definition is null || _definition.Frames.Count == 0
+        ? 0 : _definition.Frames[_index].DurationSeconds ?? _definition.ThrottleTime;
+
+    private bool Advance()
+    {
+        if (_definition is null ||
+            _definition.Frames.Count == 0)
+        {
+            return false;
+        }
+
+        int count = _definition.Frames.Count;
+
+        switch (_definition.CycleType)
+        {
+            case CycleType.Simple:
+                if (_index < count - 1)
+                {
+                    _index++;
+                }
+                else
+                {
+                    _hiddenAtEnd = _definition.HideTileOnCycleEnd;
+                    Pause();
+                    return false;
+                }
+                break;
+
+            case CycleType.Repeating:
+                _index = (_index + 1) % count;
+                break;
+
+            case CycleType.PingPong:
+                if (count == 1)
+                {
+                    _index = 0;
+                }
+                else
+                {
+                    _index += _direction;
+
+                    if (_index >= count - 1)
+                    {
+                        _index = count - 1;
+                        _direction = -1;
+                    }
+                    else if (_index <= 0)
+                    {
+                        _index = 0;
+                        _direction = 1;
+                    }
+                }
+                break;
+
+            default:
+                Pause();
+                return false;
+        }
+
+        _hiddenAtEnd = false;
+        CurrentFrameChanged?.Invoke(this, EventArgs.Empty);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        var graphics = e.Graphics;
+        using (var checker = new HatchBrush(
+                   HatchStyle.LargeCheckerBoard,
+                   Color.FromArgb(52, 52, 52),
+                   Color.FromArgb(40, 40, 40)))
+        {
+            graphics.FillRectangle(checker, ClientRectangle);
+        }
+
+        if (_sourcePreviewActive)
+        {
+            if (_sourcePreview is not { } sourcePreview)
+            {
+                DrawMessage(
+                    graphics,
+                    _sourcePreviewCaption is { Length: > 0 }
+                        ? $"No preview source for {_sourcePreviewCaption}."
+                        : "No preview source for the selected GTS frame.");
+                return;
+            }
+
+            DrawFrame(
+                graphics,
+                sourcePreview,
+                _sourcePreviewCaption ?? "Selected GTS frame");
+            return;
+        }
+
+        if (_definition is null ||
+            _definition.Frames.Count == 0)
+        {
+            DrawMessage(graphics, "Add frames to preview the animation.");
+            return;
+        }
+
+        if (_hiddenAtEnd)
+        {
+            DrawMessage(graphics, "Tile hidden at end of Simple cycle.");
+            return;
+        }
+
+        var frame = _definition.Frames[
+            Math.Clamp(_index, 0, _definition.Frames.Count - 1)];
+
+        var preview = _resolver?.Invoke(frame);
+        if (preview is null)
+        {
+            DrawMessage(
+                graphics,
+                $"No preview source for {frame.Tilesheet} / {frame.RegionName} / ({frame.XTile}, {frame.YTile}).");
+            return;
+        }
+
+        var caption =
+            $"Frame {_index + 1}/{_definition.Frames.Count}  " +
+            $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})";
+
+        DrawFrame(graphics, preview.Value, caption);
+    }
+
+    private void DrawFrame(
+        Graphics graphics,
+        FramePreview preview,
+        string caption)
+    {
+        var source = preview.SourceBounds;
+        if (source.Width <= 0 || source.Height <= 0)
+        {
+            DrawMessage(graphics, "Selected frame has invalid dimensions.");
+            return;
+        }
+
+        float scale = _zoom ?? Math.Min(
+            Math.Max(0.01f, (ClientSize.Width - 40f) / source.Width),
+            Math.Max(0.01f, (ClientSize.Height - 60f) / source.Height));
+
+        var width = Math.Max(1, (int)Math.Round(source.Width * scale));
+        var height = Math.Max(1, (int)Math.Round(source.Height * scale));
+        var destination = new Rectangle(
+            (ClientSize.Width - width) / 2,
+            (ClientSize.Height - height) / 2,
+            width,
+            height);
+
+        graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+        graphics.PixelOffsetMode = PixelOffsetMode.Half;
+        graphics.SmoothingMode = SmoothingMode.None;
+        graphics.DrawImage(
+            preview.Image,
+            destination,
+            source,
+            GraphicsUnit.Pixel);
+
+        TextRenderer.DrawText(
+            graphics,
+            caption,
+            Font,
+            new Rectangle(6, ClientSize.Height - 28, ClientSize.Width - 12, 22),
+            ForeColor,
+            TextFormatFlags.HorizontalCenter |
+            TextFormatFlags.VerticalCenter |
+            TextFormatFlags.EndEllipsis);
+    }
+
+    private void DrawMessage(Graphics graphics, string message)
+    {
+        TextRenderer.DrawText(
+            graphics,
+            message,
+            Font,
+            ClientRectangle,
+            Color.Silver,
+            TextFormatFlags.WordBreak |
+            TextFormatFlags.HorizontalCenter |
+            TextFormatFlags.VerticalCenter);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _timer.Stop();
+            _timer.Dispose();
+            _clock.Stop();
+        }
+
+        base.Dispose(disposing);
+    }
+}

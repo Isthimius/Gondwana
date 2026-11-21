@@ -12,7 +12,7 @@ using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 public sealed partial class SceneEditorTests
 {

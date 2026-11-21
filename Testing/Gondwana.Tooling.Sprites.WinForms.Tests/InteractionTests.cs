@@ -9,7 +9,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Sprites.Editing;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 /// <summary>
 /// Contains regression tests for interaction.

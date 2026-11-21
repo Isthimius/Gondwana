@@ -1,12 +1,12 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Assets;
 using Gondwana.Tooling.Animations.Editing;
-using Gondwana.Tooling.Animations.WinForms;
-using Gondwana.Tooling.Assets.WinForms;
-using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Studio.Animations.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Tests;
 
 // Run all three public controls through the same embedding contract in the
 // existing Windows CI suite. Production editors do not reference one another.

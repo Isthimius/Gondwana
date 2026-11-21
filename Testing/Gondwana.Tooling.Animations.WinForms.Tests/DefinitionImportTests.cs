@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Tooling.Animations.Editing;
 
-namespace Gondwana.Tooling.Animations.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Animations.WinForms.Tests;
 
 /// <summary>Tests additive import, source isolation, selection, and resource paths.</summary>
 public sealed class DefinitionImportTests

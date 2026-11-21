@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Assets.WinForms;
-using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Studio.Assets.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -22,7 +22,7 @@ public sealed partial class CompositionTests
         var path = Path.Combine(root, "keys.gaf");
         using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false)) initial.Save();
         using var studio = standalone ? null : Host(root);
-        using var shell = standalone ? new Gondwana.Tooling.Assets.WinForms.MainForm() : null;
+        using var shell = standalone ? new Gondwana.Tooling.Studio.Assets.WinForms.MainForm() : null;
         AssetEditorControl editor;
         if (shell is not null)
         {

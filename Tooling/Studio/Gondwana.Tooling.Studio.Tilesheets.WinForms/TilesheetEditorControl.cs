@@ -1,0 +1,720 @@
+using System.ComponentModel;
+using Gondwana.Assets;
+using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
+using WeifenLuo.WinFormsUI.Docking;
+
+namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
+
+/// <summary>Hostable editor for the definitions in a tilesheet document, with image, region, frame, and validation panes.</summary>
+public sealed class TilesheetEditorControl : UserControl
+{
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
+    public static IReadOnlyList<string> PaneNames { get; } =
+        Array.AsReadOnly(["Image", "Definition", "Region", "Frame", "Validation"]);
+
+    /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
+    public TilesheetDocument Document { get; }
+
+    private readonly OverlaySettings _overlaySettings;
+    private readonly AssetPackageCatalog _assetPackages;
+    private readonly bool _ownsAssetPackages;
+    private readonly ImageViewport _viewport = new();
+    private readonly PropertyGrid _definitionProperties = CreatePropertyGrid();
+    private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
+    private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
+    private readonly ComboBox _paneDefinitions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
+    private readonly ComboBox _regions = new() { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
+    private readonly ToolStripComboBox _toolbarRegions = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
+    private ToolStripButton? _renameRegionButton;
+    private readonly NumericUpDown _column = new() { Width = 80 };
+    private readonly NumericUpDown _row = new() { Width = 80 };
+    private readonly Label _gridSize = new() { AutoSize = true };
+    private readonly TextBox _validation = new() { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false };
+    private string? _previewKey;
+    private string? _previewError;
+    private bool _refreshing;
+    private bool _refreshPending;
+    private EditorDockWorkspace _workspace = null!;
+    private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
+
+    /// <summary>Gets the dimensions of the loaded preview image, or null when no preview is available.</summary>
+    public Size? ImageSize => _viewport.Image?.Size;
+
+    /// <summary>Gets or sets the host picker invoked with the dialog owner to select a packed image; returning null cancels selection.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public Func<IWin32Window, PackedImageSource?>? PackedImagePicker { get; set; }
+
+    /// <summary>Creates a tilesheet editor with its own package cache.</summary>
+    /// <param name="document">The mutable tilesheet document to edit.</param>
+    public TilesheetEditorControl(TilesheetDocument document)
+        : this(document, overlaySettings: null, assetPackages: null)
+    {
+    }
+
+    /// <summary>Creates a tilesheet editor using a shared package cache.</summary>
+    /// <param name="document">The mutable tilesheet document to edit.</param>
+    /// <param name="assetPackages">A non-null borrowed cache; the caller remains responsible for disposal.</param>
+    public TilesheetEditorControl(TilesheetDocument document, AssetPackageCatalog assetPackages)
+        : this(
+            document,
+            overlaySettings: null,
+            assetPackages: assetPackages ?? throw new ArgumentNullException(nameof(assetPackages)))
+    {
+    }
+
+    internal TilesheetEditorControl(
+        TilesheetDocument document,
+        OverlaySettings? overlaySettings,
+        AssetPackageCatalog? assetPackages)
+    {
+        Document = document ?? throw new ArgumentNullException(nameof(document));
+        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+
+        Disposed += (_, _) => shortcuts.Dispose();
+
+        _overlaySettings = overlaySettings ?? OverlaySettings.Default;
+        _assetPackages = assetPackages ?? new AssetPackageCatalog();
+        _ownsAssetPackages = assetPackages is null;
+        _viewport.Colors = _overlaySettings;
+        _viewport.CreateFrameDrag = CreateFrameDrag;
+
+        Size = new Size(1000, 650);
+        Dock = DockStyle.Fill;
+
+        var regionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
+        regionTools.Items.Add("+ Region", null, (_, _) => AddRegion());
+        regionTools.Items.Add("− Region", null, (_, _) => RemoveRegion());
+        regionTools.Items.Add("Prune invalid frames…", null, (_, _) => PruneFrames());
+        regionTools.Items.Add(new ToolStripControlHost(_regions) { AutoSize = false, Width = 185 });
+
+        var navigator = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
+        navigator.Controls.AddRange([new Label { Text = "Frame X", AutoSize = true }, _column,
+            new Label { Text = "Y", AutoSize = true }, _row, _gridSize]);
+
+        _column.ValueChanged += (_, _) => SelectFrame();
+        _row.ValueChanged += (_, _) => SelectFrame();
+        _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
+        _paneDefinitions.SelectedIndexChanged += (_, _) =>
+        {
+            if (!_refreshing && _paneDefinitions.SelectedItem is TilesheetDefinition definition &&
+                !ReferenceEquals(Document.SelectedDefinition, definition))
+                SelectDefinition(definition);
+        };
+
+        _toolbarRegions.ComboBox.DisplayMember = "Name";
+        _toolbarRegions.SelectedIndexChanged += (_, _) =>
+        {
+            if (!_refreshing && _toolbarRegions.SelectedItem is TilesheetRegionDefinition region &&
+                !ReferenceEquals(_regions.SelectedItem, region))
+            {
+                _regions.SelectedItem = region;
+            }
+        };
+
+        _workspace = new EditorDockWorkspace("gts");
+        Controls.Add(_workspace);
+
+        var dock = _workspace.DockPanel;
+        var image = _workspace.AddPane("image", "Image", _viewport, BuildPreviewToolbar());
+
+        var definitionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
+        definitionTools.Items.Add(new ToolStripLabel("Definition"));
+        definitionTools.Items.Add(new ToolStripControlHost(_paneDefinitions) { AutoSize = false, Width = 205 });
+
+        var definition = _workspace.AddPane("definition", "Definition", _definitionProperties, definitionTools);
+        var region = _workspace.AddPane("region", "Region", _regionProperties, regionTools);
+        var frame = _workspace.AddPane("frame", "Frame", _frameProperties, navigator);
+        var validation = _workspace.AddPane("validation", "Validation", _validation);
+
+        _workspace.Place(image, () => image.Show(dock, DockState.Document));
+        _workspace.Place(definition, () => definition.Show(image.Pane, DockAlignment.Right, .36));
+        _workspace.Place(region, () => region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3));
+        _workspace.Place(frame, () => frame.Show(region.Pane, DockAlignment.Bottom, .5));
+        _workspace.Place(validation, () => validation.Show(image.Pane, DockAlignment.Bottom, .24));
+        _workspace.InitializeLayout();
+
+        var definitionBar = new DefinitionSelectionBar<TilesheetDefinition>(
+            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Name,
+            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gts", (path, select) => Document.ImportDefinitions(path, select));
+
+        definitionBar.UseModalRenameAfterSelector();
+        definitionBar.Items.Insert(3, new ToolStripLabel("Region"));
+        definitionBar.Items.Insert(4, _toolbarRegions);
+        definitionBar.SetLogicalWidth(_toolbarRegions, 180);
+
+        var renameRegion = new ToolStripButton
+        {
+            Name = "RenameRegion",
+            Text = "Rename region",
+            ToolTipText = "Rename region",
+            AccessibleName = "Rename region",
+            AutoToolTip = false,
+            AutoSize = false,
+            DisplayStyle = ToolStripItemDisplayStyle.Image
+        };
+        renameRegion.Click += (_, _) => RenameSelectedRegion();
+        _renameRegionButton = renameRegion;
+        definitionBar.Items.Insert(5, renameRegion);
+        definitionBar.SetGlyph(renameRegion, pixels =>
+            ToolbarGlyphs.Definition(ToolbarGlyphs.DefinitionCommand.Rename, pixels, ToolingAppearance.Palette));
+
+        Controls.Add(definitionBar);
+
+        Document.Changed += definitionBar.RefreshMembers;
+        definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
+
+        ToolingAppearance.Apply(this);
+
+        _viewport.FrameSelected += (region, p) =>
+        {
+            // A GTS can describe disjoint grids. Select the clicked region before
+            // setting coordinates so the navigator uses that region's dimensions.
+            _refreshing = true;
+            _regions.SelectedItem = region;
+            _refreshing = false;
+            RefreshView();
+            _refreshing = true;
+            _column.Value = Math.Clamp(p.X, 0, _column.Maximum);
+            _row.Value = Math.Clamp(p.Y, 0, _row.Maximum);
+            _refreshing = false;
+            SelectFrame();
+        };
+
+        Document.Changed += DocumentChanged;
+        _overlaySettings.Changed += OverlayColorsChanged;
+        RefreshView();
+    }
+
+    internal TilesheetFrameDrag? CreateFrameDrag(TilesheetRegionDefinition region, Point frame)
+    {
+        // The target uses saved resources. An unsaved grid or renamed member could
+        // otherwise refer to a different frame at the same coordinates on disk.
+        if (Document.IsDirty || !Document.Definition.Regions.Contains(region))
+            return null;
+
+        var location = Document.PackedLocation;
+        if (location is null && Document.FilePath is { } path)
+            location = new AssetLocation(AssetTypes.TilesheetDefinition, path);
+
+        return location is null ? null
+            : new(new ResourceAddress(location, Document.Definition.Name), region.Name, frame.X, frame.Y);
+    }
+
+    /// <summary>Reloads the image without modifying the document.</summary>
+    public void ReloadImage()
+    {
+        if (Document.ResolveAssetsFilePath() is { } path)
+            _assetPackages.Invalidate(path);
+
+        _previewKey = null;
+        RefreshView();
+    }
+
+    private ToolStrip BuildPreviewToolbar()
+    {
+        var bar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
+        bar.Items.Add("Image…", null, (_, _) => ChooseImage());
+        bar.Items.Add("GAF image…", null, (_, _) => ChoosePackedImage());
+        bar.Items.Add("Reload image", null, (_, _) => ReloadImage());
+        bar.Items.Add("−", null, (_, _) => _viewport.ZoomOut());
+
+        var zoom = new ToolStripComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 75,
+            BackColor = ToolingAppearance.Palette.Background,
+            ForeColor = ToolingAppearance.Palette.Foreground,
+            FlatStyle = FlatStyle.Flat
+        };
+
+        var zoomSelector = new ZoomSelector(zoom.ComboBox, requested =>
+        {
+            if (requested is { } value)
+                _viewport.SetZoom(value);
+            else
+                _viewport.Fit();
+        });
+
+        _viewport.ZoomChanged += () => zoomSelector.Show(_viewport.Zoom, _viewport.IsFit);
+        bar.Items.Add(zoom);
+        bar.Items.Add("+", null, (_, _) => _viewport.ZoomIn());
+
+        var overlays = new ToolStripDropDownButton("Overlays / legend");
+        foreach (var (kind, description) in new[]
+        {
+            (OverlayKind.Regions, "Regions: other region bounds"),
+            (OverlayKind.SelectedRegion, "Selected region bounds"),
+            (OverlayKind.Frames, "Frames: tile bounds"),
+            (OverlayKind.SelectedFrame, "Selected frame"),
+            (OverlayKind.Margin, "Margin: inner region margin"),
+            (OverlayKind.Padding, "Padding: padded cell"),
+            (OverlayKind.Overhang, "Overhang: world extent at source scale"),
+            (OverlayKind.Collision, "Collision: effective bounds")
+        })
+        {
+            var row = new OverlayLegendRow(kind, description, _overlaySettings,
+                visible =>
+                {
+                    if (visible)
+                        _viewport.Overlays.Add(kind.ToString());
+                    else
+                        _viewport.Overlays.Remove(kind.ToString());
+
+                    _viewport.Invalidate();
+                },
+                () =>
+                {
+                    overlays.HideDropDown();
+                    using var dialog = new ColorDialog
+                    {
+                        Color = _overlaySettings[kind],
+                        FullOpen = true
+                    };
+
+                    if (dialog.ShowDialog(this) != DialogResult.OK)
+                        return;
+
+                    try
+                    {
+                        _overlaySettings.SetColor(kind, dialog.Color);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        ThemedMessageBox.Show(this, $"Could not save overlay colors to {_overlaySettings.FilePath}.\n{ex.Message}",
+                            "Overlay settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });
+
+            overlays.DropDownItems.Add(new ToolStripControlHost(row) { AutoSize = false, Size = row.Size, Margin = Padding.Empty, Padding = Padding.Empty });
+        }
+
+        bar.Items.Add(overlays);
+        return bar;
+    }
+
+    private void OverlayColorsChanged(object? sender, EventArgs e)
+    {
+        _viewport.Invalidate();
+        UpdateValidation();
+    }
+
+    /// <summary>Sets a loose image source, marks the document dirty, and refreshes the preview.</summary>
+    /// <param name="path">Image path, or null to show a file picker. Cancelling the picker leaves the document unchanged.</param>
+    public void ChooseImage(string? path = null)
+    {
+        if (path is null)
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Filter = TilesheetWorkspaceControl.ImageFilter,
+                InitialDirectory = Document.BaseDirectory
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            path = dialog.FileName;
+        }
+
+        Document.SetImage(Path.GetFullPath(path));
+        RefreshView();
+    }
+
+    /// <summary>Invokes the host picker and applies its selected packed image; cancellation leaves the document unchanged.</summary>
+    /// <remarks>Displays an informational message if no picker is configured.</remarks>
+    public void ChoosePackedImage()
+    {
+        if (PackedImagePicker is null)
+        {
+            ThemedMessageBox.Show(
+                this,
+                "This host has not provided a GAF image picker.",
+                "GAF image source",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+            return;
+        }
+
+        var source = PackedImagePicker(this);
+        if (source is not null)
+            ChoosePackedImage(source);
+    }
+
+    /// <summary>Sets the packed image source, marks the document dirty, and reloads the preview.</summary>
+    /// <param name="source">The archive entry identifying the image.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
+    public void ChoosePackedImage(PackedImageSource source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        Document.SetPackedImage(source.AssetsFilePath, source.AssetEntryName);
+        _previewKey = null;
+        RefreshView();
+    }
+
+    /// <summary>Adds and selects a uniquely named region covering the preview image, or a 32-by-32 area when no image is loaded, and marks the document dirty.</summary>
+    public void AddRegion()
+    {
+        string name = "default";
+        int number = 1;
+
+        while (Document.Definition.Regions.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase)))
+            name = "region" + number++;
+
+        var size = ImageSize ?? new Size(32, 32);
+        var region = new TilesheetRegionDefinition
+        {
+            Name = name,
+            Area = new Rectangle(Point.Empty, size),
+            TileSize = new Size(Math.Min(32, size.Width), Math.Min(32, size.Height))
+        };
+
+        Document.AddRegion(region);
+        RefreshView();
+        _regions.SelectedItem = region;
+        RefreshProperties();
+    }
+
+    private void RenameSelectedRegion()
+    {
+        if (SelectedRegion is not { } region)
+            return;
+
+        DefinitionRenameDialog.Show(FindForm(), "Rename region", region.Name, requested =>
+        {
+            if (Document.Definition.Regions.Any(other =>
+                    !ReferenceEquals(other, region) &&
+                    string.Equals(other.Name, requested, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidDataException($"Duplicate region name '{requested}'.");
+
+            Document.Edit(region, "Rename region", () => region.Name = requested);
+            RefreshView();
+        });
+    }
+
+    private void RemoveRegion()
+    {
+        if (SelectedRegion is not { } region)
+            return;
+
+        if (ThemedMessageBox.Show(this, $"Remove region '{region.Name}' and all its frame metadata?", "Remove region",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+        {
+            return;
+        }
+
+        Document.RemoveRegion(region);
+        RefreshView();
+    }
+
+    private void PruneFrames()
+    {
+        if (SelectedRegion is not { } region)
+            return;
+
+        if (ThemedMessageBox.Show(this, "Delete metadata outside this region's current grid? Restore the geometry instead to keep it.",
+            "Prune invalid frame metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+        {
+            return;
+        }
+
+        Document.RemoveOutOfGridMetadata(region);
+        RefreshView();
+    }
+
+    private void DocumentChanged(object? sender, EventArgs e)
+    {
+        // Rebind after PropertyGrid finishes committing, never while it is editing a descriptor.
+        if (_refreshPending || !IsHandleCreated)
+            return;
+
+        _refreshPending = true;
+        BeginInvoke(() => { _refreshPending = false; if (!IsDisposed) RefreshView(); });
+    }
+
+    private void SelectFrame()
+    {
+        if (_refreshing)
+            return;
+
+        _viewport.SelectedFrame = new Point((int)_column.Value, (int)_row.Value);
+        _viewport.RevealSelectedFrame();
+        _viewport.Invalidate();
+
+        RefreshProperties();
+    }
+
+    private static PropertyGrid CreatePropertyGrid() => new()
+    {
+        Dock = DockStyle.Fill,
+        ToolbarVisible = false,
+        HelpVisible = true,
+        PropertySort = PropertySort.Categorized
+    };
+
+    private void RefreshProperties()
+    {
+        BindProperties(_definitionProperties, PropertyFields.Definition(Document, Document.MarkChanged, ImageSize));
+        PropertyFields? regionFields = null;
+        PropertyFields? frameFields = null;
+
+        if (SelectedRegion is { } region)
+        {
+            regionFields = new PropertyFields(Document);
+            regionFields.AddModel(region, Document.MarkChanged, "Frames");
+
+            if (_column.Enabled)
+                frameFields = PropertyFields.Frame(Document, region, (int)_column.Value, (int)_row.Value, Document.MarkChanged);
+        }
+
+        BindProperties(_regionProperties, regionFields);
+        BindProperties(_frameProperties, frameFields);
+    }
+
+    private static void BindProperties(PropertyGrid grid, PropertyFields? fields)
+    {
+        // Nested Size properties can both have a child named Width (or Height).
+        // Preserve the entire property path, not just the final descriptor name.
+
+        string? selectedPath = grid.SelectedGridItem is { } selected ? GridItemPath(selected) : null;
+        var oldItems = GridItems(grid).ToArray();
+        var collapsedCategories = oldItems.Where(item => item.GridItemType == GridItemType.Category && !item.Expanded)
+            .Select(item => item.Label).ToHashSet();
+        var expandedProperties = oldItems.Where(item => item.GridItemType == GridItemType.Property && item.Expandable && item.Expanded)
+            .Select(GridItemPath).ToHashSet();
+
+        grid.SelectedObject = fields;
+        grid.Enabled = fields is not null;
+
+        foreach (var item in GridItems(grid))
+        {
+            if (item.GridItemType == GridItemType.Category && collapsedCategories.Contains(item.Label))
+                item.Expanded = false;
+            if (item.GridItemType == GridItemType.Property && expandedProperties.Contains(GridItemPath(item)))
+                item.Expanded = true;
+            if (selectedPath is not null && GridItemPath(item) == selectedPath)
+                grid.SelectedGridItem = item;
+        }
+    }
+
+    private static string GridItemPath(GridItem item)
+    {
+        var segments = new Stack<string>();
+        while (item.Parent is not null)
+        {
+            segments.Push(item.PropertyDescriptor?.Name ?? item.Label);
+            item = item.Parent;
+        }
+        return string.Join("/", segments);
+    }
+
+    private static IEnumerable<GridItem> GridItems(PropertyGrid grid)
+    {
+        var root = grid.SelectedGridItem;
+
+        if (root is null)
+            yield break;
+
+        while (root.Parent is not null)
+            root = root.Parent;
+
+        foreach (var item in Descendants(root))
+            yield return item;
+
+        static IEnumerable<GridItem> Descendants(GridItem parent)
+        {
+            foreach (GridItem child in parent.GridItems)
+            {
+                yield return child;
+
+                foreach (var descendant in Descendants(child))
+                    yield return descendant;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Refreshes the editor controls from the current document.
+    /// </summary>
+    public void RefreshView()
+    {
+        _refreshing = true;
+
+        _paneDefinitions.Items.Clear();
+        _paneDefinitions.Items.AddRange(Document.Definitions.Cast<object>().ToArray());
+        _paneDefinitions.SelectedItem = Document.SelectedDefinition;
+
+        var selected = SelectedRegion;
+        var regions = Document.Definition.Regions.Cast<object>().ToArray();
+
+        _regions.Items.Clear();
+        _regions.Items.AddRange(regions);
+
+        if (selected is not null && _regions.Items.Contains(selected))
+            _regions.SelectedItem = selected;
+        else if (_regions.Items.Count > 0)
+            _regions.SelectedIndex = 0;
+
+        _toolbarRegions.Items.Clear();
+        _toolbarRegions.Items.AddRange(regions);
+        _toolbarRegions.SelectedItem = _regions.SelectedItem;
+        if (_renameRegionButton is not null)
+            _renameRegionButton.Enabled = SelectedRegion is not null;
+
+        var (columns, rows) = SelectedRegion is { } r ? TilesheetDefinitionValidator.GridSize(r) : (0L, 0L);
+
+        _column.Value = Math.Min(_column.Value, Math.Max(0, columns - 1));
+        _row.Value = Math.Min(_row.Value, Math.Max(0, rows - 1));
+        _column.Maximum = Math.Clamp(columns - 1, 0, int.MaxValue);
+        _row.Maximum = Math.Clamp(rows - 1, 0, int.MaxValue);
+        _column.Enabled = _row.Enabled = columns > 0 && rows > 0;
+        _gridSize.Text = $"{columns} × {rows} frames";
+
+        _refreshing = false;
+        LoadPreview();
+
+        _viewport.Definition = Document.Definition;
+        _viewport.SelectedRegion = SelectedRegion;
+        _viewport.SelectedFrame = _column.Enabled ? new Point((int)_column.Value, (int)_row.Value) : null;
+        _viewport.Invalidate();
+
+        RefreshProperties();
+        UpdateValidation();
+    }
+
+    /// <summary>Selects an owned definition and refreshes its regions, properties, and image without reloading or saving the document.</summary>
+    public void SelectDefinition(TilesheetDefinition definition)
+    {
+        if (ReferenceEquals(Document.SelectedDefinition, definition))
+            return;
+
+        Document.SelectDefinition(definition);
+        RefreshView();
+    }
+
+    private void LoadPreview()
+    {
+        var model = Document.Definition;
+        var mask = model.Mask;
+        string key = $"{Document.BaseDirectory}|{model.Image?.FilePath}|{model.Image?.AssetsFilePath}|{model.Image?.AssetEntryName}|{model.PremultiplyAlpha}|" +
+            (mask is null ? "none" : $"{mask.Red},{mask.Green},{mask.Blue},{mask.Alpha},{mask.Tolerance}");
+
+        if (key == _previewKey)
+            return;
+
+        _previewKey = key;
+        _viewport.Image?.Dispose();
+        _viewport.Image = null;
+        _previewError = null;
+
+        try
+        {
+            _viewport.Image = AuthoringPreviewImage.Load(model, Document.BaseDirectory, _assetPackages, Document.PackedLocation?.Path);
+        }
+        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or NotSupportedException or UnauthorizedAccessException or System.Runtime.InteropServices.ExternalException)
+        {
+            _previewError = "Image cannot be previewed: " + ex.Message;
+            _viewport.Message = _previewError;
+        }
+        finally
+        {
+            _viewport.UpdateExtent();
+        }
+    }
+
+    /// <summary>Refreshes the validation pane using the document and current preview dimensions.</summary>
+    /// <returns>Document validation errors and any preview-load error; informational overlay messages are excluded.</returns>
+    public IReadOnlyList<string> UpdateValidation()
+    {
+        var errors = Document.Validate(ImageSize).ToList();
+
+        if (_previewError is not null)
+            errors.Add(_previewError);
+
+        var lines = errors.Select(e => "ERROR: " + e).ToList();
+
+        if (_overlaySettings.Warning is { } settingsWarning)
+            lines.Add("WARNING: " + settingsWarning);
+
+        if (!string.IsNullOrWhiteSpace(Document.Definition.Image?.AssetsFilePath) &&
+            !string.IsNullOrWhiteSpace(Document.Definition.Image?.AssetEntryName) &&
+            _previewError is null)
+        {
+            lines.Add("INFO: Packed GAF image resolved successfully without extracting it.");
+        }
+
+        lines.Add("INFO: Geometry changes retain frame metadata at its original coordinates. Use Prune invalid frames only to explicitly discard it.");
+        lines.Add("INFO: Overhang shows world extent at source scale; it does not change the extracted frame. Dense grids are sampled visually; use X/Y to inspect any frame.");
+
+        if (Document.Definition.Mask is not null)
+            lines.Add("INFO: Mask preview matches runtime RGB tolerance (alpha is stored, but runtime matching ignores it). GDI+ composites alpha for display.");
+
+        if (errors.Count == 0)
+            lines.Insert(0, "VALID: GTS geometry and available loose-image checks passed.");
+
+        _validation.Text = string.Join(Environment.NewLine, lines);
+        return errors;
+    }
+
+    /// <summary>
+    /// Shows the named editor pane.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
+    public bool ShowPane(string paneName) => _workspace.ShowPane(paneName);
+
+    /// <summary>
+    /// Determines whether the named editor pane is visible.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
+    public bool IsPaneVisible(string paneName) => _workspace.IsPaneVisible(paneName);
+
+    /// <summary>Restore the default pane arrangement for this editor type.</summary>
+    public void ResetLayout() => _workspace.ResetLayout();
+
+    /// <summary>
+    /// Shows every editor pane.
+    /// </summary>
+    public void ShowAllPanes() => _workspace.ShowAllPanes();
+
+    /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
+    /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
+    public bool CommitEdits()
+    {
+        _validation.Focus();
+
+        return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus &&
+            !_frameProperties.ContainsFocus && ValidateChildren();
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Document.Changed -= DocumentChanged;
+            _overlaySettings.Changed -= OverlayColorsChanged;
+
+            _viewport.Image?.Dispose();
+            _viewport.Image = null;
+
+            if (_ownsAssetPackages)
+                _assetPackages.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+}

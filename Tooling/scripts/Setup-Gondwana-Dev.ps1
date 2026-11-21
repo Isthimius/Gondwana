@@ -56,7 +56,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# Repo root is two levels above this script (Solution Items/scripts/ → root)
+# Repo root is two levels above this script (Tooling/scripts/ → root)
 $repoRoot     = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
 $solutionFile = Join-Path $repoRoot 'Gondwana.sln'
 

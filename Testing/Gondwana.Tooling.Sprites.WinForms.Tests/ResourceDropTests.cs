@@ -10,7 +10,7 @@ using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Tilesheets.Sources;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 public sealed partial class InteractionTests
 {

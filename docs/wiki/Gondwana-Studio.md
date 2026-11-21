@@ -76,7 +76,7 @@ For the format semantics themselves, see [Authoring formats](Studio-and-Desktop-
 From the repository root on Windows:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms --configuration Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.WinForms --configuration Release
 ```
 
 Choose **File > Open working directory…** to select an authoring directory. Directories are expanded lazily in the working-directory browser.
@@ -298,7 +298,7 @@ In the GSCN **Scene Preview**, use **Show Sprites** to view authored GSPR instan
 
 The reusable GSCN editor includes **View Scene**, so the command is available in Studio as well as the standalone Scene editor.
 
-It launches `Gondwana.Tooling.SceneViewer.WinForms` as a separate process after ensuring the document is saved. The viewer then loads the saved GSCN into the real Gondwana runtime.
+It launches `Gondwana.Tooling.Studio.SceneViewer.WinForms` as a separate process after ensuring the document is saved. The viewer then loads the saved GSCN into the real Gondwana runtime.
 
 This is intentionally separate from the editable Scene Preview:
 

@@ -2,7 +2,7 @@ using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Sprites.Editing;
 
-namespace Gondwana.Tooling.Sprites.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Sprites.WinForms.Tests;
 
 public sealed partial class InteractionTests
 {

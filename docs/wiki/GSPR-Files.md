@@ -142,7 +142,7 @@ The new option is appended to the existing signature. Compression and partial se
 
 ## Authoring
 
-The standalone `Gondwana.Tooling.Sprites.WinForms` application edits multiple GSPR documents. Its SpriteEditorControl is also hosted directly by Gondwana Studio. Add, duplicate, remove and select entries, load GSCN/GTS sources, double-click a layer or frame to assign it, edit properties, and inspect the preview and validation panes.
+The standalone `Gondwana.Tooling.Studio.Sprites.WinForms` application edits multiple GSPR documents. Its SpriteEditorControl is also hosted directly by Gondwana Studio. Add, duplicate, remove and select entries, load GSCN/GTS sources, double-click a layer or frame to assign it, edit properties, and inspect the preview and validation panes.
 
 **Add from GAF…** in the GTS/GSCN source panes and **GANI from GAF…** beside
 the animation controls select exact typed entries and individual logical members.

@@ -3,7 +3,7 @@ using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-namespace Gondwana.Tooling.Scenes.WinForms.Tests;
+namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 
 /// <summary>Checks the shared definition toolbar used by the GTS/GANI/GSCN/GSPR/GSND editors.</summary>
 public sealed class DefinitionSelectionBarTests
