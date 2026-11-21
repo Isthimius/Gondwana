@@ -25,9 +25,24 @@ internal sealed class GameWindow : Form
         Controls.Add(_surface);
         KeyDown += (_, args) =>
         {
+            _host?.SetShiftHeld(args.Shift);
             if (args.KeyCode == Keys.Escape && _host?.HasMenuOrDialogOpen != true)
                 Close();
         };
+        KeyUp += (_, args) => _host?.SetShiftHeld(args.Shift);
+    }
+
+    protected override void OnActivated(EventArgs e)
+    {
+        base.OnActivated(e);
+        // Reconcile physical Shift state on returning from another app.
+        _host?.SetShiftHeld((ModifierKeys & Keys.Shift) != 0);
+    }
+
+    protected override void OnDeactivate(EventArgs e)
+    {
+        _host?.SetShiftHeld(false);
+        base.OnDeactivate(e);
     }
 
     protected override void OnLoad(EventArgs e)
@@ -47,6 +62,7 @@ internal sealed class GameWindow : Form
         {
             _host!.Initialize(logLevel: LogLevel.Warning);
             _surface.Focus();
+            _host.SetShiftHeld((ModifierKeys & Keys.Shift) != 0);
         }
         catch (Exception ex)
         {
