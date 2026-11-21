@@ -164,7 +164,9 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         {
             Keys.Tab, Keys.Enter, Keys.Escape, Keys.Space,
             Keys.Up, Keys.Down, Keys.Left, Keys.Right,
-            Keys.Home, Keys.End, Keys.PageUp, Keys.PageDown
+            Keys.Home, Keys.End, Keys.PageUp, Keys.PageDown,
+            Keys.A, Keys.G, Keys.H, Keys.L, Keys.N, Keys.O,
+            Keys.P, Keys.S, Keys.U, Keys.X
         })
             keyboard.StartMonitoringKey((int)key);
     }
