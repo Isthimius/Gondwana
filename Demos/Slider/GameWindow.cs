@@ -25,7 +25,7 @@ internal sealed class GameWindow : Form
         Controls.Add(_surface);
         KeyDown += (_, args) =>
         {
-            if (args.KeyCode == Keys.Escape)
+            if (args.KeyCode == Keys.Escape && _host?.HasMenuOrDialogOpen != true)
                 Close();
         };
     }
