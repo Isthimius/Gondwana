@@ -989,7 +989,7 @@ Engine.InitializeBlazorMouseAdapter(component);
 |---|---:|
 | `Gondwana.Avalonia` | Yes |
 | `Gondwana.Blazor` | Yes |
-| `Gondwana.WinForms` | No built-in adapter |
+| `Gondwana.WinForms` | Yes (`WM_TOUCH`) |
 
 Avalonia initialization:
 
@@ -1000,6 +1000,22 @@ Engine.InitializeAvaloniaTouchAdapter(
 ```
 
 Physical touch and mouse are distinct by default. Set `emulateMouse: true` only when desktop mouse input should also become touch ID `0`.
+
+WinForms initialization (manual host setup):
+
+```csharp
+Engine.InitializeWinFormsTouchAdapter(control);
+Engine.Input.TouchEventPoller?.StartMonitoringTouch();
+```
+
+WinForms GPU and bitmap GameHosts initialize and start native touch polling only
+when the derived host overrides `EnableNativeTouch => true`. The default
+remains mouse emulation for compatibility with older WinForms demos.
+The adapter registers the render control and its child HWNDs for `WM_TOUCH`, queues
+full begin/end lifecycles, and converts coordinates to logical render pixels.
+Windows-promoted touch mouse events are filtered so the same tap does not become
+a second mouse click; physical mouse and pen input remain separate.
+The engine disposes the adapter with its touch poller.
 
 Blazor initialization:
 

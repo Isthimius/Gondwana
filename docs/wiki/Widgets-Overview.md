@@ -124,8 +124,8 @@ protected override void OnSceneGraphCreated()
 
 protected override void OnTouchAdapterInitialized()
 {
-    // GameHostBase starts mouse monitoring automatically, but touch monitoring
-    // must be started explicitly for touch taps to reach UnhandledPrimaryAction.
+    // Custom hosts must start touch polling after configuring an adapter.
+    // Built-in Avalonia/Blazor hosts already do this, as does an opted-in WinForms host.
     Engine.Input.TouchEventPoller?.StartMonitoringTouch();
 }
 
@@ -145,14 +145,18 @@ protected override void UnhookEvents()
 ```
 
 Keep the router reference for cleanup: `GameHostBase.Dispose()` disposes
-its router before calling `UnhookEvents()`. Note that `GameHostBase.InitializeWidgetInput`
-starts mouse monitoring only; hosts targeting touch devices must also override
-`OnTouchAdapterInitialized()` and call `StartMonitoringTouch()` on `TouchEventPoller`
-so that touch events are polled. The event **does not
+its router before calling `UnhookEvents()`. `GameHostBase.InitializeWidgetInput`
+starts mouse monitoring; Avalonia/Blazor game hosts also initialize touch.
+WinForms GameHosts opt into native touch with
+`protected override bool EnableNativeTouch => true;`.
+Custom hosts must initialize a touch adapter and call
+`StartMonitoringTouch()` explicitly. The event **does not
 automatically select sprites**; games use the logical position and reported
 view to hit-test tiles, sprites, or objects. Game-specific rules such as
-turn ownership or modal state remain the game's responsibility. WinForms
-only receives mouse input unless an additional touch adapter is supplied.
+turn ownership or modal state remain the game's responsibility. WinForms now
+uses native `WM_TOUCH` contact input in addition to mouse input; promoted
+touch-to-mouse compatibility messages are filtered to prevent duplicate
+actions.
 
 ---
 

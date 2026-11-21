@@ -1,5 +1,6 @@
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.WinForms.Input.Touch;
 using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.WinForms.Input.Mouse;
@@ -74,6 +75,9 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
 
     private void OnMouseDown(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
+        if (WinFormsTouchAdapter.IsNativeTouchMouseMessage(_control))
+            return;
+
         lock (_pressedLock)
             _pressed.Add(MapButton(e.Button));
         UpdatePosition(e);
@@ -81,6 +85,9 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
 
     private void OnMouseUp(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
+        if (WinFormsTouchAdapter.IsNativeTouchMouseMessage(_control))
+            return;
+
         lock (_pressedLock)
             _pressed.Remove(MapButton(e.Button));
         UpdatePosition(e);
@@ -88,6 +95,9 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
 
     private void OnMouseMove(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
+        if (WinFormsTouchAdapter.IsNativeTouchMouseMessage(_control))
+            return;
+
         UpdatePosition(e);
     }
 
