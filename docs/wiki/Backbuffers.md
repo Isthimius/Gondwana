@@ -38,9 +38,28 @@ Examples:
 
 Ordinary adapter resize does **not** resize the Backbuffer. Instead, `PresentationTransform.Fit(...)` derives an aspect-preserving scale and centered destination rectangle. `RenderSurfaceHostBase.PresentationScale` exposes that derived scale as read-only state.
 
-Changing `RenderScale` explicitly requests a new logical resolution from the current adapter dimensions.
+Changing `RenderScale` explicitly requests a new logical resolution from the current adapter dimensions on **all registered render surfaces**. The setting remains in the engine configuration.
 
-This separation makes internal-resolution scaling, fixed-resolution games, supersampling, and stable View coordinates possible without tying game rendering to window size.
+For applications that need an exact resolution on **one surface**, `RenderSurfaceHost<TBackbuffer>.RequestLogicalResolution(width, height)` is an opt-in alternative:
+
+```csharp
+// Request a 1600×900 logical Backbuffer for this render surface only.
+renderSurface.Host.RequestLogicalResolution(1600, 900);
+```
+
+| | `Engine.Configuration.RenderScale` | `renderSurface.Host.RequestLogicalResolution(width, height)` |
+| --- | --- | --- |
+| Dimensions | Current adapter width/height multiplied by one scale factor | Exact requested width and height |
+| Scope | Engine configuration; requests updates for registered surfaces | Only the specified render surface |
+| Lifetime | Persistent configuration value | One-time resize request |
+| Subsequent adapter resize | Presentation only | Presentation only; call again to follow the adapter |
+| `RenderScale` value | Changes | Unchanged |
+
+Both requests use the existing deferred Backbuffer resize machinery: bitmap changes apply at `BeginFrame()`, and GPU changes apply on the owning GL/WebGL thread at `EnsureInitialized()`. Pending resize requests can be coalesced; a later `RenderScale` change can supersede an earlier explicit size request. Resizing the logical Backbuffer also updates the existing View rectangles and presentation transform, so recompute application-specific camera fitting after the resize is applied.
+
+**Neither API makes ordinary adapter resizing automatically recreate a Backbuffer.** A fluid playfield can explicitly call `RequestLogicalResolution` after each real control-size change; fixed-resolution games should leave that behavior opt-in. Frequent logical resizing can require GPU surface reallocation, so don't call it every frame.
+
+This separation makes internal-resolution scaling, fixed-resolution games, supersampling, and stable View coordinates possible without tying game rendering to window size. See [[Rendering Pipeline]] for the overall layout model.
 
 ---
 
@@ -83,7 +102,7 @@ As drawables and cleared regions are rendered, `BackbufferBase.DirtyRectangle` a
 
 `BitmapBackbuffer.RequestResize(width, height)` is deferred and thread-safe. Multiple pending requests are coalesced, and the most recent requested logical resolution is applied during the next `BeginFrame()` on the rendering thread.
 
-Window/control resize alone does not call this path. A logical resize occurs only when Gondwana explicitly requests one, such as after `RenderScale` changes.
+Window/control resize alone does not call this path. A logical resize occurs only when Gondwana explicitly requests one, such as after `RenderScale` changes or a surface-specific `RequestLogicalResolution(width, height)` call.
 
 ### Snapshot semantics
 
@@ -125,7 +144,7 @@ On WebGL, a browser animation frame does not necessarily cause a new scene rende
 
 `GpuBackbuffer.RequestResize(width, height)` queues a logical resolution request. The next owning GL/WebGL callback applies it through `EnsureInitialized(grContext)` and recreates the GPU render target there, where the context is valid.
 
-Adapter resize is deliberately absent from this process. Resizing a desktop window or browser canvas changes only the destination `PresentationTransform` unless `RenderScale` itself changes.
+Adapter resize is deliberately absent from this process. Resizing a desktop window or browser canvas changes only the destination `PresentationTransform`, unless the application explicitly changes `RenderScale` or calls `RenderSurfaceHost<TBackbuffer>.RequestLogicalResolution(width, height)`.
 
 A new `GRContext` also causes `EnsureInitialized` to recreate the GPU surface, which is necessary after context replacement/recreation.
 
