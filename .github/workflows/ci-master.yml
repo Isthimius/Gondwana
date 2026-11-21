@@ -130,7 +130,7 @@ jobs:
           ./Tooling/scripts/Test-PrereleaseTemplateReferences.ps1
 
   winforms-editor-tests:
-    # Only affected editor suites on PRs/master; full nightly/manual/release.
+    # Only Studio tooling changes on PRs/master; full nightly/manual/release.
     needs: changes
     if: >-
       github.event_name == 'schedule' ||
