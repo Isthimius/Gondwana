@@ -396,6 +396,9 @@ var annotated_dup =
           ] ],
           [ "Mouse", "namespaceGondwana_1_1WinForms_1_1Input_1_1Mouse.html", [
             [ "WinFormsMouseAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html", "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter" ]
+          ] ],
+          [ "Touch", "namespaceGondwana_1_1WinForms_1_1Input_1_1Touch.html", [
+            [ "WinFormsTouchAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Touch_1_1WinFormsTouchAdapter.html", "classGondwana_1_1WinForms_1_1Input_1_1Touch_1_1WinFormsTouchAdapter" ]
           ] ]
         ] ],
         [ "Rendering", "namespaceGondwana_1_1WinForms_1_1Rendering.html", [

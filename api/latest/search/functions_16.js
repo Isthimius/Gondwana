@@ -17,11 +17,12 @@ var searchData=
   ['winformsgamehostbase_14',['WinFormsGameHostBase',['../classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#ae4fc87f019ce1f31f488ed477c7b79f0',1,'Gondwana::WinForms::Hosting::WinFormsGameHostBase']]],
   ['winformsgpugamehost_15',['WinFormsGpuGameHost',['../classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a2e530bb0d0ae1e78b57434fdf9d49506',1,'Gondwana::WinForms::Hosting::WinFormsGpuGameHost']]],
   ['winformsmouseadapter_16',['WinFormsMouseAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ac2734536da49a4d7031ee5a091fed073',1,'Gondwana::WinForms::Input::Mouse::WinFormsMouseAdapter']]],
-  ['wipeeffect_17',['WipeEffect',['../classGondwana_1_1Effects_1_1WipeEffect.html#a45201916150b1655b59f04c284774672',1,'Gondwana::Effects::WipeEffect']]],
-  ['withdeadzone_18',['WithDeadzone',['../structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#a50542303651732ef842febeae7fae56b',1,'Gondwana::Input::Gamepad::GamepadStickState']]],
-  ['worldpxtocontinuousgrid_19',['WorldPxToContinuousGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a6aaa4f7cc9ba98f934fa782bb88dabda',1,'Gondwana::Scenes::SceneLayer']]],
-  ['worldpxtogrid_20',['WorldPxToGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1',1,'Gondwana::Scenes::SceneLayer']]],
-  ['worldpxtoscreenpx_21',['WorldPxToScreenPx',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#a6efebd46dd788a8587c492f2499b159d',1,'Gondwana::Rendering::Views::View']]],
-  ['worldrecttoscreenrect_22',['WorldRectToScreenRect',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865',1,'Gondwana::Rendering::Views::View']]],
-  ['wrapgrid_23',['WrapGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a1752ec1eb9abb1316ea8421f07f54006',1,'Gondwana::Scenes::SceneLayer']]]
+  ['winformstouchadapter_17',['WinFormsTouchAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Touch_1_1WinFormsTouchAdapter.html#a8f5f30a55f1bfc73e893726d0e20f94d',1,'Gondwana::WinForms::Input::Touch::WinFormsTouchAdapter']]],
+  ['wipeeffect_18',['WipeEffect',['../classGondwana_1_1Effects_1_1WipeEffect.html#a45201916150b1655b59f04c284774672',1,'Gondwana::Effects::WipeEffect']]],
+  ['withdeadzone_19',['WithDeadzone',['../structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#a50542303651732ef842febeae7fae56b',1,'Gondwana::Input::Gamepad::GamepadStickState']]],
+  ['worldpxtocontinuousgrid_20',['WorldPxToContinuousGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a6aaa4f7cc9ba98f934fa782bb88dabda',1,'Gondwana::Scenes::SceneLayer']]],
+  ['worldpxtogrid_21',['WorldPxToGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1',1,'Gondwana::Scenes::SceneLayer']]],
+  ['worldpxtoscreenpx_22',['WorldPxToScreenPx',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#a6efebd46dd788a8587c492f2499b159d',1,'Gondwana::Rendering::Views::View']]],
+  ['worldrecttoscreenrect_23',['WorldRectToScreenRect',['../classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865',1,'Gondwana::Rendering::Views::View']]],
+  ['wrapgrid_24',['WrapGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a1752ec1eb9abb1316ea8421f07f54006',1,'Gondwana::Scenes::SceneLayer']]]
 ];

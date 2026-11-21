@@ -17,5 +17,6 @@ var searchData=
   ['winformsgpugamehost_14',['WinFormsGpuGameHost',['../classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html',1,'Gondwana::WinForms::Hosting']]],
   ['winformskeyboardadapter_15',['WinFormsKeyboardAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html',1,'Gondwana::WinForms::Input::Keyboard']]],
   ['winformsmouseadapter_16',['WinFormsMouseAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html',1,'Gondwana::WinForms::Input::Mouse']]],
-  ['wipeeffect_17',['WipeEffect',['../classGondwana_1_1Effects_1_1WipeEffect.html',1,'Gondwana::Effects']]]
+  ['winformstouchadapter_17',['WinFormsTouchAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Touch_1_1WinFormsTouchAdapter.html',1,'Gondwana::WinForms::Input::Touch']]],
+  ['wipeeffect_18',['WipeEffect',['../classGondwana_1_1Effects_1_1WipeEffect.html',1,'Gondwana::Effects']]]
 ];

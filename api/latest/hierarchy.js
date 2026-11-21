@@ -236,6 +236,7 @@ var hierarchy =
       [ "Gondwana.Widgets.WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", null ],
       [ "Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html", null ],
       [ "Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html", null ],
+      [ "Gondwana.WinForms.Input.Touch.WinFormsTouchAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Touch_1_1WinFormsTouchAdapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html", null ]
     ] ],
@@ -304,7 +305,8 @@ var hierarchy =
     ] ],
     [ "Gondwana.Input.Touch.ITouchAdapter", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html", [
       [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ],
-      [ "Gondwana.Blazor.Input.Touch.BlazorTouchAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html", null ]
+      [ "Gondwana.Blazor.Input.Touch.BlazorTouchAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html", null ],
+      [ "Gondwana.WinForms.Input.Touch.WinFormsTouchAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Touch_1_1WinFormsTouchAdapter.html", null ]
     ] ],
     [ "Gondwana.Input.Touch.ITouchInput", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html", [
       [ "Gondwana.Input.Touch.TouchEventPoller", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html", null ]

@@ -12,5 +12,6 @@ var classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase =
     [ "OnKeyboardAdapterInitialized", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a87eccb7d7af24fb55f38a70d481bd6c4", null ],
     [ "OnMouseAdapterInitialized", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a5366f322cbf8dab14a0792b0b07719ec", null ],
     [ "OnSceneBound", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#ab036fc211b0c07a1ab4b42276207566b", null ],
-    [ "OnTouchAdapterInitialized", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a7fe32d34ff5db28c0f10b730523747c5", null ]
+    [ "OnTouchAdapterInitialized", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a7fe32d34ff5db28c0f10b730523747c5", null ],
+    [ "EnableNativeTouch", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a88cbf4e7647d0e7b76244ae7ffb26112", null ]
 ];

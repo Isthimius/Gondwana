@@ -79,5 +79,6 @@ var searchData=
   ['gondwana_3a_3awinforms_3a_3ainput_3a_3agamepad_3a_3axinput_76',['XInput',['../namespaceGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput.html',1,'Gondwana::WinForms::Input::Gamepad']]],
   ['gondwana_3a_3awinforms_3a_3ainput_3a_3akeyboard_77',['Keyboard',['../namespaceGondwana_1_1WinForms_1_1Input_1_1Keyboard.html',1,'Gondwana::WinForms::Input']]],
   ['gondwana_3a_3awinforms_3a_3ainput_3a_3amouse_78',['Mouse',['../namespaceGondwana_1_1WinForms_1_1Input_1_1Mouse.html',1,'Gondwana::WinForms::Input']]],
-  ['gondwana_3a_3awinforms_3a_3arendering_79',['Rendering',['../namespaceGondwana_1_1WinForms_1_1Rendering.html',1,'Gondwana::WinForms']]]
+  ['gondwana_3a_3awinforms_3a_3ainput_3a_3atouch_79',['Touch',['../namespaceGondwana_1_1WinForms_1_1Input_1_1Touch.html',1,'Gondwana::WinForms::Input']]],
+  ['gondwana_3a_3awinforms_3a_3arendering_80',['Rendering',['../namespaceGondwana_1_1WinForms_1_1Rendering.html',1,'Gondwana::WinForms']]]
 ];
