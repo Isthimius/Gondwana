@@ -17,12 +17,18 @@ namespace Gondwana.WinForms.Input.Touch;
 public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 {
     private const int WmTouch = 0x0240;
+    private const int WmParentNotify = 0x0210;
+    private const int WmCreate = 0x0001;
+    private const int WmDestroy = 0x0002;
+    private const int WmNcDestroy = 0x0082;
     private const uint TouchDown = 0x0002;
     private const uint TouchUp = 0x0004;
 
     private readonly Control _surface;
     private readonly WinFormsTouchState _state = new();
     private readonly Dictionary<Control, TouchWindowHook> _hooks = [];
+    private readonly Dictionary<IntPtr, NativeChildHook> _nativeChildren = [];
+    private bool _refreshingNativeChildren;
     private bool _disposed;
 
     /// <summary>Creates the adapter and registers existing and future child HWNDs.</summary>
@@ -33,6 +39,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             throw new InvalidOperationException("Initialize WinForms touch on the control's UI thread.");
 
         Watch(_surface);
+        RefreshNativeChildren();
     }
 
     /// <inheritdoc />
@@ -45,7 +52,9 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
     public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => _state.ConsumeEndings();
 
     /// <summary>Whether a native window has successfully registered for touch.</summary>
-    public bool IsRegistered => !_disposed && _hooks.Values.Any(static hook => hook.IsRegistered);
+    public bool IsRegistered => !_disposed &&
+        (_hooks.Values.Any(static hook => hook.IsRegistered) ||
+         _nativeChildren.Values.Any(static hook => hook.IsRegistered));
 
     /// <summary>
     /// Reports whether the WinForms mouse adapter should ignore a touch-origin
@@ -71,6 +80,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
         control.ControlRemoved += OnControlRemoved;
         foreach (Control child in control.Controls)
             Watch(child);
+        RefreshNativeChildren();
     }
 
     private void Unwatch(Control control)
@@ -84,11 +94,72 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             hook.Dispose();
     }
 
-    private void OnControlAdded(object? sender, ControlEventArgs e) => Watch(e.Control);
+    private void OnControlAdded(object? sender, ControlEventArgs e)
+    {
+        Watch(e.Control);
+        RefreshNativeChildren();
+    }
 
     private void OnControlRemoved(object? sender, ControlEventArgs e)
     {
         Unwatch(e.Control);
+        RefreshNativeChildren();
+        _state.CancelAll();
+    }
+
+    /// <summary>
+    /// SKGLControl hosts an OpenTK/GLFW native child HWND that is not exposed
+    /// through Control.Controls. Discover Win32 descendants and refresh after
+    /// native parent notifications or window recreation.
+    /// </summary>
+    private void RefreshNativeChildren()
+    {
+        if (_disposed || !_surface.IsHandleCreated || _refreshingNativeChildren)
+            return;
+
+        _refreshingNativeChildren = true;
+        try
+        {
+            var descendants = new HashSet<IntPtr>();
+            EnumChildWindows(_surface.Handle, (hwnd, _) =>
+            {
+                descendants.Add(hwnd);
+                return true;
+            }, IntPtr.Zero);
+
+            var managedHandles = _hooks.Values
+                .Where(static hook => hook.Handle != IntPtr.Zero)
+                .Select(static hook => hook.Handle)
+                .ToHashSet();
+
+            foreach (IntPtr hwnd in _nativeChildren.Keys.ToArray())
+            {
+                if (descendants.Contains(hwnd) && !managedHandles.Contains(hwnd))
+                    continue;
+
+                _nativeChildren.Remove(hwnd, out NativeChildHook? stale);
+                stale?.Dispose();
+            }
+
+            foreach (IntPtr hwnd in descendants)
+            {
+                if (managedHandles.Contains(hwnd) || _nativeChildren.ContainsKey(hwnd))
+                    continue;
+
+                _nativeChildren.Add(hwnd, new NativeChildHook(this, hwnd));
+            }
+        }
+        finally
+        {
+            _refreshingNativeChildren = false;
+        }
+    }
+
+    private void ForgetNativeChild(IntPtr hwnd)
+    {
+        if (_nativeChildren.Remove(hwnd, out NativeChildHook? hook))
+            hook.Dispose();
+
         _state.CancelAll();
     }
 
@@ -149,6 +220,9 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 
         _disposed = true;
         Unwatch(_surface);
+        foreach (NativeChildHook hook in _nativeChildren.Values.ToArray())
+            hook.Dispose();
+        _nativeChildren.Clear();
         _state.CancelAll();
     }
 
@@ -169,11 +243,16 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
                 Attach();
         }
 
-        private void OnHandleCreated(object? sender, EventArgs e) => Attach();
+        private void OnHandleCreated(object? sender, EventArgs e)
+        {
+            Attach();
+            _owner.RefreshNativeChildren();
+        }
 
         private void OnHandleDestroyed(object? sender, EventArgs e)
         {
             Detach();
+            _owner.RefreshNativeChildren();
             _owner._state.CancelAll();
         }
 
@@ -207,6 +286,11 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             }
 
             base.WndProc(ref m);
+
+            // Native children may be created by OpenTK rather than Control.Controls.
+            if (m.Msg == WmParentNotify &&
+                ((m.WParam.ToInt64() & 0xFFFF) is WmCreate or WmDestroy))
+                _owner.RefreshNativeChildren();
         }
 
         public void Dispose()
@@ -214,6 +298,55 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             _control.HandleCreated -= OnHandleCreated;
             _control.HandleDestroyed -= OnHandleDestroyed;
             Detach();
+        }
+    }
+
+    /// <summary>
+    /// Subclasses a Win32 child window not represented by a managed Control.
+    /// In particular, OpenTK owns its GLFW drawable; we only intercept touch.
+    /// </summary>
+    private sealed class NativeChildHook : NativeWindow, IDisposable
+    {
+        private readonly WinFormsTouchAdapter _owner;
+
+        internal bool IsRegistered { get; private set; }
+
+        internal NativeChildHook(WinFormsTouchAdapter owner, IntPtr hwnd)
+        {
+            _owner = owner;
+            AssignHandle(hwnd);
+            IsRegistered = RegisterTouchWindow(hwnd, 0);
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WmTouch && IsRegistered &&
+                _owner.HandleTouchMessage(m.WParam, m.LParam))
+            {
+                m.Result = IntPtr.Zero;
+                return;
+            }
+
+            IntPtr hwnd = Handle;
+            base.WndProc(ref m);
+
+            if (m.Msg == WmParentNotify &&
+                ((m.WParam.ToInt64() & 0xFFFF) is WmCreate or WmDestroy))
+                _owner.RefreshNativeChildren();
+
+            if (m.Msg == WmNcDestroy)
+                _owner.ForgetNativeChild(hwnd);
+        }
+
+        public void Dispose()
+        {
+            if (Handle == IntPtr.Zero)
+                return;
+
+            if (IsRegistered)
+                UnregisterTouchWindow(Handle);
+            IsRegistered = false;
+            ReleaseHandle();
         }
     }
 
@@ -232,6 +365,13 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
         internal uint ContactWidth;
         internal uint ContactHeight;
     }
+
+    private delegate bool EnumWindowsCallback(IntPtr hwnd, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumChildWindows(IntPtr parent,
+        EnumWindowsCallback callback, IntPtr lParam);
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
