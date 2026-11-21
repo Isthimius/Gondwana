@@ -80,7 +80,6 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
         control.ControlRemoved += OnControlRemoved;
         foreach (Control child in control.Controls)
             Watch(child);
-        RefreshNativeChildren();
     }
 
     private void Unwatch(Control control)
