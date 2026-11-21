@@ -128,7 +128,8 @@ public sealed class SliderPersistenceTests
         board.Shuffle(30, new Random(7));
         var save = new SliderSave
         {
-            Columns = 4, Rows = 3,
+            Columns = 4,
+            Rows = 3,
             Cells = board.Cells.ToArray(),
             MoveCount = 12,
             Started = true,
@@ -148,7 +149,8 @@ public sealed class SliderPersistenceTests
         board.Shuffle(12, new Random(3));
         var save = new SliderSave
         {
-            Columns = board.Columns, Rows = board.Rows,
+            Columns = board.Columns,
+            Rows = board.Rows,
             Cells = board.Cells.ToArray(),
             MoveCount = 7,
             Started = true,
@@ -179,7 +181,8 @@ public sealed class SliderPersistenceTests
     {
         var save = new SliderSave
         {
-            Columns = 3, Rows = 3,
+            Columns = 3,
+            Rows = 3,
             Cells = [0, 1, 2, 3, 4, 5, 6, 6, -1]
         };
         Assert.Throws<InvalidDataException>(() => SliderPersistence.Validate(save));
