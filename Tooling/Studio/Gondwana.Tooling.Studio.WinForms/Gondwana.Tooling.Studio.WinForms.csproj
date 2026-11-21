@@ -10,7 +10,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
         <RootNamespace>Gondwana.Studio.WinForms</RootNamespace>
-        <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
+        <AssemblyName>Gondwana.Tooling.Studio.WinForms</AssemblyName>
     </PropertyGroup>
 
     <!-- The outer shell uses the same DockPanelSuite theme family as its hosted editors. -->

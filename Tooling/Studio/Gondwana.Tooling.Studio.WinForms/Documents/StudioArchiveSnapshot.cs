@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 
 namespace Gondwana.Tooling.Studio.WinForms.Documents;
 
