@@ -244,7 +244,7 @@ The transform preserves aspect ratio and centers the Backbuffer in the available
 
 `RenderSurfaceHostBase.PresentationScale` exposes the derived fit scale.
 
-Changing `RenderScale` explicitly queues a new logical resolution. For `BitmapBackbuffer`, the actual bitmap/surface reallocation occurs during a subsequent `BeginFrame()`.
+Changing `RenderScale` explicitly queues a proportional logical resolution for registered surfaces. To request an exact width and height for a single surface, call `renderSurface.Host.RequestLogicalResolution(width, height)` instead; this does not change global `RenderScale`. For `BitmapBackbuffer`, either request is deferred until a subsequent `BeginFrame()`, when the bitmap/surface is reallocated and the View rectangles update. Subsequent ordinary adapter resizes still affect presentation only; a fluid application must issue another explicit request. See [[Backbuffers]] for the comparison.
 
 ---
 
