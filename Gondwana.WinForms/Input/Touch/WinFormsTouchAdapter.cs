@@ -39,6 +39,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             throw new InvalidOperationException("Initialize WinForms touch on the control's UI thread.");
 
         Watch(_surface);
+        _surface.SizeChanged += OnSurfaceSizeChanged;
         RefreshNativeChildren();
     }
 
@@ -92,6 +93,12 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
         if (_hooks.Remove(control, out TouchWindowHook? hook))
             hook.Dispose();
     }
+
+    // OpenTK may recreate its drawable independently of managed Control events.
+    // The native parent-notify hooks are primary; resize provides a fallback
+    // for hosts that suppress native child creation notifications.
+    private void OnSurfaceSizeChanged(object? sender, EventArgs e)
+        => RefreshNativeChildren();
 
     private void OnControlAdded(object? sender, ControlEventArgs e)
     {
@@ -218,6 +225,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             return;
 
         _disposed = true;
+        _surface.SizeChanged -= OnSurfaceSizeChanged;
         Unwatch(_surface);
         foreach (NativeChildHook hook in _nativeChildren.Values.ToArray())
             hook.Dispose();
