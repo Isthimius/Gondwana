@@ -1,4 +1,5 @@
 using Gondwana.Input.Keyboard;
+using Gondwana.Drawing.Sprites;
 using SkiaSharp;
 
 namespace Gondwana.Demos.Slider;
@@ -97,6 +98,19 @@ internal sealed partial class SliderGameHost
         {
             _sidebar?.SetStatus("Puzzle solved. High score could not be saved to disk.");
         }
+    }
+
+    private void OnPrimaryPointerAction(Gondwana.Widgets.PrimaryPointerActionEventArgs args)
+    {
+        if (!ReferenceEquals(args.View, _gameView) || _movingSprite is not null ||
+            _shuffleMoves is not null || _won || _menu?.HasOpenDialog == true)
+            return;
+
+        Sprite? sprite = Engine.Managers.Sprites
+            .GetSpritesAtViewPixel(_gameView, args.ScreenPositionPx, _layer)
+            .FirstOrDefault();
+        if (sprite is not null && int.TryParse(sprite.Nickname, out int piece))
+            TryMovePiece(piece);
     }
 
     private void UpdateShiftLabels()
