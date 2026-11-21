@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Security.Cryptography;
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
