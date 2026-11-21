@@ -246,6 +246,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Nerdbank.GitVersioning needs full history to compute version height.
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
