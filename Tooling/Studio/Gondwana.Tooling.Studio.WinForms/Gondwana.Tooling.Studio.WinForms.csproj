@@ -9,8 +9,8 @@
         <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
-        <RootNamespace>Gondwana.Studio.WinForms</RootNamespace>
-        <AssemblyName>Gondwana.Tooling.Studio.WinForms</AssemblyName>
+        <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     </PropertyGroup>
 
     <!-- The outer shell uses the same DockPanelSuite theme family as its hosted editors. -->

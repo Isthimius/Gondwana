@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
