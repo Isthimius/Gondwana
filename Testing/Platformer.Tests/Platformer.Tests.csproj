@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" PrivateAssets="all" />
+    <ProjectReference Include="../../Gondwana/Gondwana.csproj" />
+    <Compile Include="../../Demos/Gondwana.Platformer/EnemyContact.cs" Link="Demos/EnemyContact.cs" />
+    <Compile Include="../../Demos/Gondwana.Platformer/PlatformerArt.cs" Link="Demos/PlatformerArt.cs" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>
