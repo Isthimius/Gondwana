@@ -53,10 +53,10 @@
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Scenes.WinForms/Editing/SceneDocument*.cs" Link="SceneEditing/%(Filename)%(Extension)" />
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Animations.WinForms/Editing/AnimationDocument*.cs" Link="AnimationEditing/%(Filename)%(Extension)" />
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Sprites.WinForms/Editing/SpriteDocument*.cs" Link="SpriteEditing/%(Filename)%(Extension)" />
-        <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Audio.WinForms/Editing/AudioDocument*.cs" Link="AudioEditing/%(Filename)%(Extension)" />
+        <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms/Editing/AudioDocument*.cs" Link="AudioEditing/%(Filename)%(Extension)" />
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Animations.WinForms/AnimationPropertyAdapter.cs" Link="AnimationEditing/AnimationPropertyAdapter.cs" />
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Sprites.WinForms/SpriteProperties.cs" Link="SpriteEditing/SpriteProperties.cs" />
-        <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Audio.WinForms/AudioResourceProperties.cs" Link="AudioEditing/AudioResourceProperties.cs" />
+        <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms/AudioResourceProperties.cs" Link="AudioEditing/AudioResourceProperties.cs" />
         <!-- Keep the standalone editor's document model testable without a Windows UI. -->
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/Editing/*.cs" Link="TilesheetEditing/%(Filename)%(Extension)" />
         <Compile Include="../../Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/PropertyFields.cs" Link="TilesheetEditing/PropertyFields.cs" />
