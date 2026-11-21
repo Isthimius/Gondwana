@@ -3,100 +3,26 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Slider;
 
-/// <summary>WinForms shell: settings and file selection remain outside the engine.</summary>
+/// <summary>
+/// Native window and file-picker boundary. All persistent UI is drawn by
+/// Gondwana.Widgets inside the single GPU render surface.
+/// </summary>
 internal sealed class GameWindow : Form
 {
     private readonly WinFormGpuRenderSurfaceControl _surface = new() { Dock = DockStyle.Fill };
-    private readonly NumericUpDown _columns = new() { Minimum = 3, Maximum = 20, Value = 4, Width = 160 };
-    private readonly NumericUpDown _rows = new() { Minimum = 3, Maximum = 20, Value = 3, Width = 160 };
-    private readonly CheckBox _grid = new() { Text = "Show piece outlines", Checked = true, AutoSize = true };
-    private readonly Label _status = new()
-    {
-        Text = "Starting...",
-        AutoSize = false,
-        Width = 210,
-        Height = 135,
-        Font = new Font(SystemFonts.DefaultFont.FontFamily, 11f)
-    };
-
     private SliderGameHost? _host;
-    private string? _picturePath;
 
     internal GameWindow()
     {
         Text = "Gondwana: Slider";
         ClientSize = new Size(1200, 780);
-        MinimumSize = new Size(760, 510);
+        MinimumSize = new Size(760, 650);
         StartPosition = FormStartPosition.CenterScreen;
         AutoScaleMode = AutoScaleMode.Dpi;
         KeyPreview = true;
 
-        var sidebar = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            FlowDirection = FlowDirection.TopDown,
-            WrapContents = false,
-            AutoScroll = true,
-            Padding = new Padding(12),
-            BackColor = Color.FromArgb(238, 241, 245)
-        };
-
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 240f));
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-        layout.Controls.Add(sidebar, 0, 0);
-        layout.Controls.Add(_surface, 1, 0);
-        Controls.Add(layout);
-
-        sidebar.Controls.Add(new Label
-        {
-            Text = "SLIDER",
-            Width = 205,
-            Height = 42,
-            Font = new Font(SystemFonts.DefaultFont.FontFamily, 20f, FontStyle.Bold)
-        });
-        sidebar.Controls.Add(new Label { Text = "Columns", AutoSize = true, Margin = new Padding(4, 12, 4, 2) });
-        sidebar.Controls.Add(_columns);
-        sidebar.Controls.Add(new Label { Text = "Rows", AutoSize = true, Margin = new Padding(4, 12, 4, 2) });
-        sidebar.Controls.Add(_rows);
-
-        var newPuzzle = MakeButton("New puzzle");
-        newPuzzle.Click += (_, _) =>
-        {
-            _host?.RequestPuzzle(_picturePath, (int)_columns.Value, (int)_rows.Value);
-            _surface.Focus();
-        };
-        sidebar.Controls.Add(newPuzzle);
-
-        var openPicture = MakeButton("Open picture...");
-        openPicture.Click += (_, _) => OpenPicture();
-        sidebar.Controls.Add(openPicture);
-
-        var shuffle = MakeButton("Shuffle");
-        shuffle.Click += (_, _) =>
-        {
-            _host?.RequestShuffle();
-            _surface.Focus();
-        };
-        sidebar.Controls.Add(shuffle);
-
-        _grid.CheckedChanged += (_, _) =>
-        {
-            _host?.RequestGrid(_grid.Checked);
-            _surface.Focus();
-        };
-        _grid.Margin = new Padding(4, 14, 4, 8);
-        sidebar.Controls.Add(_grid);
-
-        sidebar.Controls.Add(new Label
-        {
-            Text = "Arrow keys or click a tile beside the empty square.",
-            Width = 205,
-            Height = 54,
-            Margin = new Padding(4, 12, 4, 8)
-        });
-        sidebar.Controls.Add(_status);
-
+        // This is the only child control on the WinForms form.
+        Controls.Add(_surface);
         KeyDown += (_, args) =>
         {
             if (args.KeyCode == Keys.Escape)
@@ -104,37 +30,11 @@ internal sealed class GameWindow : Form
         };
     }
 
-    private static Button MakeButton(string text) => new()
-    {
-        Text = text,
-        Width = 196,
-        Height = 36,
-        Margin = new Padding(4, 10, 4, 0)
-    };
-
-    private void OpenPicture()
-    {
-        using var chooser = new OpenFileDialog
-        {
-            Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp|All files|*.*",
-            CheckFileExists = true,
-            Multiselect = false,
-            Title = "Choose a sliding-puzzle picture"
-        };
-
-        if (chooser.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        _picturePath = chooser.FileName;
-        _host?.RequestPuzzle(_picturePath, (int)_columns.Value, (int)_rows.Value);
-        _surface.Focus();
-    }
-
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
         _host = new SliderGameHost(_surface);
-        _host.StatusChanged += OnStatusChanged;
+        _host.OpenPictureRequested += OnOpenPictureRequested;
     }
 
     protected override void OnShown(EventArgs e)
@@ -153,22 +53,37 @@ internal sealed class GameWindow : Form
         }
     }
 
-    private void OnStatusChanged(string status)
+    private void OnOpenPictureRequested(int columns, int rows)
     {
-        if (IsDisposed || Disposing || !IsHandleCreated)
+        // Widget callbacks run on Gondwana's engine thread; native dialogs
+        // must always be opened on the WinForms UI thread.
+        if (Disposing || IsDisposed || !IsHandleCreated)
             return;
 
         try
         {
             BeginInvoke((Action)(() =>
             {
-                if (!IsDisposed && !Disposing)
-                    _status.Text = status;
+                if (Disposing || IsDisposed || _host is null)
+                    return;
+
+                using var picker = new OpenFileDialog
+                {
+                    Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp|All files|*.*",
+                    CheckFileExists = true,
+                    Multiselect = false,
+                    Title = "Choose a sliding-puzzle picture"
+                };
+
+                if (picker.ShowDialog(this) == DialogResult.OK)
+                    _host.RequestPuzzle(picker.FileName, columns, rows);
+
+                _surface.Focus();
             }));
         }
-        catch (InvalidOperationException) when (IsDisposed || Disposing || !IsHandleCreated)
+        catch (InvalidOperationException) when (Disposing || IsDisposed || !IsHandleCreated)
         {
-            // Shutdown can invalidate the WinForms handle after the initial check.
+            // Shutdown may invalidate the window between the check and BeginInvoke.
         }
     }
 
@@ -176,7 +91,7 @@ internal sealed class GameWindow : Form
     {
         if (_host is not null)
         {
-            _host.StatusChanged -= OnStatusChanged;
+            _host.OpenPictureRequested -= OnOpenPictureRequested;
             _host.Dispose();
             _host = null;
         }
