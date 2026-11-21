@@ -12,7 +12,7 @@ using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Studio.WinForms.Extensibility;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Studio.WinForms.Services;
-using Gondwana.Tooling.Studio.Tilesheets.Sources;
+using Gondwana.Tooling.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms;

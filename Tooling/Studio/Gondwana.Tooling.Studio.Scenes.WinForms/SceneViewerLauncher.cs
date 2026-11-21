@@ -110,7 +110,7 @@ internal static class SceneViewerLauncher
     }
 
     internal static bool ViewSavedScene(
-        Editing.SceneDocument document,
+        SceneDocument document,
         Func<bool> confirmSave,
         Func<bool> save,
         Action<string> launch)

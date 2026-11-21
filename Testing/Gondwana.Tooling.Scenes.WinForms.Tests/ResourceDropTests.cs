@@ -10,7 +10,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
-using Gondwana.Tooling.Studio.Tilesheets.Sources;
+using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 

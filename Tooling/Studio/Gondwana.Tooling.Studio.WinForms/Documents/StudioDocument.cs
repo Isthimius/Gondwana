@@ -11,8 +11,8 @@ using Gondwana.Tooling.Studio.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Studio.Sprites.WinForms;
 using Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
-using Gondwana.Tooling.Studio.Tilesheets.Sources;
 using Gondwana.Tooling.Studio.Tilesheets.WinForms;
+using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Studio.WinForms.Documents;
 
