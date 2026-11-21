@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
@@ -136,7 +137,10 @@ internal sealed class SliderMenu : IDisposable
             description: "A sliding-picture puzzle built with the Gondwana Game Engine.",
             logo: _gondwanaLogo,
             bounds: DialogBounds(480, 360),
-            nickname: "slider.about");
+            nickname: "slider.about",
+            uriLauncher: new SliderUriLauncher(),
+            hyperlinkUri: new Uri("https://github.com/Isthimius/Gondwana"),
+            hyperlinkText: "View Gondwana on GitHub");
         about.Panel.SetColor(Color.FromArgb(255, 23, 30, 42))
             .SetBorderColor(Color.FromArgb(255, 95, 110, 135));
         about.TitleBar.SetColor(Color.FromArgb(255, 46, 63, 85));
@@ -149,6 +153,20 @@ internal sealed class SliderMenu : IDisposable
         dialog.Closed += _ => _dialog = null;
         dialog.Show();
         dialog.Activate();
+    }
+
+    private sealed class SliderUriLauncher : IExternalUriLauncher
+    {
+        public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = uri.AbsoluteUri,
+                UseShellExecute = true
+            });
+            return ValueTask.CompletedTask;
+        }
     }
 
     public void Dispose()
