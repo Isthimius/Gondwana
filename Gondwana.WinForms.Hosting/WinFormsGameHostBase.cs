@@ -1,5 +1,6 @@
 using System.Windows.Forms;
 using Gondwana.Hosting;
+using Gondwana.WinForms;
 using Gondwana.Scenes;
 
 namespace Gondwana.WinForms.Hosting;
@@ -62,11 +63,13 @@ public abstract class WinFormsGameHostBase : GameHostBase
     }
 
     /// <summary>
-    /// Configures touch input. By default, this method does not perform any actions,
-    /// but it can be overridden in derived classes to set up touch input handling.
+    /// Configures native WinForms touch input before creating the widget input router.
+    /// Both GPU and bitmap hosts share the same touch/pointer behavior.
     /// </summary>
-    protected override void ConfigureTouch()
+    protected sealed override void ConfigureTouch()
     {
+        Engine.Instance.InitializeWinFormsTouchAdapter(_renderSurface);
+        Engine.Input.TouchEventPoller?.StartMonitoringTouch();
         OnTouchAdapterInitialized();
     }
 
