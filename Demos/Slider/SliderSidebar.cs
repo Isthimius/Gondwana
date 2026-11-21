@@ -1,7 +1,7 @@
 using Gondwana.Rendering;
-using View = Gondwana.Rendering.Views.View;
 using Gondwana.Widgets.Controls;
 using SkiaSharp;
+using View = Gondwana.Rendering.Views.View;
 
 namespace Gondwana.Demos.Slider;
 
