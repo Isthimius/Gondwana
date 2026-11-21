@@ -13,14 +13,14 @@ if (-not [System.IO.Path]::IsPathRooted($OutputRoot)) {
 New-Item -ItemType Directory -Path $OutputRoot -Force | Out-Null
 
 $tools = @(
-    @{ Name = 'Gondwana.Tooling.Studio.WinForms'; Executable = 'Gondwana.Studio.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.Assets.WinForms'; Executable = 'Gondwana.Tooling.Assets.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.Animations.WinForms'; Executable = 'Gondwana.Tooling.Animations.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.Audio.WinForms'; Executable = 'Gondwana.Tooling.Audio.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.Scenes.WinForms'; Executable = 'Gondwana.Tooling.Scenes.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.SceneViewer.WinForms'; Executable = 'Gondwana.Tooling.SceneViewer.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.Sprites.WinForms'; Executable = 'Gondwana.Tooling.Sprites.WinForms.exe' }
-    @{ Name = 'Gondwana.Tooling.Tilesheets.WinForms'; Executable = 'Gondwana.Tooling.Tilesheets.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.WinForms'; Executable = 'Gondwana.Tooling.Studio.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.Assets.WinForms'; Executable = 'Gondwana.Tooling.Studio.Assets.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.Animations.WinForms'; Executable = 'Gondwana.Tooling.Studio.Animations.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.Audio.WinForms'; Executable = 'Gondwana.Tooling.Studio.Audio.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.Scenes.WinForms'; Executable = 'Gondwana.Tooling.Studio.Scenes.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.SceneViewer.WinForms'; Executable = 'Gondwana.Tooling.Studio.SceneViewer.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.Sprites.WinForms'; Executable = 'Gondwana.Tooling.Studio.Sprites.WinForms.exe' }
+    @{ Name = 'Gondwana.Tooling.Studio.Tilesheets.WinForms'; Executable = 'Gondwana.Tooling.Studio.Tilesheets.WinForms.exe' }
 )
 
 foreach ($tool in $tools) {

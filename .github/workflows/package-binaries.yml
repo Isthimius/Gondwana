@@ -119,14 +119,14 @@ jobs:
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll release-assets/
 
           # Apps/tools (FULL folders for assets/runtime)
-          cp -r publish/Tooling/Gondwana.Tooling.Assets.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.Assets.WinForms release-assets/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Studio.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Animations.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Audio.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Scenes.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.SceneViewer.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Sprites.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.Animations.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.Audio.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.Scenes.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.Sprites.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.Tilesheets.WinForms release-assets/Tooling/
           cp -r publish/Demos/Slider release-assets/Demos/
           cp -r publish/Demos/Spot.WinForms release-assets/Demos/
 

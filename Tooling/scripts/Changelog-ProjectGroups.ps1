@@ -44,19 +44,19 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Demos/WidgetsTest"; RootName = "Demos / WidgetsTest"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
 
     # tooling projects - individual changelogs and root changelog
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics"; RootName = "Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics"; RootName = "Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Cli"; RootName = "Tooling / Gondwana.Cli"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Mcp"; RootName = "Tooling / Gondwana.Mcp"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Templates"; RootName = "Tooling / Gondwana.Templates"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Assets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Assets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Animations.WinForms"; RootName = "Tooling / Gondwana.Tooling.Animations.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Audio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Audio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Core"; RootName = "Tooling / Gondwana.Tooling.Studio.Core"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Scenes.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Scenes.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.SceneViewer.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Sprites.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Sprites.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
-    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Tilesheets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Tilesheets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Assets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Assets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Animations.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Animations.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Audio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Core"; RootName = "Tooling / Gondwana.Tooling.Studio.Core"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Scenes.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Scenes.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.SceneViewer.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.SceneViewer.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Sprites.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Sprites.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.Tilesheets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     
     # root-only areas - no individual changelogs, but included in root changelog
     [pscustomobject]@{
