@@ -30,9 +30,9 @@ Gondwana includes touch adapters for:
 |---|---|
 | Avalonia | `AvaloniaTouchInputAdapter` |
 | Blazor | `BlazorTouchAdapter` |
-| WinForms | No built-in touch adapter |
+| WinForms | `WinFormsTouchAdapter` (`WM_TOUCH`) |
 
-Avalonia and Blazor game hosts initialize touch automatically.
+Avalonia, Blazor, and WinForms game hosts initialize touch automatically. WinForms uses native Windows touch contacts (not mouse emulation), while its mouse adapter suppresses the duplicate compatibility mouse messages for touch contacts.
 
 This page uses the host hook:
 
@@ -55,8 +55,9 @@ The event does not automatically hit-test game sprites.
 > **Note:** Subscribing to `UnhandledPrimaryAction` does not start touch polling
 > automatically. While the game host starts mouse monitoring during widget input
 > initialization, touch input requires calling `TouchEventPoller.StartMonitoringTouch()`
-> from `OnTouchAdapterInitialized`. Without that call, touch events are never polled
-> and the tap half of the unified action will not fire.
+> from `OnTouchAdapterInitialized` **when initializing a custom host**.
+> The standard WinForms/Avalonia/Blazor game hosts already initialize and
+> start touch polling, so no manual setup is required for those hosts.
 
 See [[Widgets Overview|Widgets-Overview]] for the callback/cleanup pattern.
 
