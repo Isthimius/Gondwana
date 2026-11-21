@@ -1,5 +1,5 @@
-using Gondwana.Input.Keyboard;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Input.Keyboard;
 using SkiaSharp;
 
 namespace Gondwana.Demos.Slider;
@@ -11,7 +11,7 @@ internal sealed partial class SliderGameHost
     private byte[]? _imagePng;
     private TimeSpan _elapsedBeforeResume;
 
-    internal bool HasMenuOrDialogOpen => _menu?.HasOpenDialog == true || _menu?.HasOpenMenu == true;
+    internal bool HasMenuOrDialogOpen => HasMenuOrDialogOpen || _menu?.HasOpenMenu == true;
 
     internal event Action<SliderSave>? SaveGameRequested;
     internal event Action? LoadGameRequested;
@@ -105,7 +105,7 @@ internal sealed partial class SliderGameHost
     private void OnPrimaryPointerAction(Gondwana.Widgets.PrimaryPointerActionEventArgs args)
     {
         if (!ReferenceEquals(args.View, _gameView) || _movingSprite is not null ||
-            _shuffleMoves is not null || _won || _menu?.HasOpenDialog == true)
+            _shuffleMoves is not null || _won || HasMenuOrDialogOpen)
             return;
 
         Sprite? sprite = Engine.Managers.Sprites
