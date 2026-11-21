@@ -133,7 +133,7 @@ public sealed class ViewportScalingTests : IDisposable
 
         adapter.Resize(1200, 720);
         Assert.Equal((800, 600), (buffer.Width, buffer.Height));
-        Assert.Equal(new SKRect(120, 0, 1080, 720),
+        AssertRectApproximately(new SKRect(120, 0, 1080, 720),
             adapter.Presentation.DestinationRect);
 
         host.RequestLogicalResolution(1200, 720);
@@ -142,7 +142,7 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal((1200, 720), (buffer.Width, buffer.Height));
         Assert.Same(view, Assert.Single(host.ViewManager.Views));
         Assert.Equal(new Rectangle(0, 0, 1200, 720), view.Viewport.TargetRectPx);
-        Assert.Equal(new SKRect(0, 0, 1200, 720),
+        AssertRectApproximately(new SKRect(0, 0, 1200, 720),
             adapter.Presentation.DestinationRect);
         Assert.Equal(1f, Engine.Instance.Configuration.RenderScale);
 
@@ -152,10 +152,20 @@ public sealed class ViewportScalingTests : IDisposable
 
         Assert.Equal((720, 1200), (buffer.Width, buffer.Height));
         Assert.Equal(new Rectangle(0, 0, 720, 1200), view.Viewport.TargetRectPx);
-        Assert.Equal(new SKRect(0, 0, 720, 1200),
+        AssertRectApproximately(new SKRect(0, 0, 720, 1200),
             adapter.Presentation.DestinationRect);
         Assert.Throws<ArgumentOutOfRangeException>(() => host.RequestLogicalResolution(0, 100));
         Assert.Throws<ArgumentOutOfRangeException>(() => host.RequestLogicalResolution(100, 0));
+
+        // Presentation fitting uses floating-point division. Coordinate comparisons
+        // must allow subpixel rounding without tolerating meaningful letterboxing.
+        static void AssertRectApproximately(SKRect expected, SKRect actual)
+        {
+            Assert.Equal(expected.Left, actual.Left, 3);
+            Assert.Equal(expected.Top, actual.Top, 3);
+            Assert.Equal(expected.Right, actual.Right, 3);
+            Assert.Equal(expected.Bottom, actual.Bottom, 3);
+        }
     }
 
     /// <summary>
