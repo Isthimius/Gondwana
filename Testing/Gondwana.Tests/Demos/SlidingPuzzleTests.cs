@@ -85,6 +85,8 @@ public sealed class SlidingPuzzleTests
         Assert.True(board.TryMovePiece(7, out _));
         Assert.Equal(1, board.MoveCount);
 
+        int[] before = board.Cells.ToArray();
+        int[] afterFirstMove;
         using (IEnumerator<PuzzleMove> steps = board.ShuffleSteps(50, new Random(15)).GetEnumerator())
         {
             Assert.True(steps.MoveNext());
@@ -92,12 +94,14 @@ public sealed class SlidingPuzzleTests
             Assert.Equal(firstMove.PieceId, board.Cells[firstMove.DestinationIndex]);
             Assert.Equal(-1, board.Cells[firstMove.FromIndex]);
             Assert.Equal(0, board.MoveCount);
+            Assert.Equal(2, board.Cells.Where((piece, index) => piece != before[index]).Count());
+            afterFirstMove = board.Cells.ToArray();
         }
 
         // Disposing the sequence must not instantly apply the remaining shuffle.
+        Assert.Equal(afterFirstMove, board.Cells);
         Assert.Equal(Enumerable.Range(0, 8).Append(-1).OrderBy(x => x),
             board.Cells.OrderBy(x => x));
-        Assert.True(board.Cells.Count(piece => piece == -1) == 1);
     }
 
     [Fact]
