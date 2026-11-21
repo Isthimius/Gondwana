@@ -101,8 +101,7 @@ internal sealed class SliderMenu : IDisposable
         }
 
         Rectangle bounds = DialogBounds(530, 530);
-        var dialog = new DialogBox(_host, _gameView, bounds, title,
-            showCloseButton: true, nickname: "slider.dialog");
+        var dialog = new SliderTextDialog(_host, _gameView, bounds, title);
         dialog.Panel.SetColor(Color.FromArgb(255, 24, 30, 42))
             .SetBorderColor(Color.FromArgb(255, 95, 110, 135));
         dialog.TitleBar.SetColor(Color.FromArgb(255, 46, 63, 85));
@@ -128,7 +127,7 @@ internal sealed class SliderMenu : IDisposable
                 Color.FromArgb(255, 71, 92, 119), Color.FromArgb(255, 38, 54, 75))
             .SetTextColor(Color.White)
             .SetButtonZOrder(10_030);
-        close.Clicked += () => dialog.Close(DialogResult.Close);
+        close.Clicked += () => dialog.Close(Gondwana.Widgets.Dialogs.DialogResult.Close);
         dialog.Add(close, keepCurrentOffset: false,
             explicitLocalOffsetPx: new Vector2((bounds.Width - 110) / 2, bounds.Height - 48));
 
@@ -165,6 +164,15 @@ internal sealed class SliderMenu : IDisposable
         dialog.Closed += _ => _dialog = null;
         dialog.Show();
         dialog.Activate();
+    }
+
+    // DialogBox is an abstract base class; use a concrete dialog for text content.
+    private sealed class SliderTextDialog : DialogBox
+    {
+        internal SliderTextDialog(RenderSurfaceHostBase host, View view, Rectangle bounds, string title)
+            : base(host, view, bounds, title, showCloseButton: true, nickname: "slider.dialog")
+        {
+        }
     }
 
     private sealed class SliderUriLauncher : IExternalUriLauncher
