@@ -101,6 +101,9 @@ jobs:
       winforms_scene_viewer: ${{ steps.filter.outputs.winforms_scene_viewer }}
       winforms_studio: ${{ steps.filter.outputs.winforms_studio }}
       winforms_importers: ${{ steps.filter.outputs.winforms_importers }}
+      demo: ${{ steps.filter.outputs.demo }}
+      demo_spot: ${{ steps.filter.outputs.demo_spot }}
+      demo_platformer: ${{ steps.filter.outputs.demo_platformer }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -230,6 +233,37 @@ jobs:
       - name: Tooling importer tests
         if: ${{ steps.select.outputs.importers == 'true' }}
         run: dotnet test Testing/Gondwana.Tooling.Importers.Tests/Gondwana.Tooling.Importers.Tests.csproj --configuration Release --no-build --no-restore --nologo
+
+  demo-tests:
+    # Run only the affected demo test projects on PRs/master; run both
+    # nightly, manually, and for tagged releases to catch shared regressions.
+    needs: changes
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      github.ref_type == 'tag' ||
+      needs.changes.outputs.demo == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Spot demo unit tests
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag' ||
+          needs.changes.outputs.demo_spot == 'true'
+        run: dotnet test Testing/Spot.Tests/Spot.Tests.csproj --configuration Release --nologo
+
+      - name: Platformer demo unit tests
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag' ||
+          needs.changes.outputs.demo_platformer == 'true'
+        run: dotnet test Testing/Platformer.Tests/Platformer.Tests.csproj --configuration Release --nologo
 
   build:
     runs-on: ubuntu-latest
