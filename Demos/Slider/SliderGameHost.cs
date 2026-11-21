@@ -5,7 +5,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Physics.Movement.Scripted;
-using Gondwana.Rendering.Views;
+using View = Gondwana.Rendering.Views.View;
 using Gondwana.Scenes;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
