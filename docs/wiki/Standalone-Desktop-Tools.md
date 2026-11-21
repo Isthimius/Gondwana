@@ -8,17 +8,17 @@ The standalone editors are not reduced copies of Gondwana Studio. Their reusable
 
 | Format | Project | Primary job |
 | --- | --- | --- |
-| GAF / ZIP | `Gondwana.Tooling.Assets.WinForms` | Create and manage typed asset containers. |
-| GTS | `Gondwana.Tooling.Tilesheets.WinForms` | Author tilesheets, regions, frames, collision metadata, and image sources. |
-| GANI | `Gondwana.Tooling.Animations.WinForms` | Author animation definitions and GTS-backed frame sequences. |
-| GSND | `Gondwana.Tooling.Audio.WinForms` | Author portable sound definitions and source metadata. |
-| GSCN | `Gondwana.Tooling.Scenes.WinForms` | Author scenes, SceneLayers, sparse tile placements, GTS/GANI sources, and scene preview. |
-| GSPR | `Gondwana.Tooling.Sprites.WinForms` | Author collections of sprite definitions with scene/layer and frame references. |
+| GAF / ZIP | `Gondwana.Tooling.Studio.Assets.WinForms` | Create and manage typed asset containers. |
+| GTS | `Gondwana.Tooling.Studio.Tilesheets.WinForms` | Author tilesheets, regions, frames, collision metadata, and image sources. |
+| GANI | `Gondwana.Tooling.Studio.Animations.WinForms` | Author animation definitions and GTS-backed frame sequences. |
+| GSND | `Gondwana.Tooling.Studio.Audio.WinForms` | Author portable sound definitions and source metadata. |
+| GSCN | `Gondwana.Tooling.Studio.Scenes.WinForms` | Author scenes, SceneLayers, sparse tile placements, GTS/GANI sources, and scene preview. |
+| GSPR | `Gondwana.Tooling.Studio.Sprites.WinForms` | Author collections of sprite definitions with scene/layer and frame references. |
 
 Run a tool from the repository root with the normal `dotnet run --project ...` command. For example:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms -c Release
 ```
 
 Replace the project name with the editor you want to run.
@@ -105,7 +105,7 @@ the Icon Size submenu. Resetting a docking layout does not reset this preference
 
 ## Scene Viewer
 
-`Gondwana.Tooling.SceneViewer.WinForms` is a separate utility rather than another definition editor.
+`Gondwana.Tooling.Studio.SceneViewer.WinForms` is a separate utility rather than another definition editor.
 
 Its purpose is:
 
@@ -114,7 +114,7 @@ Its purpose is:
 Launch it directly with:
 
 ```powershell
-Gondwana.Tooling.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
+Gondwana.Tooling.Studio.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
 ```
 
 or use **View Scene** from the GSCN editor. The command is available in both the standalone Scene editor and Studio because it belongs to the shared `SceneEditorControl`.

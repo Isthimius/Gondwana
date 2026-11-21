@@ -10,7 +10,7 @@ Standalone .NET 10 Windows editor for Gondwana `.gani` animation definitions.
 Run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.Animations.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Animations.WinForms -c Release
 ```
 
 ## Design
@@ -73,7 +73,7 @@ The editor refuses to load two GTS files with the same logical
 `TilesheetDefinition.Name` into one document because the resulting GANI references
 would be ambiguous.
 
-Loose and packed GTS images use the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md)
+Loose and packed GTS images use the [shared authoring resolver](../../Gondwana.Tooling.Assets/README.md)
 and Skia decoding, with mask metadata applied for preview parity. **Reload sources**
 refreshes definitions, images, thumbnails and playback data without editing the GANI.
 
@@ -111,7 +111,7 @@ Use **View** to restore an individual pane in the active GANI document, or choos
 workspace. A restored inner pane returns to its previous split/tab group for that
 open document. Layouts, including hidden panes, persist per editor type and entry application.
 
-The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
+The small helper in Tooling/Studio/Shared/WinForms/EditorDockWorkspace.cs is source-linked
 by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
 inner dock contents (including hidden panes) and theme, and disposes them with the
 editor. Existing editor-specific model, image, preview, and event cleanup remains

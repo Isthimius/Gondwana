@@ -13,8 +13,8 @@ Relative paths resolve against the launch working directory. With no arguments, 
 Build or run from the repository root:
 
 ```powershell
-dotnet build Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms -c Release
-dotnet run --project Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms -c Release -- --scene "Content\Scenes\level1.gscn"
+dotnet build Tooling/Studio/Gondwana.Tooling.Studio.SceneViewer.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.SceneViewer.WinForms -c Release -- --scene "Content\Scenes\level1.gscn"
 ```
 
 ## Controls

@@ -10,7 +10,7 @@ Standalone .NET 10 Windows editor for Gondwana `.gsnd` audio definitions.
 Run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Audio.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms -c Release
 ```
 
 ## Design

@@ -10,7 +10,7 @@ A Windows WinForms authoring tool for `.gspr` sprite collections. One file may c
 ## Launch and documents
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.Sprites.WinForms
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Sprites.WinForms
 ```
 
 Use File > New (Ctrl+N), Open (Ctrl+O), Save (Ctrl+S), Save As (Ctrl+Shift+S), and Close (Ctrl+W). Several documents can remain open at once. Modified documents show an asterisk and prompt before closing. Saving reports structural validation errors and uses a temporary file followed by replacement. Save As rebases relative GTS/GSCN authoring paths.
@@ -29,7 +29,7 @@ Use Add GSCN in the source pane or the File menu. Expand the scene and double-cl
 
 GTS data and images belong to the editor. They are not registered with TilesheetRegistry. Loading GSCN reads definitions without materializing a runtime scene. Runtime GSPR materialization never reads authoring dependency paths; the game must load its dependencies first.
 
-Explicit packed GTS, GSCN and GANI sources use the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md),
+Explicit packed GTS, GSCN and GANI sources use the [shared authoring resolver](../../Gondwana.Tooling.Assets/README.md),
 including packed GTS images and GANI tilesheet dependencies. Packed entries and
 logical members are selected exactly, without substituting loose duplicates.
 

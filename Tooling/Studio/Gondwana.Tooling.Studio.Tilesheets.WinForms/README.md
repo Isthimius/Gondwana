@@ -6,14 +6,14 @@ which hosts this same editor. Packed documents retain all logical members and th
 source references; Save updates the typed archive entry, while Save As adopts a loose copy.
 
 Image decoding and package access are shared with the other authoring editors
-through [Gondwana.Tooling.Assets](../Gondwana.Tooling.Assets/README.md).
+through [Gondwana.Tooling.Assets](../../Gondwana.Tooling.Assets/README.md).
 **Reload image** refreshes changed packed images without altering their references.
 
 Standalone .NET 10 Windows editor for `.gts` definitions backed by loose images or image entries in Gondwana asset packages (`.gaf` / `.zip`). Open this project in
 Visual Studio, or run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.Tilesheets.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms -c Release
 ```
 
 ## Undo and redo
@@ -200,7 +200,7 @@ Use **View** to restore an individual pane in the active GTS document, or choose
 **Show all tilesheet panes**. A restored pane returns to its previous split/tab
 group for that open document. Layouts, including hidden panes, persist per editor type and entry application.
 
-The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
+The small helper in Tooling/Studio/Shared/WinForms/EditorDockWorkspace.cs is source-linked
 by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
 inner dock contents (including hidden panes) and theme, and disposes them with the
 editor. Existing editor-specific model, image, preview, and event cleanup remains

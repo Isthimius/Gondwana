@@ -80,12 +80,12 @@ Studio and the standalone editors operate on the same native formats consumed by
 
 | Format | Purpose | Standalone editor | Format documentation |
 | --- | --- | --- | --- |
-| GAF / ZIP | Typed asset containers | `Gondwana.Tooling.Assets.WinForms` | [[Assets Files]] |
-| GTS | Tilesheet definitions | `Gondwana.Tooling.Tilesheets.WinForms` | [[.gts Files|GTS-Files]] |
-| GANI | Animation definitions | `Gondwana.Tooling.Animations.WinForms` | [[.gani Files|GANI-Files]] |
-| GSND | Audio definitions | `Gondwana.Tooling.Audio.WinForms` | [[.gsnd Files|GSND-Files]] |
-| GSCN | Scene definitions | `Gondwana.Tooling.Scenes.WinForms` | [[.gscn Files|GSCN-Files]] |
-| GSPR | Sprite collections | `Gondwana.Tooling.Sprites.WinForms` | [[.gspr Files|GSPR-Files]] |
+| GAF / ZIP | Typed asset containers | `Gondwana.Tooling.Studio.Assets.WinForms` | [[Assets Files]] |
+| GTS | Tilesheet definitions | `Gondwana.Tooling.Studio.Tilesheets.WinForms` | [[.gts Files|GTS-Files]] |
+| GANI | Animation definitions | `Gondwana.Tooling.Studio.Animations.WinForms` | [[.gani Files|GANI-Files]] |
+| GSND | Audio definitions | `Gondwana.Tooling.Studio.Audio.WinForms` | [[.gsnd Files|GSND-Files]] |
+| GSCN | Scene definitions | `Gondwana.Tooling.Studio.Scenes.WinForms` | [[.gscn Files|GSCN-Files]] |
+| GSPR | Sprite collections | `Gondwana.Tooling.Studio.Sprites.WinForms` | [[.gspr Files|GSPR-Files]] |
 
 The format pages remain authoritative for serialization, runtime behavior, provenance, dependency rules, and validation semantics. Tooling documentation explains how those formats are edited.
 
@@ -142,7 +142,7 @@ Studio and the standalone applications store independent UI-layout profiles even
 
 The Scene Viewer is different from the definition editors.
 
-`Gondwana.Tooling.SceneViewer.WinForms` opens a saved GSCN, resolves its authored dependencies, materializes an actual runtime `Scene`, and renders it through the current WinForms GPU host.
+`Gondwana.Tooling.Studio.SceneViewer.WinForms` opens a saved GSCN, resolves its authored dependencies, materializes an actual runtime `Scene`, and renders it through the current WinForms GPU host.
 
 The GSCN editor's **View Scene** command launches the viewer in a separate process from either Studio or the standalone Scene editor. The lightweight Scene Preview remains definition-driven and editable; the Scene Viewer is the runtime check.
 

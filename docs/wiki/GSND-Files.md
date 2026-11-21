@@ -323,13 +323,13 @@ See [[Serialization and EngineState]] for the full snapshot and dependency model
 The standalone editor is:
 
 ```text
-Tooling/Gondwana.Tooling.Audio.WinForms
+Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms
 ```
 
 Run it from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Audio.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms -c Release
 ```
 
 The editor is definition-driven and does not start a `GameHost` or require an

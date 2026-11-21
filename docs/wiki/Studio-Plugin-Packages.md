@@ -38,7 +38,7 @@ and does not silently change that preference.
 Preferences are independent of the working directory and stored at:
 
 ```text
-%LOCALAPPDATA%\Hidden Worlds Games\Gondwana\Tooling\Gondwana.Studio.WinForms\Studio\plugin-preferences.json
+%LOCALAPPDATA%\Hidden Worlds Games\Gondwana\Tooling\Gondwana.Tooling.Studio.WinForms\Studio\plugin-preferences.json
 ```
 
 This uses Studio's existing application-settings root (including any configured

@@ -7,7 +7,7 @@ renaming, and deleting assets stored through `AssetsFile`.
 Open this project in Visual Studio, or run it from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.Assets.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Assets.WinForms -c Release
 ```
 
 This is development tooling, not a runtime dependency for a game.
@@ -188,7 +188,7 @@ Use **View** to restore an individual pane in the active GAF document, or choose
 for that open document.
 Layouts, including hidden panes, persist per editor type and entry application.
 
-The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
+The small helper in Tooling/Studio/Shared/WinForms/EditorDockWorkspace.cs is source-linked
 by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
 inner dock contents (including hidden panes) and theme, and disposes them with the
 editor. Existing editor-specific model, image, preview, and event cleanup remains

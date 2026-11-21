@@ -78,7 +78,7 @@ These are Gondwana content formats rather than Studio-specific project files. Ap
 
 Studio and the standalone editors share the same underlying authoring controls and definition models.
 
-See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
+See **[Gondwana Studio](Tooling/Studio/Gondwana.Tooling.Studio.WinForms)** for details.
 
 ---
 
@@ -87,7 +87,7 @@ See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
 - 📘 **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)**
 - 📚 **[API Reference — stable](https://isthimius.github.io/Gondwana/api/)** · [Development (`master`)](https://isthimius.github.io/Gondwana/api/latest/) · Historical releases are available in the API version selector.
 - 🤖 **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**
-- 🛠️ **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)**
+- 🛠️ **[Gondwana Studio](Tooling/Studio/Gondwana.Tooling.Studio.WinForms)**
 - ❔ **[Frequently Asked Questions](https://github.com/Isthimius/Gondwana/discussions/360)**
 - 📦 **[NuGet Package](https://www.nuget.org/packages/Gondwana)**
 - 🏷️ **[GitHub Releases](https://github.com/Isthimius/Gondwana/releases)**
@@ -243,7 +243,7 @@ Gondwana's development tooling is optional and is not required by the engine at 
 
 | Tool | Install / location | Description |
 | --- | --- | --- |
-| **Gondwana Studio** | [`Tooling/Gondwana.Tooling.Studio.WinForms`](Tooling/Gondwana.Tooling.Studio.WinForms) | Integrated Windows authoring environment for GAF, GTS, GANI, GSND, GSCN, and GSPR content |
+| **Gondwana Studio** | [`Tooling/Studio/Gondwana.Tooling.Studio.WinForms`](Tooling/Studio/Gondwana.Tooling.Studio.WinForms) | Integrated Windows authoring environment for GAF, GTS, GANI, GSND, GSCN, and GSPR content |
 | **Standalone editors** | `Tooling/Gondwana.Tooling.*.WinForms` | Individual authoring utilities for assets, tilesheets, animations, sounds, scenes, and sprites, using the same reusable controls hosted by Studio |
 | **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
 | **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating, checking, upgrading, running, publishing, and deploying Gondwana projects; managing and validating assets; and one-command Blazor/WebAssembly deployment to static web hosts or itch.io |

@@ -12,9 +12,9 @@ edit those formats rather than introducing Studio-specific equivalents.
 
 | Goal | Start with |
 | --- | --- |
-| Edit multiple Gondwana asset types in one application | [Gondwana Studio](./Gondwana.Tooling.Studio.WinForms/README.md) |
+| Edit multiple Gondwana asset types in one application | [Gondwana Studio](./Studio/Gondwana.Tooling.Studio.WinForms/README.md) |
 | Edit one asset type without launching Studio | [Standalone content editors](#standalone-content-editors) |
-| See how a saved scene actually renders in the engine | [Scene Viewer](./Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md) |
+| See how a saved scene actually renders in the engine | [Scene Viewer](./Studio/Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md) |
 | Pack, inspect, publish, or deploy from the command line | [Gondwana CLI](./Gondwana.Cli/README.md) |
 | Create a new game project | [Project templates](./Gondwana.Templates/README.md) |
 
@@ -23,9 +23,9 @@ edit those formats rather than introducing Studio-specific equivalents.
 Tagged GitHub Releases include `Gondwana-<version>-binaries.zip`. Extract the **entire**
 archive, keeping the application directories under `Tooling/` together:
 
-- `Gondwana.Tooling.Studio.WinForms/Gondwana.Studio.WinForms.exe` — integrated Studio,
+- `Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.exe` — integrated Studio,
   including the official Project Diagnostics and External Asset Importer plugins under `plugins/`.
-- `Gondwana.Tooling.{Assets,Animations,Audio,Scenes,Sprites,Tilesheets}.WinForms/` —
+- `Gondwana.Tooling.Studio.{Assets,Animations,Audio,Scenes,Sprites,Tilesheets}.WinForms/` —
   standalone editors, each with its own executable and runtime dependencies.
 - `Gondwana.Tooling.Studio.SceneViewer.WinForms/` — GPU-backed scene viewer shared by
   Studio and the standalone Scene editor.
@@ -46,7 +46,7 @@ validator to keep the layout consistent.
 
 ### Gondwana Studio
 
-[**Gondwana.Tooling.Studio.WinForms**](./Gondwana.Tooling.Studio.WinForms/README.md)
+[**Gondwana.Tooling.Studio.WinForms**](./Studio/Gondwana.Tooling.Studio.WinForms/README.md)
 is the Windows authoring shell. It opens GAF/ZIP, GTS, GANI, GSND, GSCN, and
 GSPR documents side by side, with a working-directory browser, Output,
 document commands, and optional plugins.
@@ -62,12 +62,12 @@ control is also hosted in Studio.
 
 | Format | Standalone editor | Purpose |
 | --- | --- | --- |
-| GAF / ZIP | [Assets](./Gondwana.Tooling.Studio.Assets.WinForms/README.md) | Package management; semantic import/export, reference-aware move/delete, entries, and encryption |
-| GTS | [Tilesheets](./Gondwana.Tooling.Studio.Tilesheets.WinForms/README.md) | Image-backed tilesheets, frames, regions, and collision metadata |
-| GANI | [Animations](./Gondwana.Tooling.Studio.Animations.WinForms/README.md) | Animation cycles, frame sequences, GTS dependencies, and preview |
-| GSCN | [Scenes](./Gondwana.Tooling.Studio.Scenes.WinForms/README.md) | Scenes, layers, sparse tile placements, GTS/GANI sources, and authoring preview |
-| GSPR | [Sprites](./Gondwana.Tooling.Studio.Sprites.WinForms/README.md) | Sprite collections, scene/layer and frame assignments, properties, and preview |
-| GSND | [Audio](./Gondwana.Tooling.Audio.WinForms/README.md) | Sound definitions, audio source references, and playback settings |
+| GAF / ZIP | [Assets](./Studio/Gondwana.Tooling.Studio.Assets.WinForms/README.md) | Package management; semantic import/export, reference-aware move/delete, entries, and encryption |
+| GTS | [Tilesheets](./Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms/README.md) | Image-backed tilesheets, frames, regions, and collision metadata |
+| GANI | [Animations](./Studio/Gondwana.Tooling.Studio.Animations.WinForms/README.md) | Animation cycles, frame sequences, GTS dependencies, and preview |
+| GSCN | [Scenes](./Studio/Gondwana.Tooling.Studio.Scenes.WinForms/README.md) | Scenes, layers, sparse tile placements, GTS/GANI sources, and authoring preview |
+| GSPR | [Sprites](./Studio/Gondwana.Tooling.Studio.Sprites.WinForms/README.md) | Sprite collections, scene/layer and frame assignments, properties, and preview |
+| GSND | [Audio](./Studio/Gondwana.Tooling.Studio.Audio.WinForms/README.md) | Sound definitions, audio source references, and playback settings |
 
 All five native definition formats (GTS, GANI, GSCN, GSPR, and GSND) support
 multi-definition documents. For editor capabilities and known preview limitations,
@@ -75,7 +75,7 @@ follow the editor links above.
 
 ### Runtime scene preview
 
-[**Gondwana.Tooling.Studio.SceneViewer.WinForms**](./Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md)
+[**Gondwana.Tooling.Studio.SceneViewer.WinForms**](./Studio/Gondwana.Tooling.Studio.SceneViewer.WinForms/README.md)
 loads a saved GSCN into a real GPU-backed Gondwana Engine host. It is separate
 from the GSCN editor's lightweight, definition-driven preview. Scene Viewer
 provides camera movement and zoom, animation pause, and F3 runtime diagnostics;
@@ -100,14 +100,14 @@ typed-entry, logical-member, and reference-safety contracts.
 UI-independent conversion pipeline for supported Godot, Tiled, and Aseprite
 content.
 
-[**External Asset Importer plugin**](./Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md)
+[**External Asset Importer plugin**](./Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md)
 provides Studio's Analyze / Import interface, using that same pipeline to
 produce native GTS, GANI, and GSCN content. See the
 [format support matrix](../docs/wiki/External-Asset-Importing.md).
 
 ### Project diagnostics
 
-[**Project Diagnostics plugin**](./Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
+[**Project Diagnostics plugin**](./Studio/Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
 adds an optional, read-only Studio report of authored files, explicit
 references, and validation or missing-resource problems. It is not the
 runtime inspector or a replacement for the asset-operation dependency planner.
@@ -127,8 +127,8 @@ Follow each plugin's README for deployment and lifecycle requirements.
 
 | Project or directory | Purpose |
 | --- | --- |
-| [Gondwana.Tooling.Studio.Core](./Gondwana.Tooling.Studio.Core/) | UI-independent Studio plugin contracts and shell Output state |
-| [Shared](./Shared/) | Source-linked reusable WinForms tooling infrastructure, including nested dock workspaces |
+| [Gondwana.Tooling.Studio.Core](./Studio/Gondwana.Tooling.Studio.Core/) | UI-independent Studio plugin contracts and shell Output state |
+| [Shared](./Studio/Shared/) | Source-linked reusable WinForms tooling infrastructure, including nested dock workspaces |
 | [scripts](./scripts/README.md) | PowerShell helpers for setup, changelogs, publishing, deployment, releases, and maintenance |
 
 ## Workspace and dock-layout preferences
@@ -149,4 +149,4 @@ can reopen previously saved documents on startup; untitled documents and unsaved
 contents are not recovered. **File > Restore workspace on startup** controls that
 behavior. Missing or invalid preferences fall back to defaults. For detailed ownership,
 pane recovery, and plugin behavior, see the
-[Studio documentation](./Gondwana.Tooling.Studio.WinForms/README.md).
+[Studio documentation](./Studio/Gondwana.Tooling.Studio.WinForms/README.md).

@@ -10,7 +10,7 @@ Standalone .NET 10 Windows editor for Gondwana `.gscn` scene definitions.
 Run from the repository root:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.Scenes.WinForms -c Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Scenes.WinForms -c Release
 ```
 
 ## Undo and redo
@@ -161,7 +161,7 @@ AnimationSources
 Those collections locate the corresponding GTS/GANI authoring files. Loose
 paths are stored relative to the GSCN whenever possible and are rebased by
 **Save As**. Packed GTS/GANI dependencies and their packed images are previewed
-through the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md).
+through the [shared authoring resolver](../../Gondwana.Tooling.Assets/README.md).
 An animation's explicit tilesheet source is respected even if the scene declares
 a different source with the same logical name. Missing packed dependencies produce
 warnings instead of falling back to loose duplicates. **Reload sources** refreshes

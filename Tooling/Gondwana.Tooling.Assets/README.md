@@ -36,18 +36,18 @@ Passwords are never stored in definitions.
 `GetResources` lists exact physical entry identities filtered by stored `AssetTypes`.
 `PackedResourceSelection` keeps the logical member separate, enumerates members
 through existing serializers, and validates the selected member before application.
-The single linked `Tooling/Shared/WinForms/PackedResourcePicker.cs` supplies the
+The single linked `Tooling/Studio/Shared/WinForms/PackedResourcePicker.cs` supplies the
 GANI/GSCN/GSPR/GSND dependency UI, including **Reload / retry** for cached failures
 or changed packages. Browsing never extracts or rewrites archives. Conflicting
 logical names are rejected instead of silently switching an existing dependency.
 
 The controls share Skia decoding, masking and owned GDI bitmap conversion through
-`Tooling/Shared/WinForms/AuthoringPreviewImage.cs`. GANI keeps its existing playback
+`Tooling/Studio/Shared/WinForms/AuthoringPreviewImage.cs`. GANI keeps its existing playback
 and timing; scenes use a representative first animation frame. Sprites with a
 starting animation preview its first frame using that animation's own declared
 GTS sources; scene/layer positioning remains unchanged.
 
-This library resolves dependencies. [Studio](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions)
+This library resolves dependencies. [Studio](../Studio/Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions)
 owns opening and editing packed native documents, coordinated transactional GAF
 saves, conflict handling, and session restoration. It uses the same resolver for
 their previews. Standalone editors share the preview controls but retain their

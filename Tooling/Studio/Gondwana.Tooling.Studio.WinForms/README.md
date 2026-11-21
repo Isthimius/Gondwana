@@ -18,7 +18,7 @@ or `GameHost`.
 From the repository root on Windows:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms --configuration Release
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.WinForms --configuration Release
 ```
 
 ## Working with files
@@ -94,7 +94,7 @@ To start without reopening the previous session, choose **File > Start empty on
 next launch**, hold **Shift** during startup, or pass `--empty-workspace`:
 
 ```console
-dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -- --empty-workspace
+dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.WinForms -- --empty-workspace
 ```
 
 Unavailable files are skipped, and encrypted archives may ask for their
@@ -127,13 +127,13 @@ legacy flat DLLs remain manually deployed.
 Studio's six editors are built in. Optional plugins can add tools to the
 workspace:
 
-- [Project Diagnostics](../Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
+- [Project Diagnostics](../Plugin/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
   scans authoring files and references.
-- [External Asset Importer](../Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md)
+- [External Asset Importer](../Plugin/Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md)
   imports supported Tiled, Godot, and Aseprite content.
 
 Each plugin's README explains how to build, deploy, and use it. Studio runs
-without either plugin. See [plugin package conventions](../../docs/wiki/Studio-Plugin-Packages.md)
+without either plugin. See [plugin package conventions](../../../docs/wiki/Studio-Plugin-Packages.md)
 for manifests, legacy compatibility, dependency boundaries, and structured status.
 
 ## Development
@@ -141,10 +141,10 @@ for manifests, legacy compatibility, dependency boundaries, and structured statu
 Studio owns the outer docked workspace, file handling, and plugin integration;
 the standalone WinForms projects supply the actual format editors. Shared
 resource resolution is documented in
-[Gondwana.Tooling.Assets](../Gondwana.Tooling.Assets/README.md).
+[Gondwana.Tooling.Assets](../../Gondwana.Tooling.Assets/README.md).
 
 Windows UI tests live in `Testing/Gondwana.Tooling.Studio.WinForms.Tests`.
 Studio uses [DockPanel Suite](https://github.com/dockpanelsuite/dockpanelsuite)
 for docking (originally created by Weifen Luo).
 
-For the broader authoring toolset, see the [Tooling overview](../README.md).
+For the broader authoring toolset, see the [Tooling overview](../../README.md).
