@@ -1,5 +1,7 @@
 using System.Drawing;
 using Gondwana.Input.Touch;
+using Gondwana.Tests.Input;
+using Gondwana.Timers;
 using Gondwana.WinForms.Input.Touch;
 
 namespace Gondwana.Tests.WinFormsInput;
@@ -8,7 +10,8 @@ namespace Gondwana.Tests.WinFormsInput;
 /// Tests platform-neutral touch transition buffering used by the Windows
 /// adapter, without requiring a touchscreen or an HWND on Linux CI.
 /// </summary>
-public sealed class WinFormsTouchStateTests
+[Collection(InputPollerCollection.Name)]
+public sealed class WinFormsTouchStateTests : IDisposable
 {
     [Fact]
     public void FastTapStillProvidesBothEdgesBetweenPolls()
@@ -35,11 +38,11 @@ public sealed class WinFormsTouchStateTests
         state.Move(1, new Point(12, 24));
         state.End(2, new Point(31, 41));
 
-        Assert.Equal(new TouchPoint(1, new Point(12, 24), TouchPhase.Moved),
-            Assert.Single(state.ActiveTouches));
         Assert.Equal(2, state.ConsumeBeginnings().Count);
         Assert.Equal(new TouchPoint(2, new Point(31, 41), TouchPhase.Ended),
             Assert.Single(state.ConsumeEndings()));
+        Assert.Equal(new TouchPoint(1, new Point(12, 24), TouchPhase.Moved),
+            Assert.Single(state.ActiveTouches));
     }
 
     [Fact]
@@ -73,6 +76,103 @@ public sealed class WinFormsTouchStateTests
     }
 
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void SequentialFastTaps_AreRecognizedIndependently_EvenWhenIdsAreReused(bool reuseId)
+    {
+        var state = new WinFormsTouchState();
+        TouchEventPoller.Initialize(state, new TouchEventConfiguration());
+        var poller = TouchEventPoller.Instance!;
+        var taps = new List<int>();
+        poller.TapRecognizer.Tapped += (_, e) => taps.Add(e.TouchId);
+
+        int nextId = reuseId ? 7 : 8;
+        state.Begin(7, new Point(20, 20));
+        state.End(7, new Point(20, 20));
+        state.Begin(nextId, new Point(24, 24));
+        state.End(nextId, new Point(24, 24));
+
+        // Both complete native lifecycles occurred before a single engine tick.
+        // The adapter hands them off chronologically on successive polls.
+        long tick = HighResTimer.TicksPerSecond;
+        poller.PollForEvents(tick);
+        Assert.Equal([7], taps);
+        Assert.Empty(poller.ActiveTouches);
+        poller.PollForEvents(tick + HighResTimer.TicksPerSecond / 60);
+        Assert.Equal(new[] { 7, nextId }, taps);
+        Assert.Empty(poller.ActiveTouches);
+    }
+
+    [Fact]
+    public void SimultaneousFingers_DoNotBecomeSingleFingerTaps()
+    {
+        var state = new WinFormsTouchState();
+        TouchEventPoller.Initialize(state, new TouchEventConfiguration());
+        var poller = TouchEventPoller.Instance!;
+        int taps = 0;
+        poller.TapRecognizer.Tapped += (_, _) => taps++;
+
+        state.Begin(1, new Point(20, 20));
+        state.Begin(2, new Point(30, 30));
+        state.End(1, new Point(20, 20));
+        state.End(2, new Point(30, 30));
+        poller.PollForEvents(HighResTimer.TicksPerSecond);
+
+        Assert.Equal(0, taps);
+        Assert.Empty(poller.ActiveTouches);
+    }
+
+    [Fact]
+    public void EventsArrivingDuringBatchReads_AreProcessedOnTheNextPoll()
+    {
+        var state = new WinFormsTouchState();
+        state.Begin(1, new Point(10, 10));
+        state.End(1, new Point(10, 10));
+
+        // Mimic a native callback precisely between the two ITouchAdapter
+        // consumption calls made by TouchEventPoller.
+        Assert.Equal(1, Assert.Single(state.ConsumeBeganTouches()).Id);
+        state.Begin(2, new Point(20, 20));
+        state.End(2, new Point(20, 20));
+        Assert.Equal(1, Assert.Single(state.ConsumeEndedTouches()).Id);
+        Assert.Empty(state.ActiveTouches);
+
+        Assert.Equal(2, Assert.Single(state.ConsumeBeganTouches()).Id);
+        Assert.Equal(2, Assert.Single(state.ConsumeEndedTouches()).Id);
+        Assert.Empty(state.ActiveTouches);
+    }
+
+    [Fact]
+    public void LateTapDuringPolling_CannotCreateStuckContacts()
+    {
+        var state = new WinFormsTouchState();
+        TouchEventPoller.Initialize(state, new TouchEventConfiguration());
+        var poller = TouchEventPoller.Instance!;
+        int taps = 0;
+        poller.TapRecognizer.Tapped += (_, _) => taps++;
+
+        state.Begin(1, new Point(10, 10));
+        state.End(1, new Point(10, 10));
+        poller.TouchBegan += (_, e) =>
+        {
+            if (e.Touch.Id != 1)
+                return;
+
+            // These events happen after both queues were snapshotted by
+            // the poller; they must not alter the current batch.
+            state.Begin(2, new Point(40, 40));
+            state.End(2, new Point(40, 40));
+        };
+
+        long tick = HighResTimer.TicksPerSecond;
+        poller.PollForEvents(tick);
+        poller.PollForEvents(tick + HighResTimer.TicksPerSecond / 60);
+
+        Assert.Equal(2, taps);
+        Assert.Empty(poller.ActiveTouches);
+    }
+
+    [Theory]
     [InlineData(unchecked((long)0xFF515780), true)]
     [InlineData(unchecked((long)0xFF515781), true)]
     [InlineData(unchecked((long)0xFF515700), false)] // Pen is not touch.
@@ -83,4 +183,6 @@ public sealed class WinFormsTouchStateTests
         Assert.Equal(expected,
             WinFormsTouchState.IsPromotedTouchMouseMessage(extraInfo));
     }
+
+    public void Dispose() => TouchEventPoller.Reset();
 }
