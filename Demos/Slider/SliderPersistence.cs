@@ -74,6 +74,7 @@ internal static class SliderPersistence
         }
         catch (IOException) { return []; }
         catch (JsonException) { return []; }
+        catch (UnauthorizedAccessException) { return []; }
     }
 
     internal static IReadOnlyList<SliderScore> AddScore(
