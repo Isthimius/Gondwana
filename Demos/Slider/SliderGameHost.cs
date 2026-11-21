@@ -226,10 +226,10 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
         int y = _board.BlankRow;
         switch (key)
         {
-            case Keys.Left:  x++; break;
+            case Keys.Left: x++; break;
             case Keys.Right: x--; break;
-            case Keys.Up:    y++; break;
-            case Keys.Down:  y--; break;
+            case Keys.Up: y++; break;
+            case Keys.Down: y--; break;
             default: return;
         }
 

@@ -108,12 +108,12 @@ internal sealed class PuzzleRenderer : IDisposable
     internal void SnapToBoard(SlidingPuzzle board)
     {
         for (int row = 0; row < board.Rows; row++)
-        for (int col = 0; col < board.Columns; col++)
-        {
-            int piece = board.PieceAt(col, row);
-            if (piece >= 0)
-                _pieces[piece].SetPosition(PositionAt(col, row));
-        }
+            for (int col = 0; col < board.Columns; col++)
+            {
+                int piece = board.PieceAt(col, row);
+                if (piece >= 0)
+                    _pieces[piece].SetPosition(PositionAt(col, row));
+            }
     }
 
     internal Vector2 PositionForIndex(int index)
