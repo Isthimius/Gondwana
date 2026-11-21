@@ -63,6 +63,14 @@ public static class EngineExtensions
     {
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(control);
+
+        if (control.InvokeRequired)
+            throw new InvalidOperationException("WinForms touch adapters must be initialized on the UI thread.");
+
+        // Dispose the old adapter and unregister its HWNDs *before* the new
+        // adapter registers those same windows. The TouchAdapter setter
+        // otherwise constructs the replacement before disposing its predecessor.
+        engine.Input.TouchAdapter = null;
         engine.Input.TouchAdapter = new WinFormsTouchAdapter(control);
     }
 
