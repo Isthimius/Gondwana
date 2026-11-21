@@ -118,6 +118,47 @@ public sealed class ViewportScalingTests : IDisposable
     }
 
     /// <summary>
+    /// Verifies fluid applications can explicitly match their logical surface to a
+    /// resized adapter while the default presentation-only resize behavior remains unchanged.
+    /// </summary>
+    [Fact]
+    public void ExplicitLogicalResolution_TracksChangingAspectRatios_WithoutLetterboxing()
+    {
+        var adapter = new Adapter(800, 600);
+        using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
+        using var buffer = host.Backbuffer;
+        using var scene = new Scene();
+        host.Bind(scene, false);
+        var view = Assert.Single(host.ViewManager.Views);
+
+        adapter.Resize(1200, 720);
+        Assert.Equal((800, 600), (buffer.Width, buffer.Height));
+        Assert.Equal(new SKRect(120, 0, 1080, 720),
+            adapter.Presentation.DestinationRect);
+
+        host.RequestLogicalResolution(1200, 720);
+        buffer.BeginFrame();
+
+        Assert.Equal((1200, 720), (buffer.Width, buffer.Height));
+        Assert.Same(view, Assert.Single(host.ViewManager.Views));
+        Assert.Equal(new Rectangle(0, 0, 1200, 720), view.Viewport.TargetRectPx);
+        Assert.Equal(new SKRect(0, 0, 1200, 720),
+            adapter.Presentation.DestinationRect);
+        Assert.Equal(1f, Engine.Instance.Configuration.RenderScale);
+
+        adapter.Resize(720, 1200);
+        host.RequestLogicalResolution(720, 1200);
+        buffer.BeginFrame();
+
+        Assert.Equal((720, 1200), (buffer.Width, buffer.Height));
+        Assert.Equal(new Rectangle(0, 0, 720, 1200), view.Viewport.TargetRectPx);
+        Assert.Equal(new SKRect(0, 0, 720, 1200),
+            adapter.Presentation.DestinationRect);
+        Assert.Throws<ArgumentOutOfRangeException>(() => host.RequestLogicalResolution(0, 100));
+        Assert.Throws<ArgumentOutOfRangeException>(() => host.RequestLogicalResolution(100, 0));
+    }
+
+    /// <summary>
     /// Verifies deferred initial layout is established once explicit change while minimized is deferred.
     /// </summary>
     [Fact]
