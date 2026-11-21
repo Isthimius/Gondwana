@@ -69,8 +69,20 @@ internal sealed class SlidingPuzzle
 
     internal void Shuffle(int moves, Random? random = null)
     {
+        foreach (PuzzleMove _ in ShuffleSteps(moves, random))
+        {
+        }
+    }
+
+    /// <summary>
+    /// Yields legal shuffle moves as they happen, allowing the host to animate each
+    /// move before requesting the next one. Shuffle moves never count as player moves.
+    /// </summary>
+    internal IEnumerable<PuzzleMove> ShuffleSteps(int moves, Random? random = null)
+    {
         ArgumentOutOfRangeException.ThrowIfNegative(moves);
         random ??= Random.Shared;
+        MoveCount = 0;
         int previousBlank = -1;
 
         for (int i = 0; i < moves; i++)
@@ -80,18 +92,14 @@ internal sealed class SlidingPuzzle
                 candidates = Adjacent(_blank).ToArray();
 
             int oldBlank = _blank;
-            SwapWithBlank(candidates[random.Next(candidates.Length)]);
+            PuzzleMove move = SwapWithBlank(candidates[random.Next(candidates.Length)]);
             previousBlank = oldBlank;
+            yield return move;
         }
 
         // A puzzle accidentally returned to the solved layout is not a useful shuffle.
         if (moves > 0 && IsSolved)
-        {
-            int candidate = Adjacent(_blank).First();
-            SwapWithBlank(candidate);
-        }
-
-        MoveCount = 0;
+            yield return SwapWithBlank(Adjacent(_blank).First());
     }
 
     private PuzzleMove SwapWithBlank(int from)
