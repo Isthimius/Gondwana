@@ -31,9 +31,7 @@ internal sealed class SliderSidebar : IDisposable
 
     // Arrow keys belong to the selector while one is being operated, not to the puzzle.
     internal bool IsEditingDimensions =>
-        _columns.IsDropDownOpen || _rows.IsDropDownOpen ||
-        _columns.Header.IsFocused || _columns.DropDown.IsFocused ||
-        _rows.Header.IsFocused || _rows.DropDown.IsFocused;
+        _columns.IsDropDownOpen || _rows.IsDropDownOpen;
 
     internal SliderSidebar(RenderSurfaceHostBase host, View view,
         int height,
@@ -46,8 +44,8 @@ internal sealed class SliderSidebar : IDisposable
             new Rectangle(0, 0, Width, Math.Max(1, height)), BackgroundColor, "slider.sidebar")
             .SetPanelZOrder(1000);
 
-        AddLabel(host, view, new Rectangle(18, 17, 208, 48), "SLIDER", 30f, SKColors.White);
-        AddLabel(host, view, new Rectangle(18, 77, 204, 23), "Columns", 17f, SKColors.LightGray);
+        AddLabel(host, view, new Rectangle(18, 17, 208, 48), "SLIDER", 30f, SKColors.White, "slider.title");
+        AddLabel(host, view, new Rectangle(18, 77, 204, 23), "Columns", 17f, SKColors.LightGray, "slider.columnsLabel");
         _columns = new ComboBoxWidget(host, view, new Rectangle(18, 101, 202, 33),
             Dimensions, dropDownHeight: 220, nickname: "slider.columns");
         _panel.AddWidget(_columns, new Point(18, 101));
@@ -55,7 +53,7 @@ internal sealed class SliderSidebar : IDisposable
         _columns.SetHeaderTextColor(Color.White);
         _columns.SelectedIndex = 1; // 4 columns
 
-        AddLabel(host, view, new Rectangle(18, 145, 204, 23), "Rows", 17f, SKColors.LightGray);
+        AddLabel(host, view, new Rectangle(18, 145, 204, 23), "Rows", 17f, SKColors.LightGray, "slider.rowsLabel");
         _rows = new ComboBoxWidget(host, view, new Rectangle(18, 169, 202, 33),
             Dimensions, dropDownHeight: 220, nickname: "slider.rows");
         _panel.AddWidget(_rows, new Point(18, 169));
@@ -63,9 +61,9 @@ internal sealed class SliderSidebar : IDisposable
         _rows.SetHeaderTextColor(Color.White);
         _rows.SelectedIndex = 0; // 3 rows
 
-        AddButton(host, view, 222, "New puzzle", onNewPuzzle);
-        AddButton(host, view, 267, "Open picture...", () => onOpenPicture(Columns, Rows));
-        AddButton(host, view, 312, "Shuffle", onShuffle);
+        AddButton(host, view, 222, "New puzzle", "slider.newPuzzle", onNewPuzzle);
+        AddButton(host, view, 267, "Open picture...", "slider.openPicture", () => onOpenPicture(Columns, Rows));
+        AddButton(host, view, 312, "Shuffle", "slider.shuffle", onShuffle);
 
         var grid = new CheckBoxWidget(host, view, new Rectangle(18, 370, 205, 29),
             "Show piece outlines", isChecked: true, nickname: "slider.grid")
@@ -74,11 +72,11 @@ internal sealed class SliderSidebar : IDisposable
         _panel.AddWidget(grid, new Point(18, 370));
 
         AddLabel(host, view, new Rectangle(18, 416, 207, 60),
-            "Arrow keys or click a tile beside the empty square.", 15f, SKColors.LightGray)
+            "Arrow keys or click a tile beside the empty square.", 15f, SKColors.LightGray, "slider.instructions")
             .EnableWrapping();
 
         _status = AddLabel(host, view, new Rectangle(18, 496, 205, 120),
-            "Starting...", 17f, SKColors.White);
+            "Starting...", 17f, SKColors.White, "slider.status");
         _panel.Show();
     }
 
@@ -87,9 +85,9 @@ internal sealed class SliderSidebar : IDisposable
     internal void Resize(int height) => _panel.Size = new Size(Width, Math.Max(1, height));
 
     private LabelWidget AddLabel(RenderSurfaceHostBase host, View view,
-        Rectangle bounds, string text, float size, SKColor color)
+        Rectangle bounds, string text, float size, SKColor color, string nickname)
     {
-        var label = new LabelWidget(host, view, bounds, text, "slider.label")
+        var label = new LabelWidget(host, view, bounds, text, nickname)
             .SetFont(SKTypeface.Default, size)
             .SetColors(color, SKColors.Transparent);
         _panel.AddWidget(label, bounds.Location);
@@ -97,10 +95,10 @@ internal sealed class SliderSidebar : IDisposable
     }
 
     private void AddButton(RenderSurfaceHostBase host, View view,
-        int top, string text, Action clicked)
+        int top, string text, string nickname, Action clicked)
     {
         var button = new ButtonWidget(host, view, new Rectangle(18, top, 202, 36),
-            text, "slider.button")
+            text, nickname)
             .SetBackgroundColors(ButtonColor, ButtonHoverColor, ButtonPressedColor)
             .SetTextColor(Color.White);
         button.Clicked += clicked;
