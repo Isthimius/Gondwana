@@ -62,11 +62,27 @@ public abstract class WinFormsGameHostBase : GameHostBase
     }
 
     /// <summary>
-    /// Configures touch input. By default, this method does not perform any actions,
-    /// but it can be overridden in derived classes to set up touch input handling.
+    /// Opts this host into native Windows touchscreen routing.
+    /// </summary>
+    /// <remarks>
+    /// Disabled by default to preserve touch-to-mouse behavior in existing
+    /// WinForms games that consume mouse input directly. Widget-driven games
+    /// can override this to true to receive native contact and tap events.
+    /// </remarks>
+    protected virtual bool EnableNativeTouch => false;
+
+    /// <summary>
+    /// Configures native WinForms touch when explicitly enabled, before the
+    /// widget router is created. Custom hosts can still override this hook.
     /// </summary>
     protected override void ConfigureTouch()
     {
+        if (EnableNativeTouch)
+        {
+            Engine.Instance.InitializeWinFormsTouchAdapter(_renderSurface);
+            Engine.Input.TouchEventPoller?.StartMonitoringTouch();
+        }
+
         OnTouchAdapterInitialized();
     }
 

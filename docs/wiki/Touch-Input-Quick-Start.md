@@ -30,9 +30,15 @@ Gondwana includes touch adapters for:
 |---|---|
 | Avalonia | `AvaloniaTouchInputAdapter` |
 | Blazor | `BlazorTouchAdapter` |
-| WinForms | No built-in touch adapter |
+| WinForms | `WinFormsTouchAdapter` (`WM_TOUCH`) |
 
-Avalonia and Blazor game hosts initialize touch automatically.
+Avalonia and Blazor game hosts initialize touch automatically. WinForms supports native Windows touch contacts via an opt-in host property, leaving touchscreen-to-mouse emulation available to older mouse-only games:
+
+```csharp
+protected override bool EnableNativeTouch => true;
+```
+
+With that property enabled, the WinForms host initializes the native adapter and starts monitoring touch. The mouse adapter suppresses duplicate compatibility mouse messages for those touch contacts.
 
 This page uses the host hook:
 
@@ -55,8 +61,9 @@ The event does not automatically hit-test game sprites.
 > **Note:** Subscribing to `UnhandledPrimaryAction` does not start touch polling
 > automatically. While the game host starts mouse monitoring during widget input
 > initialization, touch input requires calling `TouchEventPoller.StartMonitoringTouch()`
-> from `OnTouchAdapterInitialized`. Without that call, touch events are never polled
-> and the tap half of the unified action will not fire.
+> from `OnTouchAdapterInitialized` **when initializing a custom host**.
+> Avalonia/Blazor game hosts start touch polling automatically. WinForms does so
+> only when `EnableNativeTouch` is set to `true` on the derived host.
 
 See [[Widgets Overview|Widgets-Overview]] for the callback/cleanup pattern.
 
@@ -534,7 +541,7 @@ foreach (var point in touch.ActiveTouches)
 
 The platform touch adapter was not initialized.
 
-Avalonia and Blazor hosts do this automatically. WinForms requires a custom `ITouchAdapter`.
+Avalonia and Blazor hosts do this automatically. In WinForms, override `EnableNativeTouch => true` on the GameHost (or call `InitializeWinFormsTouchAdapter` with manual host setup).
 
 ## Touch works on a device but not with a desktop mouse
 

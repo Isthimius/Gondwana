@@ -3,6 +3,7 @@ using Gondwana.Input.Mouse;
 using Gondwana.WinForms.Input.Gamepad.XInput;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Input.Mouse;
+using Gondwana.WinForms.Input.Touch;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.WinForms;
@@ -48,6 +49,31 @@ public static class EngineExtensions
 
         KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(control));
     }
+
+
+    /// <summary>
+    /// Initializes native Windows touchscreen support for a render control.
+    /// Contact events are queued on the UI thread and polled by Gondwana.
+    /// On machines without registered touch windows, the normal mouse adapter
+    /// remains available for compatibility input.
+    /// </summary>
+    /// <param name="engine">The engine instance to configure.</param>
+    /// <param name="control">The WinForms surface to capture touch from.</param>
+    public static void InitializeWinFormsTouchAdapter(this Engine engine, Control control)
+    {
+        ArgumentNullException.ThrowIfNull(engine);
+        ArgumentNullException.ThrowIfNull(control);
+
+        if (control.InvokeRequired)
+            throw new InvalidOperationException("WinForms touch adapters must be initialized on the UI thread.");
+
+        // Dispose the old adapter and unregister its HWNDs *before* the new
+        // adapter registers those same windows. The TouchAdapter setter
+        // otherwise constructs the replacement before disposing its predecessor.
+        engine.Input.TouchAdapter = null;
+        engine.Input.TouchAdapter = new WinFormsTouchAdapter(control);
+    }
+
 
     /// <summary>
     /// Initializes the Windows Forms mouse adapter for the specified control.
