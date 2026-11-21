@@ -44,6 +44,8 @@ internal static class SliderPersistence
         ArgumentNullException.ThrowIfNull(save);
         if (save.Version != 1)
             throw new InvalidDataException("Unsupported Slider save-file version.");
+        if (save.Columns is < 3 or > 20 || save.Rows is < 3 or > 20)
+            throw new InvalidDataException("Saved puzzle dimensions must be between 3 and 20.");
         if (save.ElapsedTicks < 0 || save.ElapsedTicks > TimeSpan.MaxValue.Ticks)
             throw new InvalidDataException("Invalid saved elapsed time.");
         if (save.Won && !save.Started)
@@ -98,6 +100,15 @@ internal static class SliderPersistence
         File.Move(temp, path, overwrite: true);
     }
 
+    internal static string FormatElapsed(TimeSpan duration)
+    {
+        if (duration.Days > 0)
+            return duration.ToString(@"d\.hh\:mm\:ss");
+        if (duration.Hours > 0)
+            return duration.ToString(@"hh\:mm\:ss");
+        return duration.ToString(@"mm\:ss");
+    }
+
     internal static string FormatScores(IReadOnlyList<SliderScore> scores)
     {
         if (scores.Count == 0)
@@ -109,7 +120,7 @@ internal static class SliderPersistence
             .Select(g => $"{g.Key.Columns} x {g.Key.Rows}{Environment.NewLine}" +
                 string.Join(Environment.NewLine, g.OrderBy(s => s.ElapsedTicks)
                     .ThenBy(s => s.Moves).Take(10).Select((s, index) =>
-                        $"  {index + 1,2}. {TimeSpan.FromTicks(s.ElapsedTicks):mm\\:ss}  " +
+                        $"  {index + 1,2}. {FormatElapsed(TimeSpan.FromTicks(s.ElapsedTicks))}  " +
                         $"{s.Moves} moves  ({s.CompletedUtc:yyyy-MM-dd})"))));
     }
 }
