@@ -47,6 +47,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private bool _started;
     private bool _won;
     private PuzzleRequest? _pendingPictureLoad;
+    private SliderSave? _pendingSavedLoad;
     private bool _hideLoadingOnNextTick;
     private long _lastStatusTicks;
 
@@ -188,6 +189,22 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
             _sidebar?.SetLoading(-1f);
             _hideLoadingOnNextTick = false;
         }
+        else if (_pendingSavedLoad is { } saved)
+        {
+            _pendingSavedLoad = null;
+            try
+            {
+                _sidebar?.SetLoading(0.65f);
+                RestoreSavedGame(saved);
+                _sidebar?.SetLoading(1f);
+                _hideLoadingOnNextTick = true;
+            }
+            catch (Exception ex)
+            {
+                _sidebar?.SetLoading(-1f);
+                _sidebar?.SetStatus("Unable to load saved puzzle: " + ex.Message);
+            }
+        }
         else if (_pendingPictureLoad is { } picture)
         {
             _pendingPictureLoad = null;
@@ -250,7 +267,8 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
                         PublishStatus();
                         break;
                     case PuzzleCommand.Restore:
-                        RestoreSavedGame(request.SavedGame!);
+                        _pendingSavedLoad = request.SavedGame!;
+                        _sidebar?.SetLoading(0.15f);
                         break;
                     case PuzzleCommand.ShowGrid:
                     case PuzzleCommand.HideGrid:
