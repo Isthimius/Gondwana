@@ -11,6 +11,8 @@ internal sealed partial class SliderGameHost
     private byte[]? _imagePng;
     private TimeSpan _elapsedBeforeResume;
 
+    internal bool HasMenuOrDialogOpen => _menu?.HasOpenDialog == true || _menu?.HasOpenMenu == true;
+
     internal event Action<SliderSave>? SaveGameRequested;
     internal event Action? LoadGameRequested;
     internal event Action? ExitRequested;
