@@ -1,5 +1,4 @@
 using Gondwana.Drawing.Sprites;
-using Gondwana.Input.Keyboard;
 using SkiaSharp;
 
 namespace Gondwana.Demos.Slider;
@@ -10,6 +9,12 @@ internal sealed partial class SliderGameHost
     private IReadOnlyList<SliderScore> _highScores = SliderPersistence.LoadScores();
     private byte[]? _imagePng;
     private TimeSpan _elapsedBeforeResume;
+    private int _shiftHeldFromUi;
+
+    // These snapshots are published by the WinForms UI thread. On deactivation,
+    // immediately clear Shift even when another window receives the key-up.
+    internal void SetShiftHeld(bool held)
+        => Volatile.Write(ref _shiftHeldFromUi, held ? 1 : 0);
 
     internal bool HasMenuOrDialogOpen => HasMenuOrDialogOpen || _menu?.HasOpenMenu == true;
 
@@ -117,10 +122,6 @@ internal sealed partial class SliderGameHost
 
     private void UpdateShiftLabels()
     {
-        // The adapter updates modifiers on the UI thread; reading its snapshot
-        // also handles lost key-up events when the window loses focus.
-        KeyboardModifierState modifiers = Engine.Input.KeyboardEventPoller?.Adapter?
-            .CurrentKeyboardModifiers ?? KeyboardModifierState.None;
-        _renderer.ShowDestinations((modifiers & KeyboardModifierState.Shift) != 0);
+        _renderer.ShowDestinations(Volatile.Read(ref _shiftHeldFromUi) != 0);
     }
 }
