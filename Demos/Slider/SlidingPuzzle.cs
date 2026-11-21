@@ -99,7 +99,7 @@ internal sealed class SlidingPuzzle
 
         // A puzzle accidentally returned to the solved layout is not a useful shuffle.
         if (moves > 0 && IsSolved)
-            yield return SwapWithBlank(Adjacent(_blank).First());
+            yield return SwapWithBlank(Adjacent(_blank).First(index => index != previousBlank));
     }
 
     private PuzzleMove SwapWithBlank(int from)
