@@ -1,5 +1,4 @@
 using System.Drawing;
-using Gondwana.Demos.Platformer;
 
 namespace Gondwana.Demos.Platformer.Tests;
 
