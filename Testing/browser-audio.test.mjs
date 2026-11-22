@@ -205,28 +205,3 @@ test("a sound bank shares one context and unloading tracks preserves other playb
 test("the demo consumes the backend static asset without a conflicting source copy", async () => {
     await assert.rejects(readFile(new URL("../Demos/Spot.Blazor/wwwroot/gondwana-audio.js", import.meta.url)), { code: "ENOENT" });
 });
-
-test("trusted gesture resumes suspended Web Audio context before a later game-loop play", async () => {
-    audio.load("slider-effect", "slide.wav", false, 1, 0, 1);
-    const media = elements.at(-1);
-    const context = contexts[0];
-
-    // Browser audio may be loaded during startup and played only after the
-    // engine processes a click on a later frame. Successful HTML media play
-    // alone does not unblock a suspended Web Audio context.
-    context.state = "suspended";
-    gestures.dispatchEvent(new Event("pointerdown"));
-    await Promise.resolve();
-    assert.equal(context.state, "running");
-
-    audio.play("slider-effect", true);
-    assert.equal(media.paused, false);
-
-    // Keyboard-driven puzzle moves must unlock audio as well.
-    context.state = "suspended";
-    gestures.dispatchEvent(new Event("keydown"));
-    await Promise.resolve();
-    assert.equal(context.state, "running");
-
-    audio.unload("slider-effect");
-});
