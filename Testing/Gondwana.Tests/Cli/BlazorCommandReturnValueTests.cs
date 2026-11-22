@@ -26,11 +26,11 @@ public sealed class BlazorCommandReturnValueTests
             "publish-blazor",
             "--project", projectPath,
             "--configuration", "Release",
-            "--framework", "net8.0-browser",
+            "--framework", "net10.0-browser",
             "--skip-workload");
 
         Assert.Equal(0, exitCode);
-        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release", "net8.0-browser");
+        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release", "net10.0-browser");
         Assert.NotNull(wwwroot);
         Assert.True(File.Exists(Path.Combine(wwwroot!, "index.html")));
     }
@@ -47,7 +47,7 @@ public sealed class BlazorCommandReturnValueTests
         var resolved = ProjectHelper.TryResolveBrowserFramework(projectPath, null, out var framework, out var error);
 
         Assert.True(resolved, error);
-        Assert.Equal("net8.0-browser", framework);
+        Assert.Equal("net10.0-browser", framework);
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public sealed class BlazorCommandReturnValueTests
     {
         using var fixture = CliCommandFixture.Create();
         var projectPath = fixture.CreatePublishedBlazorProject();
-        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release", "net8.0-browser");
+        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release", "net10.0-browser");
 
         Assert.NotNull(wwwroot);
         var applied = ProjectHelper.TryApplyBlazorBaseHref(wwwroot!, "/games/mygame", out var error);
@@ -81,7 +81,7 @@ public sealed class BlazorCommandReturnValueTests
             "publish-itch",
             "--project", projectPath,
             "--configuration", "Release",
-            "--framework", "net8.0-browser",
+            "--framework", "net10.0-browser",
             "--skip-build",
             "--base-href", "./",
             "--output", zipPath);
@@ -110,7 +110,7 @@ public sealed class BlazorCommandReturnValueTests
             "deploy-blazor",
             "--project", projectPath,
             "--configuration", "Release",
-            "--framework", "net8.0-browser",
+            "--framework", "net10.0-browser",
             "--skip-build",
             "--base-href", "/mygame/",
             "--web-root", webRoot);
@@ -163,7 +163,7 @@ public sealed class BlazorCommandReturnValueTests
     //        "deploy-itch",
     //        "--project", projectPath,
     //        "--configuration", "Release",
-    //        "--framework", "net8.0-browser",
+    //        "--framework", "net10.0-browser",
     //        "--skip-build",
     //        "--itch-game", "user/game");
 
@@ -227,7 +227,7 @@ public sealed class BlazorCommandReturnValueTests
     //            "deploy-itch",
     //            "--project", projectPath,
     //            "--configuration", "Release",
-    //            "--framework", "net8.0-browser",
+    //            "--framework", "net10.0-browser",
     //            "--skip-build",
     //            "--itch-game", "user/game");
 
@@ -305,7 +305,7 @@ public sealed class BlazorCommandReturnValueTests
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
-                    <TargetFramework>net8.0-browser</TargetFramework>
+                    <TargetFramework>net10.0-browser</TargetFramework>
                   </PropertyGroup>
                   <ItemGroup>
                     <PackageReference Include="Gondwana.Blazor" Version="2.0.0" />
@@ -313,7 +313,7 @@ public sealed class BlazorCommandReturnValueTests
                 </Project>
                 """);
 
-            var publishDirectory = Path.Combine(projectDirectory, "bin", "Release", "net8.0-browser", "publish", "wwwroot");
+            var publishDirectory = Path.Combine(projectDirectory, "bin", "Release", "net10.0-browser", "publish", "wwwroot");
             Directory.CreateDirectory(publishDirectory);
             File.WriteAllText(Path.Combine(publishDirectory, "index.html"), "<html><head><base href=\"/\" /></head><body>ok</body></html>");
 
@@ -336,13 +336,13 @@ public sealed class BlazorCommandReturnValueTests
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
-                    <TargetFramework>net8.0-browser</TargetFramework>
+                    <TargetFramework>net10.0-browser</TargetFramework>
                     <Nullable>enable</Nullable>
                     <ImplicitUsings>enable</ImplicitUsings>
                   </PropertyGroup>
                   <ItemGroup>
-                    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
-                    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.8" PrivateAssets="all" />
+                    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+                    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
                   </ItemGroup>
                 </Project>
                 """);
