@@ -13,6 +13,25 @@ let _gestureRetryInstalled = false;
 // One context per module, retained until page teardown. Tracks own only their
 // nodes; unloading one track must not close the context used by the others.
 let _context = null;
+let _contextGestureUnlockInstalled = false;
+
+// Media elements connected through Web Audio are silent while their context is
+// suspended, even if audio.play() succeeds. Unlock from the original trusted
+// gesture, before a game's input poller dispatches Play on a later frame.
+function resumeContextFromGesture() {
+    if (_context?.state === "suspended")
+        _context.resume().catch(() => { });
+}
+
+function ensureContextGestureUnlock() {
+    if (_contextGestureUnlockInstalled || typeof globalThis.addEventListener !== "function")
+        return;
+
+    _contextGestureUnlockInstalled = true;
+    globalThis.addEventListener("pointerdown", resumeContextFromGesture, { capture: true, passive: true });
+    globalThis.addEventListener("touchstart", resumeContextFromGesture, { capture: true, passive: true });
+    globalThis.addEventListener("keydown", resumeContextFromGesture, { capture: true });
+}
 
 function getContext() {
     const AudioContextType = globalThis.AudioContext || globalThis.webkitAudioContext;
@@ -23,6 +42,7 @@ function getContext() {
     if (!_context || _context.state === "closed")
         _context = new AudioContextType();
 
+    ensureContextGestureUnlock();
     return _context;
 }
 
