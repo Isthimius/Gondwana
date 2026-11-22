@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0-browser</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WasmBuildNative>true</WasmBuildNative>
+    <RootNamespace>Gondwana.Demos.Slider</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Slider.Shared/Slider.Shared.csproj" />
+    <ProjectReference Include="../../Gondwana/Gondwana.csproj" />
+    <ProjectReference Include="../../Gondwana.Widgets/Gondwana.Widgets.csproj" />
+    <ProjectReference Include="../../Gondwana.Blazor/Gondwana.Blazor.csproj" />
+    <ProjectReference Include="../../Gondwana.Blazor.Hosting/Gondwana.Blazor.Hosting.csproj" />
+    <ProjectReference Include="../../Gondwana.Audio.Browser/Gondwana.Audio.Browser.csproj" />
+  </ItemGroup>
+  <!-- Content links only; game logic is referenced from the compiled Slider.Shared project. -->
+  <ItemGroup>
+    <Content Include="../Spot.Shared/assets/gondwana-logo-text.png" Link="wwwroot/assets/gondwana-logo-text.png" />
+    <Content Include="../Slider.WinForms/assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" Link="wwwroot/assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" />
+    <Content Include="../Slider.WinForms/assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav" Link="wwwroot/assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav" />
+  </ItemGroup>
+</Project>
