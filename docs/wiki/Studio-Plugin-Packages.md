@@ -229,7 +229,7 @@ A version 1 manifest is a JSON object with these case-sensitive properties:
   "name": "Project Diagnostics",
   "version": "1.0.0",
   "entryAssembly": "Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll",
-  "contractVersion": 1,
+  "contractVersion": 2,
   "description": "Project validation and diagnostics",
   "author": "Hidden Worlds Games"
 }
@@ -242,10 +242,10 @@ A version 1 manifest is a JSON object with these case-sensitive properties:
 | `name` | Required nonblank display name. |
 | `version` | Required SemVer 2.0.0 package version; prerelease/build metadata are supported. |
 | `entryAssembly` | Required DLL filename directly in this directory. ASCII letters/digits/underscore first, then letters/digits/underscore/dot/hyphen; `.dll` suffix. No subpaths, absolute paths, or alternate data streams. |
-| `contractVersion` | Required positive integer; this host accepts exactly 1. |
+| `contractVersion` | Required positive integer; this host accepts exactly 2. |
 | `description`, `author` | Optional strings for description and publisher/author attribution. |
 
-Unknown properties are ignored for additive metadata evolution. Contract 1 means
+Unknown properties are ignored for additive metadata evolution. Contract 2 means
 the current Core `IStudioPlugin` lifecycle, optional host-services interfaces,
 and the WinForms derived panel/menu contract when hosted in WinForms Studio.
 It is **not** the engine, assembly, or Studio release version. This declaration
