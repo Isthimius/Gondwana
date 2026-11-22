@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace Gondwana.Demos.Slider;
 
 /// <summary>Aspect-preserving placement of an image inside the integer-cell puzzle atlas.</summary>
