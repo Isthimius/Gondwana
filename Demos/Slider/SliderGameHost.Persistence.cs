@@ -16,7 +16,7 @@ internal sealed partial class SliderGameHost
     internal void SetShiftHeld(bool held)
         => Volatile.Write(ref _shiftHeldFromUi, held ? 1 : 0);
 
-    internal bool HasMenuOrDialogOpen => HasMenuOrDialogOpen || _menu?.HasOpenMenu == true;
+    internal bool HasMenuOrDialogOpen => _menu?.HasOpenDialog == true || _menu?.HasOpenMenu == true;
 
     internal event Action<SliderSave>? SaveGameRequested;
     internal event Action? LoadGameRequested;
