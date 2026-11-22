@@ -263,5 +263,93 @@ public sealed class DocumentSourceMonitorTests : IDisposable
         source.Verify();
         Assert.Equal(1, Volatile.Read(ref count));
     }
+
+    [Fact]
+    public void ExplicitInaccessibleVerificationSchedulesRecoveryWithoutAFileEvent()
+    {
+        var location = Loose();
+        Write(location, "original");
+        using var monitor = Manual();
+        var changes = new List<DocumentSourceChange>();
+        using var source = monitor.Register(location, DocumentSourceVersion.Read(location), DocumentSourceRole.Primary, changes.Add);
+        monitor.VerifyPending();
+        monitor.VerifyPending();
+        Assert.False(source.Pending);
+        using (var locked = new FileStream(location.Path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            Assert.Equal(DocumentSourceChangeKind.Inaccessible, source.Verify().Kind);
+            Assert.True(source.Pending);
+        }
+        monitor.VerifyPending();
+        monitor.VerifyPending();
+        Assert.False(source.Pending);
+        Assert.Equal(2, changes.Count);
+        Assert.Equal(DocumentSourceChangeKind.Inaccessible, changes[0].Kind);
+        Assert.Equal(DocumentSourceChangeKind.Unchanged, changes[1].Kind);
+    }
+
+    [Fact]
+    public void RemovedArchiveEntryCannotFallBackToDifferentExtension()
+    {
+        var path = Path.Combine(_root, "assets.gaf");
+        using (var archive = AssetsFile.LoadOrCreate(path, password: null, encrypt: false, register: false))
+        {
+            using var png = new MemoryStream(Encoding.UTF8.GetBytes("png-data"));
+            using var jpg = new MemoryStream(Encoding.UTF8.GetBytes("jpg-data"));
+            archive.Add(AssetTypes.Image, "image.png", png);
+            archive.Add(AssetTypes.Image, "image.jpg", jpg);
+            archive.Save();
+        }
+        var location = new AssetLocation(AssetTypes.Image, path, "image.png");
+        Assert.Equal(DocumentSourceStatus.Available, DocumentSourceVersion.Read(location).Status);
+        using (var archive = AssetsFile.LoadOrCreate(path, password: null, encrypt: false, register: false))
+        {
+            archive.Remove(AssetTypes.Image, "image.png");
+            archive.Save();
+        }
+        var current = DocumentSourceVersion.Read(location);
+        Assert.Equal(DocumentSourceStatus.Missing, current.Status);
+        Assert.NotNull(current.PhysicalHash);
+        Assert.Null(current.ContentHash);
+        Assert.Equal(DocumentSourceStatus.Available,
+            DocumentSourceVersion.Read(new AssetLocation(AssetTypes.Image, path, "image.jpg")).Status);
+    }
+
+    [Fact]
+    public void VerificationPassSharesArchiveSnapshotBetweenRegistrations()
+    {
+        var path = Path.Combine(_root, "shared.gaf");
+        void WriteArchive(string content)
+        {
+            using var archive = AssetsFile.LoadOrCreate(path, password: null, encrypt: false, register: false);
+            using var png = new MemoryStream(Encoding.UTF8.GetBytes(content));
+            using var jpg = new MemoryStream(Encoding.UTF8.GetBytes(content));
+            archive.Add(AssetTypes.Image, "image.png", png);
+            archive.Add(AssetTypes.Image, "image.jpg", jpg);
+            archive.Save();
+        }
+        WriteArchive("first");
+        var pngLocation = new AssetLocation(AssetTypes.Image, path, "image.png");
+        var jpgLocation = new AssetLocation(AssetTypes.Image, path, "image.jpg");
+        using var monitor = Manual();
+        var pngChanges = new List<DocumentSourceChange>();
+        var jpgChanges = new List<DocumentSourceChange>();
+        using var pngSource = monitor.Register(pngLocation, DocumentSourceVersion.Read(pngLocation), DocumentSourceRole.Primary,
+            change =>
+            {
+                pngChanges.Add(change);
+                // Replaces the archive during callback delivery, but this pass must remain consistent.
+                WriteArchive("third");
+            });
+        using var jpgSource = monitor.Register(jpgLocation, DocumentSourceVersion.Read(jpgLocation), DocumentSourceRole.Dependency, jpgChanges.Add);
+        WriteArchive("second");
+        monitor.VerifyPending();
+        monitor.VerifyPending();
+        Assert.Single(pngChanges);
+        Assert.Single(jpgChanges);
+        Assert.Equal(pngChanges[0].Current.PhysicalHash, jpgChanges[0].Current.PhysicalHash);
+        Assert.Equal(pngChanges[0].Current.ContentHash, jpgChanges[0].Current.ContentHash);
+    }
+
 }
 

@@ -12,29 +12,120 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
     /// <summary>Reads fresh bytes without registering an archive or trusting timestamps and lengths.</summary>
     public static DocumentSourceVersion Read(AssetLocation location, string? password = null)
     {
+        ArgumentNullException.ThrowIfNull(location);
+        using var batch = new ReadBatch();
+        return batch.Read(location, password);
+    }
+
+    /// <summary>Shares physical reads and decompressed archive contents within one verification pass only.</summary>
+    internal sealed class ReadBatch : IDisposable
+    {
+        private readonly Dictionary<string, DocumentSourceVersion> _loose = new(
+            OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+        private readonly Dictionary<(string Path, string? Password), ArchiveSnapshot> _archives = [];
+
+        internal DocumentSourceVersion Read(AssetLocation location, string? password = null)
+        {
+            if (location.AssetEntryName is null)
+            {
+                if (!_loose.TryGetValue(location.Path, out var version))
+                {
+                    version = ReadLoose(location.Path);
+                    _loose.Add(location.Path, version);
+                }
+                return version;
+            }
+
+            var key = (location.Path, password);
+            if (!_archives.TryGetValue(key, out var snapshot))
+            {
+                snapshot = ArchiveSnapshot.Open(location.Path, password);
+                _archives.Add(key, snapshot);
+            }
+            return snapshot.Read(location.AssetType, location.AssetEntryName);
+        }
+
+        public void Dispose()
+        {
+            foreach (var snapshot in _archives.Values) snapshot.Dispose();
+            _archives.Clear();
+        }
+    }
+
+    private static DocumentSourceVersion ReadLoose(string path)
+    {
         try
         {
-            // Deny in-place writers during the read. Atomic replacements are detected on the next verification.
-            using var file = new FileStream(location.Path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
-            using var buffer = new MemoryStream();
-            file.CopyTo(buffer);
-            var bytes = buffer.ToArray();
-            var physical = Hash(bytes);
-            if (location.AssetEntryName is null) return new(DocumentSourceStatus.Available, physical, physical);
-            buffer.Position = 0;
-            using var archive = AssetsFile.Load(buffer, password, register: false, sourcePath: location.Path);
-            using var entry = archive.Get(location.AssetType, location.AssetEntryName);
-            return entry is null ? new(DocumentSourceStatus.Missing, physical, null) :
-                new(DocumentSourceStatus.Available, physical, Convert.ToHexString(SHA256.HashData(entry)));
+            // Loose dependencies may be large; hash directly without buffering file-sized copies.
+            using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
+            var hash = Convert.ToHexString(SHA256.HashData(file));
+            return new(DocumentSourceStatus.Available, hash, hash);
         }
         catch (FileNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
         catch (DirectoryNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or
-            System.Security.Cryptography.CryptographicException or ICSharpCode.SharpZipLib.SharpZipBaseException)
-        {
-            return new(DocumentSourceStatus.Inaccessible, null, null);
-        }
+        catch (Exception ex) when (IsInaccessible(ex)) { return new(DocumentSourceStatus.Inaccessible, null, null); }
     }
+
+    private sealed class ArchiveSnapshot : IDisposable
+    {
+        private readonly AssetsFile? _archive;
+        private readonly HashSet<AssetsFileEntry>? _entries;
+        private readonly Dictionary<AssetsFileEntry, DocumentSourceVersion> _versions = [];
+        private readonly DocumentSourceStatus _status;
+        private readonly string? _physicalHash;
+
+        private ArchiveSnapshot(DocumentSourceStatus status, string? physicalHash, AssetsFile? archive)
+        {
+            _status = status;
+            _physicalHash = physicalHash;
+            _archive = archive;
+            _entries = archive?.GetAllEntries().ToHashSet();
+        }
+
+        internal static ArchiveSnapshot Open(string path, string? password)
+        {
+            try
+            {
+                // Archives alone are buffered. A single path/password snapshot serves all its entries.
+                using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
+                using var buffer = new MemoryStream();
+                file.CopyTo(buffer);
+                buffer.Position = 0;
+                var hash = Convert.ToHexString(SHA256.HashData(buffer));
+                buffer.Position = 0;
+                var archive = AssetsFile.Load(buffer, password, register: false, sourcePath: path);
+                return new ArchiveSnapshot(DocumentSourceStatus.Available, hash, archive);
+            }
+            catch (FileNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
+            catch (DirectoryNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
+            catch (Exception ex) when (IsInaccessible(ex)) { return new(DocumentSourceStatus.Inaccessible, null, null); }
+        }
+
+        internal DocumentSourceVersion Read(AssetTypes type, string name)
+        {
+            if (_status != DocumentSourceStatus.Available) return new(_status, null, null);
+            var key = new AssetsFileEntry { AssetType = type, AssetName = name };
+            if (_versions.TryGetValue(key, out var version)) return version;
+
+            // Get() allows basename fallback for regular consumers; source verification must not.
+            if (!_entries!.Contains(key))
+                version = new(DocumentSourceStatus.Missing, _physicalHash, null);
+            else
+            {
+                using var entry = _archive!.Get(type, name);
+                version = entry is null
+                    ? new(DocumentSourceStatus.Missing, _physicalHash, null)
+                    : new(DocumentSourceStatus.Available, _physicalHash, Convert.ToHexString(SHA256.HashData(entry)));
+            }
+            _versions.Add(key, version);
+            return version;
+        }
+
+        public void Dispose() => _archive?.Dispose();
+    }
+
+    private static bool IsInaccessible(Exception ex) => ex is IOException or UnauthorizedAccessException or InvalidDataException or
+        CryptographicException or ICSharpCode.SharpZipLib.SharpZipBaseException;
 
     internal static string Hash(byte[] bytes) => Convert.ToHexString(SHA256.HashData(bytes));
 }

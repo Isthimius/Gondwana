@@ -115,10 +115,11 @@ public sealed class DocumentSourceMonitor : IDisposable
         lock (_gate)
         {
             if (_disposed) return;
+            using var reads = new DocumentSourceVersion.ReadBatch();
             foreach (var registration in _registrations.ToArray())
             {
                 if (!registration.Pending || registration.Closed) continue;
-                var current = DocumentSourceVersion.Read(registration.Location, registration.Password);
+                var current = reads.Read(registration.Location, registration.Password);
                 // Require two equal observations separated by the debounce interval, including missing files.
                 if (registration.Candidate != current)
                 {
@@ -211,7 +212,13 @@ public sealed class DocumentSourceMonitor : IDisposable
             lock (_owner._gate)
             {
                 ObjectDisposedException.ThrowIf(Closed, this);
-                return Observe(DocumentSourceVersion.Read(Location, Password));
+                var current = DocumentSourceVersion.Read(Location, Password);
+                if (current.Status == DocumentSourceStatus.Inaccessible)
+                {
+                    Candidate = null;
+                    _owner.Schedule(this);
+                }
+                return Observe(current);
             }
         }
 
