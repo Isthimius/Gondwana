@@ -17,6 +17,22 @@ public sealed partial class PluginPackageTests
         .Select(path => MetadataReference.CreateFromFile(path)).ToArray();
 
     [Fact]
+    public void BundledPluginContractsMatchHostAndPackagingValidator()
+    {
+        foreach (var package in new[] { "ProjectDiagnostics", "ExternalImport" })
+        {
+            var manifestPath = Path.Combine(AppContext.BaseDirectory, "plugins", package, "plugin.json");
+            using var manifest = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            Assert.Equal(PluginManifest.SupportedSchemaVersion, manifest.RootElement.GetProperty("schemaVersion").GetInt32());
+            Assert.Equal(PluginManifest.SupportedContractVersion, manifest.RootElement.GetProperty("contractVersion").GetInt32());
+        }
+
+        var validator = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Test-WindowsToolingBundle.ps1"));
+        Assert.Contains("$manifest.schemaVersion -ne " + PluginManifest.SupportedSchemaVersion, validator, StringComparison.Ordinal);
+        Assert.Contains("$manifest.contractVersion -ne " + PluginManifest.SupportedContractVersion, validator, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void PackageLoadsOnceAndSnapshotIsImmutable()
     {
         Package("one", "sample.one");

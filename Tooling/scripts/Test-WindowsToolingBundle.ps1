@@ -50,7 +50,7 @@ foreach ($file in @(
 foreach ($package in @('ProjectDiagnostics', 'ExternalImport')) {
     $folder = Join-Path $pluginFolder $package
     $manifest = Get-Content -LiteralPath (Join-Path $folder 'plugin.json') -Raw | ConvertFrom-Json
-    if ($manifest.schemaVersion -ne 1 -or $manifest.contractVersion -ne 1 -or
+    if ($manifest.schemaVersion -ne 1 -or $manifest.contractVersion -ne 2 -or
         $manifest.entryAssembly -ne "Gondwana.Tooling.Studio.Plugin.$package.dll") {
         throw "Invalid bundled plugin manifest: $folder"
     }
