@@ -112,9 +112,11 @@
             if (_disposed)
                 return;
 
-            using var logoBitmap = global::SkiaSharp.SKBitmap.Decode(logoData)
+            // Use the same encoded-image loading path as Spot.Blazor. SKBitmap.Decode
+            // can throw on WASM when SkiaSharp cannot create a bitmap codec.
+            using var logoStream = new MemoryStream(logoData, writable: false);
+            var logo = global::SkiaSharp.SKImage.FromEncodedData(logoStream)
                 ?? throw new InvalidDataException("Invalid Gondwana logo image.");
-            var logo = global::SkiaSharp.SKImage.FromBitmap(logoBitmap);
             var store = new SliderBrowserScoreStore(scores, SaveScoresInBrowser);
 
             _host = new SliderBlazorGameHost(_surface, JS, store, logo, slide, victory);
