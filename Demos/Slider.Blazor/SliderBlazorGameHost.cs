@@ -2,7 +2,6 @@ using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Input.Keyboard;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Scenes;
-using Gondwana.Widgets.Controls;
 using Microsoft.JSInterop;
 using SkiaSharp;
 
@@ -108,7 +107,45 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
     }
 
     protected override void OnEngineInitialized() => _runtime.OnEngineInitialized();
-    protected override void OnInitialized() => _runtime.OnInitialized();
+    protected override void OnInitialized()
+    {
+        if (WidgetInputRouter is not null)
+            WidgetInputRouter.KeyboardCodeMapper = ToWidgetVirtualKey;
+
+        _runtime.OnInitialized();
+    }
+
+    // Widgets currently use Windows virtual keys for navigation and mnemonics.
+    // Only widget routing needs translation; gameplay receives native BlazorKey values.
+    private static int ToWidgetVirtualKey(int key)
+    {
+        var browserKey = (BlazorKey)key;
+        if (browserKey is >= BlazorKey.KeyA and <= BlazorKey.KeyZ)
+            return 'A' + key - (int)BlazorKey.KeyA;
+
+        if (browserKey is >= BlazorKey.Digit1 and <= BlazorKey.Digit9)
+            return '1' + key - (int)BlazorKey.Digit1;
+
+        return browserKey switch
+        {
+            BlazorKey.Digit0 => '0',
+            BlazorKey.ArrowLeft => 37,
+            BlazorKey.ArrowUp => 38,
+            BlazorKey.ArrowRight => 39,
+            BlazorKey.ArrowDown => 40,
+            BlazorKey.Enter => 13,
+            BlazorKey.Escape => 27,
+            BlazorKey.Space => 32,
+            BlazorKey.Tab => 9,
+            BlazorKey.Home => 36,
+            BlazorKey.End => 35,
+            BlazorKey.PageUp => 33,
+            BlazorKey.PageDown => 34,
+            BlazorKey.Backspace => 8,
+            BlazorKey.Delete => 46,
+            _ => key
+        };
+    }
 
     protected override void UnhookEvents()
     {
