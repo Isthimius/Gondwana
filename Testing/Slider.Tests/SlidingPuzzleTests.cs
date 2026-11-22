@@ -188,6 +188,43 @@ public sealed class SliderPersistenceTests
         Assert.Throws<InvalidDataException>(() => SliderPersistence.Validate(save));
     }
 
+    [Theory]
+    [InlineData(0, 3)]
+    [InlineData(2, 3)]
+    [InlineData(3, 21)]
+    [InlineData(22, 3)]
+    public void InvalidSavedDimensionsAreReportedAsInvalidData(int columns, int rows)
+    {
+        var save = new SliderSave { Columns = columns, Rows = rows };
+        Assert.Throws<InvalidDataException>(() => SliderPersistence.Validate(save));
+    }
+
+    [Fact]
+    public void HighScoreDurationsIncludeHoursAndDays()
+    {
+        Assert.Equal("01:05:00",
+            SliderPersistence.FormatElapsed(TimeSpan.FromMinutes(65)));
+        Assert.Equal("1.02:05:00",
+            SliderPersistence.FormatElapsed(TimeSpan.FromDays(1) + TimeSpan.FromHours(2) + TimeSpan.FromMinutes(5)));
+    }
+
+    [Theory]
+    [InlineData(20000, 20, 900, 20)]
+    [InlineData(20, 20000, 20, 650)]
+    [InlineData(1200, 800, 900, 650)]
+    public void ImageFitDoesNotDistortExtremeAspectRatios(
+        int imageWidth, int imageHeight, int atlasWidth, int atlasHeight)
+    {
+        var bounds = PuzzleImageLayout.FitImage(imageWidth, imageHeight, atlasWidth, atlasHeight);
+        Assert.True(bounds.Left >= 0f);
+        Assert.True(bounds.Top >= 0f);
+        Assert.True(bounds.Right <= atlasWidth);
+        Assert.True(bounds.Bottom <= atlasHeight);
+        Assert.InRange(
+            bounds.Width / bounds.Height / (imageWidth / (double)imageHeight),
+            0.999, 1.001);
+    }
+
     [Fact]
     public void HighScoresKeepTenFastestPerBoardSize()
     {
