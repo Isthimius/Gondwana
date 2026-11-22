@@ -4,4 +4,4 @@ Platform-neutral puzzle logic, GPU sprite renderer, Gondwana.Widgets UI, and per
 
 This is a compiled `net10.0` project. The desktop host references it with a normal `ProjectReference`; there are no linked `Compile` items.
 
-The platform host owns window creation, native file dialogs, audio resource loading, and storage destinations.
+`SliderGameRuntime` owns the game lifecycle, and platform hosts own window creation, file dialogs, audio loading, storage destinations, URI launching, and rendered-frame notifications. Hosts also provide a resize callback for logical-resolution changes.

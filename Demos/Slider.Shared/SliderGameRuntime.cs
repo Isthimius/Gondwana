@@ -21,6 +21,7 @@ internal sealed partial class SliderGameRuntime
     private readonly Func<WidgetInputRouter?> _routerAccessor;
     private readonly ISliderScoreStore _scoreStore;
     private readonly IExternalUriLauncher _uriLauncher;
+    private readonly Action<int, int> _requestLogicalResolution;
     private readonly SKImage? _aboutLogo;
     private WidgetInputRouter? WidgetInputRouter => _routerAccessor();
 
@@ -59,20 +60,22 @@ internal sealed partial class SliderGameRuntime
 
     internal SliderGameRuntime(RenderSurfaceHostBase surface,
         Func<WidgetInputRouter?> routerAccessor, ISliderScoreStore scoreStore,
-        SKImage? aboutLogo, IExternalUriLauncher uriLauncher)
+        SKImage? aboutLogo, IExternalUriLauncher uriLauncher,
+        Action<int, int> requestLogicalResolution)
     {
         _surface = surface ?? throw new ArgumentNullException(nameof(surface));
         _routerAccessor = routerAccessor ?? throw new ArgumentNullException(nameof(routerAccessor));
         _scoreStore = scoreStore ?? throw new ArgumentNullException(nameof(scoreStore));
         _aboutLogo = aboutLogo;
         _uriLauncher = uriLauncher ?? throw new ArgumentNullException(nameof(uriLauncher));
+        _requestLogicalResolution = requestLogicalResolution ?? throw new ArgumentNullException(nameof(requestLogicalResolution));
         _highScores = scoreStore.LoadScores();
         _clientSize = new Size(surface.Backbuffer.Width, surface.Backbuffer.Height);
     }
 
     /// <summary>
     /// Raised by the in-engine Open Picture button. Subscribers must open the
-    /// platform's file picker on the WinForms UI thread.
+    /// platform's file picker on the platform UI thread.
     /// </summary>
     internal event Action<int, int>? OpenPictureRequested;
 
@@ -255,7 +258,7 @@ internal sealed partial class SliderGameRuntime
         if (resized && newSize.Width > 0 && newSize.Height > 0)
         {
             _requestedLogicalSize = newSize;
-            _surface.RequestLogicalResolution(newSize.Width, newSize.Height);
+            _requestLogicalResolution(newSize.Width, newSize.Height);
             _cameraFitPending = true;
         }
 
@@ -317,7 +320,7 @@ internal sealed partial class SliderGameRuntime
 
         UpdateShiftLabels();
 
-        // Refresh the clock without touching any WinForms control from the engine thread.
+        // Refresh the clock without touching any platform UI control from the engine thread.
         if (_timer.IsRunning && Stopwatch.GetTimestamp() - _lastStatusTicks >= Stopwatch.Frequency / 4)
             PublishStatus();
     }

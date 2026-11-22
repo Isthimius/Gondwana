@@ -38,11 +38,12 @@ The **Game** menu saves portable `.slider.json` files containing the tile arrang
 
 - `Slider.Shared/SlidingPuzzle.cs`: independent, testable board rules and legal-move shuffle. The logical board, **not sprite coordinates**, is authoritative.
 - `Slider.Shared/PuzzleRenderer.cs`: builds two SkiaSharp tilesheet variants (outlined and plain) and projects board state into GPU-rendered sprites.
-- `SliderGameHost.cs`: `WinFormsGpuGameHost` lifecycle, two non-overlapping Views, puzzle input, scripted animation, audio, timing, and background-thread request processing.
+- `Slider.Shared/SliderGameRuntime.cs`: shared views, puzzle input, animation, timing, and request processing.
+- `Slider.WinForms/SliderGameHost.cs`: WinForms GPU host adapter, audio loading, resize and frame-presentation bridge.
 - `Slider.Shared/SliderSidebar.cs`: **Gondwana.Widgets** controls, settings, progress indicator, and status.
 - `Slider.Shared/SliderMenu.cs`: in-engine `MenuBarWidget` Game / Scores / Help menus, standard `AboutBox`, and scrollable `DialogBox` instructions and high scores.
-- `Slider.Shared/SliderPersistence.cs`: JSON save/restore and per-board high-score rankings.
-- `SliderGameHost.Persistence.cs`: menu callbacks, native UI boundary events, game state capture, high scores, and correct-position labels.
+- `Slider.Shared/SliderPersistence.cs`: portable JSON formats and rankings. `Slider.WinForms/SliderFileStorage.cs` persists desktop saves and scores.
+- `Slider.Shared/SliderGameRuntime.Persistence.cs`: menu callbacks, native UI boundary events, game state capture, high scores, and correct-position labels.
 - `GameWindow.cs`: a minimal WinForms shell containing **only one `WinFormGpuRenderSurfaceControl`**; native file pickers for pictures and saves/loads are invoked on the WinForms UI thread by Widgets actions.
 
 The host starts **once**. Mouse clicks and native Windows single-finger taps share the `WidgetInputRouter.UnhandledPrimaryAction` path so one press moves a piece only once. Changing pictures, shuffling, or resizing updates live game state rather than starting or stopping the engine again. Widget actions remain in the engine; the picture chooser is the sole native dialog and is marshalled to the UI thread. The sidebar is a fixed 240-pixel Gondwana View, while the puzzle View occupies the remaining logical GPU area. After resizing, both Viewports are laid out again and the puzzle camera fits the right-hand viewport. The WinForms form has no labels, text boxes, buttons, checkboxes, or layout panels.
