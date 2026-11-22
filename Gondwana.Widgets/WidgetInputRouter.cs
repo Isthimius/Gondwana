@@ -73,6 +73,13 @@ public sealed class WidgetInputRouter : IDisposable
     public WidgetBase? FocusedWidget => _focusedWidget;
 
     /// <summary>
+    /// Optional translation from adapter-specific key codes into the key codes
+    /// expected by widget controls (Windows virtual-key codes by default).
+    /// Engines and non-widget subscribers continue to receive original key codes.
+    /// </summary>
+    public Func<int, int>? KeyboardCodeMapper { get; set; }
+
+    /// <summary>
     /// Occurs when a primary gameplay action was not claimed by a widget.
     /// Mouse left-button presses fire on press; touch fires only for a recognized
     /// single-finger tap whose contact began outside widgets.
@@ -285,7 +292,7 @@ public sealed class WidgetInputRouter : IDisposable
         if (!int.TryParse(args.KeyConfig.Key, out int key))
             return;
 
-        RouteKeyboardInput(key, args.KeyAction, args.Modifiers);
+        RouteKeyboardInput(KeyboardCodeMapper?.Invoke(key) ?? key, args.KeyAction, args.Modifiers);
     }
 
     internal void RouteKeyboardInput(int key, KeyAction action, KeyboardModifierState modifiers)
