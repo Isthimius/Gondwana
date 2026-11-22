@@ -1,4 +1,6 @@
+using Gondwana.Assets;
 using Gondwana.Drawing.Sprites.GSPR;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Sprites.Editing;
@@ -6,6 +8,9 @@ namespace Gondwana.Tooling.Sprites.Editing;
 /// <summary>UI-independent authoring session. Never creates runtime sprites or scenes.</summary>
 public sealed partial class SpriteDocument
 {
+    /// <summary>Last successfully opened or saved loose source version.</summary>
+    public DocumentSourceVersion? SourceVersion { get; private set; }
+
     /// <summary>Adds a validated packed tilesheet dependency; rejects conflicting logical identities.</summary>
     public void AddPackedTilesheetSource(string tilesheet, string archivePath, string entryName)
     {
@@ -89,10 +94,14 @@ public sealed partial class SpriteDocument
     public static SpriteDocument Open(string path)
     {
         path = Path.GetFullPath(path);
+        var location = new AssetLocation(AssetTypes.SpriteDefinition, path);
+        var version = DocumentSourceVersion.Read(location);
         var definitions = SpriteDefinitionSerializer.LoadAll(path).ToList();
+        DocumentSourceSave.Verify(location, version);
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new SpriteDocument(definitions[0], Path.GetDirectoryName(path)!, path, false);
         document._definitions = definitions;
+        document.SourceVersion = version;
         document.RememberReferenceOrigins();
         return document;
     }
@@ -214,14 +223,21 @@ public sealed partial class SpriteDocument
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
+        var location = new AssetLocation(AssetTypes.SpriteDefinition, path);
+        var expected = FilePath is not null && string.Equals(path, FilePath,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
+            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
         var snapshots = _definitions.Select(member =>
         {
             var clone = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(member));
             clone.Source = PackedLocation is { } packed ? SpriteDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : SpriteDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gspr"));
             return clone;
         }).ToList();
-        SpriteDefinitionSerializer.SaveAll(path, snapshots);
+        var installed = DocumentSourceSave.Save(location, expected,
+            check => SpriteDefinitionSerializer.SaveAll(path, snapshots, check));
         var saved = SpriteDefinitionSerializer.LoadAll(path);
+        DocumentSourceSave.Verify(location, installed);
+        SourceVersion = installed;
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];

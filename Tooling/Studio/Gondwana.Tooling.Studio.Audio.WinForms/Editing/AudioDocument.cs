@@ -1,4 +1,6 @@
+using Gondwana.Assets;
 using Gondwana.Audio.GSND;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Audio.Editing;
@@ -6,6 +8,9 @@ namespace Gondwana.Tooling.Audio.Editing;
 /// <summary>UI-independent editing session for all logical definitions in one GSND document.</summary>
 public sealed partial class AudioDocument
 {
+    /// <summary>Last successfully opened or saved loose source version.</summary>
+    public DocumentSourceVersion? SourceVersion { get; private set; }
+
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public AudioDefinition Definition { get; private set; }
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
@@ -44,10 +49,14 @@ public sealed partial class AudioDocument
     public static AudioDocument Open(string path)
     {
         path = Path.GetFullPath(path);
+        var location = new AssetLocation(AssetTypes.AudioDefinition, path);
+        var version = DocumentSourceVersion.Read(location);
         var definitions = AudioDefinitionSerializer.LoadAll(path).ToList();
+        DocumentSourceSave.Verify(location, version);
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new AudioDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
+        document.SourceVersion = version;
         document.RememberReferenceOrigins();
         return document;
     }
@@ -155,14 +164,21 @@ public sealed partial class AudioDocument
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
+        var location = new AssetLocation(AssetTypes.AudioDefinition, path);
+        var expected = FilePath is not null && string.Equals(path, FilePath,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
+            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
         var snapshots = _definitions.Select(member =>
         {
             var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
             clone.Source = PackedLocation is { } packed ? AudioDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
             return clone;
         }).ToList();
-        AudioDefinitionSerializer.SaveAll(path, snapshots);
+        var installed = DocumentSourceSave.Save(location, expected,
+            check => AudioDefinitionSerializer.SaveAll(path, snapshots, check));
         var saved = AudioDefinitionSerializer.LoadAll(path);
+        DocumentSourceSave.Verify(location, installed);
+        SourceVersion = installed;
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];

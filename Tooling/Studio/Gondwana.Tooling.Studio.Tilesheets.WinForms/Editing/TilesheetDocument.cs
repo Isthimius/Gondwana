@@ -1,5 +1,7 @@
 using System.Drawing;
+using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
@@ -7,6 +9,9 @@ namespace Gondwana.Tooling.Studio.Tilesheets.WinForms.Editing;
 /// <summary>UI-independent editing session for all definitions in a GTS document; browsing frames or changing geometry preserves existing frame metadata until explicitly pruned.</summary>
 public sealed partial class TilesheetDocument
 {
+    /// <summary>Last successfully opened or saved loose source version.</summary>
+    public DocumentSourceVersion? SourceVersion { get; private set; }
+
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public TilesheetDefinition Definition { get; private set; }
 
@@ -47,13 +52,17 @@ public sealed partial class TilesheetDocument
     public static TilesheetDocument Open(string path)
     {
         path = Path.GetFullPath(path);
+        var location = new AssetLocation(AssetTypes.TilesheetDefinition, path);
+        var version = DocumentSourceVersion.Read(location);
         var definitions = TilesheetDefinitionSerializer.LoadAll(path).ToList();
+        DocumentSourceSave.Verify(location, version);
 
         if (definitions.Count == 0)
             throw new InvalidDataException("Document contains no definitions.");
 
         var document = new TilesheetDocument(definitions[0], path, Path.GetDirectoryName(path)!);
         document._definitions = definitions;
+        document.SourceVersion = version;
         document.RememberReferenceOrigins();
 
         return document;
@@ -234,6 +243,10 @@ public sealed partial class TilesheetDocument
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
 
+        var location = new AssetLocation(AssetTypes.TilesheetDefinition, path);
+        var expected = FilePath is not null && string.Equals(path, FilePath,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
+            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
         var snapshots = _definitions.Select(member =>
         {
             var clone = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(member));
@@ -253,8 +266,11 @@ public sealed partial class TilesheetDocument
             return clone;
         }).ToList();
 
-        TilesheetDefinitionSerializer.SaveAll(path, snapshots);
+        var installed = DocumentSourceSave.Save(location, expected,
+            check => TilesheetDefinitionSerializer.SaveAll(path, snapshots, check));
         var saved = TilesheetDefinitionSerializer.LoadAll(path);
+        DocumentSourceSave.Verify(location, installed);
+        SourceVersion = installed;
 
         for (int i = 0; i < _definitions.Count; i++)
         {

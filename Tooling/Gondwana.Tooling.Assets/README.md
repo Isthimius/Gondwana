@@ -1,5 +1,90 @@
 # Shared authoring assets
 
+## Document source monitoring and guarded saves
+
+`DocumentSourceMonitor`, `DocumentSourceVersion`, `DocumentSourceChange`, and
+`DocumentSourceSave` live in `Gondwana.Tooling.Assets` (`Authoring/`). They do not
+require Studio, WinForms, a workspace scan, or a running engine.
+
+`DocumentSourceVersion.Read(AssetLocation, password)` hashes fresh bytes with
+SHA-256. For a packed resource, `PhysicalHash` describes the entire GAF and
+`ContentHash` describes only the exact typed entry. Thus an unrelated entry change
+reports `ContainerChanged`, not `ContentChanged`. Missing entries/files and
+inaccessible sources have explicit statuses. Passwords are used only for detached
+archive reads; no archives are registered or modified. Metadata is never proof of
+content equality.
+
+Capture a version before loading through the existing serializer, then call
+`DocumentSourceSave.Verify(location, version)` before adopting the loaded model.
+The five existing authoring document models do this on loose Open and retain
+`SourceVersion`. Their loose Save methods check that version and only establish
+the existing history checkpoint after successful persistence and refresh. Save As
+checks its destination independently; it does not require overwriting a changed
+original. Raw serializer calls retain their previous unconditional-save contract.
+
+Register each primary source and explicit local dependency separately, retaining
+the version of the bytes the host actually loaded:
+
+```csharp
+using var monitor = new DocumentSourceMonitor();
+using var registration = monitor.Register(location, document.SourceVersion!,
+    DocumentSourceRole.Primary, change => QueueHostNotification(change));
+
+// For hosts using the serializers directly:
+registration.Save(check => TilesheetDefinitionSerializer.SaveAll(
+    location.Path, definitions, check));
+```
+
+Each registered parent directory has one nonrecursive watcher. The directory must
+already exist; the file may be missing. Changed/Created/Deleted/Renamed and watcher
+overflow request verification. Duplicate events coalesce, and background checking
+requires two equal content observations separated by the debounce interval (150 ms
+by default). Unreadable sources are retried until recovered or unregistered.
+`Verify()` performs an immediate explicit check, useful on focus or refresh; it
+returns `Unchanged` without issuing duplicate notifications. Recovery from a
+previously missing/inaccessible source can notify `Unchanged` when accepted bytes
+return. Role identifies primary versus dependency changes. Rename destinations are
+advisory hints, reported only when the old source is verified missing; paths are
+never followed automatically.
+
+`Registration.Save` serializes verification, installation, and acceptance against
+monitor callbacks. It accepts the hash of the **staging file**, never a fresh read
+after saving and never a time-based suppression window. A subsequent external
+write is still reported. For reload, pass the exact successfully loaded version to
+`Accept`. A different accepted GAF physical version must come from a verified read
+or the existing archive persistence result, not a guessed unchanged-entry hash.
+
+The new `SaveAll(..., Action<string> beforeInstall)` serializer overloads retain
+all existing reference rebasing, cloning and formats. The callback receives the
+sibling staging path after preparation; throwing aborts and removes staging.
+`DocumentSourceSave.Save` checks before preparation and immediately before
+installation, returning the staged hash only after success. Existing destinations
+use atomic `File.Replace`, new destinations `File.Move`. A readable destination
+is held with write sharing denied during preparation on Windows. Missing,
+inaccessible or changed destinations raise `DocumentSourceConflictException`.
+The existing encrypted GAF persistence path remains unchanged.
+
+### Host responsibilities and limits
+
+- Notifications run under the monitor's serialization gate. Keep callbacks brief,
+  enqueue UI work, and avoid synchronous cross-thread waits. Handler exceptions
+  are traced and do not kill the watcher worker.
+- Dispose registrations when documents close; dispose/register to change paths.
+  The last registration releases its directory watcher. Disposing the monitor
+  releases all subscriptions and prevents further callbacks.
+- Filesystem replacement is not compare-and-swap. A noncooperating external process
+  can replace a destination after the final check but before installation; portable
+  .NET APIs cannot eliminate that last interval. In-place write sharing protection
+  is strongest on Windows. Coordinate writers for a strict exclusive guarantee.
+- Two stable reads cannot prove that a paused external writer has finished. Hosts
+  must still validate/retry parsing before accepting a reload. A rename event can
+  be lost; then missing content is reported as deleted. Re-register if a watched
+  directory itself is removed/recreated. Explicit Verify can recover missed events.
+- Studio watcher ownership, dependency registration, dispatch, reload policy,
+  catalog/preview refresh and conflict UX are Phase 2. Standalone host wiring and
+  broader platform regression coverage are Phase 3 of #465. No runtime hot reload,
+  automatic reload, merge UI or document-tab behavior is introduced here.
+
 `AuthoringResourceResolver` loads GTS, GANI and GSCN definitions and decodes GTS
 images for the authoring editors without starting the engine or registering
 runtime assets. `AuthoringResource` keeps the physical path, expected `AssetTypes`

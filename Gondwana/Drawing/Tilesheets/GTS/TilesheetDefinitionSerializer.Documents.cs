@@ -100,7 +100,13 @@ public static partial class TilesheetDefinitionSerializer
     /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
-    public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions)
+    public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions) => SaveAll(filePath, definitions, null);
+
+    /// <summary>Saves with a pre-install check after preparation and staging. Throw to abort; the callback must not alter the staging file.</summary>
+    /// <param name="filePath">Final destination used for reference rebasing.</param>
+    /// <param name="definitions">All members to persist.</param>
+    /// <param name="beforeInstall">Receives the sibling staging path immediately before atomic installation.</param>
+    public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions, Action<string>? beforeInstall)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         ArgumentNullException.ThrowIfNull(definitions);
@@ -109,7 +115,7 @@ public static partial class TilesheetDefinitionSerializer
         DefinitionDocumentJson.Check(members, definition => definition.Name, allowUnnamedSingleton: true);
         var saved = members.Select(definition => PrepareDocumentMember(definition, path)).ToList();
         var json = ToDocumentJson(new() { Definitions = saved });
-        DefinitionDocumentPersistence.WriteAtomic(path, json);
+        DefinitionDocumentPersistence.WriteAtomic(path, json, beforeInstall);
     }
 
     private static TilesheetDefinition PrepareDocumentMember(TilesheetDefinition definition, string path)
