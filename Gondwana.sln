@@ -4,7 +4,7 @@ VisualStudioVersion = 18.8.12009.203
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slider", "Demos\Slider\Slider.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slider.WinForms", "Demos\Slider.WinForms\Slider.WinForms.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spot.WinForms", "Demos\Spot.WinForms\Spot.WinForms.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
 EndProject

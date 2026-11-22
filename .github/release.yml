@@ -96,7 +96,7 @@ changelog:
         - Spot.WinForms
         - Spot.Blazor
         - Spot.Avalonia
-        - Slider
+        - Slider.WinForms
 
     - title: Other Changes
       labels:

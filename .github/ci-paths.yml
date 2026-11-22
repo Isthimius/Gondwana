@@ -106,7 +106,7 @@ demo:
   - 'Testing/Spot.Tests/**'
   - 'Demos/Gondwana.Platformer/**'
   - 'Testing/Platformer.Tests/**'
-  - 'Demos/Slider/**'
+  - 'Demos/Slider.WinForms/**'
   - 'Testing/Slider.Tests/**'
 
 demo_spot:
@@ -119,5 +119,5 @@ demo_platformer:
 
 
 demo_slider:
-  - 'Demos/Slider/**'
+  - 'Demos/Slider.WinForms/**'
   - 'Testing/Slider.Tests/**'

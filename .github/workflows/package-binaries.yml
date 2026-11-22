@@ -73,7 +73,7 @@ jobs:
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
           mkdir -p publish/Tooling/Gondwana.Templates
-          mkdir -p publish/Demos/Slider
+          mkdir -p publish/Demos/Slider.WinForms
           mkdir -p publish/Demos/Spot.WinForms
 
           dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
@@ -92,7 +92,7 @@ jobs:
           # Apps/tools (full folders needed for assets)
           # Shared self-contained publish plan for Studio, standalones, and Scene Viewer.
           pwsh -NoProfile -File Tooling/scripts/Publish-WindowsTooling.ps1 -OutputRoot publish/Tooling
-          dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Slider.WinForms/Slider.WinForms.csproj -c Release -o publish/Demos/Slider.WinForms -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
 
       # ---------------------------
@@ -127,7 +127,7 @@ jobs:
           cp -r publish/Tooling/Gondwana.Tooling.Studio.SceneViewer.WinForms release-assets/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Studio.Sprites.WinForms release-assets/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Studio.Tilesheets.WinForms release-assets/Tooling/
-          cp -r publish/Demos/Slider release-assets/Demos/
+          cp -r publish/Demos/Slider.WinForms release-assets/Demos/
           cp -r publish/Demos/Spot.WinForms release-assets/Demos/
 
       - name: Validate packaged Windows tooling

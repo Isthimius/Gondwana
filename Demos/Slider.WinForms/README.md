@@ -1,4 +1,4 @@
-# Slider
+# Slider.WinForms
 
 A sliding-picture puzzle built on Gondwana's **GPU WinForms host**. Start with the included procedural scene, or choose a PNG, JPEG, BMP, GIF, or WebP picture to turn it into your own puzzle.
 
@@ -7,7 +7,7 @@ A sliding-picture puzzle built on Gondwana's **GPU WinForms host**. Start with t
 From the repository root on Windows:
 
 ```powershell
-dotnet run --project Demos/Slider/Slider.csproj
+dotnet run --project Demos/Slider.WinForms/Slider.WinForms.csproj
 ```
 
 Requires the .NET 10 SDK and the repository's normal Gondwana native GPU dependencies.
