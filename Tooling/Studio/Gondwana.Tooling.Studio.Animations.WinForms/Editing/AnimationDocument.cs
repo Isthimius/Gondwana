@@ -1,3 +1,5 @@
+using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Tooling.Editing;
@@ -7,6 +9,9 @@ namespace Gondwana.Tooling.Animations.Editing;
 /// <summary>UI-independent editing session for all logical definitions in one GANI document.</summary>
 public sealed partial class AnimationDocument
 {
+    /// <summary>Last successfully opened or saved loose source version.</summary>
+    public DocumentSourceVersion? SourceVersion { get; private set; }
+
     /// <summary>Adds a validated packed tilesheet dependency; rejects conflicting logical identities.</summary>
     public void AddPackedTilesheetSource(string tilesheet, string archivePath, string entryName)
     {
@@ -58,10 +63,14 @@ public sealed partial class AnimationDocument
     public static AnimationDocument Open(string path)
     {
         path = Path.GetFullPath(path);
+        var location = new AssetLocation(AssetTypes.AnimationDefinition, path);
+        var version = DocumentSourceVersion.Read(location);
         var definitions = AnimationDefinitionSerializer.LoadAll(path).ToList();
+        DocumentSourceSave.Verify(location, version);
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new AnimationDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
+        document.SourceVersion = version;
         document.RememberReferenceOrigins();
         return document;
     }
@@ -201,14 +210,21 @@ public sealed partial class AnimationDocument
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
+        var location = new AssetLocation(AssetTypes.AnimationDefinition, path);
+        var expected = FilePath is not null && string.Equals(path, FilePath,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
+            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
         var snapshots = _definitions.Select(member =>
         {
             var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
             clone.Source = PackedLocation is { } packed ? AnimationDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
             return clone;
         }).ToList();
-        AnimationDefinitionSerializer.SaveAll(path, snapshots);
+        var installed = DocumentSourceSave.Save(location, expected,
+            check => AnimationDefinitionSerializer.SaveAll(path, snapshots, check));
         var saved = AnimationDefinitionSerializer.LoadAll(path);
+        DocumentSourceSave.Verify(location, installed);
+        SourceVersion = installed;
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];

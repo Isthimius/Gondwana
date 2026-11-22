@@ -28,7 +28,8 @@ internal static class DefinitionDocumentPersistence
     /// <summary>Writes already prepared JSON atomically at its final destination.</summary>
     /// <param name="path">The final absolute document path used when preparing the JSON.</param>
     /// <param name="json">The prepared document JSON.</param>
-    internal static void WriteAtomic(string path, string json)
+    /// <param name="beforeInstall">Optional verification after staging, immediately before installation.</param>
+    internal static void WriteAtomic(string path, string json, Action<string>? beforeInstall = null)
     {
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
@@ -36,7 +37,15 @@ internal static class DefinitionDocumentPersistence
         try
         {
             File.WriteAllText(temporary, json);
-            File.Move(temporary, path, overwrite: true);
+            if (beforeInstall is null)
+            {
+                File.Move(temporary, path, overwrite: true);
+                return;
+            }
+            var replacing = File.Exists(path);
+            beforeInstall(temporary);
+            if (replacing) File.Replace(temporary, path, destinationBackupFileName: null);
+            else File.Move(temporary, path);
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
