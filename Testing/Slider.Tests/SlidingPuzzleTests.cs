@@ -143,7 +143,7 @@ public sealed class SliderPersistenceTests
     }
 
     [Fact]
-    public void GameFileRoundTripsPictureTilesMovesAndTimer()
+    public void GameJsonRoundTripsPictureTilesMovesAndTimer()
     {
         var board = new SlidingPuzzle(3, 3);
         board.Shuffle(12, new Random(3));
@@ -158,22 +158,12 @@ public sealed class SliderPersistenceTests
             ImagePngBase64 = Convert.ToBase64String([1, 2, 3, 4])
         };
 
-        string file = Path.Combine(Path.GetTempPath(),
-            "slider-test-" + Guid.NewGuid().ToString("N") + ".slider.json");
-        try
-        {
-            SliderPersistence.Save(file, save);
-            SliderSave loaded = SliderPersistence.Load(file);
-            Assert.Equal(save.Cells, loaded.Cells);
-            Assert.Equal(save.MoveCount, loaded.MoveCount);
-            Assert.Equal(save.ElapsedTicks, loaded.ElapsedTicks);
-            Assert.Equal(save.ImagePngBase64, loaded.ImagePngBase64);
-        }
-        finally
-        {
-            if (File.Exists(file))
-                File.Delete(file);
-        }
+        string json = SliderPersistence.Serialize(save);
+        SliderSave loaded = SliderPersistence.Deserialize(json);
+        Assert.Equal(save.Cells, loaded.Cells);
+        Assert.Equal(save.MoveCount, loaded.MoveCount);
+        Assert.Equal(save.ElapsedTicks, loaded.ElapsedTicks);
+        Assert.Equal(save.ImagePngBase64, loaded.ImagePngBase64);
     }
 
     [Fact]
