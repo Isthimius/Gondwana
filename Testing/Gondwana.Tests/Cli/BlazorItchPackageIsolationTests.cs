@@ -25,7 +25,7 @@ public sealed class BlazorItchPackageIsolationTests
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
-                    <TargetFramework>net8.0-browser</TargetFramework>
+                    <TargetFramework>net10.0-browser</TargetFramework>
                   </PropertyGroup>
                   <ItemGroup>
                     <PackageReference Include="Gondwana.Blazor" Version="2.0.0" />
@@ -33,7 +33,7 @@ public sealed class BlazorItchPackageIsolationTests
                 </Project>
                 """);
 
-            var wwwroot = Path.Combine(projectDirectory, "bin", "Release", "net8.0-browser", "publish", "wwwroot");
+            var wwwroot = Path.Combine(projectDirectory, "bin", "Release", "net10.0-browser", "publish", "wwwroot");
             Directory.CreateDirectory(wwwroot);
             var indexPath = Path.Combine(wwwroot, "index.html");
             const string originalIndex = "<html><head><base href=\"/\" /></head><body>ok</body></html>";
@@ -43,7 +43,7 @@ public sealed class BlazorItchPackageIsolationTests
             var packagePath = ProjectHelper.CreateBlazorItchPackage(
                 projectPath,
                 "Release",
-                "net8.0-browser",
+                "net10.0-browser",
                 skipBuild: true,
                 skipWorkload: true,
                 baseHref: "./",
