@@ -100,12 +100,14 @@ winforms_importers:
 
 # Demo-only test runs: select the owning demo when its sources/assets or
 # its dedicated tests change. Engine/global changes are covered nightly.
-# Add a new filter and demo-tests step for future demo suites (e.g. Slider).
+# Add a new filter and demo-tests step for future demo suites.
 demo:
   - 'Demos/Spot.*/**'
   - 'Testing/Spot.Tests/**'
   - 'Demos/Gondwana.Platformer/**'
   - 'Testing/Platformer.Tests/**'
+  - 'Demos/Slider/**'
+  - 'Testing/Slider.Tests/**'
 
 demo_spot:
   - 'Demos/Spot.*/**'
@@ -115,3 +117,7 @@ demo_platformer:
   - 'Demos/Gondwana.Platformer/**'
   - 'Testing/Platformer.Tests/**'
 
+
+demo_slider:
+  - 'Demos/Slider/**'
+  - 'Testing/Slider.Tests/**'

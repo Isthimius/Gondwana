@@ -1118,6 +1118,33 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void InvalidatePresentation() => Interlocked.Exchange(ref _presentationInvalidated, 1);
 
+    /// <summary>
+    /// Explicitly requests a new logical backbuffer resolution without changing the global
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.RenderScale"/> setting.
+    /// </summary>
+    /// <remarks>
+    /// Normal adapter resizes intentionally preserve logical resolution. Applications with
+    /// a fluid viewport can opt in to a new resolution after a layout change. Bitmap
+    /// backbuffers apply the request on the next frame; GPU backbuffers apply it on the
+    /// owning GL thread. Existing view rectangles are resized with the backbuffer.
+    /// </remarks>
+    /// <param name="width">The requested logical width, in pixels.</param>
+    /// <param name="height">The requested logical height, in pixels.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Either dimension is not positive.</exception>
+    /// <exception cref="ObjectDisposedException">The render surface host has been disposed.</exception>
+    public void RequestLogicalResolution(int width, int height)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        // Keep the normal adapter-resize policy unchanged: only callers invoking
+        // this API opt in to a new resolution. The backbuffer coalesces pending
+        // requests and applies them on its own rendering thread.
+        _deferredRenderScale = float.NaN;
+        Backbuffer.RequestResize(width, height);
+    }
+
     internal override void RequestRenderScale(float scale)
     {
         if (!_resolutionEstablished || _disposed) return;

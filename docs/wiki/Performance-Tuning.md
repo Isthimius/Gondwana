@@ -405,7 +405,7 @@ Browser paint cadence and Gondwana Scene-render cadence are separate. If the bro
 
 For WebGL performance, pay particular attention to:
 
-- logical backbuffer resolution and `RenderScale`
+- logical backbuffer resolution and `RenderScale` (or per-surface `RequestLogicalResolution(width, height)` for explicit dimensions); logical resolution changes recreate GPU targets and should not be requested every frame
 - visible tile, sprite, DirectDrawing, and effect count
 - full-scene rendering cost when a new Scene frame is due
 - work performed by `Engine.Tick()` in the browser/WASM execution context

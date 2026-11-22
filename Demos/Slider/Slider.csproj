@@ -1,23 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net10.0-windows</TargetFramework>
-        <OutputType>WinExe</OutputType>
-        <UseWindowsForms>true</UseWindowsForms>
-        <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-        <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
-    <ItemGroup>
-        <Content Include="assets\177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\75143__willc2-45220__slide-cup-16b-44k-0-747s.wav">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\..\Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj" />
-        <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
-        <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
-    </ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Gondwana.Demos.Slider</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <ApplicationIcon>assets/gondwana_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="../Spot.Shared/assets/gondwana-logo-text.png" Link="assets/gondwana-logo-text.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Gondwana/Gondwana.csproj" />
+    <ProjectReference Include="../../Gondwana.WinForms/Gondwana.WinForms.csproj" />
+    <ProjectReference Include="../../Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj" />
+    <ProjectReference Include="../../Gondwana.Widgets/Gondwana.Widgets.csproj" />
+  </ItemGroup>
 </Project>

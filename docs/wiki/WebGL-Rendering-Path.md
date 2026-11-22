@@ -217,17 +217,19 @@ This means CSS/layout resize changes presentation geometry instead of silently c
 
 ---
 
-## Changing RenderScale
+## Explicit logical resolution changes
 
-Changing `Engine.Instance.Configuration.RenderScale` is different from resizing the browser canvas.
+Changing `Engine.Instance.Configuration.RenderScale` is different from resizing the browser canvas. It is a persistent, engine-wide scale factor: a change requests a new logical Backbuffer resolution calculated from each registered surface's current adapter dimensions.
 
-A `RenderScale` change requests a new logical Backbuffer resolution based on the current destination size. `GpuBackbuffer.RequestResize(...)` records that request, and the next WebGL callback applies it through:
+`RenderSurfaceHost<TBackbuffer>.RequestLogicalResolution(width, height)` is a separate, one-time request for **exact logical dimensions on one render surface**, independent of the global `RenderScale` setting. A later `RenderScale` change can replace that requested size. Neither mechanism automatically follows subsequent browser canvas resizes.
+
+Both APIs ultimately queue a request through `GpuBackbuffer.RequestResize(...)`. The next WebGL callback applies the requested size through:
 
 ```csharp
 backbuffer.EnsureInitialized(grContext)
 ```
 
-The GPU surface is recreated only while the proper `GRContext` is current. A runtime `MsaaSampleCount` change uses the same path: the next WebGL callback recreates the surface at the requested sample count without changing logical dimensions.
+The GPU surface is recreated only while the proper `GRContext` is current. Recreating it can be expensive, so fluid applications should request exact dimensions only on meaningful layout changes, not on every frame. A runtime `MsaaSampleCount` change uses the same path: the next WebGL callback recreates the surface at the requested sample count without changing logical dimensions.
 
 When `EnsureInitialized(...)` reports that a new GPU surface was created, `BlazorGpuRenderSurfaceComponent` sets `_backbufferNeedsRender = true`, ensuring the new surface receives a complete Scene frame before being reused.
 
@@ -448,7 +450,7 @@ Gondwana's WebGL path is a **browser-animation-driven GPU renderer with decouple
 - `AfterFrameRender` records that a new Scene frame is due rather than scheduling another browser frame;
 - a due Scene frame uses Gondwana's full GPU Scene renderer;
 - browser paints between Scene frames simply re-present the existing GPU Backbuffer;
-- `RenderScale` controls logical resolution while canvas resizing changes presentation only;
+- `RenderScale` establishes proportional logical resolution; `RequestLogicalResolution(width, height)` can instead request exact dimensions for one surface; ordinary canvas resizing changes presentation only;
 - `PresentationTransform` preserves aspect ratio and centers the logical Backbuffer; and
 - completed frame pixels remain on the GPU instead of crossing the .NET/JavaScript boundary.
 

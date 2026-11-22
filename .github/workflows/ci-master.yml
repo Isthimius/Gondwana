@@ -104,6 +104,7 @@ jobs:
       demo: ${{ steps.filter.outputs.demo }}
       demo_spot: ${{ steps.filter.outputs.demo_spot }}
       demo_platformer: ${{ steps.filter.outputs.demo_platformer }}
+      demo_slider: ${{ steps.filter.outputs.demo_slider }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -266,6 +267,14 @@ jobs:
           github.ref_type == 'tag' ||
           needs.changes.outputs.demo_platformer == 'true'
         run: dotnet test Testing/Platformer.Tests/Platformer.Tests.csproj --configuration Release --nologo
+
+      - name: Slider demo unit tests
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag' ||
+          needs.changes.outputs.demo_slider == 'true'
+        run: dotnet test Testing/Slider.Tests/Slider.Tests.csproj --configuration Release --nologo
 
   build:
     runs-on: ubuntu-latest

@@ -30,7 +30,7 @@ These sizes are intentionally independent.
 
 After that, ordinary window or canvas resizing changes **presentation only**. It does not resize the Backbuffer. Gondwana calculates an aspect-preserving `PresentationTransform`, centers the Backbuffer in the available destination, and exposes the derived scale through `RenderSurfaceHostBase.PresentationScale`.
 
-Changing `RenderScale` explicitly requests a new logical resolution from the current adapter size.
+Changing `RenderScale` explicitly requests a new logical resolution from the current adapter size on registered surfaces. Alternatively, `renderSurface.Host.RequestLogicalResolution(width, height)` requests **exact dimensions for that surface only**, without changing global `RenderScale`. Both are explicit, deferred Backbuffer resize operations; neither causes ordinary window resize to recreate the Backbuffer. An application that needs a fluid logical viewport can call the method when its control size changes and then refit its camera after the new logical viewport dimensions are applied. See [[Backbuffers]] for the API comparison and rendering-thread details.
 
 `RenderScalingFilter` controls presentation sampling:
 

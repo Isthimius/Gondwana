@@ -101,7 +101,7 @@ Setting `RedrawDirtyRectangleOnly = false` presents the entire existing Backbuff
 
 If post-scene canvas handlers or rendering plugins may touch arbitrary pixels, Gondwana marks the **whole logical Backbuffer dirty** for presentation, even when the normal scene rendering used small dirty regions.
 
-Ordinary adapter resizing adjusts the `PresentationTransform`, not necessarily the logical Backbuffer resolution. A presentation invalidation can cause full image presentation without implying a new scene-wide redraw.
+Ordinary adapter resizing adjusts the `PresentationTransform` without resizing the logical Backbuffer. A presentation invalidation can cause full image presentation without implying a new scene-wide redraw. By contrast, a `RenderScale` change or an explicit per-surface `RenderSurfaceHost<TBackbuffer>.RequestLogicalResolution(width, height)` request changes logical Backbuffer dimensions (proportionally or exactly, respectively) and updates View rectangles; bitmap resize is applied on `BeginFrame()`. See [[Backbuffers]].
 
 ## Why the GPU path differs
 
