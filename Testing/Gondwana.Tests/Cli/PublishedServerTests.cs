@@ -26,8 +26,8 @@ public sealed class PublishedServerTests : IDisposable
     public void Discovery_RequiresPublishedOutput_AndSupportsRuntimeSubdirectory()
     {
         var project = Path.Combine(root, "Game.csproj");
-        File.WriteAllText(project, "<Project Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\"><PropertyGroup><TargetFramework>net8.0-browser</TargetFramework></PropertyGroup></Project>");
-        var build = Path.Combine(root, "bin", "Release", "net8.0-browser", "wwwroot");
+        File.WriteAllText(project, "<Project Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\"><PropertyGroup><TargetFramework>net10.0-browser</TargetFramework></PropertyGroup></Project>");
+        var build = Path.Combine(root, "bin", "Release", "net10.0-browser", "wwwroot");
         Directory.CreateDirectory(build);
         File.WriteAllText(Path.Combine(build, "index.html"), "build output");
         Assert.Null(ProjectHelper.TryLocateBlazorPublishRoot(project, "Release"));
@@ -36,7 +36,7 @@ public sealed class PublishedServerTests : IDisposable
         var app = new CommandApp();
         app.Configure(c => c.AddCommand<ServeCommand>("serve"));
         Assert.Equal(1, app.Run(["serve", "-p", project, "--no-open"]));
-        var published = Path.Combine(root, "bin", "Release", "net8.0-browser", "browser-wasm", "publish", "wwwroot");
+        var published = Path.Combine(root, "bin", "Release", "net10.0-browser", "browser-wasm", "publish", "wwwroot");
         Directory.CreateDirectory(published);
         File.WriteAllText(Path.Combine(published, "index.html"), "published");
         Assert.Equal(published, ServeCommand.ResolveRoot(new() { Project = project }));
