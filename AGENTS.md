@@ -2,7 +2,7 @@
 
 This file is the repository-level entry point for coding agents and AI assistants working with Gondwana.
 
-Gondwana is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. It is intentionally object-oriented rather than ECS-based, and its tooling is supplemental: Gondwana games remain ordinary .NET projects whose behavior is expressed in code.
+Gondwana is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 10. It is intentionally object-oriented rather than ECS-based, and its tooling is supplemental: Gondwana games remain ordinary .NET projects whose behavior is expressed in code.
 
 For the AI-oriented repository map, documentation routes, and implementation workflow, start with [`docs/ai/README.md`](docs/ai/README.md).
 

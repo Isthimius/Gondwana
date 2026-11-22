@@ -23,6 +23,10 @@ The browser's native file chooser is used for image and saved-game imports.
 - **Load Puzzle** reads a WinForms or Blazor `.slider.json` file (64 MiB maximum).
   Exports larger than 64 MiB are rejected instead of producing unloadable files.
 - **High Scores** persist locally in the current browser's `localStorage`.
+- Build-time assets follow Spot.Blazor's GAF packaging pattern: the two WAV
+  effects from `Slider.WinForms/assets` are packed into a generated
+  `wwwroot/assets/slider.gaf` and loaded as `AssetsFile` audio streams.
+  No duplicate audio files are tracked in the Blazor project.
 - Audio is played by `Gondwana.Audio.Browser`; browser autoplay policies
   may defer playback until the first user interaction.
 

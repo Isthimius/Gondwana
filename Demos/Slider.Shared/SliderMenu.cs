@@ -15,7 +15,8 @@ internal sealed class SliderMenu : IDisposable
     private readonly RenderSurfaceHostBase _host;
     private readonly View _gameView;
     private readonly MenuBarWidget _menu;
-    private readonly SKImage? _gondwanaLogo;
+    private readonly Func<SKImage?> _loadGondwanaLogo;
+    private SKImage? _gondwanaLogo;
     private readonly IExternalUriLauncher _uriLauncher;
     private DialogBox? _dialog;
 
@@ -23,13 +24,13 @@ internal sealed class SliderMenu : IDisposable
     internal bool HasOpenMenu => _menu.OpenMenuIndex >= 0;
 
     internal SliderMenu(RenderSurfaceHostBase host, View uiView, View gameView,
-        SKImage? gondwanaLogo, IExternalUriLauncher uriLauncher,
+        Func<SKImage?> loadGondwanaLogo, IExternalUriLauncher uriLauncher,
         Action newPuzzle, Action openPicture, Action shuffle,
         Action save, Action load, Action highScores, Action exit)
     {
         _host = host;
         _gameView = gameView;
-        _gondwanaLogo = gondwanaLogo;
+        _loadGondwanaLogo = loadGondwanaLogo ?? throw new ArgumentNullException(nameof(loadGondwanaLogo));
         _uriLauncher = uriLauncher;
 
         _menu = new MenuBarWidget(host, uiView, new Rectangle(0, 0, SliderSidebar.Width, 32));
@@ -141,6 +142,9 @@ internal sealed class SliderMenu : IDisposable
             _dialog!.Activate();
             return;
         }
+
+        // Resolve only after the engine has initialized SkiaSharp, not during WASM startup.
+        _gondwanaLogo ??= _loadGondwanaLogo();
 
         var about = new AboutBox(_host, _gameView,
             applicationName: "Slider",

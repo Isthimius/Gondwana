@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <SpotAssetSourceRoot>$(MSBuildThisFileDirectory)assets</SpotAssetSourceRoot>
+        <SpotAssetSourceRoot Condition="'$(SpotAssetSourceRoot)' == ''">$(MSBuildThisFileDirectory)assets</SpotAssetSourceRoot>
         <SpotGafPath Condition="'$(SpotGafPath)' == ''">$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\spot.gaf</SpotGafPath>
     </PropertyGroup>
     <ItemGroup Condition="'$(SpotBrowserAssets)' != 'true'">
