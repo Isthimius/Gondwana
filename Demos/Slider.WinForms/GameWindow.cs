@@ -95,7 +95,17 @@ internal sealed class GameWindow : Form
                 };
 
                 if (picker.ShowDialog(this) == DialogResult.OK)
-                    _host.RequestPuzzle(picker.FileName, columns, rows);
+                {
+                    try
+                    {
+                        _host.RequestPuzzle(File.ReadAllBytes(picker.FileName), columns, rows);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        MessageBox.Show(this, ex.Message, "Could not open picture",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
 
                 _surface.Focus();
             }));
@@ -143,7 +153,7 @@ internal sealed class GameWindow : Form
 
             try
             {
-                SliderPersistence.Save(dialog.FileName, snapshot);
+                SliderFileStorage.SaveGame(dialog.FileName, snapshot);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
             {
@@ -169,7 +179,7 @@ internal sealed class GameWindow : Form
 
             try
             {
-                _host?.RequestRestore(SliderPersistence.Load(dialog.FileName));
+                _host?.RequestRestore(SliderFileStorage.LoadGame(dialog.FileName));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or System.Text.Json.JsonException)
             {

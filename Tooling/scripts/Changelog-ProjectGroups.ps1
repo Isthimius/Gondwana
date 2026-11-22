@@ -35,7 +35,8 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Demos/Gondwana.TheGreatPlop"; RootName = "Demos / Gondwana.TheGreatPlop"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.Torchlight"; RootName = "Demos / Gondwana.Torchlight"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.ZeldaPrototype"; RootName = "Demos / Gondwana.ZeldaPrototype"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
-    [pscustomobject]@{ Path = "Demos/Slider"; RootName = "Demos / Slider"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+    [pscustomobject]@{ Path = "Demos/Slider.WinForms"; RootName = "Demos / Slider.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+    [pscustomobject]@{ Path = "Demos/Slider.Shared"; RootName = "Demos / Slider.Shared"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Spot.Avalonia"; RootName = "Demos / Spot.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Spot.Blazor"; RootName = "Demos / Spot.Blazor"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Spot.Shared"; RootName = "Demos / Spot.Shared"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
@@ -100,6 +101,7 @@ $ChangelogProjects = @(
 # historical and unreleased changelogs through the stable v2.7.0 release.
 # Remove these legacy paths AFTER v2.7.0 is released; leave current project paths.
 $ChangelogLegacyPaths = @{
+    "Demos/Slider.WinForms" = @("Demos/Slider")
     "Tooling/Studio/Gondwana.Tooling.Studio.Assets.WinForms" = @("Tooling/Studio/Gondwana.Tooling.Assets.WinForms", "Tooling/Gondwana.Tooling.Assets.WinForms", "Tooling/Gondwana.Assets.WinForms")
     "Tooling/Studio/Gondwana.Tooling.Studio.Animations.WinForms" = @("Tooling/Studio/Gondwana.Tooling.Animations.WinForms", "Tooling/Gondwana.Tooling.Animations.WinForms")
     "Tooling/Studio/Gondwana.Tooling.Studio.Audio.WinForms" = @("Tooling/Studio/Gondwana.Tooling.Audio.WinForms", "Tooling/Gondwana.Tooling.Audio.WinForms")

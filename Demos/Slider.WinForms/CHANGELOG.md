@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Refactoring
+- Rename the existing Slider application to Slider.WinForms in preparation for a shared runtime and Blazor host.
+
 
 
 ## Build

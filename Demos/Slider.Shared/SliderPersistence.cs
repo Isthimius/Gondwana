@@ -22,18 +22,15 @@ internal static class SliderPersistence
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
-    internal static void Save(string path, SliderSave save)
+    internal static string Serialize(SliderSave save)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
         Validate(save);
-        string json = JsonSerializer.Serialize(save, JsonOptions);
-        File.WriteAllText(path, json);
+        return JsonSerializer.Serialize(save, JsonOptions);
     }
 
-    internal static SliderSave Load(string path)
+    internal static SliderSave Deserialize(string json)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        SliderSave save = JsonSerializer.Deserialize<SliderSave>(File.ReadAllText(path))
+        SliderSave save = JsonSerializer.Deserialize<SliderSave>(json)
             ?? throw new InvalidDataException("The file contains no Slider game.");
         Validate(save);
         return save;
@@ -58,26 +55,17 @@ internal static class SliderPersistence
         }
     }
 
-    private static string ScorePath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Gondwana", "Slider", "high-scores.json");
-
-    internal static IReadOnlyList<SliderScore> LoadScores()
+    internal static IReadOnlyList<SliderScore> DeserializeScores(string json)
     {
-        if (!File.Exists(ScorePath))
-            return [];
-        try
-        {
-            return (JsonSerializer.Deserialize<List<SliderScore>>(File.ReadAllText(ScorePath))
-                ?? []).Where(s => s.Columns is >= 3 and <= 20 &&
-                    s.Rows is >= 3 and <= 20 && s.Moves >= 0 &&
-                    s.ElapsedTicks >= 0 && s.ElapsedTicks <= TimeSpan.MaxValue.Ticks)
-                .OrderBy(s => s.ElapsedTicks).ThenBy(s => s.Moves).ToArray();
-        }
-        catch (IOException) { return []; }
-        catch (JsonException) { return []; }
-        catch (UnauthorizedAccessException) { return []; }
+        return (JsonSerializer.Deserialize<List<SliderScore>>(json) ?? [])
+            .Where(s => s.Columns is >= 3 and <= 20 &&
+                s.Rows is >= 3 and <= 20 && s.Moves >= 0 &&
+                s.ElapsedTicks >= 0 && s.ElapsedTicks <= TimeSpan.MaxValue.Ticks)
+            .OrderBy(s => s.ElapsedTicks).ThenBy(s => s.Moves).ToArray();
     }
+
+    internal static string SerializeScores(IReadOnlyList<SliderScore> scores)
+        => JsonSerializer.Serialize(scores, JsonOptions);
 
     internal static IReadOnlyList<SliderScore> AddScore(
         IReadOnlyList<SliderScore> existing, SliderScore score)
@@ -89,15 +77,6 @@ internal static class SliderPersistence
             .SelectMany(g => g.OrderBy(s => s.ElapsedTicks).ThenBy(s => s.Moves).Take(10))
             .OrderBy(s => s.Columns).ThenBy(s => s.Rows).ThenBy(s => s.ElapsedTicks)
             .ToArray();
-    }
-
-    internal static void SaveScores(IReadOnlyList<SliderScore> scores)
-    {
-        string path = ScorePath;
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        string temp = path + ".tmp";
-        File.WriteAllText(temp, JsonSerializer.Serialize(scores, JsonOptions));
-        File.Move(temp, path, overwrite: true);
     }
 
     internal static string FormatElapsed(TimeSpan duration)

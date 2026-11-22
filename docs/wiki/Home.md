@@ -349,7 +349,8 @@ Gondwana Studio is supplemental tooling. Gondwana projects remain ordinary .NET 
 
 ### Demos
 
-- `Demos/Slider`
+- `Demos/Slider.WinForms`
+- `Demos/Slider.Shared`
 - `Demos/Spot.WinForms`
 - `Demos/Spot.Avalonia`
 - `Demos/Spot.Blazor`

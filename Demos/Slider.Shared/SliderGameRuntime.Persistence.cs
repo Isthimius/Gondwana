@@ -3,10 +3,10 @@ using SkiaSharp;
 
 namespace Gondwana.Demos.Slider;
 
-internal sealed partial class SliderGameHost
+internal sealed partial class SliderGameRuntime
 {
     private SliderMenu? _menu;
-    private IReadOnlyList<SliderScore> _highScores = SliderPersistence.LoadScores();
+    private IReadOnlyList<SliderScore> _highScores = [];
     private byte[]? _imagePng;
     private TimeSpan _elapsedBeforeResume;
     private int _shiftHeldFromUi;
@@ -31,8 +31,9 @@ internal sealed partial class SliderGameHost
 
     private void CreateMenu()
     {
-        _menu = new SliderMenu(RenderSurface.Host, _uiView, _gameView,
-            newPuzzle: () => RequestPuzzle(_picturePath, _sidebar!.Columns, _sidebar.Rows),
+        _menu = new SliderMenu(_surface, _uiView, _gameView,
+            _aboutLogo, _uriLauncher,
+            newPuzzle: () => RequestPuzzle(null, _sidebar!.Columns, _sidebar.Rows),
             openPicture: () => OpenPictureRequested?.Invoke(_sidebar!.Columns, _sidebar.Rows),
             shuffle: RequestShuffle,
             save: () => SaveGameRequested?.Invoke(CaptureGame()),
@@ -74,7 +75,6 @@ internal sealed partial class SliderGameHost
         CancelAnimation();
         _renderer.Load(image, restored, _showGrid);
         _board = restored;
-        _picturePath = null;
         CapturePicture(image);
 
         _elapsedBeforeResume = TimeSpan.FromTicks(save.ElapsedTicks);
@@ -95,7 +95,7 @@ internal sealed partial class SliderGameHost
                 (_elapsedBeforeResume + _timer.Elapsed).Ticks, DateTime.UtcNow));
         try
         {
-            SliderPersistence.SaveScores(_highScores);
+            _scoreStore.SaveScores(_highScores);
         }
         catch (IOException)
         {

@@ -143,7 +143,7 @@ public sealed class SliderPersistenceTests
     }
 
     [Fact]
-    public void GameFileRoundTripsPictureTilesMovesAndTimer()
+    public void GameJsonRoundTripsPictureTilesMovesAndTimer()
     {
         var board = new SlidingPuzzle(3, 3);
         board.Shuffle(12, new Random(3));
@@ -158,22 +158,12 @@ public sealed class SliderPersistenceTests
             ImagePngBase64 = Convert.ToBase64String([1, 2, 3, 4])
         };
 
-        string file = Path.Combine(Path.GetTempPath(),
-            "slider-test-" + Guid.NewGuid().ToString("N") + ".slider.json");
-        try
-        {
-            SliderPersistence.Save(file, save);
-            SliderSave loaded = SliderPersistence.Load(file);
-            Assert.Equal(save.Cells, loaded.Cells);
-            Assert.Equal(save.MoveCount, loaded.MoveCount);
-            Assert.Equal(save.ElapsedTicks, loaded.ElapsedTicks);
-            Assert.Equal(save.ImagePngBase64, loaded.ImagePngBase64);
-        }
-        finally
-        {
-            if (File.Exists(file))
-                File.Delete(file);
-        }
+        string json = SliderPersistence.Serialize(save);
+        SliderSave loaded = SliderPersistence.Deserialize(json);
+        Assert.Equal(save.Cells, loaded.Cells);
+        Assert.Equal(save.MoveCount, loaded.MoveCount);
+        Assert.Equal(save.ElapsedTicks, loaded.ElapsedTicks);
+        Assert.Equal(save.ImagePngBase64, loaded.ImagePngBase64);
     }
 
     [Fact]
@@ -234,5 +224,51 @@ public sealed class SliderPersistenceTests
         var results = SliderPersistence.AddScore(scores, new SliderScore(4, 4, 23, 40, DateTime.UtcNow));
         Assert.Equal(10, results.Count(s => s.Columns == 3));
         Assert.Single(results.Where(s => s.Columns == 4));
+    }
+}
+
+public sealed class SliderArrowKeysTests
+{
+    // Windows Forms Key enum: Left=37, Up=38, Right=39, Down=40.
+    private static readonly SliderArrowKeys WinFormsKeys = new(37, 39, 38, 40);
+
+    [Theory]
+    [InlineData("37", 1, 0)]
+    [InlineData("39", -1, 0)]
+    [InlineData("38", 0, 1)]
+    [InlineData("40", 0, -1)]
+    [InlineData("ArrowLeft", 1, 0)]
+    [InlineData("ArrowRight", -1, 0)]
+    [InlineData("ArrowUp", 0, 1)]
+    [InlineData("ArrowDown", 0, -1)]
+    [InlineData("Left", 1, 0)]
+    [InlineData("Right", -1, 0)]
+    public void TranslatesNumericAndNamedArrowKeys(string key, int expectedColumn, int expectedRow)
+    {
+        Assert.True(WinFormsKeys.TryGetOffset(key, out int column, out int row));
+        Assert.Equal(expectedColumn, column);
+        Assert.Equal(expectedRow, row);
+    }
+
+    [Fact]
+    public void RespectsHostSpecificNumericKeyCodes()
+    {
+        // BlazorKey uses 37=ArrowLeft, 38=ArrowRight, 39=ArrowUp, 40=ArrowDown.
+        var blazorKeys = new SliderArrowKeys(37, 38, 39, 40);
+        Assert.True(blazorKeys.TryGetOffset("38", out int column, out int row));
+        Assert.Equal(-1, column);
+        Assert.Equal(0, row);
+    }
+
+    [Theory]
+    [InlineData("16")]
+    [InlineData("Space")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void IgnoresNonArrowKeys(string? key)
+    {
+        Assert.False(WinFormsKeys.TryGetOffset(key, out int column, out int row));
+        Assert.Equal(0, column);
+        Assert.Equal(0, row);
     }
 }

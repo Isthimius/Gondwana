@@ -4,20 +4,27 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Keyboard;
 using Gondwana.Physics.Movement.Scripted;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.WinForms.Hosting;
-using Gondwana.WinForms.Rendering;
+using Gondwana.Widgets;
+using Gondwana.Widgets.Controls;
 using SkiaSharp;
 using View = Gondwana.Rendering.Views.View;
 
 namespace Gondwana.Demos.Slider;
 
 /// <summary>Owns Gondwana startup, input, graphics, audio, and engine-thread puzzle state.</summary>
-internal sealed partial class SliderGameHost : WinFormsGpuGameHost
+internal sealed partial class SliderGameRuntime
 {
-    // Native WM_TOUCH is routed through WidgetInputRouter, avoiding both double taps
-    // and a second independent gameplay mouse handler.
-    protected override bool EnableNativeTouch => true;
+    private static global::Gondwana.Engine Engine => global::Gondwana.Engine.Instance;
+    private readonly RenderSurfaceHostBase _surface;
+    private readonly Func<WidgetInputRouter?> _routerAccessor;
+    private readonly ISliderScoreStore _scoreStore;
+    private readonly IExternalUriLauncher _uriLauncher;
+    private readonly Action<int, int> _requestLogicalResolution;
+    private readonly SliderArrowKeys _arrowKeys;
+    private readonly SKImage? _aboutLogo;
+    private WidgetInputRouter? WidgetInputRouter => _routerAccessor();
 
     private const int WorldTiles = 20;
     private const int WorldTileSize = 64;
@@ -33,7 +40,6 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private SliderSidebar? _sidebar;
     private View _uiView = null!;
     private View _gameView = null!;
-    private string? _picturePath;
     private AudioResource? _slideSound;
     private AudioResource? _winSound;
     private Sprite? _movingSprite;
@@ -49,28 +55,37 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private PuzzleRequest? _pendingPictureLoad;
     private SliderSave? _pendingSavedLoad;
     private bool _hideLoadingOnNextTick;
-    private bool _trackingLoadingPresentation;
     private long _presentedLoadingFrames;
     private long _loadingFrameBarrier;
     private long _lastStatusTicks;
 
-    internal SliderGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface)
+    internal SliderGameRuntime(RenderSurfaceHostBase surface,
+        Func<WidgetInputRouter?> routerAccessor, ISliderScoreStore scoreStore,
+        SKImage? aboutLogo, IExternalUriLauncher uriLauncher,
+        Action<int, int> requestLogicalResolution,
+        SliderArrowKeys arrowKeys)
     {
-        _clientSize = surface.ClientSize;
-        surface.SizeChanged += OnSurfaceSizeChanged;
+        _surface = surface ?? throw new ArgumentNullException(nameof(surface));
+        _routerAccessor = routerAccessor ?? throw new ArgumentNullException(nameof(routerAccessor));
+        _scoreStore = scoreStore ?? throw new ArgumentNullException(nameof(scoreStore));
+        _aboutLogo = aboutLogo;
+        _uriLauncher = uriLauncher ?? throw new ArgumentNullException(nameof(uriLauncher));
+        _requestLogicalResolution = requestLogicalResolution ?? throw new ArgumentNullException(nameof(requestLogicalResolution));
+        _arrowKeys = arrowKeys;
+        _highScores = scoreStore.LoadScores();
+        _clientSize = new Size(surface.Backbuffer.Width, surface.Backbuffer.Height);
     }
 
     /// <summary>
     /// Raised by the in-engine Open Picture button. Subscribers must open the
-    /// platform's file picker on the WinForms UI thread.
+    /// platform's file picker on the platform UI thread.
     /// </summary>
     internal event Action<int, int>? OpenPictureRequested;
 
-    internal void RequestPuzzle(string? imagePath, int columns, int rows)
+    internal void RequestPuzzle(byte[]? imageBytes, int columns, int rows)
     {
         lock (_requestGate)
-            _requests.Enqueue(new PuzzleRequest(imagePath, columns, rows, null,
-                ImagePng: imagePath is null ? _imagePng : null));
+            _requests.Enqueue(new PuzzleRequest(imageBytes ?? _imagePng, columns, rows, null));
     }
 
     internal void RequestShuffle()
@@ -86,27 +101,22 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
                 show ? PuzzleCommand.ShowGrid : PuzzleCommand.HideGrid));
     }
 
-    private void OnSurfaceSizeChanged(object? sender, EventArgs args)
+    internal void RequestResize(Size size)
     {
         lock (_requestGate)
         {
-            _clientSize = RenderSurface.ClientSize;
+            _clientSize = size;
             _fitRequested = true;
         }
     }
 
-    protected override void LoadAssets()
+    internal void SetAudioResources(AudioResource? slideSound, AudioResource? winSound)
     {
-        var root = Path.Combine(AppContext.BaseDirectory, "assets");
-        _slideSound = Engine.Managers.AudioResources.LoadFromFile(
-            "slider-move", Path.Combine(root,
-                "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav"));
-        _winSound = Engine.Managers.AudioResources.LoadFromFile(
-            "slider-victory", Path.Combine(root,
-                "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav"));
+        _slideSound = slideSound;
+        _winSound = winSound;
     }
 
-    protected override Scene CreateInitialScene()
+    internal Scene CreateInitialScene()
     {
         var scene = new Scene();
         _layer = scene.AddLayer(WorldTiles, WorldTiles, WorldTileSize, WorldTileSize,
@@ -114,9 +124,9 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         return scene;
     }
 
-    protected override void OnSceneBound()
+    internal void OnSceneBound()
     {
-        var host = RenderSurface.Host;
+        var host = _surface;
         host.Backbuffer.ClearColor = new SKColor(18, 23, 35);
 
         // Two non-overlapping Views share the one GPU adapter: a fixed-width
@@ -136,7 +146,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         _gameView.Camera.WorldBoundsPx = RectangleF.Empty;
     }
 
-    protected override void CreateSprites()
+    internal void CreateSprites()
     {
         _board = new SlidingPuzzle(4, 3);
         _renderer = new PuzzleRenderer(_layer, Engine.Managers.Tilesheets, Engine.Managers.Sprites);
@@ -145,11 +155,11 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         FitPuzzle();
     }
 
-    protected override void CreateDirectDrawings()
+    internal void CreateDirectDrawings()
     {
-        _sidebar = new SliderSidebar(RenderSurface.Host, _uiView,
-            RenderSurface.Host.Backbuffer.Height,
-            onNewPuzzle: () => RequestPuzzle(_picturePath, _sidebar!.Columns, _sidebar.Rows),
+        _sidebar = new SliderSidebar(_surface, _uiView,
+            _surface.Backbuffer.Height,
+            onNewPuzzle: () => RequestPuzzle(null, _sidebar!.Columns, _sidebar.Rows),
             onOpenPicture: (columns, rows) => OpenPictureRequested?.Invoke(columns, rows),
             onShuffle: RequestShuffle,
             onGridChanged: RequestGrid);
@@ -157,46 +167,26 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         WidgetInputRouter!.UnhandledPrimaryAction += OnPrimaryPointerAction;
     }
 
-    protected override void OnKeyboardAdapterInitialized()
+    internal void OnKeyboardAdapterInitialized()
     {
-        var keyboard = Engine.Input.KeyboardEventPoller!;
-        keyboard.KeyDown += OnKeyDown;
-        // WidgetInputRouter expects numeric key identifiers, not enum display
-        // names. Include navigation, selection, and focus keys for combo boxes
-        // and buttons while retaining the arrow-key puzzle controls.
-        foreach (Keys key in new[]
-        {
-            Keys.Tab, Keys.Enter, Keys.Escape, Keys.Space,
-            Keys.Up, Keys.Down, Keys.Left, Keys.Right,
-            Keys.Home, Keys.End, Keys.PageUp, Keys.PageDown,
-            Keys.A, Keys.G, Keys.H, Keys.L, Keys.N, Keys.O,
-            Keys.P, Keys.S, Keys.U, Keys.X
-        })
-            keyboard.StartMonitoringKey((int)key);
+        Engine.Input.KeyboardEventPoller!.KeyDown += OnKeyDown;
     }
 
-    protected override void OnEngineInitialized()
+    internal void OnEngineInitialized()
     {
         Engine.Configuration.TargetFPS = 60;
         Engine.BeforeBackgroundTasksExecute += OnTick;
     }
 
-    protected override void OnInitialized() => PublishStatus();
+    internal void OnInitialized() => PublishStatus();
 
-    // GPU paints happen on the WinForms GL thread. Engine simulation ticks alone
-    // do not guarantee any picture reached the screen, so loading stages wait for
-    // the adapter's post-paint diagnostics callback before advancing.
-    private void OnLoadingFramePresented(WinFormGpuFrameDiagnostics _)
+    // The platform host reports actual GPU presentations so a loading state
+    // remains visible until a new frame has reached the screen.
+    internal void NotifyFramePresented()
         => Interlocked.Increment(ref _presentedLoadingFrames);
 
     private void BeginLoadingIndicator()
     {
-        if (!_trackingLoadingPresentation)
-        {
-            RenderSurface.Adapter.FrameDiagnosticsCalculated += OnLoadingFramePresented;
-            _trackingLoadingPresentation = true;
-        }
-
         _loadingFrameBarrier = Interlocked.Read(ref _presentedLoadingFrames);
         _hideLoadingOnNextTick = false;
         _sidebar?.SetLoading(0.15f);
@@ -212,12 +202,6 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private void StopLoadingIndicator()
     {
         _sidebar?.SetLoading(-1f);
-        if (_trackingLoadingPresentation)
-        {
-            RenderSurface.Adapter.FrameDiagnosticsCalculated -= OnLoadingFramePresented;
-            _trackingLoadingPresentation = false;
-        }
-
         _hideLoadingOnNextTick = false;
     }
 
@@ -277,7 +261,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         if (resized && newSize.Width > 0 && newSize.Height > 0)
         {
             _requestedLogicalSize = newSize;
-            RenderSurface.Host.RequestLogicalResolution(newSize.Width, newSize.Height);
+            _requestLogicalResolution(newSize.Width, newSize.Height);
             _cameraFitPending = true;
         }
 
@@ -330,8 +314,8 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
         // using the control's newer size against an older viewport clips pieces.
         if (_cameraFitPending &&
             (_requestedLogicalSize.IsEmpty ||
-             RenderSurface.Host.Backbuffer.Width == _requestedLogicalSize.Width &&
-             RenderSurface.Host.Backbuffer.Height == _requestedLogicalSize.Height))
+             _surface.Backbuffer.Width == _requestedLogicalSize.Width &&
+             _surface.Backbuffer.Height == _requestedLogicalSize.Height))
         {
             ApplyLayout();
             _cameraFitPending = false;
@@ -339,7 +323,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
 
         UpdateShiftLabels();
 
-        // Refresh the clock without touching any WinForms control from the engine thread.
+        // Refresh the clock without touching any platform UI control from the engine thread.
         if (_timer.IsRunning && Stopwatch.GetTimestamp() - _lastStatusTicks >= Stopwatch.Frequency / 4)
             PublishStatus();
     }
@@ -350,19 +334,15 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
             throw new ArgumentOutOfRangeException(nameof(request), "Rows and columns must be 3–20.");
 
         // Decode first. An invalid file must not destroy the currently playable board.
-        using SKBitmap image = request.ImagePath is not null
-            ? SKBitmap.Decode(request.ImagePath)
+        using SKBitmap image = request.ImagePng is not null
+            ? SKBitmap.Decode(request.ImagePng)
                 ?? throw new InvalidDataException("Unsupported or corrupt picture.")
-            : request.ImagePng is { Length: > 0 }
-                ? SKBitmap.Decode(request.ImagePng)
-                    ?? throw new InvalidDataException("The current picture could not be decoded.")
-                : CreateSampleImage();
+            : CreateSampleImage();
 
         var replacement = new SlidingPuzzle(request.Columns, request.Rows);
         CancelAnimation();
         _renderer.Load(image, replacement, _showGrid);
         _board = replacement;
-        _picturePath = request.ImagePath;
         CapturePicture(image);
         _elapsedBeforeResume = TimeSpan.Zero;
         _started = false;
@@ -375,20 +355,12 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     {
         if (args.KeyAction != KeyAction.Pressed || _movingSprite is not null || _shuffleMoves is not null ||
             _won || HasMenuOrDialogOpen || _sidebar?.IsEditingDimensions == true ||
-            !Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key))
+            !_arrowKeys.TryGetOffset(args.KeyConfig.Key, out int dx, out int dy))
             return;
 
         // Direction refers to the piece's motion, not the empty square's motion.
-        int x = _board.BlankColumn;
-        int y = _board.BlankRow;
-        switch (key)
-        {
-            case Keys.Left: x++; break;
-            case Keys.Right: x--; break;
-            case Keys.Up: y++; break;
-            case Keys.Down: y--; break;
-            default: return;
-        }
+        int x = _board.BlankColumn + dx;
+        int y = _board.BlankRow + dy;
 
         int piece = _board.PieceAt(x, y);
         if (piece >= 0)
@@ -485,7 +457,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     {
         // View rectangles are automatically scaled with the logical Backbuffer,
         // so restore the sidebar's exact width after the GPU resize completes.
-        var buffer = RenderSurface.Host.Backbuffer;
+        var buffer = _surface.Backbuffer;
         _uiView.Viewport.TargetRectPx =
             new Rectangle(0, 0, SliderSidebar.Width, buffer.Height);
         _gameView.Viewport.TargetRectPx =
@@ -525,14 +497,13 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
             "Time: " + SliderPersistence.FormatElapsed(_elapsedBeforeResume + _timer.Elapsed));
     }
 
-    protected override void UnhookEvents()
+    internal void UnhookEvents()
     {
         if (WidgetInputRouter is not null)
             WidgetInputRouter.UnhandledPrimaryAction -= OnPrimaryPointerAction;
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
         Engine.BeforeBackgroundTasksExecute -= OnTick;
-        RenderSurface.SizeChanged -= OnSurfaceSizeChanged;
         StopLoadingIndicator();
         CancelAnimation();
         _menu?.Dispose();
@@ -600,6 +571,6 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     }
 
     private enum PuzzleCommand { Shuffle, ShowGrid, HideGrid, Restore }
-    private sealed record PuzzleRequest(string? ImagePath, int Columns, int Rows,
-        PuzzleCommand? Command, SliderSave? SavedGame = null, byte[]? ImagePng = null);
+    private sealed record PuzzleRequest(byte[]? ImagePng, int Columns, int Rows,
+        PuzzleCommand? Command, SliderSave? SavedGame = null);
 }

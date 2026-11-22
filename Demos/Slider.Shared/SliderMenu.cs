@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
@@ -17,20 +16,21 @@ internal sealed class SliderMenu : IDisposable
     private readonly View _gameView;
     private readonly MenuBarWidget _menu;
     private readonly SKImage? _gondwanaLogo;
+    private readonly IExternalUriLauncher _uriLauncher;
     private DialogBox? _dialog;
 
     internal bool HasOpenDialog => _dialog is { IsClosed: false };
     internal bool HasOpenMenu => _menu.OpenMenuIndex >= 0;
 
     internal SliderMenu(RenderSurfaceHostBase host, View uiView, View gameView,
+        SKImage? gondwanaLogo, IExternalUriLauncher uriLauncher,
         Action newPuzzle, Action openPicture, Action shuffle,
         Action save, Action load, Action highScores, Action exit)
     {
         _host = host;
         _gameView = gameView;
-        string logoPath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
-        using (SKBitmap? logoBitmap = File.Exists(logoPath) ? SKBitmap.Decode(logoPath) : null)
-            _gondwanaLogo = logoBitmap is null ? null : SKImage.FromBitmap(logoBitmap);
+        _gondwanaLogo = gondwanaLogo;
+        _uriLauncher = uriLauncher;
 
         _menu = new MenuBarWidget(host, uiView, new Rectangle(0, 0, SliderSidebar.Width, 32));
         _menu
@@ -149,7 +149,7 @@ internal sealed class SliderMenu : IDisposable
             logo: _gondwanaLogo,
             bounds: DialogBounds(480, 360),
             nickname: "slider.about",
-            uriLauncher: new SliderUriLauncher(),
+            uriLauncher: _uriLauncher,
             hyperlinkUri: new Uri("https://github.com/Isthimius/Gondwana"),
             hyperlinkText: "View Gondwana on GitHub");
         about.Panel.SetColor(Color.FromArgb(255, 23, 30, 42))
@@ -172,20 +172,6 @@ internal sealed class SliderMenu : IDisposable
         internal SliderTextDialog(RenderSurfaceHostBase host, View view, Rectangle bounds, string title)
             : base(host, view, bounds, title, showCloseButton: true, nickname: "slider.dialog")
         {
-        }
-    }
-
-    private sealed class SliderUriLauncher : IExternalUriLauncher
-    {
-        public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = uri.AbsoluteUri,
-                UseShellExecute = true
-            });
-            return ValueTask.CompletedTask;
         }
     }
 
