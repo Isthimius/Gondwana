@@ -20,7 +20,8 @@ The browser's native file chooser is used for image and saved-game imports.
 
 - **Open Picture** selects an image (16 MiB maximum).
 - **Save Puzzle** downloads a compatible `.slider.json` file, including the image.
-- **Load Puzzle** reads a WinForms or Blazor `.slider.json` file (16 MiB maximum).
+- **Load Puzzle** reads a WinForms or Blazor `.slider.json` file (64 MiB maximum).
+  Exports larger than 64 MiB are rejected instead of producing unloadable files.
 - **High Scores** persist locally in the current browser's `localStorage`.
 - Audio is played by `Gondwana.Audio.Browser`; browser autoplay policies
   may defer playback until the first user interaction.
@@ -28,4 +29,6 @@ The browser's native file chooser is used for image and saved-game imports.
 This is a Blazor WebAssembly app; no server is required for gameplay. The
 browser chooses its own file download location. Browser storage may be cleared
 by private/incognito sessions or site-data deletion. Resize is handled by a
-`ResizeObserver` and Gondwana's dynamic logical-resolution request.
+`ResizeObserver` and Gondwana's dynamic logical-resolution request. The game
+preserves a 1200x780 minimum logical canvas and scales to narrow or short
+viewports so the fixed-position sidebar remains fully visible.

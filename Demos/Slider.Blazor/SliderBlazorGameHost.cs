@@ -71,7 +71,12 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
     internal void RequestResize(System.Drawing.Size size) => _runtime.RequestResize(size);
     internal void SetShiftHeld(bool held) => _runtime.SetShiftHeld(held);
 
-    private void OnFramePresented() => _runtime.NotifyFramePresented();
+    private void OnFramePresented(bool sceneRendered)
+    {
+        // Cached GPU re-blits do not prove that the loading widgets were drawn.
+        if (sceneRendered)
+            _runtime.NotifyFramePresented();
+    }
 
     protected override void OnConfigurePlatform() => Engine.UseBrowserAudio();
 
