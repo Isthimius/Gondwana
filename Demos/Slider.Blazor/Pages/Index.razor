@@ -294,6 +294,9 @@
 
     private sealed class BrowserSize
     {
+        // Explicit public constructor allows System.Text.Json interop deserialization.
+        public BrowserSize() { }
+
         public int Width { get; set; }
         public int Height { get; set; }
     }
