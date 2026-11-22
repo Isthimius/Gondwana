@@ -112,14 +112,18 @@
             if (_disposed)
                 return;
 
-            // Use the same encoded-image loading path as Spot.Blazor. SKBitmap.Decode
-            // can throw on WASM when SkiaSharp cannot create a bitmap codec.
-            using var logoStream = new MemoryStream(logoData, writable: false);
-            var logo = global::SkiaSharp.SKImage.FromEncodedData(logoStream)
-                ?? throw new InvalidDataException("Invalid Gondwana logo image.");
+            // Decode the About logo on demand, after the WASM renderer has initialized
+            // SkiaSharp. Eager decoding here fails before the game can start.
+            global::SkiaSharp.SKImage? LoadLogo()
+            {
+                using var stream = new MemoryStream(logoData, writable: false);
+                return global::SkiaSharp.SKImage.FromEncodedData(stream)
+                    ?? throw new InvalidDataException("Invalid Gondwana logo image.");
+            }
+
             var store = new SliderBrowserScoreStore(scores, SaveScoresInBrowser);
 
-            _host = new SliderBlazorGameHost(_surface, JS, store, logo, slide, victory);
+            _host = new SliderBlazorGameHost(_surface, JS, store, LoadLogo, slide, victory);
             _host.OpenPictureRequested += OnPictureRequested;
             _host.SaveGameRequested += OnSaveRequested;
             _host.LoadGameRequested += OnLoadRequested;
