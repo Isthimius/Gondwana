@@ -67,6 +67,14 @@ jobs:
       - name: Pack, generate and test Blazor NuGet consumer
         shell: pwsh
         run: ./Testing/BlazorConsumer/Run.ps1 -WorkRoot '${{ runner.temp }}/blazor-consumer'
+      - name: Publish Slider.Blazor WebAssembly demo
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag' ||
+          needs.changes.outputs.demo_slider == 'true'
+        run: dotnet publish Demos/Slider.Blazor/Slider.Blazor.csproj --configuration Release --nologo -o ${{ runner.temp }}/slider-blazor-publish
+
       - name: Upload consumer diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

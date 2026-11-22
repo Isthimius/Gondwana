@@ -16,6 +16,9 @@
       <_Parameter1>Slider.WinForms</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Slider.Blazor</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>Slider.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>

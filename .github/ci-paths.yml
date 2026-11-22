@@ -24,6 +24,8 @@ blazor:
   - 'Tooling/Gondwana.Tooling.Assets/**'
   - 'Tooling/Gondwana.Cli/**'
   - 'Tooling/Gondwana.Templates/**'
+  - 'Demos/Slider.Blazor/**'
+  - 'Demos/Slider.Shared/**'
   - 'Testing/BlazorConsumer/**'
   - 'Testing/BlazorPresentationTests.mjs'
   - 'Testing/browser-audio.test.mjs'
@@ -107,6 +109,7 @@ demo:
   - 'Demos/Gondwana.Platformer/**'
   - 'Testing/Platformer.Tests/**'
   - 'Demos/Slider.WinForms/**'
+  - 'Demos/Slider.Blazor/**'
   - 'Demos/Slider.Shared/**'
   - 'Testing/Slider.Tests/**'
 
@@ -121,5 +124,6 @@ demo_platformer:
 
 demo_slider:
   - 'Demos/Slider.WinForms/**'
+  - 'Demos/Slider.Blazor/**'
   - 'Demos/Slider.Shared/**'
   - 'Testing/Slider.Tests/**'

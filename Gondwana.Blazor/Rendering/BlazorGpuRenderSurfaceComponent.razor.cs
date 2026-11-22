@@ -47,6 +47,12 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     private bool _backbufferNeedsRender = true;
     private bool _disposed;
 
+    /// <summary>
+    /// Raised after a WebGL frame has been successfully presented on the browser canvas.
+    /// The callback runs on the browser render thread and must remain lightweight.
+    /// </summary>
+    public event Action? FramePresented;
+
     /// <summary>Gets the adapter that coordinates engine frame requests with this component.</summary>
     public BlazorGpuRenderSurfaceAdapter Adapter { get; private set; } = null!;
 
@@ -174,6 +180,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         // browser GPU presentation cadence, which may differ from the engine's TargetFPS.
         backbuffer.RecordFrame();
         if (telemetryGeneration != 0) Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
+        FramePresented?.Invoke();
     }
 
     /// <inheritdoc/>
