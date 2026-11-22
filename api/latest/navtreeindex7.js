@@ -1,5 +1,7 @@
 var NAVTREEINDEX7 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#adea146bff87658bfd3b3e383664ca1f6":[1,0,0,6,2,17,9],
+"classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ae187fd0edce91e848615ccd4c6ac8c72":[0,0,0,6,3,17,54],
 "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ae187fd0edce91e848615ccd4c6ac8c72":[1,0,0,6,2,17,54],
 "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ae804a24101bd9a779277c42b162de0ab":[0,0,0,6,3,17,20],
 "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ae804a24101bd9a779277c42b162de0ab":[1,0,0,6,2,17,20],
@@ -247,7 +249,5 @@ var NAVTREEINDEX7 =
 "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#af319b8bb9389e1e1ec6891264e125e81":[1,0,0,6,3,2,16],
 "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#af86cda257f1816701516db876fc64453":[0,0,0,6,4,2,36],
 "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#af86cda257f1816701516db876fc64453":[1,0,0,6,3,2,36],
-"classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html":[0,0,0,6,4,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html":[1,0,0,6,3,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a0defa489406ca25400815d4449df97ad":[0,0,0,6,4,3,6]
+"classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html":[0,0,0,6,4,3]
 };

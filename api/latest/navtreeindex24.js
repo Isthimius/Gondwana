@@ -1,5 +1,9 @@
 var NAVTREEINDEX24 =
 {
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801":[1,0,0,10,3,2,2],
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0":[0,0,0,11,4,2,3],
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0":[1,0,0,10,3,2,3],
+"interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html":[0,0,0,13,0,6],
 "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html":[1,0,0,12,0,6],
 "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html#a38a6f284d8b60596723eceda92163fbc":[0,0,0,13,0,6,1],
 "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html#a38a6f284d8b60596723eceda92163fbc":[1,0,0,12,0,6,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX24 =
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af5f286e73bda105e538310b3190f75c5":[0,0,0,3,2,0,1,92],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af6c6379402dce27659f7cffee6bc1f00":[0,0,0,3,2,0,1,95],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af7303042267ef3576930c1f4cd79348a":[0,0,0,3,2,0,1,77],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afa78892b0c0fd9b6f2d9dc2400956255":[0,0,0,3,2,0,1,18],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afe5c3684dce76cdd9f7f42430868aa74":[0,0,0,3,2,0,1,64],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Mouse.html":[0,0,0,3,2,1],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Touch.html":[0,0,0,3,2,2],
-"namespaceGondwana_1_1Blazor_1_1Logging.html":[0,0,0,3,3]
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afa78892b0c0fd9b6f2d9dc2400956255":[0,0,0,3,2,0,1,18]
 };

@@ -4,5 +4,6 @@ var searchData=
   ['focusgained_1',['FocusGained',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ab553b458486fa7d6f0bce235610f7802',1,'Gondwana::Widgets::WidgetBase']]],
   ['focuslost_2',['FocusLost',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a9a924e5c184262760f5cc511638fc637',1,'Gondwana::Widgets::WidgetBase']]],
   ['framediagnosticscalculated_3',['FrameDiagnosticsCalculated',['../classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html#a02943aaf7f0e76ddbb2b1a1aa6472836',1,'Gondwana::WinForms::Rendering::WinFormGpuRenderSurfaceAdapter']]],
-  ['frameready_4',['FrameReady',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a5884aac4123ba1047432a9a0fd409fd4',1,'Gondwana.Video.IVideoPlayer.FrameReady'],['../classGondwana_1_1Video_1_1VlcVideoPlayer.html#a2c20ea7d7c2e929e185f60bdcfebb93e',1,'Gondwana.Video.VlcVideoPlayer.FrameReady']]]
+  ['framepresented_4',['FramePresented',['../classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#a2e3369db1adcbacf0cb48e7a91a5c5f6',1,'Gondwana::Blazor::Rendering::BlazorGpuRenderSurfaceComponent']]],
+  ['frameready_5',['FrameReady',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a5884aac4123ba1047432a9a0fd409fd4',1,'Gondwana.Video.IVideoPlayer.FrameReady'],['../classGondwana_1_1Video_1_1VlcVideoPlayer.html#a2c20ea7d7c2e929e185f60bdcfebb93e',1,'Gondwana.Video.VlcVideoPlayer.FrameReady']]]
 ];

@@ -1,5 +1,7 @@
 var NAVTREEINDEX12 =
 {
+"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#ab3b80419a65608955954b00611f0e8e2":[1,0,0,10,3,0,1,2],
+"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html":[0,0,0,11,4,0,4],
 "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html":[1,0,0,10,3,0,4],
 "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a004979294e9114ade9b0d956075185ae":[0,0,0,11,4,0,4,0],
 "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a004979294e9114ade9b0d956075185ae":[1,0,0,10,3,0,4,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX12 =
 "classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aaf81a83ca48b73fed9ccf4331977169f":[1,0,0,13,0,0,6],
 "classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#ad337f9fed366bb07672919518bd3b7c2":[0,0,0,14,0,0,1],
 "classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#ad337f9fed366bb07672919518bd3b7c2":[1,0,0,13,0,0,1],
-"classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aeb71bc24fcba76bcc7f06be7f54041d8":[0,0,0,14,0,0,4],
-"classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aeb71bc24fcba76bcc7f06be7f54041d8":[1,0,0,13,0,0,4],
-"classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5":[0,0,0,14,0,0,5]
+"classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aeb71bc24fcba76bcc7f06be7f54041d8":[0,0,0,14,0,0,4]
 };

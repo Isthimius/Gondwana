@@ -5,5 +5,6 @@ var classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent =
     [ "OnInitialized", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#a0baef9f1bf239db527a6a399ff2bb3e0", null ],
     [ "OnParametersSet", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#ab500bedc86888b5a8de51b151bc6acf6", null ],
     [ "Adapter", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#a9d1fb4e702a054b86d34453e772b46ce", null ],
-    [ "Host", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#a7e04f436a382ae66303766b6fa23b7cf", null ]
+    [ "Host", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#a7e04f436a382ae66303766b6fa23b7cf", null ],
+    [ "FramePresented", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#a2e3369db1adcbacf0cb48e7a91a5c5f6", null ]
 ];

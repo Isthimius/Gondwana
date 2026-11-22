@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad38e0285605825ffe181f98ba74daef8":[1,0,0,6,2,2,25],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ade89d167607c4cb7ff9e2c954ec0ac2f":[0,0,0,6,3,2,1],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ade89d167607c4cb7ff9e2c954ec0ac2f":[1,0,0,6,2,2,1],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ae2e2ceb43f40a2e4764515766c7e2aae":[0,0,0,6,3,2,17],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ae2e2ceb43f40a2e4764515766c7e2aae":[1,0,0,6,2,2,17],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a2c8239e6a1fd3ec3b54b2f30362b96df":[1,0,0,6,2,8,3],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a31652a267817ef9818a2a86bddb41190":[0,0,0,6,3,8,6],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a31652a267817ef9818a2a86bddb41190":[1,0,0,6,2,8,6],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a5975ee18fa29f97685f2034395ac7ab0":[0,0,0,6,3,8,2],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a5975ee18fa29f97685f2034395ac7ab0":[1,0,0,6,2,8,2],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a7aba65053859b8ec758ed0a0d67d9d28":[0,0,0,6,3,8,1]
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a5975ee18fa29f97685f2034395ac7ab0":[0,0,0,6,3,8,2]
 };

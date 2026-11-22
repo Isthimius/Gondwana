@@ -1,5 +1,7 @@
 var NAVTREEINDEX21 =
 {
+"classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a09462a0d784f710178c34eaba146810d":[1,0,0,17,5,1,0,2],
+"classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a2ddb22b5f505aaafbe118c502a5a56ac":[0,0,0,19,5,1,0,3],
 "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a2ddb22b5f505aaafbe118c502a5a56ac":[1,0,0,17,5,1,0,3],
 "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a6830a6bcb5563d6b8ba7bafda3eda348":[0,0,0,19,5,1,0,1],
 "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a6830a6bcb5563d6b8ba7bafda3eda348":[1,0,0,17,5,1,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX21 =
 "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a274f956e9c69b5dfef96081a951cf8ff":[1,0,0,17,13,2],
 "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a49686e358147015b3e1877d7e7b072a8":[0,0,0,19,13,6],
 "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a49686e358147015b3e1877d7e7b072a8":[1,0,0,17,13,6],
-"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a67f59f6e1ab56481abecdaccd5068d11":[0,0,0,19,13,1],
-"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a67f59f6e1ab56481abecdaccd5068d11":[1,0,0,17,13,1],
-"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a6c6c74c7820be9dc1b50ec747bbbd183":[0,0,0,19,13,9]
+"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a67f59f6e1ab56481abecdaccd5068d11":[0,0,0,19,13,1]
 };
