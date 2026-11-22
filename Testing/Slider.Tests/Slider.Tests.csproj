@@ -13,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <Compile Include="../../Demos/Slider/SlidingPuzzle.cs" Link="Demos/SlidingPuzzle.cs" />
+    <Compile Include="../../Demos/Slider/PuzzleImageLayout.cs" Link="Demos/PuzzleImageLayout.cs" />
     <Compile Include="../../Demos/Slider/SliderPersistence.cs" Link="Demos/SliderPersistence.cs" />
     <Using Include="Xunit" />
   </ItemGroup>
