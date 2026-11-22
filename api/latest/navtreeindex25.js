@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"namespaceGondwana_1_1Blazor_1_1Rendering.html":[0,0,0,3,4],
+"namespaceGondwana_1_1Configuration.html":[0,0,0,4],
 "namespaceGondwana_1_1Diagnostics.html":[0,0,0,5],
 "namespaceGondwana_1_1Diagnostics.html#a0277e2ad965814b598c9ff1915767fb0":[0,0,0,5,6],
 "namespaceGondwana_1_1Diagnostics.html#a08382dbcc1a1f573c74b3b2bbe3eceba":[0,0,0,5,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "namespaceGondwana_1_1Timers.html#ae9d007991e00874a718658b6a05bd255":[0,0,0,17,1],
 "namespaceGondwana_1_1Timers.html#ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611":[0,0,0,17,1,0],
 "namespaceGondwana_1_1Timers.html#ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a":[0,0,0,17,1,1],
-"namespaceGondwana_1_1Video.html":[0,0,0,18],
-"namespaceGondwana_1_1Video.html#ab4fee478b3a0b01f9e591f7883c003f4":[0,0,0,18,6],
-"namespaceGondwana_1_1Video.html#ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d":[0,0,0,18,6,1]
+"namespaceGondwana_1_1Video.html":[0,0,0,18]
 };

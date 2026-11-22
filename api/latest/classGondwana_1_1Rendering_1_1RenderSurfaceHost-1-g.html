@@ -117,6 +117,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6df1d4dbd2be4ad06f17518294425948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> class with the specified render surface adapter.  <br /></td></tr>
 <tr class="memitem:ad2eee4bd5139d89c515b2d79463f2f03" id="r_ad2eee4bd5139d89c515b2d79463f2f03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2eee4bd5139d89c515b2d79463f2f03">Bind</a> (<a class="el" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a> newScene, bool limitCameraToWorldBoundPx=true)</td></tr>
 <tr class="memdesc:ad2eee4bd5139d89c515b2d79463f2f03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a scene to this render surface host, replacing any previously bound scene.  <br /></td></tr>
+<tr class="memitem:a75809b0425766f1d1763e78082759d3a" id="r_a75809b0425766f1d1763e78082759d3a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75809b0425766f1d1763e78082759d3a">RequestLogicalResolution</a> (int width, int height)</td></tr>
+<tr class="memdesc:a75809b0425766f1d1763e78082759d3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly requests a new logical backbuffer resolution without changing the global <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a7ea9365066b7f0ba1c168133cab1d522" title="Establishes logical Backbuffer dimensions from current adapter dimensions. Default is one; values abo...">Gondwana.Configuration.EngineConfiguration.RenderScale</a> setting.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">Gondwana.Rendering.RenderSurfaceHostBase</a></td></tr>
 <tr class="memitem:aa4889c2c598f4b21e07ec34728d064ce inherit pub_methods_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase" id="r_aa4889c2c598f4b21e07ec34728d064ce"><td class="memItemLeft" align="right" valign="top">SKImage?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aa4889c2c598f4b21e07ec34728d064ce">GlRenderAndSnapshot</a> ()</td></tr>
 <tr class="memdesc:aa4889c2c598f4b21e07ec34728d064ce inherit pub_methods_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders the current scene frame on the active GL/WebGL thread and returns a snapshot of the GPU backbuffer ready to be drawn to the platform surface.  <br /></td></tr>
@@ -318,6 +320,46 @@ This method always unregisters the instance from the registry. Derived classes s
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00122">122</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+
+</div>
+</div>
+<a id="a75809b0425766f1d1763e78082759d3a" name="a75809b0425766f1d1763e78082759d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75809b0425766f1d1763e78082759d3a">&#9670;&#160;</a></span>RequestLogicalResolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.RequestLogicalResolution </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>width</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>height</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicitly requests a new logical backbuffer resolution without changing the global <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a7ea9365066b7f0ba1c168133cab1d522" title="Establishes logical Backbuffer dimensions from current adapter dimensions. Default is one; values abo...">Gondwana.Configuration.EngineConfiguration.RenderScale</a> setting. </p>
+<p>Normal adapter resizes intentionally preserve logical resolution. Applications with a fluid viewport can opt in to a new resolution after a layout change. Bitmap backbuffers apply the request on the next frame; GPU backbuffers apply it on the owning GL thread. Existing view rectangles are resized with the backbuffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>The requested logical width, in pixels.</td></tr>
+    <tr><td class="paramname">height</td><td>The requested logical height, in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentOutOfRangeException</td><td>Either dimension is not positive.</td></tr>
+    <tr><td class="paramname">ObjectDisposedException</td><td>The render surface host has been disposed.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l01135">1135</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>

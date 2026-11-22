@@ -3,6 +3,7 @@ var classGondwana_1_1Rendering_1_1RenderSurfaceHost_1_g =
     [ "Bind", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#ad2eee4bd5139d89c515b2d79463f2f03", null ],
     [ "Dispose", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c", null ],
     [ "RenderSurfaceHost", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a6df1d4dbd2be4ad06f17518294425948", null ],
+    [ "RequestLogicalResolution", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a75809b0425766f1d1763e78082759d3a", null ],
     [ "Backbuffer", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#af1e9cce6010aec7aa21ce64a35d768d9", null ],
     [ "RedrawDirtyRectangleOnly", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#af6c088dcc08eff11fb58064e4cdaeb25", null ],
     [ "RenderSurfaceAdapter", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#ab02a5f41d5ec6ba966313de1d4521307", null ],

@@ -1,5 +1,7 @@
 var NAVTREEINDEX18 =
 {
+"classGondwana_1_1Widgets_1_1Controls_1_1TabControlWidget.html#a522c7568157cb0de085832b4a40e4bb7":[1,0,0,17,0,11,14],
+"classGondwana_1_1Widgets_1_1Controls_1_1TabControlWidget.html#a568a98331ce5ee86c399ae5c6e8e166c":[0,0,0,19,0,11,21],
 "classGondwana_1_1Widgets_1_1Controls_1_1TabControlWidget.html#a568a98331ce5ee86c399ae5c6e8e166c":[1,0,0,17,0,11,21],
 "classGondwana_1_1Widgets_1_1Controls_1_1TabControlWidget.html#a5805b7db29f9f7228cd1a8b2a6c44102":[0,0,0,19,0,11,11],
 "classGondwana_1_1Widgets_1_1Controls_1_1TabControlWidget.html#a5805b7db29f9f7228cd1a8b2a6c44102":[1,0,0,17,0,11,11],
@@ -247,7 +249,5 @@ var NAVTREEINDEX18 =
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#aa1ad175b862955e2460314670e1e1bb7":[1,0,0,17,1,2,3],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#abbeeb30f75bc72e469424cf0ce26e80c":[0,0,0,19,1,2,7],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#abbeeb30f75bc72e469424cf0ce26e80c":[1,0,0,17,1,2,7],
-"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ac4e628fdf8e2c5e07af5f47398aa2df4":[0,0,0,19,1,2,2],
-"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ac4e628fdf8e2c5e07af5f47398aa2df4":[1,0,0,17,1,2,2],
-"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ac7e51b6838fa79702391fa71759406e9":[0,0,0,19,1,2,4]
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ac4e628fdf8e2c5e07af5f47398aa2df4":[0,0,0,19,1,2,2]
 };
