@@ -49,6 +49,9 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
     private PuzzleRequest? _pendingPictureLoad;
     private SliderSave? _pendingSavedLoad;
     private bool _hideLoadingOnNextTick;
+    private bool _trackingLoadingPresentation;
+    private long _presentedLoadingFrames;
+    private long _loadingFrameBarrier;
     private long _lastStatusTicks;
 
     internal SliderGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface)
@@ -180,45 +183,78 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
 
     protected override void OnInitialized() => PublishStatus();
 
+    // GPU paints happen on the WinForms GL thread. Engine simulation ticks alone
+    // do not guarantee any picture reached the screen, so loading stages wait for
+    // the adapter's post-paint diagnostics callback before advancing.
+    private void OnLoadingFramePresented(WinFormGpuFrameDiagnostics _)
+        => Interlocked.Increment(ref _presentedLoadingFrames);
+
+    private void BeginLoadingIndicator()
+    {
+        if (!_trackingLoadingPresentation)
+        {
+            RenderSurface.Adapter.FrameDiagnosticsCalculated += OnLoadingFramePresented;
+            _trackingLoadingPresentation = true;
+        }
+
+        _loadingFrameBarrier = Interlocked.Read(ref _presentedLoadingFrames);
+        _hideLoadingOnNextTick = false;
+        _sidebar?.SetLoading(0.15f);
+    }
+
+    private void FinishLoadingIndicator()
+    {
+        _sidebar?.SetLoading(1f);
+        _loadingFrameBarrier = Interlocked.Read(ref _presentedLoadingFrames);
+        _hideLoadingOnNextTick = true;
+    }
+
+    private void StopLoadingIndicator()
+    {
+        _sidebar?.SetLoading(-1f);
+        if (_trackingLoadingPresentation)
+        {
+            RenderSurface.Adapter.FrameDiagnosticsCalculated -= OnLoadingFramePresented;
+            _trackingLoadingPresentation = false;
+        }
+
+        _hideLoadingOnNextTick = false;
+    }
+
     private void OnTick()
     {
-        // Stage image loading across frames so the Widgets progress indicator is
-        // actually presented before potentially expensive decoding/atlas creation.
+        long paintedFrames = Interlocked.Read(ref _presentedLoadingFrames);
         if (_hideLoadingOnNextTick)
         {
-            _sidebar?.SetLoading(-1f);
-            _hideLoadingOnNextTick = false;
+            if (paintedFrames > _loadingFrameBarrier)
+                StopLoadingIndicator();
         }
-        else if (_pendingSavedLoad is { } saved)
+        else if (paintedFrames > _loadingFrameBarrier && _pendingSavedLoad is { } saved)
         {
             _pendingSavedLoad = null;
             try
             {
-                _sidebar?.SetLoading(0.65f);
                 RestoreSavedGame(saved);
-                _sidebar?.SetLoading(1f);
-                _hideLoadingOnNextTick = true;
+                FinishLoadingIndicator();
             }
             catch (Exception ex)
             {
-                _sidebar?.SetLoading(-1f);
+                StopLoadingIndicator();
                 _sidebar?.SetStatus("Unable to load saved puzzle: " + ex.Message);
             }
         }
-        else if (_pendingPictureLoad is { } picture)
+        else if (paintedFrames > _loadingFrameBarrier && _pendingPictureLoad is { } picture)
         {
             _pendingPictureLoad = null;
             try
             {
-                _sidebar?.SetLoading(0.65f);
                 LoadPicture(picture);
                 _cameraFitPending = true;
-                _sidebar?.SetLoading(1f);
-                _hideLoadingOnNextTick = true;
+                FinishLoadingIndicator();
             }
             catch (Exception ex)
             {
-                _sidebar?.SetLoading(-1f);
+                StopLoadingIndicator();
                 _sidebar?.SetStatus("Unable to load puzzle: " + ex.Message);
             }
         }
@@ -267,8 +303,9 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
                         PublishStatus();
                         break;
                     case PuzzleCommand.Restore:
+                        _pendingPictureLoad = null;
                         _pendingSavedLoad = request.SavedGame!;
-                        _sidebar?.SetLoading(0.15f);
+                        BeginLoadingIndicator();
                         break;
                     case PuzzleCommand.ShowGrid:
                     case PuzzleCommand.HideGrid:
@@ -276,8 +313,9 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
                         _renderer.ShowGrid(_showGrid);
                         break;
                     case null:
+                        _pendingSavedLoad = null;
                         _pendingPictureLoad = request;
-                        _sidebar?.SetLoading(0.15f);
+                        BeginLoadingIndicator();
                         break;
                 }
             }
@@ -495,6 +533,7 @@ internal sealed partial class SliderGameHost : WinFormsGpuGameHost
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
         Engine.BeforeBackgroundTasksExecute -= OnTick;
         RenderSurface.SizeChanged -= OnSurfaceSizeChanged;
+        StopLoadingIndicator();
         CancelAnimation();
         _menu?.Dispose();
         _menu = null;
