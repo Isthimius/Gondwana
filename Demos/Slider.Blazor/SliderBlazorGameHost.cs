@@ -1,3 +1,5 @@
+using Gondwana.Assets;
+using Gondwana.Audio;
 using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Input.Keyboard;
 using Gondwana.Blazor.Rendering;
@@ -11,20 +13,17 @@ namespace Gondwana.Demos.Slider;
 internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
 {
     private readonly SliderGameRuntime _runtime;
-    private readonly byte[] _slideAudio;
-    private readonly byte[] _victoryAudio;
+    private readonly AssetsFile _assets;
 
     internal SliderBlazorGameHost(
         BlazorGpuRenderSurfaceComponent surface,
         IJSRuntime jsRuntime,
         ISliderScoreStore scoreStore,
         Func<SKImage?> loadAboutLogo,
-        byte[] slideAudio,
-        byte[] victoryAudio)
+        AssetsFile assets)
         : base(surface, jsRuntime)
     {
-        _slideAudio = slideAudio;
-        _victoryAudio = victoryAudio;
+        _assets = assets ?? throw new ArgumentNullException(nameof(assets));
         _runtime = new SliderGameRuntime(
             surface.Host,
             () => WidgetInputRouter,
@@ -82,11 +81,18 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
 
     protected override void LoadAssets()
     {
-        using var slideStream = new MemoryStream(_slideAudio, writable: false);
-        using var victoryStream = new MemoryStream(_victoryAudio, writable: false);
         _runtime.SetAudioResources(
-            Engine.Managers.AudioResources.LoadFromStream("slider-move", slideStream, ".wav"),
-            Engine.Managers.AudioResources.LoadFromStream("slider-victory", victoryStream, ".wav"));
+            LoadAudio("slider-move", "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav"),
+            LoadAudio("slider-victory", "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav"));
+    }
+
+    // Identical resource lookup and stream loading pattern to Spot.Blazor.
+    private AudioResource LoadAudio(string key, string assetName)
+    {
+        using var stream = _assets.Get(AssetTypes.Audio, assetName)
+            ?? throw new InvalidDataException($"Slider audio asset '{assetName}' is missing from slider.gaf.");
+        return Engine.Managers.AudioResources.LoadFromStream(
+            key, stream, Path.GetExtension(assetName));
     }
 
     protected override Scene CreateInitialScene() => _runtime.CreateInitialScene();
@@ -157,4 +163,6 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
         RenderSurface.FramePresented -= OnFramePresented;
         _runtime.UnhookEvents();
     }
+
+    protected override void OnBlazorDisposed() => _assets.Dispose();
 }
