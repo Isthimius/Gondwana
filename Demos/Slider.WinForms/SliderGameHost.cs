@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Gondwana.Scenes;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
+using Gondwana.Widgets.Controls;
 using Gondwana.Widgets.Dialogs;
 using SkiaSharp;
 
