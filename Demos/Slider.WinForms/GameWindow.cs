@@ -95,7 +95,17 @@ internal sealed class GameWindow : Form
                 };
 
                 if (picker.ShowDialog(this) == DialogResult.OK)
-                    _host.RequestPuzzle(File.ReadAllBytes(picker.FileName), columns, rows);
+                {
+                    try
+                    {
+                        _host.RequestPuzzle(File.ReadAllBytes(picker.FileName), columns, rows);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        MessageBox.Show(this, ex.Message, "Could not open picture",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
 
                 _surface.Focus();
             }));

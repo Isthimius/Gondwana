@@ -18,7 +18,8 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
         _runtime = new SliderGameRuntime(surface.Host,
             () => WidgetInputRouter, new SliderFileStorage(),
             LoadAboutLogo(), new SliderWindowsUriLauncher(),
-            (width, height) => surface.Host.RequestLogicalResolution(width, height));
+            (width, height) => surface.Host.RequestLogicalResolution(width, height),
+            new SliderArrowKeys((int)Keys.Left, (int)Keys.Right, (int)Keys.Up, (int)Keys.Down));
         _runtime.RequestResize(surface.ClientSize);
         surface.SizeChanged += OnSurfaceSizeChanged;
         surface.Adapter.FrameDiagnosticsCalculated += OnFramePresented;

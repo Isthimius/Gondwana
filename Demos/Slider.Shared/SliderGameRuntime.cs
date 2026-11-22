@@ -4,8 +4,8 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Keyboard;
 using Gondwana.Physics.Movement.Scripted;
-using Gondwana.Scenes;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.Widgets;
 using Gondwana.Widgets.Controls;
 using SkiaSharp;
@@ -22,6 +22,7 @@ internal sealed partial class SliderGameRuntime
     private readonly ISliderScoreStore _scoreStore;
     private readonly IExternalUriLauncher _uriLauncher;
     private readonly Action<int, int> _requestLogicalResolution;
+    private readonly SliderArrowKeys _arrowKeys;
     private readonly SKImage? _aboutLogo;
     private WidgetInputRouter? WidgetInputRouter => _routerAccessor();
 
@@ -61,7 +62,8 @@ internal sealed partial class SliderGameRuntime
     internal SliderGameRuntime(RenderSurfaceHostBase surface,
         Func<WidgetInputRouter?> routerAccessor, ISliderScoreStore scoreStore,
         SKImage? aboutLogo, IExternalUriLauncher uriLauncher,
-        Action<int, int> requestLogicalResolution)
+        Action<int, int> requestLogicalResolution,
+        SliderArrowKeys arrowKeys)
     {
         _surface = surface ?? throw new ArgumentNullException(nameof(surface));
         _routerAccessor = routerAccessor ?? throw new ArgumentNullException(nameof(routerAccessor));
@@ -69,6 +71,7 @@ internal sealed partial class SliderGameRuntime
         _aboutLogo = aboutLogo;
         _uriLauncher = uriLauncher ?? throw new ArgumentNullException(nameof(uriLauncher));
         _requestLogicalResolution = requestLogicalResolution ?? throw new ArgumentNullException(nameof(requestLogicalResolution));
+        _arrowKeys = arrowKeys;
         _highScores = scoreStore.LoadScores();
         _clientSize = new Size(surface.Backbuffer.Width, surface.Backbuffer.Height);
     }
@@ -331,7 +334,7 @@ internal sealed partial class SliderGameRuntime
             throw new ArgumentOutOfRangeException(nameof(request), "Rows and columns must be 3–20.");
 
         // Decode first. An invalid file must not destroy the currently playable board.
-        using SKBitmap image = request.ImagePng is { Length: > 0 }
+        using SKBitmap image = request.ImagePng is not null
             ? SKBitmap.Decode(request.ImagePng)
                 ?? throw new InvalidDataException("Unsupported or corrupt picture.")
             : CreateSampleImage();
@@ -352,20 +355,12 @@ internal sealed partial class SliderGameRuntime
     {
         if (args.KeyAction != KeyAction.Pressed || _movingSprite is not null || _shuffleMoves is not null ||
             _won || HasMenuOrDialogOpen || _sidebar?.IsEditingDimensions == true ||
-            string.IsNullOrEmpty(args.KeyConfig.Key))
+            !_arrowKeys.TryGetOffset(args.KeyConfig.Key, out int dx, out int dy))
             return;
 
         // Direction refers to the piece's motion, not the empty square's motion.
-        int x = _board.BlankColumn;
-        int y = _board.BlankRow;
-        switch (args.KeyConfig.Key)
-        {
-            case "Left": case "ArrowLeft": x++; break;
-            case "Right": case "ArrowRight": x--; break;
-            case "Up": case "ArrowUp": y++; break;
-            case "Down": case "ArrowDown": y--; break;
-            default: return;
-        }
+        int x = _board.BlankColumn + dx;
+        int y = _board.BlankRow + dy;
 
         int piece = _board.PieceAt(x, y);
         if (piece >= 0)

@@ -226,3 +226,49 @@ public sealed class SliderPersistenceTests
         Assert.Single(results.Where(s => s.Columns == 4));
     }
 }
+
+public sealed class SliderArrowKeysTests
+{
+    // Windows Forms Key enum: Left=37, Up=38, Right=39, Down=40.
+    private static readonly SliderArrowKeys WinFormsKeys = new(37, 39, 38, 40);
+
+    [Theory]
+    [InlineData("37", 1, 0)]
+    [InlineData("39", -1, 0)]
+    [InlineData("38", 0, 1)]
+    [InlineData("40", 0, -1)]
+    [InlineData("ArrowLeft", 1, 0)]
+    [InlineData("ArrowRight", -1, 0)]
+    [InlineData("ArrowUp", 0, 1)]
+    [InlineData("ArrowDown", 0, -1)]
+    [InlineData("Left", 1, 0)]
+    [InlineData("Right", -1, 0)]
+    public void TranslatesNumericAndNamedArrowKeys(string key, int expectedColumn, int expectedRow)
+    {
+        Assert.True(WinFormsKeys.TryGetOffset(key, out int column, out int row));
+        Assert.Equal(expectedColumn, column);
+        Assert.Equal(expectedRow, row);
+    }
+
+    [Fact]
+    public void RespectsHostSpecificNumericKeyCodes()
+    {
+        // BlazorKey uses 37=ArrowLeft, 38=ArrowRight, 39=ArrowUp, 40=ArrowDown.
+        var blazorKeys = new SliderArrowKeys(37, 38, 39, 40);
+        Assert.True(blazorKeys.TryGetOffset("38", out int column, out int row));
+        Assert.Equal(-1, column);
+        Assert.Equal(0, row);
+    }
+
+    [Theory]
+    [InlineData("16")]
+    [InlineData("Space")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void IgnoresNonArrowKeys(string? key)
+    {
+        Assert.False(WinFormsKeys.TryGetOffset(key, out int column, out int row));
+        Assert.Equal(0, column);
+        Assert.Equal(0, row);
+    }
+}
