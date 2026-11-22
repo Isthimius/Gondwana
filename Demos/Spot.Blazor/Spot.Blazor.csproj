@@ -32,9 +32,19 @@
     <ItemGroup>
         <Content Remove="wwwroot\assets\spot.gaf" />
         <Content Include="wwwroot\assets\spot.gaf" />
-        <!-- Serve the shared icon as a static web asset in development and published output. -->
-        <Content Include="..\Spot.Shared\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+        <!-- Stage the PNG inside the web root for both dev-server and published assets. -->
+        <Content Remove="wwwroot\assets\spot_ico.png" />
+        <Content Include="wwwroot\assets\spot_ico.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
+
+    <!-- Match the generated-GAF approach: copy the canonical shared icon to a
+         physical wwwroot path before the SDK resolves static web assets. -->
+    <Target Name="StageSpotStartupIcon" BeforeTargets="PrepareForBuild">
+        <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot\assets" />
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\..\Spot.Shared\assets\spot_ico.png"
+              DestinationFiles="$(MSBuildProjectDirectory)\wwwroot\assets\spot_ico.png"
+              SkipUnchangedFiles="true" />
+    </Target>
 
     <Import Project="..\Spot.Shared\Spot.Assets.targets" />
 
