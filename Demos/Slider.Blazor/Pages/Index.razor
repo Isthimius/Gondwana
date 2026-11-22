@@ -112,18 +112,12 @@
             if (_disposed)
                 return;
 
-            // Decode the About logo on demand, after the WASM renderer has initialized
-            // SkiaSharp. Eager decoding here fails before the game can start.
-            global::SkiaSharp.SKImage? LoadLogo()
-            {
-                using var stream = new MemoryStream(logoData, writable: false);
-                return global::SkiaSharp.SKImage.FromEncodedData(stream)
-                    ?? throw new InvalidDataException("Invalid Gondwana logo image.");
-            }
-
+            // Never decode an image inside the engine's synchronous menu callback.
+            // The About dialog receives a cached image, prepared after engine startup.
+            global::SkiaSharp.SKImage? aboutLogo = null;
             var store = new SliderBrowserScoreStore(scores, SaveScoresInBrowser);
 
-            _host = new SliderBlazorGameHost(_surface, JS, store, LoadLogo, slide, victory);
+            _host = new SliderBlazorGameHost(_surface, JS, store, () => aboutLogo, slide, victory);
             _host.OpenPictureRequested += OnPictureRequested;
             _host.SaveGameRequested += OnSaveRequested;
             _host.LoadGameRequested += OnLoadRequested;
@@ -132,6 +126,20 @@
             var size = await _module.InvokeAsync<BrowserSize>("getSize", _container);
             RequestBrowserResize(size.Width, size.Height);
             _host.Initialize(logLevel: LogLevel.Warning);
+
+            // Spot.Blazor also creates its About images after host initialization.
+            // A missing/unsupported logo must not prevent Slider or its menu from working.
+            try
+            {
+                using var logoStream = new MemoryStream(logoData, writable: false);
+                aboutLogo = global::SkiaSharp.SKImage.FromEncodedData(logoStream);
+                if (aboutLogo is null)
+                    Logger.LogWarning("Unable to decode Slider's Gondwana About logo; opening About without a logo.");
+            }
+            catch (Exception logoError)
+            {
+                Logger.LogWarning(logoError, "Unable to decode Slider's Gondwana About logo; opening About without a logo.");
+            }
 
             _dotNetRef = DotNetObjectReference.Create(this);
             await _module.InvokeVoidAsync("watchSurface", _container, _dotNetRef);
