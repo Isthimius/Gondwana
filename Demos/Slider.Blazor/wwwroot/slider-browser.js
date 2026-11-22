@@ -1,6 +1,7 @@
 const scoreKey = "gondwana.slider.high-scores.v1";
 let resizeObserver = null;
 let removeListeners = null;
+let removeDialogTrap = null;
 
 export function readScores() {
     try { return localStorage.getItem(scoreKey); }
@@ -67,7 +68,73 @@ export function watchSurface(element, dotNetRef) {
     };
 }
 
+export function focusDialog(element, dotNetRef) {
+    stopDialogTrap();
+
+    const dialog = element.querySelector(".browser-dialog");
+    if (!dialog)
+        return;
+
+    const focusables = () => Array.from(dialog.querySelectorAll(
+        'input:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(node => node.getClientRects().length > 0);
+
+    const onDialogKeyDown = event => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+            dotNetRef.invokeMethodAsync("DismissPicker").catch(() => {});
+            return;
+        }
+
+        if (event.key !== "Tab")
+            return;
+
+        const controls = focusables();
+        if (!controls.length) {
+            event.preventDefault();
+            return;
+        }
+
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+
+        if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {
+            event.preventDefault();
+            first.focus();
+        }
+    };
+
+    const keepFocusInDialog = event => {
+        if (!dialog.contains(event.target))
+            focusables()[0]?.focus();
+    };
+
+    document.addEventListener("keydown", onDialogKeyDown, true);
+    document.addEventListener("focusin", keepFocusInDialog, true);
+    removeDialogTrap = () => {
+        document.removeEventListener("keydown", onDialogKeyDown, true);
+        document.removeEventListener("focusin", keepFocusInDialog, true);
+    };
+
+    focusables()[0]?.focus();
+}
+
+function stopDialogTrap() {
+    removeDialogTrap?.();
+    removeDialogTrap = null;
+}
+
+export function restoreCanvasFocus(element) {
+    stopDialogTrap();
+    element.querySelector("canvas[tabindex]")?.focus();
+}
+
 export function stopWatching() {
+    stopDialogTrap();
     resizeObserver?.disconnect();
     resizeObserver = null;
     removeListeners?.();

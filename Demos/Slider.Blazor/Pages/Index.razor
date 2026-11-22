@@ -23,17 +23,17 @@
         @if (_picker != PickerMode.None)
         {
             <div class="dialog-backdrop">
-                <div class="browser-dialog" role="dialog" aria-modal="true">
+                <div class="browser-dialog" role="dialog" aria-modal="true" aria-labelledby="slider-picker-title">
                     @if (_picker == PickerMode.Picture)
                     {
-                        <h2>Open picture</h2>
+                        <h2 id="slider-picker-title">Open picture</h2>
                         <p>Select an image on this device (up to 16 MiB).</p>
                         <InputFile OnChange="OnPictureSelected" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" />
                     }
                     else
                     {
-                        <h2>Load puzzle</h2>
-                        <p>Select a Slider .slider.json save file (up to 16 MiB).</p>
+                        <h2 id="slider-picker-title">Load puzzle</h2>
+                        <p>Select a Slider .slider.json save file (up to 64 MiB).</p>
                         <InputFile OnChange="OnGameSelected" accept=".slider.json,.json,application/json" />
                     }
                     <button @onclick="ClosePicker">Cancel</button>
@@ -52,7 +52,10 @@
 </div>
 
 @code {
-    private const long MaxUploadBytes = 16L * 1024 * 1024;
+    private const long MaxImageBytes = 16L * 1024 * 1024;
+    private const long MaxSaveBytes = 64L * 1024 * 1024;
+    private const int MinLogicalWidth = 1200;
+    private const int MinLogicalHeight = 780;
     private const string SlideAudio = "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav";
     private const string VictoryAudio = "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav";
 
@@ -69,10 +72,31 @@
     private bool _disposed;
     private bool _loading = true;
     private string? _notice;
+    private bool _focusPickerPending;
+    private bool _restoreCanvasFocusPending;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || _surface is null)
+        if (!firstRender)
+        {
+            if (_module is null || _disposed)
+                return;
+
+            if (_focusPickerPending && _picker != PickerMode.None && _dotNetRef is not null)
+            {
+                _focusPickerPending = false;
+                await _module.InvokeVoidAsync("focusDialog", _container, _dotNetRef);
+            }
+            else if (_restoreCanvasFocusPending && _picker == PickerMode.None)
+            {
+                _restoreCanvasFocusPending = false;
+                await _module.InvokeVoidAsync("restoreCanvasFocus", _container);
+            }
+
+            return;
+        }
+
+        if (_surface is null)
             return;
 
         try
@@ -100,7 +124,7 @@
             _host.ExitRequested += OnExitRequested;
 
             var size = await _module.InvokeAsync<BrowserSize>("getSize", _container);
-            _host.RequestResize(new Size(Math.Max(1, size.Width), Math.Max(1, size.Height)));
+            RequestBrowserResize(size.Width, size.Height);
             _host.Initialize(logLevel: LogLevel.Warning);
 
             _dotNetRef = DotNetObjectReference.Create(this);
@@ -144,6 +168,8 @@
             _pictureColumns = columns;
             _pictureRows = rows;
             _picker = PickerMode.Picture;
+            _focusPickerPending = true;
+            _restoreCanvasFocusPending = false;
             StateHasChanged();
         });
     }
@@ -155,6 +181,8 @@
             if (_disposed)
                 return;
             _picker = PickerMode.SavedGame;
+            _focusPickerPending = true;
+            _restoreCanvasFocusPending = false;
             StateHasChanged();
         });
     }
@@ -170,7 +198,11 @@
 
             try
             {
-                await _module.InvokeVoidAsync("downloadSave", SliderPersistence.Serialize(save));
+                string json = SliderPersistence.Serialize(save);
+                if (System.Text.Encoding.UTF8.GetByteCount(json) > MaxSaveBytes)
+                    throw new InvalidDataException("The saved puzzle exceeds the 64 MiB browser save limit.");
+
+                await _module.InvokeVoidAsync("downloadSave", json);
             }
             catch (Exception ex)
             {
@@ -205,7 +237,7 @@
     {
         try
         {
-            await using var file = args.File.OpenReadStream(MaxUploadBytes);
+            await using var file = args.File.OpenReadStream(MaxImageBytes);
             using var buffer = new MemoryStream();
             await file.CopyToAsync(buffer);
             _host?.RequestPuzzle(buffer.ToArray(), _pictureColumns, _pictureRows);
@@ -221,7 +253,7 @@
     {
         try
         {
-            await using var file = args.File.OpenReadStream(MaxUploadBytes);
+            await using var file = args.File.OpenReadStream(MaxSaveBytes);
             using var reader = new StreamReader(file);
             string json = await reader.ReadToEndAsync();
             _host?.RequestRestore(SliderPersistence.Deserialize(json));
@@ -234,7 +266,20 @@
         }
     }
 
-    private void ClosePicker() => _picker = PickerMode.None;
+    private void ClosePicker()
+    {
+        _picker = PickerMode.None;
+        _focusPickerPending = false;
+        _restoreCanvasFocusPending = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void DismissPicker()
+    {
+        if (!_disposed && _picker != PickerMode.None)
+            _ = InvokeAsync(ClosePicker);
+    }
 
     private void ShowNotice(string message)
     {
@@ -253,11 +298,22 @@
         public int Height { get; set; }
     }
 
+    private void RequestBrowserResize(int width, int height)
+    {
+        if (width <= 0 || height <= 0)
+            return;
+
+        // Preserve the full fixed-position Widgets sidebar on small screens.
+        // CSS scales the 1200x780 logical canvas to the available viewport.
+        _host?.RequestResize(new Size(Math.Max(MinLogicalWidth, width),
+            Math.Max(MinLogicalHeight, height)));
+    }
+
     [JSInvokable]
     public void UpdateSize(int width, int height)
     {
-        if (!_disposed && width > 0 && height > 0)
-            _host?.RequestResize(new Size(width, height));
+        if (!_disposed)
+            RequestBrowserResize(width, height);
     }
 
     [JSInvokable]
