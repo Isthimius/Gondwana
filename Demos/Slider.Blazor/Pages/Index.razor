@@ -2,6 +2,7 @@
 @page "/index.html"
 @using System.Drawing
 @using System.Text.Json
+@using Gondwana.Assets
 @using Gondwana.Blazor.Rendering
 @using Microsoft.Extensions.Logging
 @inject HttpClient Http
@@ -56,8 +57,6 @@
     private const long MaxSaveBytes = 64L * 1024 * 1024;
     private const int MinLogicalWidth = 1200;
     private const int MinLogicalHeight = 780;
-    private const string SlideAudio = "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav";
-    private const string VictoryAudio = "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav";
 
     private enum PickerMode { None, Picture, SavedGame }
 
@@ -99,25 +98,30 @@
         if (_surface is null)
             return;
 
+        AssetsFile? assets = null;
         try
         {
             _module = await JS.InvokeAsync<IJSObjectReference>("import", "./slider-browser.js");
             string? stored = await _module.InvokeAsync<string?>("readScores");
             IReadOnlyList<SliderScore> scores = ReadStoredScores(stored);
 
-            byte[] slide = await Http.GetByteArrayAsync("assets/" + SlideAudio);
-            byte[] victory = await Http.GetByteArrayAsync("assets/" + VictoryAudio);
+            // Fail fast on an invalid asset response, rather than sending HTML
+            // fallback bytes to the browser audio backend as a supposed WAV.
+            byte[] packageBytes = await Http.GetByteArrayAsync("assets/slider.gaf");
+            using var packageStream = new MemoryStream(packageBytes, writable: false);
+            assets = AssetsFile.Load(packageStream);
             byte[] logoData = await Http.GetByteArrayAsync("assets/gondwana-logo-text.png");
 
             if (_disposed)
                 return;
 
-            using var logoBitmap = global::SkiaSharp.SKBitmap.Decode(logoData)
-                ?? throw new InvalidDataException("Invalid Gondwana logo image.");
-            var logo = global::SkiaSharp.SKImage.FromBitmap(logoBitmap);
+            // Never decode an image inside the engine's synchronous menu callback.
+            // The About dialog receives a cached image, prepared after engine startup.
+            global::SkiaSharp.SKImage? aboutLogo = null;
             var store = new SliderBrowserScoreStore(scores, SaveScoresInBrowser);
 
-            _host = new SliderBlazorGameHost(_surface, JS, store, logo, slide, victory);
+            _host = new SliderBlazorGameHost(_surface, JS, store, () => aboutLogo, assets);
+            assets = null; // Ownership transferred to host.
             _host.OpenPictureRequested += OnPictureRequested;
             _host.SaveGameRequested += OnSaveRequested;
             _host.LoadGameRequested += OnLoadRequested;
@@ -126,6 +130,20 @@
             var size = await _module.InvokeAsync<BrowserSize>("getSize", _container);
             RequestBrowserResize(size.Width, size.Height);
             _host.Initialize(logLevel: LogLevel.Warning);
+
+            // Spot.Blazor also creates its About images after host initialization.
+            // A missing/unsupported logo must not prevent Slider or its menu from working.
+            try
+            {
+                using var logoStream = new MemoryStream(logoData, writable: false);
+                aboutLogo = global::SkiaSharp.SKImage.FromEncodedData(logoStream);
+                if (aboutLogo is null)
+                    Logger.LogWarning("Unable to decode Slider's Gondwana About logo; opening About without a logo.");
+            }
+            catch (Exception logoError)
+            {
+                Logger.LogWarning(logoError, "Unable to decode Slider's Gondwana About logo; opening About without a logo.");
+            }
 
             _dotNetRef = DotNetObjectReference.Create(this);
             await _module.InvokeVoidAsync("watchSurface", _container, _dotNetRef);
@@ -138,6 +156,7 @@
         }
         finally
         {
+            assets?.Dispose();
             _loading = false;
             if (!_disposed)
                 StateHasChanged();

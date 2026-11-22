@@ -20,10 +20,35 @@
     <ProjectReference Include="../../Gondwana.Blazor.Hosting/Gondwana.Blazor.Hosting.csproj" />
     <ProjectReference Include="../../Gondwana.Audio.Browser/Gondwana.Audio.Browser.csproj" />
   </ItemGroup>
-  <!-- Content links only; game logic is referenced from the compiled Slider.Shared project. -->
+  <!-- Keep the source assets shared with Spot/Slider.WinForms; don't duplicate them in git. -->
   <ItemGroup>
-    <Content Include="../Spot.Shared/assets/gondwana-logo-text.png" Link="wwwroot/assets/gondwana-logo-text.png" />
-    <Content Include="../Slider.WinForms/assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" Link="wwwroot/assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" />
-    <Content Include="../Slider.WinForms/assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav" Link="wwwroot/assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav" />
+    <!-- A physical web-root file is required for the standalone WASM dev server
+         to serve the PNG rather than falling back to index.html. -->
+    <Content Remove="wwwroot/assets/gondwana-logo-text.png" />
+    <Content Include="wwwroot/assets/gondwana-logo-text.png"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <!-- Mirror Spot.Blazor: serve a real generated .gaf rather than linked
+         individual WAV paths (which can resolve to the SPA HTML fallback). -->
+    <Content Remove="wwwroot/assets/slider.gaf" />
+    <Content Include="wwwroot/assets/slider.gaf" />
   </ItemGroup>
+
+  <!-- Like Spot's GenerateSpotGaf, stage the web asset before the SDK resolves
+       static web assets. The source remains the canonical Spot.Shared PNG. -->
+  <Target Name="StageSliderAboutLogo" BeforeTargets="PrepareForBuild">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/wwwroot/assets" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../Spot.Shared/assets/gondwana-logo-text.png"
+          DestinationFiles="$(MSBuildProjectDirectory)/wwwroot/assets/gondwana-logo-text.png"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Reuse Spot's proven GAF packer with Slider's own canonical sound assets.
+       The pack is generated into the physical web root before static asset discovery. -->
+  <PropertyGroup>
+    <SpotBrowserAssets>true</SpotBrowserAssets>
+    <SpotAssetSourceRoot>$(MSBuildProjectDirectory)/../Slider.WinForms/assets</SpotAssetSourceRoot>
+    <SpotGafPath>$(MSBuildProjectDirectory)/wwwroot/assets/slider.gaf</SpotGafPath>
+  </PropertyGroup>
+  <Import Project="../Spot.Shared/Spot.Assets.targets" />
 </Project>

@@ -32,7 +32,7 @@ internal sealed partial class SliderGameRuntime
     private void CreateMenu()
     {
         _menu = new SliderMenu(_surface, _uiView, _gameView,
-            _aboutLogo, _uriLauncher,
+            _loadAboutLogo, _uriLauncher,
             newPuzzle: () => RequestPuzzle(null, _sidebar!.Columns, _sidebar.Rows),
             openPicture: () => OpenPictureRequested?.Invoke(_sidebar!.Columns, _sidebar.Rows),
             shuffle: RequestShuffle,
