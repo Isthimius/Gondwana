@@ -23,7 +23,7 @@ internal sealed partial class SliderGameRuntime
     private readonly IExternalUriLauncher _uriLauncher;
     private readonly Action<int, int> _requestLogicalResolution;
     private readonly SliderArrowKeys _arrowKeys;
-    private readonly SKImage? _aboutLogo;
+    private readonly Func<SKImage?> _loadAboutLogo;
     private WidgetInputRouter? WidgetInputRouter => _routerAccessor();
 
     private const int WorldTiles = 20;
@@ -61,14 +61,14 @@ internal sealed partial class SliderGameRuntime
 
     internal SliderGameRuntime(RenderSurfaceHostBase surface,
         Func<WidgetInputRouter?> routerAccessor, ISliderScoreStore scoreStore,
-        SKImage? aboutLogo, IExternalUriLauncher uriLauncher,
+        Func<SKImage?> loadAboutLogo, IExternalUriLauncher uriLauncher,
         Action<int, int> requestLogicalResolution,
         SliderArrowKeys arrowKeys)
     {
         _surface = surface ?? throw new ArgumentNullException(nameof(surface));
         _routerAccessor = routerAccessor ?? throw new ArgumentNullException(nameof(routerAccessor));
         _scoreStore = scoreStore ?? throw new ArgumentNullException(nameof(scoreStore));
-        _aboutLogo = aboutLogo;
+        _loadAboutLogo = loadAboutLogo ?? throw new ArgumentNullException(nameof(loadAboutLogo));
         _uriLauncher = uriLauncher ?? throw new ArgumentNullException(nameof(uriLauncher));
         _requestLogicalResolution = requestLogicalResolution ?? throw new ArgumentNullException(nameof(requestLogicalResolution));
         _arrowKeys = arrowKeys;
