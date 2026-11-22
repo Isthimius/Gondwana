@@ -18,7 +18,7 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
         BlazorGpuRenderSurfaceComponent surface,
         IJSRuntime jsRuntime,
         ISliderScoreStore scoreStore,
-        SKImage? aboutLogo,
+        Func<SKImage?> loadAboutLogo,
         byte[] slideAudio,
         byte[] victoryAudio)
         : base(surface, jsRuntime)
@@ -29,7 +29,7 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
             surface.Host,
             () => WidgetInputRouter,
             scoreStore,
-            aboutLogo,
+            loadAboutLogo,
             new Gondwana.Blazor.BlazorExternalUriLauncher(jsRuntime),
             (width, height) => surface.Host.RequestLogicalResolution(width, height),
             new SliderArrowKeys(
