@@ -14,7 +14,7 @@ changelog:
 
 blazor:
   # Actual projects packed by Testing/BlazorConsumer/Run.ps1 (plus CLI assets).
-  # Do not run the full WASM/browser integration for WinForms-only changes.
+  # Demo-only changes use demo-tests; do not rerun NuGet consumer integration.
   - 'Gondwana/**'
   - 'Gondwana.Widgets/**'
   - 'Gondwana.Hosting/**'
@@ -24,10 +24,6 @@ blazor:
   - 'Tooling/Gondwana.Tooling.Assets/**'
   - 'Tooling/Gondwana.Cli/**'
   - 'Tooling/Gondwana.Templates/**'
-  - 'Demos/Slider.Blazor/**'
-  - 'Demos/Slider.Shared/**'
-  - 'Demos/Spot.Blazor/**'
-  - 'Demos/Spot.Shared/**'
   - 'Testing/BlazorConsumer/**'
   - 'Testing/BlazorPresentationTests.mjs'
   - 'Testing/browser-audio.test.mjs'
