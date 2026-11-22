@@ -75,6 +75,20 @@ jobs:
           needs.changes.outputs.demo_slider == 'true'
         run: dotnet publish Demos/Slider.Blazor/Slider.Blazor.csproj --configuration Release --nologo -o ${{ runner.temp }}/slider-blazor-publish
 
+      - name: Publish Spot.Blazor and validate startup icon
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag' ||
+          needs.changes.outputs.demo_spot == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --nologo -o "${{ runner.temp }}/spot-blazor-publish"
+          icon="${{ runner.temp }}/spot-blazor-publish/wwwroot/assets/spot_ico.png"
+          test -s "$icon" || { echo "::error::Spot.Blazor startup icon missing from publish/wwwroot/assets"; exit 1; }
+          cmp Demos/Spot.Shared/assets/spot_ico.png "$icon" || { echo "::error::Published Spot.Blazor icon differs from the shared source"; exit 1; }
+
       - name: Upload consumer diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

@@ -32,7 +32,8 @@
     <ItemGroup>
         <Content Remove="wwwroot\assets\spot.gaf" />
         <Content Include="wwwroot\assets\spot.gaf" />
-        <Content Include="..\Spot.Shared\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
+        <!-- Serve the shared icon as a static web asset in development and published output. -->
+        <Content Include="..\Spot.Shared\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
 
     <Import Project="..\Spot.Shared\Spot.Assets.targets" />

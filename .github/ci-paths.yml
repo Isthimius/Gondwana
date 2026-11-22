@@ -26,6 +26,8 @@ blazor:
   - 'Tooling/Gondwana.Templates/**'
   - 'Demos/Slider.Blazor/**'
   - 'Demos/Slider.Shared/**'
+  - 'Demos/Spot.Blazor/**'
+  - 'Demos/Spot.Shared/**'
   - 'Testing/BlazorConsumer/**'
   - 'Testing/BlazorPresentationTests.mjs'
   - 'Testing/browser-audio.test.mjs'
