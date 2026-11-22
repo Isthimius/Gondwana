@@ -36,12 +36,12 @@ The **Game** menu saves portable `.slider.json` files containing the tile arrang
 
 ## Architecture
 
-- `SlidingPuzzle.cs`: independent, testable board rules and legal-move shuffle. The logical board, **not sprite coordinates**, is authoritative.
-- `PuzzleRenderer.cs`: builds two SkiaSharp tilesheet variants (outlined and plain) and projects board state into GPU-rendered sprites.
+- `Slider.Shared/SlidingPuzzle.cs`: independent, testable board rules and legal-move shuffle. The logical board, **not sprite coordinates**, is authoritative.
+- `Slider.Shared/PuzzleRenderer.cs`: builds two SkiaSharp tilesheet variants (outlined and plain) and projects board state into GPU-rendered sprites.
 - `SliderGameHost.cs`: `WinFormsGpuGameHost` lifecycle, two non-overlapping Views, puzzle input, scripted animation, audio, timing, and background-thread request processing.
-- `SliderSidebar.cs`: **Gondwana.Widgets** controls, settings, progress indicator, and status.
-- `SliderMenu.cs`: in-engine `MenuBarWidget` Game / Scores / Help menus, standard `AboutBox`, and scrollable `DialogBox` instructions and high scores.
-- `SliderPersistence.cs`: JSON save/restore and per-board high-score rankings.
+- `Slider.Shared/SliderSidebar.cs`: **Gondwana.Widgets** controls, settings, progress indicator, and status.
+- `Slider.Shared/SliderMenu.cs`: in-engine `MenuBarWidget` Game / Scores / Help menus, standard `AboutBox`, and scrollable `DialogBox` instructions and high scores.
+- `Slider.Shared/SliderPersistence.cs`: JSON save/restore and per-board high-score rankings.
 - `SliderGameHost.Persistence.cs`: menu callbacks, native UI boundary events, game state capture, high scores, and correct-position labels.
 - `GameWindow.cs`: a minimal WinForms shell containing **only one `WinFormGpuRenderSurfaceControl`**; native file pickers for pictures and saves/loads are invoked on the WinForms UI thread by Widgets actions.
 
@@ -52,3 +52,6 @@ Pure logic and saved-state regression tests live in `Testing/Slider.Tests/Slidin
 ## Follow-ups
 
 This modernization addresses all listed implementation items from [#33](https://github.com/Isthimius/Gondwana/issues/33) and removes the duplicate input paths implicated in the intermittent freeze from [#32](https://github.com/Isthimius/Gondwana/issues/32). Reproducing the original intermittent freeze and testing native touch, the GPU adapter, modal dialogs, and file persistence on a real Windows machine are still required before closing #32 as verified.
+
+
+The common puzzle model, renderer, and Gondwana.Widgets UI compile in `Slider.Shared`, which this host consumes via `ProjectReference` rather than linking C# sources.

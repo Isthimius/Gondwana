@@ -15,6 +15,7 @@
     <Content Include="assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../Slider.Shared/Slider.Shared.csproj" />
     <ProjectReference Include="../../Gondwana/Gondwana.csproj" />
     <ProjectReference Include="../../Gondwana.WinForms/Gondwana.WinForms.csproj" />
     <ProjectReference Include="../../Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj" />

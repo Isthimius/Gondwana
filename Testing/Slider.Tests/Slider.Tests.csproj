@@ -12,9 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <Compile Include="../../Demos/Slider.WinForms/SlidingPuzzle.cs" Link="Demos/SlidingPuzzle.cs" />
-    <Compile Include="../../Demos/Slider.WinForms/PuzzleImageLayout.cs" Link="Demos/PuzzleImageLayout.cs" />
-    <Compile Include="../../Demos/Slider.WinForms/SliderPersistence.cs" Link="Demos/SliderPersistence.cs" />
+    <ProjectReference Include="../../Demos/Slider.Shared/Slider.Shared.csproj" />
     <Using Include="Xunit" />
   </ItemGroup>
 </Project>
