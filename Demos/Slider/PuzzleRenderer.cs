@@ -58,14 +58,9 @@ internal sealed class PuzzleRenderer : IDisposable
         {
             canvas.Clear(SKColors.Black);
             using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High };
-            float proportionalScale = Math.Min(
-                atlasWidth / (float)image.Width, atlasHeight / (float)image.Height);
-            float drawWidth = image.Width * proportionalScale;
-            float drawHeight = image.Height * proportionalScale;
-            var destination = new SKRect(
-                (atlasWidth - drawWidth) / 2f, (atlasHeight - drawHeight) / 2f,
-                (atlasWidth + drawWidth) / 2f, (atlasHeight + drawHeight) / 2f);
-            canvas.DrawBitmap(image, destination, paint);
+            RectangleF bounds = PuzzleImageLayout.FitImage(
+                image.Width, image.Height, atlasWidth, atlasHeight);
+            canvas.DrawBitmap(image, new SKRect(bounds.Left, bounds.Top, bounds.Right, bounds.Bottom), paint);
             canvas.Flush();
         }
 
