@@ -67,28 +67,6 @@ jobs:
       - name: Pack, generate and test Blazor NuGet consumer
         shell: pwsh
         run: ./Testing/BlazorConsumer/Run.ps1 -WorkRoot '${{ runner.temp }}/blazor-consumer'
-      - name: Publish Slider.Blazor WebAssembly demo
-        if: >-
-          github.event_name == 'schedule' ||
-          github.event_name == 'workflow_dispatch' ||
-          github.ref_type == 'tag' ||
-          needs.changes.outputs.demo_slider == 'true'
-        run: dotnet publish Demos/Slider.Blazor/Slider.Blazor.csproj --configuration Release --nologo -o ${{ runner.temp }}/slider-blazor-publish
-
-      - name: Publish Spot.Blazor and validate startup icon
-        if: >-
-          github.event_name == 'schedule' ||
-          github.event_name == 'workflow_dispatch' ||
-          github.ref_type == 'tag' ||
-          needs.changes.outputs.demo_spot == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --nologo -o "${{ runner.temp }}/spot-blazor-publish"
-          icon="${{ runner.temp }}/spot-blazor-publish/wwwroot/assets/spot_ico.png"
-          test -s "$icon" || { echo "::error::Spot.Blazor startup icon missing from publish/wwwroot/assets"; exit 1; }
-          cmp Demos/Spot.Shared/assets/spot_ico.png "$icon" || { echo "::error::Published Spot.Blazor icon differs from the shared source"; exit 1; }
-
       - name: Upload consumer diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
@@ -258,8 +236,8 @@ jobs:
         run: dotnet test Testing/Gondwana.Tooling.Importers.Tests/Gondwana.Tooling.Importers.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
   demo-tests:
-    # Run only the affected demo test projects on PRs/master; run both
-    # nightly, manually, and for tagged releases to catch shared regressions.
+    # Run affected demo unit tests on PRs/master; run all demo tests and
+    # browser publish/asset checks nightly, manually, and on tagged releases.
     needs: changes
     if: >-
       github.event_name == 'schedule' ||
@@ -297,6 +275,36 @@ jobs:
           github.ref_type == 'tag' ||
           needs.changes.outputs.demo_slider == 'true'
         run: dotnet test Testing/Slider.Tests/Slider.Tests.csproj --configuration Release --nologo
+
+      # Demo-specific browser publish/asset checks belong with the demo suites,
+      # not the general Blazor NuGet consumer validation. Keep expensive WASM
+      # publishes nightly/manual/release-only; path-selected PRs run unit tests.
+      - name: Install .NET 10 WebAssembly workload for demo publishing
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag'
+        run: dotnet workload install wasm-tools
+
+      - name: Publish Slider.Blazor WebAssembly demo
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag'
+        run: dotnet publish Demos/Slider.Blazor/Slider.Blazor.csproj --configuration Release --nologo -o ${{ runner.temp }}/slider-blazor-publish
+
+      - name: Publish Spot.Blazor and validate startup icon
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag'
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --nologo -o "${{ runner.temp }}/spot-blazor-publish"
+          icon="${{ runner.temp }}/spot-blazor-publish/wwwroot/assets/spot_ico.png"
+          test -s "$icon" || { echo "::error::Spot.Blazor startup icon missing from publish/wwwroot/assets"; exit 1; }
+          cmp Demos/Spot.Shared/assets/spot_ico.png "$icon" || { echo "::error::Published Spot.Blazor icon differs from the shared source"; exit 1; }
 
   build:
     runs-on: ubuntu-latest
