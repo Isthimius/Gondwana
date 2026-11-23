@@ -54,7 +54,8 @@ internal sealed class PackDefinitionDocument
     };
 
     /// <summary>Enumerates only this document's explicit physical dependencies, without opening or resolving them.</summary>
-    internal IEnumerable<AssetLocation> References(AssetLocation owner)
+    /// <remarks>Strict by default. Monitoring may record invalid references and continue discovering later valid sources.</remarks>
+    internal IEnumerable<AssetLocation> References(AssetLocation owner, Action<Exception>? invalid = null)
     {
         AssetLocation Physical(AssetTypes type, string? file, string? archive, string? entry)
         {
@@ -65,34 +66,42 @@ internal sealed class PackDefinitionDocument
                 throw new InvalidDataException("Missing or conflicting physical dependency source.");
             return new(type, Path.GetFullPath(loose ? file! : archive!, Path.GetDirectoryName(owner.Path)!), packed ? entry : null);
         }
+        IEnumerable<AssetLocation> Resolve(AssetTypes type, string? file, string? archive, string? entry)
+        {
+            AssetLocation? location = null;
+            try { location = Physical(type, file, archive, entry); }
+            catch (Exception ex) when (invalid is not null && ex is InvalidDataException or ArgumentException or IOException)
+            { invalid(ex); }
+            if (location is not null) yield return location;
+        }
         foreach (var (_, member) in Members())
         {
             switch (member)
             {
                 case TilesheetDefinition sheet:
-                    yield return Physical(AssetTypes.Image, sheet.Image.FilePath, sheet.Image.AssetsFilePath, sheet.Image.AssetEntryName);
+                    foreach (var reference in Resolve(AssetTypes.Image, sheet.Image?.FilePath, sheet.Image?.AssetsFilePath, sheet.Image?.AssetEntryName)) yield return reference;
                     break;
                 case AnimationDefinition animation:
                     foreach (var source in animation.TilesheetSources)
-                        yield return Physical(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
                     break;
                 case SceneDefinition scene:
                     foreach (var source in scene.TilesheetSources)
-                        yield return Physical(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
                     foreach (var source in scene.AnimationSources)
-                        yield return Physical(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
                     break;
                 case SpriteDefinition sprites:
                     foreach (var source in sprites.TilesheetSources)
-                        yield return Physical(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
                     foreach (var source in sprites.AnimationSources)
-                        yield return Physical(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
                     foreach (var source in sprites.SceneSources)
-                        yield return Physical(AssetTypes.SceneDefinition, source.GscnPath, source.AssetsFilePath, source.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.SceneDefinition, source.GscnPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
                     break;
                 case AudioDefinition audio:
                     foreach (var resource in audio.Resources.Where(r => r.SourceKind != AudioResourceSourceKind.Uri))
-                        yield return Physical(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName);
+                        foreach (var reference in Resolve(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName)) yield return reference;
                     break;
             }
         }

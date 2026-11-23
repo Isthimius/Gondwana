@@ -22,7 +22,7 @@ public sealed partial class MainForm
             Archive = true,
             Password = path => string.Equals(path, editor.FilePath, StringComparison.OrdinalIgnoreCase) ? editor.AssetsFile.Password : null,
             SaveAs = editor.SaveAs,
-            RefreshPreviews = editor.RefreshEntries,
+            RefreshPreviews = () => { editor.RefreshEntries(); return true; },
             Reload = () =>
             {
                 var selected = editor.SelectedEntry;

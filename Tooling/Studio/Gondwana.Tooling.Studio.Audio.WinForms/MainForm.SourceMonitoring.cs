@@ -1,7 +1,6 @@
 using Gondwana.Assets;
-using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Audio.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Audio.WinForms;
 
@@ -23,7 +22,7 @@ internal sealed partial class MainForm
             Invalidate = tab.Editor.SourcePackages.Invalidate,
             Roots = () => [(Owner(), model.SerializePacked())],
             SaveAs = () => SaveDocument(tab, true),
-            RefreshPreviews = () => tab.Editor.UpdateValidation(),
+            RefreshPreviews = () => tab.Editor.UpdateValidation().Count == 0,
             Reload = () =>
             {
                 if (model.FilePath is null) return;
@@ -31,7 +30,7 @@ internal sealed partial class MainForm
                 var loaded = AudioDocument.Open(model.FilePath);
                 try
                 {
-                    var member = loaded.Definitions.FirstOrDefault(d => string.Equals(d.Key, selected, StringComparison.OrdinalIgnoreCase));
+                    var member = loaded.Definitions.FirstOrDefault(d => DefinitionReferenceQuery.MembersEqual(AssetTypes.AudioDefinition, d.Key, selected));
                     if (member is not null) loaded.SelectDefinition(member);
                     EditorSourceMonitorController.Replace(tab, () =>
                     {

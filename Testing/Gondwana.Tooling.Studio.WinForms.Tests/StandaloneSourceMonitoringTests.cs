@@ -6,13 +6,13 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Editing;
-using Gondwana.Tooling.Studio.Shared.WinForms;
-using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 using Gondwana.Tooling.Studio.Animations.WinForms;
 using Gondwana.Tooling.Studio.Scenes.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Sprites.WinForms;
-using Gondwana.Tooling.Audio.WinForms;
+using Gondwana.Tooling.Studio.Tilesheets.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
@@ -102,6 +102,9 @@ public sealed partial class CompositionTests
             Assert.True(sources.SaveFailed(error)); Application.DoEvents();
         }
         Assert.Equal(1, prompts);
+        var otherDestination = new AssetLocation(AssetTypes.Misc, Path.Combine(root, "occupied." + format));
+        Assert.False(sources.SaveFailed(new DocumentSourceConflictException(otherDestination, new(DocumentSourceStatus.Available, "other", "other"))));
+        Application.DoEvents(); Assert.Equal(1, prompts);
         Assert.Equal(accepted, (DocumentSourceVersion)model.SourceVersion);
         Assert.True(history.CanUndo);
         monitor.ConfirmDiscard = () => false;
@@ -321,5 +324,61 @@ public sealed partial class CompositionTests
         sources.RefreshPreviews();
         Assert.False(sources.PreviewStale); Assert.True(editor.Document.IsDirty);
         Assert.Equal("local", editor.Document.Definition.Name); Assert.True(editor.Document.History.CanUndo);
+    });
+
+    [Theory]
+    [InlineData("gts")]
+    [InlineData("gscn")]
+    [InlineData("gspr")]
+    [InlineData("gsnd")]
+    public void StandaloneSourceMonitoringReloadPreservesCaseSensitiveMember(string format) => RunSta(root =>
+    {
+        var path = Path.Combine(root, "case." + format);
+        File.WriteAllText(path, NativeJson(format).Replace("sibling", "First"));
+        using var host = StandaloneHost(path, format);
+        var editor = StandaloneEditor(host, format); dynamic model = AuthoringModel(editor);
+        model.SelectDefinition(model.Definitions[1]);
+        Assert.Equal("First", MemberName(model, format));
+        File.AppendAllText(path, "\n"); VerifyStandalone(StandaloneMonitor(host));
+        StandaloneSources(StandaloneTab(editor)).Reload();
+        Assert.Equal("First", MemberName(AuthoringModel(StandaloneEditor(host, format)), format));
+    });
+
+    [Fact]
+    public void StandaloneSourceMonitoringIncompleteFirstMemberStillWatchesLaterImage() => RunSta(root =>
+    {
+        var image = Path.Combine(root, "later.png");
+        WritePreviewImage(image, Color.Red);
+        var path = Path.Combine(root, "partial.gts");
+        TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "incomplete" }, new() { Name = "valid", Image = new() { FilePath = image } }]);
+        using var host = StandaloneHost(path, "gts");
+        var monitor = StandaloneMonitor(host);
+        var editor = StandaloneEditor(host, "gts");
+        Assert.Equal(2, monitor.RegistrationCount);
+        WritePreviewImage(image, Color.Blue); VerifyStandalone(monitor);
+        Assert.True(StandaloneSources(StandaloneTab(editor)).PreviewStale);
+    });
+
+    [Fact]
+    public void StandaloneSourceMonitoringFailedPreviewRefreshRetainsWarningUntilSuccess() => RunSta(root =>
+    {
+        var image = Path.Combine(root, "image.png");
+        WritePreviewImage(image, Color.Red);
+        var path = Path.Combine(root, "sheet.gts");
+        TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "sheet", Image = new() { FilePath = image } }]);
+        using var host = StandaloneHost(path, "gts");
+        var monitor = StandaloneMonitor(host);
+        var editor = (TilesheetEditorControl)StandaloneEditor(host, "gts");
+        var sources = StandaloneSources(StandaloneTab(editor));
+        editor.Document.RenameDefinition("local");
+        File.WriteAllText(image, "not an image"); VerifyStandalone(monitor);
+        sources.RefreshPreviews(); Assert.True(sources.PreviewStale);
+        sources.RefreshPreviews(); Assert.True(sources.PreviewStale);
+        File.Delete(image); VerifyStandalone(monitor);
+        sources.RefreshPreviews(); Assert.True(sources.PreviewStale);
+        sources.RefreshPreviews(); Assert.True(sources.PreviewStale);
+        WritePreviewImage(image, Color.Blue); VerifyStandalone(monitor);
+        sources.RefreshPreviews(); Assert.False(sources.PreviewStale);
+        Assert.True(editor.Document.IsDirty); Assert.True(editor.Document.History.CanUndo);
     });
 }

@@ -23,7 +23,7 @@ internal sealed partial class MainForm
             Invalidate = tab.Editor.SourcePackages.Invalidate,
             Roots = () => [(Owner(), model.SerializePacked())],
             SaveAs = () => SaveDocument(tab, true),
-            RefreshPreviews = () => tab.Editor.ReloadImage(),
+            RefreshPreviews = () => { tab.Editor.ReloadImage(); return tab.Editor.PreviewLoadSucceeded; },
             Reload = () =>
             {
                 if (model.FilePath is null) return;
@@ -32,7 +32,7 @@ internal sealed partial class MainForm
                 var loaded = TilesheetDocument.Open(model.FilePath);
                 try
                 {
-                    var member = loaded.Definitions.FirstOrDefault(d => string.Equals(d.Name, selected, StringComparison.OrdinalIgnoreCase));
+                    var member = loaded.Definitions.FirstOrDefault(d => DefinitionReferenceQuery.MembersEqual(AssetTypes.TilesheetDefinition, d.Name, selected));
                     if (member is not null) loaded.SelectDefinition(member);
                     EditorSourceMonitorController.Replace(tab, () =>
                     {

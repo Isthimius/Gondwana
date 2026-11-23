@@ -36,7 +36,7 @@ public static class DocumentSourceDependencies
             try
             {
                 references.AddRange(PackDefinitionDocument.Read(item.Location.AssetType, item.Bytes,
-                    item.Location.AssetEntryName ?? item.Location.Path)?.References(item.Location) ?? []);
+                    item.Location.AssetEntryName ?? item.Location.Path)?.References(item.Location, ex => incomplete = ex) ?? []);
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
                 NullReferenceException or Newtonsoft.Json.JsonException)

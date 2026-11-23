@@ -72,7 +72,7 @@ public sealed class EditorSourceMonitorController : IDisposable
         public required Func<AssetLocation> ReferenceOwner { get; init; }
         public required Action Reload { get; init; }
         public required Action SaveAs { get; init; }
-        public required Action RefreshPreviews { get; init; }
+        public required Func<bool> RefreshPreviews { get; init; }
         public Action<string> Invalidate { get; init; } = _ => { };
         public Func<string, string?> Password { get; init; } = _ => null;
         public bool Archive { get; init; }
@@ -193,7 +193,8 @@ public sealed class EditorSourceMonitorController : IDisposable
             { found.UnionWith(_dependencies.Keys); }
             foreach (var obsolete in _dependencies.Keys.Except(found, DocumentSourceDependencies.Comparer).ToArray()) _dependencies.Remove(obsolete);
             foreach (var source in found)
-                _dependencies.TryAdd(source, versions.GetValueOrDefault(source) ?? DocumentSourceVersion.Read(source, Password(source.Path)));
+                if (!_dependencies.ContainsKey(source))
+                    _dependencies.Add(source, versions.GetValueOrDefault(source) ?? DocumentSourceVersion.Read(source, Password(source.Path)));
             var generation = ++_generation;
             foreach (var source in _sources.Values) source.Dispose();
             _sources.Clear();
@@ -247,6 +248,7 @@ public sealed class EditorSourceMonitorController : IDisposable
         public bool SaveFailed(Exception exception)
         {
             if (exception is not IOException || _adapter.Location() is not { } location || _adapter.Accepted() is not { } accepted) return false;
+            if (exception is DocumentSourceConflictException conflict && !DocumentSourceDependencies.Comparer.Equals(conflict.Location, location)) return false;
             var current = DocumentSourceVersion.Read(location, Password(location.Path));
             if (current == accepted) return false;
             Observe(new(location, DocumentSourceRole.Primary, current.Status == DocumentSourceStatus.Available ?
@@ -280,10 +282,14 @@ public sealed class EditorSourceMonitorController : IDisposable
             try
             {
                 foreach (var path in versions.Keys) _adapter.Invalidate(path.Path);
-                _adapter.RefreshPreviews();
-                PreviewStale = versions.Any(p => p.Value.Status != DocumentSourceStatus.Available && p.Value != _dependencies[p.Key]);
-                foreach (var pair in versions) _dependencies[pair.Key] = pair.Value;
-                Reconcile();
+                bool loaded = _adapter.RefreshPreviews();
+                var newlyUnavailable = versions.Any(p => p.Value.Status != DocumentSourceStatus.Available && p.Value != _dependencies[p.Key]);
+                PreviewStale = !loaded || newlyUnavailable;
+                if (!PreviewStale)
+                {
+                    foreach (var pair in versions.Where(p => p.Value.Status == DocumentSourceStatus.Available)) _dependencies[pair.Key] = pair.Value;
+                    Reconcile();
+                }
                 UpdateCaption();
             }
             catch (Exception ex) { PreviewStale = true; UpdateCaption(); _owner.ReportError(ex); }

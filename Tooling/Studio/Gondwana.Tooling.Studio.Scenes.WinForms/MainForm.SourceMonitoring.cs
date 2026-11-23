@@ -1,7 +1,6 @@
 using Gondwana.Assets;
-using Gondwana.Tooling.Assets;
-using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Scenes.Editing;
+using Gondwana.Tooling.Studio.Shared.WinForms;
 
 namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
@@ -23,7 +22,7 @@ internal sealed partial class MainForm
             Invalidate = tab.Editor.SourcePackages.Invalidate,
             Roots = () => [(Owner(), model.SerializePacked())],
             SaveAs = () => SaveDocument(tab, true),
-            RefreshPreviews = () => tab.Editor.ReloadSources(),
+            RefreshPreviews = () => { tab.Editor.ReloadSources(); return tab.Editor.SourcesLoadedSuccessfully; },
             Reload = () =>
             {
                 if (model.FilePath is null) return;
@@ -32,7 +31,7 @@ internal sealed partial class MainForm
                 var loaded = SceneDocument.Open(model.FilePath);
                 try
                 {
-                    var member = loaded.Definitions.FirstOrDefault(d => string.Equals(d.ID, selected, StringComparison.OrdinalIgnoreCase));
+                    var member = loaded.Definitions.FirstOrDefault(d => DefinitionReferenceQuery.MembersEqual(AssetTypes.SceneDefinition, d.ID, selected));
                     if (member is not null) loaded.SelectDefinition(member);
                     EditorSourceMonitorController.Replace(tab, () =>
                     {
