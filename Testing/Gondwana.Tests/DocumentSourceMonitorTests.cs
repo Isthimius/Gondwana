@@ -9,6 +9,26 @@ namespace Gondwana.Tests;
 
 public sealed class DocumentSourceMonitorTests : IDisposable
 {
+    [Fact]
+    public void ArchiveCopyReturnsInstalledVersionAndInspectionRetainsCapturedHashes()
+    {
+        var source = Path.Combine(_root, "source.gaf");
+        using var archive = AssetsFile.LoadOrCreate(source, null, false, register: false);
+        using var data = new MemoryStream([1, 2, 3]);
+        archive.Add(AssetTypes.Misc, "entry", data);
+        archive.Save();
+        var destination = Path.Combine(_root, "copy.gaf");
+        var installed = AssetArchiveCopy.SaveVersioned(archive, destination, null, false);
+        var location = new AssetLocation(AssetTypes.Misc, destination);
+        Assert.Equal(Convert.ToHexString(installed), DocumentSourceVersion.Read(location).PhysicalHash);
+        var inspection = DefinitionReferenceDiscovery.Inspect(destination);
+        var captured = inspection.SourceVersions[destination];
+        Assert.Empty(inspection.Files); // Diagnostic inspection still releases payload buffers.
+        File.WriteAllText(destination, "external replacement");
+        Assert.Equal(Convert.ToHexString(installed), captured.PhysicalHash);
+        Assert.NotEqual(captured, DocumentSourceVersion.Read(location));
+    }
+
     private readonly string _root = Path.Combine(Path.GetTempPath(), "SourceMonitor-" + Guid.NewGuid());
     public DocumentSourceMonitorTests() => Directory.CreateDirectory(_root);
     public void Dispose() => Directory.Delete(_root, true);

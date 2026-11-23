@@ -28,11 +28,13 @@ internal sealed class StudioDockDocument : DockContent
     {
         Text = Document.Caption
              + (Document.Dirty() ? " *" : "")
-             + (Document.ContentStale || Document.PreviewStale ? " [reload]" : "");
+             + (Document.ContentStale ? Document.Dirty() ? " [conflict]" : " [reload]" : "")
+             + (Document.PreviewStale ? " [preview]" : "");
 
         ToolTipText = Document.Tooltip
                     + (Document.ContentStale ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately." : "")
                     + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
+        if (Document.SourceProblem is { } problem) ToolTipText += "\n" + problem;
     }
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();

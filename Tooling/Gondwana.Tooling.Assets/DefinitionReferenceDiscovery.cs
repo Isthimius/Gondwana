@@ -77,6 +77,9 @@ public sealed class DefinitionReferenceDiscovery
     /// <summary>Gets the files inspected, including dependencies checked outside scope.</summary>
     public IReadOnlyList<string> InspectedFiles => _inspectedFiles ?? Files.Keys.ToArray();
     private string[]? _inspectedFiles;
+    /// <summary>Exact physical versions retained for host invalidation after diagnostic buffers are released.</summary>
+    internal IReadOnlyDictionary<string, DocumentSourceVersion> SourceVersions { get; private set; } =
+        new Dictionary<string, DocumentSourceVersion>(Paths);
     /// <summary>Gets failures encountered by a diagnostic scan. Strict scans still throw.</summary>
     public IReadOnlyList<ReferenceScanProblem> Problems => _problems.AsReadOnly();
     private readonly List<ReferenceScanProblem> _problems = [];
@@ -161,6 +164,11 @@ public sealed class DefinitionReferenceDiscovery
         }
         // Exploration needs identities and diagnostics, not retained media bytes or passwords.
         result._inspectedFiles = result.Files.Keys.ToArray();
+        result.SourceVersions = result.Files.ToDictionary(pair => pair.Key, pair =>
+        {
+            var hash = pair.Value is null ? null : DocumentSourceVersion.Hash(pair.Value);
+            return new DocumentSourceVersion(pair.Value is null ? DocumentSourceStatus.Missing : DocumentSourceStatus.Available, hash, hash);
+        }, Paths);
         result.Files.Clear();
         result.Archives.Clear();
         result.Contents.Clear();

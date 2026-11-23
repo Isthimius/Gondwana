@@ -57,6 +57,8 @@ public sealed partial class MainForm
         AddButton(bar, "WorkingDirectory", "Choose working directory", "folder", ChooseDirectory);
         AddButton(bar, "Refresh", "Refresh working directory", "refresh", () =>
         {
+            foreach (var document in _documents.ToArray()) RefreshSourceRegistrations(document);
+            VerifyDocumentSources();
             Browser.RefreshDirectory();
             SyncActiveDocumentSelection();
         });

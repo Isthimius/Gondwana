@@ -150,6 +150,14 @@ public sealed partial class SceneEditorControl : UserControl
 
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public SceneDocument Document { get; }
+
+    /// <summary>Gets or restores preview magnification; null selects Fit. This is view state, not a document edit.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public float? PreviewZoom
+    {
+        get => _preview.IsFit ? null : _preview.Zoom;
+        set { if (value is { } zoom) _preview.SetZoom(zoom); else _preview.Fit(); }
+    }
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
     /// <summary>Gets the mutable definition currently selected in the document.</summary>

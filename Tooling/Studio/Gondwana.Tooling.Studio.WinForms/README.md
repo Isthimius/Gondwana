@@ -13,6 +13,37 @@ It brings the standalone editors together in one dockable, multi-document interf
 Studio reuses the standalone editor controls. It does not require a running game
 or `GameHost`.
 
+## External source changes
+
+Studio owns one shared `DocumentSourceMonitor`. Registrations live on the existing
+`StudioDocument` bindings; primary versions come from the loaded/saved document or
+verified archive snapshot. Callbacks only post to the UI context. Registration
+generations reject stale callbacks after save, relocation, reload, or disposal.
+Document edits recalculate explicit dependency subscriptions using the existing
+native reference walker, including transitive definitions and local media.
+
+Tabs use `[reload]`, `[conflict]`, and `[preview]` alongside the existing dirty `*`.
+The tab menu exposes Keep My Edits, Reload from Disk, Save As, Resolve external
+conflict, and Reload dependency previews. Keep My Edits never changes the accepted
+version. Guarded-save conflicts use the resolution workflow rather than a generic
+error; background notifications never prompt. Failed/cancelled reloads retain the
+old editor and history. Successful reload preserves logical selection, docking
+pane and activation/focus where possible, plus tilesheet/scene zoom, and creates
+clean history. Other transient view selections may reset.
+
+Dependency Explorer retains hashes (not media buffers or passwords) from its
+existing saved-content scan for invalidation. Changes cancel/disregard obsolete
+scans and invalidate completed results without launching an automatic full scan.
+The Working Directory browser refresh is coalesced. Switching directories releases
+scan subscriptions; documents kept open retain their own sources. Newly added
+files outside the scan inventory require explicit Refresh / Rescan. Project
+Diagnostics remains independent.
+
+See [the Studio wiki source](../../../docs/wiki/Gondwana-Studio.md#external-changes-and-document-conflicts)
+and [shared monitoring contracts](../../Gondwana.Tooling.Assets/README.md) for
+threading, exact-version acceptance, and filesystem race limitations. Standalone
+host integration remains Phase 3 of #465. No runtime hot reload is involved.
+
 ## Running
 
 From the repository root on Windows:

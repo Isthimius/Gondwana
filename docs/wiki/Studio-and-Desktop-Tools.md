@@ -8,6 +8,30 @@ The central design rule is simple:
 
 That keeps Studio optional without making it a parallel content system.
 
+## External content changes in Studio
+
+Studio uses the shared document-source monitor for open loose definitions, GAF
+archives, exact packed entries, and referenced local definitions/media. Tabs show
+`[reload]` for changed clean documents, `[conflict]` when local edits exist, and
+`[preview]` for dependency changes. Background changes never discard edits or
+force a dialog. The tab menu offers Keep My Edits, Reload from Disk, Save As, and
+Reload dependency previews. Keeping edits does not bypass guarded persistence.
+
+Reload validates a replacement before closing the old editor; successful reload
+starts clean history and retains logical-member selection where possible.
+Dependency refresh is allowed on dirty documents and preserves their edits/history.
+GAF checks distinguish container changes from changes to the specific typed entry,
+including encrypted archives. Own saves accept exact persisted versions without
+time-based notification suppression.
+
+Dependency Explorer inspects saved content, while an editor can contain unsaved
+changes. External changes invalidate its captured results; use Refresh / Rescan
+to inspect again. Project Diagnostics remains an independent plugin. See
+[Gondwana Studio — external changes](Gondwana-Studio#external-changes-and-document-conflicts)
+for lifecycle, conflict choices, supported view-state preservation, and limitations.
+Standalone editors already share guarded save models, but standalone monitoring
+and conflict UI integration remain Phase 3 of #465. This is not runtime hot reload.
+
 ## Undo and redo
 
 **Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the

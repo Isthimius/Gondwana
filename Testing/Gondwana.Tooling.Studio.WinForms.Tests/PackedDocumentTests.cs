@@ -493,7 +493,9 @@ public sealed partial class CompositionTests
         {
             WaitForArchives(studio.Browser);
             using var changed = AssetsFile.LoadOrCreate(path, null, false, register: false);
-            AddNative(changed, "gani", "external.gani");
+            using var externalEntry = new MemoryStream(Encoding.UTF8.GetBytes(
+                TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Name = "external" }] })));
+            changed.Add(AssetTypes.TilesheetDefinition, child.Document.PackedLocation()!.AssetEntryName!, externalEntry);
             changed.Save();
         }
         else studio.BeforeArchiveInstall = () => throw new IOException("Injected failure after staging.");

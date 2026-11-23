@@ -22,6 +22,14 @@ public sealed class TilesheetEditorControl : UserControl
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public TilesheetDocument Document { get; }
 
+    /// <summary>Gets or restores preview magnification; null selects Fit. This is view state, not a document edit.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public float? PreviewZoom
+    {
+        get => _viewport.IsFit ? null : _viewport.Zoom;
+        set { if (value is { } zoom) _viewport.SetZoom(zoom); else _viewport.Fit(); }
+    }
+
     private readonly OverlaySettings _overlaySettings;
     private readonly AssetPackageCatalog _assetPackages;
     private readonly bool _ownsAssetPackages;
