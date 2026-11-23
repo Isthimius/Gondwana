@@ -29,8 +29,8 @@ changes. External changes invalidate its captured results; use Refresh / Rescan
 to inspect again. Project Diagnostics remains an independent plugin. See
 [Gondwana Studio — external changes](Gondwana-Studio#external-changes-and-document-conflicts)
 for lifecycle, conflict choices, supported view-state preservation, and limitations.
-Standalone editors already share guarded save models, but standalone monitoring
-and conflict UI integration remain Phase 3 of #465. This is not runtime hot reload.
+Standalone editors share guarded save models and now integrate monitoring and
+conflict actions through Shared.WinForms. This is not runtime hot reload.
 
 ## Undo and redo
 
@@ -242,3 +242,12 @@ Malformed or unsupported raw native replacements remain opaque and replay their
 exact bytes after Save As; those opaque versions cannot promise reference rebasing.
 A failed post-commit refresh blocks saving stale buffers, but discard/close,
 shutdown, and confirmed Reload document remain available.
+
+
+Studio and all six standalone authoring tools now detect external primary and
+local dependency changes through shared source monitoring. They use matching
+`[reload]`, `[conflict]`, and `[preview]` indicators and explicit Keep My Edits,
+Reload from Disk, Save As, and preview-refresh actions. Standalone Assets Save As
+continues to create a copy without adopting it. See
+[Standalone Desktop Tools — External content changes](Standalone-Desktop-Tools#external-content-changes)
+for lifecycle, opt-out, conflict protection, and filesystem limitations.

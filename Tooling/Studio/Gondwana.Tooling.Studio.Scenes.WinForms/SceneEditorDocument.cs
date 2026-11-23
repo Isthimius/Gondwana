@@ -7,6 +7,8 @@ namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal sealed class SceneEditorDocument : DockContent
 {
+    internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
+
     private readonly Func<SceneEditorDocument, bool, bool> _save;
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>

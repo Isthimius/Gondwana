@@ -329,3 +329,17 @@ Malformed or unsupported raw native replacements remain opaque and replay their
 exact bytes after Save As; those opaque versions cannot promise reference rebasing.
 A failed post-commit refresh blocks saving stale buffers, but discard/close,
 shutdown, and confirmed Reload document remain available.
+
+
+## External source changes
+
+The standalone host uses `EditorSourceMonitorController` from Shared.WinForms
+with the shared `DocumentSourceMonitor` and existing persistence guards. Tabs show
+`[reload]`, `[conflict]`, or `[preview]`; right-click for Reload from Disk, Keep My
+Edits, Save As, dependency preview refresh, verification, or the session monitoring
+toggle. Dirty reload requires discard approval; failed reload keeps edits/history.
+Disabling watchers never disables save protection. Own saves use exact persisted
+versions rather than time-based suppression.
+
+See [Standalone Desktop Tools](../../../docs/wiki/Standalone-Desktop-Tools.md#external-content-changes)
+for all six editors' behavior, archive copy semantics, and monitoring limitations.

@@ -177,3 +177,17 @@ GAF-backed definitions opened through Studio.
 History edits authoring metadata. It does not modify external media, download URI
 sources, undo committed archive/file operations, or alter other documents.
 GAF Add/Import and Replace also have document-scoped history. Reviewed archive Rename/Move/Delete operations are not locally undoable; see [Studio's undo/redo contract](../Gondwana.Tooling.Studio.WinForms/README.md#undo-and-redo).
+
+
+## External source changes
+
+The standalone host uses `EditorSourceMonitorController` from Shared.WinForms
+with the shared `DocumentSourceMonitor` and existing persistence guards. Tabs show
+`[reload]`, `[conflict]`, or `[preview]`; right-click for Reload from Disk, Keep My
+Edits, Save As, dependency preview refresh, verification, or the session monitoring
+toggle. Dirty reload requires discard approval; failed reload keeps edits/history.
+Disabling watchers never disables save protection. Own saves use exact persisted
+versions rather than time-based suppression.
+
+See [Standalone Desktop Tools](../../../docs/wiki/Standalone-Desktop-Tools.md#external-content-changes)
+for all six editors' behavior, archive copy semantics, and monitoring limitations.

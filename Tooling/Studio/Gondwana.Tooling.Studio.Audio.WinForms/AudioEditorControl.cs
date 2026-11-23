@@ -13,6 +13,8 @@ namespace Gondwana.Tooling.Audio.WinForms;
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GSND document.</summary>
 public sealed class AudioEditorControl : UserControl
 {
+    internal AssetPackageCatalog SourcePackages => _packages;
+
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
     /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>

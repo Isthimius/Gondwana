@@ -10,6 +10,7 @@ namespace Gondwana.Tooling.Studio.Assets.WinForms;
 /// </summary>
 internal sealed class AssetEditorDocument : DockContent
 {
+    internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
     private readonly AssetsFile _assetsFile;
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool CloseApproved { get; set; }
@@ -25,15 +26,17 @@ internal sealed class AssetEditorDocument : DockContent
     /// <param name="assetsFile">The loaded archive to edit.</param>
     /// <param name="workspaceChanged">Callback invoked when saving changes the workspace's files.</param>
     /// <param name="isDocumentOpen">Callback testing whether a destination path is already open, to prevent Save As collisions.</param>
+    /// <param name="acceptedSource">Version verified around the opening read.</param>
     public AssetEditorDocument(
         AssetsFile assetsFile,
         Action workspaceChanged,
-        Func<string, bool> isDocumentOpen)
+        Func<string, bool> isDocumentOpen,
+        Gondwana.Tooling.Assets.DocumentSourceVersion? acceptedSource = null)
     {
         _assetsFile = assetsFile ??
             throw new ArgumentNullException(nameof(assetsFile));
 
-        Editor = new AssetEditorControl(assetsFile)
+        Editor = new AssetEditorControl(assetsFile, acceptedSource)
         {
             WorkspaceChanged = workspaceChanged ??
                 throw new ArgumentNullException(nameof(workspaceChanged)),

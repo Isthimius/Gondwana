@@ -42,7 +42,7 @@ Diagnostics remains independent.
 See [the Studio wiki source](../../../docs/wiki/Gondwana-Studio.md#external-changes-and-document-conflicts)
 and [shared monitoring contracts](../../Gondwana.Tooling.Assets/README.md) for
 threading, exact-version acceptance, and filesystem race limitations. Standalone
-host integration remains Phase 3 of #465. No runtime hot reload is involved.
+hosts use the same contracts through Shared.WinForms. No runtime hot reload is involved.
 
 ## Running
 

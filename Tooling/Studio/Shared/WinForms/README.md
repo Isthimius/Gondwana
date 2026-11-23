@@ -100,3 +100,26 @@ and `CreateMenu(form, source)` (or `SynchronizeOnActivation` for a lazy menu).
 Notifications are scoped by the canonical preference path; isolated roots do not
 change the global tools' presentation. Migration publishes only if the shared file
 is still absent and reads the winning value when another writer gets there first.
+
+
+## Standalone source-monitor integration
+
+`EditorSourceMonitorController` owns one shared `DocumentSourceMonitor` per host.
+Its small callback `Adapter` supplies existing document identity, accepted version,
+dirty state, serialized native payloads for reference discovery, and format-specific
+save/reload/preview actions. It does not serialize documents to disk or own history.
+One disposable `Document` binding attaches to each dock and rejects queued callbacks
+after disposal/reconciliation using a generation number. Monitor callbacks only post
+to the captured WinForms synchronization context; they never synchronously invoke UI.
+
+Hosts call `Saved()` with their adapter already exposing the exact installed source
+version. `Changed` coalesces reference reconciliation, `SaveFailed` offers explicit
+conflict actions after a guarded save fails, and `Verify()` supports deterministic
+verification. `Enabled = false` releases subscriptions without modifying accepted
+versions or persistence protection. Password lookup uses only already authenticated
+credentials; background verification never opens a password prompt.
+
+Dependency discovery is shared with Studio through `DocumentSourceDependencies` in
+Gondwana.Tooling.Assets. It reuses the existing native reference walker, tracks all
+logical members and exact typed entries, ignores remote URIs, and retains partial
+results plus previous subscriptions while a draft reference is incomplete.

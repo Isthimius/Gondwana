@@ -17,6 +17,8 @@ namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 /// <summary>The shared standalone and Studio GSPR authoring surface.</summary>
 public sealed partial class SpriteEditorControl : UserControl
 {
+    internal AssetPackageCatalog SourcePackages => _packages;
+
     private sealed record AnimationChoice(string? Key)
     {
         /// <summary>Returns the animation key, or the no-selection label.</summary>

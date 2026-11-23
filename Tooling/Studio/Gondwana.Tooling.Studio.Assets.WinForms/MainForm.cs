@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
@@ -10,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>Standalone asset-package editor shell managing document tabs, the workspace browser, and session persistence.</summary>
-public sealed class MainForm : Form
+public sealed partial class MainForm : Form
 {
     private readonly UndoRedoMenu _undoRedo;
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
@@ -234,6 +235,7 @@ public sealed class MainForm : Form
         }
 
         AssetsFile? assetsFile = null;
+        var version = DocumentSourceVersion.Read(new(AssetTypes.Misc, path));
 
         try
         {
@@ -266,7 +268,8 @@ public sealed class MainForm : Form
                 _ = assetsFile.GetAllEntries().ToList();
             }
 
-            ShowDocument(assetsFile);
+            DocumentSourceSave.Verify(new(AssetTypes.Misc, path), version);
+            ShowDocument(assetsFile, version);
             assetsFile = null;
         }
         catch (Exception ex)
@@ -363,12 +366,12 @@ public sealed class MainForm : Form
     }
 
     private AssetEditorDocument ShowDocument(
-        AssetsFile assetsFile)
+        AssetsFile assetsFile, DocumentSourceVersion? acceptedSource = null)
     {
         var editor = new AssetEditorDocument(
             assetsFile,
             _workspaceControl.RefreshDirectory,
-            IsDocumentOpen);
+            IsDocumentOpen, acceptedSource);
 
         _documents.Add(editor);
         editor.Editor.RelocationScope = () => _workspaceControl.WorkingDirectory;
@@ -379,10 +382,11 @@ public sealed class MainForm : Form
         }
         editor.Editor.ValidateRelocation = _ => ValidateContentOperation();
         editor.Editor.ValidateDeletion = _ => ValidateContentOperation();
-        editor.FormClosed += (_, _) =>
+        editor.Disposed += (_, _) =>
             _documents.Remove(editor);
 
         editor.Show(_dock, DockState.Document);
+        MonitorDocument(editor);
         return editor;
     }
 
@@ -407,6 +411,7 @@ public sealed class MainForm : Form
     {
         if (disposing)
         {
+            _sources.Dispose();
             _undoRedo.Dispose();
             _layout.Dispose();
             foreach (var document in _documents.ToArray()) document.Dispose();

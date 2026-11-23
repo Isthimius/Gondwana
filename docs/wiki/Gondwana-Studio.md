@@ -66,8 +66,9 @@ cannot eliminate an unrelated process replacing a file between final verificatio
 and installation. Two stable reads cannot prove that a paused writer has finished;
 a failed reload should be retried when writing is complete. Missing parent
 directories require an explicit refresh/reload or reopening after recreation.
-This Studio integration is Phase 2 of #465. Standalone host notifications and
-conflict workflows remain Phase 3; runtime hot reload (#120) is separate.
+Studio and standalone hosts share source monitoring and matching conflict
+workflows; see [Standalone Desktop Tools](Standalone-Desktop-Tools#external-content-changes).
+Runtime hot reload (#120) is separate.
 
 ## Undo and redo
 

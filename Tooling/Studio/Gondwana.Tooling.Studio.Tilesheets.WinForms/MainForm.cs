@@ -10,7 +10,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 
-internal sealed class MainForm : Form
+internal sealed partial class MainForm : Form
 {
     private readonly UndoRedoMenu _undoRedo;
 
@@ -319,8 +319,9 @@ internal sealed class MainForm : Form
                     _workspaceControl.WorkingDirectory));
 
         _documents.Add(editor);
-        editor.FormClosed += (_, _) => _documents.Remove(editor);
+        editor.Disposed += (_, _) => _documents.Remove(editor);
         editor.Show(_dock, DockState.Document);
+        MonitorDocument(editor);
 
         return editor;
     }
@@ -391,6 +392,7 @@ internal sealed class MainForm : Form
 
             editor.RefreshView();
             _workspaceControl.RefreshDirectory();
+            editor.Sources?.Saved();
             return true;
         }
         catch (Exception ex) when (
@@ -400,7 +402,7 @@ internal sealed class MainForm : Form
             InvalidOperationException or
             NotSupportedException)
         {
-            ShowError(ex);
+            if (editor.Sources?.SaveFailed(ex) != true) ShowError(ex);
             return false;
         }
     }
@@ -418,6 +420,7 @@ internal sealed class MainForm : Form
     {
         if (disposing)
         {
+            _sources.Dispose();
             _layout.Dispose();
             _workspace.Dispose();
             _assetPackages.Dispose();
