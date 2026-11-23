@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
 
