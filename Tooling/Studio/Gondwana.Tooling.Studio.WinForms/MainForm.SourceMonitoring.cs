@@ -46,13 +46,10 @@ public sealed partial class MainForm
         }
         while (pending.TryDequeue(out var item))
         {
-            AssetLocation[] references;
-            try
-            {
-                references = PackDefinitionDocument.Read(item.Location.AssetType, item.Bytes,
-                    item.Location.AssetEntryName ?? item.Location.Path)?.References(item.Location).ToArray() ?? [];
-            }
-            catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or Newtonsoft.Json.JsonException) { continue; }
+            // Do not skip a malformed member: the caller must retain the last known
+            // dependency inventory rather than silently dropping existing watchers.
+            var references = PackDefinitionDocument.Read(item.Location.AssetType, item.Bytes,
+                item.Location.AssetEntryName ?? item.Location.Path)?.References(item.Location).ToArray() ?? [];
             foreach (var reference in references)
             {
                 if (!visited.Add(reference)) continue;
@@ -90,7 +87,8 @@ public sealed partial class MainForm
         var discovered = new Dictionary<AssetLocation, DocumentSourceVersion>(DocumentLocationComparer.Instance);
         AssetLocation[] dependencies;
         try { dependencies = DocumentDependencies(model, discovered).ToArray(); }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or Newtonsoft.Json.JsonException)
+        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
+            NullReferenceException or Newtonsoft.Json.JsonException)
         {
             // An incomplete authoring edit must not tear down the last valid dependency inventory.
             dependencies = model.Sources.Where(p => p.Value.Role == DocumentSourceRole.Dependency).Select(p => p.Key).ToArray();
@@ -109,6 +107,18 @@ public sealed partial class MainForm
             var version = refreshedPreviews?.GetValueOrDefault(dependency) ?? previous.GetValueOrDefault(dependency)
                 ?? discovered.GetValueOrDefault(dependency) ?? DocumentSourceVersion.Read(dependency, _archivePasswords.GetValueOrDefault(dependency.Path));
             Register(dependency, version, DocumentSourceRole.Dependency);
+        }
+
+        // A registration recreated after a file reverted starts at the accepted bytes;
+        // no change notification will fire for that recovery. Clear an obsolete conflict
+        // only after verifying the primary, without adopting an external revision.
+        if (primary is not null && model.ContentStale && model.AcceptedSource is { } baseline &&
+            DocumentSourceVersion.Read(primary, model.ArchivePassword) == baseline)
+        {
+            model.ContentStale = false;
+            model.SourceProblem = null;
+            model.PromptedConflict = null;
+            tab.UpdateCaption();
         }
 
         void Register(AssetLocation location, DocumentSourceVersion version, DocumentSourceRole role)

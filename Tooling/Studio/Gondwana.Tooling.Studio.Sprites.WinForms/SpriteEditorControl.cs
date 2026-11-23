@@ -46,6 +46,9 @@ public sealed partial class SpriteEditorControl : UserControl
     private bool _syncingAnimationPicker;
     private readonly List<string> _sourceWarnings = [];
     private readonly Dictionary<object, List<string>> _sourceLoadWarnings = new(ReferenceEqualityComparer.Instance);
+
+    /// <summary>Whether all declared authoring sources loaded without warnings or errors.</summary>
+    public bool SourcesLoadedSuccessfully => _sourceLoadWarnings.Count == 0 && _sourceWarnings.Count == 0;
     private readonly HashSet<string> _loadedScenePaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _loadedTilesheetPaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _loadedAnimationPaths = new(StringComparer.OrdinalIgnoreCase);

@@ -260,22 +260,48 @@ public sealed partial class MainForm
         _loadingDependencies = document.Document.DependencyArchives;
         try
         {
-            switch (document.Document.Editor)
+            // Editor reload methods can report failures as diagnostics instead of throwing.
+            // Never adopt source versions when an editor failed to load its previews.
+            bool loaded = document.Document.Editor switch
             {
-                case Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor: editor.ReloadImage(); break;
-                case Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Audio.WinForms.AudioEditorControl editor: editor.UpdateValidation(); break;
+                Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor => ReloadImage(editor),
+                Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor => ReloadAnimation(editor),
+                Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor => ReloadScene(editor),
+                Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor => ReloadSprite(editor),
+                Gondwana.Tooling.Audio.WinForms.AudioEditorControl editor => editor.UpdateValidation().Count == 0,
+                _ => true
+            };
+            if (loaded && versions.Values.All(version => version.Status == DocumentSourceStatus.Available))
+            {
+                // Only successfully loaded, available sources become the new preview baseline.
+                RefreshSourceRegistrations(document, versions);
+                document.Document.PreviewStale = false;
             }
-            // An already-missing reference in an unused logical member is a validation issue,
-            // not a new preview change. Keep a newly unavailable dependency visibly stale.
-            document.Document.PreviewStale = versions.Any(pair => pair.Value.Status != DocumentSourceStatus.Available &&
-                pair.Value != document.Document.Sources[pair.Key].Accepted);
-            RefreshSourceRegistrations(document, versions);
+            else document.Document.PreviewStale = true;
             document.UpdateCaption();
         }
         catch (Exception ex) { document.Document.PreviewStale = true; document.UpdateCaption(); ReportError(ex); }
         finally { _loadingDependencies = null; }
+
+        static bool ReloadImage(Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor)
+        {
+            editor.ReloadImage();
+            return editor.PreviewLoadSucceeded;
+        }
+        static bool ReloadAnimation(Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor)
+        {
+            editor.ReloadSources();
+            return editor.SourcesLoadedSuccessfully;
+        }
+        static bool ReloadScene(Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor)
+        {
+            editor.ReloadSources();
+            return editor.SourcesLoadedSuccessfully;
+        }
+        static bool ReloadSprite(Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor)
+        {
+            editor.ReloadSources();
+            return editor.SourcesLoadedSuccessfully;
+        }
     }
 }

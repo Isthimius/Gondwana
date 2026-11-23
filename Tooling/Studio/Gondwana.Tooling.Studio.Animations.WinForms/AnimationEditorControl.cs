@@ -57,6 +57,9 @@ public sealed partial class AnimationEditorControl : UserControl
 
     private readonly List<TilesheetSource> _sources = [];
     private readonly List<string> _sourceDiagnostics = [];
+
+    /// <summary>Whether all declared authoring sources loaded without reported errors.</summary>
+    public bool SourcesLoadedSuccessfully => _sourceDiagnostics.Count == 0;
     private readonly ImageList _sourceFrameImages = new()
     {
         ImageSize = new Size(

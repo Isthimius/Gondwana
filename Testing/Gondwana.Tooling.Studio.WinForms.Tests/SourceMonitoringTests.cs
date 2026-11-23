@@ -177,6 +177,78 @@ public sealed partial class CompositionTests
     });
 
     [Fact]
+    public void SourceMonitoringMalformedReferenceKeepsLastValidDependencyWatchers() => RunSta(root =>
+    {
+        var image = Path.Combine(root, "image.png");
+        using (var bitmap = new Bitmap(8, 8)) bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        var path = Path.Combine(root, "sheet.gts");
+        TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "sheet", Image = new() { FilePath = image } }]);
+        using var studio = Host(root);
+        var tab = studio.OpenDocument(path);
+        Assert.Contains(tab.Document.Sources.Keys, source => source.Path == image);
+        var editor = (TilesheetEditorControl)tab.Document.Editor;
+        editor.Document.Definition.Image.FilePath = null; // Incomplete property edit; reference walk fails.
+        editor.Document.MarkChanged();
+        Application.DoEvents();
+        Assert.Contains(tab.Document.Sources.Keys, source => source.Path == image);
+        using (var bitmap = new Bitmap(9, 9)) bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        VerifySources(studio);
+        Assert.True(tab.Document.PreviewStale);
+        Assert.Contains("[preview]", tab.Text);
+    });
+
+    [Fact]
+    public void SourceMonitoringPrimaryRevertClearsStaleFlagOnRegistrationRefresh() => RunSta(root =>
+    {
+        var path = Path.Combine(root, "source.gts");
+        WriteMonitored(path, "gts", "original");
+        var original = File.ReadAllBytes(path);
+        using var studio = Host(root);
+        var tab = studio.OpenDocument(path);
+        var accepted = tab.Document.AcceptedSource;
+        WriteMonitored(path, "gts", "external");
+        VerifySources(studio);
+        Assert.True(tab.Document.ContentStale);
+        File.WriteAllBytes(path, original);
+        studio.StudioToolbar.Items["Refresh"]!.PerformClick();
+        Application.DoEvents();
+        Assert.False(tab.Document.ContentStale);
+        Assert.Null(tab.Document.SourceProblem);
+        Assert.DoesNotContain("[reload]", tab.Text);
+        Assert.Equal(accepted, tab.Document.AcceptedSource);
+    });
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void SourceMonitoringFailedDependencyReloadRetainsBaselineUntilSuccess(bool missing) => RunSta(root =>
+    {
+        var sheet = Path.Combine(root, "sheet.gts");
+        WriteMonitored(sheet, "gts", "sheet");
+        var animation = Path.Combine(root, "animation.gani");
+        AnimationDefinitionSerializer.SaveAll(animation, [new() { Key = "animation",
+            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)] }]);
+        using var studio = Host(root);
+        var tab = studio.OpenDocument(animation);
+        var dependency = Assert.Single(tab.Document.Sources.Where(pair => pair.Key.Path == sheet));
+        var accepted = dependency.Value.Accepted;
+        if (missing) File.Delete(sheet);
+        else File.WriteAllText(sheet, "invalid {");
+        VerifySources(studio);
+        Assert.True(tab.Document.PreviewStale);
+        studio.ReloadPreviews(tab);
+        Assert.True(tab.Document.PreviewStale);
+        Assert.Equal(accepted, tab.Document.Sources[dependency.Key].Accepted);
+        studio.ReloadPreviews(tab); // A second failed refresh must not accept the missing/invalid file.
+        Assert.True(tab.Document.PreviewStale);
+        Assert.Equal(accepted, tab.Document.Sources[dependency.Key].Accepted);
+        WriteMonitored(sheet, "gts", "sheet");
+        studio.ReloadPreviews(tab);
+        Assert.False(tab.Document.PreviewStale);
+        Assert.Equal(DocumentSourceVersion.Read(dependency.Key), tab.Document.Sources[dependency.Key].Accepted);
+    });
+
+    [Fact]
     public void SourceMonitoringCloseAndWorkspaceChangeDiscardQueuedCallbacks() => RunSta(root =>
     {
         var path = Path.Combine(root, "source.gts");

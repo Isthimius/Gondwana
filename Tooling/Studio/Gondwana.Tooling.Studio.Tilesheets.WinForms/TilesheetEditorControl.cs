@@ -47,6 +47,9 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly TextBox _validation = new() { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false };
     private string? _previewKey;
     private string? _previewError;
+
+    /// <summary>Whether the most recent preview load completed without an image-source error.</summary>
+    public bool PreviewLoadSucceeded => _previewError is null;
     private bool _refreshing;
     private bool _refreshPending;
     private EditorDockWorkspace _workspace = null!;

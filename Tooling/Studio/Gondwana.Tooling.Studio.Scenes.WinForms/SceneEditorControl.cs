@@ -138,6 +138,9 @@ public sealed partial class SceneEditorControl : UserControl
     private readonly List<SceneAnimationSource> _animationSources = [];
     private readonly List<string> _sourceDiagnostics = [];
     private readonly Dictionary<object, string> _declaredSourceDiagnostics = new(ReferenceEqualityComparer.Instance);
+
+    /// <summary>Whether the most recent declared-source load completed without diagnostics.</summary>
+    public bool SourcesLoadedSuccessfully => _declaredSourceDiagnostics.Count == 0 && _sourceDiagnostics.Count == 0;
     private readonly Dictionary<string, DockContent> _panes =
         new(StringComparer.OrdinalIgnoreCase);
     private EditorDockWorkspace _workspace = null!;
