@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+
+
+
+## Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+## Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
 # v2.6.2 - November 03, 2026
 
 

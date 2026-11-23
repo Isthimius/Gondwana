@@ -19,6 +19,22 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Embedded icons and GTS rename dialogs ([#556](https://github.com/Isthimius/Gondwana/pull/556))
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+- Add plugin manager UI and activation preferences (#471, phase 2) ([#570](https://github.com/Isthimius/Gondwana/pull/570))
+
+
+
+## Documentation
+- Streamline the Studio WinForms README ([#567](https://github.com/Isthimius/Gondwana/pull/567))
+
+
+
+## Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
 # v2.6.2 - November 03, 2026
 

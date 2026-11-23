@@ -56,6 +56,11 @@ All notable changes to this project will be documented in this file.
 
 ## Gondwana.Blazor
 
+### Documentation
+- Refresh Blazor README ([#574](https://github.com/Isthimius/Gondwana/pull/574))
+
+
+
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
@@ -124,6 +129,44 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
+## Tooling / Gondwana.Tooling.Studio.Plugin.ExternalImport
+
+### Added
+- Import godot 4 tile scenes ([#543](https://github.com/Isthimius/Gondwana/pull/543))
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Assets
+
+### Added
+- Add typed resource drag-and-drop foundation ([#561](https://github.com/Isthimius/Gondwana/pull/561))
+- Support GTS and GANI resource drag-and-drop ([#562](https://github.com/Isthimius/Gondwana/pull/562))
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+- Add visual sprite placement and editing ([#564](https://github.com/Isthimius/Gondwana/pull/564))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
+## Tooling / Gondwana.Tooling.Importers
+
+### Added
+- Import godot 4 tile scenes ([#543](https://github.com/Isthimius/Gondwana/pull/543))
+- Support oversized Tiled tiles and offsets ([#544](https://github.com/Isthimius/Gondwana/pull/544))
+- Support embedded Tiled atlases and Aseprite reference layers ([#559](https://github.com/Isthimius/Gondwana/pull/559))
+- Convert Tiled chunked maps into finite GSCN layers ([#565](https://github.com/Isthimius/Gondwana/pull/565))
+- Preserve single-rectangle Tiled tile collisions in GTS/GSCN ([#566](https://github.com/Isthimius/Gondwana/pull/566))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
 ## Tooling / Gondwana.Cli
 
 ### Documentation
@@ -140,6 +183,11 @@ All notable changes to this project will be documented in this file.
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
 ## Tooling / Gondwana.Templates
+
+### Fixed
+- Align browser assets and startup flow and update "First Game" article ([#575](https://github.com/Isthimius/Gondwana/pull/575))
+
+
 
 ### Documentation
 - Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
@@ -171,7 +219,7 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
-## Tooling / Gondwana.Tooling.Audio.WinForms
+## Tooling / Gondwana.Tooling.Studio.Audio.WinForms
 
 ### Documentation
 - Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
@@ -275,6 +323,24 @@ All notable changes to this project will be documented in this file.
 ### Build
 - Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
+## Tooling / Studio Shared
+
+### Added
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Add typed resource drag-and-drop foundation ([#561](https://github.com/Isthimius/Gondwana/pull/561))
+- Embedded icons and GTS rename dialogs ([#556](https://github.com/Isthimius/Gondwana/pull/556))
+- Complete cross-editor drag-and-drop for authoring resources ([#563](https://github.com/Isthimius/Gondwana/pull/563))
+
+
+
+### Documentation
+- Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
+
+
+
+### Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
 ## Build / Repository
 
 ### Added
@@ -286,6 +352,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Align dev setup with .NET 10 Blazor prerequisites ([#550](https://github.com/Isthimius/Gondwana/pull/550))
+- Allow uppercase characters in PR titles ([#580](https://github.com/Isthimius/Gondwana/pull/580))
+- Validate plugin bundles and consolidate demo checks ([#587](https://github.com/Isthimius/Gondwana/pull/587))
 
 
 
@@ -302,6 +370,13 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Support safe PR title formatting for forks ([#548](https://github.com/Isthimius/Gondwana/pull/548))
+- Run Studio tooling tests only for tooling changes and nightly ([#582](https://github.com/Isthimius/Gondwana/pull/582))
+- Isolate demo unit tests with per-demo triggers and nightly coverage ([#583](https://github.com/Isthimius/Gondwana/pull/583))
+
+
+
+### Other Changes
+- Update .NET version in README to 10.0
 
 # [v2.6.2] - 2026-11-03
 

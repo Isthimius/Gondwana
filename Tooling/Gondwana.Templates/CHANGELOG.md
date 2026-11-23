@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Fixed
+- Align browser assets and startup flow and update "First Game" article ([#575](https://github.com/Isthimius/Gondwana/pull/575))
+
+
+
 ## Documentation
 - Audit nested README accuracy and correct documentation drift ([#552](https://github.com/Isthimius/Gondwana/pull/552))
 

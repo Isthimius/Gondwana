@@ -16,6 +16,14 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - Add studio icon assets ([#546](https://github.com/Isthimius/Gondwana/pull/546))
+- Add shared breakout demos for desktop and web ([#554](https://github.com/Isthimius/Gondwana/pull/554))
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+- Add plugin manager UI and activation preferences (#471, phase 2) ([#570](https://github.com/Isthimius/Gondwana/pull/570))
+
+
+
+## Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
 
 # v2.6.2 - November 03, 2026
 

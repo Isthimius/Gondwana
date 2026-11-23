@@ -11,6 +11,16 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Add manifest-based plugin packaging and discovery (#471, phase 1) ([#568](https://github.com/Isthimius/Gondwana/pull/568))
+
+
+
+## Build
+- Migrate solution and tooling to .net 10 ([#573](https://github.com/Isthimius/Gondwana/pull/573))
+
 # v2.6.2 - November 03, 2026
 
 
