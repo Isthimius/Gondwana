@@ -29,8 +29,10 @@ changes. External changes invalidate its captured results; use Refresh / Rescan
 to inspect again. Project Diagnostics remains an independent plugin. See
 [Gondwana Studio — external changes](Gondwana-Studio#external-changes-and-document-conflicts)
 for lifecycle, conflict choices, supported view-state preservation, and limitations.
-Standalone editors share guarded save models and now integrate monitoring and
-conflict actions through Shared.WinForms. This is not runtime hot reload.
+Standalone editors use the same guarded-save and source-monitoring contracts,
+with matching conflict actions. See [Standalone Desktop Tools — External content changes](Standalone-Desktop-Tools#external-content-changes)
+for controls, lifecycle, and limitations. Authoring-document monitoring does not
+replace content in a running game or Scene Viewer.
 
 ## Undo and redo
 
@@ -52,8 +54,8 @@ History includes in-memory edits to loose and GAF-backed GTS/GSCN/GANI/GSPR/GSND
 It cannot reverse committed archive relocation, file deletion, or cross-file
 reference rewrites. GAF Add/Import (including dependencies) is one step per approved
 import; Replace retains the exact typed entry and payload. Identical replacements
-and zero-addition imports create no step. Scene painting and fill tools are not included. Audio history changes
-GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
+and zero-addition imports create no step. Scene painting and fill edits participate
+in document history. Audio history changes GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
 
 GAF histories retain only affected entry bytes, capped at 64 MiB across Undo and
 Redo as well as 200 operations. Oldest applied entries, then furthest redo entries,
@@ -76,10 +78,9 @@ an external refresh for a clean parent GAF, so its obsolete history is cleared;
 the child keeps its own independent history. Pending archive saves block replay.
 
 Grouped model edits form one undo step. An empty group creates no step;
-cancelling a group restores its original state. Scene tile commands preserve
-sparse cells and can be composed into future painting transactions without
-adding painting tools now. Save As keeps reference targets meaningful when
-older source-reference edits are undone.
+cancelling a group restores its original state. Scene painting and fill edits
+preserve sparse cells and use document history. Save As keeps reference targets
+meaningful when older source-reference edits are undone.
 
 
 ## Choose an entry point
@@ -218,20 +219,9 @@ game
 
 There is no Studio project format required by the engine, and EngineState project composition is separate from the current Studio shell.
 
-## Where to read next
+## GAF persistence and replay safeguards
 
-- [[Gondwana Studio]]
-- [[Standalone Desktop Tools]]
-- [[External Asset Importing]]
-- [[Assets Files]]
-- [[.gts Files|GTS-Files]]
-- [[.gani Files|GANI-Files]]
-- [[.gsnd Files|GSND-Files]]
-- [[.gscn Files|GSCN-Files]]
-- [[.gspr Files|GSPR-Files]]
-
-
-GAF persistence and replay safeguards: normal standalone Save uses the same
+normal standalone Save uses the same
 version-checked, encrypted sibling staging as Studio; it never invalidates the
 live archive buffer on a failed write. Retained native payloads track only their
 own physical dependencies. Save As updates those targets from the copied
@@ -244,10 +234,14 @@ A failed post-commit refresh blocks saving stale buffers, but discard/close,
 shutdown, and confirmed Reload document remain available.
 
 
-Studio and all six standalone authoring tools now detect external primary and
-local dependency changes through shared source monitoring. They use matching
-`[reload]`, `[conflict]`, and `[preview]` indicators and explicit Keep My Edits,
-Reload from Disk, Save As, and preview-refresh actions. Standalone Assets Save As
-continues to create a copy without adopting it. See
-[Standalone Desktop Tools — External content changes](Standalone-Desktop-Tools#external-content-changes)
-for lifecycle, opt-out, conflict protection, and filesystem limitations.
+## Where to read next
+
+- [[Gondwana Studio]]
+- [[Standalone Desktop Tools]]
+- [[External Asset Importing]]
+- [[Assets Files]]
+- [[.gts Files|GTS-Files]]
+- [[.gani Files|GANI-Files]]
+- [[.gsnd Files|GSND-Files]]
+- [[.gscn Files|GSCN-Files]]
+- [[.gspr Files|GSPR-Files]]
