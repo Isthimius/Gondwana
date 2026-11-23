@@ -68,7 +68,7 @@ a failed reload should be retried when writing is complete. Missing parent
 directories require an explicit refresh/reload or reopening after recreation.
 Studio and standalone hosts share source monitoring and matching conflict
 workflows; see [Standalone Desktop Tools](Standalone-Desktop-Tools#external-content-changes).
-Runtime hot reload (#120) is separate.
+Document-source monitoring does not replace content in a running game or Scene Viewer.
 
 ## Undo and redo
 
@@ -90,8 +90,8 @@ History includes in-memory edits to loose and GAF-backed GTS/GSCN/GANI/GSPR/GSND
 It cannot reverse committed archive relocation, file deletion, or cross-file
 reference rewrites. GAF Add/Import (including dependencies) is one step per approved
 import; Replace retains the exact typed entry and payload. Identical replacements
-and zero-addition imports create no step. Scene painting and fill tools are not included. Audio history changes
-GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
+and zero-addition imports create no step. Scene painting and fill edits participate
+in document history. Audio history changes GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
 
 GAF histories retain only affected entry bytes, capped at 64 MiB across Undo and
 Redo as well as 200 operations. Oldest applied entries, then furthest redo entries,
@@ -114,15 +114,14 @@ an external refresh for a clean parent GAF, so its obsolete history is cleared;
 the child keeps its own independent history. Pending archive saves block replay.
 
 Grouped model edits form one undo step. An empty group creates no step;
-cancelling a group restores its original state. Scene tile commands preserve
-sparse cells and can be composed into future painting transactions without
-adding painting tools now. Save As keeps reference targets meaningful when
-older source-reference edits are undone.
+cancelling a group restores its original state. Scene painting and fill edits
+preserve sparse cells and use document history. Save As keeps reference targets
+meaningful when older source-reference edits are undone.
 
 
 ## Supported content
 
-Studio currently hosts six built-in editors:
+Studio hosts six built-in editors:
 
 | Format | Hosted editor control |
 | --- | --- |
