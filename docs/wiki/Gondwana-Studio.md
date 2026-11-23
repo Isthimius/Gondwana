@@ -91,7 +91,8 @@ It cannot reverse committed archive relocation, file deletion, or cross-file
 reference rewrites. GAF Add/Import (including dependencies) is one step per approved
 import; Replace retains the exact typed entry and payload. Identical replacements
 and zero-addition imports create no step. Scene painting and fill edits participate
-in document history. Audio history changes GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
+in document history. Audio history changes GSND metadata; it never deletes
+media, downloads URIs, or rewrites an audio archive.
 
 GAF histories retain only affected entry bytes, capped at 64 MiB across Undo and
 Redo as well as 200 operations. Oldest applied entries, then furthest redo entries,
