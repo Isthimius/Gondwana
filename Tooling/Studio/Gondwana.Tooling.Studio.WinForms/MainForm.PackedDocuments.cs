@@ -271,10 +271,18 @@ public sealed partial class MainForm
                 Gondwana.Tooling.Audio.WinForms.AudioEditorControl editor => editor.UpdateValidation().Count == 0,
                 _ => true
             };
-            if (loaded && versions.Values.All(version => version.Status == DocumentSourceStatus.Available))
+            var newlyUnavailable = versions.Any(pair =>
+                pair.Value.Status != DocumentSourceStatus.Available &&
+                pair.Value != document.Document.Sources[pair.Key].Accepted);
+            if (loaded && !newlyUnavailable)
             {
-                // Only successfully loaded, available sources become the new preview baseline.
-                RefreshSourceRegistrations(document, versions);
+                // Unavailable sources already in the accepted inventory are not new preview
+                // changes; retain their baseline while adopting successfully refreshed sources.
+                var acceptedVersions = versions.ToDictionary(pair => pair.Key, pair =>
+                    pair.Value.Status == DocumentSourceStatus.Available
+                        ? pair.Value : document.Document.Sources[pair.Key].Accepted,
+                    DocumentLocationComparer.Instance);
+                RefreshSourceRegistrations(document, acceptedVersions);
                 document.Document.PreviewStale = false;
             }
             else document.Document.PreviewStale = true;

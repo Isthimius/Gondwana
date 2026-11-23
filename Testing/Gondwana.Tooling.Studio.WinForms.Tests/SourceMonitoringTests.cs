@@ -230,7 +230,7 @@ public sealed partial class CompositionTests
             TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)] }]);
         using var studio = Host(root);
         var tab = studio.OpenDocument(animation);
-        var dependency = Assert.Single(tab.Document.Sources.Where(pair => pair.Key.Path == sheet));
+        var dependency = Assert.Single(tab.Document.Sources, pair => pair.Key.Path == sheet);
         var accepted = dependency.Value.Accepted;
         if (missing) File.Delete(sheet);
         else File.WriteAllText(sheet, "invalid {");

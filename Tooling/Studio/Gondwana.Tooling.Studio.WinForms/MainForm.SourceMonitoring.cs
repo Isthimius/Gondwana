@@ -28,7 +28,7 @@ public sealed partial class MainForm
     // Reuse the existing format/reference walker, including every logical member. This is a
     // subscription inventory, not a second graph or workspace scan. Remote URIs are omitted by References.
     private IEnumerable<AssetLocation> DocumentDependencies(StudioDocument model,
-        Dictionary<AssetLocation, DocumentSourceVersion> discovered)
+        Dictionary<AssetLocation, DocumentSourceVersion> discovered, HashSet<AssetLocation> observed)
     {
         var owner = model.Location ?? new AssetLocation(StudioDocument.TypeFor(model.Extension),
             Path.Combine(model.ReferenceDirectory, "Untitled." + model.Extension));
@@ -54,7 +54,12 @@ public sealed partial class MainForm
             {
                 if (!visited.Add(reference)) continue;
                 if (model.Kind != "asset" || !string.Equals(reference.Path, owner.Path, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Retain already-walked dependencies if a later member is incomplete.
+                    // Enumerable.ToArray() discards its partial results when enumeration throws.
+                    observed.Add(reference);
                     yield return reference;
+                }
                 if (!PackDefinitionDocument.IsNative(reference.AssetType)) continue;
                 byte[] bytes;
                 try
@@ -85,13 +90,16 @@ public sealed partial class MainForm
         var model = tab.Document;
         var previous = model.Sources.ToDictionary(p => p.Key, p => p.Value.Accepted, DocumentLocationComparer.Instance);
         var discovered = new Dictionary<AssetLocation, DocumentSourceVersion>(DocumentLocationComparer.Instance);
+        var observed = new HashSet<AssetLocation>(DocumentLocationComparer.Instance);
         AssetLocation[] dependencies;
-        try { dependencies = DocumentDependencies(model, discovered).ToArray(); }
+        try { dependencies = DocumentDependencies(model, discovered, observed).ToArray(); }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
             NullReferenceException or Newtonsoft.Json.JsonException)
         {
-            // An incomplete authoring edit must not tear down the last valid dependency inventory.
-            dependencies = model.Sources.Where(p => p.Value.Role == DocumentSourceRole.Dependency).Select(p => p.Key).ToArray();
+            // Preserve both previously monitored dependencies and valid references yielded
+            // before an invalid member interrupted the walk (including on the first open).
+            observed.UnionWith(model.Sources.Where(p => p.Value.Role == DocumentSourceRole.Dependency).Select(p => p.Key));
+            dependencies = observed.ToArray();
         }
         var generation = ++model.SourceGeneration;
         foreach (var registration in model.Sources.Values) registration.Dispose();
