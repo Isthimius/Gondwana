@@ -7,6 +7,8 @@ namespace Gondwana.Tooling.Studio.Sprites.WinForms;
 
 internal sealed class SpriteEditorDocument : DockContent
 {
+    internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
+
     private readonly Func<SpriteEditorDocument, bool, bool> _save;
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>

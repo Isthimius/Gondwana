@@ -15,6 +15,8 @@ namespace Gondwana.Tooling.Studio.Animations.WinForms;
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GANI document.</summary>
 public sealed partial class AnimationEditorControl : UserControl
 {
+    internal AssetPackageCatalog SourcePackages => _packages;
+
     /// <summary>Validates and adds one packed GTS member with its exact entry identity and preview.</summary>
     public void AddPackedTilesheetSource(PackedResourceSelection selection)
     {

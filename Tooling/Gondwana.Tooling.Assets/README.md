@@ -82,8 +82,8 @@ The existing encrypted GAF persistence path remains unchanged.
   directory itself is removed/recreated. Explicit Verify can recover missed events.
 - Studio owns watcher registration, UI dispatch, explicit reload/conflict choices,
   and catalog/preview refresh through its existing document bindings (Phase 2).
-  Standalone host wiring and broader platform regression coverage remain Phase 3
-  of #465. This library implements no UI policy or runtime hot reload.
+  All six standalone hosts use the Shared.WinForms integration controller (Phase 3).
+  This library implements no UI policy or runtime hot reload.
 
 Diagnostic reference inspection retains only physical SHA-256 versions alongside
 its existing file inventory when releasing payloads/passwords. Studio uses these
@@ -243,3 +243,12 @@ Malformed or unsupported raw native replacements remain opaque and replay their
 exact bytes after Save As; those opaque versions cannot promise reference rebasing.
 A failed post-commit refresh blocks saving stale buffers, but discard/close,
 shutdown, and confirmed Reload document remain available.
+
+
+`DocumentSourceDependencies` supplies the explicit, transitive local reference
+inventory used by Studio and standalone hosts. `Discover` consumes existing native
+payloads (not a second serializer), exposes hashes of bytes it traverses, and records
+partial results for hosts to preserve subscriptions across incomplete edits.
+`ArchiveRoots` walks native entries already loaded by an archive editor. Its identity
+comparer keeps physical paths and exact typed entry names distinct. The integration
+controller lives in Shared.WinForms; the monitor and dependency walker remain host-neutral.

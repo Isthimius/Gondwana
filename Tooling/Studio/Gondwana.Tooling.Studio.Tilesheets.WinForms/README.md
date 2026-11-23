@@ -244,3 +244,17 @@ for storage, close behavior, encrypted archives, and recovery details.
 ## Appearance
 
 Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
+
+
+## External source changes
+
+The standalone host uses `EditorSourceMonitorController` from Shared.WinForms
+with the shared `DocumentSourceMonitor` and existing persistence guards. Tabs show
+`[reload]`, `[conflict]`, or `[preview]`; right-click for Reload from Disk, Keep My
+Edits, Save As, dependency preview refresh, verification, or the session monitoring
+toggle. Dirty reload requires discard approval; failed reload keeps edits/history.
+Disabling watchers never disables save protection. Own saves use exact persisted
+versions rather than time-based suppression.
+
+See [Standalone Desktop Tools](../../../docs/wiki/Standalone-Desktop-Tools.md#external-content-changes)
+for all six editors' behavior, archive copy semantics, and monitoring limitations.

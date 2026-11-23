@@ -15,6 +15,8 @@ namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 /// <summary>Hostable editor for the definitions in a tilesheet document, with image, region, frame, and validation panes.</summary>
 public sealed class TilesheetEditorControl : UserControl
 {
+    internal AssetPackageCatalog SourcePackages => _assetPackages;
+
     /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Image", "Definition", "Region", "Frame", "Validation"]);

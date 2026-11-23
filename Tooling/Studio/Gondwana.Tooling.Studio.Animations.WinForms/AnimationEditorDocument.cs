@@ -6,6 +6,8 @@ namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal sealed class AnimationEditorDocument : DockContent
 {
+    internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
+
     private readonly Func<AnimationEditorDocument, bool, bool> _save;
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>

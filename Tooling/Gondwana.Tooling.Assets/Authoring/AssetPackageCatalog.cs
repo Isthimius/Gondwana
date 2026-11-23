@@ -8,6 +8,9 @@ namespace Gondwana.Tooling.Tilesheets.Sources;
 /// </summary>
 public sealed class AssetPackageCatalog : IDisposable
 {
+    /// <summary>Returns an already authenticated credential without prompting or loading a package.</summary>
+    public string? CachedPassword(string path) => _packages.GetValueOrDefault(Path.GetFullPath(path))?.Password;
+
     /// <summary>Reports a physical package dependency so hosts can indicate stale previews after writes.</summary>
     public event Action<string>? PackageAccessed;
     /// <summary>Reports a successfully authenticated password for an optional host session cache.</summary>

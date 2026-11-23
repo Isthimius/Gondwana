@@ -7,6 +7,8 @@ namespace Gondwana.Tooling.Audio.WinForms;
 
 internal sealed class AudioEditorDocument : DockContent
 {
+    internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
+
     private readonly Func<AudioEditorDocument, bool, bool> _save;
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>

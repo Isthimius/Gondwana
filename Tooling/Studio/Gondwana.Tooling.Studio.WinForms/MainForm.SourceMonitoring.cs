@@ -32,55 +32,13 @@ public sealed partial class MainForm
     {
         var owner = model.Location ?? new AssetLocation(StudioDocument.TypeFor(model.Extension),
             Path.Combine(model.ReferenceDirectory, "Untitled." + model.Extension));
-        var visited = new HashSet<AssetLocation>(DocumentLocationComparer.Instance) { owner };
-        var pending = new Queue<(AssetLocation Location, byte[] Bytes)>();
-        if (model.SerializePacked is not null) pending.Enqueue((owner, model.SerializePacked()));
-        else if (model.Editor is Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl assets)
-        {
-            foreach (var entry in assets.AssetsFile.GetAllEntries().Where(e => PackDefinitionDocument.IsNative(e.AssetType)))
-            {
-                var location = new AssetLocation(entry.AssetType, owner.Path, entry.AssetName);
-                visited.Add(location);
-                pending.Enqueue((location, StudioArchiveSnapshot.Entry(assets.AssetsFile, location)));
-            }
-        }
-        while (pending.TryDequeue(out var item))
-        {
-            // Do not skip a malformed member: the caller must retain the last known
-            // dependency inventory rather than silently dropping existing watchers.
-            var references = PackDefinitionDocument.Read(item.Location.AssetType, item.Bytes,
-                item.Location.AssetEntryName ?? item.Location.Path)?.References(item.Location).ToArray() ?? [];
-            foreach (var reference in references)
-            {
-                if (!visited.Add(reference)) continue;
-                if (model.Kind != "asset" || !string.Equals(reference.Path, owner.Path, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Retain already-walked dependencies if a later member is incomplete.
-                    // Enumerable.ToArray() discards its partial results when enumeration throws.
-                    observed.Add(reference);
-                    yield return reference;
-                }
-                if (!PackDefinitionDocument.IsNative(reference.AssetType)) continue;
-                byte[] bytes;
-                try
-                {
-                    if (reference.AssetEntryName is null)
-                    {
-                        bytes = File.ReadAllBytes(reference.Path);
-                        var hash = DocumentSourceVersion.Hash(bytes);
-                        discovered[reference] = new(DocumentSourceStatus.Available, hash, hash);
-                    }
-                    else
-                    {
-                        using var archive = StudioArchiveSnapshot.Open(reference.Path, _archivePasswords.GetValueOrDefault(reference.Path));
-                        bytes = StudioArchiveSnapshot.Entry(archive.Archive, reference);
-                        discovered[reference] = new(DocumentSourceStatus.Available, Convert.ToHexString(archive.Hash), DocumentSourceVersion.Hash(bytes));
-                    }
-                }
-                catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or System.Security.Cryptography.CryptographicException or ICSharpCode.SharpZipLib.SharpZipBaseException) { continue; }
-                pending.Enqueue((reference, bytes));
-            }
-        }
+        var roots = model.SerializePacked is not null
+            ? new[] { (owner, model.SerializePacked()) }
+            : model.Editor is Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl assets
+                ? DocumentSourceDependencies.ArchiveRoots(assets.AssetsFile)
+                : Enumerable.Empty<(AssetLocation, byte[])>();
+        return DocumentSourceDependencies.Discover(owner, roots, model.Kind == "asset",
+            path => _archivePasswords.GetValueOrDefault(path), discovered, observed);
     }
 
     private void RefreshSourceRegistrations(StudioDockDocument tab,

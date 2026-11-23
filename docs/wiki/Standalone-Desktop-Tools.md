@@ -169,3 +169,67 @@ pass `--empty-workspace` for an empty startup. Missing or invalid files are skip
 with a summary; unsaved contents are not recovered. See
 [Gondwana Studio — Workspace sessions](Gondwana-Studio#workspace-sessions) for the
 shared save/close, privacy, and recovery behavior.
+
+## External content changes
+
+All six standalone WinForms editors use the same source-version and filesystem
+monitoring contracts as Studio. Watchers cover open documents and their explicit
+local dependencies, including references in unselected logical definitions and
+exact typed GAF entries. They do not recursively watch the workspace, and remote
+media URIs are not watched. Filesystem events request SHA-256 verification; equal
+file sizes and timestamps do not hide changed content.
+
+Document captions distinguish:
+
+- `*`: unsaved local edits.
+- `[reload]`: the primary source changed externally; the clean document can reload.
+- `[conflict]`: the primary source changed while local edits exist.
+- `[preview]`: a referenced definition, image, or media source changed.
+
+Right-click a document tab for **Reload from Disk**, **Keep My Edits**, **Save As**,
+**Reload dependency previews**, and **Check sources now**. Background notifications
+never interrupt editing with a dialog. Missing, renamed, or inaccessible primary
+sources are explained in the tab tooltip. A rename does not silently redirect the
+editor to a new path.
+
+Reload loads the replacement before releasing the current editor. A clean reload
+needs no confirmation; dirty documents require explicit discard confirmation.
+Failed or cancelled reloads retain the document and its Undo/Redo history.
+Successful reload starts a clean history and preserves the selected definition,
+docking position, activation, and supported tilesheet/scene zoom where possible.
+Other transient view state may reset.
+
+**Keep My Edits** preserves the model and history but does not authorize an
+overwrite or advance the accepted source version. Ordinary Save remains guarded.
+A failed save offers conflict actions once per observed external version; the tab
+menu remains available afterward. Native-definition **Save As** uses existing
+reference rebasing and changes the active filename. The standalone **Assets Save
+As** creates a separate copy, retaining the original active archive, dirty state,
+and history. It does not adopt Studio's archive Save As behavior.
+
+Dependency preview refresh works while the primary document is dirty. It uses the
+existing format-specific preview loaders without replacing the document or its
+history. GSND refreshes its existing media validation; this feature does not add
+an audio playback engine. GAF container changes remain distinct from changes to a
+specific typed dependency entry. An archive editor owns the whole GAF, so an
+external change anywhere in that primary archive requires reload/conflict handling.
+
+Own saves accept the exact staged version returned by persistence, without a
+suppression timer. External writes immediately afterward remain detectable.
+Closing a document releases its subscriptions; shutdown releases the host monitor.
+Changing the working directory does not discard open documents or their necessary
+subscriptions, and no subscriptions are retained solely for an old workspace.
+
+**Monitor external changes** on the tab menu toggles automatic monitoring for the
+current standalone application session. Disabling it releases watchers but does
+not disable guarded-save conflict checks. Re-enabling reconciles current document
+references. Missing parent directories or unavailable watcher resources may need
+a later edit, reopen, or explicit check after access is restored. A paused partial
+write can appear stable; failed loads still preserve the old document. Atomic
+replacement is not a portable filesystem compare-and-swap: an unrelated process
+can still write after the final pre-install version check.
+
+Document-source monitoring applies to authoring editors; it does not replace
+content in a running game or Scene Viewer. Studio's Dependency Explorer examines
+saved content and invalidates stale scan results; open documents may contain
+unsaved edits. Project Diagnostics remains an independent validation plugin.

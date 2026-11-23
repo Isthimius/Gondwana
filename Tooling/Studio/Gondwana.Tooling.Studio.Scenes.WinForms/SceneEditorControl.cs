@@ -19,6 +19,8 @@ namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GSCN document.</summary>
 public sealed partial class SceneEditorControl : UserControl
 {
+    internal AssetPackageCatalog SourcePackages => _packages;
+
     /// <summary>Validates and adds one packed GTS member with its exact entry identity and preview.</summary>
     public void AddPackedTilesheetSource(PackedResourceSelection selection)
     {

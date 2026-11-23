@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Security.Cryptography;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
@@ -26,6 +25,11 @@ public sealed class AssetEditorControl : UserControl
     private AssetsFile _assetsFile;
     private AssetsFile? _ownedSavedCopy;
     private bool _refreshFailed;
+    /// <summary>Exact accepted physical archive version. Independent of automatic monitoring.</summary>
+    public DocumentSourceVersion SourceVersion { get; private set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal Func<Exception, bool>? SourceSaveFailed { get; set; }
+    internal event Action? SourceSaved;
 
     /// <summary>Dirty state for edits made through this editor.</summary>
     public bool IsDirty => History.IsDirty;
@@ -89,9 +93,13 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Creates an editor for a loaded archive without taking ownership of that initial archive.</summary>
     /// <param name="assetsFile">The mutable archive to edit, with a source path assigned.</param>
     /// <exception cref="ArgumentNullException"><paramref name="assetsFile"/> is null.</exception>
-    public AssetEditorControl(AssetsFile assetsFile)
+    public AssetEditorControl(AssetsFile assetsFile) : this(assetsFile, null) { }
+
+    /// <summary>Creates an editor with a version verified around the host's opening read.</summary>
+    public AssetEditorControl(AssetsFile assetsFile, DocumentSourceVersion? acceptedSource)
     {
         _assetsFile = assetsFile ?? throw new ArgumentNullException(nameof(assetsFile));
+        SourceVersion = acceptedSource ?? DocumentSourceVersion.Read(new(AssetTypes.Misc, FilePath));
         _edits = new(assetsFile, initiallySaved: File.Exists(assetsFile.SourcePath));
         var shortcuts = UndoRedoMenu.Route(this, () => Enabled ? History : null, () => Enabled);
         Disposed += (_, _) => shortcuts.Dispose();
@@ -261,6 +269,7 @@ public sealed class AssetEditorControl : UserControl
         }
         catch (Exception ex)
         {
+            if (SourceSaveFailed?.Invoke(ex) == true) return;
             ShowError("Failed to save asset file.", ex);
         }
     }
@@ -406,20 +415,29 @@ public sealed class AssetEditorControl : UserControl
         if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
         {
             // Never call Save on the live archive: a failed Save can invalidate its loaded buffer.
-            var expected = File.Exists(destination) ? SHA256.HashData(File.ReadAllBytes(destination)) : null;
-            AssetArchivePersistence.Commit(_assetsFile, destination, expected);
+            DocumentSourceSave.Verify(new(AssetTypes.Misc, destination), SourceVersion);
+            var expected = SourceVersion.PhysicalHash is { } hash ? Convert.FromHexString(hash) : null;
+            var installed = AssetArchivePersistence.Commit(_assetsFile, destination, expected);
+            var fingerprint = Convert.ToHexString(installed);
+            SourceVersion = new(DocumentSourceStatus.Available, fingerprint, fingerprint);
         }
         else
         {
-            AssetArchiveCopy.Save(_assetsFile, destination, _assetsFile.Password, _assetsFile.UseEncryption);
+            var installed = AssetArchiveCopy.SaveVersioned(_assetsFile, destination, _assetsFile.Password, _assetsFile.UseEncryption);
+            var fingerprint = Convert.ToHexString(installed);
+            var version = new DocumentSourceVersion(DocumentSourceStatus.Available, fingerprint, fingerprint);
             var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption,
                 register: AssetsFile.AllAssetsFiles.Contains(_assetsFile));
+            try { DocumentSourceSave.Verify(new(AssetTypes.Misc, destination), version); }
+            catch { replacement.Dispose(); throw; }
             _ownedSavedCopy?.Dispose();
             _ownedSavedCopy = replacement;
             _assetsFile = replacement;
+            SourceVersion = version;
         }
 
         _edits.AcceptSavedArchive(_assetsFile);
+        SourceSaved?.Invoke();
         WorkspaceChanged();
         SetStatus($"Saved: {FilePath}");
     }
@@ -564,14 +582,17 @@ public sealed class AssetEditorControl : UserControl
     {
         try
         {
+            var version = DocumentSourceVersion.Read(new(AssetTypes.Misc, FilePath));
             using var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false);
             var contents = AssetImportPlan.Snapshot(disk); // read successfully before touching the borrowed instance
+            DocumentSourceSave.Verify(new(AssetTypes.Misc, FilePath), version);
             foreach (var key in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(key.AssetType, key.AssetName);
             foreach (var pair in contents)
             {
                 using var stream = new MemoryStream(pair.Value, writable: false);
                 _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
             }
+            SourceVersion = version;
         }
         catch (Exception ex)
         {
@@ -584,6 +605,7 @@ public sealed class AssetEditorControl : UserControl
             throw new IOException("Disk transaction committed, but archive refresh failed. It is not undoable. Close and reopen this document before editing or saving.", ex);
         }
         History.ResetSaved();
+        SourceSaved?.Invoke();
         WorkspaceChanged();
         SetStatus(status + " Committed disk operation; not locally undoable. Earlier history cleared.");
     }
@@ -727,6 +749,17 @@ public sealed class AssetEditorControl : UserControl
 
     private AssetRecord? GetSelectedRecord() =>
         _grid.CurrentRow?.DataBoundItem as AssetRecord;
+
+    internal AssetsFileEntry? SelectedEntry => GetSelectedRecord() is { } record
+        ? new() { AssetType = record.AssetType, AssetName = record.AssetName } : null;
+
+    internal void SelectEntry(AssetsFileEntry? entry)
+    {
+        if (entry is null) return;
+        var index = _records.ToList().FindIndex(r => r.AssetType == entry.AssetType &&
+            string.Equals(r.AssetName, entry.AssetName, StringComparison.OrdinalIgnoreCase));
+        if (index >= 0) _grid.CurrentCell = _grid.Rows[index].Cells[0];
+    }
 
     private void UpdateUiState()
     {

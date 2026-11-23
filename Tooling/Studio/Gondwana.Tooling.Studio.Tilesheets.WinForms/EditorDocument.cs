@@ -12,6 +12,8 @@ namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
 /// </summary>
 internal sealed class EditorDocument : DockContent
 {
+    internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
+
     private readonly Func<EditorDocument, bool, bool> _save;
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>
