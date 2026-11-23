@@ -39,7 +39,8 @@ public static class DocumentSourceDependencies
                     item.Location.AssetEntryName ?? item.Location.Path)?.References(item.Location) ?? []);
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
-                NullReferenceException or Newtonsoft.Json.JsonException) { incomplete = ex; }
+                NullReferenceException or Newtonsoft.Json.JsonException)
+            { incomplete = ex; }
             foreach (var reference in references)
             {
                 if (!visited.Add(reference)) continue;

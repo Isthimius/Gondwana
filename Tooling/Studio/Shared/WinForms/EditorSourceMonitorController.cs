@@ -189,7 +189,8 @@ public sealed class EditorSourceMonitorController : IDisposable
                     Password, versions, found).ToArray();
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
-                NullReferenceException or Newtonsoft.Json.JsonException) { found.UnionWith(_dependencies.Keys); }
+                NullReferenceException or Newtonsoft.Json.JsonException)
+            { found.UnionWith(_dependencies.Keys); }
             foreach (var obsolete in _dependencies.Keys.Except(found, DocumentSourceDependencies.Comparer).ToArray()) _dependencies.Remove(obsolete);
             foreach (var source in found)
                 _dependencies.TryAdd(source, versions.GetValueOrDefault(source) ?? DocumentSourceVersion.Read(source, Password(source.Path)));

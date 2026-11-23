@@ -21,9 +21,12 @@ public sealed partial class CompositionTests
 {
     private static Type StandaloneEditorType(string format) => format switch
     {
-        "gts" => typeof(TilesheetEditorControl), "gani" => typeof(AnimationEditorControl),
-        "gscn" => typeof(SceneEditorControl), "gspr" => typeof(SpriteEditorControl),
-        "gsnd" => typeof(AudioEditorControl), _ => typeof(Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl)
+        "gts" => typeof(TilesheetEditorControl),
+        "gani" => typeof(AnimationEditorControl),
+        "gscn" => typeof(SceneEditorControl),
+        "gspr" => typeof(SpriteEditorControl),
+        "gsnd" => typeof(AudioEditorControl),
+        _ => typeof(Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl)
     };
     private static Form StandaloneHost(string path, string format)
     {
