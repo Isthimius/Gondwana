@@ -138,6 +138,9 @@ public sealed partial class SceneEditorControl : UserControl
     private readonly List<SceneAnimationSource> _animationSources = [];
     private readonly List<string> _sourceDiagnostics = [];
     private readonly Dictionary<object, string> _declaredSourceDiagnostics = new(ReferenceEqualityComparer.Instance);
+
+    /// <summary>Whether the most recent declared-source load completed without diagnostics.</summary>
+    public bool SourcesLoadedSuccessfully => _declaredSourceDiagnostics.Count == 0 && _sourceDiagnostics.Count == 0;
     private readonly Dictionary<string, DockContent> _panes =
         new(StringComparer.OrdinalIgnoreCase);
     private EditorDockWorkspace _workspace = null!;
@@ -150,6 +153,14 @@ public sealed partial class SceneEditorControl : UserControl
 
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public SceneDocument Document { get; }
+
+    /// <summary>Gets or restores preview magnification; null selects Fit. This is view state, not a document edit.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public float? PreviewZoom
+    {
+        get => _preview.IsFit ? null : _preview.Zoom;
+        set { if (value is { } zoom) _preview.SetZoom(zoom); else _preview.Fit(); }
+    }
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
     /// <summary>Gets the mutable definition currently selected in the document.</summary>

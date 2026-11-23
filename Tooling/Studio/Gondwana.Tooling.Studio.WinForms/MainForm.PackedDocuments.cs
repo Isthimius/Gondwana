@@ -96,13 +96,13 @@ public sealed partial class MainForm
                 string.Equals(item.Document.Path(), destination, StringComparison.OrdinalIgnoreCase));
             if (parent?.Document.Dirty() == true)
                 throw new InvalidOperationException("The GAF editor has unsaved changes. Save it first, then retry this packed save. Conflicting entry changes will require Reload document or Save As.");
-            StudioArchiveSnapshot.CheckVersion(destination, model.ArchiveHash);
             using var current = StudioArchiveSnapshot.Open(destination, model.ArchivePassword);
             if (!StudioArchiveSnapshot.Entry(current.Archive, location).AsSpan().SequenceEqual(model.OriginalEntry))
                 throw new IOException($"The entry changed since it was opened: {location}. Reload document, or Save As to retain your edits separately.");
             using var bytes = new MemoryStream(entryBytes, writable: false);
             current.Archive.Add(location.AssetType, location.AssetEntryName!, bytes);
-            hash = StudioArchiveSnapshot.Commit(current.Archive, destination, model.ArchiveHash, BeforeArchiveInstall);
+            hash = StudioArchiveSnapshot.Commit(current.Archive, destination, current.Hash, BeforeArchiveInstall);
+            model.ArchiveHash = hash;
             model.OriginalEntry = entryBytes;
             model.AcceptPackedSave!();
         }
@@ -114,19 +114,35 @@ public sealed partial class MainForm
             else
             {
                 // Existing Save As semantics: copy/rebase into a new archive, then adopt it.
-                AssetArchiveCopy.Save(editor.AssetsFile, destination, editor.AssetsFile.Password, editor.AssetsFile.UseEncryption);
-                using var copied = StudioArchiveSnapshot.Open(destination, editor.AssetsFile.Password);
-                hash = copied.Hash;
+                hash = AssetArchiveCopy.SaveVersioned(editor.AssetsFile, destination, editor.AssetsFile.Password, editor.AssetsFile.UseEncryption);
             }
             // An empty ZIP has no entries from which to infer its requested encryption policy.
-            editor.AcceptSavedArchive(AssetsFile.LoadOrCreate(destination, editor.AssetsFile.Password,
-                editor.AssetsFile.UseEncryption, register: false));
+            using var savedArchive = StudioArchiveSnapshot.Open(destination, editor.AssetsFile.Password);
+            if (!savedArchive.Hash.AsSpan().SequenceEqual(hash))
+            {
+                var changedDestination = new AssetLocation(AssetTypes.Misc, destination);
+                throw new DocumentSourceConflictException(changedDestination, DocumentSourceVersion.Read(changedDestination));
+            }
+            if (editor.AssetsFile.UseEncryption && !savedArchive.Archive.GetAllEntries().Any())
+            {
+                // Empty ZIPs cannot encode encryption; retain the editor's explicit policy.
+                var empty = AssetsFile.LoadOrCreate(destination, editor.AssetsFile.Password, true, register: false);
+                try
+                {
+                    StudioArchiveSnapshot.CheckVersion(destination, hash);
+                    editor.AcceptSavedArchive(empty);
+                }
+                catch { empty.Dispose(); throw; }
+            }
+            else editor.AcceptSavedArchive(savedArchive.Detach());
             model.ArchiveHash = hash;
             model.ArchivePassword = editor.AssetsFile.Password;
         }
         _archivePasswords[destination] = model.ArchivePassword;
         _packages.Invalidate(destination);
         using var persisted = StudioArchiveSnapshot.Open(destination, model.ArchivePassword);
+        if (!persisted.Hash.AsSpan().SequenceEqual(hash))
+            throw new DocumentSourceConflictException(model.Location!, DocumentSourceVersion.Read(model.Location!, model.ArchivePassword));
         foreach (var other in _documents)
         {
             var candidate = other.Document;
@@ -137,7 +153,11 @@ public sealed partial class MainForm
                 if (other != document && candidate.Editor is AssetEditorControl parent && !candidate.Dirty())
                 {
                     using var saved = StudioArchiveSnapshot.Open(destination, model.ArchivePassword);
+                    if (!saved.Hash.AsSpan().SequenceEqual(hash))
+                        throw new DocumentSourceConflictException(location, DocumentSourceVersion.Read(location, model.ArchivePassword));
                     parent.AcceptSavedArchive(saved.Detach(), externalRefresh: true);
+                    candidate.ContentStale = false;
+                    candidate.SourceProblem = null;
                 }
                 else if (other != document && candidate.PackedLocation() is { } packed)
                 {
@@ -145,7 +165,17 @@ public sealed partial class MainForm
                     catch (FileNotFoundException) { candidate.ContentStale = true; }
                 }
             }
-            if (candidate.DependencyArchives.Contains(destination)) candidate.PreviewStale = true;
+            foreach (var source in candidate.Sources.Values.Where(s => s.Role == DocumentSourceRole.Dependency &&
+                string.Equals(s.Location.Path, destination, StringComparison.OrdinalIgnoreCase)))
+            {
+                try
+                {
+                    var contentHash = source.Location.AssetEntryName is null ? Convert.ToHexString(hash) :
+                        DocumentSourceVersion.Hash(StudioArchiveSnapshot.Entry(persisted.Archive, source.Location));
+                    if (source.Accepted.ContentHash != contentHash) candidate.PreviewStale = true;
+                }
+                catch (FileNotFoundException) { candidate.PreviewStale = true; }
+            }
             other.UpdateCaption();
         }
     }
@@ -156,34 +186,130 @@ public sealed partial class MainForm
         if (document.Document.Location is not { } location) return false;
         if (!document.Document.CommitEdits()) return false;
         if (document.Document.Dirty() && !ConfirmReload(document.Document)) return false;
+        StudioDocument? replacement = null;
+        StudioDockDocument? opened = null;
+        var active = ActiveDocument;
+        var selected = document.Document.SelectedMember;
+        var focused = FocusedControlPath(document.Document.Editor);
+        float? zoom = document.Document.Editor switch
+        {
+            Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl e => e.PreviewZoom,
+            Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl e => e.PreviewZoom,
+            _ => null
+        };
         try
         {
+            foreach (var source in document.Document.Sources.Keys) _packages.Invalidate(source.Path);
             _packages.Invalidate(location.Path);
-            var replacement = CreateModel(location, null);
+            replacement = CreateModel(location, document.Document.ArchivePassword);
+            if (selected is not null) replacement.SelectMember(selected);
+            opened = ShowDocument(replacement, document);
+            replacement = null; // The new dock owns it now.
+            if (opened.Document.Editor is Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl sheet) sheet.PreviewZoom = zoom;
+            if (opened.Document.Editor is Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl scene) scene.PreviewZoom = zoom;
             document.CloseApproved = true;
             document.Close();
-            ShowDocument(replacement);
+            if (active is not null && active != document && !active.IsDisposed) active.Activate();
+            else RestoreFocusedControl(opened.Document.Editor, focused);
+            InvalidateDependencies();
             return true;
         }
         catch (OperationCanceledException) { return false; }
         catch (Exception ex) { ReportError(ex); return false; }
+        finally
+        {
+            replacement?.Dispose();
+            if (!document.IsDisposed)
+            {
+                // Replacement construction/show failed: restore the original registry and editor.
+                if (opened is not null) opened.Dispose();
+                _paths[location] = document;
+                if (active == document) document.Activate();
+            }
+        }
+    }
+
+    private static int[] FocusedControlPath(Control root)
+    {
+        var result = new List<int>();
+        while (root.Controls.Cast<Control>().FirstOrDefault(c => c.ContainsFocus) is { } focused)
+        {
+            result.Add(root.Controls.IndexOf(focused));
+            root = focused;
+        }
+        return result.ToArray();
+    }
+
+    private static void RestoreFocusedControl(Control root, int[] path)
+    {
+        foreach (var index in path)
+        {
+            if (index >= root.Controls.Count) break;
+            root = root.Controls[index];
+        }
+        if (root.CanFocus) root.Focus();
     }
 
     internal void ReloadPreviews(StudioDockDocument document)
     {
+        if (document.IsDisposed) return;
+        RefreshSourceRegistrations(document);
+        var versions = document.Document.Sources.Where(p => p.Value.Role == DocumentSourceRole.Dependency)
+            .ToDictionary(p => p.Key, p => DocumentSourceVersion.Read(p.Key, _archivePasswords.GetValueOrDefault(p.Key.Path)), DocumentLocationComparer.Instance);
+        foreach (var source in versions.Keys) _packages.Invalidate(source.Path);
         _loadingDependencies = document.Document.DependencyArchives;
         try
         {
-            switch (document.Document.Editor)
+            // Editor reload methods can report failures as diagnostics instead of throwing.
+            // Never adopt source versions when an editor failed to load its previews.
+            bool loaded = document.Document.Editor switch
             {
-                case Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor: editor.ReloadImage(); break;
-                case Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor: editor.ReloadSources(); break;
-                case Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor: editor.ReloadSources(); break;
+                Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor => ReloadImage(editor),
+                Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor => ReloadAnimation(editor),
+                Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor => ReloadScene(editor),
+                Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor => ReloadSprite(editor),
+                Gondwana.Tooling.Audio.WinForms.AudioEditorControl editor => editor.UpdateValidation().Count == 0,
+                _ => true
+            };
+            var newlyUnavailable = versions.Any(pair =>
+                pair.Value.Status != DocumentSourceStatus.Available &&
+                pair.Value != document.Document.Sources[pair.Key].Accepted);
+            if (loaded && !newlyUnavailable)
+            {
+                // Unavailable sources already in the accepted inventory are not new preview
+                // changes; retain their baseline while adopting successfully refreshed sources.
+                var acceptedVersions = versions.ToDictionary(pair => pair.Key, pair =>
+                    pair.Value.Status == DocumentSourceStatus.Available
+                        ? pair.Value : document.Document.Sources[pair.Key].Accepted,
+                    DocumentLocationComparer.Instance);
+                RefreshSourceRegistrations(document, acceptedVersions);
+                document.Document.PreviewStale = false;
             }
-            document.Document.PreviewStale = false;
+            else document.Document.PreviewStale = true;
             document.UpdateCaption();
         }
+        catch (Exception ex) { document.Document.PreviewStale = true; document.UpdateCaption(); ReportError(ex); }
         finally { _loadingDependencies = null; }
+
+        static bool ReloadImage(Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor)
+        {
+            editor.ReloadImage();
+            return editor.PreviewLoadSucceeded;
+        }
+        static bool ReloadAnimation(Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor)
+        {
+            editor.ReloadSources();
+            return editor.SourcesLoadedSuccessfully;
+        }
+        static bool ReloadScene(Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor)
+        {
+            editor.ReloadSources();
+            return editor.SourcesLoadedSuccessfully;
+        }
+        static bool ReloadSprite(Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor)
+        {
+            editor.ReloadSources();
+            return editor.SourcesLoadedSuccessfully;
+        }
     }
 }

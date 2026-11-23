@@ -14,6 +14,7 @@ public sealed partial class MainForm : IResourceNavigator
     private CancellationTokenSource? _dependencyCancellation;
     private long _dependencyGeneration;
     private DefinitionReferenceDiscovery? _dependencyScan;
+    private readonly List<DocumentSourceMonitor.Registration> _dependencySources = [];
     private ResourceAddress? _dependencyTarget;
     private bool _followDependencySelection;
     private bool _dependencyWholeDocument;
@@ -104,6 +105,8 @@ public sealed partial class MainForm : IResourceNavigator
     private void InvalidateDependencies()
     {
         _dependencyGeneration++;
+        foreach (var source in _dependencySources) source.Dispose();
+        _dependencySources.Clear();
         _dependencyCancellation?.Cancel();
         _dependencyCancellation?.Dispose();
         _dependencyCancellation = null;
@@ -134,10 +137,19 @@ public sealed partial class MainForm : IResourceNavigator
             {
                 var scan = await Browser.RunArchiveReadAsync(
                     () => InspectDependencies(scope, path => credentials.GetValueOrDefault(path), token), token).ConfigureAwait(false);
+                await Task.Run(() =>
+                {
+                    foreach (var (path, version) in scan.SourceVersions)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        DocumentSourceSave.Verify(new(Gondwana.Assets.AssetTypes.Misc, path), version);
+                    }
+                }, token).ConfigureAwait(false);
                 await OnDependencyUiAsync(() =>
                 {
                     if (_disposed || generation != _dependencyGeneration || token.IsCancellationRequested) return;
                     _dependencyScan = scan;
+                    RegisterDependencyScanSources(scan, generation);
                     _dependencyCancellation = null;
                     PresentDependencies();
                 }, token).ConfigureAwait(false);
@@ -169,6 +181,24 @@ public sealed partial class MainForm : IResourceNavigator
         if (_dependencyTarget is not null && _dependencyScan is not null && !_disposed)
             _dependencies.ShowResults(_dependencyWholeDocument ? new ResourceAddress(_dependencyTarget.Location) : _dependencyTarget,
                 _dependencyScan, _documents.Any(d => d.Document.Dirty()));
+    }
+
+    private void RegisterDependencyScanSources(DefinitionReferenceDiscovery scan, long generation)
+    {
+        // The existing scan owns the inventory and captured bytes. Watch only those files;
+        // additions outside this inventory still require explicit Refresh / Rescan.
+        foreach (var (path, version) in scan.SourceVersions)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(path))) continue;
+            _dependencySources.Add(_sourceMonitor.Register(new(Gondwana.Assets.AssetTypes.Misc, path), version,
+                DocumentSourceRole.Dependency, change => _dependencyUi.Post(_ =>
+                {
+                    if (_disposed || generation != _dependencyGeneration) return;
+                    InvalidateDependencies();
+                    _packages.Invalidate(change.Location.Path);
+                    QueueSourceBrowserRefresh();
+                }, null)));
+        }
     }
 
     private async Task OnDependencyUiAsync(Action action, CancellationToken token)

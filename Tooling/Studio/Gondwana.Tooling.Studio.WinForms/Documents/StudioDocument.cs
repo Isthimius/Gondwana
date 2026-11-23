@@ -32,6 +32,32 @@ internal sealed class StudioDocument : IDisposable
     internal string? ArchivePassword { get; set; }
     internal bool PreviewStale { get; set; }
     internal bool ContentStale { get; set; }
+    internal string? SourceProblem { get; set; }
+    internal DocumentSourceVersion? PromptedConflict { get; set; }
+    internal long SourceGeneration { get; set; }
+    internal bool SourcesQueued { get; set; }
+    internal Dictionary<AssetLocation, DocumentSourceMonitor.Registration> Sources { get; } = new(DocumentLocationComparer.Instance);
+    internal DocumentSourceVersion? AcceptedSource => Editor switch
+    {
+        TilesheetEditorControl e when PackedLocation() is null => e.Document.SourceVersion,
+        AnimationEditorControl e when PackedLocation() is null => e.Document.SourceVersion,
+        SceneEditorControl e when PackedLocation() is null => e.Document.SourceVersion,
+        SpriteEditorControl e when PackedLocation() is null => e.Document.SourceVersion,
+        AudioEditorControl e when PackedLocation() is null => e.Document.SourceVersion,
+        _ when ArchiveHash is { } hash => new(DocumentSourceStatus.Available, Convert.ToHexString(hash),
+            OriginalEntry is { } entry ? DocumentSourceVersion.Hash(entry) : Convert.ToHexString(hash)),
+        _ when Kind == "asset" => new(DocumentSourceStatus.Missing, null, null),
+        _ => null
+    };
+    internal string ReferenceDirectory => Editor switch
+    {
+        TilesheetEditorControl e => e.Document.BaseDirectory,
+        AnimationEditorControl e => e.Document.BaseDirectory,
+        SceneEditorControl e => e.Document.BaseDirectory,
+        SpriteEditorControl e => e.Document.BaseDirectory,
+        AudioEditorControl e => e.Document.BaseDirectory,
+        _ => SaveDirectoryHint ?? Environment.CurrentDirectory
+    };
     internal HashSet<string> DependencyArchives { get; } = new(StringComparer.OrdinalIgnoreCase);
     internal AssetLocation? Location => PackedLocation() ?? (Path() is { } path
         ? new AssetLocation(TypeFor(Extension), System.IO.Path.GetFullPath(path)) : null);
@@ -362,6 +388,9 @@ internal sealed class StudioDocument : IDisposable
     /// <summary>Detaches model change handlers, disposes the editor, and releases the owned GAF archive when present.</summary>
     public void Dispose()
     {
+        SourceGeneration++;
+        foreach (var source in Sources.Values) source.Dispose();
+        Sources.Clear();
         _detach?.Invoke();
         _detach = null;
 

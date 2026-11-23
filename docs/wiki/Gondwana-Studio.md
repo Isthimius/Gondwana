@@ -4,6 +4,71 @@ Gondwana Studio is the integrated Windows authoring shell for Gondwana's native 
 
 Studio is optional development tooling. It does not replace Gondwana's code-first runtime model, and games do not depend on Studio.
 
+## External changes and document conflicts
+
+Studio watches the physical sources of open documents and their explicit local
+dependencies. It also watches files captured by the current Dependency Explorer
+scan. Subscriptions are scoped to those files and released when no longer needed;
+there is no recursive workspace watcher. Remote media URIs are not watched.
+
+Tabs distinguish four states:
+
+| Indicator | Meaning |
+| --- | --- |
+| `*` | Unsaved local edits |
+| `[reload]` | Primary saved content changed, disappeared, or cannot currently be verified |
+| `[conflict]` | The primary source changed while the editor contains local edits |
+| `[preview]` | A referenced definition, image, or local media source changed |
+
+Background notifications never discard edits or open a modal dialog. The tab
+tooltip explains missing, renamed, and inaccessible sources. A rename does not
+retarget the document automatically. Unreadable sources are retried.
+
+Use the tab context menu to **Keep My Edits**, **Reload from Disk**, **Save As**,
+or **Resolve external conflict**. Keep My Edits leaves the source version and save
+protection unchanged; it is not permission to overwrite an external edit. Save As
+uses the existing workflow to preserve local work under another filename. A Save
+that encounters an external version offers the same resolution choices, once per
+observed unresolved version. Resolve external conflict can reopen those choices.
+
+Reloading a clean document needs no discard confirmation. Reloading a dirty
+document requires explicit confirmation. Studio loads a replacement before closing
+the previous editor. Invalid or incomplete replacements leave the original edits
+and Undo/Redo history intact. Successful reload establishes a clean baseline with
+new history, retains the selected logical member when it still exists, and keeps
+the tab in its docking pane. Activation and focus are restored where possible;
+tilesheet and scene previews retain zoom/Fit. Other transient preview selections
+may reset.
+
+**File > Reload dependency previews** is independent of primary document reload.
+It refreshes the existing image/source previews and invalidates package caches,
+including when the primary document is dirty. It does not discard edits or clear
+history. GSND local media changes invalidate the resource view/validation; Studio
+does not add an audio playback or remote-download system.
+
+GAF monitoring distinguishes the physical archive from each exact typed entry.
+Changing another entry does not conflict with an unchanged packed definition.
+Encrypted packages retain their existing authentication and save coordination.
+Own saves use the exact persisted content version rather than a suppression timer,
+so an external write immediately after Save still requires attention.
+
+Dependency Explorer describes **saved content**, which may differ from unsaved
+editor buffers. Relevant changes invalidate results and cancel obsolete in-flight
+scans. Working Directory refreshes are coalesced; expensive dependency scans run
+only through the existing Refresh / Rescan action. Newly added files outside the
+captured inventory require an explicit refresh. Switching working directories
+releases scan subscriptions; sources of documents that remain open stay monitored.
+Project Diagnostics remains an independent plugin, with no dependency on this
+notification workflow.
+
+Filesystem replacement is not compare-and-swap: the shared save infrastructure
+cannot eliminate an unrelated process replacing a file between final verification
+and installation. Two stable reads cannot prove that a paused writer has finished;
+a failed reload should be retried when writing is complete. Missing parent
+directories require an explicit refresh/reload or reopening after recreation.
+This Studio integration is Phase 2 of #465. Standalone host notifications and
+conflict workflows remain Phase 3; runtime hot reload (#120) is separate.
+
 ## Undo and redo
 
 **Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the

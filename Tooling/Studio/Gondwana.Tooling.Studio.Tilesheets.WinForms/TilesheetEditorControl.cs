@@ -22,6 +22,14 @@ public sealed class TilesheetEditorControl : UserControl
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public TilesheetDocument Document { get; }
 
+    /// <summary>Gets or restores preview magnification; null selects Fit. This is view state, not a document edit.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public float? PreviewZoom
+    {
+        get => _viewport.IsFit ? null : _viewport.Zoom;
+        set { if (value is { } zoom) _viewport.SetZoom(zoom); else _viewport.Fit(); }
+    }
+
     private readonly OverlaySettings _overlaySettings;
     private readonly AssetPackageCatalog _assetPackages;
     private readonly bool _ownsAssetPackages;
@@ -39,6 +47,9 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly TextBox _validation = new() { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false };
     private string? _previewKey;
     private string? _previewError;
+
+    /// <summary>Whether the most recent preview load completed without an image-source error.</summary>
+    public bool PreviewLoadSucceeded => _previewError is null;
     private bool _refreshing;
     private bool _refreshPending;
     private EditorDockWorkspace _workspace = null!;

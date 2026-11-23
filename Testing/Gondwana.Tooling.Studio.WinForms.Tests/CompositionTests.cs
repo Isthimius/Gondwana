@@ -383,6 +383,7 @@ public sealed partial class CompositionTests
         studio.ReportError = ex => throw new InvalidOperationException("Unexpected shell error", ex);
         studio.AllowInvalidSave = _ => true;
         studio.AskSave = _ => DialogResult.No;
+        studio.AskSourceConflict = _ => MainForm.SourceConflictChoice.KeepEdits;
         studio.SetWorkingDirectory(directory);
         studio.Show();
         Application.DoEvents();

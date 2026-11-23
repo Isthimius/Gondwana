@@ -184,7 +184,9 @@ public sealed partial class CompositionTests
         Exception? failure = null;
         studio.ReportError = error => failure = error;
         Assert.False(AwaitUi(studio.SaveAllDocuments()));
-        Assert.NotNull(failure);
+        Assert.Null(failure); // Source conflicts now use the explicit resolution workflow.
+        Assert.True(child.Document.ContentStale);
+        Assert.Contains("[conflict]", child.Text);
         Assert.True(child.Document.Dirty());
         Assert.False(parent.Document.Dirty());
         using var persisted = StudioArchiveSnapshot.Open(path, null);

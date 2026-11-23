@@ -80,10 +80,17 @@ The existing encrypted GAF persistence path remains unchanged.
   must still validate/retry parsing before accepting a reload. A rename event can
   be lost; then missing content is reported as deleted. Re-register if a watched
   directory itself is removed/recreated. Explicit Verify can recover missed events.
-- Studio watcher ownership, dependency registration, dispatch, reload policy,
-  catalog/preview refresh and conflict UX are Phase 2. Standalone host wiring and
-  broader platform regression coverage are Phase 3 of #465. No runtime hot reload,
-  automatic reload, merge UI or document-tab behavior is introduced here.
+- Studio owns watcher registration, UI dispatch, explicit reload/conflict choices,
+  and catalog/preview refresh through its existing document bindings (Phase 2).
+  Standalone host wiring and broader platform regression coverage remain Phase 3
+  of #465. This library implements no UI policy or runtime hot reload.
+
+Diagnostic reference inspection retains only physical SHA-256 versions alongside
+its existing file inventory when releasing payloads/passwords. Studio uses these
+versions to reject stale scans and subscribe to later saved-content changes.
+Archive Save As uses the existing copy helper's internal version-returning path;
+the returned hash comes from staging, not a fresh post-save read. The public copy
+API and encrypted serialization behavior are unchanged.
 
 `AuthoringResourceResolver` loads GTS, GANI and GSCN definitions and decodes GTS
 images for the authoring editors without starting the engine or registering

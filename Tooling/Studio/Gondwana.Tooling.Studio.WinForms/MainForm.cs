@@ -444,6 +444,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
             _plugins.NotifyProjectClosed();
 
         Browser.SetDirectory(path);
+        foreach (var document in _documents.ToArray()) RefreshSourceRegistrations(document);
         SyncActiveDocumentSelection();
         _workingDirectory = path;
         _plugins.NotifyProjectOpened(path);
@@ -561,87 +562,108 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         return ShowDocument(model);
     }
 
-    private StudioDockDocument ShowDocument(StudioDocument model)
+    private StudioDockDocument ShowDocument(StudioDocument model, StudioDockDocument? replacing = null)
     {
         var document = new StudioDockDocument(model, ConfirmClose);
 
-        if (model.Editor is Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl sceneEditor)
+        try
         {
-            sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
-            sceneEditor.SetSpriteOwners(GetSpriteOwners);
-            sceneEditor.SpriteHistorySelectionChanged += () => _undoRedo.Refresh();
-        }
-
-        _documents.Add(document);
-        model.Changed += ToolbarDocumentChanged;
-        model.Changed += DependencySelectionChanged;
-        if (model.Kind == "sprite") model.Changed += SpriteDocumentChanged;
-        var referencesMenu = new ContextMenuStrip();
-
-        foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
-        {
-            referencesMenu.Items.Add(title, null, (_, _) => ShowDependencies(
-                model.Location is { } endpoint ? new ResourceAddress(endpoint, model.SelectedMember) : null,
-                dependents: title != "Show Dependencies"));
-        }
-
-        document.TabPageContextMenuStrip = referencesMenu;
-
-        if (model.Location is { } location)
-            _paths.Add(location, document);
-
-        if (model.Editor is AssetEditorControl assets)
-        {
-            assets.SaveRequested = async saveAs => await SaveDocument(document, saveAs);
-            assets.IsDocumentOpen = path => _paths.Keys.Any(location => string.Equals(location.Path, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase));
-            assets.RelocationScope = () => Browser.WorkingDirectory;
-            assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
-            assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
-
-            assets.WorkspaceChanged = () =>
+            if (model.Editor is Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl sceneEditor)
             {
-                InvalidateDependencies();
-                if (!assets.IsDirty && File.Exists(assets.FilePath))
+                sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
+                sceneEditor.SetSpriteOwners(GetSpriteOwners);
+                sceneEditor.SpriteHistorySelectionChanged += () => _undoRedo.Refresh();
+            }
+
+            _documents.Add(document);
+            model.Changed += ToolbarDocumentChanged;
+            model.Changed += DependencySelectionChanged;
+            model.Changed += SourcesChanged;
+            if (model.Kind == "sprite") model.Changed += SpriteDocumentChanged;
+            var referencesMenu = new ContextMenuStrip();
+
+            foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
+            {
+                referencesMenu.Items.Add(title, null, (_, _) => ShowDependencies(
+                    model.Location is { } endpoint ? new ResourceAddress(endpoint, model.SelectedMember) : null,
+                    dependents: title != "Show Dependencies"));
+            }
+
+            referencesMenu.Items.Add(new ToolStripSeparator());
+            referencesMenu.Items.Add("Reload from Disk", null, (_, _) => ReloadDocument(document));
+            referencesMenu.Items.Add("Keep My Edits", null, (_, _) => document.UpdateCaption());
+            referencesMenu.Items.Add("Save As...", null, async (_, _) => await SaveDocument(document, saveAs: true));
+            referencesMenu.Items.Add("Resolve external conflict...", null, async (_, _) => await ResolveSourceConflict(document));
+            referencesMenu.Items.Add("Reload dependency previews", null, (_, _) => ReloadPreviews(document));
+            document.TabPageContextMenuStrip = referencesMenu;
+
+            if (model.Location is { } location)
+                _paths[location] = document;
+
+            if (model.Editor is AssetEditorControl assets)
+            {
+                assets.SaveRequested = async saveAs => await SaveDocument(document, saveAs);
+                assets.IsDocumentOpen = path => _paths.Keys.Any(location => string.Equals(location.Path, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase));
+                assets.RelocationScope = () => Browser.WorkingDirectory;
+                assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
+                assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
+
+                assets.WorkspaceChanged = () =>
                 {
-                    using var current = StudioArchiveSnapshot.Open(assets.FilePath, assets.AssetsFile.Password);
-                    // Existing relocation/deletion transactions already verify the editor against disk.
-                    model.ArchiveHash = current.Hash;
-                }
+                    InvalidateDependencies();
+                    if (!assets.IsDirty && File.Exists(assets.FilePath))
+                    {
+                        using var current = StudioArchiveSnapshot.Open(assets.FilePath, assets.AssetsFile.Password);
+                        // Existing relocation/deletion transactions already verify the editor against disk.
+                        model.ArchiveHash = current.Hash;
+                    }
 
-                _packages.Clear();
-                Browser.RefreshDirectory();
+                    RefreshSourceRegistrations(document);
+                    _packages.Clear();
+                    Browser.RefreshDirectory();
+                };
+            }
+
+            document.Disposed += (_, _) =>
+            {
+                model.Changed -= ToolbarDocumentChanged;
+                model.Changed -= DependencySelectionChanged;
+                model.Changed -= SourcesChanged;
+                model.Changed -= SpriteDocumentChanged;
+
+                referencesMenu.Dispose();
+                _documents.Remove(document);
+                _saves.Remove(document);
+                if (model.Kind == "sprite") SpriteRegistryChanged();
+
+                foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray())
+                    _paths.Remove(key);
+
+                UpdateToolbarState();
             };
-        }
 
-        document.Disposed += (_, _) =>
-        {
-            model.Changed -= ToolbarDocumentChanged;
-            model.Changed -= DependencySelectionChanged;
-            model.Changed -= SpriteDocumentChanged;
-
-            referencesMenu.Dispose();
-            _documents.Remove(document);
-            _saves.Remove(document);
+            if (replacing?.Pane is { } pane) document.Show(pane, replacing);
+            else document.Show(Workspace, DockState.Document);
+            RefreshSourceRegistrations(document);
             if (model.Kind == "sprite") SpriteRegistryChanged();
-
-            foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray())
-                _paths.Remove(key);
-
+            document.Activate();
+            SyncActiveDocumentSelection();
             UpdateToolbarState();
-        };
 
-        document.Show(Workspace, DockState.Document);
-        if (model.Kind == "sprite") SpriteRegistryChanged();
-        document.Activate();
-        SyncActiveDocumentSelection();
-        UpdateToolbarState();
+            if (model.Kind == "asset")
+                Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
 
-        if (model.Kind == "asset")
-            Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
+            _output.Log($"Opened {model.Path() ?? document.Text}");
 
-        _output.Log($"Opened {model.Path() ?? document.Text}");
-
-        return document;
+            return document;
+        }
+        catch
+        {
+            _documents.Remove(document);
+            foreach (var key in _paths.Where(p => p.Value == document).Select(p => p.Key).ToArray()) _paths.Remove(key);
+            document.Dispose();
+            throw;
+        }
     }
 
     internal Task<bool> SaveDocument(StudioDockDocument document, bool saveAs = false, string? destination = null)
@@ -708,6 +730,10 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                     _paths.Remove(key);
 
                 _paths.Add(model.Location!, document);
+                model.ContentStale = false;
+                model.SourceProblem = null;
+                model.PromptedConflict = null;
+                foreach (var open in _documents.ToArray()) RefreshSourceRegistrations(open);
                 document.UpdateCaption();
 
                 SyncActiveDocumentSelection();
@@ -756,6 +782,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         }
         catch (Exception ex)
         {
+            if (ex is IOException && HandleSourceSaveFailure(document)) return false;
             ReportError(ex);
             return false;
         }
@@ -913,6 +940,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         if (disposing && !_disposed)
         {
             _disposed = true;
+            _sourceMonitor.Dispose();
 
             InvalidateDependencies();
             _layout.Dispose();
