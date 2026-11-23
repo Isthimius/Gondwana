@@ -229,7 +229,7 @@ write can appear stable; failed loads still preserve the old document. Atomic
 replacement is not a portable filesystem compare-and-swap: an unrelated process
 can still write after the final pre-install version check.
 
-This is authoring-document synchronization, separate from runtime hot reload
-(#120). Studio's Dependency Explorer examines saved content and invalidates stale
-scan results; open documents may contain unsaved edits. Project Diagnostics remains
-an independent validation plugin.
+Document-source monitoring applies to authoring editors; it does not replace
+content in a running game or Scene Viewer. Studio's Dependency Explorer examines
+saved content and invalidates stale scan results; open documents may contain
+unsaved edits. Project Diagnostics remains an independent validation plugin.
