@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Gondwana.Serialization;
 namespace Gondwana.Scenes.GSCN;
 
 /// <summary>

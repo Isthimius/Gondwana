@@ -7,6 +7,7 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Serialization;
 using SkiaSharp;
 
 namespace Gondwana.Tests;

@@ -5,7 +5,7 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 /// <summary>
 /// Resolves an existing, unchanged physical definition source for a runtime dependency.

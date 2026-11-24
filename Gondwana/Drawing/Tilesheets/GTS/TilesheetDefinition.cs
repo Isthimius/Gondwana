@@ -1,3 +1,5 @@
+using Gondwana.Serialization;
+
 namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>

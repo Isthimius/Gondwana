@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 // Owned by the materialized object (or collection manager), never by a global name map.
 // Compare the serializer's complete runtime projection, including nested mutable data.

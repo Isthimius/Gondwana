@@ -3,6 +3,7 @@ using Gondwana.Assets;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
+using Gondwana.Serialization;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites.GSPR;

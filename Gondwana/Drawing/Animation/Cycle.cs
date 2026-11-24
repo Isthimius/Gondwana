@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Serialization;
 using Gondwana.Timers;
 using Newtonsoft.Json;
 
