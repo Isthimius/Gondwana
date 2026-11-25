@@ -99,8 +99,8 @@ Apply the following conventions to new and modified C# code, including engine co
 
 - Write one statement per physical line. Never combine declarations, assignments, method calls, or other statements on one line. Semicolons within a `for` header are not separate statements for this purpose.
 - Put the body of every control-flow statement (`if`, `else`, `for`, `foreach`, `while`, `do`, and similar constructs) on subsequent indented lines. Never put the body on the same line as its header.
-- Use the existing Allman brace style for executable blocks when braces are present. Unbraced single-statement bodies remain permitted where appropriate; this is a layout rule, not a requirement to add braces.
-- Leave one empty line after a complete control-flow statement, whether braced or unbraced, before the next statement at the same scope. Do not separate an `if` from its associated `else if` or `else`, a `try` from its `catch` or `finally`, or a `do` body from its terminating `while`. Do not add an otherwise unnecessary empty line immediately before a closing scope brace.
+- Use the existing Allman brace style for executable blocks when braces are present. Never keep a nonempty executable block on one line, including a single-statement `try`, `catch`, or `finally` body. Unbraced single-statement bodies remain permitted where appropriate; this is a layout rule, not a requirement to add braces.
+- Prefer one empty line both before and after a complete control-flow statement, whether braced or unbraced, when adjacent to another statement at the same scope. Consecutive control-flow statements share a single separating blank line. Do not separate an `if` from its associated `else if` or `else`, a `try` from its `catch` or `finally`, or a `do` body from its terminating `while`. Do not add an otherwise unnecessary empty line immediately after an opening scope brace or before a closing scope brace.
 - Auto-properties and other property declarations with only bodyless `get`, `set`, or `init` accessors should remain on a single line, including accessor accessibility modifiers and initializers. These accessors are not executable statements. Properties with executable accessor blocks must follow the standard multiline conventions. Single-line expression-bodied properties are also permitted.
 - Do not collapse existing multiline executable statements or blocks to save vertical space. Keep formatting changes focused on the code being added or modified rather than reformatting unrelated files.
 
@@ -130,7 +130,31 @@ public string Name { get; init; }
 public bool IsActive { get; }
 ```
 
-The blank lines following both control-flow statements are intentional. Check generated code for these conventions before returning it, including when the formatter does not enforce them.
+The blank lines around control-flow statements are intentional. The same conventions apply within exception handlers:
+
+```csharp
+try
+{
+    if (settings.TypeFilter is not null)
+        throw new ArgumentException("Type filters are not supported.");
+
+    var errors = ValidateContents(settings);
+
+    foreach (var error in errors)
+        Report(error);
+
+    if (errors.Count == 0)
+        ReportSuccess();
+
+    return errors.Count == 0 ? 0 : 1;
+}
+catch (Exception ex)
+{
+    return ProjectCommand.Fail(ex);
+}
+```
+
+Do not insert a blank line between the closing brace of `try` and its `catch`. Check generated code for these conventions before returning it, including when the formatter does not enforce them.
 
 ## Demos and Game Boilerplate
 
