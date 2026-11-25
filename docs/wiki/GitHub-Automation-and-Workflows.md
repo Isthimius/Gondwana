@@ -224,6 +224,8 @@ dotnet build \
 
 ## Formatting and tests
 
+For optional local formatting beyond Roslyn's built-in formatter, contributors can run `./Tooling/scripts/Format-Code.ps1 -All` or target specific C# files with `-Files`. See [Tooling Scripts](Tooling-Scripts#format-codeps1). JetBrains CleanupCode is not a CI dependency or validation step.
+
 CI always checks whitespace and selected style diagnostics, builds the solution in Release configuration, and runs:
 
 - `Testing/Gondwana.Tests/Gondwana.Tests.csproj` core unit tests (excluding demo-specific test suites)

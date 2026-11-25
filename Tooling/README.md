@@ -44,7 +44,10 @@ For the native asset and reference contracts, see [Assets Files](../docs/wiki/As
 | [Gondwana.Cli](./Gondwana.Cli/README.md) | `gondwana` commands, environment checks, and deployment |
 | [Gondwana.Templates](./Gondwana.Templates/README.md) | `dotnet new` templates and generated project setup |
 | [Gondwana.Mcp](./Gondwana.Mcp/README.md) | Read-only access to the official repository and wiki for supported AI clients |
-| [scripts](./scripts/README.md) | PowerShell setup, changelog, publishing, release, and maintenance helpers |
+| [scripts](./scripts/README.md) | PowerShell setup, formatting, changelog, publishing, release, and maintenance helpers |
+
+For optional local C# formatting, use [Format-Code.ps1](./scripts/README.md#format-codeps1).
+It installs CleanupCode only if needed and is independent of developer setup and CI.
 
 Windows authoring releases and their packaging scripts are described in the
 [Studio overview](./Studio/README.md#windows-release-bundles).

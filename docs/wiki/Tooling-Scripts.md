@@ -1,10 +1,11 @@
-Gondwana includes repository-maintenance tooling for developer setup, local CLI/template iteration, changelog generation, release orchestration, API documentation publishing, and Wiki synchronization.
+Gondwana includes repository-maintenance tooling for developer setup, local code formatting, local CLI/template iteration, changelog generation, release orchestration, API documentation publishing, and Wiki synchronization.
 
 Most of it lives under:
 
 ```text
 Tooling/scripts/
 ├── Changelog-ProjectGroups.ps1
+├── Format-Code.ps1
 ├── Generate-Project-Changelogs.ps1
 ├── Generate-Root-Changelog.ps1
 ├── Reinstall-Gondwana-Cli.ps1
@@ -36,6 +37,7 @@ Their purpose is to make repository operations repeatable instead of relying on 
 - [Which tool should I use?](#which-tool-should-i-use)
 - [Running the tools](#running-the-tools)
 - [Setup-Gondwana-Dev.ps1](#setup-gondwana-devps1)
+- [Format-Code.ps1](#format-codeps1)
 - [Reinstall-Gondwana-Cli.ps1](#reinstall-gondwana-clips1)
 - [Reinstall-Gondwana-Templates.ps1](#reinstall-gondwana-templatesps1)
 - [Changelog tooling](#changelog-tooling)
@@ -52,6 +54,7 @@ Their purpose is to make repository operations repeatable instead of relying on 
 | Goal | Tool |
 |---|---|
 | Set up a new Gondwana development machine | `Setup-Gondwana-Dev.ps1` |
+| Reformat repository C# source locally | `Format-Code.ps1` |
 | Test changes to the `gondwana` CLI locally | `Reinstall-Gondwana-Cli.ps1` |
 | Test changes to Gondwana `dotnet new` templates locally | `Reinstall-Gondwana-Templates.ps1` |
 | Generate or preview project-specific changelogs | `Generate-Project-Changelogs.ps1` |
@@ -69,6 +72,7 @@ DEVELOPMENT ENVIRONMENT
 └── Setup-Gondwana-Dev.ps1
 
 LOCAL ITERATION
+├── Format-Code.ps1
 ├── Reinstall-Gondwana-Cli.ps1
 └── Reinstall-Gondwana-Templates.ps1
 
@@ -169,6 +173,32 @@ Examples:
 # Core setup only
 .\Tooling\scripts\Setup-Gondwana-Dev.ps1 -SkipOptional
 ```
+
+---
+
+# `Format-Code.ps1`
+
+This is an **optional local contributor tool** for reformatting C# source with [JetBrains CleanupCode](https://www.jetbrains.com/help/resharper/CleanupCode.html). The root `.editorconfig` defines formatting preferences, and [AGENTS.md](https://github.com/Isthimius/Gondwana/blob/master/AGENTS.md) describes the conventions expected of code generation. CleanupCode complements Roslyn's formatter where its formatting rules are less granular.
+
+The script uses the formatting-only profile, not full cleanup or syntax modernization. It operates directly on C# files without a solution build, reuses `jb` if available, and installs the global .NET tool only when needed. It is not part of developer bootstrap or CI.
+
+Choose exactly one scope: `-All` selects existing Git-tracked C# files (including templates outside the solution, excluding `bin` and `obj`); `-Files` accepts literal repository-relative or absolute paths within the checkout, including new files. `-WhatIf` previews without installing or editing; `-NoInstall` requires an existing installation.
+
+```powershell
+# Format all tracked C# source files, including project templates
+./Tooling/scripts/Format-Code.ps1 -All
+
+# Format only the specified files (paths are relative to the repository root)
+./Tooling/scripts/Format-Code.ps1 -Files 'Gondwana/EngineState.Definitions.cs', 'Gondwana/EngineState.cs'
+
+# Preview the scope without installing anything or modifying source
+./Tooling/scripts/Format-Code.ps1 -All -WhatIf
+
+# Require an existing jb installation
+./Tooling/scripts/Format-Code.ps1 -All -NoInstall
+```
+
+Formatting changes are written in place. Review `git diff` afterward; a failed run may have already formatted earlier batches. For prerequisites and parameter details, see the [scripts README](https://github.com/Isthimius/Gondwana/blob/master/Tooling/scripts/README.md#format-codeps1).
 
 ---
 
@@ -722,6 +752,7 @@ DEVELOPMENT ENVIRONMENT
         prepares the machine
 
 LOCAL ITERATION
+├── Format-Code.ps1
 ├── Reinstall-Gondwana-Cli.ps1
 └── Reinstall-Gondwana-Templates.ps1
         test unpublished local packages
