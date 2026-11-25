@@ -123,15 +123,16 @@ $(function(){initNavTree('StereoPanSampleProvider_8cs_source.html','',''); });
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">public</span> <span class="keywordtype">int</span> Read(<span class="keywordtype">float</span>[] buffer, <span class="keywordtype">int</span> offset, <span class="keywordtype">int</span> count)</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    {</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        var read = _source.Read(buffer, offset, count);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">for</span> (var index = 0; index + 1 &lt; read; index += 2)</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            buffer[offset + index] *= LeftVolume;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            buffer[offset + index + 1] *= RightVolume;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        }</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> read;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">for</span> (var index = 0; index + 1 &lt; read; index += 2)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            buffer[offset + index] *= LeftVolume;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            buffer[offset + index + 1] *= RightVolume;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> read;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Audio_1_1NAudio_html"><div class="ttname"><a href="namespaceGondwana_1_1Audio_1_1NAudio.html">Gondwana.Audio.NAudio</a></div><div class="ttdef"><b>Definition</b> <a href="NAudioAudioBackend_8cs_source.html#l00001">NAudioAudioBackend.cs:1</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

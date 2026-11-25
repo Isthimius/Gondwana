@@ -152,35 +152,41 @@ $(function(){initNavTree('AudioDefinitionValidator_8cs_source.html','',''); });
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                <span class="keywordflow">case</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77">AudioResourceSourceKind</a>.LooseFile:</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.FilePath))</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                        errors.Add($<span class="stringliteral">&quot;{label}: loose FilePath is empty.&quot;</span>);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">case</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77">AudioResourceSourceKind</a>.PackedAsset:</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.AssetsFilePath))</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                        errors.Add($<span class="stringliteral">&quot;{label}: AssetsFilePath is empty.&quot;</span>);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.AssetEntryName))</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                        errors.Add($<span class="stringliteral">&quot;{label}: AssetEntryName is empty.&quot;</span>);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.SourceExtension) &amp;&amp;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                        <span class="keywordtype">string</span>.IsNullOrWhiteSpace(Path.GetExtension(resource.AssetEntryName)))</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                        errors.Add($<span class="stringliteral">&quot;{label}: packed audio requires SourceExtension when AssetEntryName has no extension.&quot;</span>);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    }</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="keywordflow">case</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77">AudioResourceSourceKind</a>.Uri:</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.SourceUri))</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                        errors.Add($<span class="stringliteral">&quot;{label}: SourceUri is empty.&quot;</span>);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_enumvalue" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493">Uri</a>.TryCreate(resource.SourceUri, UriKind.RelativeOrAbsolute, out _))</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                        errors.Add($<span class="stringliteral">&quot;{label}: SourceUri is invalid.&quot;</span>);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> errors;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
-<div class="ttc" id="anamespaceGondwana_1_1Audio_1_1GSND_html"><div class="ttname"><a href="namespaceGondwana_1_1Audio_1_1GSND.html">Gondwana.Audio.GSND</a></div><div class="ttdef"><b>Definition</b> <a href="AudioDefinition_8cs_source.html#l00003">AudioDefinition.cs:3</a></div></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                <span class="keywordflow">case</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77">AudioResourceSourceKind</a>.PackedAsset:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.AssetsFilePath))</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                        errors.Add($<span class="stringliteral">&quot;{label}: AssetsFilePath is empty.&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.AssetEntryName))</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                        errors.Add($<span class="stringliteral">&quot;{label}: AssetEntryName is empty.&quot;</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.SourceExtension) &amp;&amp;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                        <span class="keywordtype">string</span>.IsNullOrWhiteSpace(Path.GetExtension(resource.AssetEntryName)))</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                    {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                        errors.Add(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                            $<span class="stringliteral">&quot;{label}: packed audio requires SourceExtension when AssetEntryName has no extension.&quot;</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">case</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77">AudioResourceSourceKind</a>.Uri:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                    <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(resource.SourceUri))</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                        errors.Add($<span class="stringliteral">&quot;{label}: SourceUri is empty.&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_enumvalue" href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493">Uri</a>.TryCreate(resource.SourceUri, UriKind.RelativeOrAbsolute, out _))</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                        errors.Add($<span class="stringliteral">&quot;{label}: SourceUri is invalid.&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">return</span> errors;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="ttc" id="anamespaceGondwana_1_1Audio_1_1GSND_html"><div class="ttname"><a href="namespaceGondwana_1_1Audio_1_1GSND.html">Gondwana.Audio.GSND</a></div><div class="ttdef"><b>Definition</b> <a href="AudioDefinition_8cs_source.html#l00004">AudioDefinition.cs:4</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Audio_1_1GSND_html_a401e76f38f63c88d19354870f02f6c77"><div class="ttname"><a href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77">Gondwana.Audio.GSND.AudioResourceSourceKind</a></div><div class="ttdeci">AudioResourceSourceKind</div><div class="ttdoc">Identifies how a GSND audio resource locates its underlying media.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceSourceKind_8cs_source.html#l00010">AudioResourceSourceKind.cs:11</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Audio_1_1GSND_html_a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493"><div class="ttname"><a href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493">Gondwana.Audio.GSND.AudioResourceSourceKind.Uri</a></div><div class="ttdeci">@ Uri</div><div class="ttdoc">The resource is loaded from a URI.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceSourceKind_8cs_source.html#l00023">AudioResourceSourceKind.cs:23</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Audio_1_1GSND_html_a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493"><div class="ttname"><a href="namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493">Gondwana.Audio.GSND.AudioResourceSourceKind.Uri</a></div><div class="ttdeci">@ Uri</div><div class="ttdoc">The resource is loaded from a URI.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceSourceKind_8cs_source.html#l00025">AudioResourceSourceKind.cs:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

@@ -16,6 +16,7 @@ var namespaceGondwana =
     [ "Physics", "namespaceGondwana_1_1Physics.html", "namespaceGondwana_1_1Physics" ],
     [ "Rendering", "namespaceGondwana_1_1Rendering.html", "namespaceGondwana_1_1Rendering" ],
     [ "Scenes", "namespaceGondwana_1_1Scenes.html", "namespaceGondwana_1_1Scenes" ],
+    [ "Serialization", "namespaceGondwana_1_1Serialization.html", null ],
     [ "SkiaSharp", "namespaceGondwana_1_1SkiaSharp.html", null ],
     [ "Timers", "namespaceGondwana_1_1Timers.html", "namespaceGondwana_1_1Timers" ],
     [ "Video", "namespaceGondwana_1_1Video.html", "namespaceGondwana_1_1Video" ],

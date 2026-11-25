@@ -141,122 +141,128 @@ $(function(){initNavTree('KeyboardEventPoller_8cs_source.html','',''); });
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        var adapter = <a class="code hl_property" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#acabc359ef6bb617fb9c081a6f0c1b354">Adapter</a>;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (adapter is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="comment">// Apply any pending adds/removes on the engine thread.</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">while</span> (_pendingOps.TryDequeue(out var op))</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            op();</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        var mods = adapter.CurrentKeyboardModifiers;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">foreach</span> (var kvp <span class="keywordflow">in</span> _keyConfigs)</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordtype">int</span> keyCode = kvp.Key;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            var config = kvp.Value;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordtype">bool</span> currentlyPressed = adapter.IsDown(keyCode);</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordtype">bool</span> previouslyPressed = _previousPressed.TryGetValue(keyCode, out var prev) &amp;&amp; prev;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="comment">// Transition: not pressed -&gt; pressed</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="keywordflow">if</span> (currentlyPressed &amp;&amp; !previouslyPressed)</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                _previousPressed[keyCode] = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                config._lastEventTick = tick;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                <a class="code hl_event" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a>?.Invoke(<span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html">KeyDownEventArgs</a>(config, mods, <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>.Pressed));</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="comment">// Still pressed -&gt; maybe repeated (throttled)</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">if</span> (currentlyPressed &amp;&amp; previouslyPressed)</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <span class="keywordflow">if</span> (!config.IsPaused &amp;&amp; config.ReadyForNextEvent(tick))</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    config._lastEventTick = tick;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                    <a class="code hl_event" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a>?.Invoke(<span class="keyword">new</span> KeyDownEventArgs(config, mods, <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>.Repeated));</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="comment">// Transition: pressed -&gt; not pressed</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">if</span> (!currentlyPressed &amp;&amp; previouslyPressed)</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                _previousPressed[keyCode] = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                <a class="code hl_event" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a>?.Invoke(<span class="keyword">new</span> KeyDownEventArgs(config, mods, <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>.Released));</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            }</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="comment">// not pressed &amp;&amp; not previously pressed =&gt; nothing</span></div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span></div>
-<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">  129</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">StartMonitoringKey</a>(<span class="keywordtype">int</span> keyCode, <span class="keywordtype">string</span>? displayName = <span class="keyword">null</span>, <span class="keywordtype">double</span> timeBetweenEvents = -1, <span class="keywordtype">bool</span> isPaused = <span class="keyword">false</span>)</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    {</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        _pendingOps.Enqueue(() =&gt;</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        {</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordflow">if</span> (timeBetweenEvents &lt; 0)</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                timeBetweenEvents = <a class="code hl_class" href="classGondwana_1_1Engine.html">Engine</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#a10ce957685d349193e8268c1421bcec5">Instance</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.TimeBetweenKeyboardEvents;</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            var name = <span class="keywordtype">string</span>.IsNullOrWhiteSpace(displayName) ? keyCode.ToString() : displayName;</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            var config = <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyEventConfiguration.html">KeyEventConfiguration</a>(name, timeBetweenEvents, isPaused);</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            _keyConfigs[keyCode] = config;</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            var adapter = <a class="code hl_property" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#acabc359ef6bb617fb9c081a6f0c1b354">Adapter</a>;</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            _previousPressed[keyCode] = adapter?.IsDown(keyCode) ?? <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        });</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (adapter is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="comment">// Apply any pending adds/removes on the engine thread.</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">while</span> (_pendingOps.TryDequeue(out var op))</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            op();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        var mods = adapter.CurrentKeyboardModifiers;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">foreach</span> (var kvp <span class="keywordflow">in</span> _keyConfigs)</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordtype">int</span> keyCode = kvp.Key;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            var config = kvp.Value;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordtype">bool</span> currentlyPressed = adapter.IsDown(keyCode);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordtype">bool</span> previouslyPressed = _previousPressed.TryGetValue(keyCode, out var prev) &amp;&amp; prev;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="comment">// Transition: not pressed -&gt; pressed</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keywordflow">if</span> (currentlyPressed &amp;&amp; !previouslyPressed)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                _previousPressed[keyCode] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                config._lastEventTick = tick;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <a class="code hl_event" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a>?.Invoke(<span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html">KeyDownEventArgs</a>(config, mods, <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>.Pressed));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="comment">// Still pressed -&gt; maybe repeated (throttled)</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">if</span> (currentlyPressed &amp;&amp; previouslyPressed)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <span class="keywordflow">if</span> (!config.IsPaused &amp;&amp; config.ReadyForNextEvent(tick))</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                    config._lastEventTick = tick;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    <a class="code hl_event" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a>?.Invoke(<span class="keyword">new</span> KeyDownEventArgs(config, mods, <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>.Repeated));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="comment">// Transition: pressed -&gt; not pressed</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keywordflow">if</span> (!currentlyPressed &amp;&amp; previouslyPressed)</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                _previousPressed[keyCode] = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                <a class="code hl_event" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a>?.Invoke(<span class="keyword">new</span> KeyDownEventArgs(config, mods, <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>.Released));</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="comment">// not pressed &amp;&amp; not previously pressed =&gt; nothing</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span></div>
+<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">  131</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">StartMonitoringKey</a>(</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordtype">int</span> keyCode,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordtype">string</span>? displayName = <span class="keyword">null</span>,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordtype">double</span> timeBetweenEvents = -1,</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordtype">bool</span> isPaused = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        _pendingOps.Enqueue(() =&gt;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="keywordflow">if</span> (timeBetweenEvents &lt; 0)</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                timeBetweenEvents = <a class="code hl_class" href="classGondwana_1_1Engine.html">Engine</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#a10ce957685d349193e8268c1421bcec5">Instance</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.TimeBetweenKeyboardEvents;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            var name = <span class="keywordtype">string</span>.IsNullOrWhiteSpace(displayName) ? keyCode.ToString() : displayName;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            var config = <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyEventConfiguration.html">KeyEventConfiguration</a>(name, timeBetweenEvents, isPaused);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            _keyConfigs[keyCode] = config;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            var adapter = <a class="code hl_property" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#acabc359ef6bb617fb9c081a6f0c1b354">Adapter</a>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            _previousPressed[keyCode] = adapter?.IsDown(keyCode) ?? <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        });</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    }</div>
 </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span></div>
-<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">  155</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">StopMonitoringKey</a>(<span class="keywordtype">int</span> keyCode)</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    {</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        _pendingOps.Enqueue(() =&gt;</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        {</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            _keyConfigs.Remove(keyCode);</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            _previousPressed.Remove(keyCode);</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        });</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span></div>
+<div class="foldopen" id="foldopen00161" data-start="{" data-end="}">
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">  161</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">StopMonitoringKey</a>(<span class="keywordtype">int</span> keyCode)</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        _pendingOps.Enqueue(() =&gt;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            _keyConfigs.Remove(keyCode);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            _previousPressed.Remove(keyCode);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        });</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
 </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span></div>
-<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7ba2fcaefc68a556bf46e943ae2f25ea">  173</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7ba2fcaefc68a556bf46e943ae2f25ea">StopMonitoringKey</a>(<span class="keywordtype">string</span> key)</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    {</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">if</span> (<span class="keywordtype">int</span>.TryParse(key, out <span class="keywordtype">int</span> code))</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">StopMonitoringKey</a>(code);</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span></div>
+<div class="foldopen" id="foldopen00179" data-start="{" data-end="}">
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7ba2fcaefc68a556bf46e943ae2f25ea">  179</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7ba2fcaefc68a556bf46e943ae2f25ea">StopMonitoringKey</a>(<span class="keywordtype">string</span> key)</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">if</span> (<span class="keywordtype">int</span>.TryParse(key, out <span class="keywordtype">int</span> code))</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">StopMonitoringKey</a>(code);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
 </div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span></div>
-<div class="foldopen" id="foldopen00185" data-start="{" data-end="}">
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a123f622a2f5b19616cf4404d91538764">  185</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a123f622a2f5b19616cf4404d91538764">StopMonitoringAllKeys</a>()</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    {</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        _pendingOps.Enqueue(() =&gt;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        {</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            _keyConfigs.Clear();</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            _previousPressed.Clear();</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        });</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span></div>
+<div class="foldopen" id="foldopen00191" data-start="{" data-end="}">
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a123f622a2f5b19616cf4404d91538764">  191</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a123f622a2f5b19616cf4404d91538764">StopMonitoringAllKeys</a>()</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        _pendingOps.Enqueue(() =&gt;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            _keyConfigs.Clear();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            _previousPressed.Clear();</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        });</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    }</div>
 </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span></div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a269d2e83e88424c413729444b15b3e17">  197</a></span>    <span class="keyword">public</span> IReadOnlyDictionary&lt;int, KeyEventConfiguration&gt; <a class="code hl_property" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a269d2e83e88424c413729444b15b3e17">AllKeyConfigs</a> =&gt;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keyword">new</span> ReadOnlyDictionary&lt;int, KeyEventConfiguration&gt;(_keyConfigs);</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>}</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a269d2e83e88424c413729444b15b3e17">  203</a></span>    <span class="keyword">public</span> IReadOnlyDictionary&lt;int, KeyEventConfiguration&gt; <a class="code hl_property" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a269d2e83e88424c413729444b15b3e17">AllKeyConfigs</a> =&gt;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keyword">new</span> ReadOnlyDictionary&lt;int, KeyEventConfiguration&gt;(_keyConfigs);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html"><div class="ttname"><a href="classGondwana_1_1Engine.html">Gondwana.Engine</a></div><div class="ttdoc">Represents the core game engine singleton responsible for managing the main update loop,...</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00035">Engine.cs:36</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a10ce957685d349193e8268c1421bcec5"><div class="ttname"><a href="classGondwana_1_1Engine.html#a10ce957685d349193e8268c1421bcec5">Gondwana.Engine.Instance</a></div><div class="ttdeci">static Engine Instance</div><div class="ttdoc">Gets the singleton instance of the Engine.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00049">Engine.cs:49</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Engine_html_ad8821f813581b2d22fabbb4c9c7c3cb2"><div class="ttname"><a href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Gondwana.Engine.Configuration</a></div><div class="ttdeci">EngineConfiguration Configuration</div><div class="ttdoc">Gets the current engine configuration settings.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00927">Engine.cs:928</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Engine_html_ad8821f813581b2d22fabbb4c9c7c3cb2"><div class="ttname"><a href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Gondwana.Engine.Configuration</a></div><div class="ttdeci">EngineConfiguration Configuration</div><div class="ttdoc">Gets the current engine configuration settings.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00938">Engine.cs:939</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs_html"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html">Gondwana.Input.Keyboard.KeyDownEventArgs</a></div><div class="ttdoc">Provides data for keyboard key events, including information about the key that was pressed,...</div><div class="ttdef"><b>Definition</b> <a href="KeyDownEventArgs_8cs_source.html#l00009">KeyDownEventArgs.cs:10</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyEventConfiguration_html"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyEventConfiguration.html">Gondwana.Input.Keyboard.KeyEventConfiguration</a></div><div class="ttdoc">Represents the configuration for keyboard key events, including key identification and timing control...</div><div class="ttdef"><b>Definition</b> <a href="KeyEventConfiguration_8cs_source.html#l00008">KeyEventConfiguration.cs:9</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html">Gondwana.Input.Keyboard.KeyboardEventPoller</a></div><div class="ttdoc">Cross-platform singleton keyboard handler with throttling and manual input state feeding.</div><div class="ttdef"><b>Definition</b> <a href="#l00009">KeyboardEventPoller.cs:10</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a123f622a2f5b19616cf4404d91538764"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a123f622a2f5b19616cf4404d91538764">Gondwana.Input.Keyboard.KeyboardEventPoller.StopMonitoringAllKeys</a></div><div class="ttdeci">void StopMonitoringAllKeys()</div><div class="ttdoc">Unregisters all keys from event monitoring, clearing all key configurations and state tracking....</div><div class="ttdef"><b>Definition</b> <a href="#l00185">KeyboardEventPoller.cs:185</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a123f622a2f5b19616cf4404d91538764"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a123f622a2f5b19616cf4404d91538764">Gondwana.Input.Keyboard.KeyboardEventPoller.StopMonitoringAllKeys</a></div><div class="ttdeci">void StopMonitoringAllKeys()</div><div class="ttdoc">Unregisters all keys from event monitoring, clearing all key configurations and state tracking....</div><div class="ttdef"><b>Definition</b> <a href="#l00191">KeyboardEventPoller.cs:191</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a1ed51464f2db3bd405771f760d913d35"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a1ed51464f2db3bd405771f760d913d35">Gondwana.Input.Keyboard.KeyboardEventPoller.PauseAllKeyEvents</a></div><div class="ttdeci">bool PauseAllKeyEvents</div><div class="ttdoc">Pauses all key events globally.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">KeyboardEventPoller.cs:59</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a269d2e83e88424c413729444b15b3e17"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a269d2e83e88424c413729444b15b3e17">Gondwana.Input.Keyboard.KeyboardEventPoller.AllKeyConfigs</a></div><div class="ttdeci">IReadOnlyDictionary&lt; int, KeyEventConfiguration &gt; AllKeyConfigs</div><div class="ttdoc">Exposes monitored key configurations. Treat as engine-thread-only unless you add external synchroniza...</div><div class="ttdef"><b>Definition</b> <a href="#l00197">KeyboardEventPoller.cs:197</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a42534518e50bbd625f8c29bc600dc93e"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">Gondwana.Input.Keyboard.KeyboardEventPoller.StopMonitoringKey</a></div><div class="ttdeci">void StopMonitoringKey(int keyCode)</div><div class="ttdoc">Unregisters a specific key from event monitoring by its platform-agnostic key code....</div><div class="ttdef"><b>Definition</b> <a href="#l00155">KeyboardEventPoller.cs:155</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a7ba2fcaefc68a556bf46e943ae2f25ea"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7ba2fcaefc68a556bf46e943ae2f25ea">Gondwana.Input.Keyboard.KeyboardEventPoller.StopMonitoringKey</a></div><div class="ttdeci">void StopMonitoringKey(string key)</div><div class="ttdoc">Unregisters a specific key from event monitoring by parsing its string representation....</div><div class="ttdef"><b>Definition</b> <a href="#l00173">KeyboardEventPoller.cs:173</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a269d2e83e88424c413729444b15b3e17"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a269d2e83e88424c413729444b15b3e17">Gondwana.Input.Keyboard.KeyboardEventPoller.AllKeyConfigs</a></div><div class="ttdeci">IReadOnlyDictionary&lt; int, KeyEventConfiguration &gt; AllKeyConfigs</div><div class="ttdoc">Exposes monitored key configurations. Treat as engine-thread-only unless you add external synchroniza...</div><div class="ttdef"><b>Definition</b> <a href="#l00203">KeyboardEventPoller.cs:203</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a42534518e50bbd625f8c29bc600dc93e"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">Gondwana.Input.Keyboard.KeyboardEventPoller.StopMonitoringKey</a></div><div class="ttdeci">void StopMonitoringKey(int keyCode)</div><div class="ttdoc">Unregisters a specific key from event monitoring by its platform-agnostic key code....</div><div class="ttdef"><b>Definition</b> <a href="#l00161">KeyboardEventPoller.cs:161</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a7ba2fcaefc68a556bf46e943ae2f25ea"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7ba2fcaefc68a556bf46e943ae2f25ea">Gondwana.Input.Keyboard.KeyboardEventPoller.StopMonitoringKey</a></div><div class="ttdeci">void StopMonitoringKey(string key)</div><div class="ttdoc">Unregisters a specific key from event monitoring by parsing its string representation....</div><div class="ttdef"><b>Definition</b> <a href="#l00179">KeyboardEventPoller.cs:179</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a7fb962a9db32bbc2a547461215b1a423"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a7fb962a9db32bbc2a547461215b1a423">Gondwana.Input.Keyboard.KeyboardEventPoller.Initialize</a></div><div class="ttdeci">static void Initialize(IKeyboardAdapter adapter)</div><div class="ttdoc">Initializes the singleton instance of the KeyboardEventPoller with the specified keyboard adapter....</div><div class="ttdef"><b>Definition</b> <a href="#l00024">KeyboardEventPoller.cs:24</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_a93c0de7b15a700fb8cd2fceed43197ed"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a93c0de7b15a700fb8cd2fceed43197ed">Gondwana.Input.Keyboard.KeyboardEventPoller.KeyDown</a></div><div class="ttdeci">Action&lt; KeyDownEventArgs &gt;? KeyDown</div><div class="ttdoc">Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and...</div><div class="ttdef"><b>Definition</b> <a href="#l00035">KeyboardEventPoller.cs:35</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_ab243f1d9ae1ef9f7906e536d25fe6efc"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">Gondwana.Input.Keyboard.KeyboardEventPoller.StartMonitoringKey</a></div><div class="ttdeci">void StartMonitoringKey(int keyCode, string? displayName=null, double timeBetweenEvents=-1, bool isPaused=false)</div><div class="ttdoc">Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...</div><div class="ttdef"><b>Definition</b> <a href="#l00129">KeyboardEventPoller.cs:129</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_ab243f1d9ae1ef9f7906e536d25fe6efc"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">Gondwana.Input.Keyboard.KeyboardEventPoller.StartMonitoringKey</a></div><div class="ttdeci">void StartMonitoringKey(int keyCode, string? displayName=null, double timeBetweenEvents=-1, bool isPaused=false)</div><div class="ttdoc">Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...</div><div class="ttdef"><b>Definition</b> <a href="#l00131">KeyboardEventPoller.cs:131</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_acabc359ef6bb617fb9c081a6f0c1b354"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#acabc359ef6bb617fb9c081a6f0c1b354">Gondwana.Input.Keyboard.KeyboardEventPoller.Adapter</a></div><div class="ttdeci">IKeyboardAdapter? Adapter</div><div class="ttdoc">Gets the current keyboard adapter in use.</div><div class="ttdef"><b>Definition</b> <a href="#l00054">KeyboardEventPoller.cs:54</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller_html_ad42e4ab4773cfb415306bbf0754ed7c9"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ad42e4ab4773cfb415306bbf0754ed7c9">Gondwana.Input.Keyboard.KeyboardEventPoller.Instance</a></div><div class="ttdeci">static ? KeyboardEventPoller Instance</div><div class="ttdoc">Singleton instance of the KeyboardEventPoller class.</div><div class="ttdef"><b>Definition</b> <a href="#l00014">KeyboardEventPoller.cs:14</a></div></div>
 <div class="ttc" id="ainterfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter_html"><div class="ttname"><a href="interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.html">Gondwana.Input.Keyboard.IKeyboardAdapter</a></div><div class="ttdoc">Represents an adapter for keyboard input, providing access to the currently pressed keys and active m...</div><div class="ttdef"><b>Definition</b> <a href="IKeyboardAdapter_8cs_source.html#l00008">IKeyboardAdapter.cs:9</a></div></div>

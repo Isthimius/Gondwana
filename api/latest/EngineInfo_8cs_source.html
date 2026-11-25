@@ -111,18 +111,20 @@ $(function(){initNavTree('EngineInfo_8cs_source.html','',''); });
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    {</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="comment">// 1) Best: NerdBank / SemVer / git hash lives here</span></div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        var info = <span class="keyword">asm</span>.GetCustomAttribute&lt;AssemblyInformationalVersionAttribute&gt;()?.InformationalVersion;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(info))</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> info;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="comment">// 2) Next: Windows file version (works cross-platform too; returns empty sometimes)</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        var fvi = FileVersionInfo.GetVersionInfo(<span class="keyword">asm</span>.Location);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(fvi.FileVersion))</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">return</span> fvi.FileVersion;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="comment">// 3) Last resort: AssemblyName.Version (often stable/boring)</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> <span class="keyword">asm</span>.GetName().Version?.ToString() ?? <span class="stringliteral">&quot;unknown&quot;</span>;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(info))</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">return</span> info;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="comment">// 2) Next: Windows file version (works cross-platform too; returns empty sometimes)</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        var fvi = FileVersionInfo.GetVersionInfo(<span class="keyword">asm</span>.Location);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(fvi.FileVersion))</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> fvi.FileVersion;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="comment">// 3) Last resort: AssemblyName.Version (often stable/boring)</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">return</span> <span class="keyword">asm</span>.GetName().Version?.ToString() ?? <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
 <div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="RuntimeTelemetryExample_8cs_source.html#l00007">RuntimeTelemetryExample.cs:7</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

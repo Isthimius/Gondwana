@@ -117,7 +117,7 @@ Properties</h2></td></tr>
 <tr class="memitem:ad1849d5bd88701feb06bbad9c7adafcb" id="r_ad1849d5bd88701feb06bbad9c7adafcb"><td class="memItemLeft" align="right" valign="top">float float Max&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1849d5bd88701feb06bbad9c7adafcb">VelocityRangeX</a> = (-120f, 120f)<code> [get, set]</code></td></tr>
 <tr class="memitem:a12da9eba9822148ff543e07b5d17141a" id="r_a12da9eba9822148ff543e07b5d17141a"><td class="memItemLeft" align="right" valign="top">float float Max&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12da9eba9822148ff543e07b5d17141a">VelocityRangeY</a> = (-300f, -180f)<code> [get, set]</code></td></tr>
 <tr class="memitem:ab1af5e07e974ce19e635fe249d78ad2f" id="r_ab1af5e07e974ce19e635fe249d78ad2f"><td class="memItemLeft" align="right" valign="top">float float Max&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1af5e07e974ce19e635fe249d78ad2f">SizeRange</a> = (3f, 7f)<code> [get, set]</code></td></tr>
-<tr class="memitem:a1cd6d1a34e45bff6efbf97cc4163a0d0" id="r_a1cd6d1a34e45bff6efbf97cc4163a0d0"><td class="memItemLeft" align="right" valign="top">SKColor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cd6d1a34e45bff6efbf97cc4163a0d0">Color</a> = new SKColor(200, 200, 255, 255)<code> [get, set]</code></td></tr>
+<tr class="memitem:a1cd6d1a34e45bff6efbf97cc4163a0d0" id="r_a1cd6d1a34e45bff6efbf97cc4163a0d0"><td class="memItemLeft" align="right" valign="top">SKColor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cd6d1a34e45bff6efbf97cc4163a0d0">Color</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a1cd6d1a34e45bff6efbf97cc4163a0d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired.  <br /></td></tr>
 <tr class="memitem:a4698392a7a76ef87261fd87afa082b5a" id="r_a4698392a7a76ef87261fd87afa082b5a"><td class="memItemLeft" align="right" valign="top">SKBlendMode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4698392a7a76ef87261fd87afa082b5a">BlendMode</a> = SKBlendMode.Plus<code> [get, set]</code></td></tr>
 <tr class="memdesc:a4698392a7a76ef87261fd87afa082b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend mode used when rendering particles from this emitter. Defaults to SKBlendMode.Plus for additive/glowy effects.  <br /></td></tr>
@@ -251,7 +251,7 @@ Properties</h2></td></tr>
 
 <p>Blend mode used when rendering particles from this emitter. Defaults to SKBlendMode.Plus for additive/glowy effects. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00121">121</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00125">125</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -265,7 +265,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">SKColor Gondwana.Drawing.Direct.Particles.ParticleEmitter.Color = new SKColor(200, 200, 255, 255)</td>
+          <td class="memname">SKColor Gondwana.Drawing.Direct.Particles.ParticleEmitter.Color</td>
         </tr>
       </table>
   </td>
@@ -274,7 +274,12 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">= <span class="keyword">new</span> SKColor(</div>
+<div class="line">        200,</div>
+<div class="line">        200,</div>
+<div class="line">        255,</div>
+<div class="line">        255)</div>
+</div><!-- fragment -->
 <p>Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired. </p>
 
 <p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00115">115</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
@@ -329,7 +334,7 @@ Properties</h2></td></tr>
 
 <p>For Gaussian distribution: standard deviation as a fraction of outer radius. Typical values: 0.25 to 0.5. Higher spreads wider. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00180">180</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00184">184</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -355,7 +360,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the horizontal component of the gravity vector in pixels per second squared (px/s²). Negative values pull left, positive values pull right. If null, the emitter uses the global gravity setting from the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a>. Default <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a902e6b3d20c47de94948c1e7718346ed" title="Gets or sets the horizontal component of gravity, measured in pixels per second squared....">ParticleSurface.GravityX</a> is 0."/&gt; </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00138">138</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00142">142</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -381,7 +386,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the vertical component of the gravity vector in pixels per second squared (px/s²). Negative values pull up, positive values pull down. If null, the emitter uses the global gravity setting from the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a>. Default <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a097410af3acfe301f3a15d5e4f3d2f04" title="Gets or sets the gravitational acceleration along the Y-axis, measured in pixels per second squared....">ParticleSurface.GravityY</a> is 400."/&gt; </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00145">145</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00149">149</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -407,7 +412,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the horizontal jitter value for spawning particles, which represents a random offset applied along the X-axis. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00126">126</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00130">130</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -433,7 +438,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the vertical jitter value for spawning particles, which represents a random offset applied along the Y-axis. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00131">131</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00135">135</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -483,7 +488,7 @@ Properties</h2></td></tr>
 
 <p>Optional per-emitter maximum speed in px/s. If set, particle velocity will be clamped to this magnitude after acceleration is applied each update. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00163">163</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00167">167</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -509,7 +514,7 @@ Properties</h2></td></tr>
 
 <p>Optional per-particle customization hook (e.g., perlin drift, hue jitter). </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00183">183</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00187">187</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -535,7 +540,7 @@ Properties</h2></td></tr>
 
 <p>Optional per-frame callback to tweak emitter (e.g., move with an object). </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00186">186</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00190">190</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -561,7 +566,7 @@ Properties</h2></td></tr>
 
 <p>Optional sprite used for particles spawned by this emitter. If null, the particle surface’s default sprite is used (or a circle if none). </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00151">151</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00155">155</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -613,7 +618,7 @@ Properties</h2></td></tr>
 
 <p>For Ring distribution: inner radius as a fraction of the outer radius [0..1]. 0 = filled disk, 0.8 = thin-ish ring, 0.95 = very thin ring. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00174">174</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00178">178</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -663,7 +668,7 @@ Properties</h2></td></tr>
 
 <p>Controls the random spawn distribution used by JitterX/JitterY. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00168">168</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00172">172</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -689,7 +694,7 @@ Properties</h2></td></tr>
 
 <p>Optional per-emitter tint. If set, it overrides the particle system's <code>GlobalColorTint</code> for particles spawned by this emitter. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00157">157</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParticleEmitter_8cs_source.html#l00161">161</a> of file <a class="el" href="ParticleEmitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>

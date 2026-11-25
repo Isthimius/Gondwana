@@ -112,13 +112,17 @@ $(function(){initNavTree('ReferenceRelocation_8cs_source.html','',''); });
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    {</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        ArgumentNullException.ThrowIfNull(source);</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        ArgumentNullException.ThrowIfNull(destination);</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">if</span> (source.<a class="code hl_property" href="classGondwana_1_1Assets_1_1AssetLocation.html#a1681b6f9887614449dc70d0ed4303c63">AssetType</a> != destination.<a class="code hl_property" href="classGondwana_1_1Assets_1_1AssetLocation.html#a1681b6f9887614449dc70d0ed4303c63">AssetType</a>)</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentException($<span class="stringliteral">&quot;Incompatible relocation from {source.AssetType} to {destination.AssetType}.&quot;</span>, nameof(destination));</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <a class="code hl_property" href="classGondwana_1_1Assets_1_1ReferenceRelocation.html#a8539380ff60640bc90de856c4476c9d1">Source</a> = source;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_property" href="classGondwana_1_1Assets_1_1ReferenceRelocation.html#aeb7ac5093aed60c9a03135cfaffdb620">Destination</a> = destination;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">if</span> (source.<a class="code hl_property" href="classGondwana_1_1Assets_1_1AssetLocation.html#a1681b6f9887614449dc70d0ed4303c63">AssetType</a> != destination.<a class="code hl_property" href="classGondwana_1_1Assets_1_1AssetLocation.html#a1681b6f9887614449dc70d0ed4303c63">AssetType</a>)</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentException(</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                $<span class="stringliteral">&quot;Incompatible relocation from {source.AssetType} to {destination.AssetType}.&quot;</span>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                nameof(destination));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_property" href="classGondwana_1_1Assets_1_1ReferenceRelocation.html#a8539380ff60640bc90de856c4476c9d1">Source</a> = source;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_property" href="classGondwana_1_1Assets_1_1ReferenceRelocation.html#aeb7ac5093aed60c9a03135cfaffdb620">Destination</a> = destination;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
 </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetLocation_html"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetLocation.html">Gondwana.Assets.AssetLocation</a></div><div class="ttdoc">A physical endpoint for reference transformation, without opening files or archives....</div><div class="ttdef"><b>Definition</b> <a href="AssetLocation_8cs_source.html#l00007">AssetLocation.cs:8</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetLocation_html_a1681b6f9887614449dc70d0ed4303c63"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetLocation.html#a1681b6f9887614449dc70d0ed4303c63">Gondwana.Assets.AssetLocation.AssetType</a></div><div class="ttdeci">AssetTypes AssetType</div><div class="ttdoc">Gets the resource or definition type, including for loose files.</div><div class="ttdef"><b>Definition</b> <a href="AssetLocation_8cs_source.html#l00010">AssetLocation.cs:10</a></div></div>

@@ -120,28 +120,35 @@ $(function(){initNavTree('NAudioAudioBackend_8cs_source.html','',''); });
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">float</span> playbackSpeed)</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    {</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        var (reader, tempPath) = NAudioReaderRegistry.Open(data, fileNameOrExtension);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">return</span> <span class="keyword">new</span> NAudioPlaybackHandle(key, reader, tempPath, volume, pan, playbackSpeed);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">catch</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            reader.Dispose();</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            NAudioReaderRegistry.TryDelete(tempPath);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordflow">return</span> <span class="keyword">new</span> NAudioPlaybackHandle(</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                key,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                reader,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                tempPath,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                volume,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                pan,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                playbackSpeed);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">catch</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            reader.Dispose();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            NAudioReaderRegistry.TryDelete(tempPath);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
 </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#ae200d449346f1c740ef529ba649fd333">   61</a></span>    <span class="keyword">public</span> <a class="code hl_interface" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html">IAudioPlaybackHandle</a> <a class="code hl_function" href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#ae200d449346f1c740ef529ba649fd333">CreateFromUri</a>(</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">string</span> key,</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordtype">string</span> uri,</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordtype">float</span> volume,</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">float</span> pan,</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordtype">float</span> playbackSpeed)</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        =&gt; <span class="keywordflow">throw</span> <span class="keyword">new</span> NotSupportedException(</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="stringliteral">&quot;Gondwana.Audio.NAudio loads files, streams, and engine assets. URI playback is provided by URI-capable backends such as Gondwana.Audio.Browser.&quot;</span>);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#ae200d449346f1c740ef529ba649fd333">   68</a></span>    <span class="keyword">public</span> <a class="code hl_interface" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html">IAudioPlaybackHandle</a> <a class="code hl_function" href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#ae200d449346f1c740ef529ba649fd333">CreateFromUri</a>(</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordtype">string</span> key,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordtype">string</span> uri,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordtype">float</span> volume,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordtype">float</span> pan,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordtype">float</span> playbackSpeed)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        =&gt; <span class="keywordflow">throw</span> <span class="keyword">new</span> NotSupportedException(</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="stringliteral">&quot;Gondwana.Audio.NAudio loads files, streams, and engine assets. URI playback is provided by URI-capable backends such as Gondwana.Audio.Browser.&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
 </div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend_html_a43b4145ef2105ae1688ec907529cd03f"><div class="ttname"><a href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#a43b4145ef2105ae1688ec907529cd03f">Gondwana.Audio.NAudio.NAudioAudioBackend.CreateFromBytes</a></div><div class="ttdeci">IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed)</div><div class="ttdoc">Creates an IAudioPlaybackHandle from the provided raw audio bytes. The data is opened via the NAudioR...</div><div class="ttdef"><b>Definition</b> <a href="#l00030">NAudioAudioBackend.cs:30</a></div></div>

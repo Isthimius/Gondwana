@@ -150,19 +150,22 @@ $(function(){initNavTree('Gondwana_8WinForms_2EngineExtensions_8cs_source.html',
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">void</span> InitializeWinFormsMouseAdapter(<span class="keyword">this</span> Engine engine, Control control, MouseEventConfiguration? mouseEventConfiguration = <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        Engine.Logger.LogInformation(<span class="stringliteral">&quot;Initializing WinFormsMouseAdapter...&quot;</span>);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (control == <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            Engine.Logger.LogError(<span class="stringliteral">&quot;WinFormsMousedAdapter initialization failed: Control cannot be null.&quot;</span>);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentNullException(nameof(control));</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        }</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        MouseEventPoller.Initialize(<span class="keyword">new</span> WinFormsMouseAdapter(control), mouseEventConfiguration);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">void</span> InitializeWinFormsMouseAdapter(</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">this</span> Engine engine,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        Control control,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        MouseEventConfiguration? mouseEventConfiguration = <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        Engine.Logger.LogInformation(<span class="stringliteral">&quot;Initializing WinFormsMouseAdapter...&quot;</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">if</span> (control == <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            Engine.Logger.LogError(<span class="stringliteral">&quot;WinFormsMousedAdapter initialization failed: Control cannot be null.&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentNullException(nameof(control));</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        MouseEventPoller.Initialize(<span class="keyword">new</span> WinFormsMouseAdapter(control), mouseEventConfiguration);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Input_1_1Keyboard_html"><div class="ttname"><a href="namespaceGondwana_1_1Input_1_1Keyboard.html">Gondwana.Input.Keyboard</a></div><div class="ttdef"><b>Definition</b> <a href="IKeyboardAdapter_8cs_source.html#l00001">IKeyboardAdapter.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Input_1_1Mouse_html"><div class="ttname"><a href="namespaceGondwana_1_1Input_1_1Mouse.html">Gondwana.Input.Mouse</a></div><div class="ttdef"><b>Definition</b> <a href="IMouseAdapter_8cs_source.html#l00004">IMouseAdapter.cs:4</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_html"><div class="ttname"><a href="namespaceGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput.html">Gondwana.WinForms.Input.Gamepad.XInput</a></div><div class="ttdef"><b>Definition</b> <a href="XInput_8cs_source.html#l00003">XInput.cs:3</a></div></div>
