@@ -5,7 +5,7 @@ using Gondwana.Scenes.GSCN;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 /// <summary>Persistence policy shared by native definition documents.</summary>
 internal static class DefinitionDocumentPersistence

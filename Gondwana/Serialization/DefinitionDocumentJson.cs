@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 /// <summary>Shared envelope parsing and member selection for native definition documents.</summary>
 internal static class DefinitionDocumentJson

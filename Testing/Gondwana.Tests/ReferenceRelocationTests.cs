@@ -5,6 +5,7 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Serialization;
 using Newtonsoft.Json.Linq;
 
 namespace Gondwana.Tests;

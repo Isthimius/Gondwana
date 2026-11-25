@@ -5,6 +5,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
+using Gondwana.Serialization;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;

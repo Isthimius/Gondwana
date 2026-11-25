@@ -1,3 +1,5 @@
+using Gondwana.Serialization;
+
 namespace Gondwana.Drawing.Animation.GANI;
 
 /// <summary>

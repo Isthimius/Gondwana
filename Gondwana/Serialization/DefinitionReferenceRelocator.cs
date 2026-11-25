@@ -5,7 +5,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 /// <summary>Transforms complete native documents without file, archive, or registry mutations.</summary>
 /// <remarks>
