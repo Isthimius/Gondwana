@@ -27,7 +27,10 @@ public sealed class VideoSource
     public static VideoSource FromStream(Stream source, bool leaveOpen = false)
     {
         ArgumentNullException.ThrowIfNull(source);
-        if (!source.CanRead) throw new ArgumentException("Video stream must be readable.", nameof(source));
+
+        if (!source.CanRead)
+            throw new ArgumentException("Video stream must be readable.", nameof(source));
+
         return new(player => player.Open(source, leaveOpen));
     }
 
@@ -40,12 +43,23 @@ public sealed class VideoSource
     {
         ArgumentNullException.ThrowIfNull(assets);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
         return new(player =>
         {
             var stream = assets.Get(AssetTypes.Video, name)
-                ?? throw new FileNotFoundException($"Video asset '{name}' was not found in '{assets.FilePath}'.", name);
-            try { player.Open(stream, leaveOpen: false); }
-            catch { stream.Dispose(); throw; }
+                         ?? throw new FileNotFoundException(
+                             $"Video asset '{name}' was not found in '{assets.FilePath}'.",
+                             name);
+
+            try
+            {
+                player.Open(stream, leaveOpen: false);
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
         });
     }
 }

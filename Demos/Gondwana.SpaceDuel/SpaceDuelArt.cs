@@ -20,11 +20,11 @@ internal static class SpaceDuelArt
         Assembly assembly = typeof(SpaceDuelArt).Assembly;
 
         using Stream stream = assembly.GetManifestResourceStream(ShipResourceName)
-            ?? throw new InvalidOperationException(
-                $"Embedded ship resource '{ShipResourceName}' was not found.");
+                              ?? throw new InvalidOperationException(
+                                  $"Embedded ship resource '{ShipResourceName}' was not found.");
 
         return SKBitmap.Decode(stream)
-            ?? throw new InvalidOperationException("The embedded ship sprite sheet could not be decoded.");
+               ?? throw new InvalidOperationException("The embedded ship sprite sheet could not be decoded.");
     }
 
     internal static SKBitmap CreateEffectsBitmap()
@@ -54,12 +54,30 @@ internal static class SpaceDuelArt
         {
             IsAntialias = true,
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(138, 177, 220, 185)
+            Color = new SKColor(
+                138,
+                177,
+                220,
+                185)
         };
 
-        canvas.DrawCircle(x + 9, 11, 1f, paint);
-        canvas.DrawCircle(x + 47, 22, 0.8f, paint);
-        canvas.DrawCircle(x + 29, 51, 1.1f, paint);
+        canvas.DrawCircle(
+            x + 9,
+            11,
+            1f,
+            paint);
+
+        canvas.DrawCircle(
+            x + 47,
+            22,
+            0.8f,
+            paint);
+
+        canvas.DrawCircle(
+            x + 29,
+            51,
+            1.1f,
+            paint);
     }
 
     private static void DrawNearStars(SKCanvas canvas, int x)
@@ -68,14 +86,36 @@ internal static class SpaceDuelArt
         {
             IsAntialias = true,
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(245, 249, 255, 235)
+            Color = new SKColor(
+                245,
+                249,
+                255,
+                235)
         };
 
-        canvas.DrawCircle(x + 14, 17, 1.8f, paint);
-        canvas.DrawCircle(x + 51, 43, 1.3f, paint);
+        canvas.DrawCircle(
+            x + 14,
+            17,
+            1.8f,
+            paint);
 
-        paint.Color = new SKColor(115, 210, 242, 210);
-        canvas.DrawCircle(x + 34, 8, 1.5f, paint);
+        canvas.DrawCircle(
+            x + 51,
+            43,
+            1.3f,
+            paint);
+
+        paint.Color = new SKColor(
+            115,
+            210,
+            242,
+            210);
+
+        canvas.DrawCircle(
+            x + 34,
+            8,
+            1.5f,
+            paint);
     }
 
     private static void DrawLaser(SKCanvas canvas, int x)
@@ -84,11 +124,19 @@ internal static class SpaceDuelArt
         {
             IsAntialias = true,
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(55, 226, 255, 90)
+            Color = new SKColor(
+                55,
+                226,
+                255,
+                90)
         };
 
         canvas.DrawRoundRect(
-            new SKRect(x + 26, 7, x + 38, 57),
+            new SKRect(
+                x + 26,
+                7,
+                x + 38,
+                57),
             6,
             6,
             glow);
@@ -97,11 +145,19 @@ internal static class SpaceDuelArt
         {
             IsAntialias = true,
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(210, 252, 255, 255)
+            Color = new SKColor(
+                210,
+                252,
+                255,
+                255)
         };
 
         canvas.DrawRoundRect(
-            new SKRect(x + 30, 9, x + 34, 55),
+            new SKRect(
+                x + 30,
+                9,
+                x + 34,
+                55),
             2,
             2,
             core);

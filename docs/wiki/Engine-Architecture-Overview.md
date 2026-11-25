@@ -34,6 +34,8 @@ If you're on Windows and want to get everything installed in one shot, run the [
 
 The script is idempotent — safe to re-run at any time. It ends with `gondwana doctor` to confirm your environment is healthy.
 
+For optional contributor-side C# formatting, run `./Tooling/scripts/Format-Code.ps1 -All` or select individual files with `-Files`. This uses JetBrains CleanupCode and installs it on demand rather than as part of developer setup. See [Tooling Scripts](Tooling-Scripts#format-codeps1).
+
 > **This step is entirely optional.** Everything the script does can also be done manually with `dotnet restore`, `dotnet build`, and `dotnet tool install`. See [`scripts README.md`](https://github.com/Isthimius/Gondwana/blob/master/Tooling/scripts/README.md) for a full description of all available scripts.
 
 ---

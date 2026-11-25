@@ -21,7 +21,8 @@ public sealed class SceneLayerDefinition
     /// Gets or sets the coordinate system used by the layer.
     /// </summary>
     [Category("Grid")]
-    [Description("How layer grid coordinates map to the scene: orthogonal uses rectangular rows and columns; other choices change the tile layout.")]
+    [Description(
+        "How layer grid coordinates map to the scene: orthogonal uses rectangular rows and columns; other choices change the tile layout.")]
     public CoordinateSystemTypes CoordinateSystemType { get; set; } = CoordinateSystemTypes.Orthogonal;
 
     /// <summary>
@@ -63,14 +64,16 @@ public sealed class SceneLayerDefinition
     /// Gets or sets the parallax factor.
     /// </summary>
     [Category("Rendering")]
-    [Description("Camera-scrolling multiplier for this layer. 1 follows normal world movement; 0.5 scrolls at half speed (distant background); above 1 scrolls faster; 0 does not shift with the camera.")]
+    [Description(
+        "Camera-scrolling multiplier for this layer. 1 follows normal world movement; 0.5 scrolls at half speed (distant background); above 1 scrolls faster; 0 does not shift with the camera.")]
     public float Parallax { get; set; } = 1f;
 
     /// <summary>
     /// Gets or sets whether the layer is visible.
     /// </summary>
     [Category("Rendering")]
-    [Description("Whether this entire layer is drawn. False hides its contents without deleting the layer or its tiles.")]
+    [Description(
+        "Whether this entire layer is drawn. False hides its contents without deleting the layer or its tiles.")]
     public bool Visible { get; set; } = true;
 
     /// <summary>
@@ -98,14 +101,16 @@ public sealed class SceneLayerDefinition
     /// Gets or sets whether collision boxes are shown.
     /// </summary>
     [Category("Debugging")]
-    [Description("Draw collision outlines for this layer as a debug overlay; does not turn collision detection on or off.")]
+    [Description(
+        "Draw collision outlines for this layer as a debug overlay; does not turn collision detection on or off.")]
     public bool ShowCollisionBoxes { get; set; }
 
     /// <summary>
     /// Gets or sets the world-space origin of tile (0,0).
     /// </summary>
     [Category("Grid")]
-    [Description("World-pixel position of the layer's grid origin (cell 0,0); shifts the whole layer without changing tile coordinates.")]
+    [Description(
+        "World-pixel position of the layer's grid origin (cell 0,0); shifts the whole layer without changing tile coordinates.")]
     public Point OriginPx { get; set; } = Point.Empty;
 
     /// <summary>

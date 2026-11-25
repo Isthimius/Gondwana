@@ -46,9 +46,20 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
             left: 4,
             right: 1);
 
-        var result = adjust.ApplyTo(new Rectangle(10, 20, 30, 40));
+        var result = adjust.ApplyTo(
+            new Rectangle(
+                10,
+                20,
+                30,
+                40));
 
-        Assert.Equal(new Rectangle(14, 23, 25, 35), result);
+        Assert.Equal(
+            new Rectangle(
+                14,
+                23,
+                25,
+                35),
+            result);
     }
 
     /// <summary>
@@ -63,9 +74,20 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
             left: -4,
             right: -1);
 
-        var result = adjust.ApplyTo(new Rectangle(10, 20, 30, 40));
+        var result = adjust.ApplyTo(
+            new Rectangle(
+                10,
+                20,
+                30,
+                40));
 
-        Assert.Equal(new Rectangle(6, 17, 35, 45), result);
+        Assert.Equal(
+            new Rectangle(
+                6,
+                17,
+                35,
+                45),
+            result);
     }
 
     /// <summary>
@@ -78,28 +100,55 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         using var tilesheet = CreateRuntimeTilesheet();
         var region = tilesheet.DefaultRegion;
 
-        var initial = new CollisionAdjust(1, 1, 2, 2);
+        var initial = new CollisionAdjust(
+            1,
+            1,
+            2,
+            2);
+
         region.CollisionAdjust = initial;
 
         Assert.Equal(initial, tilesheet.GetFrame(0, 0).CollisionAdjust);
         Assert.Equal(initial, tilesheet.GetFrame(1, 0).CollisionAdjust);
 
-        var frameOverride = new CollisionAdjust(3, 3, 4, 4);
+        var frameOverride = new CollisionAdjust(
+            3,
+            3,
+            4,
+            4);
+
         var secondFrame = tilesheet.GetFrame(1, 0);
         secondFrame.CollisionAdjust = frameOverride;
 
         Assert.Equal(frameOverride, tilesheet.GetFrame(1, 0).CollisionAdjust);
+
         Assert.Equal(
-            frameOverride.ApplyTo(new Rectangle(0, 0, 16, 16)),
+            frameOverride.ApplyTo(
+                new Rectangle(
+                    0,
+                    0,
+                    16,
+                    16)),
             tilesheet.GetFrame(1, 0).CollisionArea);
 
-        var replacementDefault = new CollisionAdjust(5, 5, 6, 6);
+        var replacementDefault = new CollisionAdjust(
+            5,
+            5,
+            6,
+            6);
+
         region.CollisionAdjust = replacementDefault;
 
         Assert.Equal(replacementDefault, tilesheet.GetFrame(0, 0).CollisionAdjust);
         Assert.Equal(frameOverride, tilesheet.GetFrame(1, 0).CollisionAdjust);
+
         Assert.Equal(
-            frameOverride.ApplyTo(new Rectangle(0, 0, 16, 16)),
+            frameOverride.ApplyTo(
+                new Rectangle(
+                    0,
+                    0,
+                    16,
+                    16)),
             tilesheet.GetFrame(1, 0).CollisionArea);
     }
 
@@ -112,7 +161,13 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     {
         using var tilesheet = CreateRuntimeTilesheet();
         var region = tilesheet.DefaultRegion;
-        var initialDefault = new CollisionAdjust(1, 1, 2, 2);
+
+        var initialDefault = new CollisionAdjust(
+            1,
+            1,
+            2,
+            2);
+
         region.CollisionAdjust = initialDefault;
 
         var frame = tilesheet.GetFrame(1, 0);
@@ -120,7 +175,12 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
 
         Assert.True(frame.HasCollisionAdjustOverride);
 
-        var replacementDefault = new CollisionAdjust(3, 3, 4, 4);
+        var replacementDefault = new CollisionAdjust(
+            3,
+            3,
+            4,
+            4);
+
         region.CollisionAdjust = replacementDefault;
 
         Assert.Equal(initialDefault, frame.CollisionAdjust);
@@ -139,12 +199,27 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         using var tilesheet = CreateRuntimeTilesheet();
         var region = tilesheet.DefaultRegion;
 
-        var firstAdjust = new CollisionAdjust(1, 1, 2, 2);
-        var secondAdjust = new CollisionAdjust(3, 3, 4, 4);
+        var firstAdjust = new CollisionAdjust(
+            1,
+            1,
+            2,
+            2);
+
+        var secondAdjust = new CollisionAdjust(
+            3,
+            3,
+            4,
+            4);
+
         region.SetFrameCollisionAdjust(0, 0, firstAdjust);
         region.SetFrameCollisionAdjust(1, 0, secondAdjust);
 
-        using var layer = new SceneLayer(1, 1, 16, 16);
+        using var layer = new SceneLayer(
+            1,
+            1,
+            16,
+            16);
+
         var sprite = new Sprite(layer, tilesheet.GetFrame(0, 0));
 
         try
@@ -174,8 +249,18 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     [Fact]
     public void GtsJson_RoundTripsRegionAndFrameCollisionAdjustments()
     {
-        var regionAdjust = new CollisionAdjust(1, 1, 2, 2);
-        var frameAdjust = new CollisionAdjust(3, 3, 4, 4);
+        var regionAdjust = new CollisionAdjust(
+            1,
+            1,
+            2,
+            2);
+
+        var frameAdjust = new CollisionAdjust(
+            3,
+            3,
+            4,
+            4);
+
         var definition = new TilesheetDefinition
         {
             Name = "Sheet",
@@ -185,7 +270,11 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
                 new TilesheetRegionDefinition
                 {
                     Name = TilesheetRegion.DefaultRegionName,
-                    Area = new Rectangle(0, 0, 32, 16),
+                    Area = new Rectangle(
+                        0,
+                        0,
+                        32,
+                        16),
                     TileSize = new Size(16, 16),
                     CollisionAdjust = regionAdjust,
                     Frames =
@@ -213,6 +302,7 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
 
         Assert.Equal(regionAdjust, loadedRegion.CollisionAdjust);
         Assert.Equal(2, loadedRegion.Frames.Count);
+
         Assert.Equal(
             frameAdjust,
             loadedRegion.Frames[1].CollisionAdjust.GetValueOrDefault());
@@ -234,11 +324,15 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
             Regions =
             [
                 new TilesheetRegionDefinition
-            {
-                Name = TilesheetRegion.DefaultRegionName,
-                Area = new Rectangle(0, 0, 16, 16),
-                TileSize = new Size(16, 16)
-            }
+                {
+                    Name = TilesheetRegion.DefaultRegionName,
+                    Area = new Rectangle(
+                        0,
+                        0,
+                        16,
+                        16),
+                    TileSize = new Size(16, 16)
+                }
             ]
         };
 
@@ -283,6 +377,7 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     public void FromDefinition_PreservesExplicitOverrideEqualToRegionDefault()
     {
         var imagePath = Path.Combine(_tempDir, "equal-override.png");
+
         using (var bitmap = new SKBitmap(32, 16))
         using (var image = SKImage.FromBitmap(bitmap))
         using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
@@ -290,7 +385,12 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
             File.WriteAllBytes(imagePath, data.ToArray());
         }
 
-        var regionAdjust = new CollisionAdjust(1, 1, 2, 2);
+        var regionAdjust = new CollisionAdjust(
+            1,
+            1,
+            2,
+            2);
+
         var definition = new TilesheetDefinition
         {
             Name = "Sheet",
@@ -300,7 +400,11 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
                 new TilesheetRegionDefinition
                 {
                     Name = TilesheetRegion.DefaultRegionName,
-                    Area = new Rectangle(0, 0, 32, 16),
+                    Area = new Rectangle(
+                        0,
+                        0,
+                        32,
+                        16),
                     TileSize = new Size(16, 16),
                     CollisionAdjust = regionAdjust,
                     Frames =
@@ -327,7 +431,12 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         Assert.False(region.TryGetFrameCollisionAdjustOverride(0, 0, out _));
         Assert.True(region.TryGetFrameCollisionAdjustOverride(1, 0, out _));
 
-        var replacementDefault = new CollisionAdjust(3, 3, 4, 4);
+        var replacementDefault = new CollisionAdjust(
+            3,
+            3,
+            4,
+            4);
+
         region.CollisionAdjust = replacementDefault;
 
         Assert.Equal(replacementDefault, tilesheet.GetFrame(0, 0).CollisionAdjust);
@@ -342,6 +451,7 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     public void FromTilesheet_PreservesInheritedAndExplicitFrameAdjustments()
     {
         var imagePath = Path.Combine(_tempDir, "sheet.png");
+
         using (var bitmap = new SKBitmap(32, 16))
         using (var image = SKImage.FromBitmap(bitmap))
         using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
@@ -352,14 +462,28 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         using var tilesheet = TilesheetFactory.FromImageFile("Sheet", imagePath);
         var region = tilesheet.DefaultRegion;
         region.TileSize = new Size(16, 16);
-        region.CollisionAdjust = new CollisionAdjust(1, 1, 2, 2);
-        region.SetFrameCollisionAdjust(1, 0, new CollisionAdjust(3, 3, 4, 4));
+
+        region.CollisionAdjust = new CollisionAdjust(
+            1,
+            1,
+            2,
+            2);
+
+        region.SetFrameCollisionAdjust(
+            1,
+            0,
+            new CollisionAdjust(
+                3,
+                3,
+                4,
+                4));
 
         var definition = TilesheetDefinitionSerializer.FromTilesheet(tilesheet);
         var serializedRegion = Assert.Single(definition.Regions);
 
         Assert.Equal(2, serializedRegion.Frames.Count);
         Assert.Null(serializedRegion.Frames[0].CollisionAdjust);
+
         Assert.Equal(
             region.GetFrameCollisionAdjust(1, 0),
             serializedRegion.Frames[1].CollisionAdjust.GetValueOrDefault());

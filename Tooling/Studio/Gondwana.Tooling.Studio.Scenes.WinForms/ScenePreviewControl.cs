@@ -17,10 +17,13 @@ namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 {
     internal event Func<Keys, bool>? NavigationKey;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool SampleStroke { get; set; } = true;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool SingleCellGesture { get; set; }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool RequireSelectedLayer { get; set; }
 
@@ -46,7 +49,10 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     internal void SetResourceDropCell(SceneLayerDefinition? layer, Point cell = default)
     {
         (SceneLayerDefinition Layer, Point Cell)? next = layer is null ? null : (layer, cell);
-        if (_resourceDrop == next) return;
+
+        if (_resourceDrop == next)
+            return;
+
         _resourceDrop = next;
         Invalidate();
     }
@@ -55,6 +61,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     {
         cell = default;
         Point client = PointToClient(screen);
+
         if (!ClientRectangle.Contains(client) || _definition?.Layers.Contains(layer) != true ||
             !ReferenceEquals(layer, _selectedLayer) || !IsLayerDisplayed(layer))
             return false;
@@ -81,10 +88,13 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
     /// <summary>Gets displayed pixels per world pixel.</summary>
     public float Zoom { get; private set; } = 1f;
+
     /// <summary>Gets whether automatic fitting is active.</summary>
     internal bool IsFit => _fitToWindow;
+
     /// <summary>Occurs when magnification or Fit state changes.</summary>
     internal event Action? ZoomChanged;
+
     /// <summary>Gets or sets whether cell outlines are drawn during the next repaint.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool ShowGridLines { get; set; } = true;
@@ -116,7 +126,9 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         Func<string, SceneAnimationSource?> findAnimation,
         Func<SceneLayerDefinition, bool>? showLayer = null)
     {
-        if (HasGesture) CancelGesture();
+        if (HasGesture)
+            CancelGesture();
+
         CancelSpriteGesture();
         _definition = definition;
         _findTilesheet = findTilesheet;
@@ -124,6 +136,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         _showLayer = showLayer;
 
         var currentLayers = definition.Layers.ToHashSet();
+
         foreach (var stale in _projections.Keys
                      .Where(layer => !currentLayers.Contains(layer))
                      .ToArray())
@@ -142,6 +155,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     {
         CancelGesture();
         CancelSpriteGesture();
+
         PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
             ? null
             : new PointF(
@@ -157,6 +171,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             float contentX =
                 PreviewMargin +
                 (center.X - _worldBounds.Left) * Zoom;
+
             float contentY =
                 PreviewMargin +
                 (center.Y - _worldBounds.Top) * Zoom;
@@ -252,6 +267,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             return false;
 
         long buttonsAndDelta = message.WParam.ToInt64();
+
         if ((buttonsAndDelta & ControlKey) == 0)
         {
             _zoomWheelDelta = 0;
@@ -259,6 +275,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         }
 
         long position = message.LParam.ToInt64();
+
         var screenPoint = new Point(
             unchecked((short)position),
             unchecked((short)(position >> 16)));
@@ -296,6 +313,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         // or its old pixels remain visible in the scrolled scene.
         var previousPosition = AutoScrollPosition;
         base.OnMouseWheel(e);
+
         if (AutoScrollPosition != previousPosition)
         {
             UpdateOffset();
@@ -360,12 +378,22 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             DrawLayer(e.Graphics, layer);
 
         if (_spriteGhost is { } ghost)
-            DrawSprite(e.Graphics, ghost.Visual, ghost.Position, ghost: true);
+            DrawSprite(
+                e.Graphics,
+                ghost.Visual,
+                ghost.Position,
+                ghost: true);
 
-        if (_resourceDrop is { } drop && visibleLayers.Contains(drop.Layer) && ReferenceEquals(_selectedLayer, drop.Layer))
+        if (_resourceDrop is { } drop && visibleLayers.Contains(drop.Layer) &&
+            ReferenceEquals(_selectedLayer, drop.Layer))
         {
-            var points = TileOutline(GetProjection(drop.Layer), drop.Layer, drop.Cell.X, drop.Cell.Y)
+            var points = TileOutline(
+                    GetProjection(drop.Layer),
+                    drop.Layer,
+                    drop.Cell.X,
+                    drop.Cell.Y)
                 .Select(ToScreen).ToArray();
+
             if (points.Length >= 3)
             {
                 using var fill = new SolidBrush(Color.FromArgb(55, Color.DeepSkyBlue));
@@ -376,6 +404,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         }
 
         using var labelBrush = new SolidBrush(ForeColor);
+
         e.Graphics.DrawString(
             $"Active layer: {_selectedLayer?.ID ?? "(none)"} - {visibleLayers.Count} visible layer(s)\n" +
             $"{(long)_selectedCells.Width * _selectedCells.Height} cell(s) selected - Tile Properties edits active cell ({_selectedX},{_selectedY}) only" +
@@ -394,11 +423,16 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             return;
 
         UpdateOffset();
-        if (TryStartSpriteGesture(e.Location)) return;
-        if (RequireSelectedLayer && (_selectedLayer is null ||
-            !_definition.Layers.Contains(_selectedLayer) || !IsLayerDisplayed(_selectedLayer))) return;
 
-        var layer = _selectedLayer is not null && _definition.Layers.Contains(_selectedLayer) && IsLayerDisplayed(_selectedLayer)
+        if (TryStartSpriteGesture(e.Location))
+            return;
+
+        if (RequireSelectedLayer && (_selectedLayer is null ||
+                                     !_definition.Layers.Contains(_selectedLayer) || !IsLayerDisplayed(_selectedLayer)))
+            return;
+
+        var layer = _selectedLayer is not null && _definition.Layers.Contains(_selectedLayer) &&
+                    IsLayerDisplayed(_selectedLayer)
             ? _selectedLayer
             : _definition.Layers
                 .Where(candidate => IsLayerDisplayed(candidate))
@@ -416,19 +450,34 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         CancelGesture();
         Focus();
         var world = ScreenToWorld(e.Location);
-        if (!TryHitCell(layer, world, out var cell)) return;
-        if (GestureStarting is not null && !GestureStarting(layer, cell.X, cell.Y)) return;
+
+        if (!TryHitCell(layer, world, out var cell))
+            return;
+
+        if (GestureStarting is not null && !GestureStarting(layer, cell.X, cell.Y))
+            return;
 
         _gestureLayer = layer;
         _lastGestureCell = null;
         _previousWorld = world;
+
         try
         {
             Capture = true;
-            if (!Capture) { CancelGesture(); return; }
+
+            if (!Capture)
+            {
+                CancelGesture();
+                return;
+            }
+
             VisitCell(layer, cell);
         }
-        catch { CancelGesture(); throw; }
+        catch
+        {
+            CancelGesture();
+            throw;
+        }
     }
 
     private PointF ScreenToWorld(Point point) => new((point.X - _offset.X) / Zoom, (point.Y - _offset.Y) / Zoom);
@@ -442,7 +491,9 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
     private void VisitCell(SceneLayerDefinition layer, Point cell)
     {
-        if (_lastGestureCell == cell) return;
+        if (_lastGestureCell == cell)
+            return;
+
         _lastGestureCell = cell;
         _selectedLayer = layer;
         _selectedX = cell.X;
@@ -453,39 +504,53 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
     private void ContinueGesture(Point location)
     {
-        if (_gestureLayer is not { } layer) return;
+        if (_gestureLayer is not { } layer)
+            return;
+
         if (_definition?.Layers.Contains(layer) != true || !IsLayerDisplayed(layer))
         {
             CancelGesture();
             return;
         }
-        if (SingleCellGesture) return;
+
+        if (SingleCellGesture)
+            return;
+
         UpdateOffset();
         var world = ScreenToWorld(location);
         var start = _previousWorld;
         _previousWorld = world;
+
         if (!SampleStroke && TryHitCell(layer, world, out var target))
         {
             VisitCell(layer, target);
             return;
         }
+
         foreach (var cell in CellsAlongSegment(layer, start, world))
         {
-            if (!ReferenceEquals(_gestureLayer, layer)) break;
+            if (!ReferenceEquals(_gestureLayer, layer))
+                break;
+
             VisitCell(layer, cell);
         }
     }
 
     internal IEnumerable<Point> CellsAlongSegment(SceneLayerDefinition layer, PointF start, PointF end)
     {
-        bool hex = layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop;
+        bool hex = layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop
+            or CoordinateSystemTypes.HexAxialPointedTop;
+
         var projection = GetProjection(layer);
         double previous = 0;
         Point first = CellAt(0);
         Point? yielded = null;
+
         foreach (var cell in Trace())
         {
-            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || yielded == cell) continue;
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || yielded == cell)
+                continue;
+
             yielded = cell;
             yield return cell;
         }
@@ -493,40 +558,88 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         IEnumerable<Point> Trace()
         {
             yield return first;
+
             foreach (double stop in SegmentBoundaries(layer, start, end))
             {
                 Point last = CellAt(stop);
+
                 if (hex)
                 {
                     // Boundary points can belong to a different rounded pixel or search
                     // neighborhood than the open interval. Inspect both interior sides.
                     double left = Interior(previous, stop), right = Interior(stop, previous);
                     Point insideLeft = CellAt(left), insideRight = CellAt(right);
-                    foreach (var cell in Refine(previous, left, first, insideLeft)) yield return cell;
-                    foreach (var cell in Refine(left, right, insideLeft, insideRight)) yield return cell;
-                    foreach (var cell in Refine(right, stop, insideRight, last)) yield return cell;
+
+                    foreach (var cell in Refine(
+                                 previous,
+                                 left,
+                                 first,
+                                 insideLeft))
+                        yield return cell;
+
+                    foreach (var cell in Refine(
+                                 left,
+                                 right,
+                                 insideLeft,
+                                 insideRight))
+                        yield return cell;
+
+                    foreach (var cell in Refine(
+                                 right,
+                                 stop,
+                                 insideRight,
+                                 last))
+                        yield return cell;
                 }
                 else
                 {
                     yield return CellAt((previous + stop) / 2);
                     yield return last;
                 }
+
                 previous = stop;
                 first = last;
             }
         }
 
-        IEnumerable<Point> Refine(double from, double to, Point left, Point right)
+        IEnumerable<Point> Refine(
+            double from,
+            double to,
+            Point left,
+            Point right)
         {
             // Within a fixed rounded pixel and candidate neighborhood, polygon choice is
             // constant; nearest-center fallback has convex cells. Refine differing cells
             // to representable parameter precision, including endpoint rounding transitions.
             double middle = (from + to) / 2;
-            if (middle == from || middle == to) { yield return right; yield break; }
+
+            if (middle == from || middle == to)
+            {
+                yield return right;
+                yield break;
+            }
+
             Point center = CellAt(middle);
-            if (left == right && center == left) { yield return right; yield break; }
-            foreach (var cell in Refine(from, middle, left, center)) yield return cell;
-            foreach (var cell in Refine(middle, to, center, right)) yield return cell;
+
+            if (left == right && center == left)
+            {
+                yield return right;
+                yield break;
+            }
+
+            foreach (var cell in Refine(
+                         from,
+                         middle,
+                         left,
+                         center))
+                yield return cell;
+
+            foreach (var cell in Refine(
+                         middle,
+                         to,
+                         center,
+                         right))
+                yield return cell;
         }
 
         double Interior(double boundary, double toward)
@@ -535,8 +648,13 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             double direction = Math.Sign(toward - boundary);
             double dx = end.X - start.X, dy = end.Y - start.Y;
             double inset = 0;
-            if (dx != 0) inset = Math.Max(inset, ParameterStep(point.X, dx));
-            if (dy != 0) inset = Math.Max(inset, ParameterStep(point.Y, dy));
+
+            if (dx != 0)
+                inset = Math.Max(inset, ParameterStep(point.X, dx));
+
+            if (dy != 0)
+                inset = Math.Max(inset, ParameterStep(point.Y, dy));
+
             // Move off a float-rounded boundary without stepping over a narrow interval.
             return boundary + direction * Math.Min(inset * 2, Math.Abs(toward - boundary) / 4);
 
@@ -547,7 +665,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             }
         }
 
-        PointF WorldAt(double t) => new((float)(start.X + (end.X - start.X) * t),
+        PointF WorldAt(double t) => new(
+            (float)(start.X + (end.X - start.X) * t),
             (float)(start.Y + (end.Y - start.Y) * t));
 
         Point CellAt(double t)
@@ -562,15 +681,30 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         var stops = new SortedSet<double> { 1 };
         var projection = GetProjection(layer);
         int width = projection.TileWidth, height = projection.TileHeight;
-        if (layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop)
+
+        if (layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop
+            or CoordinateSystemTypes.HexAxialPointedTop)
         {
             // Hex lookup has two kinds of discontinuity: rounded polygon pixels and
             // changes to its coarse candidate search. Partition both before refining the
             // continuous nearest-center fallback. WorldPxToGrid remains the cell selector.
             var bounds = projection.GetLayerBoundsPx();
             bounds.Inflate(width, height);
-            AddBoundaries(stops, start.X + .5, end.X + .5, bounds.Left + .5, bounds.Right + .5);
-            AddBoundaries(stops, start.Y + .5, end.Y + .5, bounds.Top + .5, bounds.Bottom + .5);
+
+            AddBoundaries(
+                stops,
+                start.X + .5,
+                end.X + .5,
+                bounds.Left + .5,
+                bounds.Right + .5);
+
+            AddBoundaries(
+                stops,
+                start.Y + .5,
+                end.Y + .5,
+                bounds.Top + .5,
+                bounds.Bottom + .5);
+
             if (layer.CoordinateSystemType == CoordinateSystemTypes.HexAxialFlatTop)
             {
                 // See HexAxialFlatTopCoordinates.GetSceneLayerCoordinatesAtPixel.
@@ -586,12 +720,19 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
                 SearchX(width, -projection.OriginPx.X + width / 2 + width * .5);
             }
 
-            void SearchX(double spacing, double origin) => AddBoundaries(stops,
-                (start.X - origin) / spacing, (end.X - origin) / spacing,
-                (bounds.Left - origin) / spacing, (bounds.Right - origin) / spacing);
-            void SearchY(double spacing, double origin) => AddBoundaries(stops,
-                (start.Y - origin) / spacing, (end.Y - origin) / spacing,
-                (bounds.Top - origin) / spacing, (bounds.Bottom - origin) / spacing);
+            void SearchX(double spacing, double origin) => AddBoundaries(
+                stops,
+                (start.X - origin) / spacing,
+                (end.X - origin) / spacing,
+                (bounds.Left - origin) / spacing,
+                (bounds.Right - origin) / spacing);
+
+            void SearchY(double spacing, double origin) => AddBoundaries(
+                stops,
+                (start.Y - origin) / spacing,
+                (end.Y - origin) / spacing,
+                (bounds.Top - origin) / spacing,
+                (bounds.Bottom - origin) / spacing);
         }
         else
         {
@@ -599,21 +740,44 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             // segment with grid boundaries using that inverse, including click hit-test tolerance.
             var first = projection.WorldPxToGrid(start);
             var last = projection.WorldPxToGrid(end);
-            AddBoundaries(stops, first.X + .0001f, last.X + .0001f, 0, layer.Columns);
-            AddBoundaries(stops, first.Y + .0001f, last.Y + .0001f, 0, layer.Rows);
+
+            AddBoundaries(
+                stops,
+                first.X + .0001f,
+                last.X + .0001f,
+                0,
+                layer.Columns);
+
+            AddBoundaries(
+                stops,
+                first.Y + .0001f,
+                last.Y + .0001f,
+                0,
+                layer.Rows);
         }
+
         return stops;
     }
 
-    private static void AddBoundaries(SortedSet<double> stops, double start, double end, double minimum, double maximum)
+    private static void AddBoundaries(
+        SortedSet<double> stops,
+        double start,
+        double end,
+        double minimum,
+        double maximum)
     {
-        if (start == end) return;
+        if (start == end)
+            return;
+
         double first = Math.Ceiling(Math.Max(Math.Min(start, end), minimum));
         double last = Math.Floor(Math.Min(Math.Max(start, end), maximum));
+
         for (double boundary = first; boundary <= last; boundary++)
         {
             double t = (boundary - start) / (end - start);
-            if (t > 0 && t < 1) stops.Add(t);
+
+            if (t > 0 && t < 1)
+                stops.Add(t);
         }
     }
 
@@ -621,44 +785,86 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     protected override void OnMouseMove(MouseEventArgs e)
     {
         base.OnMouseMove(e);
+
         if (HasSpriteGesture)
         {
-            if ((e.Button & MouseButtons.Left) == 0) CancelSpriteGesture();
-            else ContinueSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
+            if ((e.Button & MouseButtons.Left) == 0)
+                CancelSpriteGesture();
+            else
+                ContinueSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
+
             return;
         }
-        if (!HasGesture) return;
-        if ((e.Button & MouseButtons.Left) == 0) { CancelGesture(); return; }
-        try { ContinueGesture(e.Location); }
-        catch { CancelGesture(); throw; }
+
+        if (!HasGesture)
+            return;
+
+        if ((e.Button & MouseButtons.Left) == 0)
+        {
+            CancelGesture();
+            return;
+        }
+
+        try
+        {
+            ContinueGesture(e.Location);
+        }
+        catch
+        {
+            CancelGesture();
+            throw;
+        }
     }
 
     /// <inheritdoc/>
     protected override void OnMouseUp(MouseEventArgs e)
     {
         base.OnMouseUp(e);
+
         if (e.Button == MouseButtons.Left && HasSpriteGesture)
         {
             FinishSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
             return;
         }
-        if (e.Button != MouseButtons.Left || !HasGesture) return;
-        try { ContinueGesture(e.Location); FinishGesture(cancel: false); }
-        catch { CancelGesture(); throw; }
+
+        if (e.Button != MouseButtons.Left || !HasGesture)
+            return;
+
+        try
+        {
+            ContinueGesture(e.Location);
+            FinishGesture(cancel: false);
+        }
+        catch
+        {
+            CancelGesture();
+            throw;
+        }
     }
 
     private void FinishGesture(bool cancel)
     {
-        if (!HasGesture) return;
+        if (!HasGesture)
+            return;
+
         _gestureLayer = null;
-        try { GestureEnded?.Invoke(cancel); }
-        finally { Capture = false; Invalidate(); }
+
+        try
+        {
+            GestureEnded?.Invoke(cancel);
+        }
+        finally
+        {
+            Capture = false;
+            Invalidate();
+        }
     }
 
     /// <inheritdoc/>
     protected override void OnMouseCaptureChanged(EventArgs e)
     {
         base.OnMouseCaptureChanged(e);
+
         if (!Capture)
         {
             CancelGesture();
@@ -669,9 +875,21 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-        if (keyData == Keys.Escape && HasSpriteGesture) { CancelSpriteGesture(); return true; }
-        if (keyData == Keys.Escape && HasGesture) { CancelGesture(); return true; }
-        if (Focused && NavigationKey?.Invoke(keyData) == true) return true;
+        if (keyData == Keys.Escape && HasSpriteGesture)
+        {
+            CancelSpriteGesture();
+            return true;
+        }
+
+        if (keyData == Keys.Escape && HasGesture)
+        {
+            CancelGesture();
+            return true;
+        }
+
+        if (Focused && NavigationKey?.Invoke(keyData) == true)
+            return true;
+
         return base.ProcessCmdKey(ref msg, keyData);
     }
 
@@ -685,25 +903,38 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         {
             var projection = GetProjection(layer);
             var rect = projection.GetLayerBoundsPx();
+
             foreach (var tile in layer.Tiles.Where(tile =>
-                tile.Visible &&
-                tile.X >= 0 &&
-                tile.Y >= 0 &&
-                tile.X < layer.Columns &&
-                tile.Y < layer.Rows))
+                         tile.Visible &&
+                         tile.X >= 0 &&
+                         tile.Y >= 0 &&
+                         tile.X < layer.Columns &&
+                         tile.Y < layer.Rows))
             {
                 var frame = ResolvePreviewFrame(tile);
                 var source = frame is null ? null : ResolveTilesheetSource(frame, tile.AnimationKey);
+
                 if (frame is not null && source?.TryResolve(frame, out var region, out _) == true)
-                    rect = RectangleF.Union(rect, TileTransformGeometry.GetVisualBounds(
-                        Rectangle.Round(TileBounds(projection, layer, tile.X, tile.Y)), region!.Overhang, tile.Transform));
+                    rect = RectangleF.Union(
+                        rect,
+                        TileTransformGeometry.GetVisualBounds(
+                            Rectangle.Round(
+                                TileBounds(
+                                    projection,
+                                    layer,
+                                    tile.X,
+                                    tile.Y)),
+                            region!.Overhang,
+                            tile.Transform));
             }
+
             if (rect.IsEmpty)
                 continue;
 
             bounds = hasBounds
                 ? RectangleF.Union(bounds, rect)
                 : rect;
+
             hasBounds = true;
         }
 
@@ -741,6 +972,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
         float availableWidth =
             Math.Max(1, ClientSize.Width - PreviewMargin * 2);
+
         float availableHeight =
             Math.Max(1, ClientSize.Height - PreviewMargin * 2);
 
@@ -834,18 +1066,32 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
                 continue;
 
             var frame = ResolvePreviewFrame(tile);
+
             if (frame is null)
                 continue;
 
             var source = ResolveTilesheetSource(frame, tile.AnimationKey);
+
             if (source?.Image is null ||
                 !source.TryResolve(frame, out var region, out var sourceBounds))
             {
-                DrawMissingFrame(graphics, projection, layer, tile.X, tile.Y);
+                DrawMissingFrame(
+                    graphics,
+                    projection,
+                    layer,
+                    tile.X,
+                    tile.Y);
+
                 continue;
             }
 
-            var cell = Rectangle.Round(TileBounds(projection, layer, tile.X, tile.Y));
+            var cell = Rectangle.Round(
+                TileBounds(
+                    projection,
+                    layer,
+                    tile.X,
+                    tile.Y));
+
             var world = TileTransformGeometry.GetVisualBounds(cell, region!.Overhang, tile.Transform);
             var screen = ToScreen(world);
 
@@ -870,41 +1116,78 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         {
             int maxCells = 20000;
             int count = 0;
+
             for (int y = 0; y < layer.Rows && count < maxCells; y++)
                 for (int x = 0; x < layer.Columns && count < maxCells; x++, count++)
                 {
-                    var points = TileOutline(projection, layer, x, y)
+                    var points = TileOutline(
+                            projection,
+                            layer,
+                            x,
+                            y)
                         .Select(ToScreen)
                         .ToArray();
 
                     if (points.Length >= 3)
                         graphics.DrawPolygon(gridPen, points);
                     else
-                        graphics.DrawRectangle(gridPen, Rectangle.Round(ToScreen(
-                            TileBounds(projection, layer, x, y))));
+                        graphics.DrawRectangle(
+                            gridPen,
+                            Rectangle.Round(
+                                ToScreen(
+                                    TileBounds(
+                                        projection,
+                                        layer,
+                                        x,
+                                        y))));
                 }
         }
 
         if (ReferenceEquals(layer, _selectedLayer))
         {
-            var cells = _selectedCells.IsEmpty ? new Rectangle(_selectedX, _selectedY, 1, 1) : _selectedCells;
-            cells.Intersect(new Rectangle(0, 0, layer.Columns, layer.Rows));
-            var corners = new[] { Point.Empty, new Point(ClientSize.Width, 0),
-                new Point(0, ClientSize.Height), new Point(ClientSize.Width, ClientSize.Height) }
+            var cells = _selectedCells.IsEmpty
+                ? new Rectangle(
+                    _selectedX,
+                    _selectedY,
+                    1,
+                    1)
+                : _selectedCells;
+
+            cells.Intersect(
+                new Rectangle(
+                    0,
+                    0,
+                    layer.Columns,
+                    layer.Rows));
+
+            var corners = new[]
+                {
+                    Point.Empty, new Point(ClientSize.Width, 0),
+                    new Point(0, ClientSize.Height), new Point(ClientSize.Width, ClientSize.Height)
+                }
                 .Select(point => projection.WorldPxToGrid(ScreenToWorld(point))).ToArray();
+
             // Cull off-screen selection cells using the existing inverse projection.
-            cells.Intersect(Rectangle.FromLTRB((int)Math.Floor(corners.Min(point => point.X)) - 2,
-                (int)Math.Floor(corners.Min(point => point.Y)) - 2, (int)Math.Ceiling(corners.Max(point => point.X)) + 3,
-                (int)Math.Ceiling(corners.Max(point => point.Y)) + 3));
+            cells.Intersect(
+                Rectangle.FromLTRB(
+                    (int)Math.Floor(corners.Min(point => point.X)) - 2,
+                    (int)Math.Floor(corners.Min(point => point.Y)) - 2,
+                    (int)Math.Ceiling(corners.Max(point => point.X)) + 3,
+                    (int)Math.Ceiling(corners.Max(point => point.Y)) + 3));
+
             using var selectedPen = new Pen(Color.Gold, 2f);
 
             for (int y = cells.Top; y < cells.Bottom; y++)
                 for (int x = cells.Left; x < cells.Right; x++)
                 {
-                    var points = TileOutline(projection, layer, x, y).Select(ToScreen).ToArray();
+                    var points = TileOutline(
+                        projection,
+                        layer,
+                        x,
+                        y).Select(ToScreen).ToArray();
+
                     if (points.Length >= 3)
                     {
-
                         graphics.DrawPolygon(selectedPen, points);
                     }
                 }
@@ -918,6 +1201,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         {
             var animation = _findAnimation?.Invoke(tile.AnimationKey);
             var frame = animation?.FirstPreviewFrame();
+
             if (frame is not null)
                 return frame;
         }
@@ -930,11 +1214,14 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         string? animationKey)
     {
         var animation = string.IsNullOrWhiteSpace(animationKey) ? null : _findAnimation?.Invoke(animationKey);
+
         // An animation's explicit source belongs to that animation, even when the
         // scene declares a different archive/loose source with the same logical name.
         if (animation?.Definition.TilesheetSources.Any(source => source.Tilesheet == frame.Tilesheet) == true)
             return animation.FindTilesheet(frame.Tilesheet);
+
         var source = _findTilesheet?.Invoke(frame.Tilesheet);
+
         if (source is not null)
             return source;
 
@@ -953,10 +1240,21 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         int x,
         int y)
     {
-        var screen = Rectangle.Round(ToScreen(
-            TileBounds(projection, layer, x, y)));
+        var screen = Rectangle.Round(
+            ToScreen(
+                TileBounds(
+                    projection,
+                    layer,
+                    x,
+                    y)));
 
-        using var brush = new SolidBrush(Color.FromArgb(55, 80, 80, 80));
+        using var brush = new SolidBrush(
+            Color.FromArgb(
+                55,
+                80,
+                80,
+                80));
+
         using var pen = new Pen(Color.DarkGray);
         graphics.FillRectangle(brush, screen);
         graphics.DrawRectangle(pen, screen);
@@ -969,6 +1267,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         int y)
     {
         var tile = projection[x, y];
+
         return tile is null
             ? RectangleF.Empty
             : tile.DrawLocationWorld;
@@ -981,6 +1280,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         int y)
     {
         var tile = projection[x, y];
+
         return tile is null
             ? []
             : tile.OutlinePointsWorld
@@ -1008,9 +1308,11 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             cached.Layer.Dispose();
 
         var projection = ProjectionLayer.Create(definition);
+
         _projections[definition] = new ProjectionCache(
             fingerprint,
             projection);
+
         return projection;
     }
 
@@ -1030,6 +1332,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     {
         using var brush = new SolidBrush(ForeColor);
         var size = graphics.MeasureString(text, Font);
+
         graphics.DrawString(
             text,
             Font,
@@ -1046,8 +1349,10 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         {
             CancelGesture();
             CancelSpriteGesture();
+
             foreach (var cached in _projections.Values)
                 cached.Layer.Dispose();
+
             _projections.Clear();
         }
 
@@ -1100,6 +1405,7 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             {
                 OriginPx = definition.OriginPx
             };
+
             return layer;
         }
     }

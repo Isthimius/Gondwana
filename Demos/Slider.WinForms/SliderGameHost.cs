@@ -15,11 +15,19 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
 
     internal SliderGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface)
     {
-        _runtime = new SliderGameRuntime(surface.Host,
-            () => WidgetInputRouter, new SliderFileStorage(),
-            LoadAboutLogo, new SliderWindowsUriLauncher(),
+        _runtime = new SliderGameRuntime(
+            surface.Host,
+            () => WidgetInputRouter,
+            new SliderFileStorage(),
+            LoadAboutLogo,
+            new SliderWindowsUriLauncher(),
             (width, height) => surface.Host.RequestLogicalResolution(width, height),
-            new SliderArrowKeys((int)Keys.Left, (int)Keys.Right, (int)Keys.Up, (int)Keys.Down));
+            new SliderArrowKeys(
+                (int)Keys.Left,
+                (int)Keys.Right,
+                (int)Keys.Up,
+                (int)Keys.Down));
+
         _runtime.RequestResize(surface.ClientSize);
         surface.SizeChanged += OnSurfaceSizeChanged;
         surface.Adapter.FrameDiagnosticsCalculated += OnFramePresented;
@@ -30,16 +38,19 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
         add => _runtime.OpenPictureRequested += value;
         remove => _runtime.OpenPictureRequested -= value;
     }
+
     internal event Action<SliderSave>? SaveGameRequested
     {
         add => _runtime.SaveGameRequested += value;
         remove => _runtime.SaveGameRequested -= value;
     }
+
     internal event Action? LoadGameRequested
     {
         add => _runtime.LoadGameRequested += value;
         remove => _runtime.LoadGameRequested -= value;
     }
+
     internal event Action? ExitRequested
     {
         add => _runtime.ExitRequested += value;
@@ -47,8 +58,10 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     }
 
     internal bool HasMenuOrDialogOpen => _runtime.HasMenuOrDialogOpen;
+
     internal void RequestPuzzle(byte[]? imageBytes, int columns, int rows)
         => _runtime.RequestPuzzle(imageBytes, columns, rows);
+
     internal void RequestRestore(SliderSave save) => _runtime.RequestRestore(save);
     internal void SetShiftHeld(bool held) => _runtime.SetShiftHeld(held);
 
@@ -68,13 +81,18 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     protected override void LoadAssets()
     {
         string root = Path.Combine(AppContext.BaseDirectory, "assets");
+
         _runtime.SetAudioResources(
             Engine.Managers.AudioResources.LoadFromFile(
-                "slider-move", Path.Combine(root,
-                "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav")),
+                "slider-move",
+                Path.Combine(
+                    root,
+                    "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav")),
             Engine.Managers.AudioResources.LoadFromFile(
-                "slider-victory", Path.Combine(root,
-                "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav")));
+                "slider-victory",
+                Path.Combine(
+                    root,
+                    "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav")));
     }
 
     protected override Scene CreateInitialScene() => _runtime.CreateInitialScene();
@@ -85,15 +103,17 @@ internal sealed class SliderGameHost : WinFormsGpuGameHost
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
+
         foreach (Keys key in new[]
-        {
-            Keys.Tab, Keys.Enter, Keys.Escape, Keys.Space,
-            Keys.Up, Keys.Down, Keys.Left, Keys.Right,
-            Keys.Home, Keys.End, Keys.PageUp, Keys.PageDown,
-            Keys.A, Keys.G, Keys.H, Keys.L, Keys.N, Keys.O,
-            Keys.P, Keys.S, Keys.U, Keys.X
-        })
+                 {
+                     Keys.Tab, Keys.Enter, Keys.Escape, Keys.Space,
+                     Keys.Up, Keys.Down, Keys.Left, Keys.Right,
+                     Keys.Home, Keys.End, Keys.PageUp, Keys.PageDown,
+                     Keys.A, Keys.G, Keys.H, Keys.L, Keys.N, Keys.O,
+                     Keys.P, Keys.S, Keys.U, Keys.X
+                 })
             keyboard.StartMonitoringKey((int)key);
+
         _runtime.OnKeyboardAdapterInitialized();
     }
 
@@ -113,11 +133,14 @@ internal sealed class SliderWindowsUriLauncher : IExternalUriLauncher
     public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = uri.AbsoluteUri,
-            UseShellExecute = true
-        });
+
+        Process.Start(
+            new ProcessStartInfo
+            {
+                FileName = uri.AbsoluteUri,
+                UseShellExecute = true
+            });
+
         return ValueTask.CompletedTask;
     }
 }

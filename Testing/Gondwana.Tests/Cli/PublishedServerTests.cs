@@ -12,10 +12,12 @@ namespace Gondwana.Tests.Cli;
 public sealed class PublishedServerTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "GondwanaServe_" + Guid.NewGuid().ToString("N"));
+
     /// <summary>
     /// Initializes a new instance of the <c>PublishedServerTests</c> class.
     /// </summary>
     public PublishedServerTests() => Directory.CreateDirectory(root);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(root, recursive: true);
 
@@ -26,17 +28,39 @@ public sealed class PublishedServerTests : IDisposable
     public void Discovery_RequiresPublishedOutput_AndSupportsRuntimeSubdirectory()
     {
         var project = Path.Combine(root, "Game.csproj");
-        File.WriteAllText(project, "<Project Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\"><PropertyGroup><TargetFramework>net10.0-browser</TargetFramework></PropertyGroup></Project>");
-        var build = Path.Combine(root, "bin", "Release", "net10.0-browser", "wwwroot");
+
+        File.WriteAllText(
+            project,
+            "<Project Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\"><PropertyGroup><TargetFramework>net10.0-browser</TargetFramework></PropertyGroup></Project>");
+
+        var build = Path.Combine(
+            root,
+            "bin",
+            "Release",
+            "net10.0-browser",
+            "wwwroot");
+
         Directory.CreateDirectory(build);
         File.WriteAllText(Path.Combine(build, "index.html"), "build output");
         Assert.Null(ProjectHelper.TryLocateBlazorPublishRoot(project, "Release"));
-        var exception = Assert.Throws<InvalidOperationException>(() => ServeCommand.ResolveRoot(new() { Project = project }));
+
+        var exception =
+            Assert.Throws<InvalidOperationException>(() => ServeCommand.ResolveRoot(new() { Project = project }));
+
         Assert.Contains("gondwana publish blazor", exception.Message);
         var app = new CommandApp();
         app.Configure(c => c.AddCommand<ServeCommand>("serve"));
         Assert.Equal(1, app.Run(["serve", "-p", project, "--no-open"]));
-        var published = Path.Combine(root, "bin", "Release", "net10.0-browser", "browser-wasm", "publish", "wwwroot");
+
+        var published = Path.Combine(
+            root,
+            "bin",
+            "Release",
+            "net10.0-browser",
+            "browser-wasm",
+            "publish",
+            "wwwroot");
+
         Directory.CreateDirectory(published);
         File.WriteAllText(Path.Combine(published, "index.html"), "published");
         Assert.Equal(published, ServeCommand.ResolveRoot(new() { Project = project }));
@@ -60,11 +84,20 @@ public sealed class PublishedServerTests : IDisposable
         probe.Stop();
         using var stop = new CancellationTokenSource(TimeSpan.FromSeconds(20));
         var ready = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var server = PublishedServer.Run(root, port, url => ready.SetResult(url), stop.Token);
+
+        var server = PublishedServer.Run(
+            root,
+            port,
+            url => ready.SetResult(url),
+            stop.Token);
+
         try
         {
             var first = await Task.WhenAny(server, ready.Task);
-            if (first == server) await server; // Preserve bind failure details.
+
+            if (first == server)
+                await server; // Preserve bind failure details.
+
             var url = await ready.Task.WaitAsync(stop.Token);
             using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
             File.WriteAllText(Path.Combine(root, "late.txt"), "not part of the published index");
@@ -84,14 +117,24 @@ public sealed class PublishedServerTests : IDisposable
             Assert.Equal("nested asset", await nested.Content.ReadAsStringAsync());
             using var late = await client.GetAsync(url + "late.txt");
             Assert.Equal(HttpStatusCode.NotFound, late.StatusCode);
-            foreach (var name in new[] { "%2e%2e%5csecret.txt", "nested%2f..%2fsecret.txt", "%2fsecret.txt", "C%3a%5csecret.txt", "test.wasm%3astream" })
+
+            foreach (var name in new[]
+                     {
+                         "%2e%2e%5csecret.txt", "nested%2f..%2fsecret.txt", "%2fsecret.txt", "C%3a%5csecret.txt",
+                         "test.wasm%3astream"
+                     })
             {
                 using var unsafePath = await client.GetAsync(url + name);
                 Assert.Equal(HttpStatusCode.BadRequest, unsafePath.StatusCode);
             }
+
             using var doubleEncoded = await client.GetAsync(url + "%252e%252e%255csecret.txt");
             Assert.Equal(HttpStatusCode.NotFound, doubleEncoded.StatusCode);
         }
-        finally { stop.Cancel(); await server.WaitAsync(TimeSpan.FromSeconds(5)); }
+        finally
+        {
+            stop.Cancel();
+            await server.WaitAsync(TimeSpan.FromSeconds(5));
+        }
     }
 }

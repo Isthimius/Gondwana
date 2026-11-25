@@ -13,16 +13,21 @@ public sealed partial class AudioDocument
 
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public AudioDefinition Definition { get; private set; }
+
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
+
     /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
+
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty => History.IsDirty;
+
     /// <summary>Document-local reversible edits and saved checkpoints.</summary>
     public EditHistory History { get; }
+
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -34,7 +39,10 @@ public sealed partial class AudioDocument
     {
         _definitions = [definition];
         Definition = definition;
-        if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = "audio";
+
+        if (string.IsNullOrWhiteSpace(definition.Key))
+            definition.Key = "audio";
+
         FilePath = filePath;
         BaseDirectory = Path.GetFullPath(baseDirectory);
         History = new(initiallySaved: !isDirty);
@@ -53,8 +61,16 @@ public sealed partial class AudioDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = AudioDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
-        var document = new AudioDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
+
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
+
+        var document = new AudioDocument(
+            definitions[0],
+            path,
+            Path.GetDirectoryName(path)!,
+            false);
+
         document._definitions = definitions;
         document.SourceVersion = version;
         document.RememberReferenceOrigins();
@@ -96,7 +112,12 @@ public sealed partial class AudioDocument
             SourceExtension = Path.GetExtension(fullPath)
         };
 
-        History.Insert("Add audio resource", Definition.Resources, Definition.Resources.Count, resource);
+        History.Insert(
+            "Add audio resource",
+            Definition.Resources,
+            Definition.Resources.Count,
+            resource);
+
         return resource;
     }
 
@@ -119,7 +140,12 @@ public sealed partial class AudioDocument
             SourceExtension = Path.GetExtension(uri)
         };
 
-        History.Insert("Add audio resource", Definition.Resources, Definition.Resources.Count, resource);
+        History.Insert(
+            "Add audio resource",
+            Definition.Resources,
+            Definition.Resources.Count,
+            resource);
+
         return resource;
     }
 
@@ -156,40 +182,61 @@ public sealed partial class AudioDocument
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = AudioDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
-        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Key)) ||
             _definitions.Select(member => member.Key).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
             throw new InvalidDataException("Every definition needs a unique, non-empty logical identity.");
+
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
         var location = new AssetLocation(AssetTypes.AudioDefinition, path);
-        var expected = FilePath is not null && string.Equals(path, FilePath,
+
+        var expected = FilePath is not null && string.Equals(
+            path,
+            FilePath,
             OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
-            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
+            ? SourceVersion ?? DocumentSourceVersion.Read(location)
+            : DocumentSourceVersion.Read(location);
+
         var snapshots = _definitions.Select(member =>
         {
             var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is { } packed ? AudioDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
+
+            clone.Source = PackedLocation is { } packed
+                ? AudioDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!)
+                : AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
+
             return clone;
         }).ToList();
-        var installed = DocumentSourceSave.Save(location, expected,
+
+        var installed = DocumentSourceSave.Save(
+            location,
+            expected,
             check => AudioDefinitionSerializer.SaveAll(path, snapshots, check));
+
         var saved = AudioDefinitionSerializer.LoadAll(path);
         DocumentSourceSave.Verify(location, installed);
         SourceVersion = installed;
+
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];
             var persisted = saved[i];
+
             for (int j = 0; j < member.Resources.Count; j++)
             {
                 member.Resources[j].FilePath = persisted.Resources[j].FilePath;
                 member.Resources[j].AssetsFilePath = persisted.Resources[j].AssetsFilePath;
             }
+
             member.Source = AudioDefinitionSource.LooseDefinitionFile(path);
         }
+
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
@@ -200,6 +247,7 @@ public sealed partial class AudioDocument
     private string UniqueKey(string proposed)
     {
         proposed = string.IsNullOrWhiteSpace(proposed) ? "audio" : proposed;
+
         if (Definition.Resources.All(resource =>
                 !string.Equals(resource.Key, proposed, StringComparison.Ordinal)))
         {
@@ -208,12 +256,12 @@ public sealed partial class AudioDocument
 
         int suffix = 2;
         string candidate;
+
         do
         {
             candidate = $"{proposed}_{suffix++}";
-        }
-        while (Definition.Resources.Any(resource =>
-                   string.Equals(resource.Key, candidate, StringComparison.Ordinal)));
+        } while (Definition.Resources.Any(resource =>
+                     string.Equals(resource.Key, candidate, StringComparison.Ordinal)));
 
         return candidate;
     }
@@ -224,7 +272,10 @@ public sealed partial class AudioDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
         var extension = string.IsNullOrWhiteSpace(sourceExtension) ? Path.GetExtension(entryName) : sourceExtension;
-        if (string.IsNullOrWhiteSpace(extension)) throw new InvalidDataException("Packed audio requires a source extension.");
+
+        if (string.IsNullOrWhiteSpace(extension))
+            throw new InvalidDataException("Packed audio requires a source extension.");
+
         var resource = new AudioResourceDefinition
         {
             Key = UniqueKey(Path.GetFileNameWithoutExtension(entryName)),
@@ -233,7 +284,13 @@ public sealed partial class AudioDocument
             AssetEntryName = entryName,
             SourceExtension = extension
         };
-        History.Insert("Add audio resource", Definition.Resources, Definition.Resources.Count, resource);
+
+        History.Insert(
+            "Add audio resource",
+            Definition.Resources,
+            Definition.Resources.Count,
+            resource);
+
         return resource;
     }
 
@@ -241,6 +298,7 @@ public sealed partial class AudioDocument
     {
         var fullPath = Path.GetFullPath(path);
         var fullBase = Path.GetFullPath(baseDirectory);
+
         if (!string.Equals(
                 Path.GetPathRoot(fullPath),
                 Path.GetPathRoot(fullBase),
@@ -265,7 +323,9 @@ public sealed partial class AudioDocument
     /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(AudioDefinition definition)
     {
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -297,13 +357,27 @@ public sealed partial class AudioDocument
     public bool RemoveDefinition(AudioDefinition definition)
     {
         int index = _definitions.IndexOf(definition);
-        if (_definitions.Count == 1 || index < 0) return false;
+
+        if (_definitions.Count == 1 || index < 0)
+            return false;
+
         var selected = Definition;
-        History.Execute("Remove definition", () =>
-        {
-            _definitions.RemoveAt(index);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
-        }, () => { _definitions.Insert(index, definition); Definition = selected; });
+
+        History.Execute(
+            "Remove definition",
+            () =>
+            {
+                _definitions.RemoveAt(index);
+
+                if (ReferenceEquals(Definition, definition))
+                    Definition = _definitions[0];
+            },
+            () =>
+            {
+                _definitions.Insert(index, definition);
+                Definition = selected;
+            });
+
         return true;
     }
 
@@ -315,10 +389,17 @@ public sealed partial class AudioDocument
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
+
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Key == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
+
         var member = Definition;
-        History.Set("Rename audio definition", () => member.Key, value => member.Key = value, identity);
+
+        History.Set(
+            "Rename audio definition",
+            () => member.Key,
+            value => member.Key = value,
+            identity);
     }
 
     /// <summary>Imports selected GSND members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -330,21 +411,37 @@ public sealed partial class AudioDocument
     public int ImportDefinitions(string path, Func<IReadOnlyList<AudioDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);
+
         if (!string.Equals(Path.GetExtension(path), ".gsnd", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Choose a .gsnd definition document.", nameof(path));
+
         var sourceDirectory = Path.GetDirectoryName(path)!;
         string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
-        var imported = DefinitionImport.Prepare(path, Definitions, AudioDefinitionSerializer.LoadAll, select, member =>
-        {
-            var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
-            foreach (var resource in clone.Resources ?? [])
+
+        var imported = DefinitionImport.Prepare(
+            path,
+            Definitions,
+            AudioDefinitionSerializer.LoadAll,
+            select,
+            member =>
             {
-                resource.FilePath = Rebase(resource.FilePath);
-                resource.AssetsFilePath = Rebase(resource.AssetsFilePath);
-            }
-            return clone;
-        }, member => member.Key, (member, identity) => member.Key = identity, "audio");
-        if (imported.Count == 0) return 0;
+                var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
+
+                foreach (var resource in clone.Resources ?? [])
+                {
+                    resource.FilePath = Rebase(resource.FilePath);
+                    resource.AssetsFilePath = Rebase(resource.AssetsFilePath);
+                }
+
+                return clone;
+            },
+            member => member.Key,
+            (member, identity) => member.Key = identity,
+            "audio");
+
+        if (imported.Count == 0)
+            return 0;
+
         AddMembers(imported, "Import audio definitions");
         return imported.Count;
     }
@@ -352,7 +449,10 @@ public sealed partial class AudioDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++) candidate = basis + "-" + i;
+
+        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++)
+            candidate = basis + "-" + i;
+
         return candidate;
     }
 }

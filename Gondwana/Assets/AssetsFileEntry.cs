@@ -45,6 +45,7 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
         }
 
         var parts = entry.Split('_', 2);
+
         if (parts.Length != 2)
         {
             Engine.Logger.LogWarning("Invalid entry format: {Entry}. Expected format is 'AssetType_AssetName'.", entry);
@@ -53,8 +54,11 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
 
         if (!Enum.TryParse<AssetTypes>(parts[0], ignoreCase: true, out var assetType))
         {
-            Engine.Logger.LogWarning("Invalid asset type: {AssetType}. Valid types are: {ValidTypes}.",
-                parts[0], string.Join(", ", Enum.GetNames(typeof(AssetTypes))));
+            Engine.Logger.LogWarning(
+                "Invalid asset type: {AssetType}. Valid types are: {ValidTypes}.",
+                parts[0],
+                string.Join(", ", Enum.GetNames(typeof(AssetTypes))));
+
             return null;
         }
 
@@ -73,7 +77,9 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
     /// <returns><see langword="true"/> if the specified entry is equal to the current entry; otherwise, <see langword="false"/>.</returns>
     public bool Equals(AssetsFileEntry? other)
     {
-        if (other is null) return false;
+        if (other is null)
+            return false;
+
         return AssetType == other.AssetType &&
                string.Equals(AssetName, other.AssetName, StringComparison.OrdinalIgnoreCase);
     }

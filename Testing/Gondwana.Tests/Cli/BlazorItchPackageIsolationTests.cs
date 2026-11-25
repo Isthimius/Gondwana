@@ -15,13 +15,16 @@ public sealed class BlazorItchPackageIsolationTests
     public void CreateBlazorItchPackage_BaseHrefOverride_DoesNotMutatePublishedIndex()
     {
         var root = Path.Combine(Path.GetTempPath(), "gondwana-cli-tests", Guid.NewGuid().ToString("N"));
+
         try
         {
             var projectDirectory = Path.Combine(root, "Game");
             Directory.CreateDirectory(projectDirectory);
 
             var projectPath = Path.Combine(projectDirectory, "Game.csproj");
-            File.WriteAllText(projectPath,
+
+            File.WriteAllText(
+                projectPath,
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
@@ -33,13 +36,21 @@ public sealed class BlazorItchPackageIsolationTests
                 </Project>
                 """);
 
-            var wwwroot = Path.Combine(projectDirectory, "bin", "Release", "net10.0-browser", "publish", "wwwroot");
+            var wwwroot = Path.Combine(
+                projectDirectory,
+                "bin",
+                "Release",
+                "net10.0-browser",
+                "publish",
+                "wwwroot");
+
             Directory.CreateDirectory(wwwroot);
             var indexPath = Path.Combine(wwwroot, "index.html");
             const string originalIndex = "<html><head><base href=\"/\" /></head><body>ok</body></html>";
             File.WriteAllText(indexPath, originalIndex);
 
             var zipPath = Path.Combine(root, "game.zip");
+
             var packagePath = ProjectHelper.CreateBlazorItchPackage(
                 projectPath,
                 "Release",

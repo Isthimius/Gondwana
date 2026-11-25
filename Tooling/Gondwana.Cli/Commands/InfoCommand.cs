@@ -18,6 +18,7 @@ internal sealed class InfoCommand : Command
         }
 
         XDocument doc;
+
         try
         {
             doc = XDocument.Load(csproj);
@@ -41,11 +42,13 @@ internal sealed class InfoCommand : Command
         if (!string.IsNullOrWhiteSpace(host))
             AnsiConsole.MarkupLine($"[bold]Host:[/]       {Markup.Escape(host)}");
 
-        AnsiConsole.MarkupLine($"[bold]Gondwana:[/]   {(gondwanaVer is not null ? Markup.Escape(gondwanaVer) : "[dim]not referenced[/]")}");
+        AnsiConsole.MarkupLine(
+            $"[bold]Gondwana:[/]   {(gondwanaVer is not null ? Markup.Escape(gondwanaVer) : "[dim]not referenced[/]")}");
 
         if (adapters.Count > 0)
         {
             AnsiConsole.MarkupLine("[bold]Adapters:[/]");
+
             foreach (var adapter in adapters)
                 AnsiConsole.MarkupLine($"  [dim]-[/] {Markup.Escape(adapter)}");
         }
@@ -54,6 +57,7 @@ internal sealed class InfoCommand : Command
         {
             AnsiConsole.MarkupLine("[bold]Assets:[/]");
             var projectDir = Path.GetDirectoryName(csproj)!;
+
             foreach (var assetFile in assetFiles)
             {
                 var rel = Path.GetRelativePath(projectDir, assetFile);
@@ -67,8 +71,8 @@ internal sealed class InfoCommand : Command
     private static string? FindCsproj(string directory)
     {
         var files = Directory.GetFiles(directory, "*.csproj")
-                             .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
-                             .ToArray();
+            .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
 
         if (files.Length == 0)
             return null;
@@ -76,7 +80,9 @@ internal sealed class InfoCommand : Command
         if (files.Length == 1)
             return files[0];
 
-        AnsiConsole.MarkupLine("[yellow]Multiple .csproj files found in the current directory; using the first one:[/]");
+        AnsiConsole.MarkupLine(
+            "[yellow]Multiple .csproj files found in the current directory; using the first one:[/]");
+
         foreach (var file in files)
         {
             AnsiConsole.MarkupLine($"  [dim]-[/] {Markup.Escape(Path.GetFileName(file))}");
@@ -94,8 +100,10 @@ internal sealed class InfoCommand : Command
     {
         var packageVersion = doc.Descendants("PackageReference")
             .FirstOrDefault(e =>
-                string.Equals(e.Attribute("Include")?.Value, "Gondwana",
-                              StringComparison.OrdinalIgnoreCase))
+                string.Equals(
+                    e.Attribute("Include")?.Value,
+                    "Gondwana",
+                    StringComparison.OrdinalIgnoreCase))
             ?.Attribute("Version")?.Value;
 
         if (!string.IsNullOrWhiteSpace(packageVersion))
@@ -103,9 +111,10 @@ internal sealed class InfoCommand : Command
 
         var hasProjectReference = doc.Descendants("ProjectReference")
             .Any(e =>
-                string.Equals(GetProjectReferenceName(e.Attribute("Include")?.Value),
-                              "Gondwana",
-                              StringComparison.OrdinalIgnoreCase));
+                string.Equals(
+                    GetProjectReferenceName(e.Attribute("Include")?.Value),
+                    "Gondwana",
+                    StringComparison.OrdinalIgnoreCase));
 
         return hasProjectReference ? "project reference" : null;
     }
@@ -133,8 +142,8 @@ internal sealed class InfoCommand : Command
         try
         {
             return Directory.GetFiles(directory, "*.gaf", SearchOption.AllDirectories)
-                            .Concat(Directory.GetFiles(directory, "*.assets", SearchOption.AllDirectories))
-                            .ToList();
+                .Concat(Directory.GetFiles(directory, "*.assets", SearchOption.AllDirectories))
+                .ToList();
         }
         catch
         {
@@ -145,7 +154,7 @@ internal sealed class InfoCommand : Command
     private static string? DetectHost(List<string> adapters)
     {
         if (adapters.Any(a => a.Equals("Gondwana.WinForms", StringComparison.OrdinalIgnoreCase) ||
-                               a.Equals("Gondwana.WinForms.Hosting", StringComparison.OrdinalIgnoreCase)))
+                              a.Equals("Gondwana.WinForms.Hosting", StringComparison.OrdinalIgnoreCase)))
             return "WinForms";
 
         if (adapters.Any(a => a.StartsWith("Gondwana.Avalonia", StringComparison.OrdinalIgnoreCase)))

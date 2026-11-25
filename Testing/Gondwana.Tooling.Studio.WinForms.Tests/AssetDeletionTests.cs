@@ -15,29 +15,60 @@ public sealed partial class CompositionTests
     public void AssetDeletionProtectsEditorsAndRefreshes(bool hosted) => RunSta(directory =>
     {
         var path = Path.Combine(directory, "game.gaf");
-        using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
         {
             using var image = new MemoryStream([1, 2]);
             archive.Add(AssetTypes.Image, "images/art.png", image);
+
             var sheet = new TilesheetDefinition
             {
                 Name = "terrain",
                 Image = new() { AssetEntryName = "images/art.png" },
-                Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 1, 1), TileSize = new Size(1, 1) }]
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "default", Area = new Rectangle(
+                            0,
+                            0,
+                            1,
+                            1),
+                        TileSize = new Size(1, 1)
+                    }
+                ]
             };
-            using var bytes = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+
+            using var bytes = new MemoryStream(
+                System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+
             archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
             archive.Save();
         }
+
         using var studio = Host(directory);
-        using var borrowed = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var borrowed = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         var document = hosted ? studio.OpenDocument(path) : null;
         using var standalone = hosted ? null : new AssetEditorControl(borrowed);
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
         var instance = editor.AssetsFile;
         editor.ReplaceAsset(AssetTypes.Image, "images/art.png", [8, 9]);
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
+
         Assert.True(editor.History.CanUndo);
         var originalEntries = AssetImportPlan.Snapshot(instance);
         var plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Image, path, "images/art.png")]);
@@ -59,18 +90,27 @@ public sealed partial class CompositionTests
         editor.MarkChanged();
         Assert.Throws<InvalidOperationException>(() => editor.ApplyDeletion(plan, true));
         Assert.True(editor.IsDirty);
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
+
         editor.ReplaceAsset(AssetTypes.Image, "images/art.png", [1, 2]);
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
+
         Assert.True(editor.History.CanUndo);
         plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Image, path, "images/art.png")]);
         changes = refreshes = 0;
         editor.ApplyDeletion(plan, true);
         Assert.Same(instance, editor.AssetsFile);
         Assert.False(editor.IsDirty);
-        Assert.False(editor.History.CanUndo); Assert.False(editor.History.CanRedo);
+        Assert.False(editor.History.CanUndo);
+        Assert.False(editor.History.CanRedo);
         Assert.Equal(0, editor.History.RetainedBytes);
         Assert.Equal(1, changes);
         Assert.Equal(1, refreshes);
@@ -78,7 +118,13 @@ public sealed partial class CompositionTests
         var only = Assert.Single(remaining);
         Assert.Equal(AssetTypes.TilesheetDefinition, only.Key.AssetType);
         Assert.Equal(originalEntries[only.Key], only.Value);
-        using var disk = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var disk = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         Assert.Equal(only.Value, AssetImportPlan.Snapshot(disk).Single().Value);
         document?.Close();
     });
@@ -106,7 +152,13 @@ public sealed partial class CompositionTests
     public void AssetDeletionRequiresCurrentArchiveClosedForWholeDelete() => RunSta(directory =>
     {
         var path = Path.Combine(directory, "game.zip");
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         archive.Save();
         using var editor = new AssetEditorControl(archive);
         var plan = AssetDeletionPlan.Create(path, [], [path]);

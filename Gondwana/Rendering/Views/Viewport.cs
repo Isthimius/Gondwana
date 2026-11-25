@@ -8,7 +8,12 @@ namespace Gondwana.Rendering.Views;
 /// </summary>
 public sealed class Viewport
 {
-    private Rectangle _targetRectPx = new Rectangle(0, 0, 1280, 720);
+    private Rectangle _targetRectPx = new Rectangle(
+        0,
+        0,
+        1280,
+        720);
+
     private float _zoom = 1f;
     private float? _zoomTarget;
     private float _zoomLerpPerSecond;
@@ -55,7 +60,12 @@ public sealed class Viewport
     public void Resize(int width, int height)
     {
         var rect = TargetRectPx;
-        TargetRectPx = new Rectangle(rect.Left, rect.Top, width, height);
+
+        TargetRectPx = new Rectangle(
+            rect.Left,
+            rect.Top,
+            width,
+            height);
     }
 
     /// <summary>
@@ -197,5 +207,6 @@ public sealed class Viewport
         if (Math.Abs(newZoom - target) < 1e-4f)
             SnapZoom(target);
     }
+
     #endregion zoom zoom
 }

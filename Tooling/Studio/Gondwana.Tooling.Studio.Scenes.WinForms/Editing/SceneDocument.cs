@@ -17,10 +17,22 @@ public sealed partial class SceneDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
         ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
-        if (Definition.TilesheetSources.Any(source => string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)))
-            throw new InvalidOperationException($"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
-        History.Insert("Add tilesheet source", Definition.TilesheetSources, Definition.TilesheetSources.Count,
-            SceneTilesheetSourceDefinition.Packed(tilesheet, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
+
+        if (Definition.TilesheetSources.Any(source => string.Equals(
+                source.Tilesheet,
+                tilesheet,
+                StringComparison.Ordinal)))
+            throw new InvalidOperationException(
+                $"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+
+        History.Insert(
+            "Add tilesheet source",
+            Definition.TilesheetSources,
+            Definition.TilesheetSources.Count,
+            SceneTilesheetSourceDefinition.Packed(
+                tilesheet,
+                Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)),
+                entryName));
     }
 
     /// <summary>Adds a validated packed animation dependency; rejects conflicting logical identities.</summary>
@@ -29,26 +41,44 @@ public sealed partial class SceneDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
-        if (Definition.AnimationSources.Any(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase)))
-            throw new InvalidOperationException($"An animation source named '{key}' already exists. Remove the existing source before adding another.");
-        History.Insert("Add animation source", Definition.AnimationSources, Definition.AnimationSources.Count,
-            SceneAnimationSourceDefinition.Packed(key, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
+
+        if (Definition.AnimationSources.Any(source => string.Equals(
+                source.AnimationKey,
+                key,
+                StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException(
+                $"An animation source named '{key}' already exists. Remove the existing source before adding another.");
+
+        History.Insert(
+            "Add animation source",
+            Definition.AnimationSources,
+            Definition.AnimationSources.Count,
+            SceneAnimationSourceDefinition.Packed(
+                key,
+                Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)),
+                entryName));
     }
 
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public SceneDefinition Definition { get; private set; }
+
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
+
     /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
+
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty => History.IsDirty;
+
     /// <summary>Document-local reversible edits and save checkpoints.</summary>
     public EditHistory History { get; }
+
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
+
     internal event Action? EditingContextChanging;
 
     private SceneDocument(
@@ -77,8 +107,16 @@ public sealed partial class SceneDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = SceneDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
-        var document = new SceneDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
+
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
+
+        var document = new SceneDocument(
+            definitions[0],
+            path,
+            Path.GetDirectoryName(path)!,
+            false);
+
         document._definitions = definitions;
         document.SourceVersion = version;
         document.RememberReferenceOrigins();
@@ -104,6 +142,7 @@ public sealed partial class SceneDocument
     public SceneLayerDefinition AddLayer()
     {
         EditingContextChanging?.Invoke();
+
         var layer = new SceneLayerDefinition
         {
             ID = UniqueLayerId(),
@@ -113,7 +152,13 @@ public sealed partial class SceneDocument
             TileHeight = 32,
             ZOrder = Definition.Layers.Count
         };
-        History.Insert("Add layer", Definition.Layers, Definition.Layers.Count, layer);
+
+        History.Insert(
+            "Add layer",
+            Definition.Layers,
+            Definition.Layers.Count,
+            layer);
+
         return layer;
     }
 
@@ -150,11 +195,14 @@ public sealed partial class SceneDocument
         int x,
         int y)
     {
-        if (!Owns(layer)) throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+        if (!Owns(layer))
+            throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+
         if (x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
             throw new ArgumentOutOfRangeException(nameof(x), "Tile coordinates must be inside the selected layer.");
 
         var existing = FindTile(layer, x, y);
+
         if (existing is not null)
             return existing;
 
@@ -163,7 +211,13 @@ public sealed partial class SceneDocument
             X = x,
             Y = y
         };
-        History.Insert("Create tile", layer.Tiles, layer.Tiles.Count, tile);
+
+        History.Insert(
+            "Create tile",
+            layer.Tiles,
+            layer.Tiles.Count,
+            tile);
+
         return tile;
     }
 
@@ -174,7 +228,9 @@ public sealed partial class SceneDocument
     /// <returns>True if any overrides were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTile(SceneLayerDefinition layer, int x, int y)
     {
-        if (!Owns(layer)) throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+        if (!Owns(layer))
+            throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+
         return History.RemoveWhere("Erase tile", layer.Tiles, tile => tile.X == x && tile.Y == y) > 0;
     }
 
@@ -205,10 +261,19 @@ public sealed partial class SceneDocument
         }
 
         using var transaction = History.BeginTransaction("Change tilesheet source");
-        History.RemoveWhere("Remove source", Definition.TilesheetSources, source =>
-            string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal));
-        History.Insert("Add source", Definition.TilesheetSources, Definition.TilesheetSources.Count,
+
+        History.RemoveWhere(
+            "Remove source",
+            Definition.TilesheetSources,
+            source =>
+                string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal));
+
+        History.Insert(
+            "Add source",
+            Definition.TilesheetSources,
+            Definition.TilesheetSources.Count,
             SceneTilesheetSourceDefinition.Loose(tilesheet, persisted));
+
         transaction.Commit();
         return true;
     }
@@ -241,10 +306,19 @@ public sealed partial class SceneDocument
         }
 
         using var transaction = History.BeginTransaction("Change animation source");
-        History.RemoveWhere("Remove source", Definition.AnimationSources, source =>
-            string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase));
-        History.Insert("Add source", Definition.AnimationSources, Definition.AnimationSources.Count,
+
+        History.RemoveWhere(
+            "Remove source",
+            Definition.AnimationSources,
+            source =>
+                string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase));
+
+        History.Insert(
+            "Add source",
+            Definition.AnimationSources,
+            Definition.AnimationSources.Count,
             SceneAnimationSourceDefinition.Loose(animationKey, persisted));
+
         transaction.Commit();
         return true;
     }
@@ -254,8 +328,11 @@ public sealed partial class SceneDocument
     /// <returns>True if any entries were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTilesheetSource(string tilesheet)
     {
-        return History.RemoveWhere("Remove tilesheet source", Definition.TilesheetSources, source =>
-            string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)) > 0;
+        return History.RemoveWhere(
+            "Remove tilesheet source",
+            Definition.TilesheetSources,
+            source =>
+                string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)) > 0;
     }
 
     /// <summary>Removes all animation sources matching the key from the selected scene.</summary>
@@ -263,8 +340,11 @@ public sealed partial class SceneDocument
     /// <returns>True if entries were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveAnimationSource(string animationKey)
     {
-        return History.RemoveWhere("Remove animation source", Definition.AnimationSources, source =>
-            string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase)) > 0;
+        return History.RemoveWhere(
+            "Remove animation source",
+            Definition.AnimationSources,
+            source =>
+                string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase)) > 0;
     }
 
     /// <summary>Resolves a document-relative resource path to an absolute path without checking existence.</summary>
@@ -300,48 +380,72 @@ public sealed partial class SceneDocument
     /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, bool allowInvalid = false)
     {
-        if (History.InTransaction || History.IsExecuting) throw new InvalidOperationException("Finish the current edit before saving.");
+        if (History.InTransaction || History.IsExecuting)
+            throw new InvalidOperationException("Finish the current edit before saving.");
+
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = SceneDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
-        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.ID)) ||
             _definitions.Select(member => member.ID).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
             throw new InvalidDataException("Every definition needs a unique, non-empty logical identity.");
+
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
         var location = new AssetLocation(AssetTypes.SceneDefinition, path);
-        var expected = FilePath is not null && string.Equals(path, FilePath,
+
+        var expected = FilePath is not null && string.Equals(
+            path,
+            FilePath,
             OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
-            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
+            ? SourceVersion ?? DocumentSourceVersion.Read(location)
+            : DocumentSourceVersion.Read(location);
+
         var snapshots = _definitions.Select(member =>
         {
             var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is { } packed ? SceneDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
+
+            clone.Source = PackedLocation is { } packed
+                ? SceneDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!)
+                : SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
+
             return clone;
         }).ToList();
-        var installed = DocumentSourceSave.Save(location, expected,
+
+        var installed = DocumentSourceSave.Save(
+            location,
+            expected,
             check => SceneDefinitionSerializer.SaveAll(path, snapshots, check));
+
         var saved = SceneDefinitionSerializer.LoadAll(path);
         DocumentSourceSave.Verify(location, installed);
         SourceVersion = installed;
+
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];
             var persisted = saved[i];
+
             for (int j = 0; j < member.TilesheetSources.Count; j++)
             {
                 member.TilesheetSources[j].GtsPath = persisted.TilesheetSources[j].GtsPath;
                 member.TilesheetSources[j].AssetsFilePath = persisted.TilesheetSources[j].AssetsFilePath;
             }
+
             for (int j = 0; j < member.AnimationSources.Count; j++)
             {
                 member.AnimationSources[j].GaniPath = persisted.AnimationSources[j].GaniPath;
                 member.AnimationSources[j].AssetsFilePath = persisted.AnimationSources[j].AssetsFilePath;
             }
+
             member.Source = SceneDefinitionSource.LooseDefinitionFile(path);
         }
+
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
@@ -353,9 +457,12 @@ public sealed partial class SceneDocument
     {
         int n = Definition.Layers.Count + 1;
         string candidate;
-        do candidate = $"layer-{n++}";
+
+        do
+            candidate = $"layer-{n++}";
         while (Definition.Layers.Any(layer =>
-            string.Equals(layer.ID, candidate, StringComparison.Ordinal)));
+                   string.Equals(layer.ID, candidate, StringComparison.Ordinal)));
+
         return candidate;
     }
 
@@ -372,6 +479,7 @@ public sealed partial class SceneDocument
     {
         string fullPath = Path.GetFullPath(path);
         string fullBase = Path.GetFullPath(baseDirectory);
+
         if (!string.Equals(
                 Path.GetPathRoot(fullPath),
                 Path.GetPathRoot(fullBase),
@@ -397,7 +505,10 @@ public sealed partial class SceneDocument
     public void SelectDefinition(SceneDefinition definition)
     {
         EditingContextChanging?.Invoke();
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -430,18 +541,30 @@ public sealed partial class SceneDocument
     public bool RemoveDefinition(SceneDefinition definition)
     {
         EditingContextChanging?.Invoke();
-        if (_definitions.Count == 1 || !_definitions.Contains(definition)) return false;
+
+        if (_definitions.Count == 1 || !_definitions.Contains(definition))
+            return false;
+
         var selected = Definition;
         int index = _definitions.IndexOf(definition);
-        History.Execute("Remove definition", () =>
-        {
-            _definitions.Remove(definition);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
-        }, () =>
-        {
-            if (!_definitions.Contains(definition)) _definitions.Insert(index, definition);
-            Definition = selected;
-        });
+
+        History.Execute(
+            "Remove definition",
+            () =>
+            {
+                _definitions.Remove(definition);
+
+                if (ReferenceEquals(Definition, definition))
+                    Definition = _definitions[0];
+            },
+            () =>
+            {
+                if (!_definitions.Contains(definition))
+                    _definitions.Insert(index, definition);
+
+                Definition = selected;
+            });
+
         return true;
     }
 
@@ -453,10 +576,17 @@ public sealed partial class SceneDocument
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
+
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.ID == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
+
         var member = Definition;
-        History.Set("Rename definition", () => member.ID, value => member.ID = value, identity);
+
+        History.Set(
+            "Rename definition",
+            () => member.ID,
+            value => member.ID = value,
+            identity);
     }
 
     /// <summary>Imports selected GSCN members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -468,26 +598,43 @@ public sealed partial class SceneDocument
     public int ImportDefinitions(string path, Func<IReadOnlyList<SceneDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);
+
         if (!string.Equals(Path.GetExtension(path), ".gscn", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Choose a .gscn definition document.", nameof(path));
+
         var sourceDirectory = Path.GetDirectoryName(path)!;
         string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
-        var imported = DefinitionImport.Prepare(path, Definitions, SceneDefinitionSerializer.LoadAll, select, member =>
-        {
-            var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
-            foreach (var source in clone.TilesheetSources ?? [])
+
+        var imported = DefinitionImport.Prepare(
+            path,
+            Definitions,
+            SceneDefinitionSerializer.LoadAll,
+            select,
+            member =>
             {
-                source.GtsPath = Rebase(source.GtsPath);
-                source.AssetsFilePath = Rebase(source.AssetsFilePath);
-            }
-            foreach (var source in clone.AnimationSources ?? [])
-            {
-                source.GaniPath = Rebase(source.GaniPath);
-                source.AssetsFilePath = Rebase(source.AssetsFilePath);
-            }
-            return clone;
-        }, member => member.ID, (member, identity) => member.ID = identity, "scene");
-        if (imported.Count == 0) return 0;
+                var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
+
+                foreach (var source in clone.TilesheetSources ?? [])
+                {
+                    source.GtsPath = Rebase(source.GtsPath);
+                    source.AssetsFilePath = Rebase(source.AssetsFilePath);
+                }
+
+                foreach (var source in clone.AnimationSources ?? [])
+                {
+                    source.GaniPath = Rebase(source.GaniPath);
+                    source.AssetsFilePath = Rebase(source.AssetsFilePath);
+                }
+
+                return clone;
+            },
+            member => member.ID,
+            (member, identity) => member.ID = identity,
+            "scene");
+
+        if (imported.Count == 0)
+            return 0;
+
         AddMembers(imported, "Import definitions");
         return imported.Count;
     }
@@ -495,7 +642,10 @@ public sealed partial class SceneDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.ID == candidate); i++) candidate = basis + "-" + i;
+
+        for (int i = 2; _definitions.Any(member => member.ID == candidate); i++)
+            candidate = basis + "-" + i;
+
         return candidate;
     }
 }

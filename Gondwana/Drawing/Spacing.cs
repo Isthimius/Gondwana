@@ -18,7 +18,11 @@ public record struct Spacing(
     /// <summary>
     /// Represents a spacing with no extension in any direction (all values are zero).
     /// </summary>
-    public static readonly Spacing None = new(0, 0, 0, 0);
+    public static readonly Spacing None = new(
+        0,
+        0,
+        0,
+        0);
 
     /// <summary>
     /// Gets a value indicating whether this spacing has no extension in any direction.

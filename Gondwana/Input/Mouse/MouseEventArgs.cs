@@ -117,13 +117,14 @@ public sealed class MouseEventArgs : EventArgs
     /// <param name="tick">
     /// The timestamp or tick count at the time this mouse event was generated.
     /// </param>
-    public MouseEventArgs(MouseEventConfiguration mouseEventConfiguration,
-                          KeyboardModifierState currentKeyboardModifiers,
-                          IReadOnlyDictionary<MouseButton, MouseButtonState> buttonStates,
-                          Point previousPosition,
-                          Point currentPosition,
-                          int scrollDelta,
-                          long tick)
+    public MouseEventArgs(
+        MouseEventConfiguration mouseEventConfiguration,
+        KeyboardModifierState currentKeyboardModifiers,
+        IReadOnlyDictionary<MouseButton, MouseButtonState> buttonStates,
+        Point previousPosition,
+        Point currentPosition,
+        int scrollDelta,
+        long tick)
     {
         MouseEventConfiguration = mouseEventConfiguration;
         CurrentKeyboardModifiers = currentKeyboardModifiers;

@@ -85,6 +85,7 @@ public static class EnginePluginRegistry
     private static void Invoke(Engine engine, Action<IEnginePlugin> callback, string hook)
     {
         IEnginePlugin[] snapshot;
+
         lock (_lock)
             snapshot = _snapshot;
 

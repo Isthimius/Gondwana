@@ -38,20 +38,31 @@ public sealed class LabelWidget : WidgetBase
     /// <param name="bounds">The widget bounds in view-local pixels.</param>
     /// <param name="text">The text to display.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public LabelWidget(RenderSurfaceHostBase renderSurfaceHost,
-                       View view,
-                       Rectangle bounds,
-                       string text = "",
-                       string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public LabelWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string text = "",
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
         _text = text ?? string.Empty;
         _size = bounds.Size;
-        TextBlock = new TextBlock(renderSurfaceHost, view, bounds, $"{Nickname}.text")
+
+        TextBlock = new TextBlock(
+                renderSurfaceHost,
+                view,
+                bounds,
+                $"{Nickname}.text")
             .SetText(_text)
             .SetColors(_foregroundColor, _backgroundColor);
+
         VerticalScrollBarTrack = CreateScrollBarTrack(renderSurfaceHost, view, bounds);
         VerticalScrollBarThumb = CreateScrollBarThumb(renderSurfaceHost, view, bounds);
 
@@ -69,20 +80,32 @@ public sealed class LabelWidget : WidgetBase
     /// <param name="bounds">The widget bounds in world pixels.</param>
     /// <param name="text">The text to display.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public LabelWidget(RenderSurfaceHostBase renderSurfaceHost,
-                       SceneLayer sceneLayer,
-                       Rectangle bounds,
-                       string text = "",
-                       string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public LabelWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string text = "",
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
         _text = text ?? string.Empty;
         _size = bounds.Size;
-        TextBlock = new TextBlock(renderSurfaceHost, sceneLayer, view: null, worldBounds: bounds, nickname: $"{Nickname}.text")
+
+        TextBlock = new TextBlock(
+                renderSurfaceHost,
+                sceneLayer,
+                view: null,
+                worldBounds: bounds,
+                nickname: $"{Nickname}.text")
             .SetText(_text)
             .SetColors(_foregroundColor, _backgroundColor);
+
         VerticalScrollBarTrack = CreateScrollBarTrack(renderSurfaceHost, sceneLayer, bounds);
         VerticalScrollBarThumb = CreateScrollBarThumb(renderSurfaceHost, sceneLayer, bounds);
 
@@ -116,6 +139,7 @@ public sealed class LabelWidget : WidgetBase
         get
         {
             Vector2 position = GetPosition();
+
             return new Rectangle(
                 (int)MathF.Round(position.X),
                 (int)MathF.Round(position.Y),
@@ -169,7 +193,9 @@ public sealed class LabelWidget : WidgetBase
         get => _mouseWheelScrollPixels;
         set => _mouseWheelScrollPixels = value > 0
             ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), "Mouse-wheel scrolling must advance at least one pixel.");
+            : throw new ArgumentOutOfRangeException(
+                nameof(value),
+                "Mouse-wheel scrolling must advance at least one pixel.");
     }
 
     /// <summary>
@@ -313,6 +339,7 @@ public sealed class LabelWidget : WidgetBase
     {
         if (!float.IsFinite(horizontal) || horizontal < 0f)
             throw new ArgumentOutOfRangeException(nameof(horizontal));
+
         if (!float.IsFinite(vertical) || vertical < 0f)
             throw new ArgumentOutOfRangeException(nameof(vertical));
 
@@ -421,6 +448,7 @@ public sealed class LabelWidget : WidgetBase
         base.OnMouseWheel(args);
 
         float maximumScroll = _maximumVerticalScrollOffsetPx;
+
         if (args.Delta == 0 || maximumScroll <= 0f)
             return;
 
@@ -459,8 +487,8 @@ public sealed class LabelWidget : WidgetBase
         _maximumVerticalScrollOffsetPx = TextBlock.MeasureMaximumVerticalScrollOffsetPx();
 
         bool showScrollBar = VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
-            (VerticalScrollBarVisibility == ScrollBarVisibility.Auto &&
-             _maximumVerticalScrollOffsetPx > 0.5f);
+                             (VerticalScrollBarVisibility == ScrollBarVisibility.Auto &&
+                              _maximumVerticalScrollOffsetPx > 0.5f);
 
         if (showScrollBar)
         {
@@ -469,6 +497,7 @@ public sealed class LabelWidget : WidgetBase
                 bounds.Top,
                 Math.Max(1, bounds.Width - ScrollBarWidth - ScrollBarMargin * 2),
                 bounds.Height);
+
             SetTextBlockBounds(contentBounds);
             _maximumVerticalScrollOffsetPx = TextBlock.MeasureMaximumVerticalScrollOffsetPx();
         }
@@ -532,11 +561,14 @@ public sealed class LabelWidget : WidgetBase
             return trackBounds;
 
         float contentHeight = viewportHeight + maximumScroll;
+
         int thumbHeight = Math.Clamp(
             (int)MathF.Round(trackBounds.Height * Math.Min(1f, viewportHeight / contentHeight)),
             Math.Min(MinimumScrollBarThumbHeight, trackBounds.Height),
             trackBounds.Height);
+
         int travel = trackBounds.Height - thumbHeight;
+
         int offset = maximumScroll <= 0f
             ? 0
             : (int)MathF.Round(travel * (_verticalScrollOffsetPx / maximumScroll));
@@ -551,6 +583,7 @@ public sealed class LabelWidget : WidgetBase
     private PointF GetLocalPointerPosition(WidgetPointerEventArgs args)
     {
         RectangleF screenBounds = TextBlock.GetDrawLocationScreen(args.View);
+
         screenBounds.Offset(
             args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom,
             args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
@@ -574,6 +607,7 @@ public sealed class LabelWidget : WidgetBase
         TextBlock.SetPosition(new Vector2(bounds.X, bounds.Y));
 
         Rectangle overallBounds = Bounds;
+
         SetLocalOffset(
             TextBlock,
             new Vector2(bounds.X - overallBounds.X, bounds.Y - overallBounds.Y));
@@ -595,13 +629,31 @@ public sealed class LabelWidget : WidgetBase
         RenderSurfaceHostBase host,
         View view,
         Rectangle bounds)
-        => ConfigureScrollBarTrack(new DirectRectangle(Color.FromArgb(255, 26, 26, 32), host, view, bounds));
+        => ConfigureScrollBarTrack(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    26,
+                    26,
+                    32),
+                host,
+                view,
+                bounds));
 
     private static DirectRectangle CreateScrollBarTrack(
         RenderSurfaceHostBase host,
         SceneLayer sceneLayer,
         Rectangle bounds)
-        => ConfigureScrollBarTrack(new DirectRectangle(Color.FromArgb(255, 26, 26, 32), host, sceneLayer, bounds));
+        => ConfigureScrollBarTrack(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    26,
+                    26,
+                    32),
+                host,
+                sceneLayer,
+                bounds));
 
     private static DirectRectangle ConfigureScrollBarTrack(DirectRectangle track)
         => track.SetFilled(true).SetStrokeWidth(0f).SetCornerRadius(3f);
@@ -610,13 +662,31 @@ public sealed class LabelWidget : WidgetBase
         RenderSurfaceHostBase host,
         View view,
         Rectangle bounds)
-        => ConfigureScrollBarThumb(new DirectRectangle(Color.FromArgb(255, 126, 126, 142), host, view, bounds));
+        => ConfigureScrollBarThumb(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    126,
+                    126,
+                    142),
+                host,
+                view,
+                bounds));
 
     private static DirectRectangle CreateScrollBarThumb(
         RenderSurfaceHostBase host,
         SceneLayer sceneLayer,
         Rectangle bounds)
-        => ConfigureScrollBarThumb(new DirectRectangle(Color.FromArgb(255, 126, 126, 142), host, sceneLayer, bounds));
+        => ConfigureScrollBarThumb(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    126,
+                    126,
+                    142),
+                host,
+                sceneLayer,
+                bounds));
 
     private static DirectRectangle ConfigureScrollBarThumb(DirectRectangle thumb)
         => thumb.SetFilled(true).SetStrokeWidth(0f).SetCornerRadius(3f);

@@ -15,33 +15,41 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
         /// <summary>Gets the source loose file or archive path.</summary>
         [CommandArgument(0, "<source>")]
         public string Source { get; init; } = "";
+
         /// <summary>Gets the destination loose file or archive path.</summary>
         [CommandArgument(1, "<destination>")]
         public string Destination { get; init; } = "";
+
         /// <summary>Gets the explicit directory or single-GAF discovery scope.</summary>
         [CommandOption("--scope")]
         [Description("Required recursive directory or single GAF/ZIP search scope.")]
         public string Scope { get; init; } = "";
+
         /// <summary>Gets the source packed entry, or null for loose storage.</summary>
         [CommandOption("--source-entry")]
         [Description("Exact typed source entry; omit for loose storage.")]
         public string? SourceEntry { get; init; }
+
         /// <summary>Gets the destination packed entry, or null for loose storage.</summary>
         [CommandOption("--destination-entry")]
         [Description("Exact destination entry; omit for loose storage.")]
         public string? DestinationEntry { get; init; }
+
         /// <summary>Gets the exact type, required for packed sources.</summary>
         [CommandOption("--type")]
         [Description("AssetTypes value; required for packed sources.")]
         public string? Type { get; init; }
+
         /// <summary>Gets whether to move the complete GAF.</summary>
         [CommandOption("--archive")]
         [Description("Operate on the whole GAF/ZIP, not an entry.")]
         public bool Archive { get; init; }
+
         /// <summary>Gets whether to execute; omitted means preview only.</summary>
         [CommandOption("--commit")]
         [Description("Execute the reviewed operation; omitted means preview only.")]
         public bool Commit { get; init; }
+
         /// <summary>Gets an optional JSON object mapping absolute archive paths to their passwords.</summary>
         [CommandOption("--credentials")]
         [Description("JSON object of absolute GAF paths to passwords; never printed.")]
@@ -53,27 +61,65 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(settings.Scope)) throw new ArgumentException("An explicit --scope directory or GAF is required.");
+            if (string.IsNullOrWhiteSpace(settings.Scope))
+                throw new ArgumentException("An explicit --scope directory or GAF is required.");
+
             var credentials = AssetCommandCredentials.Load(settings.Credentials);
             AssetRelocationPlan plan;
+
             if (settings.Archive)
             {
-                if (settings.SourceEntry is not null || settings.DestinationEntry is not null || settings.Type is not null) throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
-                plan = AssetRelocationPlan.MoveArchive(settings.Source, settings.Destination, settings.Scope, path => credentials.GetValueOrDefault(path), cancellationToken);
+                if (settings.SourceEntry is not null || settings.DestinationEntry is not null ||
+                    settings.Type is not null)
+                    throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
+
+                plan = AssetRelocationPlan.MoveArchive(
+                    settings.Source,
+                    settings.Destination,
+                    settings.Scope,
+                    path => credentials.GetValueOrDefault(path),
+                    cancellationToken);
             }
             else
             {
-                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source)) throw new ArgumentException("Archive files require --archive.");
-                if (settings.SourceEntry is not null && settings.Type is null) throw new ArgumentException("Packed sources require --type.");
-                var type = settings.Type is null ? AssetImportPlan.InferType(settings.Source) : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
-                plan = AssetRelocationPlan.Create(settings.Scope, [new(new(type, Path.GetFullPath(settings.Source), settings.SourceEntry),
-                    new(type, Path.GetFullPath(settings.Destination), settings.DestinationEntry))], path => credentials.GetValueOrDefault(path), cancellationToken);
+                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source))
+                    throw new ArgumentException("Archive files require --archive.");
+
+                if (settings.SourceEntry is not null && settings.Type is null)
+                    throw new ArgumentException("Packed sources require --type.");
+
+                var type = settings.Type is null
+                    ? AssetImportPlan.InferType(settings.Source)
+                    : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
+
+                plan = AssetRelocationPlan.Create(
+                    settings.Scope,
+                    [
+                        new(
+                            new(type, Path.GetFullPath(settings.Source), settings.SourceEntry),
+                            new(type, Path.GetFullPath(settings.Destination), settings.DestinationEntry))
+                    ],
+                    path => credentials.GetValueOrDefault(path),
+                    cancellationToken);
             }
-            foreach (var line in plan.Preview) AnsiConsole.WriteLine(line);
-            if (settings.Commit) { plan.Commit(cancellationToken); AnsiConsole.WriteLine("Move committed; original locations retired."); }
-            else AnsiConsole.WriteLine("Preview only. Use --commit to execute after saving/closing affected editors.");
+
+            foreach (var line in plan.Preview)
+                AnsiConsole.WriteLine(line);
+
+            if (settings.Commit)
+            {
+                plan.Commit(cancellationToken);
+                AnsiConsole.WriteLine("Move committed; original locations retired.");
+            }
+            else
+                AnsiConsole.WriteLine("Preview only. Use --commit to execute after saving/closing affected editors.");
+
             return 0;
         }
-        catch (Exception ex) { AnsiConsole.WriteLine(ex.Message); return 1; }
+        catch (Exception ex)
+        {
+            AnsiConsole.WriteLine(ex.Message);
+            return 1;
+        }
     }
 }

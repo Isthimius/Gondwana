@@ -32,11 +32,20 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
     public async Task NativeReplaySurvivesMsaaResizeAndContextReplacement()
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
         var thread = new Thread(() =>
         {
-            try { Run(); completion.SetResult(); }
-            catch (Exception exception) { completion.SetException(exception); }
+            try
+            {
+                Run();
+                completion.SetResult();
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.IsBackground = true;
         thread.Start();
@@ -72,15 +81,22 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         AssertRed(host);
 
         Produce(host);
+
         typeof(GpuBackbuffer).GetMethod("RequestResize", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(buffer, [64, 64]);
+
         Assert.True(buffer.EnsureInitialized(replacement));
+
         using (var rejected = host.GlRenderAndSnapshot())
         using (var pixels = SKBitmap.FromImage(rejected!))
             Assert.Equal(buffer.ClearColor, pixels.GetPixel(1, 1));
+
         Produce(host);
         AssertRed(host);
-        output.WriteLine($"Native GL replay passed; MSAA actual/max {buffer.ActualMsaaSampleCount}/{buffer.MaxSupportedMsaaSampleCount}.");
+
+        output.WriteLine(
+            $"Native GL replay passed; MSAA actual/max {buffer.ActualMsaaSampleCount}/{buffer.MaxSupportedMsaaSampleCount}.");
+
         // Dispose GPU resources before their current context.
         buffer.Dispose();
     }
@@ -93,6 +109,7 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
     public async Task AvaloniaCallbacksReplayAfterContextDeinitialization()
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
         var thread = new Thread(() =>
         {
             try
@@ -103,7 +120,14 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
                 _ = native.Handle;
                 native.MakeCurrent();
                 using var control = new AvaloniaControl();
-                control.Arrange(new global::Avalonia.Rect(0, 0, 128, 128));
+
+                control.Arrange(
+                    new global::Avalonia.Rect(
+                        0,
+                        0,
+                        128,
+                        128));
+
                 using var scene = new Scene();
                 control.Host.Bind(scene, false);
                 control.Host.RenderBackbufferPostScene += canvas => canvas.Clear(SKColors.Red);
@@ -120,8 +144,12 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
                 control.Deinitialize();
                 completion.SetResult();
             }
-            catch (Exception exception) { completion.SetException(exception); }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.IsBackground = true;
         thread.Start();

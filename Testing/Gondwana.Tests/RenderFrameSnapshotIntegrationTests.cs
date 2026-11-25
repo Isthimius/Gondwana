@@ -27,11 +27,21 @@ public sealed class RenderFrameSnapshotIntegrationTests
         profiler.Reset();
         using var host = new RenderSurfaceHost<BitmapBackbuffer>(new Adapter());
         using var buffer = host.Backbuffer;
-        using (profiler.Start()) { }
+
+        using (profiler.Start())
+        {
+        }
+
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal("Bitmap", source.Backend);
-        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["replay.cpu.ms"].Availability);
-        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["layers.omitted"].Availability);
+
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryAvailability.Unsupported,
+            source.Metrics["replay.cpu.ms"].Availability);
+
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryAvailability.Unsupported,
+            source.Metrics["layers.omitted"].Availability);
     }
 
     /// <summary>
@@ -43,7 +53,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
         var profiler = Engine.Instance.Profiler;
         profiler.Reset();
         using var scene = new Scene();
-        scene.AddLayer(2, 1, 16, 16);
+
+        scene.AddLayer(
+            2,
+            1,
+            16,
+            16);
+
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var buffer = host.Backbuffer;
         host.Bind(scene, false);
@@ -59,30 +75,30 @@ public sealed class RenderFrameSnapshotIntegrationTests
             .Metrics;
 
         foreach (string key in new[]
-        {
-            "snapshot.age.ms",
-            "visible.drawables",
-            "visible.tiles",
-            "atlas.batches",
-            "atlas.tiles",
-            "layers.omitted",
-            "presentation.count",
-            "layer.0.drawables",
-            "layer.0.tiles"
-        })
+                 {
+                     "snapshot.age.ms",
+                     "visible.drawables",
+                     "visible.tiles",
+                     "atlas.batches",
+                     "atlas.tiles",
+                     "layers.omitted",
+                     "presentation.count",
+                     "layer.0.drawables",
+                     "layer.0.tiles"
+                 })
         {
             Assert.Equal(Gondwana.Diagnostics.TelemetryMetricKind.Sample, metrics[key].Kind);
         }
 
         foreach (string key in new[]
-        {
-            "mailbox.slots",
-            "snapshot.commands.approximate",
-            "layer.0.transformed.tiles",
-            "layer.0.tile.width.px",
-            "layer.0.tile.height.px",
-            "layer.0.z"
-        })
+                 {
+                     "mailbox.slots",
+                     "snapshot.commands.approximate",
+                     "layer.0.transformed.tiles",
+                     "layer.0.tile.width.px",
+                     "layer.0.tile.height.px",
+                     "layer.0.z"
+                 })
         {
             Assert.Equal(Gondwana.Diagnostics.TelemetryMetricKind.Gauge, metrics[key].Kind);
         }
@@ -90,6 +106,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(
             Gondwana.Diagnostics.TelemetryMetricKind.LifetimeCounter,
             metrics["mailbox.published.lifetime"].Kind);
+
         Assert.Equal(
             Gondwana.Diagnostics.TelemetryMetricKind.LifetimeCounter,
             metrics["mailbox.dropped.lifetime"].Kind);
@@ -109,16 +126,25 @@ public sealed class RenderFrameSnapshotIntegrationTests
         host.Bind(scene, false);
         int legacy = 0;
         host.GpuRenderFrameDiagnosticsCalculated += _ => legacy++;
+
         using (profiler.Start())
         {
             host.ProduceRenderFrameSnapshot(1);
             using var image = host.GlRenderAndSnapshot();
         }
+
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal(1, source.Metrics["build.cpu.ms"].Count);
         Assert.Equal(1, source.Metrics["replay.cpu.ms"].Count);
-        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.NotApplicable, source.Metrics["gate.wait.cpu.ms"].Availability);
-        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.NotApplicable, source.Metrics["gate.held.cpu.ms"].Availability);
+
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryAvailability.NotApplicable,
+            source.Metrics["gate.wait.cpu.ms"].Availability);
+
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryAvailability.NotApplicable,
+            source.Metrics["gate.held.cpu.ms"].Availability);
+
         var counters = host.FrameMailbox.Counters;
         profiler.Reset();
         Assert.Equal(counters, host.FrameMailbox.Counters);
@@ -144,7 +170,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
         var profiler = Engine.Instance.Profiler;
         profiler.Reset();
         using var scene = new Scene();
-        scene.AddLayer(2, 1, 16, 16);
+
+        scene.AddLayer(
+            2,
+            1,
+            16,
+            16);
+
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var buffer = host.Backbuffer;
         host.Bind(scene, false);
@@ -153,6 +185,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
             host.ProduceRenderFrameSnapshot(1);
 
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
+
         Assert.Equal(
             source.Metrics["query.cpu.ms"].Last,
             source.Metrics["layer.0.query.cpu.ms"].Last);
@@ -177,9 +210,11 @@ public sealed class RenderFrameSnapshotIntegrationTests
 
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal(1, source.Metrics["build.cpu.ms"].Count);
+
         Assert.Equal(
             Gondwana.Diagnostics.TelemetryAvailability.NotYetSampled,
             source.Metrics["query.cpu.ms"].Availability);
+
         Assert.Equal(
             Gondwana.Diagnostics.TelemetryAvailability.NotYetSampled,
             source.Metrics["record.cpu.ms"].Availability);
@@ -225,14 +260,39 @@ public sealed class RenderFrameSnapshotIntegrationTests
         using var scene = new Scene();
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var backbuffer = host.Backbuffer;
-        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            2,
+            16,
+            16);
+
         layer.WrapHorizontally = true;
         layer.WrapVertically = true;
         host.Bind(scene, false);
         var view = Assert.Single(host.ViewManager.Views);
         view.Camera.SnapTo(new(-32, -32));
-        using var drawing = new DirectRectangle(Color.Red, host, layer, new(2, 2, 8, 8)).SetFilled(true);
-        using var overlay = new DirectRectangle(Color.Blue, host, view, new(0, 0, 4, 4)).SetFilled(true);
+
+        using var drawing = new DirectRectangle(
+            Color.Red,
+            host,
+            layer,
+            new(
+                2,
+                2,
+                8,
+                8)).SetFilled(true);
+
+        using var overlay = new DirectRectangle(
+            Color.Blue,
+            host,
+            view,
+            new(
+                0,
+                0,
+                4,
+                4)).SetFilled(true);
+
         host.Effects.Run(layer, new FadeOutEffect(1));
         host.Effects.Advance(0.5f);
         // DirectRectangle lazily initializes stroke join/cap on its first draw.
@@ -258,19 +318,40 @@ public sealed class RenderFrameSnapshotIntegrationTests
     public void AtlasBatchedGridTiles_MatchLegacyDrawing_AndReportBatching()
     {
         var bitmap = new SKBitmap(32, 16);
+
         using (var canvas = new SKCanvas(bitmap))
         using (var paint = new SKPaint { Color = SKColors.Red })
         {
-            canvas.DrawRect(new SKRect(0, 0, 16, 16), paint);
+            canvas.DrawRect(
+                new SKRect(
+                    0,
+                    0,
+                    16,
+                    16),
+                paint);
+
             paint.Color = SKColors.Blue;
-            canvas.DrawRect(new SKRect(16, 0, 32, 16), paint);
+
+            canvas.DrawRect(
+                new SKRect(
+                    16,
+                    0,
+                    32,
+                    16),
+                paint);
         }
 
         using var sheet = new Tilesheet("atlas-batch-test", bitmap);
         sheet.DefaultRegion.TileSize = new Size(16, 16);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(8, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            8,
+            1,
+            16,
+            16);
+
         for (int x = 0; x < 8; x++)
             layer[x, 0]!.CurrentFrame = sheet.GetFrame(x % 2, 0);
 
@@ -308,10 +389,21 @@ public sealed class RenderFrameSnapshotIntegrationTests
 
         using var sheet = new Tilesheet("bulk-grid-parity", bitmap);
         sheet.DefaultRegion.TileSize = new Size(16, 16);
-        sheet.DefaultRegion.Overhang = new Spacing(2, 2, 2, 2);
+
+        sheet.DefaultRegion.Overhang = new Spacing(
+            2,
+            2,
+            2,
+            2);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(6, 4, 16, 16);
+
+        var layer = scene.AddLayer(
+            6,
+            4,
+            16,
+            16);
+
         for (int y = 0; y < 4; y++)
             for (int x = 0; x < 6; x++)
                 layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
@@ -348,7 +440,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
         sheet.DefaultRegion.TileSize = new Size(16, 16);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(40, 30, 16, 16);
+
+        var layer = scene.AddLayer(
+            40,
+            30,
+            16,
+            16);
+
         PopulateOpaqueAtlasGrid(layer, sheet);
 
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
@@ -380,7 +478,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
         sheet.DefaultRegion.TileSize = new Size(16, 16);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(40, 30, 16, 16);
+
+        var layer = scene.AddLayer(
+            40,
+            30,
+            16,
+            16);
+
         PopulateOpaqueAtlasGrid(layer, sheet);
 
         // Force the materialized fixed-grid path used by real scenes that contain
@@ -423,6 +527,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
             for (int x = 0; x < 2; x++)
             {
                 paint.Color = colors[y * 2 + x];
+
                 canvas.DrawRect(
                     x * 16,
                     y * 16,
@@ -458,6 +563,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Gondwana.Rendering.Views.View view)
     {
         RectangleF first = layer[0, 0]!.GetDrawLocationScreen(view);
+
         RectangleF last =
             layer[layer.GridColumnCount - 1, layer.GridRowCount - 1]!
                 .GetDrawLocationScreen(view);
@@ -465,12 +571,15 @@ public sealed class RenderFrameSnapshotIntegrationTests
         int left = Math.Max(
             0,
             (int)MathF.Round(first.Left, MidpointRounding.AwayFromZero) + 1);
+
         int top = Math.Max(
             0,
             (int)MathF.Round(first.Top, MidpointRounding.AwayFromZero) + 1);
+
         int right = Math.Min(
             bitmap.Width - 1,
             (int)MathF.Round(last.Right, MidpointRounding.AwayFromZero) - 1);
+
         int bottom = Math.Min(
             bitmap.Height - 1,
             (int)MathF.Round(last.Bottom, MidpointRounding.AwayFromZero) - 1);
@@ -487,7 +596,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
     public void EmptyGridCells_AreCulledUnlessPostDrawGeometryIsNeeded()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(8, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            8,
+            1,
+            16,
+            16);
+
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var backbuffer = host.Backbuffer;
         host.Bind(scene, false);
@@ -511,7 +626,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
     public void FixedGridSnapshotEligibility_InvalidatesOnZOrderAndFogChanges()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(4, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            4,
+            1,
+            16,
+            16);
+
         var tile = layer[0, 0]!;
 
         Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
@@ -536,7 +657,12 @@ public sealed class RenderFrameSnapshotIntegrationTests
     public void DirectTileArrayExposure_DisablesPersistentFixedGridFastPath()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            2,
+            16,
+            16);
 
         Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
 
@@ -556,7 +682,13 @@ public sealed class RenderFrameSnapshotIntegrationTests
         sheet.DefaultRegion.TileSize = new Size(16, 16);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            1,
+            16,
+            16);
+
         var first = layer[0, 0]!;
         var second = layer[1, 0]!;
         first.CurrentFrame = sheet.GetFrame(0, 0);
@@ -565,7 +697,12 @@ public sealed class RenderFrameSnapshotIntegrationTests
         ((Tile)first).ZOrder = 10;
         ((Tile)second).ZOrder = 0;
 
-        var drawables = layer.GetDrawablesInWorldRect(new Rectangle(0, 0, 32, 16));
+        var drawables = layer.GetDrawablesInWorldRect(
+            new Rectangle(
+                0,
+                0,
+                32,
+                16));
 
         Assert.Equal(2, drawables.Count);
         Assert.Same(second, drawables[0]);
@@ -584,14 +721,17 @@ public sealed class RenderFrameSnapshotIntegrationTests
         using var backbuffer = host.Backbuffer;
         host.Bind(scene, false);
         int calls = 0;
+
         host.RenderBackbufferPostScene += canvas =>
         {
             calls++;
             canvas.Clear(SKColors.Red);
         };
+
         host.ProduceRenderFrameSnapshot(1);
         using var entered = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
+
         var blocker = Task.Run(() =>
         {
             lock (RenderStateSynchronization.SyncRoot)
@@ -600,7 +740,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
                 release.Wait(TimeSpan.FromSeconds(20));
             }
         });
+
         Assert.True(entered.Wait(TimeSpan.FromSeconds(10)));
+
         try
         {
             await Task.Run(() =>
@@ -609,9 +751,14 @@ public sealed class RenderFrameSnapshotIntegrationTests
                 using var pixels = SKBitmap.FromImage(image!);
                 Assert.Equal(SKColors.Red, pixels.GetPixel(1, 1));
             }).WaitAsync(TimeSpan.FromSeconds(5));
+
             Assert.Equal(1, calls);
         }
-        finally { release.Set(); await blocker; }
+        finally
+        {
+            release.Set();
+            await blocker;
+        }
     }
 
     /// <summary>

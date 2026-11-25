@@ -9,15 +9,30 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceAdapterBase
 {
-    private sealed class PresentationState(int bufferWidth, int bufferHeight, int adapterWidth, int adapterHeight)
+    private sealed class PresentationState(
+        int bufferWidth,
+        int bufferHeight,
+        int adapterWidth,
+        int adapterHeight)
     {
         internal readonly int BufferWidth = bufferWidth, BufferHeight = bufferHeight;
         internal readonly int AdapterWidth = adapterWidth, AdapterHeight = adapterHeight;
-        internal readonly PresentationTransform Transform = PresentationTransform.Fit(bufferWidth, bufferHeight, adapterWidth, adapterHeight);
+
+        internal readonly PresentationTransform Transform = PresentationTransform.Fit(
+            bufferWidth,
+            bufferHeight,
+            adapterWidth,
+            adapterHeight);
     }
 
     private readonly object _presentationSync = new();
-    private PresentationState _presentation = new(1, 1, 0, 0);
+
+    private PresentationState _presentation = new(
+        1,
+        1,
+        0,
+        0);
+
     internal bool InitialSizeAvailable { get; private set; }
 
     /// <summary>Current immutable aspect-preserving mapping of Backbuffer ScreenPx to adapter pixels.</summary>
@@ -31,7 +46,14 @@ public abstract class RenderSurfaceAdapterBase
         lock (_presentationSync)
         {
             var state = _presentation;
-            Volatile.Write(ref _presentation, new(width, height, state.AdapterWidth, state.AdapterHeight));
+
+            Volatile.Write(
+                ref _presentation,
+                new(
+                    width,
+                    height,
+                    state.AdapterWidth,
+                    state.AdapterHeight));
         }
     }
 
@@ -52,18 +74,29 @@ public abstract class RenderSurfaceAdapterBase
     public void DrawImage(SKCanvas canvas, SKImage image, SKColor clearColor)
     {
         var state = Volatile.Read(ref _presentation);
+
         // A queued CPU snapshot may precede an explicit resolution change. Fit that complete
         // image using the same authoritative calculation until its replacement arrives.
         var transform = image.Width == state.BufferWidth && image.Height == state.BufferHeight
-            ? state.Transform : PresentationTransform.Fit(image.Width, image.Height, state.AdapterWidth, state.AdapterHeight);
+            ? state.Transform
+            : PresentationTransform.Fit(
+                image.Width,
+                image.Height,
+                state.AdapterWidth,
+                state.AdapterHeight);
+
         canvas.Clear(clearColor);
-        if (transform.Scale <= 0) return;
+
+        if (transform.Scale <= 0)
+            return;
+
         canvas.DrawImage(image, transform.DestinationRect, PresentationSampling);
     }
 
     internal static SKSamplingOptions PresentationSampling => new(
         Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor
-            ? SKFilterMode.Nearest : SKFilterMode.Linear);
+            ? SKFilterMode.Nearest
+            : SKFilterMode.Linear);
 
     /// <summary>
     /// Occurs when the render surface adapter is resized.
@@ -100,7 +133,9 @@ public abstract class RenderSurfaceAdapterBase
     /// <param name="destWidth">The initial width of the render surface in pixels.</param>
     /// <param name="destHeight">The initial height of the render surface in pixels.</param>
     protected RenderSurfaceAdapterBase(int destWidth, int destHeight)
-        : this(destWidth, destHeight, initialSizeAvailable: true) { }
+        : this(destWidth, destHeight, initialSizeAvailable: true)
+    {
+    }
 
     /// <summary>Constructs an adapter whose initial layout may still be pending.</summary>
     /// <param name="destWidth">Initial or placeholder adapter width.</param>
@@ -124,6 +159,7 @@ public abstract class RenderSurfaceAdapterBase
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
         var sizeAvailable = destWidth > 0 && destHeight > 0;
+
         if (destWidth == Width && destHeight == Height && InitialSizeAvailable == sizeAvailable)
             return;
 
@@ -131,12 +167,27 @@ public abstract class RenderSurfaceAdapterBase
         var oldHeight = Height;
 
         InitialSizeAvailable = sizeAvailable;
+
         lock (_presentationSync)
         {
             var state = _presentation;
-            Volatile.Write(ref _presentation, new(state.BufferWidth, state.BufferHeight, destWidth, destHeight));
+
+            Volatile.Write(
+                ref _presentation,
+                new(
+                    state.BufferWidth,
+                    state.BufferHeight,
+                    destWidth,
+                    destHeight));
         }
-        Resized?.Invoke(new RenderSurfaceAdapterResizedEventArgs(this, oldWidth, oldHeight, Width, Height));
+
+        Resized?.Invoke(
+            new RenderSurfaceAdapterResizedEventArgs(
+                this,
+                oldWidth,
+                oldHeight,
+                Width,
+                Height));
     }
 
     /// <summary>

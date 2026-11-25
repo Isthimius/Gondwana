@@ -8,12 +8,17 @@ namespace Gondwana.Tests;
 /// </summary>
 public sealed class OverlaySettingsTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), "OverlaySettings_" + Guid.NewGuid().ToString("N"));
+    private readonly string _directory = Path.Combine(
+        Path.GetTempPath(),
+        "OverlaySettings_" + Guid.NewGuid().ToString("N"));
+
     private string SettingsPath => Path.Combine(_directory, "tool.settings.json");
+
     /// <summary>
     /// Initializes a new instance of the <c>OverlaySettingsTests</c> class.
     /// </summary>
     public OverlaySettingsTests() => Directory.CreateDirectory(_directory);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_directory, true);
 
@@ -26,12 +31,15 @@ public sealed class OverlaySettingsTests : IDisposable
         var settings = OverlaySettings.Load(SettingsPath);
         int notifications = 0;
         settings.Changed += (_, _) => notifications++;
+
         foreach (var kind in Enum.GetValues<OverlayKind>())
             settings.SetColor(kind, Color.FromArgb(10 + (int)kind, 33, 244));
 
         var loaded = OverlaySettings.Load(SettingsPath);
+
         foreach (var kind in Enum.GetValues<OverlayKind>())
             Assert.Equal(settings[kind].ToArgb(), loaded[kind].ToArgb());
+
         Assert.Equal(Enum.GetValues<OverlayKind>().Length, notifications);
         Assert.Null(loaded.Warning);
         Assert.Contains("\"Collision\": \"#", File.ReadAllText(SettingsPath));
@@ -82,8 +90,15 @@ public sealed class OverlaySettingsTests : IDisposable
         Assert.False(File.Exists(currentPath));
 
         settings.SetColor(OverlayKind.Collision, Color.Red);
-        Assert.Equal(Color.Red.ToArgb(), OverlaySettings.LoadWithLegacyFallback(currentPath)[OverlayKind.Collision].ToArgb());
-        Assert.Equal(Color.FromArgb(0x12, 0x34, 0x56).ToArgb(), OverlaySettings.Load(currentPath)[OverlayKind.Frames].ToArgb());
+
+        Assert.Equal(
+            Color.Red.ToArgb(),
+            OverlaySettings.LoadWithLegacyFallback(currentPath)[OverlayKind.Collision].ToArgb());
+
+        Assert.Equal(
+            Color.FromArgb(0x12, 0x34, 0x56).ToArgb(),
+            OverlaySettings.Load(currentPath)[OverlayKind.Frames].ToArgb());
+
         Assert.Equal("""{"OverlayColors":{"Frames":"#123456"}}""", File.ReadAllText(legacyPath));
     }
 
@@ -91,8 +106,10 @@ public sealed class OverlaySettingsTests : IDisposable
     [Fact]
     public void CurrentFilename_WinsOverLegacyFilename()
     {
-        File.WriteAllText(Path.Combine(_directory, "Gondwana.Tooling.Tilesheets.WinForms.settings.json"),
+        File.WriteAllText(
+            Path.Combine(_directory, "Gondwana.Tooling.Tilesheets.WinForms.settings.json"),
             """{"OverlayColors":{"Frames":"#123456"}}""");
+
         var currentPath = Path.Combine(_directory, "Gondwana.Tooling.Studio.Tilesheets.WinForms.settings.json");
         File.WriteAllText(currentPath, """{"OverlayColors":{"Frames":"#ABCDEF"}}""");
 

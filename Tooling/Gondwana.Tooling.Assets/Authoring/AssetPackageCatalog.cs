@@ -13,11 +13,16 @@ public sealed class AssetPackageCatalog : IDisposable
 
     /// <summary>Reports a physical package dependency so hosts can indicate stale previews after writes.</summary>
     public event Action<string>? PackageAccessed;
+
     /// <summary>Reports a successfully authenticated password for an optional host session cache.</summary>
     public event Action<string, string>? PasswordAccepted;
+
     private readonly Dictionary<string, AssetsFile> _packages =
         new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<string, (long Length, DateTime Modified)> _stamps = new(StringComparer.OrdinalIgnoreCase);
+
+    private readonly Dictionary<string, (long Length, DateTime Modified)> _stamps = new(
+        StringComparer.OrdinalIgnoreCase);
+
     private readonly Dictionary<string, Exception> _failures = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Gets or sets a callback receiving the full archive path after an unauthenticated load fails.</summary>
@@ -29,6 +34,7 @@ public sealed class AssetPackageCatalog : IDisposable
     {
         var fullPath = NormalizeExistingPath(archivePath);
         PackageAccessed?.Invoke(fullPath);
+
         return GetPackage(fullPath).GetAllEntries()
             .Where(entry => entry.AssetType == type)
             .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
@@ -94,8 +100,8 @@ public sealed class AssetPackageCatalog : IDisposable
         }
 
         return package.Get(type, exactEntry.AssetName)
-            ?? throw new InvalidDataException(
-                $"{type} asset '{entryName}' could not be read from '{fullPath}'.");
+               ?? throw new InvalidDataException(
+                   $"{type} asset '{entryName}' could not be read from '{fullPath}'.");
     }
 
     /// <summary>Attempts to open and dispose an exact image entry, using the cache and password callback as needed.</summary>
@@ -110,11 +116,11 @@ public sealed class AssetPackageCatalog : IDisposable
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            NotSupportedException or
-            InvalidOperationException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                NotSupportedException or
+                InvalidOperationException)
         {
             return false;
         }
@@ -125,8 +131,10 @@ public sealed class AssetPackageCatalog : IDisposable
     public void Invalidate(string assetsFilePath)
     {
         var fullPath = Path.GetFullPath(assetsFilePath);
+
         if (_packages.Remove(fullPath, out var package))
             package.Dispose();
+
         _stamps.Remove(fullPath);
         _failures.Remove(fullPath);
     }
@@ -146,11 +154,15 @@ public sealed class AssetPackageCatalog : IDisposable
     {
         var info = new FileInfo(fullPath);
         var stamp = (info.Length, info.LastWriteTimeUtc);
+
         if (_stamps.TryGetValue(fullPath, out var previous) && previous != stamp)
             Invalidate(fullPath);
+
         _stamps[fullPath] = stamp;
+
         if (_failures.TryGetValue(fullPath, out var failure))
             throw new InvalidDataException($"Could not open asset package '{fullPath}': {failure.Message}", failure);
+
         if (_packages.TryGetValue(fullPath, out var existing))
             return existing;
 
@@ -160,7 +172,13 @@ public sealed class AssetPackageCatalog : IDisposable
         try
         {
             using var stream = File.OpenRead(fullPath);
-            package = AssetsFile.Load(stream, password: null, register: false, sourcePath: fullPath);
+
+            package = AssetsFile.Load(
+                stream,
+                password: null,
+                register: false,
+                sourcePath: fullPath);
+
             _ = package.GetAllEntries().ToList();
         }
         catch (Exception ex)
@@ -173,9 +191,11 @@ public sealed class AssetPackageCatalog : IDisposable
         if (package is null)
         {
             var password = PasswordProvider?.Invoke(fullPath);
+
             if (password is null)
             {
                 _failures[fullPath] = firstFailure!;
+
                 throw new InvalidDataException(
                     $"Could not open asset package '{fullPath}' (corrupt, unreadable, or password-protected): {firstFailure?.Message}",
                     firstFailure);
@@ -184,15 +204,25 @@ public sealed class AssetPackageCatalog : IDisposable
             try
             {
                 using var stream = File.OpenRead(fullPath);
-                package = AssetsFile.Load(stream, password, register: false, sourcePath: fullPath);
+
+                package = AssetsFile.Load(
+                    stream,
+                    password,
+                    register: false,
+                    sourcePath: fullPath);
+
                 _ = package.GetAllEntries().ToList();
             }
             catch (Exception ex)
             {
                 package?.Dispose();
                 _failures[fullPath] = ex;
-                throw new InvalidDataException($"Could not open asset package '{fullPath}' with the supplied password: {ex.Message}", ex);
+
+                throw new InvalidDataException(
+                    $"Could not open asset package '{fullPath}' with the supplied password: {ex.Message}",
+                    ex);
             }
+
             PasswordAccepted?.Invoke(fullPath, password);
         }
 
@@ -208,6 +238,7 @@ public sealed class AssetPackageCatalog : IDisposable
                 nameof(path));
 
         var fullPath = Path.GetFullPath(path);
+
         if (!File.Exists(fullPath))
             throw new FileNotFoundException(
                 $"Asset package not found: {fullPath}",

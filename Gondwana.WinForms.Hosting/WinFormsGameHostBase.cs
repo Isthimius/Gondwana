@@ -93,7 +93,8 @@ public abstract class WinFormsGameHostBase : GameHostBase
     protected sealed override void BindScene()
     {
         if (Scene is null)
-            throw new InvalidOperationException($"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
+            throw new InvalidOperationException(
+                $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
         _bindScene(Scene, false);
     }

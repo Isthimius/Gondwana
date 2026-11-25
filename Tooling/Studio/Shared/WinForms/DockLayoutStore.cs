@@ -13,17 +13,23 @@ public sealed class DockLayoutStore
 
     public DockLayoutStore(string profile, string? applicationId = null, string? settingsRoot = null)
     {
-        FilePath = Path.Combine(ApplicationDirectory(applicationId, settingsRoot), "Docking", SafeKey(profile) + ".xml");
+        FilePath = Path.Combine(
+            ApplicationDirectory(applicationId, settingsRoot),
+            "Docking",
+            SafeKey(profile) + ".xml");
     }
 
     public static string ApplicationDirectory(string? applicationId = null, string? settingsRoot = null)
     {
         applicationId ??= AppContext.GetData(ApplicationSetting) as string
-            ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Gondwana.Tooling.Host";
+                          ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Gondwana.Tooling.Host";
 
         settingsRoot ??= AppContext.GetData(RootSetting) as string
-            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Hidden Worlds Games", "Gondwana", "Tooling");
+                         ?? Path.Combine(
+                             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                             "Hidden Worlds Games",
+                             "Gondwana",
+                             "Tooling");
 
         return Path.Combine(settingsRoot, SafeKey(applicationId));
     }
@@ -53,6 +59,7 @@ public sealed class DockLayoutStore
     public bool Write(byte[] layout)
     {
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);

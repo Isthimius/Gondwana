@@ -17,13 +17,13 @@
 
 <div class="page-shell">
     <div class="game-wrapper">
-        <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" style="position:absolute; inset:0;" />
+        <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" style="position:absolute; inset:0;"/>
 
         @if (_loading)
         {
             <div class="startup-loader startup-loader-overlay">
                 <div class="startup-card">
-                    <img class="startup-logo" src="assets/spot_ico.png" alt="" />
+                    <img class="startup-logo" src="assets/spot_ico.png" alt=""/>
                     <h1 class="startup-title">SPOT!</h1>
                     <div class="startup-message">Preparing the game...</div>
                     <div class="startup-progress" aria-hidden="true">
@@ -324,21 +324,21 @@
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Image, "spot.png");
             _aboutSpotLogo = global::SkiaSharp.SKImage.FromEncodedData(stream)
-                ?? throw new InvalidOperationException("Failed to decode Spot About-box image.");
+                             ?? throw new InvalidOperationException("Failed to decode Spot About-box image.");
         }
 
         if (_aboutGondwanaLogo is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Image, "gondwana-logo-text.png");
             _aboutGondwanaLogo = global::SkiaSharp.SKImage.FromEncodedData(stream)
-                ?? throw new InvalidOperationException("Failed to decode Gondwana About-box image.");
+                                 ?? throw new InvalidOperationException("Failed to decode Gondwana About-box image.");
         }
 
         if (_aboutTypeface is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
             _aboutTypeface = global::SkiaSharp.SKTypeface.FromStream(stream)
-                ?? throw new InvalidOperationException("Failed to decode Spot About-box font.");
+                             ?? throw new InvalidOperationException("Failed to decode Spot About-box font.");
         }
     }
 
@@ -369,4 +369,5 @@
             _gameHost = null;
         }
     }
+
 }

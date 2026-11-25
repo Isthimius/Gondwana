@@ -3,21 +3,44 @@ namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 /// <summary>Tooling-owned modal messages use the same appearance and standard WinForms dialog results.</summary>
 public static class ThemedMessageBox
 {
-    public static DialogResult Show(IWin32Window? owner, string text, string caption,
-        MessageBoxButtons buttons = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.None,
+    public static DialogResult Show(
+        IWin32Window? owner,
+        string text,
+        string caption,
+        MessageBoxButtons buttons = MessageBoxButtons.OK,
+        MessageBoxIcon icon = MessageBoxIcon.None,
         MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
     {
-        using var dialog = Create(text, caption, buttons, icon, defaultButton);
+        using var dialog = Create(
+            text,
+            caption,
+            buttons,
+            icon,
+            defaultButton);
+
         return dialog.ShowDialog(owner);
     }
 
-    public static DialogResult Show(string text, string caption,
-        MessageBoxButtons buttons = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.None,
+    public static DialogResult Show(
+        string text,
+        string caption,
+        MessageBoxButtons buttons = MessageBoxButtons.OK,
+        MessageBoxIcon icon = MessageBoxIcon.None,
         MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1) =>
-        Show(Form.ActiveForm, text, caption, buttons, icon, defaultButton);
+        Show(
+            Form.ActiveForm,
+            text,
+            caption,
+            buttons,
+            icon,
+            defaultButton);
 
     /// <summary>Builds a message dialog without showing it, allowing hosts to inspect accessibility and button semantics.</summary>
-    public static Form Create(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon,
+    public static Form Create(
+        string text,
+        string caption,
+        MessageBoxButtons buttons,
+        MessageBoxIcon icon,
         MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
     {
         var results = buttons switch
@@ -82,7 +105,14 @@ public static class ThemedMessageBox
             body.Controls.Add(picture);
         }
 
-        var bar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 48, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(8) };
+        var bar = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Bottom,
+            Height = 48,
+            FlowDirection = FlowDirection.RightToLeft,
+            Padding = new Padding(8)
+        };
+
         var choices = results.Select(result => new Button
         {
             Text = result == DialogResult.TryAgain ? "Try again" : result.ToString(),
@@ -99,12 +129,14 @@ public static class ThemedMessageBox
 
         var selected = choices[Math.Clamp((int)defaultButton / 256, 0, choices.Length - 1)];
         form.AcceptButton = selected;
+
         form.CancelButton = choices.FirstOrDefault(button => button.DialogResult == DialogResult.Cancel)
-            ?? (buttons == MessageBoxButtons.OK ? choices[0] : null);
+                            ?? (buttons == MessageBoxButtons.OK ? choices[0] : null);
 
         form.FormClosing += (_, _) =>
         {
-            if (buttons == MessageBoxButtons.OK) form.DialogResult = DialogResult.OK;
+            if (buttons == MessageBoxButtons.OK)
+                form.DialogResult = DialogResult.OK;
         };
 
         form.Shown += (_, _) => selected.Focus();

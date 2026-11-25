@@ -9,14 +9,17 @@ public static class CollisionProfileNames
     /// The world.
     /// </summary>
     public const string World = "World";
+
     /// <summary>
     /// The actor.
     /// </summary>
     public const string Actor = "Actor";
+
     /// <summary>
     /// The projectile.
     /// </summary>
     public const string Projectile = "Projectile";
+
     /// <summary>
     /// The sensor.
     /// </summary>

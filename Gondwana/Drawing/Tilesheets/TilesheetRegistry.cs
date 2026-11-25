@@ -26,7 +26,8 @@ public sealed class TilesheetRegistry : IDisposable
 
     // Private ctor ensures no one else can new this up
     private TilesheetRegistry()
-    { }
+    {
+    }
 
     /// <summary>
     /// Registers a tilesheet in the registry. If a tilesheet with the same name already exists, it is replaced.
@@ -306,7 +307,11 @@ public sealed class TilesheetRegistry : IDisposable
     /// <remarks>
     /// This method is thread-safe. If a different tilesheet already exists at <paramref name="newName"/>, it will be replaced and a warning logged.
     /// </remarks>
-    internal void OnTilesheetRenamed(string oldName, string newName, Tilesheet sheet, bool disposeReplaced = true)
+    internal void OnTilesheetRenamed(
+        string oldName,
+        string newName,
+        Tilesheet sheet,
+        bool disposeReplaced = true)
     {
         if (oldName is null)
             throw new ArgumentNullException(nameof(oldName));
@@ -330,7 +335,9 @@ public sealed class TilesheetRegistry : IDisposable
             {
                 Engine.Logger.LogWarning(
                     "TilesheetRegistry: Renaming '{Old}'→'{New}' replaced a different registered Tilesheet instance.",
-                    oldName, newName);
+                    oldName,
+                    newName);
+
                 replaced = existingAtNew;
             }
 
@@ -472,7 +479,10 @@ public sealed class TilesheetRegistry : IDisposable
     /// <param name="gtsPath">The physical GTS path.</param>
     /// <returns>The registered tilesheets in document order.</returns>
     public IReadOnlyList<Tilesheet> LoadAllFromDefinitionFile(string gtsPath) =>
-        LoadAllDefinitions(TilesheetDefinitionSerializer.LoadDocument(gtsPath), Path.GetDirectoryName(Path.GetFullPath(gtsPath)), null);
+        LoadAllDefinitions(
+            TilesheetDefinitionSerializer.LoadDocument(gtsPath),
+            Path.GetDirectoryName(Path.GetFullPath(gtsPath)),
+            null);
 
     /// <summary>Loads and registers one selected logical tilesheet.</summary>
     /// <param name="assetsFile">The archive.</param>
@@ -491,13 +501,25 @@ public sealed class TilesheetRegistry : IDisposable
     /// <param name="gtsEntryName">The physical entry name.</param>
     /// <returns>The registered tilesheets in document order.</returns>
     public IReadOnlyList<Tilesheet> LoadAllFromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName) =>
-        LoadAllDefinitions(TilesheetDefinitionSerializer.LoadDocument(assetsFile, gtsEntryName), string.IsNullOrWhiteSpace(assetsFile.SourcePath) ? null : Path.GetDirectoryName(Path.GetFullPath(assetsFile.SourcePath)), assetsFile);
+        LoadAllDefinitions(
+            TilesheetDefinitionSerializer.LoadDocument(assetsFile, gtsEntryName),
+            string.IsNullOrWhiteSpace(assetsFile.SourcePath)
+                ? null
+                : Path.GetDirectoryName(Path.GetFullPath(assetsFile.SourcePath)),
+            assetsFile);
 
-    private IReadOnlyList<Tilesheet> LoadAllDefinitions(TilesheetDefinitionDocument document, string? directory, AssetsFile? archive)
+    private IReadOnlyList<Tilesheet> LoadAllDefinitions(
+        TilesheetDefinitionDocument document,
+        string? directory,
+        AssetsFile? archive)
     {
         var errors = TilesheetDefinitionSerializer.ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
         var created = new List<Tilesheet>();
+
         try
         {
             foreach (var definition in document.Definitions)
@@ -505,10 +527,15 @@ public sealed class TilesheetRegistry : IDisposable
         }
         catch
         {
-            foreach (var sheet in created) sheet.Dispose();
+            foreach (var sheet in created)
+                sheet.Dispose();
+
             throw;
         }
-        foreach (var sheet in created) Register(sheet);
+
+        foreach (var sheet in created)
+            Register(sheet);
+
         return created;
     }
 }

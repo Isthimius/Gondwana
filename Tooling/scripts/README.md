@@ -1,8 +1,9 @@
 # Scripts
 
-This folder contains PowerShell helper scripts for building, publishing, and releasing Gondwana projects. All scripts require **PowerShell 5.1** or later.
+This folder contains PowerShell helper scripts for building, formatting, publishing, and releasing Gondwana projects. All scripts require **PowerShell 5.1** or later.
 
 - [`Setup-Gondwana-Dev.ps1`](#setup-gondwana-devps1)
+- [`Format-Code.ps1`](#format-codeps1)
 - [`Reinstall-Gondwana-Cli.ps1`](#reinstall-gondwana-clips1)
 - [`Reinstall-Gondwana-Templates.ps1`](#reinstall-gondwana-templatesps1)
 - [`Generate-Project-Changelogs.ps1`](#generate-project-changelogsps1)
@@ -58,6 +59,41 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 
 # Install core tools only (no optional WASM, SDL2, LibVLC, git-cliff, or butler)
 .\Setup-Gondwana-Dev.ps1 -SkipOptional
+```
+
+---
+
+### `Format-Code.ps1`
+
+Optional, standalone C# formatting using [JetBrains CleanupCode](https://www.jetbrains.com/help/resharper/CleanupCode.html) and the repository's `.editorconfig`. This script is not called by CI or `Setup-Gondwana-Dev.ps1` and is not required to build Gondwana.
+
+It reuses an existing `jb` executable (including the default global .NET tools directory), or installs `JetBrains.ReSharper.GlobalTools` globally on first use if necessary. It does not update an existing installation. It invokes the formatting-only profile (`Built-in: Reformat Code`) directly on the selected C# files in batches, without loading or building the solution. It does not request syntax modernization or full cleanup. Inspect the resulting Git diff; tool versions and generated-code exclusions may affect results.
+
+**Prerequisites:** PowerShell 5.1 or later, a compatible .NET SDK for tool installation, Git for `-All`, and NuGet access if the tool must be installed.
+
+| Parameter | Description |
+|---|---|
+| `-All` | Format existing Git-tracked `.cs` files, including files outside the solution; skip deleted files and `bin`/`obj` directories. |
+| `-Files` | Format only the supplied literal C# file paths, relative to the repository root or absolute paths inside it. New, untracked source files can be selected explicitly. |
+| `-NoInstall` | Fail if `jb` is not available instead of installing it. |
+| `-WhatIf` | Show the selected scope without installing the tool or changing files. |
+
+Choose exactly one scope. The script writes changes in place; review `git diff` before committing. It stops on a tool failure but does not roll back previously formatted files.
+
+**Examples (from the repository root):**
+
+```powershell
+# Format all tracked C# source files, including project templates
+./Tooling/scripts/Format-Code.ps1 -All
+
+# Format only the specified files (paths are relative to the repository root)
+./Tooling/scripts/Format-Code.ps1 -Files 'Gondwana/EngineState.Definitions.cs', 'Gondwana/EngineState.cs'
+
+# Preview the scope without installing anything or modifying source
+./Tooling/scripts/Format-Code.ps1 -All -WhatIf
+
+# Require an existing jb installation
+./Tooling/scripts/Format-Code.ps1 -All -NoInstall
 ```
 
 ---

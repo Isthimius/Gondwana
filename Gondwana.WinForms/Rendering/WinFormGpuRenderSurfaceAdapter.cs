@@ -78,7 +78,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// </summary>
     public void RefreshDestinationSize()
     {
-        if (_presentationControl.IsDisposed || !_presentationControl.IsHandleCreated) return;
+        if (_presentationControl.IsDisposed || !_presentationControl.IsHandleCreated)
+            return;
 
         var sz = _presentationControl.ClientSize;
         SetDestinationSize(sz.Width, sz.Height);
@@ -171,8 +172,11 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     private void QueueInvalidate()
     {
-        if (_glControl.IsDisposed || _presentationControl.IsDisposed) return;
-        if (Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) != 0) return;
+        if (_glControl.IsDisposed || _presentationControl.IsDisposed)
+            return;
+
+        if (Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) != 0)
+            return;
 
         Engine.Instance.UiDispatcher!.Post(() =>
         {
@@ -208,6 +212,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         if (_gpuBackbuffer != null)
         {
             bool desiredVSync = _gpuBackbuffer.VSync;
+
             if (_appliedVSync != desiredVSync)
             {
                 _glControl.VSync = desiredVSync;
@@ -236,6 +241,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
                 // with non-positive dimensions.
                 var width = Width;
                 var height = Height;
+
                 if (width > 0 && height > 0)
                     ResizeRequested?.Invoke(GrContext, width, height);
             }
@@ -300,20 +306,32 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         if (collectDiagnostics)
         {
             long callbackEndTick = HighResTimer.GetCurrentTick();
+
             if (telemetryGeneration != 0)
             {
                 var source = _host!.Telemetry!;
                 source.Record(telemetryGeneration, "presentation.count", 1);
-                source.Record(telemetryGeneration, "presentation.cpu.ms", HighResTimer.GetDuration(callbackStartTick, callbackEndTick) * 1000d);
-                source.Record(telemetryGeneration, "render.snapshot.cpu.ms", HighResTimer.GetDuration(0, renderAndSnapshotTicks) * 1000d);
+
+                source.Record(
+                    telemetryGeneration,
+                    "presentation.cpu.ms",
+                    HighResTimer.GetDuration(callbackStartTick, callbackEndTick) * 1000d);
+
+                source.Record(
+                    telemetryGeneration,
+                    "render.snapshot.cpu.ms",
+                    HighResTimer.GetDuration(0, renderAndSnapshotTicks) * 1000d);
+
                 source.Record(telemetryGeneration, "blit.cpu.ms", HighResTimer.GetDuration(0, blitTicks) * 1000d);
                 source.Record(telemetryGeneration, "flush.cpu.ms", HighResTimer.GetDuration(0, flushTicks) * 1000d);
             }
-            FrameDiagnosticsCalculated?.Invoke(new WinFormGpuFrameDiagnostics(
-                HighResTimer.GetDuration(callbackStartTick, callbackEndTick) * 1000d,
-                HighResTimer.GetDuration(0, renderAndSnapshotTicks) * 1000d,
-                HighResTimer.GetDuration(0, blitTicks) * 1000d,
-                HighResTimer.GetDuration(0, flushTicks) * 1000d));
+
+            FrameDiagnosticsCalculated?.Invoke(
+                new WinFormGpuFrameDiagnostics(
+                    HighResTimer.GetDuration(callbackStartTick, callbackEndTick) * 1000d,
+                    HighResTimer.GetDuration(0, renderAndSnapshotTicks) * 1000d,
+                    HighResTimer.GetDuration(0, blitTicks) * 1000d,
+                    HighResTimer.GetDuration(0, flushTicks) * 1000d));
         }
     }
 

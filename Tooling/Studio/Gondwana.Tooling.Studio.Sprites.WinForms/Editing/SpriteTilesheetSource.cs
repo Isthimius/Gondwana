@@ -14,18 +14,26 @@ internal sealed class SpriteTilesheetSource : IDisposable
 {
     /// <summary>Gets the full loose document path or containing archive path; use Resource for packed entry identity.</summary>
     public string FilePath => Resource.Path;
+
     /// <summary>The complete physical source identity, separate from the logical member name.</summary>
     public AuthoringResource Resource { get; }
+
     /// <summary>Gets the full directory containing the document or archive, used to resolve its dependencies.</summary>
     public string BaseDirectory { get; }
+
     /// <summary>Gets the selected deserialized GTS member used by the authoring preview.</summary>
     public TilesheetDefinition Definition { get; }
+
     /// <summary>Gets the source-owned masked preview bitmap, or null if image loading failed or the source was disposed.</summary>
     public Bitmap? Image { get; private set; }
+
     /// <summary>Gets image-load failure details, or null when no preview problem was recorded.</summary>
     public string? PreviewWarning { get; private set; }
 
-    internal SpriteTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
+    internal SpriteTilesheetSource(
+        AuthoringResource resource,
+        TilesheetDefinition definition,
+        AssetPackageCatalog? packages = null)
     {
         Resource = resource;
         BaseDirectory = resource.BaseDirectory;
@@ -43,7 +51,11 @@ internal sealed class SpriteTilesheetSource : IDisposable
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         path = Path.GetFullPath(path);
-        return LoadResource(new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition), identity, packages);
+
+        return LoadResource(
+            new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition),
+            identity,
+            packages);
     }
 
     /// <summary>Loads a singleton tilesheet document from an exact typed archive entry.</summary>
@@ -88,10 +100,12 @@ internal sealed class SpriteTilesheetSource : IDisposable
 
         region = Definition.Regions.FirstOrDefault(candidate =>
             string.Equals(candidate.Name, frame.RegionName, StringComparison.OrdinalIgnoreCase));
+
         if (region is null)
             return false;
 
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+
         if (frame.XTile < 0 ||
             frame.YTile < 0 ||
             frame.XTile >= columns ||
@@ -135,6 +149,7 @@ internal sealed class SpriteTilesheetSource : IDisposable
     private void LoadPreviewImage(AssetPackageCatalog packages, string? archivePath)
     {
         var image = Definition.Image;
+
         if (image is null)
         {
             PreviewWarning = "GTS does not define an image source.";
@@ -143,16 +158,20 @@ internal sealed class SpriteTilesheetSource : IDisposable
 
         try
         {
-            Image = AuthoringPreviewImage.Load(Definition, BaseDirectory, packages, archivePath);
+            Image = AuthoringPreviewImage.Load(
+                Definition,
+                BaseDirectory,
+                packages,
+                archivePath);
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            InvalidOperationException or
-            NotSupportedException or
-            UnauthorizedAccessException or
-            System.Runtime.InteropServices.ExternalException)
+                InvalidDataException or
+                ArgumentException or
+                InvalidOperationException or
+                NotSupportedException or
+                UnauthorizedAccessException or
+                System.Runtime.InteropServices.ExternalException)
         {
             PreviewWarning = "Image cannot be previewed: " + ex.Message;
         }
@@ -175,7 +194,10 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// <param name="packages">Borrowed package cache, or null to create temporary caches during loading.</param>
     /// <returns>Independent source objects; the caller must dispose every returned source.</returns>
     public static IReadOnlyList<SpriteTilesheetSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
-        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new SpriteTilesheetSource(new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition), definition, packages)).ToList();
+        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new SpriteTilesheetSource(
+            new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition),
+            definition,
+            packages)).ToList();
 
     /// <summary>Loads one logical member from an exact typed packed GTS entry.</summary>
     /// <param name="archivePath">Containing archive path, normalized against the process current directory.</param>
@@ -183,10 +205,20 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// <param name="identity">Logical member identity within the packed document.</param>
     /// <param name="packages">Borrowed package cache, or null to use a temporary cache during loading.</param>
     /// <returns>A source owned by the caller, which must dispose its preview resources.</returns>
-    public static SpriteTilesheetSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null) =>
-        LoadResource(new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry), identity, packages);
+    public static SpriteTilesheetSource LoadPacked(
+        string archivePath,
+        string entry,
+        string identity,
+        AssetPackageCatalog? packages = null) =>
+        LoadResource(
+            new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry),
+            identity,
+            packages);
 
-    internal static SpriteTilesheetSource LoadResource(AuthoringResource resource, string? identity, AssetPackageCatalog? packages = null)
+    internal static SpriteTilesheetSource LoadResource(
+        AuthoringResource resource,
+        string? identity,
+        AssetPackageCatalog? packages = null)
     {
         using var owned = packages is null ? new AssetPackageCatalog() : null;
         packages ??= owned!;

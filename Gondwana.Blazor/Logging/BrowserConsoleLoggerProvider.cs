@@ -54,6 +54,7 @@ public sealed class BrowserConsoleLoggerProvider : ILoggerProvider
                 return;
 
             string message = formatter(state, exception);
+
             if (string.IsNullOrEmpty(message) && exception is null)
                 return;
 
@@ -62,12 +63,14 @@ public sealed class BrowserConsoleLoggerProvider : ILoggerProvider
                 : string.Empty;
 
             string line = $"[{FormatLevel(logLevel)}] {categoryName}{eventSuffix}: {message}";
+
             if (exception is not null)
                 line += Environment.NewLine + exception;
 
             TextWriter writer = logLevel >= LogLevel.Warning
                 ? Console.Error
                 : Console.Out;
+
             writer.WriteLine(line);
         }
 

@@ -7,14 +7,17 @@ public enum VideoMetadataStatus
     /// No metadata is available for the current source.
     /// </summary>
     Unavailable,
+
     /// <summary>
     /// Metadata discovery is in progress.
     /// </summary>
     Pending,
+
     /// <summary>
     /// Metadata discovery completed successfully.
     /// </summary>
     Ready,
+
     /// <summary>
     /// Metadata discovery failed.
     /// </summary>
@@ -36,7 +39,16 @@ internal sealed class VideoMetadataState
     private readonly object _gate = new();
     private long _generation;
     private VideoMetadata _current = VideoMetadata.Unavailable;
-    internal VideoMetadata Current { get { lock (_gate) return _current; } }
+
+    internal VideoMetadata Current
+    {
+        get
+        {
+            lock (_gate)
+                return _current;
+        }
+    }
+
     internal long Begin()
     {
         lock (_gate)
@@ -45,17 +57,25 @@ internal sealed class VideoMetadataState
             return ++_generation;
         }
     }
+
     internal bool Complete(long generation, VideoMetadata metadata)
     {
         lock (_gate)
         {
-            if (generation != _generation) return false;
+            if (generation != _generation)
+                return false;
+
             _current = metadata;
             return true;
         }
     }
+
     internal void Reset()
     {
-        lock (_gate) { ++_generation; _current = VideoMetadata.Unavailable; }
+        lock (_gate)
+        {
+            ++_generation;
+            _current = VideoMetadata.Unavailable;
+        }
     }
 }

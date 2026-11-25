@@ -8,11 +8,9 @@ namespace Gondwana.Physics.Collisions;
 /// </summary>
 public sealed class CollisionGroupRegistry
 {
-    [JsonProperty("groups")]
-    private readonly Dictionary<string, int> _groups;
+    [JsonProperty("groups")] private readonly Dictionary<string, int> _groups;
 
-    [JsonProperty("nextBit")]
-    private int _nextBit;
+    [JsonProperty("nextBit")] private int _nextBit;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CollisionGroupRegistry"/> class with
@@ -37,8 +35,10 @@ public sealed class CollisionGroupRegistry
     [JsonConstructor]
     private CollisionGroupRegistry(Dictionary<string, int> groups, int nextBit)
     {
-        _groups = new Dictionary<string, int>(groups ?? throw new ArgumentNullException(nameof(groups)),
-                                              StringComparer.OrdinalIgnoreCase);
+        _groups = new Dictionary<string, int>(
+            groups ?? throw new ArgumentNullException(nameof(groups)),
+            StringComparer.OrdinalIgnoreCase);
+
         _nextBit = nextBit;
     }
 
@@ -90,6 +90,7 @@ public sealed class CollisionGroupRegistry
         ArgumentNullException.ThrowIfNull(names);
 
         int mask = CollisionMasks.None;
+
         foreach (var name in names)
             mask |= Get(name);
 

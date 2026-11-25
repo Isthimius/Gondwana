@@ -23,21 +23,53 @@ internal static class EffectGeometry
         return direction switch
         {
             EffectDirection.FromLeftToRight =>
-                new RectangleF(bounds.Left, bounds.Top, width, bounds.Height),
+                new RectangleF(
+                    bounds.Left,
+                    bounds.Top,
+                    width,
+                    bounds.Height),
             EffectDirection.FromRightToLeft =>
-                new RectangleF(bounds.Right - width, bounds.Top, width, bounds.Height),
+                new RectangleF(
+                    bounds.Right - width,
+                    bounds.Top,
+                    width,
+                    bounds.Height),
             EffectDirection.FromTopToBottom =>
-                new RectangleF(bounds.Left, bounds.Top, bounds.Width, height),
+                new RectangleF(
+                    bounds.Left,
+                    bounds.Top,
+                    bounds.Width,
+                    height),
             EffectDirection.FromBottomToTop =>
-                new RectangleF(bounds.Left, bounds.Bottom - height, bounds.Width, height),
+                new RectangleF(
+                    bounds.Left,
+                    bounds.Bottom - height,
+                    bounds.Width,
+                    height),
             EffectDirection.FromTopLeftToBottomRight =>
-                new RectangleF(bounds.Left, bounds.Top, width, height),
+                new RectangleF(
+                    bounds.Left,
+                    bounds.Top,
+                    width,
+                    height),
             EffectDirection.FromTopRightToBottomLeft =>
-                new RectangleF(bounds.Right - width, bounds.Top, width, height),
+                new RectangleF(
+                    bounds.Right - width,
+                    bounds.Top,
+                    width,
+                    height),
             EffectDirection.FromBottomLeftToTopRight =>
-                new RectangleF(bounds.Left, bounds.Bottom - height, width, height),
+                new RectangleF(
+                    bounds.Left,
+                    bounds.Bottom - height,
+                    width,
+                    height),
             EffectDirection.FromBottomRightToTopLeft =>
-                new RectangleF(bounds.Right - width, bounds.Bottom - height, width, height),
+                new RectangleF(
+                    bounds.Right - width,
+                    bounds.Bottom - height,
+                    width,
+                    height),
             _ => bounds
         };
     }

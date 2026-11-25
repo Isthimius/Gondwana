@@ -43,7 +43,13 @@ public sealed class GpuRefreshQueueTests
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(4, 4);
-        var initialRect = new Rectangle(0, 0, 16, 16);
+
+        var initialRect = new Rectangle(
+            0,
+            0,
+            16,
+            16);
+
         layer.RefreshQueue.AddWorldRect(initialRect);
         Assert.True(layer.RefreshQueue.IsDirty);
 
@@ -53,7 +59,12 @@ public sealed class GpuRefreshQueueTests
         Assert.False(scene.UsesDirtyRegionRendering);
         Assert.False(layer.RefreshQueue.IsDirty);
 
-        layer.RefreshQueue.AddWorldRect(new Rectangle(16, 0, 16, 16));
+        layer.RefreshQueue.AddWorldRect(
+            new Rectangle(
+                16,
+                0,
+                16,
+                16));
 
         Assert.False(layer.RefreshQueue.IsDirty);
     }
@@ -69,11 +80,14 @@ public sealed class GpuRefreshQueueTests
         using var host = CreateGpuHost();
         host.Bind(scene);
 
-        var exception = Record.Exception(
-            () => layer.RefreshQueue.AddViewScreenRect(
-                null!,
-                null!,
-                new Rectangle(0, 0, 16, 16)));
+        var exception = Record.Exception(() => layer.RefreshQueue.AddViewScreenRect(
+            null!,
+            null!,
+            new Rectangle(
+                0,
+                0,
+                16,
+                16)));
 
         Assert.Null(exception);
         Assert.False(layer.RefreshQueue.IsDirty);
@@ -90,7 +104,12 @@ public sealed class GpuRefreshQueueTests
         using var host = CreateBitmapHost();
         host.Bind(scene);
 
-        layer.RefreshQueue.AddWorldRect(new Rectangle(0, 0, 16, 16));
+        layer.RefreshQueue.AddWorldRect(
+            new Rectangle(
+                0,
+                0,
+                16,
+                16));
 
         Assert.True(scene.UsesDirtyRegionRendering);
         Assert.True(layer.RefreshQueue.IsDirty);
@@ -108,13 +127,26 @@ public sealed class GpuRefreshQueueTests
         using (var gpuHost = CreateGpuHost())
         {
             gpuHost.Bind(scene);
-            layer.RefreshQueue.AddWorldRect(new Rectangle(0, 0, 16, 16));
+
+            layer.RefreshQueue.AddWorldRect(
+                new Rectangle(
+                    0,
+                    0,
+                    16,
+                    16));
+
             Assert.False(layer.RefreshQueue.IsDirty);
         }
 
         using var bitmapHost = CreateBitmapHost();
         bitmapHost.Bind(scene);
-        layer.RefreshQueue.AddWorldRect(new Rectangle(16, 0, 16, 16));
+
+        layer.RefreshQueue.AddWorldRect(
+            new Rectangle(
+                16,
+                0,
+                16,
+                16));
 
         Assert.True(layer.RefreshQueue.IsDirty);
     }
@@ -175,7 +207,12 @@ public sealed class GpuRefreshQueueTests
             get
             {
                 DrawLocationWorldReadCount++;
-                return new Rectangle(0, 0, 16, 16);
+
+                return new Rectangle(
+                    0,
+                    0,
+                    16,
+                    16);
             }
         }
 

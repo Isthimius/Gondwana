@@ -38,8 +38,17 @@ public sealed class VideoFrameReadyEventArgs : EventArgs
     /// <param name="height">The height of the video frame in pixels.</param>
     /// <param name="stride">The stride (bytes per row) of the pixel buffer.</param>
     /// <param name="pts100ns">The presentation timestamp in 100-nanosecond units.</param>
-    public VideoFrameReadyEventArgs(IntPtr pixels, int width, int height, int stride, long pts100ns)
+    public VideoFrameReadyEventArgs(
+        IntPtr pixels,
+        int width,
+        int height,
+        int stride,
+        long pts100ns)
     {
-        Pixels = pixels; Width = width; Height = height; Stride = stride; Pts100ns = pts100ns;
+        Pixels = pixels;
+        Width = width;
+        Height = height;
+        Stride = stride;
+        Pts100ns = pts100ns;
     }
 }

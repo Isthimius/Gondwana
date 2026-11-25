@@ -26,13 +26,18 @@ public sealed class ProjectDiagnosticsGlobalStateCollection
 [Collection("Project diagnostics global state")]
 public sealed class ProjectDiagnosticsTests : IDisposable
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "GondwanaDiagnostics-" + Guid.NewGuid().ToString("N"));
+    private readonly string _root = Path.Combine(
+        Path.GetTempPath(),
+        "GondwanaDiagnostics-" + Guid.NewGuid().ToString("N"));
+
     /// <summary>
     /// Initializes a new instance of the <c>ProjectDiagnosticsTests</c> class.
     /// </summary>
     public ProjectDiagnosticsTests() => Directory.CreateDirectory(_root);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_root, recursive: true);
+
     private string FilePath(string name) => Path.Combine(_root, name);
 
     /// <summary>
@@ -43,12 +48,20 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     {
         foreach (var extension in new[] { "gts", "GANI", "gsnd", "gscn", "gspr" })
             File.WriteAllText(FilePath("definition." + extension), "{}");
-        using (var assets = AssetsFile.LoadOrCreate(FilePath("assets.gaf"), null, false, register: false)) assets.Save();
+
+        using (var assets = AssetsFile.LoadOrCreate(
+                   FilePath("assets.gaf"),
+                   null,
+                   false,
+                   register: false))
+            assets.Save();
+
         foreach (var directory in new[] { "bin", "OBJ", ".git", "nested/bin" })
         {
             Directory.CreateDirectory(FilePath(directory));
             File.WriteAllText(FilePath(directory + "/ignored.gts"), "bad");
         }
+
         File.WriteAllText(FilePath("ignored.txt"), "bad");
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         Assert.Equal(6, result.Definitions.Count);
@@ -79,26 +92,39 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     {
         Directory.CreateDirectory(FilePath("nested"));
         TilesheetDefinitionSerializer.Save(FilePath("tiles.gts"), new TilesheetDefinition { Name = "tiles" });
-        AnimationDefinitionSerializer.Save(FilePath("nested/walk.gani"), new AnimationDefinition
-        {
-            Key = "walk",
-            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("tiles", "../tiles.gts")]
-        });
-        SceneDefinitionSerializer.Save(FilePath("scene.gscn"), new SceneDefinition
-        {
-            TilesheetSources = [SceneTilesheetSourceDefinition.Loose("tiles", "tiles.gts")],
-            AnimationSources = [SceneAnimationSourceDefinition.Loose("walk", "nested/walk.gani")]
-        });
-        SpriteDefinitionSerializer.Save(FilePath("player.gspr"), new SpriteDefinition
-        {
-            SceneSources = [SpriteSceneSourceDefinition.Loose("level", "scene.gscn")],
-            TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("tiles", "tiles.gts")]
-        });
+
+        AnimationDefinitionSerializer.Save(
+            FilePath("nested/walk.gani"),
+            new AnimationDefinition
+            {
+                Key = "walk",
+                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("tiles", "../tiles.gts")]
+            });
+
+        SceneDefinitionSerializer.Save(
+            FilePath("scene.gscn"),
+            new SceneDefinition
+            {
+                TilesheetSources = [SceneTilesheetSourceDefinition.Loose("tiles", "tiles.gts")],
+                AnimationSources = [SceneAnimationSourceDefinition.Loose("walk", "nested/walk.gani")]
+            });
+
+        SpriteDefinitionSerializer.Save(
+            FilePath("player.gspr"),
+            new SpriteDefinition
+            {
+                SceneSources = [SpriteSceneSourceDefinition.Loose("level", "scene.gscn")],
+                TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("tiles", "tiles.gts")]
+            });
+
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         var references = result.Definitions.SelectMany(d => d.References).ToArray();
         Assert.Equal(5, references.Length);
         Assert.All(references, reference => Assert.Null(reference.Problem));
-        Assert.Contains(references, reference => reference.Value == "../tiles.gts" && reference.ResolvedPath == FilePath("tiles.gts"));
+
+        Assert.Contains(
+            references,
+            reference => reference.Value == "../tiles.gts" && reference.ResolvedPath == FilePath("tiles.gts"));
     }
 
     /// <summary>
@@ -107,22 +133,33 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     [Fact]
     public void ReportsMissingMalformedAndUnsupportedReferences()
     {
-        AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
-        {
-            Key = "walk",
-            TilesheetSources =
-            [
-                AnimationTilesheetSourceDefinition.Loose("missing", "missing.gts"),
-                AnimationTilesheetSourceDefinition.Loose("malformed", "bad\0path"),
-                new() { Tilesheet = "unknown", Kind = (AnimationTilesheetSourceKind)123 }
-            ]
-        });
+        AnimationDefinitionSerializer.Save(
+            FilePath("walk.gani"),
+            new AnimationDefinition
+            {
+                Key = "walk",
+                TilesheetSources =
+                [
+                    AnimationTilesheetSourceDefinition.Loose("missing", "missing.gts"),
+                    AnimationTilesheetSourceDefinition.Loose("malformed", "bad\0path"),
+                    new() { Tilesheet = "unknown", Kind = (AnimationTilesheetSourceKind)123 }
+                ]
+            });
+
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         Assert.True(Assert.Single(result.Definitions).Loaded);
         Assert.Equal(3, result.Definitions[0].References.Count);
         Assert.All(result.Definitions[0].References, reference => Assert.NotNull(reference.Problem));
-        Assert.Contains(result.Problems, p => p.Property.EndsWith(" :: TilesheetSources[0].GtsPath", StringComparison.Ordinal) && p.Reason.Contains("not found"));
-        Assert.Contains(result.Problems, p => p.Property.EndsWith(" :: TilesheetSources[2].Kind", StringComparison.Ordinal) && p.Reason.Contains("Unsupported"));
+
+        Assert.Contains(
+            result.Problems,
+            p => p.Property.EndsWith(" :: TilesheetSources[0].GtsPath", StringComparison.Ordinal) &&
+                 p.Reason.Contains("not found"));
+
+        Assert.Contains(
+            result.Problems,
+            p => p.Property.EndsWith(" :: TilesheetSources[2].Kind", StringComparison.Ordinal) &&
+                 p.Reason.Contains("Unsupported"));
     }
 
     /// <summary>
@@ -131,27 +168,48 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     [Fact]
     public void ChecksPackedEntriesAndMediaWithoutRegisteringAssets()
     {
-        using (var assets = AssetsFile.LoadOrCreate(FilePath("assets.gaf"), null, false, register: false))
+        using (var assets = AssetsFile.LoadOrCreate(
+                   FilePath("assets.gaf"),
+                   null,
+                   false,
+                   register: false))
         {
             using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}"));
             assets.Add(AssetTypes.TilesheetDefinition, "tiles", stream);
             assets.Save();
         }
-        AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
-        {
-            Key = "walk",
-            TilesheetSources =
-            [
-                AnimationTilesheetSourceDefinition.Packed("tiles", "assets.gaf", "tiles"),
-                AnimationTilesheetSourceDefinition.Packed("missing", "assets.gaf", "missing")
-            ]
-        });
-        AudioDefinitionSerializer.Save(FilePath("sound.gsnd"), new AudioDefinition
-        {
-            Resources = [new() { Key = "sound", FilePath = "missing.wav" },
-                new() { Key = "remote", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "https://example.invalid/sound.ogg" },
-                new() { Key = "relative-uri", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "audio/sound.ogg" }]
-        });
+
+        AnimationDefinitionSerializer.Save(
+            FilePath("walk.gani"),
+            new AnimationDefinition
+            {
+                Key = "walk",
+                TilesheetSources =
+                [
+                    AnimationTilesheetSourceDefinition.Packed("tiles", "assets.gaf", "tiles"),
+                    AnimationTilesheetSourceDefinition.Packed("missing", "assets.gaf", "missing")
+                ]
+            });
+
+        AudioDefinitionSerializer.Save(
+            FilePath("sound.gsnd"),
+            new AudioDefinition
+            {
+                Resources =
+                [
+                    new() { Key = "sound", FilePath = "missing.wav" },
+                    new()
+                    {
+                        Key = "remote", SourceKind = AudioResourceSourceKind.Uri,
+                        SourceUri = "https://example.invalid/sound.ogg"
+                    },
+                    new()
+                    {
+                        Key = "relative-uri", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "audio/sound.ogg"
+                    }
+                ]
+            });
+
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         var animation = result.Definitions.Single(d => d.Format == "GANI");
         Assert.Null(animation.References[0].Problem);
@@ -170,30 +228,45 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     [Fact]
     public void ReusesLoadedPackedArchiveAcrossReferencesWithinScan()
     {
-        using (var assets = AssetsFile.LoadOrCreate(FilePath("assets.gaf"), null, false, register: false))
+        using (var assets = AssetsFile.LoadOrCreate(
+                   FilePath("assets.gaf"),
+                   null,
+                   false,
+                   register: false))
         {
             using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}"));
             assets.Add(AssetTypes.TilesheetDefinition, "tiles-1", stream);
-            assets.Add(AssetTypes.TilesheetDefinition, "tiles-2", () => new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}")));
+
+            assets.Add(
+                AssetTypes.TilesheetDefinition,
+                "tiles-2",
+                () => new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}")));
+
             assets.Save();
         }
-        AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
-        {
-            Key = "walk",
-            TilesheetSources =
-            [
-                AnimationTilesheetSourceDefinition.Packed("tiles-1", "assets.gaf", "tiles-1"),
-                AnimationTilesheetSourceDefinition.Packed("tiles-2", "assets.gaf", "tiles-2"),
-                AnimationTilesheetSourceDefinition.Packed("missing", "assets.gaf", "missing")
-            ]
-        });
+
+        AnimationDefinitionSerializer.Save(
+            FilePath("walk.gani"),
+            new AnimationDefinition
+            {
+                Key = "walk",
+                TilesheetSources =
+                [
+                    AnimationTilesheetSourceDefinition.Packed("tiles-1", "assets.gaf", "tiles-1"),
+                    AnimationTilesheetSourceDefinition.Packed("tiles-2", "assets.gaf", "tiles-2"),
+                    AnimationTilesheetSourceDefinition.Packed("missing", "assets.gaf", "missing")
+                ]
+            });
 
         using var logging = new EngineLoggerCaptureScope();
 
         var result = new ProjectDiagnosticsScanner().Scan(_root);
 
         Assert.Equal(1, logging.Messages.Count(message => message == "Loading assets file."));
-        Assert.Contains(result.Problems, p => p.Property.EndsWith(" :: TilesheetSources[2].AssetsFilePath", StringComparison.Ordinal));
+
+        Assert.Contains(
+            result.Problems,
+            p => p.Property.EndsWith(" :: TilesheetSources[2].AssetsFilePath", StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -221,10 +294,17 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         File.WriteAllText(FilePath("sample.gspr"), "{}");
         using var studio = new Gondwana.Tooling.Studio.WinForms.MainForm();
         studio.SetWorkingDirectory(_root);
-        var tool = Assert.Single(studio.Workspace.Contents.OfType<WeifenLuo.WinFormsUI.Docking.DockContent>(),
+
+        var tool = Assert.Single(
+            studio.Workspace.Contents.OfType<WeifenLuo.WinFormsUI.Docking.DockContent>(),
             content => content.Text == "Project Diagnostics");
+
         var menu = (ToolStripMenuItem)studio.MainMenuStrip!.Items["PluginsMenu"]!;
-        var pluginMenu = Assert.Single(menu.DropDownItems.OfType<ToolStripMenuItem>(), item => item.Text == "Project Diagnostics");
+
+        var pluginMenu = Assert.Single(
+            menu.DropDownItems.OfType<ToolStripMenuItem>(),
+            item => item.Text == "Project Diagnostics");
+
         Assert.Equal("Rescan", pluginMenu.DropDownItems[0].Text);
         var tree = Descendants(tool).OfType<TreeView>().Single();
         PumpUntil(() => tree.Nodes.Count == 1);
@@ -272,22 +352,38 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     private static void PumpUntil(Func<bool> done)
     {
         var timeout = DateTime.UtcNow.AddSeconds(10);
+
         while (!done() && DateTime.UtcNow < timeout)
         {
             Application.DoEvents();
             Thread.Sleep(10);
         }
+
         Assert.True(done(), "UI did not receive scan results before timeout.");
     }
 
     private static void RunSta(Action action)
     {
         Exception? error = null;
-        var thread = new Thread(() => { try { action(); } catch (Exception ex) { error = ex; } });
+
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+        });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 
     private sealed class EngineLoggerCaptureScope : IDisposable
@@ -318,6 +414,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
             EngineLogger.SwitchToSyncAndFlush();
             LoggerFactoryField.SetValue(null, new CapturingLoggerFactory(Messages));
             ExternalFactoryField.SetValue(null, true);
+
             LoggerCacheField.GetValue(null)!.GetType()
                 .GetMethod(nameof(System.Collections.IDictionary.Clear))!
                 .Invoke(LoggerCacheField.GetValue(null), null);
@@ -328,9 +425,11 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         {
             LoggerFactoryField.SetValue(null, _originalFactory);
             ExternalFactoryField.SetValue(null, _originalExternalFactory);
+
             LoggerCacheField.GetValue(null)!.GetType()
                 .GetMethod(nameof(System.Collections.IDictionary.Clear))!
                 .Invoke(LoggerCacheField.GetValue(null), null);
+
             EngineLogger.Mode = _originalMode;
         }
     }
@@ -390,14 +489,30 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     [Fact]
     public void SharedDocumentReportsEveryMember()
     {
-        AnimationDefinitionSerializer.SaveAll(FilePath("shared.gani"),
-        [
-            new AnimationDefinition { Key = "walk", TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "missing-a.gts")] },
-            new AnimationDefinition { Key = "run", TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "missing-b.gts")] }
-        ]);
+        AnimationDefinitionSerializer.SaveAll(
+            FilePath("shared.gani"),
+            [
+                new AnimationDefinition
+                {
+                    Key = "walk",
+                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "missing-a.gts")]
+                },
+                new AnimationDefinition
+                {
+                    Key = "run",
+                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "missing-b.gts")]
+                }
+            ]);
+
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         Assert.Single(result.Definitions);
-        Assert.Contains(result.Problems, problem => problem.Property.StartsWith("walk :: TilesheetSources[0]", StringComparison.Ordinal));
-        Assert.Contains(result.Problems, problem => problem.Property.StartsWith("run :: TilesheetSources[0]", StringComparison.Ordinal));
+
+        Assert.Contains(
+            result.Problems,
+            problem => problem.Property.StartsWith("walk :: TilesheetSources[0]", StringComparison.Ordinal));
+
+        Assert.Contains(
+            result.Problems,
+            problem => problem.Property.StartsWith("run :: TilesheetSources[0]", StringComparison.Ordinal));
     }
 }

@@ -7,7 +7,8 @@ namespace Gondwana.Input.Gamepad;
 /// </summary>
 public sealed class GamepadEventPoller
 {
-    private readonly Dictionary<string, Dictionary<string, GamepadButtonEventConfiguration>> _configsByGamepadId = new();
+    private readonly Dictionary<string, Dictionary<string, GamepadButtonEventConfiguration>>
+        _configsByGamepadId = new();
 
     /// <summary>
     /// Gets the singleton instance of the <see cref="GamepadEventPoller"/> class.
@@ -17,7 +18,8 @@ public sealed class GamepadEventPoller
     public static GamepadEventPoller? Instance { get; private set; } = new();
 
     private GamepadEventPoller()
-    { }
+    {
+    }
 
     private GamepadEventPoller(IEnumerable<IGamepadAdapter>? adapters)
     {
@@ -105,7 +107,8 @@ public sealed class GamepadEventPoller
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (PauseAllInput || ButtonDown is null || Adapters is null) return;
+        if (PauseAllInput || ButtonDown is null || Adapters is null)
+            return;
 
         foreach (var adapter in Adapters)
         {
@@ -117,7 +120,8 @@ public sealed class GamepadEventPoller
                 var button = kvp.Key;
                 var config = kvp.Value;
 
-                if (config.IsPaused || !adapter.PressedButtons.Contains(button)) continue;
+                if (config.IsPaused || !adapter.PressedButtons.Contains(button))
+                    continue;
 
                 if (config.ReadyForNextEvent(tick))
                 {
@@ -153,7 +157,11 @@ public sealed class GamepadEventPoller
     /// A value indicating whether event processing for this button should be initially paused.
     /// When paused, the button will not generate events even if pressed. Default is <c>false</c>.
     /// </param>
-    public void StartMonitoringButton(string gamepadId, string button, double timeBetweenEvents = -1, bool isPaused = false)
+    public void StartMonitoringButton(
+        string gamepadId,
+        string button,
+        double timeBetweenEvents = -1,
+        bool isPaused = false)
     {
         if (timeBetweenEvents < 0)
             timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenGamepadEvents;
@@ -205,7 +213,8 @@ public sealed class GamepadEventPoller
     /// maps button identifiers to their respective <see cref="GamepadButtonEventConfiguration"/> instances.
     /// This property is useful for inspecting the current monitoring state of all gamepads and buttons.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyDictionary<string, GamepadButtonEventConfiguration>> AllButtonConfigsByGamepadId
+    public IReadOnlyDictionary<string, IReadOnlyDictionary<string, GamepadButtonEventConfiguration>>
+        AllButtonConfigsByGamepadId
         => _configsByGamepadId.ToDictionary(
             entry => entry.Key,
             entry => (IReadOnlyDictionary<string, GamepadButtonEventConfiguration>)entry.Value);

@@ -12,6 +12,7 @@ public sealed class ProjectDiagnosticsScanner
 {
     private static readonly HashSet<string> Extensions = new(StringComparer.OrdinalIgnoreCase)
         { ".gaf", ".gts", ".gani", ".gsnd", ".gscn", ".gspr" };
+
     private static readonly HashSet<string> IgnoredDirectories = new(StringComparer.OrdinalIgnoreCase)
         { "bin", "obj", ".git", ".vs", "node_modules" };
 
@@ -35,19 +36,23 @@ public sealed class ProjectDiagnosticsScanner
         var pending = new Stack<string>();
         var packages = new Dictionary<string, AssetsFile>(StringComparer.OrdinalIgnoreCase);
         pending.Push(root);
+
         try
         {
             while (pending.TryPop(out var directory))
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
                 try
                 {
                     foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
+
                         try
                         {
                             var attributes = File.GetAttributes(entry);
+
                             // Do not follow links/junctions outside the project or into cycles.
                             if ((attributes & FileAttributes.ReparsePoint) != 0)
                                 continue;
@@ -58,7 +63,13 @@ public sealed class ProjectDiagnosticsScanner
                                     pending.Push(entry);
                             }
                             else if (Extensions.Contains(Path.GetExtension(entry)))
-                                definitions.Add(Inspect(root, entry, problems, packages, cancellationToken));
+                                definitions.Add(
+                                    Inspect(
+                                        root,
+                                        entry,
+                                        problems,
+                                        packages,
+                                        cancellationToken));
                         }
                         catch (Exception ex) when (ex is not OperationCanceledException)
                         {
@@ -72,7 +83,9 @@ public sealed class ProjectDiagnosticsScanner
                 }
             }
 
-            return new(definitions.OrderBy(d => d.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray(), problems.ToArray());
+            return new(
+                definitions.OrderBy(d => d.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray(),
+                problems.ToArray());
         }
         finally
         {
@@ -83,7 +96,12 @@ public sealed class ProjectDiagnosticsScanner
         }
     }
 
-    private static DefinitionResult Inspect(string root, string path, List<ProjectProblem> problems, Dictionary<string, AssetsFile> packages, CancellationToken token)
+    private static DefinitionResult Inspect(
+        string root,
+        string path,
+        List<ProjectProblem> problems,
+        Dictionary<string, AssetsFile> packages,
+        CancellationToken token)
     {
         var relative = Path.GetRelativePath(root, path);
         var references = new List<DefinitionReference>();
@@ -114,10 +132,16 @@ public sealed class ProjectDiagnosticsScanner
                             if (!string.IsNullOrWhiteSpace(image.FilePath))
                                 Reference("Image.FilePath", image.FilePath);
 
-                            if (!string.IsNullOrWhiteSpace(image.AssetsFilePath) || !string.IsNullOrWhiteSpace(image.AssetEntryName))
-                                Reference("Image.AssetsFilePath", image.AssetsFilePath, image.AssetEntryName, AssetTypes.Image);
+                            if (!string.IsNullOrWhiteSpace(image.AssetsFilePath) ||
+                                !string.IsNullOrWhiteSpace(image.AssetEntryName))
+                                Reference(
+                                    "Image.AssetsFilePath",
+                                    image.AssetsFilePath,
+                                    image.AssetEntryName,
+                                    AssetTypes.Image);
                         }
                     }
+
                     break;
 
                 case ".gani":
@@ -130,9 +154,18 @@ public sealed class ProjectDiagnosticsScanner
                         for (int i = 0; i < animation.TilesheetSources.Count; i++)
                         {
                             var source = animation.TilesheetSources[i];
-                            Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+
+                            Source(
+                                $"TilesheetSources[{i}]",
+                                (int)source.Kind,
+                                source.GtsPath,
+                                source.AssetsFilePath,
+                                source.AssetEntryName,
+                                AssetTypes.TilesheetDefinition,
+                                "GtsPath");
                         }
                     }
+
                     break;
 
                 case ".gscn":
@@ -145,14 +178,32 @@ public sealed class ProjectDiagnosticsScanner
                         for (int i = 0; i < scene.TilesheetSources.Count; i++)
                         {
                             var source = scene.TilesheetSources[i];
-                            Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+
+                            Source(
+                                $"TilesheetSources[{i}]",
+                                (int)source.Kind,
+                                source.GtsPath,
+                                source.AssetsFilePath,
+                                source.AssetEntryName,
+                                AssetTypes.TilesheetDefinition,
+                                "GtsPath");
                         }
+
                         for (int i = 0; i < scene.AnimationSources.Count; i++)
                         {
                             var source = scene.AnimationSources[i];
-                            Source($"AnimationSources[{i}]", (int)source.Kind, source.GaniPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.AnimationDefinition, "GaniPath");
+
+                            Source(
+                                $"AnimationSources[{i}]",
+                                (int)source.Kind,
+                                source.GaniPath,
+                                source.AssetsFilePath,
+                                source.AssetEntryName,
+                                AssetTypes.AnimationDefinition,
+                                "GaniPath");
                         }
                     }
+
                     break;
 
                 case ".gspr":
@@ -165,14 +216,32 @@ public sealed class ProjectDiagnosticsScanner
                         for (int i = 0; i < sprites.TilesheetSources.Count; i++)
                         {
                             var source = sprites.TilesheetSources[i];
-                            Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+
+                            Source(
+                                $"TilesheetSources[{i}]",
+                                (int)source.Kind,
+                                source.GtsPath,
+                                source.AssetsFilePath,
+                                source.AssetEntryName,
+                                AssetTypes.TilesheetDefinition,
+                                "GtsPath");
                         }
+
                         for (int i = 0; i < sprites.SceneSources.Count; i++)
                         {
                             var source = sprites.SceneSources[i];
-                            Source($"SceneSources[{i}]", (int)source.Kind, source.GscnPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.SceneDefinition, "GscnPath");
+
+                            Source(
+                                $"SceneSources[{i}]",
+                                (int)source.Kind,
+                                source.GscnPath,
+                                source.AssetsFilePath,
+                                source.AssetEntryName,
+                                AssetTypes.SceneDefinition,
+                                "GscnPath");
                         }
                     }
+
                     break;
 
                 case ".gsnd":
@@ -195,13 +264,24 @@ public sealed class ProjectDiagnosticsScanner
                                     break;
 
                                 case AudioResourceSourceKind.PackedAsset:
-                                    Reference(property + ".AssetsFilePath", resource.AssetsFilePath, resource.AssetEntryName, AssetTypes.Audio);
+                                    Reference(
+                                        property + ".AssetsFilePath",
+                                        resource.AssetsFilePath,
+                                        resource.AssetEntryName,
+                                        AssetTypes.Audio);
+
                                     break;
 
                                 case AudioResourceSourceKind.Uri:
                                     // The public validator accepts both relative and absolute URIs.
                                     // Their resolution belongs to the audio backend, not the project filesystem.
-                                    references.Add(new(member + " :: " + property + ".SourceUri", resource.SourceUri ?? "", null, null));
+                                    references.Add(
+                                        new(
+                                            member + " :: " + property + ".SourceUri",
+                                            resource.SourceUri ?? "",
+                                            null,
+                                            null));
+
                                     break;
 
                                 default:
@@ -210,6 +290,7 @@ public sealed class ProjectDiagnosticsScanner
                             }
                         }
                     }
+
                     break;
             }
         }
@@ -218,7 +299,11 @@ public sealed class ProjectDiagnosticsScanner
             problems.Add(new(relative, loaded ? "Inspection" : "Load", ex.GetBaseException().Message));
         }
 
-        return new(relative, format.TrimStart('.').ToUpperInvariant(), loaded, references.ToArray());
+        return new(
+            relative,
+            format.TrimStart('.').ToUpperInvariant(),
+            loaded,
+            references.ToArray());
 
         void Validate(IReadOnlyList<string> errors)
         {
@@ -230,22 +315,44 @@ public sealed class ProjectDiagnosticsScanner
         {
             property = member + " :: " + property;
             var reason = $"Unsupported source kind: {kind}.";
-            references.Add(new(property + ".Kind", kind.ToString(), null, reason));
+
+            references.Add(
+                new(
+                    property + ".Kind",
+                    kind.ToString(),
+                    null,
+                    reason));
+
             problems.Add(new(relative, property + ".Kind", reason));
         }
 
-        void Source(string property, int kind, string? loose, string? archive, string? entry, AssetTypes type, string looseProperty)
+        void Source(
+            string property,
+            int kind,
+            string? loose,
+            string? archive,
+            string? entry,
+            AssetTypes type,
+            string looseProperty)
         {
             // Each current authoring source enum uses LooseDefinitionFile=0, PackedDefinitionFile=1.
             if (kind == 0)
                 Reference(property + "." + looseProperty, loose);
             else if (kind == 1)
-                Reference(property + ".AssetsFilePath", archive, entry, type);
+                Reference(
+                    property + ".AssetsFilePath",
+                    archive,
+                    entry,
+                    type);
             else
                 Unsupported(property, kind);
         }
 
-        void Reference(string property, string? value, string? entry = null, AssetTypes? assetType = null)
+        void Reference(
+            string property,
+            string? value,
+            string? entry = null,
+            AssetTypes? assetType = null)
         {
             property = member + " :: " + property;
             token.ThrowIfCancellationRequested();
@@ -270,11 +377,17 @@ public sealed class ProjectDiagnosticsScanner
 
                     if (!packages.TryGetValue(resolved, out var package))
                     {
-                        package = AssetsFile.LoadOrCreate(resolved, null, false, register: false);
+                        package = AssetsFile.LoadOrCreate(
+                            resolved,
+                            null,
+                            false,
+                            register: false);
+
                         packages.Add(resolved, package);
                     }
 
                     using var stream = package.Get(assetType.Value, entry);
+
                     if (stream is null)
                         throw new FileNotFoundException($"Packed {assetType} entry not found: {entry}");
                 }
@@ -285,7 +398,12 @@ public sealed class ProjectDiagnosticsScanner
                 problems.Add(new(relative, property, error));
             }
 
-            references.Add(new(property, assetType is null ? value ?? "" : $"{value} :: {entry}", resolved, error));
+            references.Add(
+                new(
+                    property,
+                    assetType is null ? value ?? "" : $"{value} :: {entry}",
+                    resolved,
+                    error));
         }
     }
 }

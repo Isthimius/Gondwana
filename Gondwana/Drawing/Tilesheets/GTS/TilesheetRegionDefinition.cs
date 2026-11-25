@@ -18,7 +18,8 @@ public sealed class TilesheetRegionDefinition
     /// <summary>
     /// Gets or sets the rectangular bounds of this region in the source image.
     /// </summary>
-    [Description("Rectangle in source-image pixels containing this region's frame grid, including margins and padding.")]
+    [Description(
+        "Rectangle in source-image pixels containing this region's frame grid, including margins and padding.")]
     public Rectangle Area { get; set; }
 
     /// <summary>
@@ -30,7 +31,8 @@ public sealed class TilesheetRegionDefinition
     /// <summary>
     /// Gets or sets the spacing between adjacent frames.
     /// </summary>
-    [Description("Unused pixel space surrounding each frame within the grid; the gap between neighboring frames includes both adjacent padding edges.")]
+    [Description(
+        "Unused pixel space surrounding each frame within the grid; the gap between neighboring frames includes both adjacent padding edges.")]
     public Spacing TilePadding { get; set; } = Spacing.None;
 
     /// <summary>
@@ -42,13 +44,15 @@ public sealed class TilesheetRegionDefinition
     /// <summary>
     /// Gets or sets the visual overhang beyond the logical tile bounds.
     /// </summary>
-    [Description("How far the frame artwork visually extends beyond the logical tile footprint on each side, in pixels.")]
+    [Description(
+        "How far the frame artwork visually extends beyond the logical tile footprint on each side, in pixels.")]
     public Spacing Overhang { get; set; } = Spacing.None;
 
     /// <summary>
     /// Gets or sets the region-level collision adjustment applied to all frames by default.
     /// </summary>
-    [Description("Default collision-box edge insets for frames in this region; positive values shrink and negative values expand the box.")]
+    [Description(
+        "Default collision-box edge insets for frames in this region; positive values shrink and negative values expand the box.")]
     public CollisionAdjust CollisionAdjust { get; set; } = CollisionAdjust.None;
 
     /// <summary>
@@ -62,6 +66,7 @@ public sealed class TilesheetRegionDefinition
     /// Gets or sets per-frame collision metadata for this region. A missing collision
     /// property on a frame means that frame inherits the corresponding region value.
     /// </summary>
-    [Description("Optional per-frame collision overrides; frames without overrides inherit the region collision settings.")]
+    [Description(
+        "Optional per-frame collision overrides; frames without overrides inherit the region collision settings.")]
     public List<TilesheetFrameDefinition> Frames { get; set; } = [];
 }

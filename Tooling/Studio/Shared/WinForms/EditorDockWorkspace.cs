@@ -12,16 +12,19 @@ public sealed class EditorDockWorkspace : UserControl
     private readonly string _profile;
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly List<DockContent> _contents = [];
+
     private readonly Dictionary<string, DockContent> _contentsByTitle =
         new(StringComparer.OrdinalIgnoreCase);
 
     public DockPanel DockPanel { get; }
+
     public IReadOnlyList<string> PaneTitles =>
         _contents.Select(content => content.Text).ToArray();
 
     public EditorDockWorkspace(string profile)
     {
         Dock = DockStyle.Fill;
+
         DockPanel = new DockPanel
         {
             Dock = DockStyle.Fill,
@@ -29,6 +32,7 @@ public sealed class EditorDockWorkspace : UserControl
             DocumentStyle = DocumentStyle.DockingWindow,
             DocumentTabStripLocation = DocumentTabStripLocation.Top
         };
+
         Controls.Add(DockPanel);
         _profile = profile;
         _layout = new DockLayoutPersistence(DockPanel, profile);

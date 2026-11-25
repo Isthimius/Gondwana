@@ -66,6 +66,7 @@ public class DpiToolStrip : ToolStrip
     public void SetGlyph(ToolStripItem item, Func<int, Bitmap> create)
     {
         ArgumentNullException.ThrowIfNull(create);
+
         if (_glyphs.ContainsKey(item))
             throw new ArgumentException("The item already has a glyph.", nameof(item));
 
@@ -124,7 +125,13 @@ public class DpiToolStrip : ToolStrip
             int image = ToolbarSizing.Pixels(_imageSize, dpi);
 
             ImageScalingSize = new Size(image, image);
-            Padding = new Padding(0, 0, ToolbarSizing.Pixels(1, dpi), 0);
+
+            Padding = new Padding(
+                0,
+                0,
+                ToolbarSizing.Pixels(1, dpi),
+                0);
+
             bool rebuild = _imageDpi != dpi || _imageColor != ForeColor;
 
             foreach (var (item, glyph) in _glyphs)
@@ -134,7 +141,12 @@ public class DpiToolStrip : ToolStrip
 
                 item.AutoSize = false;
                 item.Size = new Size(button, button);
-                item.Margin = new Padding(0, ToolbarSizing.Pixels(1, dpi), 0, ToolbarSizing.Pixels(2, dpi));
+
+                item.Margin = new Padding(
+                    0,
+                    ToolbarSizing.Pixels(1, dpi),
+                    0,
+                    ToolbarSizing.Pixels(2, dpi));
 
                 if (rebuild || glyph.Image is null)
                 {
@@ -152,8 +164,11 @@ public class DpiToolStrip : ToolStrip
                     continue;
 
                 item.AutoSize = false;
+
                 int height = item is ToolStripControlHost host
-                    ? host.Control.GetPreferredSize(Size.Empty).Height : item.Height;
+                    ? host.Control.GetPreferredSize(Size.Empty).Height
+                    : item.Height;
+
                 item.Size = new Size(ToolbarSizing.Pixels(width, dpi), height);
             }
 
@@ -172,6 +187,7 @@ public class DpiToolStrip : ToolStrip
         if (disposing && !_disposing)
         {
             _disposing = true;
+
             foreach (var (item, glyph) in _glyphs)
             {
                 if (!item.IsDisposed)

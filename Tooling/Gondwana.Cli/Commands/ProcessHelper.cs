@@ -33,6 +33,7 @@ internal static class ProcessHelper
                 psi.ArgumentList.Add(arg);
 
             using var process = Process.Start(psi);
+
             if (process is null)
                 return -1;
 
@@ -41,16 +42,24 @@ internal static class ProcessHelper
 
             void HandleLine(string? line)
             {
-                if (line is null) return;
+                if (line is null)
+                    return;
+
                 Console.WriteLine(line);
 
-                if (urlOpened) return;
+                if (urlOpened)
+                    return;
+
                 var url = ExtractListeningUrl(line);
-                if (url is null) return;
+
+                if (url is null)
+                    return;
 
                 lock (syncLock)
                 {
-                    if (urlOpened) return;
+                    if (urlOpened)
+                        return;
+
                     urlOpened = true;
                 }
 
@@ -75,7 +84,10 @@ internal static class ProcessHelper
     {
         const string marker = "Now listening on: ";
         var idx = line.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
-        if (idx < 0) return null;
+
+        if (idx < 0)
+            return null;
+
         var url = line[(idx + marker.Length)..].Trim();
         return url.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? url : null;
     }
@@ -100,12 +112,17 @@ internal static class ProcessHelper
     /// <param name="exitCode">When this method returns, contains the command exit code.</param>
     /// <param name="workingDirectory">Optional child working directory for SDK resolution.</param>
     /// <returns>The captured process output.</returns>
-    public static string Run(string fileName, string arguments, out int exitCode, string? workingDirectory = null)
+    public static string Run(
+        string fileName,
+        string arguments,
+        out int exitCode,
+        string? workingDirectory = null)
     {
         try
         {
             var resolved = ResolveWindowsExecutable(fileName);
             ProcessStartInfo psi;
+
             if (IsWindowsScript(resolved))
             {
                 psi = new ProcessStartInfo
@@ -134,6 +151,7 @@ internal static class ProcessHelper
             }
 
             using var process = Process.Start(psi);
+
             if (process is null)
             {
                 exitCode = -1;
@@ -174,6 +192,7 @@ internal static class ProcessHelper
             };
 
             using var process = Process.Start(psi);
+
             if (process is null)
                 return -1;
 
@@ -199,6 +218,7 @@ internal static class ProcessHelper
         try
         {
             var resolved = ResolveWindowsExecutable(fileName);
+
             var psi = new ProcessStartInfo
             {
                 FileName = IsWindowsScript(resolved) ? "cmd.exe" : resolved,
@@ -217,6 +237,7 @@ internal static class ProcessHelper
                 psi.ArgumentList.Add(arg);
 
             using var process = Process.Start(psi);
+
             if (process is null)
                 return -1;
 
@@ -235,6 +256,7 @@ internal static class ProcessHelper
             return fileName;
 
         var pathExt = Environment.GetEnvironmentVariable("PATHEXT") ?? ".COM;.EXE;.BAT;.CMD";
+
         var searchPaths = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
             .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
 
@@ -243,6 +265,7 @@ internal static class ProcessHelper
             foreach (var dir in searchPaths)
             {
                 var candidate = Path.Combine(dir.Trim(), fileName + ext);
+
                 if (File.Exists(candidate))
                     return candidate;
             }

@@ -85,7 +85,13 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
     /// <param name="gpuFps">
     /// The actual GPU presentation rate, or <c>null</c> when no GPU surfaces are active.
     /// </param>
-    public CyclesPerSecondCalculatedEventArgs(long totalGross, long totalNet, double grossCPS, double netCPS, double sampleTime, double? gpuFps = null)
+    public CyclesPerSecondCalculatedEventArgs(
+        long totalGross,
+        long totalNet,
+        double grossCPS,
+        double netCPS,
+        double sampleTime,
+        double? gpuFps = null)
     {
         TotalGrossCycles = totalGross;
         TotalNetCycles = totalNet;

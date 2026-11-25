@@ -24,6 +24,7 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
         : base(surface, jsRuntime)
     {
         _assets = assets ?? throw new ArgumentNullException(nameof(assets));
+
         _runtime = new SliderGameRuntime(
             surface.Host,
             () => WidgetInputRouter,
@@ -36,6 +37,7 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
                 (int)BlazorKey.ArrowRight,
                 (int)BlazorKey.ArrowUp,
                 (int)BlazorKey.ArrowDown));
+
         surface.FramePresented += OnFramePresented;
     }
 
@@ -90,9 +92,13 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
     private AudioResource LoadAudio(string key, string assetName)
     {
         using var stream = _assets.Get(AssetTypes.Audio, assetName)
-            ?? throw new InvalidDataException($"Slider audio asset '{assetName}' is missing from slider.gaf.");
+                           ?? throw new InvalidDataException(
+                               $"Slider audio asset '{assetName}' is missing from slider.gaf.");
+
         return Engine.Managers.AudioResources.LoadFromStream(
-            key, stream, Path.GetExtension(assetName));
+            key,
+            stream,
+            Path.GetExtension(assetName));
     }
 
     protected override Scene CreateInitialScene() => _runtime.CreateInitialScene();
@@ -103,21 +109,24 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
+
         foreach (BlazorKey key in new[]
-        {
-            BlazorKey.Tab, BlazorKey.Enter, BlazorKey.Escape, BlazorKey.Space,
-            BlazorKey.ArrowUp, BlazorKey.ArrowDown,
-            BlazorKey.ArrowLeft, BlazorKey.ArrowRight,
-            BlazorKey.Home, BlazorKey.End, BlazorKey.PageUp, BlazorKey.PageDown,
-            BlazorKey.KeyA, BlazorKey.KeyG, BlazorKey.KeyH,
-            BlazorKey.KeyL, BlazorKey.KeyN, BlazorKey.KeyO,
-            BlazorKey.KeyP, BlazorKey.KeyS, BlazorKey.KeyU, BlazorKey.KeyX
-        })
+                 {
+                     BlazorKey.Tab, BlazorKey.Enter, BlazorKey.Escape, BlazorKey.Space,
+                     BlazorKey.ArrowUp, BlazorKey.ArrowDown,
+                     BlazorKey.ArrowLeft, BlazorKey.ArrowRight,
+                     BlazorKey.Home, BlazorKey.End, BlazorKey.PageUp, BlazorKey.PageDown,
+                     BlazorKey.KeyA, BlazorKey.KeyG, BlazorKey.KeyH,
+                     BlazorKey.KeyL, BlazorKey.KeyN, BlazorKey.KeyO,
+                     BlazorKey.KeyP, BlazorKey.KeyS, BlazorKey.KeyU, BlazorKey.KeyX
+                 })
             keyboard.StartMonitoringKey((int)key);
+
         _runtime.OnKeyboardAdapterInitialized();
     }
 
     protected override void OnEngineInitialized() => _runtime.OnEngineInitialized();
+
     protected override void OnInitialized()
     {
         if (WidgetInputRouter is not null)
@@ -131,6 +140,7 @@ internal sealed class SliderBlazorGameHost : BlazorGpuGameHost
     private static int ToWidgetVirtualKey(int key)
     {
         var browserKey = (BlazorKey)key;
+
         if (browserKey is >= BlazorKey.KeyA and <= BlazorKey.KeyZ)
             return 'A' + key - (int)BlazorKey.KeyA;
 

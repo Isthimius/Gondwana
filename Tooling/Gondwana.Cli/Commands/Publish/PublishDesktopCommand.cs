@@ -15,7 +15,8 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
         /// Gets or sets the project.
         /// </summary>
         [CommandOption("-p|--project")]
-        [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
+        [Description(
+            "Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
         /// <summary>
@@ -68,18 +69,25 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+
             if (error!.Contains("No .csproj found", StringComparison.Ordinal))
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
+
             return 1;
         }
 
-        if (!ProjectHelper.TryResolveDesktopFramework(csprojPath!, settings.Framework, out var framework, out error))
+        if (!ProjectHelper.TryResolveDesktopFramework(
+                csprojPath!,
+                settings.Framework,
+                out var framework,
+                out error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
             return 1;
         }
 
-        AnsiConsole.MarkupLine($"Publishing [bold]{Markup.Escape(Path.GetFileNameWithoutExtension(csprojPath))}[/] for [bold]{Markup.Escape(framework!)}[/]...");
+        AnsiConsole.MarkupLine(
+            $"Publishing [bold]{Markup.Escape(Path.GetFileNameWithoutExtension(csprojPath))}[/] for [bold]{Markup.Escape(framework!)}[/]...");
 
         var publishArgs = new List<string>
         {
@@ -107,6 +115,7 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
             publishArgs.Add("/p:PublishSingleFile=true");
 
         var exitCode = ProcessHelper.RunLive("dotnet", publishArgs);
+
         if (exitCode != 0)
         {
             AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
@@ -115,16 +124,22 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
 
         var publishDirectory = !string.IsNullOrWhiteSpace(settings.Output)
             ? Path.GetFullPath(settings.Output)
-            : ProjectHelper.TryLocatePublishDirectory(csprojPath!, settings.Configuration, framework!, settings.Runtime);
+            : ProjectHelper.TryLocatePublishDirectory(
+                csprojPath!,
+                settings.Configuration,
+                framework!,
+                settings.Runtime);
 
         AnsiConsole.MarkupLine("[green]Publish succeeded![/]");
+
         if (publishDirectory is not null && Directory.Exists(publishDirectory))
         {
             Console.WriteLine(publishDirectory);
         }
         else
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] Could not locate publish output directory. Check the publish output above.");
+            AnsiConsole.MarkupLine(
+                "[yellow]Warning:[/] Could not locate publish output directory. Check the publish output above.");
         }
 
         return 0;

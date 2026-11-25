@@ -20,21 +20,36 @@ internal static class Program
             Console.WriteLine("VideoTest <media path> [--headless | --stream | --gaf <asset name>]");
             return 1;
         }
+
         try
         {
-            if (args.Contains("--headless")) return NativeSmoke.Run(args[0]);
+            if (args.Contains("--headless"))
+                return NativeSmoke.Run(args[0]);
+
             ApplicationConfiguration.Initialize();
+
             using var assets = args.Contains("--gaf")
-                ? AssetsFile.LoadOrCreate(Path.GetFullPath(args[0]), null, false, register: false) : null;
+                ? AssetsFile.LoadOrCreate(
+                    Path.GetFullPath(args[0]),
+                    null,
+                    false,
+                    register: false)
+                : null;
+
             VideoSource source = assets is not null
                 ? VideoSource.FromAsset(assets, args[Array.IndexOf(args, "--gaf") + 1])
                 : args.Contains("--stream")
                     ? VideoSource.FromStream(File.OpenRead(args[0]))
                     : VideoSource.FromUri(new Uri(Path.GetFullPath(args[0])));
+
             Application.Run(new VideoWindow(source));
             return 0;
         }
-        catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            return 1;
+        }
     }
 }
 
@@ -45,20 +60,25 @@ internal sealed class VideoWindow : Form
     private readonly System.Windows.Forms.Timer _statusTimer = new() { Interval = 250 };
     private readonly VideoSource _source;
     private VideoHost? _host;
+
     internal VideoWindow(VideoSource source)
     {
         _source = source;
         ClientSize = new Size(1000, 650);
         Controls.Add(_surface);
+
         _statusTimer.Tick += (_, _) =>
         {
             var player = _host?.Player;
-            Text = player is null ? "VideoTest — disposed" :
-                $"VideoTest — {player.NaturalSize} {player.Metadata.Status} audio={player.HasAudio} " +
-                $"{player.Position:mm\\:ss}/{player.Duration:mm\\:ss} loop={player.Loop} " +
-                $"stretch={_host?.Video?.Stretch} drag={_host?.Video?.IsDragEnabled} error={player.LastError?.Message}";
+
+            Text = player is null
+                ? "VideoTest — disposed"
+                : $"VideoTest — {player.NaturalSize} {player.Metadata.Status} audio={player.HasAudio} " +
+                  $"{player.Position:mm\\:ss}/{player.Duration:mm\\:ss} loop={player.Loop} " +
+                  $"stretch={_host?.Video?.Stretch} drag={_host?.Video?.IsDragEnabled} error={player.LastError?.Message}";
         };
     }
+
     /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
@@ -67,6 +87,7 @@ internal sealed class VideoWindow : Form
         _host.Initialize();
         _statusTimer.Start();
     }
+
     /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
@@ -76,36 +97,63 @@ internal sealed class VideoWindow : Form
     }
 }
 
-internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSource source) : WinFormsGpuGameHost(surface)
+internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSource source)
+    : WinFormsGpuGameHost(surface)
 {
     internal VlcVideoPlayer? Player { get; private set; }
     internal VideoWidget? Video { get; private set; }
     private readonly List<WidgetBase> _controls = [];
+
     /// <inheritdoc/>
     protected override Scene CreateInitialScene() => Scene.Empty;
+
     /// <inheritdoc/>
     protected override void CreateInitialViews() => RenderSurface.Host.ViewManager.ConfigureSingleFullView();
+
     /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         // Monitoring is a host policy; VideoWidget assigns no keys or commands.
         var keyboard = Engine.Input.KeyboardEventPoller!;
+
         for (int key = (int)Keys.A; key <= (int)Keys.Z; key++)
             keyboard.StartMonitoringKey(key);
+
         foreach (var key in new[] { Keys.Space, Keys.Enter, Keys.Escape })
             keyboard.StartMonitoringKey((int)key);
     }
+
     /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var host = RenderSurface.Host;
         var view = host.ViewManager.Views[0];
         Player = new VlcVideoPlayer();
-        Video = new VideoWidget(host, view, new Rectangle(20, 20, 640, 360), source, Player)
+
+        Video = new VideoWidget(
+                host,
+                view,
+                new Rectangle(
+                    20,
+                    20,
+                    640,
+                    360),
+                source,
+                Player)
         { Stretch = StretchMode.Uniform };
+
         Video.IsDragEnabled = true; // Explicit demo choice; the package default is false.
-        var status = new LabelWidget(host, view, new Rectangle(20, 405, 950, 45),
+
+        var status = new LabelWidget(
+            host,
+            view,
+            new Rectangle(
+                20,
+                405,
+                950,
+                45),
             "Drag the video. Click logs an event; playback does not toggle. Controls below are separate Widgets.");
+
         status.SetZOrder(100);
         status.Show();
         _controls.Add(status);
@@ -121,13 +169,28 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
         void Add(string text, Action<VideoWidget> action)
         {
             int index = _controls.Count - 1;
-            var button = new ButtonWidget(host, view,
-                new Rectangle(20 + index % 7 * 138, 465 + index / 7 * 48, 130, 40), text);
-            button.Clicked += () => { if (Video is { } video) action(video); };
+
+            var button = new ButtonWidget(
+                host,
+                view,
+                new Rectangle(
+                    20 + index % 7 * 138,
+                    465 + index / 7 * 48,
+                    130,
+                    40),
+                text);
+
+            button.Clicked += () =>
+            {
+                if (Video is { } video)
+                    action(video);
+            };
+
             button.SetZOrder(100);
             button.Show();
             _controls.Add(button);
         }
+
         Add("Play", v => v.Play());
         Add("Pause", v => v.Pause());
         Add("Stop", v => v.Stop());
@@ -142,16 +205,39 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
         Add("Fade in", v => v.FadeIn(1));
         Add("Opacity 50%", v => v.SetOpacity(0.5f));
         Add("Stretch next", v => v.Stretch = (StretchMode)(((int)v.Stretch + 1) % 4));
-        Add("Reset bounds", v => v.SetBounds(new Rectangle(20, 20, 640, 360)));
-        Add("Resize", v => v.SetBounds(new Rectangle(v.Bounds.Location,
-            v.Bounds.Width == 640 ? new Size(400, 300) : new Size(640, 360))));
+
+        Add(
+            "Reset bounds",
+            v => v.SetBounds(
+                new Rectangle(
+                    20,
+                    20,
+                    640,
+                    360)));
+
+        Add(
+            "Resize",
+            v => v.SetBounds(
+                new Rectangle(
+                    v.Bounds.Location,
+                    v.Bounds.Width == 640 ? new Size(400, 300) : new Size(640, 360))));
+
         Add("Dispose", _ => DisposeVideo());
     }
-    internal void DisposeVideo() { Video?.Dispose(); Video = null; Player = null; }
+
+    internal void DisposeVideo()
+    {
+        Video?.Dispose();
+        Video = null;
+        Player = null;
+    }
+
     /// <inheritdoc/>
     protected override void OnDisposing()
     {
-        foreach (var control in _controls) control.Dispose();
+        foreach (var control in _controls)
+            control.Dispose();
+
         _controls.Clear();
         DisposeVideo();
     }

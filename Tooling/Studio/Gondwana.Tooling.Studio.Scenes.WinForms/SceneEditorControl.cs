@@ -27,9 +27,23 @@ public sealed partial class SceneEditorControl : UserControl
         _preview.CancelGesture();
         selection.Validate(_packages, AssetTypes.TilesheetDefinition);
         var resource = selection.Resource;
-        var source = SceneTilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
-        try { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
-        catch { source.Dispose(); throw; }
+
+        var source = SceneTilesheetSource.LoadPacked(
+            resource.Path,
+            resource.EntryName!,
+            selection.Member!,
+            _packages);
+
+        try
+        {
+            Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!);
+        }
+        catch
+        {
+            source.Dispose();
+            throw;
+        }
+
         _tilesheetSources.Add(source);
         RefreshSourceTree();
         RefreshPreview();
@@ -43,9 +57,23 @@ public sealed partial class SceneEditorControl : UserControl
         _preview.CancelGesture();
         selection.Validate(_packages, AssetTypes.AnimationDefinition);
         var resource = selection.Resource;
-        var source = SceneAnimationSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
-        try { Document.AddPackedAnimationSource(selection.Member!, resource.Path, resource.EntryName!); }
-        catch { source.Dispose(); throw; }
+
+        var source = SceneAnimationSource.LoadPacked(
+            resource.Path,
+            resource.EntryName!,
+            selection.Member!,
+            _packages);
+
+        try
+        {
+            Document.AddPackedAnimationSource(selection.Member!, resource.Path, resource.EntryName!);
+        }
+        catch
+        {
+            source.Dispose();
+            throw;
+        }
+
         _animationSources.Add(source);
         RefreshAnimationList();
         RefreshPreview();
@@ -54,15 +82,19 @@ public sealed partial class SceneEditorControl : UserControl
     }
 
     private const int SourceFrameThumbnailSize = 32;
+
     private enum PaintSourceKind { Frame, Animation }
+
     private PaintSourceKind? _paintSourceKind;
     private bool _restoringSourceSelection;
+
     private readonly ToolStripLabel _paintSourceLabel = new()
     {
         AutoSize = false,
         Width = 220,
         TextAlign = ContentAlignment.MiddleLeft
     };
+
     private readonly Dictionary<SceneEditorTool, ToolStripButton> _toolButtons = [];
     internal SceneEditorTool ActiveTool { get; private set; } = SceneEditorTool.Select;
 
@@ -143,8 +175,10 @@ public sealed partial class SceneEditorControl : UserControl
 
     /// <summary>Whether the most recent declared-source load completed without diagnostics.</summary>
     public bool SourcesLoadedSuccessfully => _declaredSourceDiagnostics.Count == 0 && _sourceDiagnostics.Count == 0;
+
     private readonly Dictionary<string, DockContent> _panes =
         new(StringComparer.OrdinalIgnoreCase);
+
     private EditorDockWorkspace _workspace = null!;
 
     private SceneLayerDefinition? _selectedLayer;
@@ -161,16 +195,25 @@ public sealed partial class SceneEditorControl : UserControl
     public float? PreviewZoom
     {
         get => _preview.IsFit ? null : _preview.Zoom;
-        set { if (value is { } zoom) _preview.SetZoom(zoom); else _preview.Fit(); }
+        set
+        {
+            if (value is { } zoom)
+                _preview.SetZoom(zoom);
+            else
+                _preview.Fit();
+        }
     }
+
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
+
     /// <summary>Gets the mutable definition currently selected in the document.</summary>
     public SceneDefinition Definition => Document.Definition;
 
     /// <summary>Gets or sets the optional synchronous save callback used before launching the separate Scene Viewer; true indicates a successful save.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<bool>? SaveRequested { get; set; }
+
     /// <summary>Gets or sets the asynchronous save callback used before launching the separate Scene Viewer; takes precedence over the synchronous callback and must return true on success.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<Task<bool>>? SaveRequestedAsync { get; set; }
@@ -189,38 +232,57 @@ public sealed partial class SceneEditorControl : UserControl
         _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
-        var shortcuts = UndoRedoMenu.Route(this, () => SelectedSpriteHistory ?? Document.History, CommitPreviewHistoryEdits);
+
+        var shortcuts = UndoRedoMenu.Route(
+            this,
+            () => SelectedSpriteHistory ?? Document.History,
+            CommitPreviewHistoryEdits);
+
         Disposed += (_, _) => shortcuts.Dispose();
         Size = new Size(1400, 900);
         Dock = DockStyle.Fill;
 
         _sourceTree.ImageList = _sourceFrameImages;
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
+
         _sourceTree.AfterSelect += (_, _) =>
         {
-            if (_restoringSourceSelection) return;
+            if (_restoringSourceSelection)
+                return;
+
             _paintSourceKind = PaintSourceKind.Frame;
             UpdatePaintSourceLabel();
         };
+
         _sourceTree.Enter += (_, _) =>
         {
-            if (_restoringSourceSelection) return;
+            if (_restoringSourceSelection)
+                return;
+
             _paintSourceKind = PaintSourceKind.Frame;
             UpdatePaintSourceLabel();
         };
+
         _animationList.Enter += (_, _) =>
         {
-            if (_restoringSourceSelection) return;
+            if (_restoringSourceSelection)
+                return;
+
             _paintSourceKind = PaintSourceKind.Animation;
             UpdatePaintSourceLabel();
         };
+
         _animationList.SelectedIndexChanged += (_, _) =>
         {
-            if (_restoringSourceSelection) return;
+            if (_restoringSourceSelection)
+                return;
+
             if (_animationList.SelectedItems.Count == 1)
                 _paintSourceKind = PaintSourceKind.Animation;
+
             UpdatePaintSourceLabel();
         };
+
         _sourceTree.NodeMouseDoubleClick += (_, e) =>
         {
             if (e.Node.Tag is FrameTag frame)
@@ -262,10 +324,18 @@ public sealed partial class SceneEditorControl : UserControl
         Document.Changed += DocumentChanged;
 
         var definitionBar = new DefinitionSelectionBar<SceneDefinition>(
-            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.ID,
-            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshSelectedDefinition,
-            "gscn", (path, select) => Document.ImportDefinitions(path, select));
+            () => Document.Definitions,
+            () => Document.SelectedDefinition,
+            definition => definition.ID,
+            Document.SelectDefinition,
+            () => Document.AddDefinition(),
+            () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition),
+            Document.RenameDefinition,
+            RefreshSelectedDefinition,
+            "gscn",
+            (path, select) => Document.ImportDefinitions(path, select));
+
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -273,7 +343,8 @@ public sealed partial class SceneEditorControl : UserControl
         NavigationSizing.Attach(_sourceTree);
         ToolingAppearance.Apply(this);
         RefreshView();
-        _displayedDefinition = Definition; _displayedSources = SourceSignature();
+        _displayedDefinition = Definition;
+        _displayedSources = SourceSignature();
     }
 
     /// <summary>Loads the members of loose tilesheet files for authoring and records their source paths in the document.</summary>
@@ -289,10 +360,12 @@ public sealed partial class SceneEditorControl : UserControl
 
 
         SceneTilesheetSource? last = null;
+
         foreach (var path in paths)
             foreach (var source in SceneTilesheetSource.LoadAll(path, _packages))
             {
                 var existing = FindTilesheet(source.Definition.Name);
+
                 if (existing is not null)
                 {
                     _tilesheetSources.Remove(existing);
@@ -313,6 +386,7 @@ public sealed partial class SceneEditorControl : UserControl
 
         if (last is not null)
             SelectTilesheetRoot(last);
+
         transaction.Commit();
     }
 
@@ -329,10 +403,12 @@ public sealed partial class SceneEditorControl : UserControl
 
 
         SceneAnimationSource? last = null;
+
         foreach (var path in paths)
             foreach (var source in SceneAnimationSource.LoadAll(path, _packages))
             {
                 var existing = FindAnimation(source.Definition.Key);
+
                 if (existing is not null)
                 {
                     _animationSources.Remove(existing);
@@ -353,6 +429,7 @@ public sealed partial class SceneEditorControl : UserControl
 
         if (last is not null)
             SelectAnimation(last);
+
         transaction.Commit();
     }
 
@@ -368,7 +445,9 @@ public sealed partial class SceneEditorControl : UserControl
         else
             lines.AddRange(errors.Select(error => "ERROR: " + error));
 
-        if (_resourceDropError is not null) lines.Add("WARNING: Resource drop rejected. " + _resourceDropError);
+        if (_resourceDropError is not null)
+            lines.Add("WARNING: Resource drop rejected. " + _resourceDropError);
+
         lines.AddRange(_sourceDiagnostics);
         lines.AddRange(_declaredSourceDiagnostics.Values);
 
@@ -380,9 +459,12 @@ public sealed partial class SceneEditorControl : UserControl
                 {
                     var animation = tile.AnimationKey is { } key ? FindAnimation(key) : null;
                     var representative = animation?.FirstPreviewFrame();
+
                     var source = representative is not null && SceneDocument.FramesMatch(frame, representative) &&
-                        animation!.Definition.TilesheetSources.Any(item => item.Tilesheet == frame.Tilesheet)
-                        ? animation.FindTilesheet(frame.Tilesheet) : FindTilesheet(frame.Tilesheet);
+                                 animation!.Definition.TilesheetSources.Any(item => item.Tilesheet == frame.Tilesheet)
+                        ? animation.FindTilesheet(frame.Tilesheet)
+                        : FindTilesheet(frame.Tilesheet);
+
                     if (source is null)
                     {
                         lines.Add(
@@ -402,6 +484,7 @@ public sealed partial class SceneEditorControl : UserControl
                 if (!string.IsNullOrWhiteSpace(tile.AnimationKey))
                 {
                     var animation = FindAnimation(tile.AnimationKey);
+
                     if (animation is null)
                     {
                         lines.Add(
@@ -431,6 +514,7 @@ public sealed partial class SceneEditorControl : UserControl
     {
         _preview.CancelGesture();
         _validation.Focus();
+
         return !_properties.ContainsFocus &&
                !_tileProperties.ContainsFocus &&
                ValidateChildren();
@@ -485,33 +569,49 @@ public sealed partial class SceneEditorControl : UserControl
         Controls.Add(_workspace);
 
         var dock = _workspace.DockPanel;
-        var structure = _workspace.AddPane("scene-structure", "Scene structure",
+
+        var structure = _workspace.AddPane(
+            "scene-structure",
+            "Scene structure",
             _structure,
             BuildStructureToolbar());
 
-        var preview = _workspace.AddPane("scene-preview", "Scene preview",
+        var preview = _workspace.AddPane(
+            "scene-preview",
+            "Scene preview",
             _preview,
             BuildPreviewToolbar());
 
-        var gts = _workspace.AddPane("gts-sources", "GTS frame sources",
+        var gts = _workspace.AddPane(
+            "gts-sources",
+            "GTS frame sources",
             _sourceTree,
             BuildGtsToolbar());
 
-        var animations = _workspace.AddPane("gani-animations", "GANI animations",
+        var animations = _workspace.AddPane(
+            "gani-animations",
+            "GANI animations",
             _animationList,
             BuildAnimationToolbar());
 
-        var properties = _workspace.AddPane("properties", "Properties",
+        var properties = _workspace.AddPane(
+            "properties",
+            "Properties",
             _properties);
 
-        var tileProperties = _workspace.AddPane("tile-properties", "Tile properties",
+        var tileProperties = _workspace.AddPane(
+            "tile-properties",
+            "Tile properties",
             _tileProperties,
             BuildTileToolbar());
 
-        var validation = _workspace.AddPane("validation", "Validation",
+        var validation = _workspace.AddPane(
+            "validation",
+            "Validation",
             _validation);
 
         _panes.Clear();
+
         foreach (var pane in new[]
                  {
                      structure,
@@ -539,14 +639,16 @@ public sealed partial class SceneEditorControl : UserControl
     private ToolStrip BuildPreviewToolbar()
     {
         var bar = NewToolbar();
+
         foreach (var tool in Enum.GetValues<SceneEditorTool>())
         {
-            var button = new ToolStripButton(tool switch
-            {
-                SceneEditorTool.RectanglePaint => "Rectangle Paint",
-                SceneEditorTool.RectangleErase => "Rectangle Erase",
-                _ => tool.ToString()
-            })
+            var button = new ToolStripButton(
+                tool switch
+                {
+                    SceneEditorTool.RectanglePaint => "Rectangle Paint",
+                    SceneEditorTool.RectangleErase => "Rectangle Erase",
+                    _ => tool.ToString()
+                })
             {
                 Checked = tool == ActiveTool,
                 ToolTipText = tool switch
@@ -559,17 +661,22 @@ public sealed partial class SceneEditorControl : UserControl
                     _ => "Drag to erase complete explicit tile definitions"
                 }
             };
+
             button.Click += (_, _) =>
             {
                 _preview.CancelGesture();
                 ClearMultiSelection();
                 ActiveTool = tool;
                 _preview.RequireSelectedLayer = tool != SceneEditorTool.Select;
-                foreach (var (mode, item) in _toolButtons) item.Checked = mode == tool;
+
+                foreach (var (mode, item) in _toolButtons)
+                    item.Checked = mode == tool;
             };
+
             _toolButtons.Add(tool, button);
             bar.Items.Add(button);
         }
+
         bar.Items.Add(new ToolStripSeparator());
 
         bar.Items.Add("−", null, (_, _) => _preview.ZoomOut());
@@ -583,11 +690,16 @@ public sealed partial class SceneEditorControl : UserControl
             FlatStyle = FlatStyle.Flat
         };
 
-        var zoomSelector = new ZoomSelector(zoom.ComboBox, requested =>
-        {
-            if (requested is { } value) _preview.SetZoom(value);
-            else _preview.Fit();
-        });
+        var zoomSelector = new ZoomSelector(
+            zoom.ComboBox,
+            requested =>
+            {
+                if (requested is { } value)
+                    _preview.SetZoom(value);
+                else
+                    _preview.Fit();
+            });
+
         _preview.ZoomChanged += () => zoomSelector.Show(_preview.Zoom, _preview.IsFit);
 
         bar.Items.Add(zoom);
@@ -622,80 +734,116 @@ public sealed partial class SceneEditorControl : UserControl
     {
         if (!CommitEdits())
             return;
+
         try
         {
             if (Document.PackedLocation is not null)
             {
                 var snapshot = SceneViewerLauncher.CreateTemporaryScene(Document);
+
                 try
                 {
-                    SceneViewerLauncher.Launch(snapshot,
-                        string.IsNullOrWhiteSpace(Document.SelectedDefinition.ID) ? null : Document.SelectedDefinition.ID,
-                        Document.BaseDirectory, temporaryScene: true);
+                    SceneViewerLauncher.Launch(
+                        snapshot,
+                        string.IsNullOrWhiteSpace(Document.SelectedDefinition.ID)
+                            ? null
+                            : Document.SelectedDefinition.ID,
+                        Document.BaseDirectory,
+                        temporaryScene: true);
                 }
                 catch
                 {
                     File.Delete(snapshot);
                     throw;
                 }
+
                 return;
             }
+
             if (SaveRequestedAsync is not null)
             {
                 if (Document.IsDirty || Document.FilePath is null)
                 {
-                    if (ThemedMessageBox.Show(this, "Save and view the scene?", "View Scene", MessageBoxButtons.OKCancel) != DialogResult.OK ||
-                        !await SaveRequestedAsync()) return;
+                    if (ThemedMessageBox.Show(
+                            this,
+                            "Save and view the scene?",
+                            "View Scene",
+                            MessageBoxButtons.OKCancel) != DialogResult.OK ||
+                        !await SaveRequestedAsync())
+                        return;
                 }
+
                 if (Document.FilePath is { } savedPath && !Document.IsDirty)
                     SceneViewerLauncher.Launch(savedPath, Document.SelectedDefinition.ID);
+
                 return;
             }
-            SceneViewerLauncher.ViewSavedScene(Document, () =>
-                ThemedMessageBox.Show(this,
-                    "This scene must be saved before viewing. Save and view the scene?",
-                    "View Scene — saved content", MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Question) == DialogResult.OK,
+
+            SceneViewerLauncher.ViewSavedScene(
+                Document,
+                () =>
+                    ThemedMessageBox.Show(
+                        this,
+                        "This scene must be saved before viewing. Save and view the scene?",
+                        "View Scene — saved content",
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Question) == DialogResult.OK,
                 () => SaveRequested?.Invoke() ?? false,
                 path => SceneViewerLauncher.Launch(path, Document.SelectedDefinition.ID));
         }
         catch (Exception ex)
         {
-            ThemedMessageBox.Show(this, ex.Message, "Unable to view scene",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            ThemedMessageBox.Show(
+                this,
+                ex.Message,
+                "Unable to view scene",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
         }
     }
 
     private ToolStrip BuildStructureToolbar()
     {
         var bar = NewToolbar();
-        bar.Items.Add("+ Layer", null, (_, _) =>
-        {
-            var layer = Document.AddLayer();
-            RefreshStructure();
-            SelectLayerNode(layer);
-            SetSelectedTile(layer, 0, 0);
-            RefreshPreview();
-            UpdateValidation();
-        });
-        bar.Items.Add("− Layer", null, (_, _) =>
-        {
-            if (_structure.SelectedNode?.Tag is not SceneLayerDefinition layer)
-                return;
 
-            if (Document.RemoveLayer(layer))
+        bar.Items.Add(
+            "+ Layer",
+            null,
+            (_, _) =>
             {
-                if (ReferenceEquals(_selectedLayer, layer))
-                    _selectedLayer = null;
+                var layer = Document.AddLayer();
+                RefreshStructure();
+                SelectLayerNode(layer);
+                SetSelectedTile(layer, 0, 0);
+                RefreshPreview();
+                UpdateValidation();
+            });
 
-                RefreshView();
-            }
-        });
+        bar.Items.Add(
+            "− Layer",
+            null,
+            (_, _) =>
+            {
+                if (_structure.SelectedNode?.Tag is not SceneLayerDefinition layer)
+                    return;
+
+                if (Document.RemoveLayer(layer))
+                {
+                    if (ReferenceEquals(_selectedLayer, layer))
+                        _selectedLayer = null;
+
+                    RefreshView();
+                }
+            });
+
         bar.Items.Add(new ToolStripSeparator());
+
         bar.Items.Add("Show all", null, (_, _) => SetAllPreviewLayersVisible(true))
             .ToolTipText = "Show every layer in the editor preview";
+
         bar.Items.Add("Hide all", null, (_, _) => SetAllPreviewLayersVisible(false))
             .ToolTipText = "Hide every layer in the editor preview";
+
         return bar;
     }
 
@@ -704,15 +852,29 @@ public sealed partial class SceneEditorControl : UserControl
         var bar = NewToolbar();
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
-        bar.Items.Add("Add from GAF…", null, (_, _) => PackedResourcePicker.PickAndApply(
-            this, _packages, Document.BaseDirectory, AssetTypes.TilesheetDefinition, AddPackedTilesheetSource));
+
+        bar.Items.Add(
+            "Add from GAF…",
+            null,
+            (_, _) => PackedResourcePicker.PickAndApply(
+                this,
+                _packages,
+                Document.BaseDirectory,
+                AssetTypes.TilesheetDefinition,
+                AddPackedTilesheetSource));
+
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedTilesheetSource());
         bar.Items.Add(new ToolStripSeparator());
-        bar.Items.Add("Assign frame", null, (_, _) =>
-        {
-            if (_sourceTree.SelectedNode?.Tag is FrameTag frame)
-                AssignFrame(frame);
-        });
+
+        bar.Items.Add(
+            "Assign frame",
+            null,
+            (_, _) =>
+            {
+                if (_sourceTree.SelectedNode?.Tag is FrameTag frame)
+                    AssignFrame(frame);
+            });
+
         bar.Items.Add("Clear frame", null, (_, _) => ClearFrame());
         return bar;
     }
@@ -721,8 +883,17 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
         bar.Items.Add("Add GANI…", null, (_, _) => ChooseAnimationSources());
-        bar.Items.Add("Add from GAF…", null, (_, _) => PackedResourcePicker.PickAndApply(
-            this, _packages, Document.BaseDirectory, AssetTypes.AnimationDefinition, AddPackedAnimationSource));
+
+        bar.Items.Add(
+            "Add from GAF…",
+            null,
+            (_, _) => PackedResourcePicker.PickAndApply(
+                this,
+                _packages,
+                Document.BaseDirectory,
+                AssetTypes.AnimationDefinition,
+                AddPackedAnimationSource));
+
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedAnimationSource());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Assign", null, (_, _) => AssignSelectedAnimation());
@@ -738,27 +909,38 @@ public sealed partial class SceneEditorControl : UserControl
         bar.Items.Add(new ToolStripLabel("Y"));
         bar.Items.Add(new ToolStripControlHost(_tileY));
         bar.Items.Add(new ToolStripSeparator());
+
         foreach (var (label, operation) in new[]
+                 {
+                     ("Rotate left 90°", TileTransform.Rotate270),
+                     ("Rotate right 90°", TileTransform.Rotate90),
+                     ("Flip horizontal", TileTransform.FlipHorizontal),
+                     ("Flip vertical", TileTransform.FlipVertical)
+                 })
         {
-            ("Rotate left 90°", TileTransform.Rotate270),
-            ("Rotate right 90°", TileTransform.Rotate90),
-            ("Flip horizontal", TileTransform.FlipHorizontal),
-            ("Flip vertical", TileTransform.FlipVertical)
-        })
-        {
-            var button = bar.Items.Add(label, null, (_, _) =>
-            {
-                if (_tileProperties.SelectedObject is TilePropertyAdapter adapter) adapter.ApplyTransform(operation);
-            });
+            var button = bar.Items.Add(
+                label,
+                null,
+                (_, _) =>
+                {
+                    if (_tileProperties.SelectedObject is TilePropertyAdapter adapter)
+                        adapter.ApplyTransform(operation);
+                });
+
             button.ToolTipText = label;
         }
+
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
         bar.Items.Add(new ToolStripSeparator());
+
         bar.Items.Add("Apply to selection", null, (_, _) => EditSelectedCells(erase: false))
             .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
+
         bar.Items.Add("Edit selected properties", null, (_, _) => EditSelectedProperties());
+
         bar.Items.Add("Erase selection", null, (_, _) => EditSelectedCells(erase: true))
             .ToolTipText = "Remove explicit tiles in the selection as one undo operation";
+
         bar.Items.Add(_selectionLabel);
         return bar;
     }
@@ -825,9 +1007,15 @@ public sealed partial class SceneEditorControl : UserControl
         _preview.CancelGesture();
         ClearMultiSelection();
         _packages.Clear();
-        foreach (var source in _tilesheetSources) source.Dispose();
-        foreach (var source in _animationSources) source.Dispose();
-        _tilesheetSources.Clear(); _animationSources.Clear();
+
+        foreach (var source in _tilesheetSources)
+            source.Dispose();
+
+        foreach (var source in _animationSources)
+            source.Dispose();
+
+        _tilesheetSources.Clear();
+        _animationSources.Clear();
         ClearSourceDiagnostics();
         LoadDeclaredSources();
         RefreshView();
@@ -848,16 +1036,27 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 try
                 {
-                    _tilesheetSources.Add(SceneTilesheetSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.Tilesheet, _packages));
+                    _tilesheetSources.Add(
+                        SceneTilesheetSource.LoadPacked(
+                            Document.ResolveReferencePath(source.AssetsFilePath!),
+                            source.AssetEntryName!,
+                            source.Tilesheet,
+                            _packages));
                 }
-                catch (Exception ex) { _declaredSourceDiagnostics[source] = ex.Message; }
+                catch (Exception ex)
+                {
+                    _declaredSourceDiagnostics[source] = ex.Message;
+                }
+
                 continue;
             }
 
             try
             {
                 var loaded = SceneTilesheetSource.LoadMember(
-                    Document.ResolveReferencePath(source.GtsPath), source.Tilesheet, _packages);
+                    Document.ResolveReferencePath(source.GtsPath),
+                    source.Tilesheet,
+                    _packages);
 
                 if (!string.Equals(
                         loaded.Definition.Name,
@@ -884,16 +1083,27 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 try
                 {
-                    _animationSources.Add(SceneAnimationSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.AnimationKey, _packages));
+                    _animationSources.Add(
+                        SceneAnimationSource.LoadPacked(
+                            Document.ResolveReferencePath(source.AssetsFilePath!),
+                            source.AssetEntryName!,
+                            source.AnimationKey,
+                            _packages));
                 }
-                catch (Exception ex) { _declaredSourceDiagnostics[source] = ex.Message; }
+                catch (Exception ex)
+                {
+                    _declaredSourceDiagnostics[source] = ex.Message;
+                }
+
                 continue;
             }
 
             try
             {
                 var loaded = SceneAnimationSource.LoadMember(
-                    Document.ResolveReferencePath(source.GaniPath), source.AnimationKey, _packages);
+                    Document.ResolveReferencePath(source.GaniPath),
+                    source.AnimationKey,
+                    _packages);
 
                 if (!string.Equals(
                         loaded.Definition.Key,
@@ -969,6 +1179,7 @@ public sealed partial class SceneEditorControl : UserControl
 
                     if (!candidates.TryGetValue(loaded.Definition.Name, out var list))
                         candidates[loaded.Definition.Name] = list = [];
+
                     list.Add(loaded);
                 }
             }
@@ -988,14 +1199,17 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 _sourceDiagnostics.Add(
                     $"WARNING: Multiple same-directory GTS files define '{name}'; legacy source recovery was skipped.");
+
                 foreach (var source in matches)
                     source.Dispose();
+
                 continue;
             }
 
             var recovered = matches[0];
             _tilesheetSources.Add(recovered);
             Document.SetLooseTilesheetSource(name, recovered.FilePath);
+
             _sourceDiagnostics.Add(
                 $"INFO: Recovered legacy GTS source '{name}' from {Path.GetFileName(recovered.FilePath)}.");
         }
@@ -1022,6 +1236,7 @@ public sealed partial class SceneEditorControl : UserControl
 
                     if (!candidates.TryGetValue(loaded.Definition.Key, out var list))
                         candidates[loaded.Definition.Key] = list = [];
+
                     list.Add(loaded);
                 }
             }
@@ -1041,14 +1256,17 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 _sourceDiagnostics.Add(
                     $"WARNING: Multiple same-directory GANI files define '{key}'; legacy source recovery was skipped.");
+
                 foreach (var source in matches)
                     source.Dispose();
+
                 continue;
             }
 
             var recovered = matches[0];
             _animationSources.Add(recovered);
             Document.SetLooseAnimationSource(key, recovered.FilePath);
+
             _sourceDiagnostics.Add(
                 $"INFO: Recovered legacy GANI source '{key}' from {Path.GetFileName(recovered.FilePath)}.");
         }
@@ -1058,6 +1276,7 @@ public sealed partial class SceneEditorControl : UserControl
     {
         _preview.CancelGesture();
         var node = _sourceTree.SelectedNode;
+
         if (node is null)
             return;
 
@@ -1079,6 +1298,7 @@ public sealed partial class SceneEditorControl : UserControl
     private void RemoveSelectedAnimationSource()
     {
         _preview.CancelGesture();
+
         if (_animationList.SelectedItems.Count != 1 ||
             _animationList.SelectedItems[0].Tag is not SceneAnimationSource source)
         {
@@ -1099,7 +1319,9 @@ public sealed partial class SceneEditorControl : UserControl
         if (_sourceTree.SelectedNode?.Tag is not FrameTag frame ||
             !_tilesheetSources.Contains(frame.Source) ||
             string.IsNullOrWhiteSpace(frame.Source.Definition.Name) ||
-            string.IsNullOrWhiteSpace(frame.Region.Name)) return null;
+            string.IsNullOrWhiteSpace(frame.Region.Name))
+            return null;
+
         var definition = frame.Source.CreateFrame(frame.Region, frame.X, frame.Y);
         return frame.Source.TryResolve(definition, out _, out _) ? frame : null;
     }
@@ -1108,7 +1330,9 @@ public sealed partial class SceneEditorControl : UserControl
         _animationList.SelectedItems.Count == 1 &&
         _animationList.SelectedItems[0].Tag is SceneAnimationSource source &&
         _animationSources.Contains(source) &&
-        AnimationDefinitionValidator.Validate(source.Definition).Count == 0 ? source : null;
+        AnimationDefinitionValidator.Validate(source.Definition).Count == 0
+            ? source
+            : null;
 
     private void UpdatePaintSourceLabel()
     {
@@ -1120,8 +1344,9 @@ public sealed partial class SceneEditorControl : UserControl
                 $"Paint: GANI {animation.Definition.Key}",
             _ => "Paint unavailable: select a valid GTS frame or GANI animation"
         };
+
         _paintSourceLabel.ToolTipText = _paintSourceLabel.Text +
-            "\nPaint uses the last-selected source pane. Select a frame or animation there to change the source.";
+                                        "\nPaint uses the last-selected source pane. Select a frame or animation there to change the source.";
     }
 
     private void AssignFrame(FrameTag frame)
@@ -1129,8 +1354,13 @@ public sealed partial class SceneEditorControl : UserControl
         if (_selectedLayer is null)
             return;
 
-        Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign frame",
+        Document.EditTile(
+            _selectedLayer,
+            (int)_tileX.Value,
+            (int)_tileY.Value,
+            "Assign frame",
             FrameAssignment(frame));
+
         RefreshTileProperties();
         RefreshPreview();
         UpdateValidation();
@@ -1164,7 +1394,12 @@ public sealed partial class SceneEditorControl : UserControl
             return;
         }
 
-        Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign animation", AnimationAssignment(source));
+        Document.EditTile(
+            _selectedLayer,
+            (int)_tileX.Value,
+            (int)_tileY.Value,
+            "Assign animation",
+            AnimationAssignment(source));
 
         RefreshTileProperties();
         RefreshPreview();
@@ -1187,7 +1422,14 @@ public sealed partial class SceneEditorControl : UserControl
             return;
         }
 
-        Document.Edit(tile, "Clear animation", () => { tile.AnimationKey = null; tile.StartAnimation = false; });
+        Document.Edit(
+            tile,
+            "Clear animation",
+            () =>
+            {
+                tile.AnimationKey = null;
+                tile.StartAnimation = false;
+            });
 
         RefreshTileProperties();
         RefreshPreview();
@@ -1232,9 +1474,11 @@ public sealed partial class SceneEditorControl : UserControl
             _preview.CancelGesture();
             preserveSelection = false;
         }
+
         _selectedLayer = layer;
 
         _syncingTileCoordinates = true;
+
         try
         {
             _tileX.Maximum = Math.Max(0, layer.Columns - 1);
@@ -1248,13 +1492,31 @@ public sealed partial class SceneEditorControl : UserControl
         }
 
         if (!preserveSelection)
-            _selectedCells = new Rectangle((int)_tileX.Value, (int)_tileY.Value, 1, 1);
-        _selectedCells.Intersect(new Rectangle(0, 0, layer.Columns, layer.Rows));
+            _selectedCells = new Rectangle(
+                (int)_tileX.Value,
+                (int)_tileY.Value,
+                1,
+                1);
+
+        _selectedCells.Intersect(
+            new Rectangle(
+                0,
+                0,
+                layer.Columns,
+                layer.Rows));
+
         if (_selectedCells.Width <= 0 || _selectedCells.Height <= 0)
             _selectedCells = layer.Columns > 0 && layer.Rows > 0
-                ? new Rectangle((int)_tileX.Value, (int)_tileY.Value, 1, 1) : Rectangle.Empty;
+                ? new Rectangle(
+                    (int)_tileX.Value,
+                    (int)_tileY.Value,
+                    1,
+                    1)
+                : Rectangle.Empty;
+
         UpdateSelectionDisplay();
         RefreshTileProperties();
+
         _preview.SetSelection(
             layer,
             (int)_tileX.Value,
@@ -1278,7 +1540,8 @@ public sealed partial class SceneEditorControl : UserControl
         SetSelectedTile(
             _selectedLayer,
             Math.Min((int)_tileX.Value, _selectedLayer.Columns - 1),
-            Math.Min((int)_tileY.Value, _selectedLayer.Rows - 1), preserveSelection: true);
+            Math.Min((int)_tileY.Value, _selectedLayer.Rows - 1),
+            preserveSelection: true);
     }
 
     private void RefreshTileProperties()
@@ -1307,9 +1570,15 @@ public sealed partial class SceneEditorControl : UserControl
                 var tile = Document.FindTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value);
                 var animation = tile?.AnimationKey is { } key ? FindAnimation(key) : null;
                 var frame = animation?.FirstPreviewFrame() ?? tile?.Frame;
-                if (frame is null) return (null, null);
-                var source = animation?.Definition.TilesheetSources.Any(item => item.Tilesheet == frame.Tilesheet) == true
-                    ? animation.FindTilesheet(frame.Tilesheet) : FindTilesheet(frame.Tilesheet) ?? animation?.FindTilesheet(frame.Tilesheet);
+
+                if (frame is null)
+                    return (null, null);
+
+                var source = animation?.Definition.TilesheetSources.Any(item => item.Tilesheet == frame.Tilesheet) ==
+                             true
+                    ? animation.FindTilesheet(frame.Tilesheet)
+                    : FindTilesheet(frame.Tilesheet) ?? animation?.FindTilesheet(frame.Tilesheet);
+
                 return (source?.TryResolve(frame, out var region, out _) == true ? region : null, frame);
             });
     }
@@ -1323,6 +1592,7 @@ public sealed partial class SceneEditorControl : UserControl
             _previewLayerVisibility[layer] = shown;
 
         _syncingStructureChecks = true;
+
         try
         {
             foreach (TreeNode node in _structure.Nodes[0].Nodes)
@@ -1338,6 +1608,7 @@ public sealed partial class SceneEditorControl : UserControl
         {
             _syncingStructureChecks = false;
         }
+
         RefreshPreview();
     }
 
@@ -1362,6 +1633,7 @@ public sealed partial class SceneEditorControl : UserControl
         }
 
         _syncingStructureChecks = true;
+
         try
         {
             foreach (TreeNode node in _structure.Nodes[0].Nodes)
@@ -1384,13 +1656,20 @@ public sealed partial class SceneEditorControl : UserControl
 
     private void StructureSelectionChanged()
     {
-        if (_refreshingStructure) return;
-        if (!ReferenceEquals(_structure.SelectedNode?.Tag, _selectedLayer)) ClearResourceDrop();
-        _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
+        if (_refreshingStructure)
+            return;
+
+        if (!ReferenceEquals(_structure.SelectedNode?.Tag, _selectedLayer))
+            ClearResourceDrop();
+
+        _properties.SelectedObject =
+            _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
 
         if (_structure.SelectedNode?.Tag is SceneLayerDefinition layer)
         {
-            if (!ReferenceEquals(_selectedLayer, layer)) _preview.CancelGesture();
+            if (!ReferenceEquals(_selectedLayer, layer))
+                _preview.CancelGesture();
+
             SetSelectedTile(layer, 0, 0);
         }
 
@@ -1400,7 +1679,9 @@ public sealed partial class SceneEditorControl : UserControl
     /// <summary>Selects an owned definition and refreshes its source previews and controls without reloading or saving the document.</summary>
     public void SelectDefinition(SceneDefinition definition)
     {
-        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        if (ReferenceEquals(Document.SelectedDefinition, definition))
+            return;
+
         Document.SelectDefinition(definition);
         RefreshSelectedDefinition();
     }
@@ -1409,12 +1690,20 @@ public sealed partial class SceneEditorControl : UserControl
     {
         _preview.CancelGesture();
         ClearMultiSelection();
-        foreach (var source in _tilesheetSources) source.Dispose();
-        foreach (var source in _animationSources) source.Dispose();
-        _tilesheetSources.Clear(); _animationSources.Clear();
+
+        foreach (var source in _tilesheetSources)
+            source.Dispose();
+
+        foreach (var source in _animationSources)
+            source.Dispose();
+
+        _tilesheetSources.Clear();
+        _animationSources.Clear();
         ClearSourceDiagnostics();
-        LoadDeclaredSources(); RefreshView();
-        _displayedDefinition = Definition; _displayedSources = SourceSignature();
+        LoadDeclaredSources();
+        RefreshView();
+        _displayedDefinition = Definition;
+        _displayedSources = SourceSignature();
     }
 
     private void RefreshView()
@@ -1450,17 +1739,20 @@ public sealed partial class SceneEditorControl : UserControl
     private void RefreshStructure()
     {
         _refreshingStructure = true;
+
         try
         {
             object? selected = _structure.SelectedNode?.Tag;
 
             // Discard viewer-only state for deleted layers and removed scene members.
             var currentLayers = Document.Definitions.SelectMany(definition => definition.Layers).ToHashSet();
+
             foreach (var stale in _previewLayerVisibility.Keys.Where(layer => !currentLayers.Contains(layer)).ToArray())
                 _previewLayerVisibility.Remove(stale);
 
             _syncingStructureChecks = true;
             _structure.BeginUpdate();
+
             try
             {
                 _structure.Nodes.Clear();
@@ -1506,14 +1798,21 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 _structure.SelectedNode = _structure.Nodes[0];
             }
-            _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
+
+            _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target
+                ? new ScenePropertyView(Document, target)
+                : null;
         }
-        finally { _refreshingStructure = false; }
+        finally
+        {
+            _refreshingStructure = false;
+        }
     }
 
     private void RefreshSourceTree()
     {
         _sourceTree.BeginUpdate();
+
         try
         {
             _sourceTree.Nodes.Clear();
@@ -1561,6 +1860,7 @@ public sealed partial class SceneEditorControl : UserControl
 
             root.Nodes.Add(regionNode);
         }
+
         return root;
     }
 
@@ -1572,6 +1872,7 @@ public sealed partial class SceneEditorControl : UserControl
                 : null;
 
         _animationList.BeginUpdate();
+
         try
         {
             _animationList.Items.Clear();
@@ -1584,6 +1885,7 @@ public sealed partial class SceneEditorControl : UserControl
                 {
                     Tag = source
                 };
+
                 item.SubItems.Add(Path.GetFileName(source.FilePath));
                 item.SubItems.Add(source.Definition.Frames.Count.ToString());
                 _animationList.Items.Add(item);
@@ -1596,12 +1898,14 @@ public sealed partial class SceneEditorControl : UserControl
 
         if (selected is not null)
             SelectAnimation(selected);
+
         UpdatePaintSourceLabel();
     }
 
     private void RefreshPreview()
     {
         UpdateSelectionDisplay();
+
         _preview.Configure(
             Definition,
             FindTilesheet,
@@ -1612,6 +1916,7 @@ public sealed partial class SceneEditorControl : UserControl
             _selectedLayer,
             (int)_tileX.Value,
             (int)_tileY.Value);
+
         InvalidateSpriteOwners();
     }
 
@@ -1620,6 +1925,7 @@ public sealed partial class SceneEditorControl : UserControl
         TreeViewCancelEventArgs e)
     {
         var node = e.Node;
+
         if (node is null ||
             node.Nodes.Count != 1 ||
             node.Nodes[0].Tag is not null)
@@ -1653,12 +1959,14 @@ public sealed partial class SceneEditorControl : UserControl
             return;
 
         int rowCount = checked((int)Math.Min(rows, int.MaxValue));
+
         for (int y = 0; y < rowCount; y++)
         {
             var rowNode = new TreeNode($"Row {y}")
             {
                 Tag = new RowTag(tag.Source, tag.Region, y)
             };
+
             rowNode.Nodes.Add("Expand to load frames…");
             node.Nodes.Add(rowNode);
         }
@@ -1674,6 +1982,7 @@ public sealed partial class SceneEditorControl : UserControl
             TilesheetDefinitionValidator.GridSize(tag.Region);
 
         int columnCount = checked((int)Math.Min(columns, int.MaxValue));
+
         for (int x = 0; x < columnCount; x++)
         {
             var frameTag = new FrameTag(
@@ -1688,6 +1997,7 @@ public sealed partial class SceneEditorControl : UserControl
             };
 
             int imageIndex = AddSourceFrameThumbnail(frameTag);
+
             if (imageIndex >= 0)
             {
                 frameNode.ImageIndex = imageIndex;
@@ -1736,6 +2046,7 @@ public sealed partial class SceneEditorControl : UserControl
             int width = Math.Max(
                 1,
                 (int)Math.Round(sourceBounds.Width * scale));
+
             int height = Math.Max(
                 1,
                 (int)Math.Round(sourceBounds.Height * scale));
@@ -1820,42 +2131,71 @@ public sealed partial class SceneEditorControl : UserControl
     private string? _displayedSources;
     private bool _refreshingStructure;
 
-    private string SourceSignature() => Newtonsoft.Json.JsonConvert.SerializeObject(new { Definition.TilesheetSources, Definition.AnimationSources });
+    private string SourceSignature() =>
+        Newtonsoft.Json.JsonConvert.SerializeObject(new { Definition.TilesheetSources, Definition.AnimationSources });
 
     private void DocumentChanged(object? sender, EventArgs e)
     {
-        if (_spriteSelection is not null) ClearPreviewSpriteSelection();
-        if (_gestureLayer is not null && !GestureTargetIsValid()) _preview.CancelGesture();
+        if (_spriteSelection is not null)
+            ClearPreviewSpriteSelection();
+
+        if (_gestureLayer is not null && !GestureTargetIsValid())
+            _preview.CancelGesture();
+
         if (_refreshPending || !IsHandleCreated)
             return;
 
         _refreshPending = true;
+
         BeginInvoke(() =>
         {
             _refreshPending = false;
+
             if (!IsDisposed)
             {
                 string sources = SourceSignature();
+
                 if (!ReferenceEquals(_displayedDefinition, Definition) || _displayedSources != sources)
                 {
                     // Restoring pane selection must not choose a different paint source kind.
                     _restoringSourceSelection = true;
+
                     try
                     {
                         var selectedSourceNode = _sourceTree.SelectedNode;
-                        while (selectedSourceNode?.Parent is { } parent) selectedSourceNode = parent;
+
+                        while (selectedSourceNode?.Parent is { } parent)
+                            selectedSourceNode = parent;
+
                         string? selectedTilesheet = (selectedSourceNode?.Tag as SceneTilesheetSource)?.Definition.Name;
-                        string? selectedAnimation = _animationList.SelectedItems.Cast<ListViewItem>().Select(item => (item.Tag as SceneAnimationSource)?.Definition.Key).FirstOrDefault();
-                        foreach (var source in _tilesheetSources) source.Dispose();
-                        foreach (var source in _animationSources) source.Dispose();
-                        _tilesheetSources.Clear(); _animationSources.Clear();
+
+                        string? selectedAnimation = _animationList.SelectedItems.Cast<ListViewItem>()
+                            .Select(item => (item.Tag as SceneAnimationSource)?.Definition.Key).FirstOrDefault();
+
+                        foreach (var source in _tilesheetSources)
+                            source.Dispose();
+
+                        foreach (var source in _animationSources)
+                            source.Dispose();
+
+                        _tilesheetSources.Clear();
+                        _animationSources.Clear();
                         ClearSourceDiagnostics();
-                        LoadDeclaredSources(); RefreshSourceTree(); RefreshAnimationList();
-                        if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is { } selectedTilesheetSource)
+                        LoadDeclaredSources();
+                        RefreshSourceTree();
+                        RefreshAnimationList();
+
+                        if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is
+                            { } selectedTilesheetSource)
                             SelectTilesheetRoot(selectedTilesheetSource);
-                        if (selectedAnimation is not null && _animationSources.FirstOrDefault(source => source.Definition.Key == selectedAnimation) is { } selectedSource)
+
+                        if (selectedAnimation is not null &&
+                            _animationSources.FirstOrDefault(source => source.Definition.Key == selectedAnimation) is
+                            { } selectedSource)
                             SelectAnimation(selectedSource);
-                        _displayedDefinition = Definition; _displayedSources = sources;
+
+                        _displayedDefinition = Definition;
+                        _displayedSources = sources;
                     }
                     finally
                     {
@@ -1863,11 +2203,13 @@ public sealed partial class SceneEditorControl : UserControl
                         UpdatePaintSourceLabel();
                     }
                 }
+
                 if (_selectedLayer is null || !Definition.Layers.Contains(_selectedLayer))
                 {
                     _selectedLayer = Definition.Layers.FirstOrDefault();
                     _selectedCells = Rectangle.Empty;
                 }
+
                 RefreshStructure();
                 ClampTileSelection();
                 RefreshTileProperties();
@@ -1885,11 +2227,11 @@ public sealed partial class SceneEditorControl : UserControl
 
     private static bool IsAuthoringException(Exception ex) =>
         ex is IOException or
-        InvalidDataException or
-        ArgumentException or
-        UnauthorizedAccessException or
-        InvalidOperationException or
-        NotSupportedException;
+            InvalidDataException or
+            ArgumentException or
+            UnauthorizedAccessException or
+            InvalidOperationException or
+            NotSupportedException;
 
     private void ShowError(Exception ex) =>
         ThemedMessageBox.Show(
@@ -1902,7 +2244,9 @@ public sealed partial class SceneEditorControl : UserControl
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing) DisposeSpritePreview();
+        if (disposing)
+            DisposeSpritePreview();
+
         if (disposing)
         {
             _preview.CancelGesture();
@@ -1911,17 +2255,21 @@ public sealed partial class SceneEditorControl : UserControl
 
             foreach (var source in _tilesheetSources)
                 source.Dispose();
+
             _tilesheetSources.Clear();
 
             foreach (var source in _animationSources)
                 source.Dispose();
+
             _animationSources.Clear();
 
             _sourceFrameImages.Dispose();
             _panes.Clear();
         }
 
-        if (disposing && _ownsPackages) _packages.Dispose();
+        if (disposing && _ownsPackages)
+            _packages.Dispose();
+
         base.Dispose(disposing);
     }
 
@@ -1939,12 +2287,26 @@ public sealed partial class SceneEditorControl : UserControl
         TilesheetRegionDefinition Region,
         int X,
         int Y);
+
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-        if (keyData == Keys.Escape && _preview.HasGesture) { _preview.CancelGesture(); return true; }
-        if (keyData == Keys.Escape && _preview.HasSpriteGesture) { CancelSpritePlacement(); return true; }
-        return UndoRedoMenu.TryShortcut(this, keyData, SelectedSpriteHistory ?? Document.History, CommitPreviewHistoryEdits) || base.ProcessCmdKey(ref msg, keyData);
-    }
+        if (keyData == Keys.Escape && _preview.HasGesture)
+        {
+            _preview.CancelGesture();
+            return true;
+        }
 
+        if (keyData == Keys.Escape && _preview.HasSpriteGesture)
+        {
+            CancelSpritePlacement();
+            return true;
+        }
+
+        return UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            SelectedSpriteHistory ?? Document.History,
+            CommitPreviewHistoryEdits) || base.ProcessCmdKey(ref msg, keyData);
+    }
 }

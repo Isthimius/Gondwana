@@ -73,6 +73,7 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
             if (!_disposed)
                 Engine.Instance.UiDispatcher!.Post(requestRepaint);
         };
+
         Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
     }
 
@@ -92,7 +93,9 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
     /// </summary>
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
+
         _disposed = true;
 
         if (_afterFrameRenderHandler != null)

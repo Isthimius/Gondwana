@@ -11,8 +11,13 @@ public static class TiledTileTransform
     public static (uint Gid, TileTransform Transform, bool HasHexRotation) Decode(uint raw)
     {
         var transform = (raw & 0x20000000) != 0 ? TileTransform.FlipDiagonal : TileTransform.Identity;
-        if ((raw & 0x80000000) != 0) transform = TileTransformGeometry.Compose(transform, TileTransform.FlipHorizontal);
-        if ((raw & 0x40000000) != 0) transform = TileTransformGeometry.Compose(transform, TileTransform.FlipVertical);
+
+        if ((raw & 0x80000000) != 0)
+            transform = TileTransformGeometry.Compose(transform, TileTransform.FlipHorizontal);
+
+        if ((raw & 0x40000000) != 0)
+            transform = TileTransformGeometry.Compose(transform, TileTransform.FlipVertical);
+
         return (raw & 0x0fffffff, transform, (raw & 0x10000000) != 0);
     }
 }

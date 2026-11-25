@@ -8,8 +8,8 @@ namespace Gondwana.Rendering;
 internal sealed class RefreshQueue
 {
     private readonly Func<bool> _isEnabled;
-    private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
-    private readonly object _syncRoot = new();      // Guards _worldRects for cross-thread access
+    private readonly List<Rectangle> _worldRects; // World-space dirty regions (pixels)
+    private readonly object _syncRoot = new(); // Guards _worldRects for cross-thread access
 
     internal RefreshQueue(Func<bool> isEnabled)
     {
@@ -22,7 +22,11 @@ internal sealed class RefreshQueue
     /// </summary>
     internal bool IsDirty
     {
-        get { lock (_syncRoot) return _worldRects.Count > 0; }
+        get
+        {
+            lock (_syncRoot)
+                return _worldRects.Count > 0;
+        }
     }
 
     /// <summary>
@@ -45,7 +49,8 @@ internal sealed class RefreshQueue
     /// <returns>A snapshot of the queued dirty rectangles in world pixels.</returns>
     internal Rectangle[] SnapshotWorldRects()
     {
-        lock (_syncRoot) return _worldRects.ToArray();
+        lock (_syncRoot)
+            return _worldRects.ToArray();
     }
 
     /// <summary>
@@ -61,6 +66,7 @@ internal sealed class RefreshQueue
 
         // ensure we're on the engine thread
         var engine = Engine.Instance;
+
         if (!engine.EngineDispatcher.IsOnEngineThread)
         {
             engine.EngineDispatcher.Post(() => AddWorldRect(worldPixelRange));
@@ -93,6 +99,7 @@ internal sealed class RefreshQueue
 
         // ensure we're on the engine thread
         var engine = Engine.Instance;
+
         if (!engine.EngineDispatcher.IsOnEngineThread)
         {
             engine.EngineDispatcher.Post(() => AddViewScreenRect(view, sceneLayer, screenPixelRange));
@@ -111,6 +118,7 @@ internal sealed class RefreshQueue
     {
         // ensure we're on the engine thread
         var engine = Engine.Instance;
+
         if (!engine.EngineDispatcher.IsOnEngineThread)
         {
             engine.EngineDispatcher.Post(() => ClearRefreshQueue());

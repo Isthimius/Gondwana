@@ -5,8 +5,10 @@ public enum ExternalImportSeverity
 {
     /// <summary>Informational conversion details that do not block import.</summary>
     Info,
+
     /// <summary>A conversion limitation or omitted feature that does not block import.</summary>
     Warning,
+
     /// <summary>A validation or conversion failure that blocks import.</summary>
     Error
 }
@@ -17,14 +19,19 @@ public enum ExternalImportSeverity
 /// <param name="Message">Human-readable details for the import preview.</param>
 /// <param name="SourcePath">Related external source path, or null when not supplied.</param>
 public sealed record ExternalImportDiagnostic(
-    ExternalImportSeverity Severity, string Code, string Message, string? SourcePath = null);
+    ExternalImportSeverity Severity,
+    string Code,
+    string Message,
+    string? SourcePath = null);
 
 /// <summary>Input file, destination directory, and overwrite policy for one conversion.</summary>
 /// <param name="SourcePath">External source file path; relative paths use the process current directory.</param>
 /// <param name="OutputDirectory">Directory receiving generated files; dependencies may remain outside it.</param>
 /// <param name="Overwrite">Whether existing generated output files may be replaced; source dependencies remain protected.</param>
 public sealed record ExternalImportRequest(
-    string SourcePath, string OutputDirectory, bool Overwrite = false);
+    string SourcePath,
+    string OutputDirectory,
+    bool Overwrite = false);
 
 /// <summary>One planned physical output, which may contain multiple logical definitions.</summary>
 /// <param name="Kind">Native format or raw output label, such as GTS, GANI, GSCN, or PNG.</param>
@@ -56,7 +63,8 @@ public sealed record ExternalImportAnalysis(
 /// <param name="Analysis">Fresh analysis performed for the import attempt.</param>
 /// <param name="WrittenFiles">Installed output paths; empty when analysis prevented writing.</param>
 public sealed record ExternalImportResult(
-    ExternalImportAnalysis Analysis, IReadOnlyList<string> WrittenFiles);
+    ExternalImportAnalysis Analysis,
+    IReadOnlyList<string> WrittenFiles);
 
 /// <summary>Headless conversion boundary. Analysis must not create or modify files.
 /// Import must revalidate source data and output conflicts before writing.</summary>
@@ -64,20 +72,25 @@ public interface IExternalAssetImporter
 {
     /// <summary>Gets the provider identifier included in analysis results.</summary>
     string Id { get; }
+
     /// <summary>Gets the human-readable format label shown in the import selector.</summary>
     string DisplayName { get; }
+
     /// <summary>Gets recognized filename extensions, including their leading dots.</summary>
     IReadOnlyList<string> SupportedExtensions { get; }
+
     /// <summary>Checks whether the provider recognizes a source filename.</summary>
     /// <param name="sourcePath">Source path to test without requiring a valid source document.</param>
     /// <returns>True if recognized; successful recognition does not imply that analysis will succeed.</returns>
     bool CanImport(string sourcePath);
+
     /// <summary>Analyzes source data, native outputs, and conflicts without creating or modifying files.</summary>
     /// <param name="request">Source file, output directory, and overwrite policy.</param>
     /// <param name="cancellationToken">Token used for cooperative cancellation.</param>
     /// <returns>The planned outputs, dependencies, and diagnostics.</returns>
     /// <exception cref="OperationCanceledException">Cancellation is observed.</exception>
     ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default);
+
     /// <summary>Revalidates the source and conflicts before writing native outputs.</summary>
     /// <param name="request">Source file, output directory, and overwrite policy.</param>
     /// <param name="cancellationToken">Token used for cooperative cancellation.</param>

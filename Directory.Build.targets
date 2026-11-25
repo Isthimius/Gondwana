@@ -14,14 +14,16 @@
     </PropertyGroup>
 
     <!-- Set the application icon for WinForms tooling executables. -->
-    <PropertyGroup Condition="'$(UseWindowsForms)' == 'true'
+    <PropertyGroup
+        Condition="'$(UseWindowsForms)' == 'true'
       and '$(OutputType)' == 'WinExe'
       and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
         <ApplicationIcon>$(MSBuildThisFileDirectory)assets/gondwana-logo.ico</ApplicationIcon>
     </PropertyGroup>
 
     <!-- Preserve the icon resource in each executable for compatibility. -->
-    <ItemGroup Condition="'$(UseWindowsForms)' == 'true'
+    <ItemGroup
+        Condition="'$(UseWindowsForms)' == 'true'
       and '$(OutputType)' == 'WinExe'
       and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
         <EmbeddedResource Include="$(MSBuildThisFileDirectory)assets/gondwana-logo.ico"

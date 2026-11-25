@@ -347,7 +347,7 @@ public sealed class ContainerWidgetTests
             .Single(view =>
                 view.ZOrder == zOrder &&
                 view.Viewport.TargetRectPx ==
-                    targetBounds);
+                targetBounds);
     }
 
     private static SceneLayer AddLayer(
@@ -361,6 +361,6 @@ public sealed class ContainerWidgetTests
             zOrder: 0,
             parallax: 1f,
             coordinateSystem:
-                CoordinateSystemTypes.Orthogonal);
+            CoordinateSystemTypes.Orthogonal);
     }
 }

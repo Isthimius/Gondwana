@@ -71,8 +71,9 @@ internal sealed partial class SpotGameHost
         }
 
         using var fontStream = RequireAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
+
         _font = SKTypeface.FromStream(fontStream)
-            ?? throw new InvalidOperationException("Failed to decode Spot font from the asset package.");
+                ?? throw new InvalidOperationException("Failed to decode Spot font from the asset package.");
 
         _runtime.SetAudioResources(
             _music,
@@ -113,6 +114,7 @@ internal sealed partial class SpotGameHost
     private AudioResource LoadAudio(string key, string assetName)
     {
         using var stream = RequireAsset(AssetTypes.Audio, assetName);
+
         return Engine.Managers.AudioResources.LoadFromStream(
             key,
             stream,
@@ -122,6 +124,6 @@ internal sealed partial class SpotGameHost
     private Stream RequireAsset(AssetTypes type, string name)
     {
         return _assets.Get(type, name)
-            ?? throw new InvalidOperationException($"Spot asset '{type}:{name}' was not found in the package.");
+               ?? throw new InvalidOperationException($"Spot asset '{type}:{name}' was not found in the package.");
     }
 }

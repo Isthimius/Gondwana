@@ -1,5 +1,4 @@
 extern alias studio;
-
 using System.Text;
 using Gondwana.Assets;
 using Gondwana.Audio.GSND;
@@ -28,43 +27,78 @@ public sealed partial class CompositionTests
     public void PackedNativeReferenceMetadataSurvivesSaveAndRebasesOnlyOnSaveAs(string format) => RunSta(root =>
     {
         var path = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
+
         var json = format switch
         {
-            "gani" => AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [PreviewAnimation("assets.gaf")] }),
-            "gspr" => SpriteDefinitionSerializer.ToDocumentJson(new()
-            {
-                Definitions = [new()
-            {
-                Key = "actors",
-                TilesheetSources = [SpriteTilesheetSourceDefinition.Packed("terrain", "assets.gaf", "definitions/world.gts")],
-                SceneSources = [SpriteSceneSourceDefinition.Packed("island", "assets.gaf", "definitions/island.gscn")],
-                AnimationSources = [SpriteAnimationSourceDefinition.Packed("water.flow", "assets.gaf", "definitions/water.gani")]
-            }]
-            }),
-            _ => AudioDefinitionSerializer.ToDocumentJson(new()
-            {
-                Definitions = [new() { Key = "audio", Resources = [new()
-            {
-                Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset,
-                AssetsFilePath = "assets.gaf", AssetEntryName = "sound.wav"
-            }] }]
-            })
+            "gani" => AnimationDefinitionSerializer.ToDocumentJson(
+                new() { Definitions = [PreviewAnimation("assets.gaf")] }),
+            "gspr" => SpriteDefinitionSerializer.ToDocumentJson(
+                new()
+                {
+                    Definitions =
+                    [
+                        new()
+                        {
+                            Key = "actors",
+                            TilesheetSources =
+                            [
+                                SpriteTilesheetSourceDefinition.Packed("terrain", "assets.gaf", "definitions/world.gts")
+                            ],
+                            SceneSources =
+                                [SpriteSceneSourceDefinition.Packed("island", "assets.gaf", "definitions/island.gscn")],
+                            AnimationSources =
+                            [
+                                SpriteAnimationSourceDefinition.Packed(
+                                    "water.flow",
+                                    "assets.gaf",
+                                    "definitions/water.gani")
+                            ]
+                        }
+                    ]
+                }),
+            _ => AudioDefinitionSerializer.ToDocumentJson(
+                new()
+                {
+                    Definitions =
+                    [
+                        new()
+                        {
+                            Key = "audio", Resources =
+                            [
+                                new()
+                                {
+                                    Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset,
+                                    AssetsFilePath = "assets.gaf", AssetEntryName = "sound.wav"
+                                }
+                            ]
+                        }
+                    ]
+                })
         };
+
         var entry = "references." + format;
-        using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
         {
             using var bytes = new MemoryStream(Encoding.UTF8.GetBytes(json));
             archive.Add(StudioDocument.TypeFor(format), entry, bytes);
             archive.Save();
         }
+
         using var studio = Host(root);
         var child = studio.OpenDocument(new AssetLocation(StudioDocument.TypeFor(format), path, entry));
         Assert.False(child.Document.Dirty());
         RenameFirst(child.Document, "renamed");
         var expected = child.Document.SerializePacked!();
         Assert.True(AwaitUi(studio.SaveDocument(child)));
+
         using (var saved = StudioArchiveSnapshot.Open(path, null))
             Assert.Equal(expected, StudioArchiveSnapshot.Entry(saved.Archive, child.Document.Location!));
+
         Assert.Contains("assets.gaf", Encoding.UTF8.GetString(expected));
         var original = File.ReadAllBytes(path);
         var destination = Path.Combine(root, "copies", entry);
@@ -75,22 +109,33 @@ public sealed partial class CompositionTests
 
     private static void SelectPackedMember(Control editor, string identity)
     {
-        var selector = editor.Controls.OfType<ToolStrip>().Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar"));
+        var selector = editor.Controls.OfType<ToolStrip>()
+            .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar"));
+
         // GTS also exposes a Region selector; the Definition selector is the first combo.
         selector.Items.OfType<ToolStripComboBox>().First().SelectedItem = identity;
         Application.DoEvents();
     }
+
     [Fact]
     public void PackedSceneSavePreservesReferencesAndDependencyReloadRendersSavedTilesheet() => RunSta(root =>
     {
         var path = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
         WritePreviewImage(Path.Combine(root, "blue.png"), Color.Blue);
-        using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
         {
             archive.Add(AssetTypes.Image, Path.Combine(root, "blue.png"), "blue.png");
             archive.Save();
         }
-        foreach (var loose in new[] { "world.gts", "water.gani", "island.gscn", "atlas.png", "blue.png" }) File.Delete(Path.Combine(root, loose));
+
+        foreach (var loose in new[] { "world.gts", "water.gani", "island.gscn", "atlas.png", "blue.png" })
+            File.Delete(Path.Combine(root, loose));
+
         using var studio = Host(root);
         var scene = studio.OpenDocument(new AssetLocation(AssetTypes.SceneDefinition, path, "definitions/island.gscn"));
         var scenes = (SceneEditorControl)scene.Document.Editor;
@@ -100,11 +145,19 @@ public sealed partial class CompositionTests
         scenes.Document.MarkChanged();
         var expected = scene.Document.SerializePacked!();
         Assert.True(AwaitUi(studio.SaveDocument(scene)));
+
         using (var saved = StudioArchiveSnapshot.Open(path, null))
             Assert.Equal(expected, StudioArchiveSnapshot.Entry(saved.Archive, scene.Document.Location!));
+
         Assert.Equal("assets.gaf", scenes.Document.Definition.TilesheetSources[0].AssetsFilePath);
-        Assert.Equal(SceneTilesheetSourceKind.PackedDefinitionFile, scenes.Document.Definition.TilesheetSources[0].Kind);
-        var tiles = studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "definitions/world.gts"));
+
+        Assert.Equal(
+            SceneTilesheetSourceKind.PackedDefinitionFile,
+            scenes.Document.Definition.TilesheetSources[0].Kind);
+
+        var tiles = studio.OpenDocument(
+            new AssetLocation(AssetTypes.TilesheetDefinition, path, "definitions/world.gts"));
+
         var sheets = (TilesheetEditorControl)tiles.Document.Editor;
         SelectPackedMember(sheets, "terrain");
         AssertPreviewColor(Property<Bitmap>(Private(sheets, "_viewport"), "Image"), Color.LimeGreen);
@@ -126,9 +179,12 @@ public sealed partial class CompositionTests
     {
         var path = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
         using var studio = Host(root);
+
         foreach (var (format, entry) in new[] { ("gts", "world"), ("gani", "water"), ("gscn", "island") })
         {
-            var document = studio.OpenDocument(new AssetLocation(StudioDocument.TypeFor(format), path, $"definitions/{entry}.{format}"));
+            var document = studio.OpenDocument(
+                new AssetLocation(StudioDocument.TypeFor(format), path, $"definitions/{entry}.{format}"));
+
             var original = File.ReadAllBytes(path);
             var destination = Path.Combine(root, "copies", entry + "." + format);
             Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: destination)));
@@ -136,6 +192,7 @@ public sealed partial class CompositionTests
             var json = File.ReadAllText(destination);
             Assert.Contains("../assets.gaf", json.Replace(@"\\", "/"));
             Assert.DoesNotContain(".gondwana-save-", json);
+
             if (document.Document.Editor is TilesheetEditorControl sheets)
             {
                 SelectPackedMember(sheets, "terrain");
@@ -158,14 +215,26 @@ public sealed partial class CompositionTests
         RenameFirst(child.Document, "persisted");
         using var opened = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
-        studio.Browser.ArchiveOpened = _ => { opened.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(15))); };
+
+        studio.Browser.ArchiveOpened = _ =>
+        {
+            opened.Set();
+            Assert.True(release.Wait(TimeSpan.FromSeconds(15)));
+        };
+
         studio.Browser.RefreshDirectory();
         Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
+
         try
         {
             studio.AskSave = _ => DialogResult.Yes;
-            if (command == "close") child.Close();
-            if (command == "shutdown") studio.Close();
+
+            if (command == "close")
+                child.Close();
+
+            if (command == "shutdown")
+                studio.Close();
+
             var save = studio.SaveDocument(child);
             Assert.False(save.IsCompleted);
             Assert.False(child.IsDisposed);
@@ -179,12 +248,24 @@ public sealed partial class CompositionTests
             release.Set();
             Assert.True(AwaitUi(save));
             Application.DoEvents();
-            if (command != "save") Assert.True(child.IsDisposed);
-            if (command == "shutdown") Assert.True(studio.IsDisposed);
+
+            if (command != "save")
+                Assert.True(child.IsDisposed);
+
+            if (command == "shutdown")
+                Assert.True(studio.IsDisposed);
+
             using var saved = StudioArchiveSnapshot.Open(path, null);
-            Assert.Contains("persisted", Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gsnd"))));
+
+            Assert.Contains(
+                "persisted",
+                Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gsnd"))));
         }
-        finally { studio.Browser.ArchiveOpened = null; release.Set(); }
+        finally
+        {
+            studio.Browser.ArchiveOpened = null;
+            release.Set();
+        }
     });
 
     [Fact]
@@ -193,13 +274,22 @@ public sealed partial class CompositionTests
         var path = NativeArchive(root, password: "secret");
         using var studio = Host(root);
         int prompts = 0;
-        studio.AssetPassword = _ => { prompts++; return "secret"; };
+
+        studio.AssetPassword = _ =>
+        {
+            prompts++;
+            return "secret";
+        };
+
         WaitForArchives(studio.Browser);
         Assert.Equal(0, prompts);
         var parent = studio.OpenDocument(path);
         Assert.Equal(1, prompts);
         WaitForArchives(studio.Browser);
-        var node = Assert.Single(Assert.Single(studio.Browser.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>());
+
+        var node = Assert.Single(
+            Assert.Single(studio.Browser.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>());
+
         DoubleClickNode(studio.Browser, node);
         var child = studio.ActiveDocument!;
         Assert.NotSame(parent, child);
@@ -210,7 +300,10 @@ public sealed partial class CompositionTests
         Assert.ThrowsAny<Exception>(() => StudioArchiveSnapshot.Open(path, null));
         using var saved = StudioArchiveSnapshot.Open(path, "secret");
         Assert.True(saved.Archive.UseEncryption);
-        Assert.Contains("encrypted-edit", Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gts"))));
+
+        Assert.Contains(
+            "encrypted-edit",
+            Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gts"))));
     });
 
     [Fact]
@@ -218,16 +311,29 @@ public sealed partial class CompositionTests
     {
         var path = NativeArchive(root);
         var encrypted = NativeArchive(root, "secret.gaf", "secret");
-        using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
         {
             using var invalid = new MemoryStream(Encoding.UTF8.GetBytes("broken json"));
             archive.Add(AssetTypes.SceneDefinition, "invalid.gscn", invalid);
             archive.Save();
         }
+
         using var studio = Host(root);
-        Assert.Throws<FileNotFoundException>(() => studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "same.gts")));
-        Assert.Throws<FileNotFoundException>(() => studio.OpenDocument(new AssetLocation(AssetTypes.AnimationDefinition, path, "nested/same.gts")));
-        Assert.ThrowsAny<Exception>(() => studio.OpenDocument(new AssetLocation(AssetTypes.SceneDefinition, path, "invalid.gscn")));
+
+        Assert.Throws<FileNotFoundException>(() =>
+            studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "same.gts")));
+
+        Assert.Throws<FileNotFoundException>(() =>
+            studio.OpenDocument(new AssetLocation(AssetTypes.AnimationDefinition, path, "nested/same.gts")));
+
+        Assert.ThrowsAny<Exception>(() =>
+            studio.OpenDocument(new AssetLocation(AssetTypes.SceneDefinition, path, "invalid.gscn")));
+
         studio.AssetPassword = _ => null;
         Assert.Throws<OperationCanceledException>(() => studio.OpenDocument(NativeLocation(encrypted, "gsnd")));
         studio.AssetPassword = _ => "wrong";
@@ -265,6 +371,7 @@ public sealed partial class CompositionTests
     public void PackedSessionRestoresTypedEntriesAndSkipsRemovedEntry() => RunSta(root =>
     {
         var path = NativeArchive(root);
+
         using (var studio = Host(root))
         {
             studio.OpenDocument(path);
@@ -272,20 +379,28 @@ public sealed partial class CompositionTests
             studio.OpenDocument(NativeLocation(path, "gsnd"));
             studio.Close();
         }
+
         var store = new WorkspaceSessionStore(_ => { });
         Assert.Equal(3, store.Read().Documents.Length);
         Assert.Equal("nested/same.gsnd", store.Read().ActivePackedDocument!.EntryName);
+
         using (var studio = Host(root))
         {
             Assert.Equal(3, studio.Documents.Count);
             Assert.Equal("nested/same.gsnd", studio.ActiveDocument!.Document.PackedLocation()!.AssetEntryName);
             studio.Close();
         }
-        using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
         {
             archive.Remove(AssetTypes.TilesheetDefinition, "nested/same.gts");
             archive.Save();
         }
+
         using var restored = Host(root);
         Assert.Equal(2, restored.Documents.Count);
         Assert.Contains(restored.Documents, doc => doc.Document.Extension == "gsnd");
@@ -330,15 +445,24 @@ public sealed partial class CompositionTests
 
     private static string NativeJson(string format, string first = "first") => format switch
     {
-        "gts" => TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Name = first }, new() { Name = "sibling" }] }),
-        "gani" => AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = first }, new() { Key = "sibling" }] }),
-        "gscn" => SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { ID = first }, new() { ID = "sibling" }] }),
-        "gspr" => SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = first }, new() { Key = "sibling" }] }),
-        "gsnd" => AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = first }, new() { Key = "sibling" }] }),
+        "gts" => TilesheetDefinitionSerializer.ToDocumentJson(
+            new() { Definitions = [new() { Name = first }, new() { Name = "sibling" }] }),
+        "gani" => AnimationDefinitionSerializer.ToDocumentJson(
+            new() { Definitions = [new() { Key = first }, new() { Key = "sibling" }] }),
+        "gscn" => SceneDefinitionSerializer.ToDocumentJson(
+            new() { Definitions = [new() { ID = first }, new() { ID = "sibling" }] }),
+        "gspr" => SpriteDefinitionSerializer.ToDocumentJson(
+            new() { Definitions = [new() { Key = first }, new() { Key = "sibling" }] }),
+        "gsnd" => AudioDefinitionSerializer.ToDocumentJson(
+            new() { Definitions = [new() { Key = first }, new() { Key = "sibling" }] }),
         _ => throw new ArgumentException(format)
     };
 
-    private static void AddNative(AssetsFile archive, string format, string entry, string first = "first")
+    private static void AddNative(
+        AssetsFile archive,
+        string format,
+        string entry,
+        string first = "first")
     {
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(NativeJson(format, first)));
         archive.Add(StudioDocument.TypeFor(format), entry, stream);
@@ -347,25 +471,51 @@ public sealed partial class CompositionTests
     private static string NativeArchive(string root, string name = "assets.gaf", string? password = null)
     {
         var path = Path.Combine(root, name);
-        using var archive = AssetsFile.LoadOrCreate(path, password, password is not null, register: false);
-        foreach (var format in new[] { "gts", "gani", "gscn", "gspr", "gsnd" }) AddNative(archive, format, "nested/same." + format);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            password,
+            password is not null,
+            register: false);
+
+        foreach (var format in new[] { "gts", "gani", "gscn", "gspr", "gsnd" })
+            AddNative(archive, format, "nested/same." + format);
+
         using var bytes = new MemoryStream([42, 11, 7]);
         archive.Add(AssetTypes.Misc, "keep.bin", bytes);
         archive.Save();
         return path;
     }
 
-    private static AssetLocation NativeLocation(string path, string format) => new(StudioDocument.TypeFor(format), path, "nested/same." + format);
+    private static AssetLocation NativeLocation(string path, string format) => new(
+        StudioDocument.TypeFor(format),
+        path,
+        "nested/same." + format);
 
     private static void RenameFirst(StudioDocument model, string name)
     {
         switch (model.Editor)
         {
-            case TilesheetEditorControl e: e.Document.Definition.Name = name; e.Document.MarkChanged(); break;
-            case AnimationEditorControl e: e.Document.Definition.Key = name; e.Document.MarkChanged(); break;
-            case SceneEditorControl e: e.Document.Definition.ID = name; e.Document.MarkChanged(); break;
-            case SpriteEditorControl e: e.Document.Definition.Key = name; e.Document.MarkChanged(); break;
-            case AudioEditorControl e: e.Document.Definition.Key = name; e.Document.MarkChanged(); break;
+            case TilesheetEditorControl e:
+                e.Document.Definition.Name = name;
+                e.Document.MarkChanged();
+                break;
+            case AnimationEditorControl e:
+                e.Document.Definition.Key = name;
+                e.Document.MarkChanged();
+                break;
+            case SceneEditorControl e:
+                e.Document.Definition.ID = name;
+                e.Document.MarkChanged();
+                break;
+            case SpriteEditorControl e:
+                e.Document.Definition.Key = name;
+                e.Document.MarkChanged();
+                break;
+            case AudioEditorControl e:
+                e.Document.Definition.Key = name;
+                e.Document.MarkChanged();
+                break;
         }
     }
 
@@ -385,9 +535,12 @@ public sealed partial class CompositionTests
         using var studio = Host(root);
         var location = NativeLocation(path, format);
         WaitForArchives(studio.Browser);
+
         var node = studio.Browser.Tree.Nodes[0].Nodes.Cast<TreeNode>().SelectMany(group => group.Nodes.Cast<TreeNode>())
             .SelectMany(archive => archive.Nodes.Cast<TreeNode>())
-            .Single(node => node.Tag is PackedAssetNodeIdentity packed && packed.ArchivePath == path && packed.AssetType == location.AssetType);
+            .Single(node => node.Tag is PackedAssetNodeIdentity packed && packed.ArchivePath == path &&
+                            packed.AssetType == location.AssetType);
+
         Assert.True(studio.Browser.PrepareFileMenu(node));
         studio.Browser.FileMenu.Items[0].PerformClick();
         var document = Assert.Single(studio.Documents);
@@ -402,17 +555,28 @@ public sealed partial class CompositionTests
         Assert.Contains(location.AssetEntryName!, document.ToolTipText);
         Assert.Contains(location.AssetType.ToString(), document.ToolTipText);
         using var before = StudioArchiveSnapshot.Open(path, null);
+
         var unchanged = before.Archive.GetAllEntries().Where(e => e.AssetType != location.AssetType)
-            .ToDictionary(e => e, e => StudioArchiveSnapshot.Entry(before.Archive, new(e.AssetType, path, e.AssetName)));
+            .ToDictionary(
+                e => e,
+                e => StudioArchiveSnapshot.Entry(before.Archive, new(e.AssetType, path, e.AssetName)));
+
         RenameFirst(document.Document, "edited");
         Assert.True(document.Document.Dirty());
         Assert.True(AwaitUi(studio.SaveDocument(document)));
         Assert.False(document.Document.Dirty());
         Assert.Equal(originalLoose, File.ReadAllBytes(loose));
         using var saved = StudioArchiveSnapshot.Open(path, null);
-        Assert.Equal(NativeJson(format, "edited"), Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, location)));
+
+        Assert.Equal(
+            NativeJson(format, "edited"),
+            Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, location)));
+
         foreach (var pair in unchanged)
-            Assert.Equal(pair.Value, StudioArchiveSnapshot.Entry(saved.Archive, new(pair.Key.AssetType, path, pair.Key.AssetName)));
+            Assert.Equal(
+                pair.Value,
+                StudioArchiveSnapshot.Entry(saved.Archive, new(pair.Key.AssetType, path, pair.Key.AssetName)));
+
         document.Close();
         var reopened = studio.OpenDocument(location);
         Assert.Equal(NativeJson(format, "edited"), Encoding.UTF8.GetString(reopened.Document.SerializePacked!()));
@@ -434,7 +598,11 @@ public sealed partial class CompositionTests
         Assert.True(AwaitUi(studio.SaveDocument(a)));
         Assert.True(b.Document.Dirty());
         Assert.True(AwaitUi(studio.SaveDocument(b)));
-        Assert.Contains("tiles-edited", Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(asset.AssetsFile, NativeLocation(path, "gts"))));
+
+        Assert.Contains(
+            "tiles-edited",
+            Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(asset.AssetsFile, NativeLocation(path, "gts"))));
+
         using var payload = new MemoryStream([9]);
         asset.AssetsFile.Add(AssetTypes.Misc, "parent.bin", payload);
         asset.MarkChanged();
@@ -448,8 +616,14 @@ public sealed partial class CompositionTests
         Assert.True(AwaitUi(studio.SaveDocument(parent)));
         Assert.True(AwaitUi(studio.SaveDocument(a)));
         using var saved = StudioArchiveSnapshot.Open(path, null);
-        Assert.Equal(new byte[] { 9 }, StudioArchiveSnapshot.Entry(saved.Archive, new(AssetTypes.Misc, path, "parent.bin")));
-        Assert.Contains("animation-edited", Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gani"))));
+
+        Assert.Equal(
+            new byte[] { 9 },
+            StudioArchiveSnapshot.Entry(saved.Archive, new(AssetTypes.Misc, path, "parent.bin")));
+
+        Assert.Contains(
+            "animation-edited",
+            Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gani"))));
     });
 
     [Fact]
@@ -461,7 +635,13 @@ public sealed partial class CompositionTests
         var child = studio.OpenDocument(NativeLocation(path, "gsnd"));
         RenameFirst(child.Document, "child-edited");
         var asset = (AssetEditorControl)parent.Document.Editor;
-        AddNative(asset.AssetsFile, "gsnd", "nested/same.gsnd", "parent-edited");
+
+        AddNative(
+            asset.AssetsFile,
+            "gsnd",
+            "nested/same.gsnd",
+            "parent-edited");
+
         asset.MarkChanged();
         Assert.True(AwaitUi(studio.SaveDocument(parent)));
         Assert.True(child.Document.ContentStale);
@@ -483,32 +663,49 @@ public sealed partial class CompositionTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void FailedStagingOrExternalChangesLeaveOriginalArchiveAndDirtyDocumentIntact(bool external) => RunSta(root =>
-    {
-        var path = NativeArchive(root);
-        using var studio = Host(root);
-        var child = studio.OpenDocument(NativeLocation(path, "gts"));
-        RenameFirst(child.Document, "edited");
-        if (external)
+    public void FailedStagingOrExternalChangesLeaveOriginalArchiveAndDirtyDocumentIntact(bool external) =>
+        RunSta(root =>
         {
-            WaitForArchives(studio.Browser);
-            using var changed = AssetsFile.LoadOrCreate(path, null, false, register: false);
-            using var externalEntry = new MemoryStream(Encoding.UTF8.GetBytes(
-                TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Name = "external" }] })));
-            changed.Add(AssetTypes.TilesheetDefinition, child.Document.PackedLocation()!.AssetEntryName!, externalEntry);
-            changed.Save();
-        }
-        else studio.BeforeArchiveInstall = () => throw new IOException("Injected failure after staging.");
-        var before = File.ReadAllBytes(path);
-        studio.ReportError = _ => { };
-        Assert.False(AwaitUi(studio.SaveDocument(child)));
-        Assert.Equal(before, File.ReadAllBytes(path));
-        Assert.True(child.Document.Dirty());
-        Assert.Empty(Directory.GetFiles(root, ".gondwana-save-*"));
-        studio.AskSave = _ => DialogResult.Yes;
-        Assert.False(AwaitUi(studio.ApproveShutdown()));
-        Assert.False(child.IsDisposed);
-    });
+            var path = NativeArchive(root);
+            using var studio = Host(root);
+            var child = studio.OpenDocument(NativeLocation(path, "gts"));
+            RenameFirst(child.Document, "edited");
+
+            if (external)
+            {
+                WaitForArchives(studio.Browser);
+
+                using var changed = AssetsFile.LoadOrCreate(
+                    path,
+                    null,
+                    false,
+                    register: false);
+
+                using var externalEntry = new MemoryStream(
+                    Encoding.UTF8.GetBytes(
+                        TilesheetDefinitionSerializer.ToDocumentJson(
+                            new() { Definitions = [new() { Name = "external" }] })));
+
+                changed.Add(
+                    AssetTypes.TilesheetDefinition,
+                    child.Document.PackedLocation()!.AssetEntryName!,
+                    externalEntry);
+
+                changed.Save();
+            }
+            else
+                studio.BeforeArchiveInstall = () => throw new IOException("Injected failure after staging.");
+
+            var before = File.ReadAllBytes(path);
+            studio.ReportError = _ => { };
+            Assert.False(AwaitUi(studio.SaveDocument(child)));
+            Assert.Equal(before, File.ReadAllBytes(path));
+            Assert.True(child.Document.Dirty());
+            Assert.Empty(Directory.GetFiles(root, ".gondwana-save-*"));
+            studio.AskSave = _ => DialogResult.Yes;
+            Assert.False(AwaitUi(studio.ApproveShutdown()));
+            Assert.False(child.IsDisposed);
+        });
 
     [Fact]
     public void PackedValidationAndSaveAsCancellationDoNotWriteOrClearDirtyState() => RunSta(root =>

@@ -9,7 +9,10 @@ public sealed class ThemeTests
     [Fact]
     public void BuiltInsHaveStableNamesAndLegiblePalettes()
     {
-        Assert.Equal(new[] { "Dark", "Dark Blue", "Light" }, Enum.GetValues<ToolingTheme>().Select(ToolingPalette.Name));
+        Assert.Equal(
+            new[] { "Dark", "Dark Blue", "Light" },
+            Enum.GetValues<ToolingTheme>().Select(ToolingPalette.Name));
+
         foreach (var theme in Enum.GetValues<ToolingTheme>())
         {
             var p = ToolingPalette.For(theme);
@@ -18,6 +21,7 @@ public sealed class ThemeTests
             Assert.True(Contrast(p.SelectionForeground, p.Selection) >= 4.5);
             Assert.True(Contrast(p.DisabledForeground, p.Surface) >= 3);
         }
+
         Assert.True(ToolingPalette.For(ToolingTheme.DarkBlue).Surface.GetBrightness() < .25);
     }
 
@@ -32,7 +36,10 @@ public sealed class ThemeTests
     public void MissingInvalidAndCorruptPreferencesFallBackToDark(string? json)
     {
         var store = new ThemePreferenceStore();
-        if (json is not null) File.WriteAllText(store.FilePath, json);
+
+        if (json is not null)
+            File.WriteAllText(store.FilePath, json);
+
         Assert.Equal(ToolingTheme.Dark, store.Read());
     }
 
@@ -44,6 +51,7 @@ public sealed class ThemeTests
     {
         var studio = new ThemePreferenceStore();
         Assert.True(studio.Write(theme));
+
         foreach (var name in new[] { "Assets", "Tilesheets", "Animations", "Audio", "Scenes", "Sprites", "Studio" })
         {
             AppContext.SetData("Gondwana.Tooling.ApplicationId", name);
@@ -51,6 +59,7 @@ public sealed class ThemeTests
             Assert.Equal(studio.FilePath, standalone.FilePath);
             Assert.Equal(theme, standalone.Read());
         }
+
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(studio.FilePath)!, "*.tmp"));
     }
 
@@ -78,6 +87,7 @@ public sealed class ThemeTests
         document.Show(dock, DockState.Document);
         var notices = new List<string>();
         using var menu = ToolingAppearance.CreateThemeMenu(owner, notify: notices.Add);
+
         foreach (ToolStripMenuItem item in menu.DropDownItems)
         {
             item.PerformClick();
@@ -88,6 +98,7 @@ public sealed class ThemeTests
             Assert.Equal("unsaved content", editor.Text);
             Assert.Equal("Unsaved *", document.Text);
         }
+
         Assert.Contains(notices, n => n.Contains("Restart"));
     });
 
@@ -121,15 +132,32 @@ public sealed class ThemeTests
     [Fact]
     public void MessageDialogPreservesSafeDefaultAndCancelSemantics() => Sta(() =>
     {
-        using var form = ThemedMessageBox.Create("Save changes?", "Unsaved changes", MessageBoxButtons.YesNoCancel,
-            MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
+        using var form = ThemedMessageBox.Create(
+            "Save changes?",
+            "Unsaved changes",
+            MessageBoxButtons.YesNoCancel,
+            MessageBoxIcon.Question,
+            MessageBoxDefaultButton.Button3);
+
         Assert.Equal(DialogResult.Cancel, Assert.IsType<Button>(form.AcceptButton).DialogResult);
         Assert.Equal(DialogResult.Cancel, Assert.IsType<Button>(form.CancelButton).DialogResult);
         Assert.Equal(ToolingAppearance.Palette.Background, form.BackColor);
-        using var yesNo = ThemedMessageBox.Create("Proceed?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+        using var yesNo = ThemedMessageBox.Create(
+            "Proceed?",
+            "Confirm",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning);
+
         Assert.False(yesNo.ControlBox);
         Assert.Null(yesNo.CancelButton);
-        using var ok = ThemedMessageBox.Create("Saved", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        using var ok = ThemedMessageBox.Create(
+            "Saved",
+            "Information",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+
         Assert.Equal(DialogResult.OK, Assert.IsType<Button>(ok.CancelButton).DialogResult);
     });
 
@@ -159,19 +187,39 @@ public sealed class ThemeTests
     {
         static double L(Color c)
         {
-            static double F(byte b) { double v = b / 255d; return v <= .04045 ? v / 12.92 : Math.Pow((v + .055) / 1.055, 2.4); }
+            static double F(byte b)
+            {
+                double v = b / 255d;
+                return v <= .04045 ? v / 12.92 : Math.Pow((v + .055) / 1.055, 2.4);
+            }
+
             return .2126 * F(c.R) + .7152 * F(c.G) + .0722 * F(c.B);
         }
+
         return (Math.Max(L(a), L(b)) + .05) / (Math.Min(L(a), L(b)) + .05);
     }
 
     private static void Sta(Action action)
     {
         Exception? error = null;
-        var thread = new Thread(() => { try { action(); } catch (Exception ex) { error = ex; } });
+
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+        });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "UI test timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

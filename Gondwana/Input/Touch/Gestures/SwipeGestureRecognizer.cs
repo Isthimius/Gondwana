@@ -83,8 +83,10 @@ public sealed class SwipeGestureRecognizer : IDisposable
         if (_isMultiTouchSequence)
         {
             _activeSwipes.Remove(e.Touch.Id);
+
             if (_activeContacts.Count == 0)
                 _isMultiTouchSequence = false;
+
             return;
         }
 
@@ -116,7 +118,13 @@ public sealed class SwipeGestureRecognizer : IDisposable
             ? (dx >= 0 ? SwipeDirection.Right : SwipeDirection.Left)
             : (dy >= 0 ? SwipeDirection.Down : SwipeDirection.Up);
 
-        Swiped?.Invoke(this, new SwipedEventArgs(direction, state.StartPosition, endPos, speed));
+        Swiped?.Invoke(
+            this,
+            new SwipedEventArgs(
+                direction,
+                state.StartPosition,
+                endPos,
+                speed));
     }
 
     /// <summary>
@@ -125,7 +133,9 @@ public sealed class SwipeGestureRecognizer : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         _isDisposed = true;
 
         _touchInput.TouchBegan -= OnTouchBegan;

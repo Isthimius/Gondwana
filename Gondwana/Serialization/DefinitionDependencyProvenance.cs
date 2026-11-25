@@ -5,7 +5,7 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 /// <summary>
 /// Resolves an existing, unchanged physical definition source for a runtime dependency.
@@ -17,10 +17,11 @@ internal static class DefinitionDependencyProvenance
     internal static DefinitionProvenance? ForTilesheet(Tilesheet? tilesheet)
     {
         var provenance = tilesheet?.DefinitionProvenance;
+
         return provenance is not null &&
-            provenance.Matches(TilesheetDefinitionSerializer.FromTilesheet(tilesheet!))
-                ? provenance
-                : null;
+               provenance.Matches(TilesheetDefinitionSerializer.FromTilesheet(tilesheet!))
+            ? provenance
+            : null;
     }
 
     /// <summary>
@@ -29,15 +30,18 @@ internal static class DefinitionDependencyProvenance
     /// instead so transitions that are not directly assigned are also exported.
     /// </summary>
     internal static IEnumerable<(string Key, DefinitionProvenance Source)> ForAnimationChain(
-        string key, HashSet<string> visited)
+        string key,
+        HashSet<string> visited)
     {
         var nextKey = key;
+
         while (!string.IsNullOrWhiteSpace(nextKey) && visited.Add(nextKey))
         {
             if (!Cycle._cycles.TryGetValue(nextKey, out var cycle))
                 yield break;
 
             var provenance = cycle.DefinitionProvenance;
+
             if (provenance is not null &&
                 provenance.Matches(AnimationDefinitionSerializer.FromCycle(cycle)))
                 yield return (cycle.CycleKey, provenance);
@@ -51,9 +55,10 @@ internal static class DefinitionDependencyProvenance
     internal static DefinitionProvenance? ForScene(Scene? scene)
     {
         var provenance = scene?.DefinitionProvenance;
+
         return provenance is not null &&
-            provenance.Matches(SceneDefinitionSerializer.FromScene(scene!))
-                ? provenance
-                : null;
+               provenance.Matches(SceneDefinitionSerializer.FromScene(scene!))
+            ? provenance
+            : null;
     }
 }

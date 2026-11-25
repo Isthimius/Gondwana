@@ -11,11 +11,13 @@ internal sealed class ViewerContentCatalog
     internal sealed record Source(string Path, string? Entry = null)
     {
         internal bool Packed => Entry is not null;
+
         /// <inheritdoc/>
         public override string ToString() => Packed ? $"{Path} :: {Entry}" : Path;
     }
 
     internal sealed record SpriteDocument(Source Source, SpriteDefinition Definition);
+
     internal sealed record SelectedSprite(SpriteDocument Document, SpriteInstanceDefinition Sprite);
 
     private readonly Dictionary<string, List<Source>> _sheets = new(StringComparer.Ordinal);
@@ -27,14 +29,18 @@ internal sealed class ViewerContentCatalog
         foreach (var path in Directory.EnumerateFiles(directory).OrderBy(path => path, StringComparer.Ordinal))
         {
             var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
+
             if (extension == ".gaf")
             {
                 try
                 {
                     var file = archive(path);
-                    foreach (var entry in file.GetAllEntries().OrderBy(entry => entry.AssetName, StringComparer.Ordinal).ThenBy(entry => entry.AssetType))
+
+                    foreach (var entry in file.GetAllEntries().OrderBy(entry => entry.AssetName, StringComparer.Ordinal)
+                                 .ThenBy(entry => entry.AssetType))
                     {
-                        if (entry.AssetType is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SpriteDefinition)
+                        if (entry.AssetType is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition
+                            or AssetTypes.SpriteDefinition)
                             Add(new(path, entry.AssetName), entry.AssetType, file);
                     }
                 }
@@ -45,8 +51,11 @@ internal sealed class ViewerContentCatalog
             }
             else if (extension is ".gts" or ".gani" or ".gspr")
             {
-                Add(new(path), extension == ".gts" ? AssetTypes.TilesheetDefinition :
-                    extension == ".gani" ? AssetTypes.AnimationDefinition : AssetTypes.SpriteDefinition, null);
+                Add(
+                    new(path),
+                    extension == ".gts" ? AssetTypes.TilesheetDefinition :
+                    extension == ".gani" ? AssetTypes.AnimationDefinition : AssetTypes.SpriteDefinition,
+                    null);
             }
         }
     }
@@ -58,25 +67,36 @@ internal sealed class ViewerContentCatalog
             if (type == AssetTypes.TilesheetDefinition)
             {
                 using var stream = archive?.Get(type, source.Entry!);
-                var definitions = archive is null ? TilesheetDefinitionSerializer.LoadAll(source.Path) :
-                    TilesheetDefinitionSerializer.LoadAll(archive, source.Entry!);
-                foreach (var definition in definitions) AddIdentity(_sheets, definition.Name, source);
+
+                var definitions = archive is null
+                    ? TilesheetDefinitionSerializer.LoadAll(source.Path)
+                    : TilesheetDefinitionSerializer.LoadAll(archive, source.Entry!);
+
+                foreach (var definition in definitions)
+                    AddIdentity(_sheets, definition.Name, source);
             }
             else if (type == AssetTypes.AnimationDefinition)
             {
-                var definitions = archive is null ? AnimationDefinitionSerializer.LoadAll(source.Path) :
-                    AnimationDefinitionSerializer.LoadAll(archive, source.Entry!);
-                foreach (var definition in definitions) AddIdentity(_animations, definition.Key, source);
+                var definitions = archive is null
+                    ? AnimationDefinitionSerializer.LoadAll(source.Path)
+                    : AnimationDefinitionSerializer.LoadAll(archive, source.Entry!);
+
+                foreach (var definition in definitions)
+                    AddIdentity(_animations, definition.Key, source);
             }
             else
             {
-                var definitions = archive is null ? SpriteDefinitionSerializer.LoadAll(source.Path) :
-                    SpriteDefinitionSerializer.LoadAll(archive, source.Entry!);
+                var definitions = archive is null
+                    ? SpriteDefinitionSerializer.LoadAll(source.Path)
+                    : SpriteDefinitionSerializer.LoadAll(archive, source.Entry!);
+
                 foreach (var definition in definitions)
                 {
                     var errors = SpriteDefinitionValidator.Validate(definition);
+
                     if (errors.Count > 0)
                         throw new InvalidDataException(string.Join("\n", errors));
+
                     _sprites.Add(new(source, definition));
                 }
             }
@@ -91,8 +111,10 @@ internal sealed class ViewerContentCatalog
     {
         if (string.IsNullOrWhiteSpace(key))
             throw new InvalidDataException("Definition logical identity is empty.");
+
         if (!index.TryGetValue(key, out var candidates))
             index.Add(key, candidates = []);
+
         candidates.Add(source);
     }
 
@@ -101,12 +123,17 @@ internal sealed class ViewerContentCatalog
 
     private static Source? Select(Dictionary<string, List<Source>> index, string key, string format)
     {
-        if (!index.TryGetValue(key, out var candidates)) return null;
+        if (!index.TryGetValue(key, out var candidates))
+            return null;
+
         var loose = candidates.Where(source => !source.Packed).ToList();
         var selected = loose.Count > 0 ? loose : candidates;
+
         if (selected.Count != 1)
-            throw new InvalidDataException($"Multiple {(loose.Count > 0 ? "loose" : "packed")} {format} definitions claim '{key}':\n" +
+            throw new InvalidDataException(
+                $"Multiple {(loose.Count > 0 ? "loose" : "packed")} {format} definitions claim '{key}':\n" +
                 string.Join("\n", selected));
+
         return selected[0];
     }
 
@@ -115,21 +142,31 @@ internal sealed class ViewerContentCatalog
         var candidates = _sprites.SelectMany(document => document.Definition.Sprites
             .Where(sprite => string.Equals(sprite.SceneId, sceneId, StringComparison.Ordinal))
             .Select(sprite => new SelectedSprite(document, sprite))).ToList();
+
         var loose = candidates.Where(candidate => !candidate.Document.Source.Packed).ToList();
-        var selected = loose.Concat(candidates.Where(candidate => candidate.Document.Source.Packed &&
-            !loose.Any(other => SameIdentity(candidate.Sprite, other.Sprite)))).ToList();
+
+        var selected = loose.Concat(
+            candidates.Where(candidate => candidate.Document.Source.Packed &&
+                                          !loose.Any(other => SameIdentity(candidate.Sprite, other.Sprite)))).ToList();
+
         for (int i = 0; i < selected.Count; i++)
         {
             var conflicts = selected.Where(other => SameIdentity(selected[i].Sprite, other.Sprite)).ToList();
+
             if (conflicts.Count > 1)
-                throw new InvalidDataException($"Sprite '{selected[i].Sprite.Nickname}' / {selected[i].Sprite.Id} is defined by multiple " +
+                throw new InvalidDataException(
+                    $"Sprite '{selected[i].Sprite.Nickname}' / {selected[i].Sprite.Id} is defined by multiple " +
                     $"{(selected[i].Document.Source.Packed ? "packed" : "loose")} GSPR sources:\n" +
                     string.Join("\n", conflicts.Select(candidate => candidate.Document.Source)));
         }
+
         return selected;
     }
 
     private static bool SameIdentity(SpriteInstanceDefinition left, SpriteInstanceDefinition right) =>
         (left.Id != Guid.Empty && left.Id == right.Id) ||
-        (!string.IsNullOrWhiteSpace(left.Nickname) && string.Equals(left.Nickname, right.Nickname, StringComparison.Ordinal));
+        (!string.IsNullOrWhiteSpace(left.Nickname) && string.Equals(
+            left.Nickname,
+            right.Nickname,
+            StringComparison.Ordinal));
 }

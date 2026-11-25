@@ -8,8 +8,7 @@ namespace Gondwana.Physics.Collisions;
 /// </summary>
 public sealed class CollisionProfileRegistry
 {
-    [JsonProperty("profiles")]
-    private readonly Dictionary<string, CollisionProfile> _profiles;
+    [JsonProperty("profiles")] private readonly Dictionary<string, CollisionProfile> _profiles;
 
     /// <summary>
     /// Initializes a registry with Gondwana's standard collision profiles.

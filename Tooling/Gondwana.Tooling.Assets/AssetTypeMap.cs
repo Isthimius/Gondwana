@@ -61,7 +61,9 @@ internal sealed class AssetTypeMap
         foreach (var ext in new[] { "svg" })
             map[ext] = AssetTypes.Svg;
 
-        foreach (var pair in NativeTypes) map[pair.Key] = pair.Value;
+        foreach (var pair in NativeTypes)
+            map[pair.Key] = pair.Value;
+
         return new AssetTypeMap(map);
     }
 
@@ -83,6 +85,7 @@ internal sealed class AssetTypeMap
         };
 
         var exeDir = Path.GetDirectoryName(typeof(AssetTypeMap).Assembly.Location);
+
         if (!string.IsNullOrWhiteSpace(exeDir))
             candidates.Add(Path.Combine(exeDir, DefaultConfigFileName));
 
@@ -106,31 +109,48 @@ internal sealed class AssetTypeMap
             var json = File.ReadAllText(path);
 
             using var document = JsonDocument.Parse(json);
+
             if (document.RootElement.ValueKind != JsonValueKind.Object)
                 throw new InvalidDataException("Type map must be a JSON object.");
+
             var configured = new Dictionary<string, AssetTypes>(StringComparer.OrdinalIgnoreCase);
             var types = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var property in document.RootElement.EnumerateObject())
             {
-                if (!types.Add(property.Name) || !Enum.GetNames<AssetTypes>().Contains(property.Name, StringComparer.OrdinalIgnoreCase))
+                if (!types.Add(property.Name) || !Enum.GetNames<AssetTypes>().Contains(
+                        property.Name,
+                        StringComparer.OrdinalIgnoreCase))
                     throw new InvalidDataException($"Unknown or duplicate asset type '{property.Name}'.");
+
                 var type = Enum.Parse<AssetTypes>(property.Name, true);
+
                 if (property.Value.ValueKind != JsonValueKind.Array)
                     throw new InvalidDataException($"Asset type '{property.Name}' requires an extension array.");
+
                 foreach (var token in property.Value.EnumerateArray())
                 {
-                    if (token.ValueKind != JsonValueKind.String) throw new InvalidDataException("Extensions must be strings.");
+                    if (token.ValueKind != JsonValueKind.String)
+                        throw new InvalidDataException("Extensions must be strings.");
+
                     var extension = token.GetString()!.Trim().TrimStart('.');
+
                     if (extension.Length == 0 || extension.Any(character => !char.IsAsciiLetterOrDigit(character)))
                         throw new InvalidDataException($"Invalid extension '{token.GetString()}'.");
+
                     if (!configured.TryAdd(extension, type))
                         throw new InvalidDataException($"Duplicate/conflicting extension '{extension}'.");
+
                     if (NativeTypes.TryGetValue(extension, out var native) && type != native)
-                        throw new InvalidDataException($"Native extension '.{extension}' must map to {native}, not {type}.");
+                        throw new InvalidDataException(
+                            $"Native extension '.{extension}' must map to {native}, not {type}.");
                 }
             }
+
             var map = BuildDefault()._map;
-            foreach (var pair in configured) map[pair.Key] = pair.Value;
+
+            foreach (var pair in configured)
+                map[pair.Key] = pair.Value;
 
             error = null;
             return new AssetTypeMap(map);

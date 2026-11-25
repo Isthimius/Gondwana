@@ -13,10 +13,12 @@ public enum AudioResourceSourceKind
     /// The resource is loaded from a loose file.
     /// </summary>
     LooseFile,
+
     /// <summary>
     /// The resource is loaded from an assets file.
     /// </summary>
     PackedAsset,
+
     /// <summary>
     /// The resource is loaded from a URI.
     /// </summary>

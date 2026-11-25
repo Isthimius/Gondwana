@@ -59,7 +59,7 @@ internal static class SaveGameService
     internal static void Save(SaveGame save)
     {
         string directory = Path.GetDirectoryName(SavePath)
-            ?? throw new InvalidOperationException("The save-game directory could not be resolved.");
+                           ?? throw new InvalidOperationException("The save-game directory could not be resolved.");
 
         Directory.CreateDirectory(directory);
 
@@ -72,8 +72,9 @@ internal static class SaveGameService
     internal static SaveGame Load()
     {
         string json = File.ReadAllText(SavePath);
+
         SaveGame save = JsonSerializer.Deserialize<SaveGame>(json, Options)
-            ?? throw new InvalidDataException("The save file did not contain a valid game state.");
+                        ?? throw new InvalidDataException("The save file did not contain a valid game state.");
 
         if (save.Version != CurrentVersion)
         {

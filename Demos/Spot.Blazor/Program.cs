@@ -12,6 +12,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 var audioModuleUrl = new Uri(
     new Uri(builder.HostEnvironment.BaseAddress),
     "gondwana-audio.js").AbsoluteUri;
+
 await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 
 await builder.Build().RunAsync();

@@ -39,11 +39,13 @@ namespace Gondwana.Rendering.Backbuffers;
 public class GpuBackbuffer : BackbufferBase
 {
     // Surface state.  All access MUST occur on the GL thread after Initialize() is called.
-    private SKBitmap? _cpuBitmap;   // temporary CPU surface used before GRContext is ready
+    private SKBitmap? _cpuBitmap; // temporary CPU surface used before GRContext is ready
     private SKSurface? _surface;
     private bool _disposed;
     private GRContext? _context;
+
     private sealed record Resolution(int Width, int Height);
+
     private Resolution? _requestedResolution;
 
     private int _targetFps = 60;
@@ -216,15 +218,24 @@ public class GpuBackbuffer : BackbufferBase
     {
         if (width <= 0 || height <= 0)
             return;
-        if (_disposed) return;
+
+        if (_disposed)
+            return;
 
         (int requestedSampleCount, long configurationRevision) = GetMsaaConfigurationSnapshot();
         int maxSupportedSampleCount = grContext.GetMaxSurfaceSampleCount(SKColorType.Rgba8888);
         Volatile.Write(ref _maxSupportedMsaaSampleCount, maxSupportedSampleCount);
 
         DisposeSurface();
-        int actualSampleCount = CreateGpuSurface(grContext, width, height, requestedSampleCount);
+
+        int actualSampleCount = CreateGpuSurface(
+            grContext,
+            width,
+            height,
+            requestedSampleCount);
+
         _context = grContext;
+
         // SizeChanged updates live viewports. Only this handoff needs the simulation
         // gate; GPU creation and ordinary command replay never hold it.
         lock (RenderStateSynchronization.SyncRoot)
@@ -255,10 +266,14 @@ public class GpuBackbuffer : BackbufferBase
     public bool EnsureInitialized(GRContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
-        if (_disposed) return false;
+
+        if (_disposed)
+            return false;
+
         var request = Interlocked.Exchange(ref _requestedResolution, null);
         int width = request?.Width ?? Width;
         int height = request?.Height ?? Height;
+
         if (ReferenceEquals(_context, context) &&
             width == Width &&
             height == Height &&
@@ -275,19 +290,28 @@ public class GpuBackbuffer : BackbufferBase
     /// Gets the SkiaSharp canvas for drawing operations.
     /// </summary>
     public override SKCanvas Canvas => _surface?.Canvas
-        ?? throw new InvalidOperationException($"{nameof(GpuBackbuffer)} surface is not initialized.");
+                                       ?? throw new InvalidOperationException(
+                                           $"{nameof(GpuBackbuffer)} surface is not initialized.");
 
     /// <summary>
     /// Prepares the backbuffer canvas for a new rendering frame.
     /// </summary>
     protected internal override void BeginFrame()
     {
-        if (_disposed || _surface is null) return;
+        if (_disposed || _surface is null)
+            return;
+
         var c = _surface.Canvas;
         c.RestoreToCount(1);
         c.Save();
         c.ResetMatrix();
-        c.ClipRect(new SKRect(0, 0, Width, Height));
+
+        c.ClipRect(
+            new SKRect(
+                0,
+                0,
+                Width,
+                Height));
     }
 
     /// <summary>
@@ -295,7 +319,9 @@ public class GpuBackbuffer : BackbufferBase
     /// </summary>
     protected internal override void EndFrame()
     {
-        if (_disposed || _surface is null) return;
+        if (_disposed || _surface is null)
+            return;
+
         _surface.Flush();
     }
 
@@ -307,7 +333,9 @@ public class GpuBackbuffer : BackbufferBase
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
-        if (image is null || _surface is null) return;
+
+        if (image is null || _surface is null)
+            return;
 
         var canvas = _surface.Canvas;
 
@@ -368,8 +396,17 @@ public class GpuBackbuffer : BackbufferBase
         int requestedSampleCount)
     {
         // Rgba8888 / Premul is the natural format for an OpenGL render target.
-        var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
-        _surface = SKSurface.Create(grContext, budgeted: true, info, requestedSampleCount);
+        var info = new SKImageInfo(
+            width,
+            height,
+            SKColorType.Rgba8888,
+            SKAlphaType.Premul);
+
+        _surface = SKSurface.Create(
+            grContext,
+            budgeted: true,
+            info,
+            requestedSampleCount);
 
         if (_surface is not null)
             return requestedSampleCount;
@@ -378,7 +415,11 @@ public class GpuBackbuffer : BackbufferBase
         // by the hardware or driver. Fall back to no MSAA (sample count 1) so the surface
         // is always valid after Initialize() completes.
         if (requestedSampleCount > 1)
-            _surface = SKSurface.Create(grContext, budgeted: true, info, sampleCount: 1);
+            _surface = SKSurface.Create(
+                grContext,
+                budgeted: true,
+                info,
+                sampleCount: 1);
 
         if (_surface is null)
             throw new InvalidOperationException(
@@ -392,7 +433,12 @@ public class GpuBackbuffer : BackbufferBase
     {
         // Bgra8888 matches the native Windows GDI pixel format; used only before
         // GRContext becomes available so rendering is always valid from frame one.
-        var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+        var info = new SKImageInfo(
+            width,
+            height,
+            SKColorType.Bgra8888,
+            SKAlphaType.Premul);
+
         _cpuBitmap = new SKBitmap(info);
         _surface = SKSurface.Create(info, _cpuBitmap.GetPixels(), _cpuBitmap.Info.RowBytes);
     }
@@ -419,7 +465,9 @@ public class GpuBackbuffer : BackbufferBase
     /// </summary>
     public override void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
+
         _disposed = true;
         base.Dispose();
         DisposeSurface();

@@ -67,7 +67,11 @@ public sealed class ViewManager
     /// and configured to snap to targets without smoothing. The view is automatically
     /// sorted by Z-order after being added.
     /// </remarks>
-    public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0, RectangleF? worldBoundsPx = null)
+    public void AddView(
+        Rectangle targetRectPx,
+        float zoom = 1f,
+        int zOrder = 0,
+        RectangleF? worldBoundsPx = null)
     {
         if (worldBoundsPx is null)
             worldBoundsPx = RectangleF.Empty;
@@ -113,13 +117,23 @@ public sealed class ViewManager
         ClearViews();
 
         var backbuffer = _renderSurfaceHost.Backbuffer;
-        var bounds = new Rectangle(0, 0, backbuffer.Width, backbuffer.Height);
+
+        var bounds = new Rectangle(
+            0,
+            0,
+            backbuffer.Width,
+            backbuffer.Height);
 
         RectangleF worldBoundsPx = RectangleF.Empty;
+
         if (_renderSurfaceHost.Scene is not null)
             worldBoundsPx = _renderSurfaceHost.Scene.GetWorldBoundsPx();
 
-        AddView(bounds, zoom, zOrder, worldBoundsPx);
+        AddView(
+            bounds,
+            zoom,
+            zOrder,
+            worldBoundsPx);
     }
 
     /// <summary>
@@ -142,19 +156,28 @@ public sealed class ViewManager
         int halfWidth = width / 2;
 
         RectangleF worldBoundsPx = RectangleF.Empty;
+
         if (_renderSurfaceHost.Scene is not null)
             worldBoundsPx = _renderSurfaceHost.Scene.GetWorldBoundsPx();
 
         // Left view
         AddView(
-            new Rectangle(0, 0, halfWidth, height),
+            new Rectangle(
+                0,
+                0,
+                halfWidth,
+                height),
             leftZoom,
             zOrder: 0,
             worldBoundsPx: worldBoundsPx);
 
         // Right view
         AddView(
-            new Rectangle(halfWidth, 0, width - halfWidth, height),
+            new Rectangle(
+                halfWidth,
+                0,
+                width - halfWidth,
+                height),
             rightZoom,
             zOrder: 1,
             worldBoundsPx: worldBoundsPx);
@@ -180,19 +203,28 @@ public sealed class ViewManager
         int halfHeight = height / 2;
 
         RectangleF worldBoundsPx = RectangleF.Empty;
+
         if (_renderSurfaceHost.Scene is not null)
             worldBoundsPx = _renderSurfaceHost.Scene.GetWorldBoundsPx();
 
         // Top view
         AddView(
-            new Rectangle(0, 0, width, halfHeight),
+            new Rectangle(
+                0,
+                0,
+                width,
+                halfHeight),
             topZoom,
             zOrder: 0,
             worldBoundsPx: worldBoundsPx);
 
         // Bottom view
         AddView(
-            new Rectangle(0, halfHeight, width, height - halfHeight),
+            new Rectangle(
+                0,
+                halfHeight,
+                width,
+                height - halfHeight),
             bottomZoom,
             zOrder: 1,
             worldBoundsPx: worldBoundsPx);
@@ -237,6 +269,7 @@ public sealed class ViewManager
     public IReadOnlyList<View> GetViewsBelow(View view)
     {
         int idx = _views.IndexOf(view);
+
         if (idx <= 0)
             return Array.Empty<View>();
 
@@ -259,6 +292,7 @@ public sealed class ViewManager
     public IReadOnlyList<View> GetViewsAbove(View view)
     {
         int idx = _views.IndexOf(view);
+
         if (idx < 0 || idx >= _views.Count - 1)
             return Array.Empty<View>();
 
@@ -281,7 +315,15 @@ public sealed class ViewManager
         // if no views exist, create a default one
         if (!_views.Any())
         {
-            AddView(new Rectangle(0, 0, _renderSurfaceHost.Backbuffer.Width, _renderSurfaceHost.Backbuffer.Height), 1, 0, worldBoundsPx);
+            AddView(
+                new Rectangle(
+                    0,
+                    0,
+                    _renderSurfaceHost.Backbuffer.Width,
+                    _renderSurfaceHost.Backbuffer.Height),
+                1,
+                0,
+                worldBoundsPx);
         }
         else
         {

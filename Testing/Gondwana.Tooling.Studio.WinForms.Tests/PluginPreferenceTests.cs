@@ -117,7 +117,12 @@ public sealed class PluginPreferenceTests : IDisposable
     {
         var preferences = new PluginPreferences(FilePath, _ => { });
         Directory.CreateDirectory(_root);
-        using (var saveLock = new FileStream(FilePath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+
+        using (var saveLock = new FileStream(
+                   FilePath + ".lock",
+                   FileMode.OpenOrCreate,
+                   FileAccess.ReadWrite,
+                   FileShare.None))
         {
             Assert.False(preferences.TrySetEnabled("sample.plugin", false, out var error));
             Assert.NotNull(error);
@@ -125,12 +130,14 @@ public sealed class PluginPreferenceTests : IDisposable
             Assert.False(preferences.RestartRequired);
             Assert.False(File.Exists(FilePath));
         }
+
         Assert.True(preferences.TrySetEnabled("sample.plugin", false, out _));
         Assert.False(new PluginPreferences(FilePath, _ => { }).IsEnabled("sample.plugin"));
     }
 
     public void Dispose()
     {
-        if (Directory.Exists(_root)) Directory.Delete(_root, recursive: true);
+        if (Directory.Exists(_root))
+            Directory.Delete(_root, recursive: true);
     }
 }

@@ -16,10 +16,14 @@ public sealed class SpriteAnimationGsprTests
     public void CycleCloneRetainsHideOnCompletion()
     {
         using var tilesheet = TilesheetRegistry.Instance.LoadFromBitmap(
-            "cycle-clone-" + Guid.NewGuid(), new SKBitmap(16, 16));
+            "cycle-clone-" + Guid.NewGuid(),
+            new SKBitmap(16, 16));
+
         using var registered = new Cycle(
-            new FrameSequence(tilesheet.GetFrame(0, 0)), .1,
-            "cycle-clone-" + Guid.NewGuid(), hideTileOnCycleEnd: true);
+            new FrameSequence(tilesheet.GetFrame(0, 0)),
+            .1,
+            "cycle-clone-" + Guid.NewGuid(),
+            hideTileOnCycleEnd: true);
 
         var copy = Cycle.GetAnimationCycle(registered.CycleKey);
         Assert.NotNull(copy);
@@ -33,17 +37,33 @@ public sealed class SpriteAnimationGsprTests
     public void RoundTripAssignsIndependentCycleCopiesAndRestoresPlaybackIntent()
     {
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
-            "gspr-animation-" + Guid.NewGuid(), new SKBitmap(32, 16));
+            "gspr-animation-" + Guid.NewGuid(),
+            new SKBitmap(32, 16));
+
         sheet.DefaultRegion.TileSize = new Size(16, 16);
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            2,
+            16,
+            16);
+
         var key = "walk-" + Guid.NewGuid();
-        using var registered = new Cycle(new FrameSequence([
-            sheet.GetFrame(0, 0), sheet.GetFrame(1, 0)]),
-            .1, key, hideTileOnCycleEnd: true);
+
+        using var registered = new Cycle(
+            new FrameSequence(
+            [
+                sheet.GetFrame(0, 0), sheet.GetFrame(1, 0)
+            ]),
+            .1,
+            key,
+            hideTileOnCycleEnd: true);
+
         var originalA = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(0, 0), "animated-a");
         var originalB = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(0, 0), "animated-b");
         var restored = new List<Sprite>();
+
         try
         {
             originalA.TileAnimator.StartAnimation(key);
@@ -71,7 +91,9 @@ public sealed class SpriteAnimationGsprTests
             Assert.True(first.CurrentCycle.HideTileOnCycleEnd);
             Assert.True(second.CurrentCycle.HideTileOnCycleEnd);
             first.CurrentCycle.Sequence.AdvanceFrame();
-            Assert.NotEqual(first.CurrentCycle.Sequence.CurrentFrameIdx,
+
+            Assert.NotEqual(
+                first.CurrentCycle.Sequence.CurrentFrameIdx,
                 second.CurrentCycle.Sequence.CurrentFrameIdx);
         }
         finally
@@ -88,22 +110,33 @@ public sealed class SpriteAnimationGsprTests
     public void MissingAnimationRollsBackTheEntireIncomingSpriteCollection()
     {
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
-            "gspr-missing-cycle-" + Guid.NewGuid(), new SKBitmap(16, 16));
+            "gspr-missing-cycle-" + Guid.NewGuid(),
+            new SKBitmap(16, 16));
+
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            2,
+            16,
+            16);
+
         var key = "known-" + Guid.NewGuid();
         using var registered = new Cycle(new FrameSequence(sheet.GetFrame(0, 0)), .1, key);
         var definition = new SpriteDefinition();
+
         foreach (var name in new[] { "first", "second" })
-            definition.Sprites.Add(new()
-            {
-                Nickname = name,
-                SceneId = scene.ID,
-                SceneLayerId = layer.ID,
-                Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name },
-                AnimationKey = key,
-                StartAnimation = true
-            });
+            definition.Sprites.Add(
+                new()
+                {
+                    Nickname = name,
+                    SceneId = scene.ID,
+                    SceneLayerId = layer.ID,
+                    Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name },
+                    AnimationKey = key,
+                    StartAnimation = true
+                });
+
         definition.Sprites[1].AnimationKey = "missing-" + Guid.NewGuid();
         var before = SpriteManager.Instance.AllSprites.ToArray();
         Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.ToSprites(definition));
@@ -115,6 +148,7 @@ public sealed class SpriteAnimationGsprTests
     {
         var entry = SpriteDefinitionSerializer.FromJson(
             """{"Sprites":[{"SceneId":"level","SceneLayerId":"actors"}]}""").Sprites.Single();
+
         Assert.Null(entry.AnimationKey);
         Assert.False(entry.StartAnimation);
     }
@@ -126,7 +160,9 @@ public sealed class SpriteAnimationGsprTests
         {
             Sprites = [new() { SceneId = "level", SceneLayerId = "actors", StartAnimation = true }]
         };
-        Assert.Contains(SpriteDefinitionValidator.Validate(definition),
+
+        Assert.Contains(
+            SpriteDefinitionValidator.Validate(definition),
             error => error.Contains("StartAnimation requires AnimationKey", StringComparison.Ordinal));
     }
 
@@ -142,7 +178,8 @@ public sealed class SpriteAnimationGsprTests
             ]
         };
 
-        Assert.Contains(SpriteDefinitionValidator.Validate(definition),
+        Assert.Contains(
+            SpriteDefinitionValidator.Validate(definition),
             error => error.Contains("duplicate AnimationSources identity", StringComparison.Ordinal));
     }
 }

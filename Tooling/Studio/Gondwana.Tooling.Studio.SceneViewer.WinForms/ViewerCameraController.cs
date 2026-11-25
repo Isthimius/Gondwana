@@ -29,9 +29,16 @@ internal sealed class ViewerCameraController
         _targetZoom = _initialZoom;
     }
 
-    internal void Move(bool north, bool south, bool west, bool east, bool fast, double seconds)
+    internal void Move(
+        bool north,
+        bool south,
+        bool west,
+        bool east,
+        bool fast,
+        double seconds)
     {
         float dt = (float)Math.Clamp(seconds, 0, .1);
+
         if (dt <= 0)
             return;
 
@@ -50,6 +57,7 @@ internal sealed class ViewerCameraController
         }
 
         float lerp = 1f - MathF.Exp(-MovementLerpPerSecond * dt);
+
         _velocityPxPerSecond = new PointF(
             _velocityPxPerSecond.X + (targetX - _velocityPxPerSecond.X) * lerp,
             _velocityPxPerSecond.Y + (targetY - _velocityPxPerSecond.Y) * lerp);
@@ -62,14 +70,16 @@ internal sealed class ViewerCameraController
             return;
         }
 
-        _view.Camera.PanBy(new PointF(
-            _velocityPxPerSecond.X * dt,
-            _velocityPxPerSecond.Y * dt));
+        _view.Camera.PanBy(
+            new PointF(
+                _velocityPxPerSecond.X * dt,
+                _velocityPxPerSecond.Y * dt));
     }
 
     internal void Zoom(int wheelDelta)
     {
         var bounds = _view.Viewport.TargetRectPx;
+
         Zoom(
             new Point(
                 bounds.Left + bounds.Width / 2,
@@ -94,6 +104,7 @@ internal sealed class ViewerCameraController
                 screenPosition,
                 _targetZoom,
                 ZoomDurationSeconds);
+
             return;
         }
 
@@ -108,6 +119,7 @@ internal sealed class ViewerCameraController
         if (_zoomLayer is not null)
         {
             var bounds = _view.Viewport.TargetRectPx;
+
             _view.ZoomAroundScreenPoint(
                 _zoomLayer,
                 new PointF(

@@ -24,16 +24,28 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
     {
         var shared = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
         var pending = new Queue<Assembly>(contracts);
+
         while (pending.TryDequeue(out var assembly))
         {
-            if (!shared.TryAdd(assembly.GetName().Name!, assembly)) continue;
+            if (!shared.TryAdd(assembly.GetName().Name!, assembly))
+                continue;
+
             foreach (var reference in assembly.GetReferencedAssemblies())
             {
-                if (shared.ContainsKey(reference.Name!)) continue;
-                try { pending.Enqueue(Default.LoadFromAssemblyName(reference)); }
-                catch (FileNotFoundException) { /* Optional host dependency; never substitute a private Gondwana assembly. */ }
+                if (shared.ContainsKey(reference.Name!))
+                    continue;
+
+                try
+                {
+                    pending.Enqueue(Default.LoadFromAssemblyName(reference));
+                }
+                catch (FileNotFoundException)
+                {
+                    /* Optional host dependency; never substitute a private Gondwana assembly. */
+                }
             }
         }
+
         return shared;
     }
 
@@ -52,41 +64,62 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
             // Check filename as well as CLR identity so renaming a contract cannot bypass validation.
             if (IsReserved(Path.GetFileNameWithoutExtension(path), shared))
                 throw new InvalidDataException($"Remove shared host/framework assembly from package: {path}");
+
             try
             {
                 if (IsReserved(AssemblyName.GetAssemblyName(path).Name!, shared))
-                    throw new InvalidDataException($"Package contains a private copy of a shared host/framework assembly: {path}");
+                    throw new InvalidDataException(
+                        $"Package contains a private copy of a shared host/framework assembly: {path}");
             }
-            catch (BadImageFormatException) { /* Native libraries are permitted. Entry validation occurs during load. */ }
+            catch (BadImageFormatException)
+            {
+                /* Native libraries are permitted. Entry validation occurs during load. */
+            }
         }
     }
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (_shared.TryGetValue(assemblyName.Name!, out var shared)) return shared;
-        if (FrameworkAssemblies.Contains(assemblyName.Name!)) return null;
+        if (_shared.TryGetValue(assemblyName.Name!, out var shared))
+            return shared;
+
+        if (FrameworkAssemblies.Contains(assemblyName.Name!))
+            return null;
+
         if (!_legacy && IsReserved(assemblyName.Name!, _shared))
             throw new FileLoadException($"Host does not supply required shared assembly '{assemblyName.Name}'.");
 
         var path = _resolver.ResolveAssemblyToPath(assemblyName);
+
         if (path is null)
         {
             var adjacent = Path.Combine(_directory, assemblyName.Name + ".dll");
-            if (File.Exists(adjacent)) path = adjacent;
+
+            if (File.Exists(adjacent))
+                path = adjacent;
         }
+
         if (path is not null)
             return LoadFromAssemblyPath(_legacy ? path : PluginPackagePaths.RequireContained(_directory, path));
-        if (_legacy) return null;
-        throw new FileNotFoundException($"Private dependency '{assemblyName}' is missing from package '{_directory}'. Deploy it and its .deps.json, then restart Studio.");
+
+        if (_legacy)
+            return null;
+
+        throw new FileNotFoundException(
+            $"Private dependency '{assemblyName}' is missing from package '{_directory}'. Deploy it and its .deps.json, then restart Studio.");
     }
 
     protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
     {
         var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+
         if (path is not null)
             return LoadUnmanagedDllFromPath(_legacy ? path : PluginPackagePaths.RequireContained(_directory, path));
-        if (_legacy) return IntPtr.Zero;
-        throw new DllNotFoundException($"Native dependency '{unmanagedDllName}' is missing from package '{_directory}'.");
-    }
 
+        if (_legacy)
+            return IntPtr.Zero;
+
+        throw new DllNotFoundException(
+            $"Native dependency '{unmanagedDllName}' is missing from package '{_directory}'.");
+    }
 }

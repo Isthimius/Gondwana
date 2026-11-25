@@ -40,6 +40,7 @@ public static partial class EngineLogger
     private static ILoggerFactory? _loggerFactory;
     private static bool _usingExternalLoggerFactory;
     private static readonly object _factoryLock = new();
+
     private static readonly Dictionary<string, Func<ILoggerProvider>> _persistentProviderFactories =
         new(StringComparer.Ordinal);
 
@@ -161,7 +162,14 @@ public static partial class EngineLogger
                 return;
 
             // Completing the writer lets the worker drain then exit.
-            try { ch.Writer.TryComplete(); } catch { /* ignore */ }
+            try
+            {
+                ch.Writer.TryComplete();
+            }
+            catch
+            {
+                /* ignore */
+            }
 
             // Clear shared references so other threads can't enqueue on this instance.
             _channel = null;
@@ -169,15 +177,37 @@ public static partial class EngineLogger
             _cts = null;
         }
 
-        try { cts?.Cancel(); } catch { /* never crash */ }
+        try
+        {
+            cts?.Cancel();
+        }
+        catch
+        {
+            /* never crash */
+        }
 
         if (flush)
         {
             var timeout = flushTimeout ?? TimeSpan.FromSeconds(2);
-            try { worker!.Wait(timeout); } catch { /* never crash */ }
+
+            try
+            {
+                worker!.Wait(timeout);
+            }
+            catch
+            {
+                /* never crash */
+            }
         }
 
-        try { cts?.Dispose(); } catch { /* ignore */ }
+        try
+        {
+            cts?.Dispose();
+        }
+        catch
+        {
+            /* ignore */
+        }
     }
 
     /// <summary>
@@ -204,6 +234,7 @@ public static partial class EngineLogger
             {
                 if (capacity.Value <= 0)
                     throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be > 0.");
+
                 _capacity = capacity.Value;
             }
 
@@ -301,7 +332,7 @@ public static partial class EngineLogger
             _loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddDebug()
-                       .SetMinimumLevel(level);
+                    .SetMinimumLevel(level);
 
                 // Only add Console logger on non-browser platforms
                 if (!isBrowser)
@@ -340,17 +371,25 @@ public static partial class EngineLogger
         if (forceRestart && _channel != null)
         {
             // Best-effort stop without flush; caller controls flush via StopAsyncLogging.
-            try { _channel.Writer.TryComplete(); } catch { /* ignore */ }
+            try
+            {
+                _channel.Writer.TryComplete();
+            }
+            catch
+            {
+                /* ignore */
+            }
         }
 
         int capacityLocal = _capacity;
 
-        var channel = Channel.CreateBounded<LogEvent>(new BoundedChannelOptions(capacityLocal)
-        {
-            SingleReader = true,
-            SingleWriter = false,
-            FullMode = BoundedChannelFullMode.DropWrite // fire-and-forget; drop if full
-        });
+        var channel = Channel.CreateBounded<LogEvent>(
+            new BoundedChannelOptions(capacityLocal)
+            {
+                SingleReader = true,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.DropWrite // fire-and-forget; drop if full
+            });
 
         _channel = channel;
 
@@ -373,6 +412,7 @@ public static partial class EngineLogger
             EnsureAsyncStarted_NoLock(forceRestart: false);
 
             var ch = _channel;
+
             if (ch == null)
                 return false;
 
@@ -393,7 +433,13 @@ public static partial class EngineLogger
                     {
                         // Executes formatting + sinks (console) off the engine thread.
                         var logger = GetOrCreateLoggerFactory().CreateLogger(ev.CategoryName);
-                        logger.Log(ev.LogLevel, ev.EventId, ev.State, ev.Exception, ev.Formatter);
+
+                        logger.Log(
+                            ev.LogLevel,
+                            ev.EventId,
+                            ev.State,
+                            ev.Exception,
+                            ev.Formatter);
                     }
                     catch (Exception ex)
                     {

@@ -60,18 +60,23 @@ public static class AudioDefinitionValidator
                 case AudioResourceSourceKind.LooseFile:
                     if (string.IsNullOrWhiteSpace(resource.FilePath))
                         errors.Add($"{label}: loose FilePath is empty.");
+
                     break;
 
                 case AudioResourceSourceKind.PackedAsset:
                     if (string.IsNullOrWhiteSpace(resource.AssetsFilePath))
                         errors.Add($"{label}: AssetsFilePath is empty.");
+
                     if (string.IsNullOrWhiteSpace(resource.AssetEntryName))
                         errors.Add($"{label}: AssetEntryName is empty.");
+
                     if (string.IsNullOrWhiteSpace(resource.SourceExtension) &&
                         string.IsNullOrWhiteSpace(Path.GetExtension(resource.AssetEntryName)))
                     {
-                        errors.Add($"{label}: packed audio requires SourceExtension when AssetEntryName has no extension.");
+                        errors.Add(
+                            $"{label}: packed audio requires SourceExtension when AssetEntryName has no extension.");
                     }
+
                     break;
 
                 case AudioResourceSourceKind.Uri:
@@ -79,6 +84,7 @@ public static class AudioDefinitionValidator
                         errors.Add($"{label}: SourceUri is empty.");
                     else if (!Uri.TryCreate(resource.SourceUri, UriKind.RelativeOrAbsolute, out _))
                         errors.Add($"{label}: SourceUri is invalid.");
+
                     break;
             }
         }

@@ -19,7 +19,13 @@ internal partial class SpotGameField : SceneLayer
         internal Sprite? Sprite { get; set; } = null;
     }
 
-    private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
+    private SpotGameField(int columns, int rows) : base(
+        columns,
+        rows,
+        64,
+        64)
+    {
+    }
 
     internal static (SpotGameField Field, SpotGameField BackgroundField) Create(int columns, int rows, Player[] players)
     {
@@ -142,7 +148,11 @@ internal partial class SpotGameField : SceneLayer
         return adjacentCells;
     }
 
-    internal PlayerMovement GetMovementType(int fromX, int fromY, int destX, int destY)
+    internal PlayerMovement GetMovementType(
+        int fromX,
+        int fromY,
+        int destX,
+        int destY)
     {
         MovementType movementType;
 
@@ -173,7 +183,14 @@ internal partial class SpotGameField : SceneLayer
                 movementType = MovementType.Illegal;
         }
 
-        return new(player!, movementType, cell, fromX, fromY, destX, destY);
+        return new(
+            player!,
+            movementType,
+            cell,
+            fromX,
+            fromY,
+            destX,
+            destY);
     }
 
     internal List<PlayerMovement> GetAllValidMoves()
@@ -191,7 +208,12 @@ internal partial class SpotGameField : SceneLayer
                 {
                     for (int destY = fromY - 2; destY <= fromY + 2; destY++)
                     {
-                        var playerMoveType = GetMovementType(fromX, fromY, destX, destY);
+                        var playerMoveType = GetMovementType(
+                            fromX,
+                            fromY,
+                            destX,
+                            destY);
+
                         if (playerMoveType.MovementType != MovementType.Illegal)
                         {
                             validMoves.Add(playerMoveType);
@@ -261,8 +283,8 @@ internal partial class SpotGameField : SceneLayer
     internal List<Cell> GetAllCellsForPlayer(Player player)
     {
         return this.Select(tile => GetCell((int)tile.SceneLayerCoordinates.X, (int)tile.SceneLayerCoordinates.Y))
-                    .Where(cell => cell.OccupiedBy == player)
-                    .ToList();
+            .Where(cell => cell.OccupiedBy == player)
+            .ToList();
     }
 
     internal List<Cell> CaptureAdjacentCells(int x, int y, Player player)
@@ -270,6 +292,7 @@ internal partial class SpotGameField : SceneLayer
         var capturedCells = new List<Cell>();
 
         var adjacentCells = GetAdjacentCells(x, y);
+
         foreach (var cell in adjacentCells)
         {
             if (cell.OccupiedBy != null && cell.OccupiedBy != player)

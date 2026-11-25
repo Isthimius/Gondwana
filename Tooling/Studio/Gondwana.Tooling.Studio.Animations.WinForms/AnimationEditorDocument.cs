@@ -12,8 +12,10 @@ internal sealed class AnimationEditorDocument : DockContent
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>
     public AnimationDocument Document { get; }
+
     /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public AnimationEditorControl Editor { get; }
+
     /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool CloseApproved { get; set; }
@@ -33,6 +35,7 @@ internal sealed class AnimationEditorDocument : DockContent
         Controls.Add(Editor);
 
         Document.Changed += DocumentChanged;
+
         FormClosing += (_, e) =>
         {
             if (!CloseApproved)
@@ -115,10 +118,10 @@ internal sealed class AnimationEditorDocument : DockContent
     private void UpdateCaption()
     {
         Text = (
-            Document.FilePath is null
-                ? Document.Definition.Key
-                : Path.GetFileName(Document.FilePath)) +
-            (Document.IsDirty ? " *" : string.Empty);
+                   Document.FilePath is null
+                       ? Document.Definition.Key
+                       : Path.GetFileName(Document.FilePath)) +
+               (Document.IsDirty ? " *" : string.Empty);
 
         ToolTipText =
             Document.FilePath ??
@@ -132,6 +135,8 @@ internal sealed class AnimationEditorDocument : DockContent
             Document.Changed -= DocumentChanged;
 
         base.Dispose(disposing);
-        if (disposing) Document.Dispose();
+
+        if (disposing)
+            Document.Dispose();
     }
 }

@@ -30,6 +30,7 @@ internal sealed class PongGameHost : WinFormsGameHost
 
     private static readonly Keys[] MonitoredKeys =
         [Keys.W, Keys.S, Keys.Up, Keys.Down, Keys.Space, Keys.R, Keys.Tab];
+
     private readonly HashSet<Keys> _keysDown = [];
     private Tilesheet _tilesheet = null!;
     private SceneLayer _actorLayer = null!;
@@ -59,8 +60,16 @@ internal sealed class PongGameHost : WinFormsGameHost
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
-        _actorLayer = scene.AddLayer(WorldColumns, WorldRows, TileSize, TileSize, 10, 1f,
+
+        _actorLayer = scene.AddLayer(
+            WorldColumns,
+            WorldRows,
+            TileSize,
+            TileSize,
+            10,
+            1f,
             CoordinateSystemTypes.Orthogonal);
+
         return scene;
     }
 
@@ -76,12 +85,24 @@ internal sealed class PongGameHost : WinFormsGameHost
     /// <inheritdoc/>
     protected override void CreateSprites()
     {
-        _leftPaddle = CreateSprite("left-paddle", PongArt.PaddleFrame, new Size(24, 128),
+        _leftPaddle = CreateSprite(
+            "left-paddle",
+            PongArt.PaddleFrame,
+            new Size(24, 128),
             new Vector2(0.65f, WorldRows / 2f));
-        _rightPaddle = CreateSprite("right-paddle", PongArt.PaddleFrame, new Size(24, 128),
+
+        _rightPaddle = CreateSprite(
+            "right-paddle",
+            PongArt.PaddleFrame,
+            new Size(24, 128),
             new Vector2(WorldColumns - 0.65f, WorldRows / 2f));
-        _ball = CreateSprite("ball", PongArt.BallFrame, new Size(28, 28),
+
+        _ball = CreateSprite(
+            "ball",
+            PongArt.BallFrame,
+            new Size(28, 28),
             new Vector2(WorldColumns / 2f, WorldRows / 2f));
+
         _ball.ZOrder = 30;
     }
 
@@ -89,25 +110,65 @@ internal sealed class PongGameHost : WinFormsGameHost
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
+
         for (int y = 16; y < WorldRows * TileSize; y += 40)
         {
-            var dash = new DirectRectangle(Color.FromArgb(90, 180, 225, 240), RenderSurface.Host, view,
-                new Rectangle(WorldColumns * TileSize / 2 - 2, y, 4, 22), $"center-line-{y}").SetFilled(true);
+            var dash = new DirectRectangle(
+                Color.FromArgb(
+                    90,
+                    180,
+                    225,
+                    240),
+                RenderSurface.Host,
+                view,
+                new Rectangle(
+                    WorldColumns * TileSize / 2 - 2,
+                    y,
+                    4,
+                    22),
+                $"center-line-{y}").SetFilled(true);
+
             dash.ZOrder = 1;
         }
-        _scoreText = new TextBlock(RenderSurface.Host, view, new Rectangle(330, 20, 300, 92), "pong-score")
+
+        _scoreText = new TextBlock(
+                RenderSurface.Host,
+                view,
+                new Rectangle(
+                    330,
+                    20,
+                    300,
+                    92),
+                "pong-score")
             .SetFont(SKTypeface.Default, 56f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .EnableWrapping(false)
             .UseShadow();
+
         _scoreText.ZOrder = 1000;
-        _statusText = new TextBlock(RenderSurface.Host, view, new Rectangle(210, 505, 540, 100), "pong-status")
+
+        _statusText = new TextBlock(
+                RenderSurface.Host,
+                view,
+                new Rectangle(
+                    210,
+                    505,
+                    540,
+                    100),
+                "pong-status")
             .SetFont(SKTypeface.Default, 20f, minSize: 16f)
-            .SetColors(new SKColor(208, 240, 250), new SKColor(5, 15, 31, 215))
+            .SetColors(
+                new SKColor(208, 240, 250),
+                new SKColor(
+                    5,
+                    15,
+                    31,
+                    215))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(3)
             .UseShadow();
+
         _statusText.HorizontalPadding = 18f;
         _statusText.VerticalPadding = 10f;
         _statusText.ZOrder = 1001;
@@ -119,6 +180,7 @@ internal sealed class PongGameHost : WinFormsGameHost
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
         keyboard.KeyDown += OnKeyDown;
+
         foreach (Keys key in MonitoredKeys)
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
@@ -136,10 +198,15 @@ internal sealed class PongGameHost : WinFormsGameHost
     {
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+
         Engine.BeforeBackgroundTasksExecute -= BeforeBackgroundTasksExecute;
     }
 
-    private Sprite CreateSprite(string nickname, int frame, Size renderSize, Vector2 position)
+    private Sprite CreateSprite(
+        string nickname,
+        int frame,
+        Size renderSize,
+        Vector2 position)
     {
         Sprite sprite = Engine.Managers.Sprites.CreateSprite(_actorLayer, _tilesheet[frame, 0], nickname);
         sprite.RenderSize = renderSize;
@@ -153,15 +220,21 @@ internal sealed class PongGameHost : WinFormsGameHost
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (!Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key)) return;
+        if (!Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key))
+            return;
+
         if (args.KeyAction == KeyAction.Released)
         {
             _keysDown.Remove(key);
             return;
         }
+
         _keysDown.Add(key);
-        if (key == Keys.Space && _state == GameState.Ready) Serve();
-        else if (key == Keys.R) ResetMatch();
+
+        if (key == Keys.Space && _state == GameState.Ready)
+            Serve();
+        else if (key == Keys.R)
+            ResetMatch();
         else if (key == Keys.Tab)
         {
             _rightPaddleAi = !_rightPaddleAi;
@@ -176,21 +249,29 @@ internal sealed class PongGameHost : WinFormsGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastUpdateTick, tick), 0f, 0.05f);
         _lastUpdateTick = tick;
-        if (dt <= 0f) return;
+
+        if (dt <= 0f)
+            return;
+
         MovePaddles(dt);
-        if (_state == GameState.Playing) MoveBall(dt);
+
+        if (_state == GameState.Playing)
+            MoveBall(dt);
     }
 
     private void MovePaddles(float dt)
     {
         MovePaddle(_leftPaddle, GetDirection(Keys.W, Keys.S) * PaddleSpeed * dt);
         float rightDirection;
+
         if (_rightPaddleAi)
         {
             float delta = _ball.GetPosition().Y - _rightPaddle.GetPosition().Y;
             rightDirection = MathF.Abs(delta) < 0.12f ? 0f : MathF.Sign(delta);
         }
-        else rightDirection = GetDirection(Keys.Up, Keys.Down);
+        else
+            rightDirection = GetDirection(Keys.Up, Keys.Down);
+
         MovePaddle(_rightPaddle, rightDirection * (_rightPaddleAi ? AiSpeed : PaddleSpeed) * dt);
     }
 
@@ -212,6 +293,7 @@ internal sealed class PongGameHost : WinFormsGameHost
     {
         Vector2 previous = _ball.GetPosition();
         Vector2 next = previous + _ballVelocity * dt;
+
         if (next.Y - BallRadius <= 0f && _ballVelocity.Y < 0f)
         {
             next.Y = BallRadius;
@@ -222,35 +304,71 @@ internal sealed class PongGameHost : WinFormsGameHost
             next.Y = WorldRows - BallRadius;
             _ballVelocity.Y *= -1f;
         }
-        BounceFromPaddle(_leftPaddle, previous, ref next, true);
-        BounceFromPaddle(_rightPaddle, previous, ref next, false);
+
+        BounceFromPaddle(
+            _leftPaddle,
+            previous,
+            ref next,
+            true);
+
+        BounceFromPaddle(
+            _rightPaddle,
+            previous,
+            ref next,
+            false);
+
         _ball.SetPosition(next);
-        if (next.X + BallRadius < 0f) AwardPoint(false);
-        else if (next.X - BallRadius > WorldColumns) AwardPoint(true);
+
+        if (next.X + BallRadius < 0f)
+            AwardPoint(false);
+        else if (next.X - BallRadius > WorldColumns)
+            AwardPoint(true);
     }
 
-    private void BounceFromPaddle(Sprite paddle, Vector2 previous, ref Vector2 next, bool isLeft)
+    private void BounceFromPaddle(
+        Sprite paddle,
+        Vector2 previous,
+        ref Vector2 next,
+        bool isLeft)
     {
         Vector2 paddlePosition = paddle.GetPosition();
         float paddleFace = paddlePosition.X + (isLeft ? PaddleHalfWidth : -PaddleHalfWidth);
+
         bool crossedFace = isLeft
             ? previous.X - BallRadius >= paddleFace && next.X - BallRadius <= paddleFace
             : previous.X + BallRadius <= paddleFace && next.X + BallRadius >= paddleFace;
-        if (!crossedFace || isLeft != (_ballVelocity.X < 0f)) return;
+
+        if (!crossedFace || isLeft != (_ballVelocity.X < 0f))
+            return;
+
         float offset = (next.Y - paddlePosition.Y) / PaddleHalfHeight;
-        if (MathF.Abs(offset) > 1f + BallRadius) return;
+
+        if (MathF.Abs(offset) > 1f + BallRadius)
+            return;
+
         offset = Math.Clamp(offset, -1f, 1f);
         float speed = Math.Min(_ballVelocity.Length() * 1.055f, MaximumBallSpeed);
         float horizontal = MathF.Cos(offset * 0.95f) * speed;
         float vertical = MathF.Sin(offset * 0.95f) * speed;
         _ballVelocity = new Vector2(isLeft ? horizontal : -horizontal, vertical);
         next.X = paddleFace + (isLeft ? BallRadius : -BallRadius);
-        _ball.JiggleOnce(2f, 2f, 18f, 0.12f, true, 0.12f);
+
+        _ball.JiggleOnce(
+            2f,
+            2f,
+            18f,
+            0.12f,
+            true,
+            0.12f);
     }
 
     private void AwardPoint(bool leftPlayerScored)
     {
-        if (leftPlayerScored) _leftScore++; else _rightScore++;
+        if (leftPlayerScored)
+            _leftScore++;
+        else
+            _rightScore++;
+
         if (_leftScore >= WinningScore || _rightScore >= WinningScore)
         {
             _state = GameState.MatchOver;
@@ -258,6 +376,7 @@ internal sealed class PongGameHost : WinFormsGameHost
             RefreshHud();
             return;
         }
+
         _serveDirection = leftPlayerScored ? 1 : -1;
         _state = GameState.Ready;
         CenterBall();
@@ -295,14 +414,19 @@ internal sealed class PongGameHost : WinFormsGameHost
     private void RefreshHud()
     {
         _scoreText?.SetText($"{_leftScore}  :  {_rightScore}");
-        if (_statusText is null) return;
+
+        if (_statusText is null)
+            return;
+
         string opponent = _rightPaddleAi ? "CPU" : "PLAYER 2";
+
         string prompt = _state switch
         {
             GameState.Ready => "SPACE to serve",
             GameState.MatchOver => $"{(_leftScore > _rightScore ? "PLAYER 1" : opponent)} WINS — R to restart",
             _ => $"First to {WinningScore}"
         };
+
         _statusText.SetText($"{prompt}\nW/S: Player 1   ↑/↓: Player 2   TAB: {opponent}   R: restart");
     }
 
@@ -312,10 +436,12 @@ internal sealed class PongGameHost : WinFormsGameHost
         /// Specifies ready.
         /// </summary>
         Ready,
+
         /// <summary>
         /// Specifies playing.
         /// </summary>
         Playing,
+
         /// <summary>
         /// Specifies match over.
         /// </summary>

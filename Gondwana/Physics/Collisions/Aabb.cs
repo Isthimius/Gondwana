@@ -53,7 +53,11 @@ public readonly struct Aabb
     /// <param name="maxX">The maximum X coordinate.</param>
     /// <param name="maxY">The maximum Y coordinate.</param>
     /// <exception cref="ArgumentException">Thrown when <paramref name="maxX"/> is less than <paramref name="minX"/>, or <paramref name="maxY"/> is less than <paramref name="minY"/>.</exception>
-    public Aabb(float minX, float minY, float maxX, float maxY)
+    public Aabb(
+        float minX,
+        float minY,
+        float maxX,
+        float maxY)
     {
         if (maxX < minX)
             throw new ArgumentException("maxX < minX");
@@ -73,7 +77,11 @@ public readonly struct Aabb
     /// <param name="r">The rectangle to convert.</param>
     /// <returns>An <see cref="Aabb"/> with boundaries matching the rectangle.</returns>
     public static Aabb FromRectangle(Rectangle r) =>
-        new(r.Left, r.Top, r.Right, r.Bottom);
+        new(
+            r.Left,
+            r.Top,
+            r.Right,
+            r.Bottom);
 
     /// <summary>
     /// Creates an <see cref="Aabb"/> from a <see cref="RectangleF"/>.
@@ -81,7 +89,11 @@ public readonly struct Aabb
     /// <param name="r">The rectangle to convert.</param>
     /// <returns>An <see cref="Aabb"/> with boundaries matching the rectangle.</returns>
     public static Aabb FromRectangleF(RectangleF r) =>
-        new(r.Left, r.Top, r.Right, r.Bottom);
+        new(
+            r.Left,
+            r.Top,
+            r.Right,
+            r.Bottom);
 
     /// <summary>
     /// Determines whether this bounding box intersects with another bounding box.
@@ -98,6 +110,8 @@ public readonly struct Aabb
     /// <returns>A <see cref="Rectangle"/> representing this bounding box.</returns>
     public Rectangle ToRectangle() =>
         Rectangle.FromLTRB(
-            (int)MinX, (int)MinY,
-            (int)MaxX, (int)MaxY);
+            (int)MinX,
+            (int)MinY,
+            (int)MaxX,
+            (int)MaxY);
 }

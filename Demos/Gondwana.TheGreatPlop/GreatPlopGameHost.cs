@@ -11,7 +11,12 @@ namespace Gondwana.Demos.TheGreatPlop;
 
 internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
 {
-    private static readonly Keys[] MonitoredKeys = [Keys.W, Keys.A, Keys.S, Keys.D, Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.Space, Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.R];
+    private static readonly Keys[] MonitoredKeys =
+    [
+        Keys.W, Keys.A, Keys.S, Keys.D, Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.Space, Keys.D1, Keys.D2,
+        Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.R
+    ];
+
     private readonly HashSet<Keys> _keys = [];
     private readonly PlopState _game = new();
     private MeadowDrawing _drawing = null!;
@@ -23,7 +28,16 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
-        scene.AddLayer(20, 10, 64, 64, 0, 1f, CoordinateSystemTypes.Orthogonal);
+
+        scene.AddLayer(
+            20,
+            10,
+            64,
+            64,
+            0,
+            1f,
+            CoordinateSystemTypes.Orthogonal);
+
         return scene;
     }
 
@@ -40,7 +54,16 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
-        _drawing = new MeadowDrawing(RenderSurface.Host, view, new Rectangle(0, 0, 1280, 720), _game)
+
+        _drawing = new MeadowDrawing(
+            RenderSurface.Host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                1280,
+                720),
+            _game)
         {
             ZOrder = 1000
         };
@@ -51,6 +74,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
         keyboard.KeyDown += OnKeyDown;
+
         foreach (Keys key in MonitoredKeys)
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
@@ -76,19 +100,30 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
     {
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+
         if (Engine.Input.MouseEventPoller is not null)
             Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
+
         Engine.BeforeBackgroundTasksExecute -= Update;
     }
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (!Enum.TryParse(args.KeyConfig.Key, true, out Keys key)) return;
-        if (args.KeyAction == KeyAction.Released) _keys.Remove(key); else _keys.Add(key);
+        if (!Enum.TryParse(args.KeyConfig.Key, true, out Keys key))
+            return;
+
+        if (args.KeyAction == KeyAction.Released)
+            _keys.Remove(key);
+        else
+            _keys.Add(key);
+
         if (args.KeyAction == KeyAction.Pressed)
         {
-            if (key is >= Keys.D1 and <= Keys.D6) _game.TryBuy((int)key - (int)Keys.D1);
-            if (key == Keys.R) _game.Reset();
+            if (key is >= Keys.D1 and <= Keys.D6)
+                _game.TryBuy((int)key - (int)Keys.D1);
+
+            if (key == Keys.R)
+                _game.Reset();
         }
     }
 
@@ -96,8 +131,12 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
     {
         _game.Mouse = args.CurrentPosition;
         bool overButton = MeadowDrawing.PlopButton.Contains(args.CurrentPosition);
-        if (args.LeftButtonJustPressed && overButton) _game.StartCharge();
-        if (args.LeftButtonJustReleased && _game.Charging) _game.ReleaseCharge();
+
+        if (args.LeftButtonJustPressed && overButton)
+            _game.StartCharge();
+
+        if (args.LeftButtonJustReleased && _game.Charging)
+            _game.ReleaseCharge();
     }
 
     private void Update()
@@ -105,20 +144,40 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0f, 0.05f);
         _lastTick = tick;
-        if (dt <= 0f) return;
+
+        if (dt <= 0f)
+            return;
 
         Vector2 direction = new(
-            Axis(Keys.A, Keys.Left, Keys.D, Keys.Right),
-            Axis(Keys.W, Keys.Up, Keys.S, Keys.Down));
+            Axis(
+                Keys.A,
+                Keys.Left,
+                Keys.D,
+                Keys.Right),
+            Axis(
+                Keys.W,
+                Keys.Up,
+                Keys.S,
+                Keys.Down));
+
         bool charging = _game.Charging || _keys.Contains(Keys.Space);
-        if (_keys.Contains(Keys.Space) && !_game.Charging) _game.StartCharge();
-        if (!_keys.Contains(Keys.Space) && _game.KeyboardCharging) _game.ReleaseCharge();
+
+        if (_keys.Contains(Keys.Space) && !_game.Charging)
+            _game.StartCharge();
+
+        if (!_keys.Contains(Keys.Space) && _game.KeyboardCharging)
+            _game.ReleaseCharge();
+
         _game.KeyboardCharging = _keys.Contains(Keys.Space);
         _game.Update(dt, direction, charging);
         _drawing.Invalidate();
     }
 
-    private float Axis(Keys negative, Keys negativeAlt, Keys positive, Keys positiveAlt)
+    private float Axis(
+        Keys negative,
+        Keys negativeAlt,
+        Keys positive,
+        Keys positiveAlt)
     {
         bool n = _keys.Contains(negative) || _keys.Contains(negativeAlt);
         bool p = _keys.Contains(positive) || _keys.Contains(positiveAlt);
@@ -153,21 +212,31 @@ internal sealed class PlopState
 
     internal void Reset()
     {
-        Plops.Clear(); Cow = new(510, 270); Pressure = 0; Money = 18; Stun = 0; Shake = 0;
+        Plops.Clear();
+        Cow = new(510, 270);
+        Pressure = 0;
+        Money = 18;
+        Stun = 0;
+        Shake = 0;
         Alfalfa = Chili = Plutonium = DualCore = Compressor = Beetle = false;
-        Message = "Pasture reset. The cow remembers nothing."; MessageTime = 3;
+        Message = "Pasture reset. The cow remembers nothing.";
+        MessageTime = 3;
     }
 
     internal void StartCharge()
     {
-        if (Stun > 0 || Charging) return;
+        if (Stun > 0 || Charging)
+            return;
+
         Charging = true;
         Pressure = Math.Max(Pressure, .02f);
     }
 
     internal void ReleaseCharge()
     {
-        if (!Charging) return;
+        if (!Charging)
+            return;
+
         Charging = false;
         Drop(Math.Max(.06f, Pressure));
         Pressure = 0;
@@ -183,10 +252,15 @@ internal sealed class PlopState
         if (charging && Charging)
         {
             Pressure += dt * (Alfalfa ? .34f : .24f);
+
             if (Pressure > 1.13f)
             {
-                Charging = false; Pressure = 0; Stun = 3; Shake = 1;
-                Message = "CATASTROPHIC BLOWOUT — dignity rebooting..."; MessageTime = 3;
+                Charging = false;
+                Pressure = 0;
+                Stun = 3;
+                Shake = 1;
+                Message = "CATASTROPHIC BLOWOUT — dignity rebooting...";
+                MessageTime = 3;
             }
         }
 
@@ -202,8 +276,10 @@ internal sealed class PlopState
         {
             Vector2 delta = plop.Position - Cow;
             float range = plop.Radius + 45;
+
             if (delta.LengthSquared() < range * range && delta.LengthSquared() > .1f && !Charging)
                 plop.Velocity += Vector2.Normalize(delta) * 280f * dt / MathF.Max(.7f, plop.Radius / 55f);
+
             plop.Position += plop.Velocity * dt;
             plop.Velocity *= MathF.Pow(.13f, dt);
             plop.Squash = MathF.Sin(plop.Age * 8f) * MathF.Exp(-plop.Age * 1.5f) * .18f;
@@ -213,21 +289,28 @@ internal sealed class PlopState
         if (Beetle)
         {
             _automationTimer += dt;
+
             if (_automationTimer > .6f)
             {
                 _automationTimer = 0;
                 Plop? target = Plops.OrderBy(p => Vector2.DistanceSquared(p.Position, new(110, 175))).FirstOrDefault();
-                if (target is not null) target.Velocity += Vector2.Normalize(new Vector2(110, 175) - target.Position) * 120f;
+
+                if (target is not null)
+                    target.Velocity += Vector2.Normalize(new Vector2(110, 175) - target.Position) * 120f;
             }
         }
 
         var sold = Plops.Where(p => p.Position.X < 155 && p.Position.Y < 245).ToList();
+
         if (sold.Count > 0)
         {
             float combo = 1f + Math.Max(0, sold.Count - 1) * .75f;
             float earned = sold.Sum(p => p.Value) * combo;
             Money += earned;
-            foreach (Plop p in sold) Plops.Remove(p);
+
+            foreach (Plop p in sold)
+                Plops.Remove(p);
+
             Message = sold.Count > 1 ? $"BEETLE COMBO x{combo:0.00}!  +${earned:0}" : $"SOLD!  +${earned:0}";
             MessageTime = 2.2f;
         }
@@ -236,24 +319,35 @@ internal sealed class PlopState
     private void Drop(float pressure)
     {
         int count = DualCore ? 2 : 1;
+
         for (int i = 0; i < count; i++)
         {
             bool flaming = Chili && _random.NextDouble() < .25;
             float radius = 14 + pressure * pressure * 118;
-            if (Compressor) radius *= .65f;
+
+            if (Compressor)
+                radius *= .65f;
+
             float value = MathF.Round(1 + pressure * pressure * 235) * (flaming ? 2 : 1) * (Plutonium ? 3 : 1);
-            Plops.Add(new Plop
-            {
-                Position = Cow + new Vector2(-18 + i * 38, 32),
-                Radius = radius,
-                Value = value,
-                Flaming = flaming,
-                Radioactive = Plutonium,
-                Velocity = new Vector2((i == 0 ? -1 : 1) * 18, 35)
-            });
+
+            Plops.Add(
+                new Plop
+                {
+                    Position = Cow + new Vector2(-18 + i * 38, 32),
+                    Radius = radius,
+                    Value = value,
+                    Flaming = flaming,
+                    Radioactive = Plutonium,
+                    Velocity = new Vector2((i == 0 ? -1 : 1) * 18, 35)
+                });
         }
+
         Shake = Math.Clamp(pressure, .15f, 1f);
-        Message = pressure >= .82f ? "TITANIC PLOP! Roll that monument to market!" : $"Fresh inventory: ${MathF.Round(1 + pressure * pressure * 235):0}";
+
+        Message = pressure >= .82f
+            ? "TITANIC PLOP! Roll that monument to market!"
+            : $"Fresh inventory: ${MathF.Round(1 + pressure * pressure * 235):0}";
+
         MessageTime = 2.4f;
     }
 
@@ -268,11 +362,47 @@ internal sealed class PlopState
             4 => (350, Compressor, "Compressor"),
             _ => (600, Beetle, "Beetle Assistant")
         };
-        if (item.owned) { Message = $"{item.name} already installed."; MessageTime = 1.5f; return; }
-        if (Money < item.cost) { Message = $"Need ${item.cost:0} for {item.name}."; MessageTime = 1.5f; return; }
+
+        if (item.owned)
+        {
+            Message = $"{item.name} already installed.";
+            MessageTime = 1.5f;
+            return;
+        }
+
+        if (Money < item.cost)
+        {
+            Message = $"Need ${item.cost:0} for {item.name}.";
+            MessageTime = 1.5f;
+            return;
+        }
+
         Money -= item.cost;
-        switch (slot) { case 0: Alfalfa = true; break; case 1: Chili = true; break; case 2: Plutonium = true; break; case 3: DualCore = true; break; case 4: Compressor = true; break; case 5: Beetle = true; break; }
-        Message = $"UPGRADE ACQUIRED: {item.name}!"; MessageTime = 2;
+
+        switch (slot)
+        {
+            case 0:
+                Alfalfa = true;
+                break;
+            case 1:
+                Chili = true;
+                break;
+            case 2:
+                Plutonium = true;
+                break;
+            case 3:
+                DualCore = true;
+                break;
+            case 4:
+                Compressor = true;
+                break;
+            case 5:
+                Beetle = true;
+                break;
+        }
+
+        Message = $"UPGRADE ACQUIRED: {item.name}!";
+        MessageTime = 2;
     }
 }
 

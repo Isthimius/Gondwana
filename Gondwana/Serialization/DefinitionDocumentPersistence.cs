@@ -5,7 +5,7 @@ using Gondwana.Scenes.GSCN;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 /// <summary>Persistence policy shared by native definition documents.</summary>
 internal static class DefinitionDocumentPersistence
@@ -34,20 +34,30 @@ internal static class DefinitionDocumentPersistence
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
         var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
+
         try
         {
             File.WriteAllText(temporary, json);
+
             if (beforeInstall is null)
             {
                 File.Move(temporary, path, overwrite: true);
                 return;
             }
+
             var replacing = File.Exists(path);
             beforeInstall(temporary);
-            if (replacing) File.Replace(temporary, path, destinationBackupFileName: null);
-            else File.Move(temporary, path);
+
+            if (replacing)
+                File.Replace(temporary, path, destinationBackupFileName: null);
+            else
+                File.Move(temporary, path);
         }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        finally
+        {
+            if (File.Exists(temporary))
+                File.Delete(temporary);
+        }
     }
 
     private sealed class DocumentResolver : DefaultContractResolver
@@ -59,6 +69,7 @@ internal static class DefinitionDocumentPersistence
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
+
             if (member.Name == "Source")
                 property.ShouldSerialize = value => value switch
                 {
@@ -67,6 +78,7 @@ internal static class DefinitionDocumentPersistence
                     SceneDefinition definition => definition.Source.Kind == SceneDefinitionSourceKind.Generated,
                     _ => true
                 };
+
             return property;
         }
     }

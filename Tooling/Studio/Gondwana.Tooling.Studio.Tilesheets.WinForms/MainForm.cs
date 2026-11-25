@@ -18,8 +18,10 @@ internal sealed partial class MainForm : Form
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string> ReportSessionError { get; set; }
+
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Project sources",
@@ -74,13 +76,25 @@ internal sealed partial class MainForm : Form
         _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
 
         var file = new ToolStripMenuItem("&File");
-        Add(file, "&New", Keys.Control | Keys.N, () => NewDocument());
-        Add(file, "&Open GTS…", Keys.Control | Keys.O, OpenFiles);
+
+        Add(
+            file,
+            "&New",
+            Keys.Control | Keys.N,
+            () => NewDocument());
+
+        Add(
+            file,
+            "&Open GTS…",
+            Keys.Control | Keys.O,
+            OpenFiles);
+
         Add(
             file,
             "Open working &directory…",
             Keys.Control | Keys.Shift | Keys.O,
             () => _workspaceControl.ChooseDirectory(this));
+
         Add(
             file,
             "&Save",
@@ -90,6 +104,7 @@ internal sealed partial class MainForm : Form
                 if (ActiveEditor is { } document)
                     SaveDocument(document, false);
             });
+
         Add(
             file,
             "Save &As…",
@@ -99,17 +114,29 @@ internal sealed partial class MainForm : Form
                 if (ActiveEditor is { } document)
                     SaveDocument(document, true);
             });
-        Add(file, "&Close", Keys.Control | Keys.W, () => ActiveEditor?.Close());
-        Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+
+        Add(
+            file,
+            "&Close",
+            Keys.Control | Keys.W,
+            () => ActiveEditor?.Close());
+
+        Add(
+            file,
+            "E&xit",
+            Keys.Alt | Keys.F4,
+            Close);
 
         var view = new ToolStripMenuItem("&View");
         view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
+
         var outerWorkspaceItem = Add(
             view,
             "Project sources",
             Keys.None,
             () => _workspace.Show());
+
         Add(
             view,
             "Refresh directory",
@@ -117,12 +144,14 @@ internal sealed partial class MainForm : Form
             _workspaceControl.RefreshDirectory);
 
         view.DropDownItems.Add(new ToolStripSeparator());
+
         var paneItems = new Dictionary<string, ToolStripMenuItem>(
             StringComparer.OrdinalIgnoreCase);
 
         foreach (var paneName in TilesheetEditorControl.PaneNames)
         {
             string capturedName = paneName;
+
             paneItems[capturedName] = Add(
                 view,
                 capturedName,
@@ -131,14 +160,24 @@ internal sealed partial class MainForm : Form
         }
 
         view.DropDownItems.Add(new ToolStripSeparator());
+
         var showAllPanesItem = Add(
             view,
             "Show all tilesheet panes",
             Keys.None,
             () => ActiveEditor?.ShowAllPanes());
 
-        Add(view, "Reset application layout", Keys.None, () => _layout.Reset());
-        var resetEditor = Add(view, "Reset active editor layout", Keys.None, () => ActiveEditor?.Editor.ResetLayout());
+        Add(
+            view,
+            "Reset application layout",
+            Keys.None,
+            () => _layout.Reset());
+
+        var resetEditor = Add(
+            view,
+            "Reset active editor layout",
+            Keys.None,
+            () => ActiveEditor?.Editor.ResetLayout());
 
         view.DropDownOpening += (_, _) =>
         {
@@ -176,7 +215,9 @@ internal sealed partial class MainForm : Form
 
         FormClosing += (_, e) =>
         {
-            if (e.Cancel) return;
+            if (e.Cancel)
+                return;
+
             foreach (var document in _documents.ToArray())
             {
                 if (!document.ConfirmClose())
@@ -187,6 +228,7 @@ internal sealed partial class MainForm : Form
             }
 
             SaveSession();
+
             foreach (var document in _documents)
                 document.CloseApproved = true;
         };
@@ -196,15 +238,22 @@ internal sealed partial class MainForm : Form
     {
         var messages = new List<string>();
 
-        _session.Restore(["gts"], path => _workspaceControl.SetWorkingDirectory(path),
+        _session.Restore(
+            ["gts"],
+            path => _workspaceControl.SetWorkingDirectory(path),
             document => OpenDocument(document.Path),
-            path => _documents.FirstOrDefault(document => string.Equals(document.Document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-            messages.Add, message => ReportSessionError(message));
+            path => _documents.FirstOrDefault(document => string.Equals(
+                document.Document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase))?.Activate(),
+            messages.Add,
+            message => ReportSessionError(message));
 
         WorkspaceSessionController.ShowStatus(this, messages);
     }
 
-    private void SaveSession() => _session.Save(_workspaceControl.WorkingDirectory,
+    private void SaveSession() => _session.Save(
+        _workspaceControl.WorkingDirectory,
         WorkspaceSessionController.DocumentOrder(_dock, _documents).Select(document => document.Document.FilePath),
         ActiveEditor?.Document.FilePath);
 
@@ -248,11 +297,10 @@ internal sealed partial class MainForm : Form
         {
             path = Path.GetFullPath(path);
 
-            var existing = _documents.FirstOrDefault(
-                document => string.Equals(
-                    document.Document.FilePath,
-                    path,
-                    StringComparison.OrdinalIgnoreCase));
+            var existing = _documents.FirstOrDefault(document => string.Equals(
+                document.Document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase));
 
             if (existing is not null)
             {
@@ -264,11 +312,11 @@ internal sealed partial class MainForm : Form
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
             if (_session.IsRestoring)
                 throw;
@@ -288,6 +336,7 @@ internal sealed partial class MainForm : Form
 
         editor.Document.Definition.Name =
             Path.GetFileNameWithoutExtension(imagePath);
+
         editor.ChooseImage(imagePath);
         editor.AddRegion();
     }
@@ -397,12 +446,14 @@ internal sealed partial class MainForm : Form
         }
         catch (Exception ex) when (
             ex is IOException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
-            if (editor.Sources?.SaveFailed(ex) != true) ShowError(ex);
+            if (editor.Sources?.SaveFailed(ex) != true)
+                ShowError(ex);
+
             return false;
         }
     }
@@ -430,6 +481,11 @@ internal sealed partial class MainForm : Form
 
         base.Dispose(disposing);
     }
+
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Document.History, () => ActiveEditor?.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            ActiveEditor?.Document.History,
+            () => ActiveEditor?.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
 }

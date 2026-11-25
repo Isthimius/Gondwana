@@ -19,31 +19,38 @@ internal static class TemplatePackageHelper
     public static string? GetInstalledVersion()
     {
         var output = ProcessHelper.Run("dotnet", "new uninstall", out var exitCode);
+
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
             return null;
 
         var lines = output.Replace("\r", string.Empty).Split('\n');
+
         for (var i = 0; i < lines.Length; i++)
         {
             var currentLine = lines[i];
+
             if (!currentLine.Contains(PackageId, StringComparison.OrdinalIgnoreCase))
                 continue;
 
             var inlineVersion = TryExtractVersion(currentLine);
+
             if (!string.IsNullOrWhiteSpace(inlineVersion))
                 return inlineVersion;
 
             for (var j = i + 1; j < lines.Length; j++)
             {
                 var line = lines[j];
+
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
 
                 var trimmed = line.Trim();
+
                 if (trimmed.StartsWith("Version:", StringComparison.OrdinalIgnoreCase))
                     return trimmed["Version:".Length..].Trim();
 
                 var nearbyVersion = TryExtractVersion(line);
+
                 if (!string.IsNullOrWhiteSpace(nearbyVersion))
                     return nearbyVersion;
 
@@ -66,6 +73,7 @@ internal static class TemplatePackageHelper
             line,
             $@"{Regex.Escape(PackageId)}\s*::\s*(?<version>[^\s,;]+)",
             RegexOptions.IgnoreCase);
+
         if (packageVersionMatch.Success)
             return packageVersionMatch.Groups["version"].Value.Trim();
 
@@ -73,12 +81,14 @@ internal static class TemplatePackageHelper
             line,
             @"\bVersion\s*:\s*(?<version>[^\s,;]+)",
             RegexOptions.IgnoreCase);
+
         if (versionLabelMatch.Success)
             return versionLabelMatch.Groups["version"].Value.Trim();
 
         foreach (var token in line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
         {
             var candidate = token.Trim().Trim(',', ';', ':');
+
             if (Regex.IsMatch(candidate, @"^\d+(?:\.\d+){1,3}(?:[-+][0-9A-Za-z.\-]+)?$"))
                 return candidate;
         }
@@ -93,6 +103,7 @@ internal static class TemplatePackageHelper
     public static int EnsureInstalledOrUpdated()
     {
         var installedVersion = GetInstalledVersion();
+
         return string.IsNullOrWhiteSpace(installedVersion)
             ? InstallTemplates()
             : UpdateInstalledTemplates(installedVersion);
@@ -103,7 +114,9 @@ internal static class TemplatePackageHelper
     /// install/update behavior when no selection is supplied.
     /// </summary>
     public static async Task<int> EnsureInstalledOrUpdatedAsync(
-        bool prerelease, string? version, CancellationToken cancellationToken)
+        bool prerelease,
+        string? version,
+        CancellationToken cancellationToken)
     {
         if (!prerelease && version is null)
             return EnsureInstalledOrUpdated();
@@ -127,16 +140,20 @@ internal static class TemplatePackageHelper
                 // --prerelease on dotnet new install requires SDK 11; resolve the exact
                 // version ourselves to support the repository's .NET 10 SDK.
                 using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+
                 var index = await http.GetFromJsonAsync<JsonElement>(
                     "https://api.nuget.org/v3-flatcontainer/gondwana.templates/index.json",
                     cancellationToken);
+
                 version = LatestAvailableVersion(
                     index.GetProperty("versions").EnumerateArray().Select(v => v.GetString()!));
             }
             catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException
-                or JsonException or InvalidOperationException)
+                                           or JsonException or InvalidOperationException)
             {
-                AnsiConsole.MarkupLine($"[red]Unable to resolve the latest Gondwana.Templates version:[/] {Markup.Escape(ex.Message)}");
+                AnsiConsole.MarkupLine(
+                    $"[red]Unable to resolve the latest Gondwana.Templates version:[/] {Markup.Escape(ex.Message)}");
+
                 return 1;
             }
         }
@@ -170,30 +187,39 @@ internal static class TemplatePackageHelper
     {
         var a = ExactVersionPattern.Match(left!);
         var b = ExactVersionPattern.Match(right!);
+
         var core = Version.Parse(a.Groups["core"].Value).CompareTo(
             Version.Parse(b.Groups["core"].Value));
-        if (core != 0) return core;
+
+        if (core != 0)
+            return core;
 
         var aPre = a.Groups["pre"].Value;
         var bPre = b.Groups["pre"].Value;
+
         if (aPre.Length == 0 || bPre.Length == 0)
             return aPre.Length == 0 ? (bPre.Length == 0 ? 0 : 1) : -1;
 
         var aParts = aPre.Split('.');
         var bParts = bPre.Split('.');
+
         for (var i = 0; i < Math.Min(aParts.Length, bParts.Length); i++)
         {
             var aNumeric = long.TryParse(aParts[i], out var aNumber);
             var bNumeric = long.TryParse(bParts[i], out var bNumber);
             int comparison;
+
             if (aNumeric && bNumeric)
                 comparison = aNumber.CompareTo(bNumber);
             else if (aNumeric != bNumeric)
                 comparison = aNumeric ? -1 : 1;
             else
                 comparison = string.Compare(aParts[i], bParts[i], StringComparison.OrdinalIgnoreCase);
-            if (comparison != 0) return comparison;
+
+            if (comparison != 0)
+                return comparison;
         }
+
         return aParts.Length.CompareTo(bParts.Length);
     }
 
@@ -214,9 +240,12 @@ internal static class TemplatePackageHelper
     public static int UpdateInstalledTemplates()
     {
         var installedVersion = GetInstalledVersion();
+
         if (string.IsNullOrWhiteSpace(installedVersion))
         {
-            AnsiConsole.MarkupLine("[yellow]Gondwana.Templates is not installed. Run [bold]gondwana templates install[/].[/]");
+            AnsiConsole.MarkupLine(
+                "[yellow]Gondwana.Templates is not installed. Run [bold]gondwana templates install[/].[/]");
+
             return 1;
         }
 
@@ -225,14 +254,17 @@ internal static class TemplatePackageHelper
 
     private static int InstallTemplates(string? version = null)
     {
-        AnsiConsole.MarkupLine(version is null
-            ? "Installing [bold]Gondwana.Templates[/] from NuGet..."
-            : $"Installing [bold]Gondwana.Templates[/] version [bold]{Markup.Escape(version)}[/] from NuGet...");
+        AnsiConsole.MarkupLine(
+            version is null
+                ? "Installing [bold]Gondwana.Templates[/] from NuGet..."
+                : $"Installing [bold]Gondwana.Templates[/] version [bold]{Markup.Escape(version)}[/] from NuGet...");
+
         var exitCode = ProcessHelper.RunLive("dotnet", InstallArguments(version));
 
         if (exitCode == 0)
         {
             var currentVersion = GetInstalledVersion();
+
             if (!string.IsNullOrWhiteSpace(currentVersion))
                 AnsiConsole.MarkupLine($"[green]Templates installed successfully: {Markup.Escape(currentVersion)}.[/]");
             else
@@ -248,12 +280,15 @@ internal static class TemplatePackageHelper
 
     private static int UpdateInstalledTemplates(string installedVersion)
     {
-        AnsiConsole.MarkupLine($"Checking [bold]Gondwana.Templates[/] for updates (current: {Markup.Escape(installedVersion)})...");
+        AnsiConsole.MarkupLine(
+            $"Checking [bold]Gondwana.Templates[/] for updates (current: {Markup.Escape(installedVersion)})...");
+
         var exitCode = ProcessHelper.RunLive("dotnet", ["new", "update"]);
 
         if (exitCode == 0)
         {
             var currentVersion = GetInstalledVersion();
+
             if (!string.IsNullOrWhiteSpace(currentVersion) &&
                 !string.Equals(currentVersion, installedVersion, StringComparison.OrdinalIgnoreCase))
             {
@@ -261,7 +296,8 @@ internal static class TemplatePackageHelper
             }
             else if (!string.IsNullOrWhiteSpace(currentVersion))
             {
-                AnsiConsole.MarkupLine($"[green]Templates checked; current version retained: {Markup.Escape(currentVersion)}.[/]");
+                AnsiConsole.MarkupLine(
+                    $"[green]Templates checked; current version retained: {Markup.Escape(currentVersion)}.[/]");
             }
             else
             {

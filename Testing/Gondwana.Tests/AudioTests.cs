@@ -32,7 +32,13 @@ public sealed class AudioTests : IDisposable
     [Fact]
     public void PortableControlsAndCompletionAreForwarded()
     {
-        var sound = manager.LoadFromUri("music", "music.ogg", 2, -2, 8);
+        var sound = manager.LoadFromUri(
+            "music",
+            "music.ogg",
+            2,
+            -2,
+            8);
+
         var handle = backend.Handles.Single();
         Assert.Equal(1, handle.Volume);
         Assert.Equal(-1, handle.Pan);
@@ -52,7 +58,13 @@ public sealed class AudioTests : IDisposable
         var completed = 0;
         var asyncCompleted = 0;
         sound.PlaybackCompleted += (_, _) => completed++;
-        sound.PlaybackCompletedAsync = () => { asyncCompleted++; return Task.CompletedTask; };
+
+        sound.PlaybackCompletedAsync = () =>
+        {
+            asyncCompleted++;
+            return Task.CompletedTask;
+        };
+
         handle.Complete();
         Assert.Equal(1, completed);
         Assert.Equal(1, asyncCompleted);
@@ -70,7 +82,13 @@ public sealed class AudioTests : IDisposable
     [Fact]
     public void UriCloneAndJsonRestoreRetainSourceAndSettings()
     {
-        var sound = manager.LoadFromUri("music", "assets/music.ogg", .4f, .2f, 1.5f);
+        var sound = manager.LoadFromUri(
+            "music",
+            "assets/music.ogg",
+            .4f,
+            .2f,
+            1.5f);
+
         sound.IsLooping = true;
         var clone = manager.Clone("music", "copy")!;
         Assert.Equal(sound.SourceUri, clone.SourceUri);
@@ -105,13 +123,18 @@ public sealed class AudioTests : IDisposable
         var notifications = 0;
         void OnDisposed(object? sender, (string Key, AudioResource Resource) args) => notifications++;
         manager.SoundDisposed += OnDisposed;
+
         try
         {
             manager.Unload("music");
             sound.Dispose();
             Assert.Equal(1, notifications);
         }
-        finally { manager.SoundDisposed -= OnDisposed; }
+        finally
+        {
+            manager.SoundDisposed -= OnDisposed;
+        }
+
         manager.ConfigureBackend(new Backend());
     }
 
@@ -122,6 +145,7 @@ public sealed class AudioTests : IDisposable
     public void FileCloneRetainsPersistedSource()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".wav");
+
         try
         {
             File.WriteAllBytes(path, [1, 2, 3]);
@@ -133,7 +157,10 @@ public sealed class AudioTests : IDisposable
             JsonConvert.DeserializeObject<AudioResource>(json)!.ReloadIntoManager();
             Assert.Equal(new byte[] { 1, 2, 3 }, manager.Get("copy")!.OriginalBytes);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
@@ -170,10 +197,24 @@ public sealed class AudioTests : IDisposable
         Assert.Equal(3, assets.Method.GetParameters().Length);
         Assert.Equal(4, clone.Method.GetParameters().Length);
         using var data = new MemoryStream([1, 2, 3]);
-        var sound = stream("legacy", data, ".wav", .5f, -.5f);
+
+        var sound = stream(
+            "legacy",
+            data,
+            ".wav",
+            .5f,
+            -.5f);
+
         Assert.Equal(1f, sound.PlaybackSpeed);
         sound.PlaybackSpeed = 2f;
-        Assert.Equal(2f, clone("legacy", "copy", null, null)!.PlaybackSpeed);
+
+        Assert.Equal(
+            2f,
+            clone(
+                "legacy",
+                "copy",
+                null,
+                null)!.PlaybackSpeed);
     }
 
     /// <summary>
@@ -184,6 +225,7 @@ public sealed class AudioTests : IDisposable
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
         var sound = manager.LoadFromUri("music", "music.ogg", playbackSpeed: 2f);
+
         try
         {
             File.WriteAllText(path, JsonConvert.SerializeObject(new { SoundResources = manager.GetAll() }));
@@ -193,7 +235,10 @@ public sealed class AudioTests : IDisposable
             Assert.Equal(2f, sound.PlaybackSpeed);
             Assert.Single(backend.Handles);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
@@ -221,11 +266,15 @@ public sealed class AudioTests : IDisposable
     {
         backend.FailDuringSetup = true;
         using var data = new MemoryStream([1, 2, 3]);
+
         Assert.Throws<InvalidOperationException>(() =>
         {
-            if (uri) manager.LoadFromUri("broken", "music.ogg");
-            else manager.LoadFromStream("broken", data, ".wav");
+            if (uri)
+                manager.LoadFromUri("broken", "music.ogg");
+            else
+                manager.LoadFromStream("broken", data, ".wav");
         });
+
         Assert.True(Assert.Single(backend.Handles).Disposed);
         Assert.Equal(0, backend.Handles[0].CompletionSubscribers);
         Assert.False(manager.Contains("broken"));
@@ -259,21 +308,26 @@ public sealed class AudioTests : IDisposable
         using var release = new ManualResetEventSlim();
         var creating = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var secondStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
         backend.BeforeCreate = () =>
         {
             creating.TrySetResult();
             Assert.True(release.Wait(TimeSpan.FromSeconds(10)));
         };
+
         var first = Task.Run(() => manager.LoadFromEngineAssetsFile(assets));
         Task<List<AudioResource>>? second = null;
+
         try
         {
             await creating.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
             second = Task.Run(() =>
             {
                 secondStarted.SetResult();
                 return manager.LoadFromEngineAssetsFile(assets);
             });
+
             await secondStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
             await Assert.ThrowsAsync<TimeoutException>(() => second.WaitAsync(TimeSpan.FromMilliseconds(100)));
             release.Set();
@@ -286,7 +340,10 @@ public sealed class AudioTests : IDisposable
         {
             release.Set();
             await first;
-            if (second is not null) await second;
+
+            if (second is not null)
+                await second;
+
             backend.BeforeCreate = null;
         }
     }
@@ -308,7 +365,14 @@ public sealed class AudioTests : IDisposable
         try
         {
             File.WriteAllBytes(audioPath, [1, 2, 3, 4]);
-            var sound = manager.LoadFromFile("music", audioPath, .35f, -.2f, 1.5f);
+
+            var sound = manager.LoadFromFile(
+                "music",
+                audioPath,
+                .35f,
+                -.2f,
+                1.5f);
+
             sound.IsLooping = true;
 
             AudioDefinitionSerializer.Save(gsndPath, manager);
@@ -337,6 +401,7 @@ public sealed class AudioTests : IDisposable
         finally
         {
             manager.Clear();
+
             if (Directory.Exists(root))
                 Directory.Delete(root, recursive: true);
         }
@@ -358,12 +423,14 @@ public sealed class AudioTests : IDisposable
         {
             using var assets = AssetsFile.LoadOrCreate(gafPath);
             assets.Add(AssetTypes.Audio, "tone.wav", new MemoryStream([4, 3, 2, 1]));
+
             var sound = Assert.Single(
                 manager.LoadFromEngineAssetsFile(
                     assets,
                     defaultVolume: .6f,
                     defaultPan: .25f,
                     defaultPlaybackSpeed: 1.25f));
+
             sound.IsLooping = true;
 
             AudioDefinitionSerializer.Save(gsndPath, manager);
@@ -388,6 +455,7 @@ public sealed class AudioTests : IDisposable
         {
             manager.Clear();
             AssetsFile.ClearAll();
+
             if (Directory.Exists(root))
                 Directory.Delete(root, recursive: true);
         }
@@ -411,7 +479,14 @@ public sealed class AudioTests : IDisposable
         try
         {
             File.WriteAllBytes(audioPath, [9, 8, 7]);
-            var sound = manager.LoadFromFile("music", audioPath, .4f, .15f, 1.75f);
+
+            var sound = manager.LoadFromFile(
+                "music",
+                audioPath,
+                .4f,
+                .15f,
+                1.75f);
+
             sound.IsLooping = true;
 
             new EngineState().SaveToFile(
@@ -440,6 +515,7 @@ public sealed class AudioTests : IDisposable
         {
             manager.Clear();
             AssetsFile.ClearAll();
+
             if (Directory.Exists(root))
                 Directory.Delete(root, recursive: true);
         }
@@ -479,91 +555,143 @@ public sealed class AudioTests : IDisposable
     {
         /// <inheritdoc/>
         public string Name => "Test";
+
         /// <summary>
         /// Gets or sets whether fail is enabled.
         /// </summary>
         public bool Fail { get; set; }
+
         /// <summary>
         /// Gets or sets whether fail during setup is enabled.
         /// </summary>
         public bool FailDuringSetup { get; set; }
+
         /// <summary>
         /// Gets or sets the before create.
         /// </summary>
         public Action? BeforeCreate { get; set; }
+
         /// <summary>
         /// Gets the handles.
         /// </summary>
         public List<Handle> Handles { get; } = [];
+
         private Handle Create()
         {
             BeforeCreate?.Invoke();
-            if (Fail) throw new NotSupportedException();
+
+            if (Fail)
+                throw new NotSupportedException();
+
             var handle = new Handle { FailDuringSetup = FailDuringSetup };
             Handles.Add(handle);
             return handle;
         }
+
         /// <inheritdoc/>
-        public IAudioPlaybackHandle CreateFromUri(string key, string uri, float volume, float pan, float playbackSpeed) => Create();
+        public IAudioPlaybackHandle CreateFromUri(
+            string key,
+            string uri,
+            float volume,
+            float pan,
+            float playbackSpeed) => Create();
+
         /// <inheritdoc/>
-        public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed) => Create();
+        public IAudioPlaybackHandle CreateFromBytes(
+            string key,
+            byte[] data,
+            string fileNameOrExtension,
+            float volume,
+            float pan,
+            float playbackSpeed) => Create();
     }
 
     private sealed class Handle : IAudioPlaybackHandle
     {
         /// <inheritdoc/>
         public event EventHandler? PlaybackCompleted;
+
         /// <inheritdoc/>
         public AudioPlaybackState State { get; private set; }
+
         /// <inheritdoc/>
         public TimeSpan CurrentTime { get; private set; }
+
         /// <inheritdoc/>
         public TimeSpan Duration => TimeSpan.FromSeconds(10);
+
         /// <inheritdoc/>
         public bool IsLooping { get; set; }
+
         /// <summary>
         /// Gets or sets whether fail during setup is enabled.
         /// </summary>
         public bool FailDuringSetup { get; set; }
+
         private float volume;
+
         /// <inheritdoc/>
         public float Volume
         {
             get => volume;
             set
             {
-                if (FailDuringSetup) throw new InvalidOperationException("Setup failed");
+                if (FailDuringSetup)
+                    throw new InvalidOperationException("Setup failed");
+
                 volume = value;
             }
         }
+
         /// <summary>
         /// Gets the completion subscribers.
         /// </summary>
         public int CompletionSubscribers => PlaybackCompleted?.GetInvocationList().Length ?? 0;
+
         /// <inheritdoc/>
         public float Pan { get; set; }
+
         /// <inheritdoc/>
         public float PlaybackSpeed { get; set; }
+
         /// <inheritdoc/>
         public string? TemporaryFilePath => null;
+
         /// <summary>
         /// Gets whether disposed is enabled.
         /// </summary>
         public bool Disposed { get; private set; }
+
         /// <inheritdoc/>
-        public void Play(bool fromStart = true) { if (fromStart) CurrentTime = TimeSpan.Zero; State = AudioPlaybackState.Playing; }
+        public void Play(bool fromStart = true)
+        {
+            if (fromStart)
+                CurrentTime = TimeSpan.Zero;
+
+            State = AudioPlaybackState.Playing;
+        }
+
         /// <inheritdoc/>
         public void Pause() => State = AudioPlaybackState.Paused;
+
         /// <inheritdoc/>
         public void Resume() => State = AudioPlaybackState.Playing;
+
         /// <inheritdoc/>
         public void Stop() => State = AudioPlaybackState.Stopped;
+
         /// <inheritdoc/>
         public void Seek(TimeSpan position) => CurrentTime = position;
+
         /// <summary>
         /// Simulates playback completion for the test.
         /// </summary>
-        public void Complete() { State = AudioPlaybackState.Stopped; PlaybackCompleted?.Invoke(this, EventArgs.Empty); }
+        public void Complete()
+        {
+            State = AudioPlaybackState.Stopped;
+            PlaybackCompleted?.Invoke(this, EventArgs.Empty);
+        }
+
         /// <summary>
         /// Releases the resources owned by this instance.
         /// </summary>

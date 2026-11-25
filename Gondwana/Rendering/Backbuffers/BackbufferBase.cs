@@ -22,7 +22,8 @@ public abstract class BackbufferBase : IDisposable
     private int _height;
 
     private BackbufferBase()
-    { }
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BackbufferBase"/> class with the specified dimensions.
@@ -155,7 +156,11 @@ public abstract class BackbufferBase : IDisposable
     /// </summary>
     public SKPaint FogPaint { get; set; } = new()
     {
-        Color = new SKColor(0, 0, 0, 128),
+        Color = new SKColor(
+            0,
+            0,
+            0,
+            128),
         IsAntialias = true
     };
 
@@ -211,7 +216,9 @@ public abstract class BackbufferBase : IDisposable
     /// </para>
     /// </remarks>
     protected internal virtual void RequestResize(int width, int height)
-    { /* no-op by default */ }
+    {
+        /* no-op by default */
+    }
 
     /// <summary>
     /// Occurs when the backbuffer dimensions change.
@@ -329,20 +336,22 @@ public abstract class BackbufferBase : IDisposable
             var instance = entry as WrappedDrawable;
             var drawable = instance?.Owner ?? entry;
             using var scope = instance?.Enter(view);
+
             if (!drawable.Visible)
                 continue;
 
             var destRectScreen = drawable.GetDrawLocationScreen(view);
+
             if (drawable is Sprite sprite)
             {
                 destRectScreen = sprite.ApplyJiggleToDestRect(destRectScreen);
             }
 
             bool batched = this is RecordingBackbuffer recorder &&
-                instance is null &&
-                drawable.GetType() == typeof(SceneLayerTile) &&
-                drawable is SceneLayerTile layerTile &&
-                recorder.TryQueueTile(layerTile, destRectScreen);
+                           instance is null &&
+                           drawable.GetType() == typeof(SceneLayerTile) &&
+                           drawable is SceneLayerTile layerTile &&
+                           recorder.TryQueueTile(layerTile, destRectScreen);
 
             if (!batched)
             {
@@ -416,6 +425,7 @@ public abstract class BackbufferBase : IDisposable
                 for (int i = 0; i < worldPts.Length; i++)
                 {
                     var p = worldPts[i];
+
                     var sp = view.WorldPxToScreenPx(
                         layer,
                         new PointF(p.X, p.Y)

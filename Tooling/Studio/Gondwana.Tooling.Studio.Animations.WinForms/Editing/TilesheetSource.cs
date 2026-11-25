@@ -13,20 +13,26 @@ internal sealed class TilesheetSource : IDisposable
 {
     /// <summary>Gets the full loose document path or containing archive path; use Resource for packed entry identity.</summary>
     public string FilePath => Resource.Path;
+
     /// <summary>The complete physical source identity, separate from the logical member name.</summary>
     public AuthoringResource Resource { get; }
+
     /// <summary>Gets the full directory containing the document or archive, used to resolve its dependencies.</summary>
     public string BaseDirectory { get; }
+
     /// <summary>Gets the selected deserialized GTS member used by the authoring preview.</summary>
     public TilesheetDefinition Definition { get; }
+
     /// <summary>Gets the source-owned masked preview bitmap, or null if image loading failed or the source was disposed.</summary>
     public Bitmap? Image { get; private set; }
+
     /// <summary>Gets image-load failure details, or null when no preview problem was recorded.</summary>
     public string? PreviewWarning { get; private set; }
 
     private TilesheetSource(
         AuthoringResource resource,
-        TilesheetDefinition definition, AssetPackageCatalog? packages = null)
+        TilesheetDefinition definition,
+        AssetPackageCatalog? packages = null)
     {
         Resource = resource;
         BaseDirectory = resource.BaseDirectory;
@@ -46,7 +52,11 @@ internal sealed class TilesheetSource : IDisposable
             throw new ArgumentException("GTS path must be a non-empty string.", nameof(path));
 
         path = Path.GetFullPath(path);
-        return LoadResource(new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition), identity, packages);
+
+        return LoadResource(
+            new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition),
+            identity,
+            packages);
     }
 
     /// <summary>Creates a logical frame reference without modifying the source or validating grid coordinates.</summary>
@@ -57,9 +67,17 @@ internal sealed class TilesheetSource : IDisposable
     public AnimationFrameDefinition CreateFrame(
         TilesheetRegionDefinition region,
         int x,
-        int y) => CreateFrame(Definition.Name, region.Name, x, y);
+        int y) => CreateFrame(
+        Definition.Name,
+        region.Name,
+        x,
+        y);
 
-    internal static AnimationFrameDefinition CreateFrame(string tilesheet, string region, int x, int y) =>
+    internal static AnimationFrameDefinition CreateFrame(
+        string tilesheet,
+        string region,
+        int x,
+        int y) =>
         new()
         {
             Tilesheet = tilesheet,
@@ -89,16 +107,16 @@ internal sealed class TilesheetSource : IDisposable
             return false;
         }
 
-        region = Definition.Regions.FirstOrDefault(
-            candidate => string.Equals(
-                candidate.Name,
-                frame.RegionName,
-                StringComparison.OrdinalIgnoreCase));
+        region = Definition.Regions.FirstOrDefault(candidate => string.Equals(
+            candidate.Name,
+            frame.RegionName,
+            StringComparison.OrdinalIgnoreCase));
 
         if (region is null)
             return false;
 
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+
         if (frame.XTile < 0 ||
             frame.YTile < 0 ||
             frame.XTile >= columns ||
@@ -142,6 +160,7 @@ internal sealed class TilesheetSource : IDisposable
     private void LoadPreviewImage(AssetPackageCatalog packages, string? archivePath)
     {
         var image = Definition.Image;
+
         if (image is null)
         {
             PreviewWarning = "GTS does not define an image source.";
@@ -150,16 +169,20 @@ internal sealed class TilesheetSource : IDisposable
 
         try
         {
-            Image = AuthoringPreviewImage.Load(Definition, BaseDirectory, packages, archivePath);
+            Image = AuthoringPreviewImage.Load(
+                Definition,
+                BaseDirectory,
+                packages,
+                archivePath);
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            InvalidOperationException or
-            NotSupportedException or
-            UnauthorizedAccessException or
-            System.Runtime.InteropServices.ExternalException)
+                InvalidDataException or
+                ArgumentException or
+                InvalidOperationException or
+                NotSupportedException or
+                UnauthorizedAccessException or
+                System.Runtime.InteropServices.ExternalException)
         {
             PreviewWarning = "Image cannot be previewed: " + ex.Message;
         }
@@ -182,7 +205,10 @@ internal sealed class TilesheetSource : IDisposable
     /// <param name="packages">Borrowed package cache, or null to create temporary caches during loading.</param>
     /// <returns>Independent source objects; the caller must dispose every returned source.</returns>
     public static IReadOnlyList<TilesheetSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
-        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new TilesheetSource(new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition), definition, packages)).ToList();
+        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new TilesheetSource(
+            new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition),
+            definition,
+            packages)).ToList();
 
     /// <summary>Loads one logical member from an exact typed packed GTS entry.</summary>
     /// <param name="archivePath">Containing archive path, normalized against the process current directory.</param>
@@ -190,17 +216,26 @@ internal sealed class TilesheetSource : IDisposable
     /// <param name="identity">Logical member identity within the packed document.</param>
     /// <param name="packages">Borrowed package cache, or null to use a temporary cache during loading.</param>
     /// <returns>A source owned by the caller, which must dispose its preview resources.</returns>
-    public static TilesheetSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null) =>
-        LoadResource(new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry), identity, packages);
+    public static TilesheetSource LoadPacked(
+        string archivePath,
+        string entry,
+        string identity,
+        AssetPackageCatalog? packages = null) =>
+        LoadResource(
+            new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry),
+            identity,
+            packages);
 
-    internal static TilesheetSource LoadResource(AuthoringResource resource, string? identity, AssetPackageCatalog? packages = null)
+    internal static TilesheetSource LoadResource(
+        AuthoringResource resource,
+        string? identity,
+        AssetPackageCatalog? packages = null)
     {
         using var owned = packages is null ? new AssetPackageCatalog() : null;
         packages ??= owned!;
         return new(resource, new AuthoringResourceResolver(packages).LoadTilesheet(resource, identity), packages);
     }
 }
-
 
 internal readonly record struct FramePreview(
     Bitmap Image,

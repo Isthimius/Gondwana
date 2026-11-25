@@ -56,14 +56,20 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     /// <param name="worldPixelRange">The rectangular pixel range to check for intersections.</param>
     /// <param name="includeOverhang">Whether to include tile overhang in intersection calculations.</param>
     /// <returns>A list of <see cref="SceneLayerTile"/> objects that intersect with the pixel range.</returns>
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
         var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
         PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Top));
-        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right - 1, candidateRange.Bottom - 1));
+
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(
+            sceneLayer,
+            new PointF(candidateRange.Right - 1, candidateRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
@@ -76,10 +82,13 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
             for (int x = minX; x <= maxX; x++)
             {
                 var gPt = sceneLayer[x, y];
-                if (gPt == null) continue;
+
+                if (gPt == null)
+                    continue;
 
                 // Overhang-aware pixel rect
                 var rect = GetPixelRangeForTile(gPt, includeOverhang);
+
                 if (rect.IntersectsWith(worldPixelRange))
                     retVal.Add(gPt);
             }
@@ -147,28 +156,44 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
         switch (direction)
         {
             case CardinalDirections.N:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y - 1);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X,
+                    layerPoint.GridCoordinatesAbs.Y - 1);
 
             case CardinalDirections.NE:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y - 1);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X + 1,
+                    layerPoint.GridCoordinatesAbs.Y - 1);
 
             case CardinalDirections.E:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X + 1,
+                    layerPoint.GridCoordinatesAbs.Y);
 
             case CardinalDirections.SE:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y + 1);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X + 1,
+                    layerPoint.GridCoordinatesAbs.Y + 1);
 
             case CardinalDirections.S:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y + 1);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X,
+                    layerPoint.GridCoordinatesAbs.Y + 1);
 
             case CardinalDirections.SW:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y + 1);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X - 1,
+                    layerPoint.GridCoordinatesAbs.Y + 1);
 
             case CardinalDirections.W:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X - 1,
+                    layerPoint.GridCoordinatesAbs.Y);
 
             case CardinalDirections.NW:
-                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y - 1);
+                return sceneLayer.ResolveWrappedTile(
+                    layerPoint.GridCoordinatesAbs.X - 1,
+                    layerPoint.GridCoordinatesAbs.Y - 1);
 
             default:
                 return null;
@@ -185,13 +210,14 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     {
         // Square polygon using the overhang-aware rect
         var r = GetPixelRangeForTile(tile, includeOverhang);
+
         return new[]
         {
-                new Point(r.Left,  r.Top),
-                new Point(r.Right, r.Top),
-                new Point(r.Right, r.Bottom),
-                new Point(r.Left,  r.Bottom)
-            };
+            new Point(r.Left, r.Top),
+            new Point(r.Right, r.Top),
+            new Point(r.Right, r.Bottom),
+            new Point(r.Left, r.Bottom)
+        };
     }
 
     /// <summary>

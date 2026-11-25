@@ -97,8 +97,7 @@ public sealed class CameraFollowAnchorTests
         scene.AddLayer(4, 4);
         var camera = CreateCamera(scene);
 
-        Assert.Throws<ArgumentOutOfRangeException>(
-            () => camera.FollowAt(() => PointF.Empty, new PointF(x, y)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => camera.FollowAt(() => PointF.Empty, new PointF(x, y)));
     }
 
     /// <summary>
@@ -108,7 +107,13 @@ public sealed class CameraFollowAnchorTests
     public void Camera_FollowAt_UsesAnchorWhenChoosingWrappedImage()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(4, 4, 32, 32);
+
+        var layer = scene.AddLayer(
+            4,
+            4,
+            32,
+            32);
+
         layer.WrapHorizontally = true;
 
         var camera = new Camera(scene)
@@ -117,6 +122,7 @@ public sealed class CameraFollowAnchorTests
         };
 
         camera.SnapTo(new PointF(40, 0));
+
         camera.FollowAt(
             () => new PointF(1, 32),
             new PointF(0f, 0.5f),
@@ -142,8 +148,10 @@ public sealed class CameraFollowAnchorTests
         /// Gets the coordinate space used by the position API.
         /// </summary>
         public MovementSpace PositionSpace { get; } = positionSpace;
+
         /// <inheritdoc/>
         public SceneLayer SceneLayer { get; } = sceneLayer;
+
         private Vector2 Position { get; set; } = position;
 
         /// <summary>

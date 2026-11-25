@@ -50,7 +50,7 @@ public abstract class DisplayEffect
     public float Progress { get; private set; }
 
     internal object Target => _target
-        ?? throw new InvalidOperationException("The effect has not been started.");
+                              ?? throw new InvalidOperationException("The effect has not been started.");
 
     internal abstract EffectChannel Channel { get; }
 
@@ -171,14 +171,17 @@ internal enum EffectChannel
     /// Specifies transform.
     /// </summary>
     Transform,
+
     /// <summary>
     /// Specifies opacity.
     /// </summary>
     Opacity,
+
     /// <summary>
     /// Specifies reveal.
     /// </summary>
     Reveal,
+
     /// <summary>
     /// Specifies zoom.
     /// </summary>

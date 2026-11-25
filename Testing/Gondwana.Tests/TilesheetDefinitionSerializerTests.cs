@@ -57,6 +57,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Image = new TilesheetImageDefinition { FilePath = "hero.png" },
             PremultiplyAlpha = true
         };
+
         using var stream = ToStream(definition);
 
         var loaded = TilesheetDefinitionSerializer.Load(stream);
@@ -97,6 +98,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.Generated()
         };
+
         var path = WriteGtsFile("pregenerated.gts", definition);
 
         var loaded = TilesheetDefinitionSerializer.Load(path);
@@ -116,6 +118,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.None()
         };
+
         var path = WriteGtsFile("none-source.gts", definition);
 
         var loaded = TilesheetDefinitionSerializer.Load(path);
@@ -139,6 +142,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.None()
         };
+
         var path = GtsPath("saved-none.gts");
 
         TilesheetDefinitionSerializer.Save(path, definition);
@@ -159,6 +163,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.LooseDefinitionFile("/original/location.gts")
         };
+
         var path = GtsPath("saved-loose.gts");
 
         TilesheetDefinitionSerializer.Save(path, original);
@@ -180,6 +185,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.Generated()
         };
+
         var path = GtsPath("saved-generated.gts");
 
         TilesheetDefinitionSerializer.Save(path, original);
@@ -199,6 +205,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.PackedDefinitionFile("/data/assets.gaf", "sheet.gts")
         };
+
         var path = GtsPath("saved-packed.gts");
 
         TilesheetDefinitionSerializer.Save(path, original);
@@ -240,6 +247,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
             Name = "Sheet",
             Source = TilesheetDefinitionSource.None()
         };
+
         var path = GtsPath("no-mutate.gts");
 
         TilesheetDefinitionSerializer.Save(path, definition);

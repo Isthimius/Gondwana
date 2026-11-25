@@ -107,6 +107,7 @@ public sealed class EffectsManagerTests
         using var host = CreateHost(out View view, out _);
 
         host.Effects.Run(view, new FadeOutEffect(1f));
+
         host.Effects.Run(
             view,
             new SlideOutEffect(
@@ -129,6 +130,7 @@ public sealed class EffectsManagerTests
     public void Cancel_RestoresStateFromBeforeEffect()
     {
         using var host = CreateHost(out View view, out _);
+
         var effect = host.Effects.Run(
             view,
             new SlideOutEffect(
@@ -159,6 +161,7 @@ public sealed class EffectsManagerTests
                 EffectDirection.FromLeftToRight,
                 1f,
                 EasingKind.Linear));
+
         host.Effects.Advance(0.5f);
 
         PointF screen = view.WorldPxToScreenPx(layer, world);
@@ -182,6 +185,7 @@ public sealed class EffectsManagerTests
         host.Effects.Run(
             layer,
             new FillEffect(EffectDirection.FromRightToLeft, 1f));
+
         Assert.Equal(0f, layer.EffectReveal);
 
         host.Effects.Advance(1f);
@@ -190,6 +194,7 @@ public sealed class EffectsManagerTests
         host.Effects.Run(
             layer,
             new EraseEffect(EffectDirection.FromTopToBottom, 1f));
+
         host.Effects.Advance(0.5f);
 
         Assert.Equal(0.5f, layer.EffectReveal, 3);
@@ -203,6 +208,7 @@ public sealed class EffectsManagerTests
     public void Earthquake_IsViewOnlyAndResetsItsOffsetAtCompletion()
     {
         using var host = CreateHost(out View view, out SceneLayer layer);
+
         var effect = host.Effects.Run(
             view,
             new EarthquakeEffect(1f, intensityPx: 10f, randomSeed: 7));
@@ -210,6 +216,7 @@ public sealed class EffectsManagerTests
         host.Effects.Advance(0.25f);
 
         Assert.NotEqual(PointF.Empty, view.EffectOffsetPx);
+
         Assert.Throws<ArgumentException>(() =>
             host.Effects.Run(layer, new EarthquakeEffect(1f)));
 
@@ -268,10 +275,30 @@ public sealed class EffectsManagerTests
     /// <param name="width">The width value for this test case.</param>
     /// <param name="height">The height value for this test case.</param>
     [Theory]
-    [InlineData(EffectDirection.FromLeftToRight, 0f, 0f, 25f, 50f)]
-    [InlineData(EffectDirection.FromRightToLeft, 75f, 0f, 25f, 50f)]
-    [InlineData(EffectDirection.FromTopToBottom, 0f, 0f, 100f, 12.5f)]
-    [InlineData(EffectDirection.FromBottomToTop, 0f, 37.5f, 100f, 12.5f)]
+    [InlineData(
+        EffectDirection.FromLeftToRight,
+        0f,
+        0f,
+        25f,
+        50f)]
+    [InlineData(
+        EffectDirection.FromRightToLeft,
+        75f,
+        0f,
+        25f,
+        50f)]
+    [InlineData(
+        EffectDirection.FromTopToBottom,
+        0f,
+        0f,
+        100f,
+        12.5f)]
+    [InlineData(
+        EffectDirection.FromBottomToTop,
+        0f,
+        37.5f,
+        100f,
+        12.5f)]
     public void RevealGeometry_UsesRequestedDirection(
         EffectDirection direction,
         float x,
@@ -280,11 +307,21 @@ public sealed class EffectsManagerTests
         float height)
     {
         RectangleF actual = EffectGeometry.GetRevealRect(
-            new RectangleF(0f, 0f, 100f, 50f),
+            new RectangleF(
+                0f,
+                0f,
+                100f,
+                50f),
             direction,
             0.25f);
 
-        Assert.Equal(new RectangleF(x, y, width, height), actual);
+        Assert.Equal(
+            new RectangleF(
+                x,
+                y,
+                width,
+                height),
+            actual);
     }
 
     private static TestRenderSurfaceHost CreateHost(
@@ -292,8 +329,20 @@ public sealed class EffectsManagerTests
         out SceneLayer layer)
     {
         var host = new TestRenderSurfaceHost();
-        layer = host.Scene.AddLayer(10, 10, width: 32, height: 32);
-        host.ViewManager.AddView(new Rectangle(0, 0, 200, 100));
+
+        layer = host.Scene.AddLayer(
+            10,
+            10,
+            width: 32,
+            height: 32);
+
+        host.ViewManager.AddView(
+            new Rectangle(
+                0,
+                0,
+                200,
+                100));
+
         view = Assert.Single(host.ViewManager.Views);
         return host;
     }

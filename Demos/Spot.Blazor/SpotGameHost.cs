@@ -26,6 +26,7 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
         : base(renderSurface, jsRuntime)
     {
         _assets = assets ?? throw new ArgumentNullException(nameof(assets));
+
         _runtime = new SpotGameRuntime(
             renderSurface.Host,
             scoreToggleKey: (int)BlazorKey.Tab,
@@ -72,8 +73,7 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
             return;
 
         var snapshot = Engine.Profiler.GetLatestSnapshot();
-        var renderSource = snapshot?.Sources.FirstOrDefault(
-            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+        var renderSource = snapshot?.Sources.FirstOrDefault(source => source.Id == RenderSurface.Host.Telemetry?.Id);
 
         if (snapshot is null ||
             GetRate(renderSource, "presentation.count", snapshot.ElapsedSeconds) is not > 0d ||
@@ -83,6 +83,7 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
         }
 
         _msaaLogged = true;
+
         Engine.Logger.LogInformation(
             "Spot.Blazor MSAA requested {MsaaSampleCount} | actual {ActualMsaaSampleCount} | max {MaxSupportedMsaaSampleCount}",
             gpuBackbuffer.MsaaSampleCount,
@@ -100,10 +101,10 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
         double elapsedSeconds)
     {
         return elapsedSeconds > 0d &&
-            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
-            metric.Availability == TelemetryAvailability.Available
-                ? metric.Count / elapsedSeconds
-                : null;
+               source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+               metric.Availability == TelemetryAvailability.Available
+            ? metric.Count / elapsedSeconds
+            : null;
     }
 
     /// <inheritdoc/>

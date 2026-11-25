@@ -61,9 +61,22 @@ public class Game : IDisposable
         // create initial scene here and bind to render surface
         Scene = CreateInitialScene();
         RenderSurface.Host.Bind(Scene, false);
-        RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewManager.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
+        RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(
+            220,
+            230,
+            255,
+            120);
+
+        RenderSurface.Host.ViewManager.AddView(
+            new Rectangle(
+                800,
+                0,
+                800,
+                300),
+            1f,
+            10);
+
         RenderSurface.Host.ViewManager.Views[0].Camera.SnapTo(new PointF(-800, -100));
         RenderSurface.Host.ViewManager.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = true;
@@ -73,7 +86,8 @@ public class Game : IDisposable
         InitSprites();
         InitDirectDrawings();
 
-        RenderSurface.Host.ViewManager.Views[0].Camera.FollowCentered(SpriteManager.Instance.GetSpriteByID("rooster_1")!);
+        RenderSurface.Host.ViewManager.Views[0].Camera
+            .FollowCentered(SpriteManager.Instance.GetSpriteByID("rooster_1")!);
 
         // configure input handling here
         ConfigureKeyboardInput();
@@ -108,7 +122,12 @@ public class Game : IDisposable
 
         var tilesheet2 = TilesheetRegistry.Instance.LoadFromImageFile("tiles", "assets/original.bmp");
         tilesheet2.DefaultRegion.TileSize = new Size(64, 32);
-        tilesheet2.DefaultRegion.Area = new Rectangle(1, 1, tilesheet2.SkBitmap.Width - 2, tilesheet2.SkBitmap.Height - 2);
+
+        tilesheet2.DefaultRegion.Area = new Rectangle(
+            1,
+            1,
+            tilesheet2.SkBitmap.Width - 2,
+            tilesheet2.SkBitmap.Height - 2);
         //tilesheet2.DefaultRegion.TilePadding = new Size(1, 1);
     }
 
@@ -158,53 +177,79 @@ public class Game : IDisposable
         //Implementation for creating direct drawings goes here
 
         //var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
-        var bounds1 = new Rectangle(10, 10, 250, 150);
-        //var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
-        var bounds2 = new Rectangle(10, 200, 250, 150);
+        var bounds1 = new Rectangle(
+            10,
+            10,
+            250,
+            150);
 
-        _directRectangle = new DirectRectangle(Color.Wheat,
-                                               RenderSurface.Host,
-                                               RenderSurface.Host.ViewManager.Views[0],
-                                               bounds1,
-                                               null);
+        //var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
+        var bounds2 = new Rectangle(
+            10,
+            200,
+            250,
+            150);
+
+        _directRectangle = new DirectRectangle(
+            Color.Wheat,
+            RenderSurface.Host,
+            RenderSurface.Host.ViewManager.Views[0],
+            bounds1,
+            null);
+
         _directRectangle.SetFilled(true).SetAlpha(128);
 
-        _textBlockCPS = new TextBlock(RenderSurface.Host,
-                                      RenderSurface.Host.ViewManager.Views[0],
-                                      bounds1,
-                                      null);
+        _textBlockCPS = new TextBlock(
+            RenderSurface.Host,
+            RenderSurface.Host.ViewManager.Views[0],
+            bounds1,
+            null);
+
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
         _profilerRequest = Engine.Instance.Profiler.Start();
         Engine.Instance.AfterBackgroundTasksExecute += UpdateProfilerText;
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host,
-                                        RenderSurface.Host.ViewManager.Views[0],
-                                        bounds2,
-                                        null);
+        _textBlockMouse = new TextBlock(
+            RenderSurface.Host,
+            RenderSurface.Host.ViewManager.Views[0],
+            bounds2,
+            null);
+
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         InitializeParticles();
 
-        _spriteNameTag = new TextBlock(RenderSurface.Host,
-                                                       Scene[0],
-                                                       null,
-                                                       new Rectangle(0, 0, 150, 30));
+        _spriteNameTag = new TextBlock(
+            RenderSurface.Host,
+            Scene[0],
+            null,
+            new Rectangle(
+                0,
+                0,
+                150,
+                30));
+
         _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
-        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.Instance.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
+
+        _spriteNameTag.Movement.FollowTileSoft(
+            SpriteManager.Instance.GetSpriteByID("rooster_1")!,
+            0.75f,
+            0.1f,
+            new Vector2(0, 0.75f));
     }
 
     private void UpdateProfilerText()
     {
         var snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
+
         if (snapshot is null || snapshot.EndedSeconds <= _lastProfilerSnapshotEnd)
             return;
 
         _lastProfilerSnapshotEnd = snapshot.EndedSeconds;
 
         var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
-        var renderSource = snapshot.Sources.FirstOrDefault(
-            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+        var renderSource = snapshot.Sources.FirstOrDefault(source => source.Id == RenderSurface.Host.Telemetry?.Id);
 
         double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
         double? foregroundFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
@@ -223,10 +268,10 @@ public class Game : IDisposable
         double elapsedSeconds)
     {
         return elapsedSeconds > 0d &&
-            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
-            metric.Availability == TelemetryAvailability.Available
-                ? metric.Count / elapsedSeconds
-                : null;
+               source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+               metric.Availability == TelemetryAvailability.Available
+            ? metric.Count / elapsedSeconds
+            : null;
     }
 
     private static string FormatRate(double? rate) => rate?.ToString("N2") ?? "n/a";
@@ -241,10 +286,11 @@ public class Game : IDisposable
             RenderSurface.Host.RenderSurfaceAdapter!.Height);
 
         // Particle system registered like any other DirectDrawing
-        _particleSurface = new ParticleSurface(RenderSurface.Host,
-                                               RenderSurface.Host.ViewManager.Views[0],
-                                               bounds,
-                                               null);
+        _particleSurface = new ParticleSurface(
+            RenderSurface.Host,
+            RenderSurface.Host.ViewManager.Views[0],
+            bounds,
+            null);
 
         // Tweak gravity if you want more “floaty” bursts
         _particleSurface.GravityY = 0f;
@@ -260,7 +306,7 @@ public class Game : IDisposable
             SizeRange = (2f, 5f),
 
             Color = SKColors.OrangeRed,
-            MaxVelocity = 400f,   // optional, keeps them from going insane
+            MaxVelocity = 400f, // optional, keeps them from going insane
 
             JitterX = 40,
             JitterY = 40,
@@ -291,7 +337,11 @@ public class Game : IDisposable
             VelocityRangeX = (-40f, 40f),
             VelocityRangeY = (-120f, -60f),
             SizeRange = (8f, 16f),
-            Color = new SKColor(80, 80, 80, 200),
+            Color = new SKColor(
+                80,
+                80,
+                80,
+                200),
             GravityY = -20f // slight upward drift
         };
     }
@@ -303,8 +353,24 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.Orthogonal);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.Orthogonal);
+
+        var sceneLayer1 = scene.AddLayer(
+            60,
+            5,
+            64,
+            64,
+            10,
+            1f,
+            CoordinateSystemTypes.Orthogonal);
+
+        var sceneLayer2 = scene.AddLayer(
+            60,
+            5,
+            32,
+            32,
+            5,
+            0.5f,
+            CoordinateSystemTypes.Orthogonal);
 
         sceneLayer1.WrapHorizontally = true;
         sceneLayer1.ShowGridLines = true;
@@ -469,11 +535,13 @@ public class Game : IDisposable
 
         // Existing HUD text
         var cameraPos = view.Camera.PositionPx;
+
         var message =
             $"Mouse Pos (screen): {screenPos.X}, {screenPos.Y}\n" +
             $"World Pos (px): {worldFromScreen.X:F1}, {worldFromScreen.Y:F1}\n" +
             $"Grid coordinates: {gridFromScreen.X}, {gridFromScreen.Y}\n" +
             $"Camera Pos: (px): {cameraPos.X}, {cameraPos.Y}";
+
         _textBlockMouse?.SetText(message);
 
         // Highlight logic, unchanged
@@ -481,6 +549,7 @@ public class Game : IDisposable
             tile.EnableFog = false;
 
         var pickedTile = layer[gridFromScreen];
+
         if (pickedTile is not null)
             pickedTile.EnableFog = true;
 
@@ -529,7 +598,11 @@ public class Game : IDisposable
             float targetZoom = Math.Clamp(currentZoom + delta, minZoom, maxZoom);
 
             // 0.15s – tweak to taste
-            view.ZoomAroundScreenPoint(layer, args.CurrentPosition, targetZoom, 0.75f);
+            view.ZoomAroundScreenPoint(
+                layer,
+                args.CurrentPosition,
+                targetZoom,
+                0.75f);
         }
     }
 

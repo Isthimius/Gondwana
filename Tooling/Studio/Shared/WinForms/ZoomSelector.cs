@@ -33,6 +33,7 @@ public sealed class ZoomSelector
     public void Show(float zoom, bool fit)
     {
         _updating = true;
+
         try
         {
             if (_customLabel is not null)
@@ -48,6 +49,7 @@ public sealed class ZoomSelector
             }
 
             int preset = Array.FindIndex(Presets, value => MathF.Abs(value - zoom) < .0001f);
+
             if (preset >= 0)
             {
                 _combo.SelectedIndex = preset;

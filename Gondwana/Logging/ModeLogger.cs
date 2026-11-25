@@ -114,7 +114,13 @@ public static partial class EngineLogger
 
             if (_mode == EngineLoggingMode.Synchronous)
             {
-                _logger.Log(logLevel, eventId, state, exception, formatter);
+                _logger.Log(
+                    logLevel,
+                    eventId,
+                    state,
+                    exception,
+                    formatter);
+
                 return;
             }
 
@@ -122,7 +128,13 @@ public static partial class EngineLogger
             Func<object?, Exception?, string> boxedFormatter = (s, e) =>
                 formatter((TState)s!, e);
 
-            var ev = new LogEvent(CategoryName, logLevel, eventId, state, exception, boxedFormatter);
+            var ev = new LogEvent(
+                CategoryName,
+                logLevel,
+                eventId,
+                state,
+                exception,
+                boxedFormatter);
 
             _ = TryEnqueue(ev); // ignore false (drop)
         }

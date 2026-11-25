@@ -1,5 +1,6 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+
 namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 /// <summary>
@@ -85,6 +86,7 @@ public sealed class AssetWorkspaceControl : UserControl
         };
 
         var context = new ContextMenuStrip();
+
         context.Items.Add(
             "Open asset file",
             null,

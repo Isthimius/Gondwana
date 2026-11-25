@@ -53,7 +53,8 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         /// Gets or sets whether include loader is enabled.
         /// </summary>
         [CommandOption("-l|--include-loader")]
-        [Description("Include a Load() static method in the generated class that instantiates an AssetsFile for the bundle.")]
+        [Description(
+            "Include a Load() static method in the generated class that instantiates an AssetsFile for the bundle.")]
         [DefaultValue(false)]
         public bool IncludeLoader { get; init; }
     }
@@ -70,6 +71,7 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         }
 
         AssetsFile assetFile;
+
         try
         {
             assetFile = AssetsFile.LoadOrCreate(path, settings.Password);
@@ -83,9 +85,9 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         using (assetFile)
         {
             var entries = assetFile.GetAllEntries()
-                                   .OrderBy(e => e.AssetType)
-                                   .ThenBy(e => e.AssetName)
-                                   .ToList();
+                .OrderBy(e => e.AssetType)
+                .ThenBy(e => e.AssetName)
+                .ToList();
 
             if (entries.Count == 0)
             {
@@ -93,8 +95,11 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
                 return 0;
             }
 
-            var code = GenerateCode(entries, settings.ClassName, settings.Namespace,
-                                     settings.IncludeLoader ? Path.GetFileName(settings.File) : null);
+            var code = GenerateCode(
+                entries,
+                settings.ClassName,
+                settings.Namespace,
+                settings.IncludeLoader ? Path.GetFileName(settings.File) : null);
 
             if (settings.Output is not null)
             {
@@ -103,13 +108,16 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
                 try
                 {
                     var outputDirectory = Path.GetDirectoryName(outputPath);
+
                     if (!string.IsNullOrEmpty(outputDirectory))
                     {
                         System.IO.Directory.CreateDirectory(outputDirectory);
                     }
 
                     System.IO.File.WriteAllText(outputPath, code, Encoding.UTF8);
-                    AnsiConsole.MarkupLine($"[green]Generated {Markup.Escape(outputPath)} with {entries.Count} key(s).[/]");
+
+                    AnsiConsole.MarkupLine(
+                        $"[green]Generated {Markup.Escape(outputPath)} with {entries.Count} key(s).[/]");
                 }
                 catch (System.UnauthorizedAccessException ex)
                 {
@@ -171,6 +179,7 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
 
                 // De-duplicate: if the name was used before, append an incrementing suffix.
                 string constName;
+
                 if (usedNames.TryGetValue(baseName, out var count))
                 {
                     usedNames[baseName] = count + 1;
@@ -200,7 +209,10 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         {
             sb.AppendLine();
             sb.AppendLine($"    /// <summary>Loads the <c>{EscapeXmlDoc(loaderBundleFileName)}</c> asset bundle.");
-            sb.AppendLine($"    /// The <paramref name=\"password\"/> is only required for password-protected or encrypted bundles.</summary>");
+
+            sb.AppendLine(
+                $"    /// The <paramref name=\"password\"/> is only required for password-protected or encrypted bundles.</summary>");
+
             sb.AppendLine("    public static AssetsFile Load(string? password = null)");
             var escapedPath = EscapeStringLiteral(loaderBundleFileName);
             sb.AppendLine($"        => AssetsFile.LoadOrCreate(\"{escapedPath}\", password);");
@@ -234,8 +246,9 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
             .Select(p =>
             {
                 // Remove any character that is not a letter, digit, or underscore.
-                var sanitized = new string(p.Select(c =>
-                    char.IsLetterOrDigit(c) || c == '_' ? c : '_').ToArray());
+                var sanitized = new string(
+                    p.Select(c =>
+                        char.IsLetterOrDigit(c) || c == '_' ? c : '_').ToArray());
 
                 if (sanitized.Length == 0)
                     return string.Empty;

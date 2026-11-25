@@ -16,14 +16,17 @@ internal sealed partial class SpotGameRuntime
     /// Gets whether music enabled is enabled.
     /// </summary>
     public bool MusicEnabled { get; private set; } = true;
+
     /// <summary>
     /// Gets whether sound effects enabled is enabled.
     /// </summary>
     public bool SoundEffectsEnabled { get; private set; } = true;
+
     /// <summary>
     /// Gets whether jiggle enabled is enabled.
     /// </summary>
     public bool JiggleEnabled { get; private set; } = true;
+
     /// <summary>
     /// Gets whether clouds enabled is enabled.
     /// </summary>
@@ -55,6 +58,7 @@ internal sealed partial class SpotGameRuntime
     internal void SetJiggleEnabled(bool enabled)
     {
         JiggleEnabled = enabled;
+
         if (!enabled)
         {
             foreach (var player in SpotGame.Players)
@@ -97,12 +101,14 @@ internal sealed partial class SpotGameRuntime
         newGameResult.Field.OriginPx = new Point(
             newGameResult.Field.OriginPx.X,
             newGameResult.Field.OriginPx.Y - PersistentMenuHeight);
+
         newGameResult.BackgroundField.OriginPx = new Point(
             newGameResult.BackgroundField.OriginPx.X,
             newGameResult.BackgroundField.OriginPx.Y - PersistentMenuHeight);
 
         ActiveScene.AddLayer(newGameResult.Field);
         ActiveScene.AddLayer(newGameResult.BackgroundField);
+
         if (_music is not null)
             _music.Volume = 0.1f;
 
@@ -173,11 +179,13 @@ internal sealed partial class SpotGameRuntime
 
             // start a short timer before computer moves
             _pendingComputerSelectTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+
             _pendingComputerSelectTimer.Tick += () =>
             {
                 _pendingComputerSelectTimer = null;
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
+
                 if (moves.Count == 0)
                     return;
 
@@ -187,6 +195,7 @@ internal sealed partial class SpotGameRuntime
 
                 // small delay before executing move to allow for selection animation
                 _pendingComputerMoveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+
                 _pendingComputerMoveTimer.Tick += () =>
                 {
                     _pendingComputerMoveTimer = null;
@@ -204,7 +213,11 @@ internal sealed partial class SpotGameRuntime
 
     private void OnSpotSelected(SpotGameField.Cell cell)
     {
-        Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy!.Name);
+        Engine.Logger.LogDebug(
+            "Cell at ({0}, {1}) selected by player {2}",
+            cell.X,
+            cell.Y,
+            cell.OccupiedBy!.Name);
 
         if (SoundEffectsEnabled && SpotGame.CurrentPlayer.Type == PlayerType.Human)
             _spotSelected?.Play();
@@ -212,7 +225,12 @@ internal sealed partial class SpotGameRuntime
         var sprite = cell.Sprite!;
         sprite.StopJiggle();
         sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
-        sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
+
+        sprite.PulseBy(
+            1.1f,
+            0.4f,
+            0.4f,
+            true);
     }
 
     private void OnSpotDeselected(SpotGameField.Cell cell)
@@ -252,11 +270,14 @@ internal sealed partial class SpotGameRuntime
 
     private void OnPlayerMoveStopped(PlayerMovement movement)
     {
-        Engine.Logger.LogDebug("Player {0} performed a {1} move from ({2}, {3}) to ({4}, {5})",
+        Engine.Logger.LogDebug(
+            "Player {0} performed a {1} move from ({2}, {3}) to ({4}, {5})",
             movement.Player.Name,
             movement.MovementType,
-            movement.FromX, movement.FromY,
-            movement.DestX, movement.DestY);
+            movement.FromX,
+            movement.FromY,
+            movement.DestX,
+            movement.DestY);
 
         if (SoundEffectsEnabled)
             _drop?.Play();
@@ -274,10 +295,12 @@ internal sealed partial class SpotGameRuntime
         foreach (var cell in cellsCaptured)
         {
             var oldSprite = cell.Sprite;
+
             if (oldSprite == null)
                 continue;
 
             Action? handler = null;
+
             handler = () =>
             {
                 oldSprite.ResizeComplete -= handler;
@@ -310,6 +333,7 @@ internal sealed partial class SpotGameRuntime
 
         var allScores = SpotGame.GetAllPlayerScores();
         var maxScore = allScores.Values.Max();
+
         var winnersWithScores = allScores
             .Where(kvp => kvp.Value == maxScore)
             .Select(kvp => kvp.Key)
@@ -322,6 +346,7 @@ internal sealed partial class SpotGameRuntime
             _music.Volume = 0.05f;
 
             var isHumanWinner = winnersWithScores.Any(winner => winner.Type == PlayerType.Human);
+
             if (isHumanWinner)
                 _gameWin?.Play();
             else
@@ -330,5 +355,4 @@ internal sealed partial class SpotGameRuntime
 
         _persistGameState?.Invoke();
     }
-
 }

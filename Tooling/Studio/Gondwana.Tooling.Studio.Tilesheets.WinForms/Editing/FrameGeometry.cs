@@ -11,7 +11,9 @@ internal static class FrameGeometry
     /// <param name="imagePoint">Point in unscaled source-image pixels.</param>
     /// <returns>The matching region and zero-based frame column and row, or null when no frame is hit.</returns>
     public static (TilesheetRegionDefinition Region, Point Frame)? HitTest(
-        TilesheetDefinition definition, TilesheetRegionDefinition? selectedRegion, PointF imagePoint)
+        TilesheetDefinition definition,
+        TilesheetRegionDefinition? selectedRegion,
+        PointF imagePoint)
     {
         if (selectedRegion is not null && definition.Regions.Contains(selectedRegion) &&
             HitTestRegion(selectedRegion, imagePoint) is { } selectedFrame)
@@ -32,6 +34,7 @@ internal static class FrameGeometry
 
         long pitchX = (long)region.TileSize.Width + region.TilePadding.Left + region.TilePadding.Right;
         long pitchY = (long)region.TileSize.Height + region.TilePadding.Top + region.TilePadding.Bottom;
+
         if (columns <= 0 || rows <= 0 || pitchX <= 0 || pitchY <= 0 ||
             region.TileSize.Width <= 0 || region.TileSize.Height <= 0)
         {
@@ -40,10 +43,12 @@ internal static class FrameGeometry
 
         double px = (double)point.X - region.Area.X - region.RegionMargin.Left;
         double py = (double)point.Y - region.Area.Y - region.RegionMargin.Top;
+
         if (!double.IsFinite(px) || !double.IsFinite(py) || px < 0 || py < 0)
             return null;
 
         double x = Math.Floor(px / pitchX), y = Math.Floor(py / pitchY);
+
         if (x >= columns || y >= rows || x > int.MaxValue || y > int.MaxValue)
             return null;
 
@@ -52,7 +57,8 @@ internal static class FrameGeometry
         double localY = py - y * pitchY - region.TilePadding.Top;
 
         return localX >= 0 && localX < region.TileSize.Width && localY >= 0 && localY < region.TileSize.Height
-            ? new Point((int)x, (int)y) : null;
+            ? new Point((int)x, (int)y)
+            : null;
     }
 
     // Matches TilesheetRegion.GetTileBounds. Grid counts come directly from the shared validator.
@@ -64,10 +70,11 @@ internal static class FrameGeometry
     /// <exception cref="OverflowException">The computed frame origin exceeds integer coordinates.</exception>
     public static Rectangle Bounds(TilesheetRegionDefinition region, int x, int y) => new(
         checked((int)((long)region.Area.X + region.RegionMargin.Left + region.TilePadding.Left +
-            x * ((long)region.TileSize.Width + region.TilePadding.Left + region.TilePadding.Right))),
+                      x * ((long)region.TileSize.Width + region.TilePadding.Left + region.TilePadding.Right))),
         checked((int)((long)region.Area.Y + region.RegionMargin.Top + region.TilePadding.Top +
-            y * ((long)region.TileSize.Height + region.TilePadding.Top + region.TilePadding.Bottom))),
-        region.TileSize.Width, region.TileSize.Height);
+                      y * ((long)region.TileSize.Height + region.TilePadding.Top + region.TilePadding.Bottom))),
+        region.TileSize.Width,
+        region.TileSize.Height);
 
     /// <summary>Computes collision bounds using frame overrides or the region default.</summary>
     /// <param name="region">Region supplying image origin, margins, padding, and tile dimensions.</param>

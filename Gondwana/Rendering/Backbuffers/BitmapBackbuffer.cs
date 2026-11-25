@@ -12,12 +12,13 @@ namespace Gondwana.Rendering.Backbuffers;
 /// </summary>
 public sealed class BitmapBackbuffer : BackbufferBase
 {
-    private readonly object _gate = new();       // guards _buffer/_surface/_disposed
+    private readonly object _gate = new(); // guards _buffer/_surface/_disposed
     private SKBitmap? _buffer;
     private SKSurface? _surface;
     private bool _disposed;
 
     private sealed record Resolution(int Width, int Height);
+
     private Resolution? _requestedResolution;
 
     /// <summary>
@@ -65,7 +66,11 @@ public sealed class BitmapBackbuffer : BackbufferBase
     /// </remarks>
     public override SKCanvas Canvas
     {
-        get { lock (_gate) return _surface!.Canvas; }
+        get
+        {
+            lock (_gate)
+                return _surface!.Canvas;
+        }
     }
 
     private readonly SKPaint _bitmapPaint = new SKPaint
@@ -112,7 +117,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
             {
                 lock (_gate)
                 {
-                    if (_disposed) return;
+                    if (_disposed)
+                        return;
+
                     DisposeSurface_NoLock();
                     CreateSurface(w, h);
                     UpdateSize(w, h); // tell base about new logical size
@@ -123,12 +130,20 @@ public sealed class BitmapBackbuffer : BackbufferBase
         // Prepare for drawing.
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
+
             var c = _surface!.Canvas;
             c.RestoreToCount(1);
             c.Save();
             c.ResetMatrix();
-            c.ClipRect(new SKRect(0, 0, Width, Height));
+
+            c.ClipRect(
+                new SKRect(
+                    0,
+                    0,
+                    Width,
+                    Height));
         }
     }
 
@@ -142,7 +157,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         lock (_gate)
         {
-            if (_disposed || _surface is null) return;
+            if (_disposed || _surface is null)
+                return;
+
             _surface.Flush();
         }
     }
@@ -193,15 +210,22 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     private void CreateSurface(int width, int height)
     {
-        var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+        var info = new SKImageInfo(
+            width,
+            height,
+            SKColorType.Bgra8888,
+            SKAlphaType.Premul);
+
         _buffer = new SKBitmap(info);
         _surface = SKSurface.Create(info, _buffer.GetPixels(), _buffer.Info.RowBytes);
     }
 
     private void DisposeSurface_NoLock()
     {
-        _surface?.Dispose(); _surface = null;
-        _buffer?.Dispose(); _buffer = null;
+        _surface?.Dispose();
+        _surface = null;
+        _buffer?.Dispose();
+        _buffer = null;
     }
 
     /// <summary>
@@ -215,7 +239,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
 
             _disposed = true;
             base.Dispose();

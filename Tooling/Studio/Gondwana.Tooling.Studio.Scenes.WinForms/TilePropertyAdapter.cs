@@ -32,7 +32,8 @@ internal sealed class TilePropertyAdapter
         SceneLayerDefinition layer,
         int x,
         int y,
-        Action changed, Func<(TilesheetRegionDefinition? Region, SceneFrameDefinition? Frame)>? region = null)
+        Action changed,
+        Func<(TilesheetRegionDefinition? Region, SceneFrameDefinition? Frame)>? region = null)
     {
         _document = document;
         _layer = layer;
@@ -47,7 +48,12 @@ internal sealed class TilePropertyAdapter
 
     private void Change(Action<SceneLayerTileDefinition> change)
     {
-        _document.EditTile(_layer, _x, _y, "Change tile properties", change);
+        _document.EditTile(
+            _layer,
+            _x,
+            _y,
+            "Change tile properties",
+            change);
 
         _changed();
     }
@@ -64,7 +70,8 @@ internal sealed class TilePropertyAdapter
 
     /// <summary>Gets whether the sparse layer contains a persisted tile entry for this cell.</summary>
     [Category("Cell"), ReadOnly(true)]
-    [Description("True when this cell has a saved tile definition. Editing an empty cell creates one; merely selecting it does not.")]
+    [Description(
+        "True when this cell has a saved tile definition. Editing an empty cell creates one; merely selecting it does not.")]
     public bool HasExplicitDefinition => Tile is not null;
 
     /// <summary>Gets or sets the tile identifier; an unmaterialized cell reads as an empty GUID.</summary>
@@ -100,7 +107,8 @@ internal sealed class TilePropertyAdapter
 
     /// <summary>Gets the assigned tilesheet, region, and grid coordinates as display text, or <c>(none)</c>.</summary>
     [Category("Appearance"), ReadOnly(true)]
-    [Description("Source tilesheet, region, and frame coordinates assigned to this cell; use the source pane to change the frame.")]
+    [Description(
+        "Source tilesheet, region, and frame coordinates assigned to this cell; use the source pane to change the frame.")]
     public string Frame =>
         Tile?.Frame is { } frame
             ? $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})"
@@ -115,7 +123,8 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.Transform = value);
     }
 
-    internal void ApplyTransform(TileTransform operation) => Transform = TileTransformGeometry.Compose(Transform, operation);
+    internal void ApplyTransform(TileTransform operation) =>
+        Transform = TileTransformGeometry.Compose(Transform, operation);
 
     /// <summary>
     /// Gets the tile dimensions in pixels.
@@ -123,28 +132,34 @@ internal sealed class TilePropertyAdapter
     [Category("Geometry"), ReadOnly(true)]
     [Description("Unrotated source frame width and height in pixels, from the referenced tilesheet region.")]
     public Size TileSize => _region?.Invoke().Region?.TileSize ?? Size.Empty;
+
     /// <summary>Gets the source tile dimensions after applying the placement orientation.</summary>
     [Category("Geometry"), ReadOnly(true)]
     [Description("Source frame dimensions after the tile's rotation or flip is applied.")]
     public Size EffectiveTileSize => TileTransformGeometry.TransformSize(TileSize, Transform);
+
     /// <summary>
     /// Gets the current frame's visual overhang beyond its tile bounds.
     /// </summary>
     [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Pixels of source artwork that extend past the tile footprint on each side.")]
     public Spacing Overhang => _region?.Invoke().Region?.Overhang ?? Spacing.None;
+
     /// <summary>Gets source overhang edges remapped by the placement orientation.</summary>
     [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Overhang edges adjusted for this placement's rotation or flip.")]
     public Spacing EffectiveOverhang => TileTransformGeometry.TransformSpacing(Overhang, Transform);
+
     /// <summary>Gets the source region padding in pixels, or no padding when the region cannot be resolved.</summary>
     [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Per-edge spacing around frames in the source tilesheet region, before placement transforms.")]
     public Spacing SourceTilePadding => _region?.Invoke().Region?.TilePadding ?? Spacing.None;
+
     /// <summary>Gets source padding edges remapped by the placement orientation.</summary>
     [Category("Geometry"), ReadOnly(true), TypeConverter(typeof(SceneSpacingConverter))]
     [Description("Source frame padding with its sides remapped by this tile's rotation or flip.")]
     public Spacing EffectiveTilePadding => TileTransformGeometry.TransformSpacing(SourceTilePadding, Transform);
+
     private CollisionAdjust SourceFrameCollisionAdjust
     {
         get
@@ -152,20 +167,26 @@ internal sealed class TilePropertyAdapter
             var source = _region?.Invoke();
             var region = source?.Region;
             var frame = source?.Frame;
-            return region?.Frames.FirstOrDefault(candidate => candidate.XTile == frame?.XTile && candidate.YTile == frame?.YTile)?.CollisionAdjust
-                ?? region?.CollisionAdjust ?? AdjustCollisionArea;
+
+            return region?.Frames
+                       .FirstOrDefault(candidate => candidate.XTile == frame?.XTile && candidate.YTile == frame?.YTile)
+                       ?.CollisionAdjust
+                   ?? region?.CollisionAdjust ?? AdjustCollisionArea;
         }
     }
 
     /// <summary>Gets frame or instance collision adjustments with edges remapped by the placement orientation.</summary>
     [Category("Collision"), ReadOnly(true), TypeConverter(typeof(CollisionAdjustConverter))]
-    [Description("Read-only collision-box insets after the selected frame or instance settings and the tile transform are applied.")]
+    [Description(
+        "Read-only collision-box insets after the selected frame or instance settings and the tile transform are applied.")]
     public CollisionAdjust EffectiveCollisionAdjust => TileTransformGeometry.TransformCollisionAdjust(
-        AdjustCollisionAreaByFrame ? SourceFrameCollisionAdjust : AdjustCollisionArea, Transform);
+        AdjustCollisionAreaByFrame ? SourceFrameCollisionAdjust : AdjustCollisionArea,
+        Transform);
 
     /// <summary>Gets or sets whether the materialized tile has animation enabled.</summary>
     [Category("Animation")]
-    [Description("Explicitly enable the tile's animation system. A nonblank AnimationKey also enables it when materialized; StartAnimation controls automatic playback.")]
+    [Description(
+        "Explicitly enable the tile's animation system. A nonblank AnimationKey also enables it when materialized; StartAnimation controls automatic playback.")]
     public bool EnableAnimator
     {
         get => Tile?.EnableAnimator ?? false;
@@ -185,7 +206,8 @@ internal sealed class TilePropertyAdapter
 
     /// <summary>Gets or sets whether the assigned animation starts when the tile is materialized.</summary>
     [Category("Animation")]
-    [Description("Whether the assigned animation begins automatically when the tile is materialized; requires a nonblank AnimationKey, which also enables the animator.")]
+    [Description(
+        "Whether the assigned animation begins automatically when the tile is materialized; requires a nonblank AnimationKey, which also enables the animator.")]
     public bool StartAnimation
     {
         get => Tile?.StartAnimation ?? false;
@@ -215,7 +237,8 @@ internal sealed class TilePropertyAdapter
     /// <summary>Gets or sets instance collision insets in pixels; negative values expand the area.</summary>
     [Category("Collision")]
     [TypeConverter(typeof(CollisionAdjustConverter))]
-    [Description("Collision-box insets: top, right, bottom, left. Applied when AdjustCollisionAreaByFrame is false. Positive shrinks; negative expands.")]
+    [Description(
+        "Collision-box insets: top, right, bottom, left. Applied when AdjustCollisionAreaByFrame is false. Positive shrinks; negative expands.")]
     public CollisionAdjust AdjustCollisionArea
     {
         get => Tile?.AdjustCollisionArea ?? CollisionAdjust.None;

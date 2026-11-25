@@ -15,15 +15,13 @@ public class SceneLayerTile : Tile
 {
     #region private / internal fields
 
-    [JsonIgnore]
-    internal SceneLayer parentSceneLayer;
+    [JsonIgnore] internal SceneLayer parentSceneLayer;
 
     /// <summary>
     /// each SceneLayerTile in array know its location in the array in parentSceneLayer;
     /// this is the position in the SceneLayer array, not pixel coordinates
     /// </summary>
-    [JsonProperty]
-    internal Point sceneLayerCoordinates;
+    [JsonProperty] internal Point sceneLayerCoordinates;
 
     #endregion private / internal fields
 
@@ -56,10 +54,11 @@ public class SceneLayerTile : Tile
     {
         if (_collider is null)
         {
-            AttachCollider(new TileCollider(
-                this,
-                collisionGroup: CollisionMasks.None,
-                collidesWith: CollisionMasks.None));
+            AttachCollider(
+                new TileCollider(
+                    this,
+                    collisionGroup: CollisionMasks.None,
+                    collidesWith: CollisionMasks.None));
         }
     }
 
@@ -102,15 +101,23 @@ public class SceneLayerTile : Tile
         get => _transform;
         set
         {
-            if (!Enum.IsDefined(value)) throw new ArgumentOutOfRangeException(nameof(value));
-            if (_transform == value) return;
+            if (!Enum.IsDefined(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_transform == value)
+                return;
+
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
             _transform = value;
+
             if (!ReferenceEquals(SceneLayer, SceneLayer.Empty))
             {
-                if (value == TileTransform.Identity) SceneLayer.TransformedTiles.Remove(this);
-                else SceneLayer.TransformedTiles.Add(this);
+                if (value == TileTransform.Identity)
+                    SceneLayer.TransformedTiles.Remove(this);
+                else
+                    SceneLayer.TransformedTiles.Add(this);
             }
+
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
@@ -129,7 +136,8 @@ public class SceneLayerTile : Tile
 
     /// <summary>Gets the oriented collision insets, including the current frame-derived adjustment.</summary>
     [JsonIgnore]
-    public CollisionAdjust EffectiveCollisionAdjust => TileTransformGeometry.TransformCollisionAdjust(AdjustCollisionArea, Transform);
+    public CollisionAdjust EffectiveCollisionAdjust =>
+        TileTransformGeometry.TransformCollisionAdjust(AdjustCollisionArea, Transform);
 
     /// <inheritdoc/>
     [JsonIgnore]
@@ -147,6 +155,7 @@ public class SceneLayerTile : Tile
         var origin = TileTransformGeometry.MapToDestination(new(0, 0), destRectScreen, Transform);
         var x = TileTransformGeometry.MapToDestination(new(1, 0), destRectScreen, Transform);
         var y = TileTransformGeometry.MapToDestination(new(0, 1), destRectScreen, Transform);
+
         var matrix = new global::SkiaSharp.SKMatrix
         {
             ScaleX = x.X - origin.X,
@@ -157,14 +166,26 @@ public class SceneLayerTile : Tile
             TransY = origin.Y,
             Persp2 = 1
         };
+
         var canvas = backbuffer.Canvas;
         canvas.Save();
+
         try
         {
             canvas.Concat(ref matrix);
-            base.Draw(backbuffer, new RectangleF(0, 0, 1, 1));
+
+            base.Draw(
+                backbuffer,
+                new RectangleF(
+                    0,
+                    0,
+                    1,
+                    1));
         }
-        finally { canvas.Restore(); }
+        finally
+        {
+            canvas.Restore();
+        }
     }
 
     /// <inheritdoc/>

@@ -147,8 +147,10 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
             return Array.Empty<TouchPoint>();
 
         var snapshot = new List<TouchPoint>(_pendingBegins.Count);
+
         while (_pendingBegins.TryDequeue(out var point))
             snapshot.Add(point);
+
         return snapshot;
     }
 
@@ -159,8 +161,10 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
             return Array.Empty<TouchPoint>();
 
         var snapshot = new List<TouchPoint>(_pendingEnds.Count);
+
         while (_pendingEnds.TryDequeue(out var point))
             snapshot.Add(point);
+
         return snapshot;
     }
 
@@ -191,7 +195,9 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         _isDisposed = true;
 
         _control.PointerPressed -= OnPointerPressed;

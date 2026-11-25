@@ -5,8 +5,10 @@ public enum TelemetryMetricKind
 {
     /// <summary>Independent work samples; count divided by elapsed seconds gives cadence.</summary>
     Sample,
+
     /// <summary>Observed state; use Last for current state, not the sum across windows.</summary>
     Gauge,
+
     /// <summary>Renderer-owned cumulative value; WindowDelta is relative to the previous observation.</summary>
     LifetimeCounter
 }
@@ -16,10 +18,13 @@ public enum TelemetryAvailability
 {
     /// <summary>The source does not implement this measurement.</summary>
     Unsupported,
+
     /// <summary>The measurement does not apply to this rendering path.</summary>
     NotApplicable,
+
     /// <summary>The measurement is supported but has no samples in this window.</summary>
     NotYetSampled,
+
     /// <summary>At least one observation is present.</summary>
     Available
 }
@@ -32,15 +37,22 @@ public enum TelemetryAvailability
 /// <param name="Maximum">Largest observation, or null without samples.</param>
 /// <param name="Last">Most recent observation, or null without samples.</param>
 public sealed record TelemetrySummary(
-    TelemetryAvailability Availability, long Count, double Sum,
-    double? Minimum, double? Maximum, double? Last)
+    TelemetryAvailability Availability,
+    long Count,
+    double Sum,
+    double? Minimum,
+    double? Maximum,
+    double? Last)
 {
     /// <summary>Whether the observations are work samples, gauges, or cumulative counters.</summary>
     public TelemetryMetricKind Kind { get; init; }
+
     /// <summary>Change since the previous window's final observation; null before a baseline is established.</summary>
     public double? WindowDelta { get; init; }
+
     /// <summary>Monotonic observation timestamp in seconds, or null without observations.</summary>
     public double? LastObservedSeconds { get; init; }
+
     /// <summary>Sample-weighted arithmetic mean, or null without samples.</summary>
     public double? Mean => Count == 0 ? null : Sum / Count;
 
@@ -56,21 +68,38 @@ public sealed record TelemetrySummary(
         double? observed = null, delta = null;
         TelemetryMetricKind? kind = null;
         var availability = TelemetryAvailability.Unsupported;
+
         foreach (var value in summaries)
         {
-            if (kind is not null && kind != value.Kind) throw new ArgumentException("Cannot combine different metric kinds.", nameof(summaries));
+            if (kind is not null && kind != value.Kind)
+                throw new ArgumentException("Cannot combine different metric kinds.", nameof(summaries));
+
             kind = value.Kind;
-            if (value.Availability > availability) availability = value.Availability;
-            if (value.Count == 0) continue;
+
+            if (value.Availability > availability)
+                availability = value.Availability;
+
+            if (value.Count == 0)
+                continue;
+
             count += value.Count;
             sum += value.Sum;
             min = min is null ? value.Minimum : Math.Min(min.Value, value.Minimum!.Value);
             max = max is null ? value.Maximum : Math.Max(max.Value, value.Maximum!.Value);
             last = value.Last;
             observed = value.LastObservedSeconds;
-            if (value.WindowDelta is { } change) delta = (delta ?? 0) + change;
+
+            if (value.WindowDelta is { } change)
+                delta = (delta ?? 0) + change;
         }
-        return new(availability, count, sum, min, max, last)
+
+        return new(
+            availability,
+            count,
+            sum,
+            min,
+            max,
+            last)
         {
             Kind = kind ?? TelemetryMetricKind.Sample,
             LastObservedSeconds = observed,
@@ -97,10 +126,13 @@ public sealed record TelemetryOptions
 
     /// <summary>Minimum completed-window duration; defaults to 250 ms, allowed range 10 ms–1 minute.</summary>
     public TimeSpan Interval { get; init; } = TimeSpan.FromMilliseconds(250);
+
     /// <summary>Completed windows retained; allowed range 1–1024.</summary>
     public int HistoryCapacity { get; init; } = 120;
+
     /// <summary>Simultaneously observed sources, including Engine; allowed range 1–64.</summary>
     public int SourceCapacity { get; init; } = 16;
+
     /// <summary>Measurements per source, including layer detail; allowed range 8–512.</summary>
     public int MetricCapacity { get; init; } = 128;
 
@@ -109,12 +141,19 @@ public sealed record TelemetryOptions
     {
         if (Interval < TimeSpan.FromMilliseconds(10) || Interval > TimeSpan.FromMinutes(1))
             throw new ArgumentOutOfRangeException(nameof(Interval));
-        if (HistoryCapacity is < 1 or > 1024) throw new ArgumentOutOfRangeException(nameof(HistoryCapacity));
-        if (SourceCapacity is < 1 or > 64) throw new ArgumentOutOfRangeException(nameof(SourceCapacity));
-        if (MetricCapacity is < 8 or > 512) throw new ArgumentOutOfRangeException(nameof(MetricCapacity));
+
+        if (HistoryCapacity is < 1 or > 1024)
+            throw new ArgumentOutOfRangeException(nameof(HistoryCapacity));
+
+        if (SourceCapacity is < 1 or > 64)
+            throw new ArgumentOutOfRangeException(nameof(SourceCapacity));
+
+        if (MetricCapacity is < 8 or > 512)
+            throw new ArgumentOutOfRangeException(nameof(MetricCapacity));
 
         long retainedMetricSummaries =
             (long)HistoryCapacity * SourceCapacity * MetricCapacity;
+
         if (retainedMetricSummaries > MaxRetainedMetricSummaries)
         {
             throw new ArgumentException(
@@ -123,6 +162,7 @@ public sealed record TelemetryOptions
 
         double publishedMetricSummariesPerSecond =
             (double)SourceCapacity * MetricCapacity / Interval.TotalSeconds;
+
         if (publishedMetricSummariesPerSecond > MaxPublishedMetricSummariesPerSecond)
         {
             throw new ArgumentException(
@@ -137,8 +177,12 @@ public sealed record TelemetryOptions
 /// <param name="EndedSeconds">Monotonic end time in seconds on the collector clock.</param>
 /// <param name="Sources">Read-only detached source measurements.</param>
 /// <param name="Truncated">Some source or metric detail exceeded configured limits.</param>
-public sealed record TelemetrySnapshot(long Generation, double StartedSeconds, double EndedSeconds,
-    IReadOnlyList<TelemetrySourceSnapshot> Sources, bool Truncated)
+public sealed record TelemetrySnapshot(
+    long Generation,
+    double StartedSeconds,
+    double EndedSeconds,
+    IReadOnlyList<TelemetrySourceSnapshot> Sources,
+    bool Truncated)
 {
     /// <summary>Actual observed wall-clock duration, excluding stopped gaps.</summary>
     public double ElapsedSeconds => EndedSeconds - StartedSeconds;
@@ -149,5 +193,8 @@ public sealed record TelemetrySnapshot(long Generation, double StartedSeconds, d
 /// <param name="Name">Bounded source name.</param>
 /// <param name="Backend">Backend or subsystem label.</param>
 /// <param name="Metrics">Read-only measurements keyed by explicitly registered names.</param>
-public sealed record TelemetrySourceSnapshot(long Id, string Name, string Backend,
+public sealed record TelemetrySourceSnapshot(
+    long Id,
+    string Name,
+    string Backend,
     IReadOnlyDictionary<string, TelemetrySummary> Metrics);

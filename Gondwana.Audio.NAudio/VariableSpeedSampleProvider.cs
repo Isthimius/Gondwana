@@ -31,6 +31,7 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
     {
         _source = source ?? throw new ArgumentNullException(nameof(source));
         _channels = source.WaveFormat.Channels;
+
         if (_channels <= 0)
             throw new ArgumentException("Source must expose at least one audio channel.", nameof(source));
 
@@ -74,6 +75,7 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
         lock (_sync)
         {
             EnsureInitialized();
+
             if (!_hasCurrent)
                 return 0;
 
@@ -148,9 +150,11 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
     private bool ReadFrame(float[] frame)
     {
         var read = 0;
+
         while (read < _channels)
         {
             var count = _source.Read(frame, read, _channels - read);
+
             if (count == 0)
                 return false;
 

@@ -50,7 +50,11 @@ public struct CollisionAdjust : IEquatable<CollisionAdjust>
     /// <param name="bottom">The signed inset amount for the bottom edge.</param>
     /// <param name="left">The signed inset amount for the left edge.</param>
     /// <param name="right">The signed inset amount for the right edge.</param>
-    public CollisionAdjust(int top, int bottom, int left, int right)
+    public CollisionAdjust(
+        int top,
+        int bottom,
+        int left,
+        int right)
     {
         Top = top;
         Bottom = bottom;
@@ -85,7 +89,11 @@ public struct CollisionAdjust : IEquatable<CollisionAdjust>
 
     /// <inheritdoc/>
     public override readonly int GetHashCode() =>
-        HashCode.Combine(Top, Bottom, Left, Right);
+        HashCode.Combine(
+            Top,
+            Bottom,
+            Left,
+            Right);
 
     /// <summary>
     /// Determines whether two adjustments are equal.

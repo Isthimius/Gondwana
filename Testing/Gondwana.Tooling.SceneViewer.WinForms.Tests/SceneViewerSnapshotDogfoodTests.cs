@@ -32,11 +32,20 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         var scene = Environment.GetEnvironmentVariable("GONDWANA_VIEWER_SCENE")!;
         Assert.True(File.Exists(scene));
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
         var thread = new Thread(() =>
         {
-            try { Run(scene); completion.SetResult(); }
-            catch (Exception exception) { completion.SetException(exception); }
+            try
+            {
+                Run(scene);
+                completion.SetResult();
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.IsBackground = true;
         thread.Start();
@@ -52,18 +61,27 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
             StartPosition = FormStartPosition.Manual,
             Location = new Point(-10000, -10000)
         };
+
         using var surface = new WinFormGpuRenderSurfaceControl { Dock = DockStyle.Fill };
         form.Controls.Add(surface);
         SceneViewerGameHost? gameHost = null;
         Action? takeSample = null;
-        using var timer = new System.Threading.Timer(_ => takeSample?.Invoke(), null, Timeout.Infinite, Timeout.Infinite);
+
+        using var timer = new System.Threading.Timer(
+            _ => takeSample?.Invoke(),
+            null,
+            Timeout.Infinite,
+            Timeout.Infinite);
+
         string running = "", paused = "", stalled = "";
         bool captured = false;
         int phase = 0;
         Exception? failure = null;
+
         form.Shown += (_, _) =>
         {
             SceneViewerGameHost host;
+
             try
             {
                 host = gameHost = new SceneViewerGameHost(surface, scene);
@@ -75,20 +93,32 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                 form.Close();
                 return;
             }
+
             Engine.Instance.EngineDispatcher.Post(() =>
             {
                 surface.Host.ViewManager.Views[0].Viewport.Zoom = .125f;
                 using var applicationRequest = Engine.Instance.Profiler.Start();
-                var toggle = typeof(SceneViewerGameHost).GetMethod("ToggleDiagnostics", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+                var toggle = typeof(SceneViewerGameHost).GetMethod(
+                    "ToggleDiagnostics",
+                    BindingFlags.Instance | BindingFlags.NonPublic)!;
+
                 toggle.Invoke(host, null);
                 toggle.Invoke(host, null);
                 Assert.True(Engine.Instance.Profiler.IsCollecting);
-                typeof(SceneViewerGameHost).GetMethod("ToggleDiagnostics", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
+
+                typeof(SceneViewerGameHost).GetMethod(
+                    "ToggleDiagnostics",
+                    BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
+
                 var diagnosticsWidget = (ProfilerWidget)typeof(SceneViewerGameHost)
                     .GetField("_diagnosticsWidget", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+
                 TextBlock diagnosticsText = diagnosticsWidget.Display.TextBlock;
+
                 var background = (global::SkiaSharp.SKColor)typeof(TextBlock)
                     .GetField("_backColor", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(diagnosticsText)!;
+
                 Assert.Equal(102, background.Alpha);
                 Assert.Equal(ProfilerContextInfo.All, diagnosticsWidget.ContextInfo);
                 Assert.NotNull(diagnosticsWidget.AdditionalLinesProvider);
@@ -99,44 +129,52 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
 
                 var onMouse = typeof(SceneViewerGameHost)
                     .GetMethod("OnMouse", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
                 var view = surface.Host.ViewManager.Views[0];
                 float zoomBeforeDiagnosticsScroll = view.Viewport.Zoom;
+
                 var noButtons = new Dictionary<
                     Gondwana.Input.Mouse.MouseButton,
                     Gondwana.Input.Mouse.MouseButtonState>();
 
-                onMouse.Invoke(host,
-                [
-                    new Gondwana.Input.Mouse.MouseEventArgs(
-                        new Gondwana.Input.Mouse.MouseEventConfiguration(false),
-                        Gondwana.Input.Keyboard.KeyboardModifierState.None,
-                        noButtons,
-                        new Point(20, 20),
-                        new Point(20, 20),
-                        120,
-                        0)
-                ]);
+                onMouse.Invoke(
+                    host,
+                    [
+                        new Gondwana.Input.Mouse.MouseEventArgs(
+                            new Gondwana.Input.Mouse.MouseEventConfiguration(false),
+                            Gondwana.Input.Keyboard.KeyboardModifierState.None,
+                            noButtons,
+                            new Point(20, 20),
+                            new Point(20, 20),
+                            120,
+                            0)
+                    ]);
 
                 Assert.Equal(zoomBeforeDiagnosticsScroll, view.Viewport.Zoom);
 
-                onMouse.Invoke(host,
-                [
-                    new Gondwana.Input.Mouse.MouseEventArgs(
-                        new Gondwana.Input.Mouse.MouseEventConfiguration(false),
-                        Gondwana.Input.Keyboard.KeyboardModifierState.None,
-                        noButtons,
-                        new Point(900, 700),
-                        new Point(900, 700),
-                        120,
-                        0)
-                ]);
+                onMouse.Invoke(
+                    host,
+                    [
+                        new Gondwana.Input.Mouse.MouseEventArgs(
+                            new Gondwana.Input.Mouse.MouseEventConfiguration(false),
+                            Gondwana.Input.Keyboard.KeyboardModifierState.None,
+                            noButtons,
+                            new Point(900, 700),
+                            new Point(900, 700),
+                            120,
+                            0)
+                    ]);
 
                 Assert.NotEqual(zoomBeforeDiagnosticsScroll, view.Viewport.Zoom);
             });
+
             surface.Adapter.FrameDiagnosticsCalculated += _ =>
             {
-                if (Volatile.Read(ref phase) == 2) Thread.Sleep(100); // deliberate slow consumer
+                if (Volatile.Read(ref phase) == 2)
+                    Thread.Sleep(100); // deliberate slow consumer
+
                 var capturePath = Environment.GetEnvironmentVariable("GONDWANA_GPU_CAPTURE");
+
                 if (!captured && Volatile.Read(ref phase) == 1 && capturePath is not null)
                 {
                     using var image = surface.Host.GlSnapshotCurrentFrame();
@@ -146,6 +184,7 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                     captured = true;
                 }
             };
+
             takeSample = () =>
             {
                 // Capture the Scene Viewer F3 ProfilerWidget text on its owner thread before changing phase.
@@ -154,12 +193,19 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                     try
                     {
                         var widget = (ProfilerWidget)typeof(SceneViewerGameHost)
-                            .GetField("_diagnosticsWidget", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+                            .GetField("_diagnosticsWidget", BindingFlags.Instance | BindingFlags.NonPublic)!
+                            .GetValue(host)!;
+
                         TextBlock text = widget.Display.TextBlock;
+
                         if (phase == 0)
                         {
                             running = text.Text;
-                            typeof(SceneViewerGameHost).GetMethod("ToggleAnimations", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
+
+                            typeof(SceneViewerGameHost).GetMethod(
+                                "ToggleAnimations",
+                                BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
+
                             Volatile.Write(ref phase, 1);
                         }
                         else if (phase == 1)
@@ -180,11 +226,22 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                     }
                 });
             };
+
             timer.Change(6000, 6000);
         };
-        try { Application.Run(form); }
-        finally { gameHost?.Dispose(); }
-        if (failure is not null) throw failure;
+
+        try
+        {
+            Application.Run(form);
+        }
+        finally
+        {
+            gameHost?.Dispose();
+        }
+
+        if (failure is not null)
+            throw failure;
+
         output.WriteLine("RUNNING\n" + running);
         output.WriteLine("PAUSED\n" + paused);
         output.WriteLine("STALLED GL (100 ms/callback)\n" + stalled);

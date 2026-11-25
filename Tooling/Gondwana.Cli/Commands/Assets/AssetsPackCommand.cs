@@ -54,15 +54,17 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
 
         /// <summary>Gets whether verified dependencies outside the final package are allowed.</summary>
         [CommandOption("--allow-external")]
-        [Description("Allow existing explicit external loose/GAF dependencies; missing and ambiguous references still fail.")]
+        [Description(
+            "Allow existing explicit external loose/GAF dependencies; missing and ambiguous references still fail.")]
         public bool AllowExternal { get; init; }
 
         /// <summary>
         /// Gets or sets the type map path.
         /// </summary>
         [CommandOption("-m|--type-map")]
-        [Description("Path to a JSON file that maps asset types to file extensions. " +
-                     "Defaults to 'gondwana-asset-types.json' in the current directory or next to the executable.")]
+        [Description(
+            "Path to a JSON file that maps asset types to file extensions. " +
+            "Defaults to 'gondwana-asset-types.json' in the current directory or next to the executable.")]
         public string? TypeMapPath { get; init; }
 
         /// <summary>
@@ -99,13 +101,17 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             return 1;
         }
 
-        if (!Enum.TryParse<AssetTypes>(settings.DefaultType, ignoreCase: true, out var defaultType) || !Enum.IsDefined(defaultType))
+        if (!Enum.TryParse<AssetTypes>(settings.DefaultType, ignoreCase: true, out var defaultType) ||
+            !Enum.IsDefined(defaultType))
         {
-            AnsiConsole.MarkupLine($"[red]Invalid asset type '{Markup.Escape(settings.DefaultType)}'. Valid types: {string.Join(", ", Enum.GetNames<AssetTypes>())}[/]");
+            AnsiConsole.MarkupLine(
+                $"[red]Invalid asset type '{Markup.Escape(settings.DefaultType)}'. Valid types: {string.Join(", ", Enum.GetNames<AssetTypes>())}[/]");
+
             return 1;
         }
 
         var typeMap = AssetTypeMap.Load(settings.TypeMapPath, out var mapError);
+
         if (typeMap is null)
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(mapError!)}[/]");
@@ -114,7 +120,12 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
 
         try
         {
-            var plan = SemanticPackPlan.Create(settings, typeMap, defaultType, cancellationToken);
+            var plan = SemanticPackPlan.Create(
+                settings,
+                typeMap,
+                defaultType,
+                cancellationToken);
+
             int packed = plan.Commit();
             AnsiConsole.MarkupLine($"[green]Packed {packed} asset(s) into {Markup.Escape(output)}.[/]");
             return 0;

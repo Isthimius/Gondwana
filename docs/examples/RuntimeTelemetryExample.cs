@@ -22,7 +22,11 @@ public static class RuntimeTelemetryExample
         var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(12, 12, 700, 520));
+            new Rectangle(
+                12,
+                12,
+                700,
+                520));
 
         // Hide any metric globally, or target a single named source.
         widget.SetMeasurementVisible("layers.omitted", false);
@@ -38,7 +42,10 @@ public static class RuntimeTelemetryExample
     public static void PrintLatest(RuntimeProfiler profiler, TextWriter output)
     {
         var snapshot = profiler.GetLatestSnapshot();
-        if (snapshot is null) return;
+
+        if (snapshot is null)
+            return;
+
         foreach (var source in snapshot.Sources)
         {
             if (source.Metrics.TryGetValue("cycle.cpu.ms", out var cycle) &&

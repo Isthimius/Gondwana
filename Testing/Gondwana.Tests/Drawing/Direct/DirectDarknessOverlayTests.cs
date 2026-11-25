@@ -19,12 +19,21 @@ public sealed class DirectDarknessOverlayTests
     public void Draw_WithRevealSource_CarvesDarknessAtCenter()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 32, 32));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                32,
+                32));
+
         SceneLayer layer = host.Scene.AddLayer(
             columnCount: 1,
             rowCount: 1,
             width: 32,
             height: 32);
+
         using var backbuffer = new BitmapBackbuffer(32, 32);
         using var overlay = new DirectDarknessOverlay(host, view, layer);
 
@@ -33,7 +42,14 @@ public sealed class DirectDarknessOverlayTests
             radiusWorldPx: 8f);
 
         backbuffer.Canvas.Clear(SKColors.White);
-        overlay.Draw(backbuffer, new RectangleF(0f, 0f, 32f, 32f));
+
+        overlay.Draw(
+            backbuffer,
+            new RectangleF(
+                0f,
+                0f,
+                32f,
+                32f));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap result = SKBitmap.FromImage(snapshot);
@@ -52,7 +68,15 @@ public sealed class DirectDarknessOverlayTests
     public void TrackLight_WhenLightMoves_SyncsRevealSource()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 64, 64));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                64,
+                64));
+
         SceneLayer layer = host.Scene.AddLayer(
             columnCount: 2,
             rowCount: 2,
@@ -60,7 +84,11 @@ public sealed class DirectDarknessOverlayTests
             height: 32);
 
         using var light = new DirectRadialLight(
-            Color.FromArgb(180, 255, 190, 80),
+            Color.FromArgb(
+                180,
+                255,
+                190,
+                80),
             host,
             layer,
             new PointF(12f, 14f),
@@ -89,7 +117,15 @@ public sealed class DirectDarknessOverlayTests
     public void TrackLight_WhenLightIsDisposed_RemovesTrackedRevealSource()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 64, 64));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                64,
+                64));
+
         SceneLayer layer = host.Scene.AddLayer(
             columnCount: 2,
             rowCount: 2,
@@ -97,7 +133,11 @@ public sealed class DirectDarknessOverlayTests
             height: 32);
 
         var light = new DirectRadialLight(
-            Color.FromArgb(180, 255, 190, 80),
+            Color.FromArgb(
+                180,
+                255,
+                190,
+                80),
             host,
             layer,
             new PointF(12f, 14f),

@@ -5,8 +5,9 @@ namespace Gondwana.Widgets.Menus;
 /// </summary>
 public sealed class MenuBarMenu
 {
-    internal MenuBarMenu(MenuHeaderWidget header,
-                         MenuDropDownWidget dropDown)
+    internal MenuBarMenu(
+        MenuHeaderWidget header,
+        MenuDropDownWidget dropDown)
     {
         Header = header;
         DropDown = dropDown;

@@ -38,39 +38,85 @@ public sealed partial class MainForm
             ToolTipText = "New document (choose a Gondwana format)",
             AccessibleName = "New document"
         };
+
         foreach (var (format, label) in NewFileFormats)
         {
             var selectedFormat = format;
             create.DropDownItems.Add(label, null, (_, _) => TryNew(selectedFormat));
         }
+
         bar.Items.Add(create);
         bar.SetGlyph(create, pixels => ToolbarGlyphs.Studio("new", pixels, ToolingAppearance.Palette));
-        AddButton(bar, "Open", "Open documents (Ctrl+O)", "open", OpenFiles);
+
+        AddButton(
+            bar,
+            "Open",
+            "Open documents (Ctrl+O)",
+            "open",
+            OpenFiles);
+
         bar.Items.Add(new ToolStripSeparator());
 
-        _saveButton = AddButton(bar, "Save", "Save active document (Ctrl+S)", "save",
-            async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
-        _saveAllButton = AddButton(bar, "SaveAll", "Save all modified documents (Ctrl+Alt+S)", "save-all",
+        _saveButton = AddButton(
+            bar,
+            "Save",
+            "Save active document (Ctrl+S)",
+            "save",
+            async () =>
+            {
+                if (ActiveDocument is { } doc)
+                    await SaveDocument(doc);
+            });
+
+        _saveAllButton = AddButton(
+            bar,
+            "SaveAll",
+            "Save all modified documents (Ctrl+Alt+S)",
+            "save-all",
             async () => await SaveAllDocuments());
+
         bar.Items.Add(new ToolStripSeparator());
 
-        AddButton(bar, "WorkingDirectory", "Choose working directory", "folder", ChooseDirectory);
-        AddButton(bar, "Refresh", "Refresh working directory", "refresh", () =>
-        {
-            foreach (var document in _documents.ToArray()) RefreshSourceRegistrations(document);
-            VerifyDocumentSources();
-            Browser.RefreshDirectory();
-            SyncActiveDocumentSelection();
-        });
+        AddButton(
+            bar,
+            "WorkingDirectory",
+            "Choose working directory",
+            "folder",
+            ChooseDirectory);
+
+        AddButton(
+            bar,
+            "Refresh",
+            "Refresh working directory",
+            "refresh",
+            () =>
+            {
+                foreach (var document in _documents.ToArray())
+                    RefreshSourceRegistrations(document);
+
+                VerifyDocumentSources();
+                Browser.RefreshDirectory();
+                SyncActiveDocumentSelection();
+            });
+
         bar.Items.Add(new ToolStripSeparator());
 
-        _previewButton = AddButton(bar, "Preview", "View active scene in Scene Viewer", "preview",
+        _previewButton = AddButton(
+            bar,
+            "Preview",
+            "View active scene in Scene Viewer",
+            "preview",
             async () =>
             {
                 if (ActiveDocument?.Document.Editor is SceneEditorControl scene)
                     await scene.ViewSceneAsync();
             });
-        _validateButton = AddButton(bar, "Validate", "Validate active document", "validate",
+
+        _validateButton = AddButton(
+            bar,
+            "Validate",
+            "Validate active document",
+            "validate",
             () => ValidateActiveDocument());
 
         _saveButton.Enabled = false;
@@ -81,7 +127,12 @@ public sealed partial class MainForm
         return bar;
     }
 
-    private ToolStripButton AddButton(DpiToolStrip bar, string name, string tooltip, string glyph, Action action)
+    private ToolStripButton AddButton(
+        DpiToolStrip bar,
+        string name,
+        string tooltip,
+        string glyph,
+        Action action)
     {
         var button = new ToolStripButton
         {
@@ -92,6 +143,7 @@ public sealed partial class MainForm
             ToolTipText = tooltip,
             AccessibleName = tooltip
         };
+
         button.Click += (_, _) => action();
         bar.Items.Add(button);
         bar.SetGlyph(button, pixels => ToolbarGlyphs.Studio(glyph, pixels, ToolingAppearance.Palette));
@@ -102,7 +154,9 @@ public sealed partial class MainForm
 
     private void UpdateToolbarState()
     {
-        if (_disposed || IsDisposed || _saveButton is null) return;
+        if (_disposed || IsDisposed || _saveButton is null)
+            return;
+
         var active = ActiveDocument;
         bool hasActive = active is { IsDisposed: false };
         _saveButton.Enabled = hasActive;
@@ -120,9 +174,12 @@ public sealed partial class MainForm
     /// <returns>True only when every modified document was saved.</returns>
     internal async Task<bool> SaveAllDocuments()
     {
-        if (_savingAll) return false;
+        if (_savingAll)
+            return false;
+
         _savingAll = true;
         UpdateToolbarState();
+
         try
         {
             // The GAF editor owns a buffered snapshot. Saving it before any packed child
@@ -130,11 +187,17 @@ public sealed partial class MainForm
             // SaveArchive still detects genuine same-entry conflicts.
             foreach (var document in _documents.ToArray().OrderBy(item => item.Document.Kind == "asset" ? 0 : 1))
             {
-                if (document.IsDisposed) continue;
+                if (document.IsDisposed)
+                    continue;
+
                 // Commit pending PropertyGrid/text edits before deciding that a document is clean.
-                if (!document.Document.CommitEdits()) return false;
-                if (document.Document.Dirty() && !await SaveDocument(document)) return false;
+                if (!document.Document.CommitEdits())
+                    return false;
+
+                if (document.Document.Dirty() && !await SaveDocument(document))
+                    return false;
             }
+
             return true;
         }
         catch (Exception ex)
@@ -153,19 +216,27 @@ public sealed partial class MainForm
     /// <returns>Validation errors, or null when no active document exists or pending edits cannot be committed.</returns>
     internal IReadOnlyList<string>? ValidateActiveDocument()
     {
-        if (ActiveDocument is not { IsDisposed: false } document || document.Document.Kind == "asset") return null;
+        if (ActiveDocument is not { IsDisposed: false } document || document.Document.Kind == "asset")
+            return null;
+
         try
         {
-            if (!document.Document.CommitEdits()) return null;
+            if (!document.Document.CommitEdits())
+                return null;
+
             var errors = document.Document.Validate();
+
             if (errors.Count == 0)
                 _output.Log($"Info: Validation passed: {document.Document.Caption}");
             else
             {
                 document.Document.ShowPane("Validation");
                 _output.Log($"Error: Validation found {errors.Count} error(s): {document.Document.Caption}");
-                foreach (var error in errors) _output.Log("  Error: " + error);
+
+                foreach (var error in errors)
+                    _output.Log("  Error: " + error);
             }
+
             return errors;
         }
         catch (Exception ex)
@@ -174,6 +245,4 @@ public sealed partial class MainForm
             return null;
         }
     }
-
-
 }

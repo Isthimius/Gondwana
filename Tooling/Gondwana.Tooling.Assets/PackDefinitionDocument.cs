@@ -5,6 +5,7 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Serialization;
 
 namespace Gondwana.Tooling.Assets;
 
@@ -17,7 +18,9 @@ internal sealed class PackDefinitionDocument
     /// <summary>Recognizes the native document types supported by the shared format handlers.</summary>
     /// <param name="type">Typed physical resource classification.</param>
     /// <returns>Whether the resource contains a native definition document.</returns>
-    internal static bool IsNative(AssetTypes type) => type is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition;
+    internal static bool IsNative(AssetTypes type) => type is AssetTypes.TilesheetDefinition
+        or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition
+        or AssetTypes.AudioDefinition;
 
     /// <summary>Reads a native document or returns null for a binary asset.</summary>
     /// <param name="type">The planned asset type.</param>
@@ -26,9 +29,16 @@ internal sealed class PackDefinitionDocument
     /// <returns>A complete typed document, or null for binary content.</returns>
     internal static PackDefinitionDocument? Read(AssetTypes type, byte[] bytes, string identity)
     {
-        if (!IsNative(type)) return null;
-        using var reader = new StreamReader(new MemoryStream(bytes), Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
+        if (!IsNative(type))
+            return null;
+
+        using var reader = new StreamReader(
+            new MemoryStream(bytes),
+            Encoding.UTF8,
+            detectEncodingFromByteOrderMarks: true);
+
         var json = reader.ReadToEnd();
+
         object document = type switch
         {
             AssetTypes.TilesheetDefinition => TilesheetDefinitionSerializer.FromDocumentJson(json, identity),
@@ -38,6 +48,7 @@ internal sealed class PackDefinitionDocument
             AssetTypes.AudioDefinition => AudioDefinitionSerializer.FromDocumentJson(json, identity),
             _ => throw new ArgumentOutOfRangeException(nameof(type))
         };
+
         return new(document);
     }
 
@@ -57,51 +68,130 @@ internal sealed class PackDefinitionDocument
     /// <remarks>Strict by default. Monitoring may record invalid references and continue discovering later valid sources.</remarks>
     internal IEnumerable<AssetLocation> References(AssetLocation owner, Action<Exception>? invalid = null)
     {
-        AssetLocation Physical(AssetTypes type, string? file, string? archive, string? entry)
+        AssetLocation Physical(
+            AssetTypes type,
+            string? file,
+            string? archive,
+            string? entry)
         {
-            if (string.IsNullOrWhiteSpace(file) && string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry)) archive = owner.Path;
+            if (string.IsNullOrWhiteSpace(file) && string.IsNullOrWhiteSpace(archive) &&
+                !string.IsNullOrWhiteSpace(entry))
+                archive = owner.Path;
+
             bool loose = !string.IsNullOrWhiteSpace(file);
             bool packed = !string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry);
+
             if (loose == packed || loose && (!string.IsNullOrWhiteSpace(archive) || !string.IsNullOrWhiteSpace(entry)))
                 throw new InvalidDataException("Missing or conflicting physical dependency source.");
-            return new(type, Path.GetFullPath(loose ? file! : archive!, Path.GetDirectoryName(owner.Path)!), packed ? entry : null);
+
+            return new(
+                type,
+                Path.GetFullPath(loose ? file! : archive!, Path.GetDirectoryName(owner.Path)!),
+                packed ? entry : null);
         }
-        IEnumerable<AssetLocation> Resolve(AssetTypes type, string? file, string? archive, string? entry)
+
+        IEnumerable<AssetLocation> Resolve(
+            AssetTypes type,
+            string? file,
+            string? archive,
+            string? entry)
         {
             AssetLocation? location = null;
-            try { location = Physical(type, file, archive, entry); }
-            catch (Exception ex) when (invalid is not null && ex is InvalidDataException or ArgumentException or IOException)
-            { invalid(ex); }
-            if (location is not null) yield return location;
+
+            try
+            {
+                location = Physical(
+                    type,
+                    file,
+                    archive,
+                    entry);
+            }
+            catch (Exception ex) when (invalid is not null &&
+                                       ex is InvalidDataException or ArgumentException or IOException)
+            {
+                invalid(ex);
+            }
+
+            if (location is not null)
+                yield return location;
         }
+
         foreach (var (_, member) in Members())
         {
             switch (member)
             {
                 case TilesheetDefinition sheet:
-                    foreach (var reference in Resolve(AssetTypes.Image, sheet.Image?.FilePath, sheet.Image?.AssetsFilePath, sheet.Image?.AssetEntryName)) yield return reference;
+                    foreach (var reference in Resolve(
+                                 AssetTypes.Image,
+                                 sheet.Image?.FilePath,
+                                 sheet.Image?.AssetsFilePath,
+                                 sheet.Image?.AssetEntryName))
+                        yield return reference;
+
                     break;
                 case AnimationDefinition animation:
                     foreach (var source in animation.TilesheetSources)
-                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.TilesheetDefinition,
+                                     source.GtsPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
+
                     break;
                 case SceneDefinition scene:
                     foreach (var source in scene.TilesheetSources)
-                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.TilesheetDefinition,
+                                     source.GtsPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
+
                     foreach (var source in scene.AnimationSources)
-                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.AnimationDefinition,
+                                     source.GaniPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
+
                     break;
                 case SpriteDefinition sprites:
                     foreach (var source in sprites.TilesheetSources)
-                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.TilesheetDefinition,
+                                     source.GtsPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
+
                     foreach (var source in sprites.AnimationSources)
-                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.AnimationDefinition,
+                                     source.GaniPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
+
                     foreach (var source in sprites.SceneSources)
-                        foreach (var reference in Resolve(AssetTypes.SceneDefinition, source.GscnPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.SceneDefinition,
+                                     source.GscnPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
+
                     break;
                 case AudioDefinition audio:
                     foreach (var resource in audio.Resources.Where(r => r.SourceKind != AudioResourceSourceKind.Uri))
-                        foreach (var reference in Resolve(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.Audio,
+                                     resource.FilePath,
+                                     resource.AssetsFilePath,
+                                     resource.AssetEntryName))
+                            yield return reference;
+
                     break;
             }
         }
@@ -120,7 +210,9 @@ internal sealed class PackDefinitionDocument
             AudioDefinitionDocument document => AudioDefinitionSerializer.ValidateDocument(document),
             _ => throw new InvalidOperationException("Unknown native document.")
         };
-        if (errors.Count != 0) throw new InvalidDataException($"{label}: {string.Join("; ", errors)}");
+
+        if (errors.Count != 0)
+            throw new InvalidDataException($"{label}: {string.Join("; ", errors)}");
     }
 
     /// <summary>Uses Phase 1 to transform complete documents and emits canonical bytes once.</summary>
@@ -129,18 +221,49 @@ internal sealed class PackDefinitionDocument
     /// <param name="mappings">Resolved dependency mappings.</param>
     /// <param name="requireAllMappings">Whether mappings unused by this document are rejected.</param>
     /// <returns>The canonical document bytes.</returns>
-    internal byte[] Relocate(AssetLocation source, AssetLocation destination, IEnumerable<ReferenceRelocation> mappings, bool requireAllMappings = true)
+    internal byte[] Relocate(
+        AssetLocation source,
+        AssetLocation destination,
+        IEnumerable<ReferenceRelocation> mappings,
+        bool requireAllMappings = true)
     {
         _document = _document switch
         {
-            TilesheetDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
-            AnimationDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
-            SceneDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
-            SpriteDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
-            AudioDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
+            TilesheetDefinitionDocument document => DefinitionReferenceRelocator.Relocate(
+                document,
+                source,
+                destination,
+                mappings,
+                requireAllMappings),
+            AnimationDefinitionDocument document => DefinitionReferenceRelocator.Relocate(
+                document,
+                source,
+                destination,
+                mappings,
+                requireAllMappings),
+            SceneDefinitionDocument document => DefinitionReferenceRelocator.Relocate(
+                document,
+                source,
+                destination,
+                mappings,
+                requireAllMappings),
+            SpriteDefinitionDocument document => DefinitionReferenceRelocator.Relocate(
+                document,
+                source,
+                destination,
+                mappings,
+                requireAllMappings),
+            AudioDefinitionDocument document => DefinitionReferenceRelocator.Relocate(
+                document,
+                source,
+                destination,
+                mappings,
+                requireAllMappings),
             _ => throw new InvalidOperationException("Unknown native document.")
         };
+
         Validate(destination.ToString());
+
         var json = _document switch
         {
             TilesheetDefinitionDocument document => TilesheetDefinitionSerializer.ToDocumentJson(document),
@@ -150,6 +273,7 @@ internal sealed class PackDefinitionDocument
             AudioDefinitionDocument document => AudioDefinitionSerializer.ToDocumentJson(document),
             _ => throw new InvalidOperationException("Unknown native document.")
         };
+
         return Encoding.UTF8.GetBytes(json);
     }
 }

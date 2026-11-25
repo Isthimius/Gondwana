@@ -127,9 +127,10 @@ public sealed class PinchGestureRecognizer : IDisposable
         _lastDistance = 0;
     }
 
-    private void Emit(PinchPhase phase,
-                      EventHandler<PinchedEventArgs>? handler,
-                      double? currentDistance = null)
+    private void Emit(
+        PinchPhase phase,
+        EventHandler<PinchedEventArgs>? handler,
+        double? currentDistance = null)
     {
         if (_activePoints.Count != 2)
             return;
@@ -140,17 +141,21 @@ public sealed class PinchGestureRecognizer : IDisposable
         var distance = currentDistance ?? GetDistance(a, b);
         var center = new PointF((a.X + b.X) / 2f, (a.Y + b.Y) / 2f);
 
-        handler?.Invoke(this, new PinchedEventArgs(phase,
-                                                   new[] { pair[0].Key, pair[1].Key },
-                                                   center,
-                                                   _startingDistance,
-                                                   _lastDistance,
-                                                   distance));
+        handler?.Invoke(
+            this,
+            new PinchedEventArgs(
+                phase,
+                new[] { pair[0].Key, pair[1].Key },
+                center,
+                _startingDistance,
+                _lastDistance,
+                distance));
     }
 
     private double GetCurrentDistance()
     {
         using var enumerator = _activePoints.Values.GetEnumerator();
+
         if (!enumerator.MoveNext())
             return 0;
 
@@ -177,7 +182,9 @@ public sealed class PinchGestureRecognizer : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         _isDisposed = true;
 
         _touchInput.TouchBegan -= OnTouchBegan;

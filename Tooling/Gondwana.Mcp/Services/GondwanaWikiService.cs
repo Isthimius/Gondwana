@@ -138,12 +138,13 @@ public sealed class GondwanaWikiService
 
                     if (score > 0)
                     {
-                        matches.Add(new WikiSearchMatchResult(
-                            content.Title,
-                            content.Slug,
-                            content.Url,
-                            score,
-                            BuildSnippet(content.Markdown, normalizedQuery)));
+                        matches.Add(
+                            new WikiSearchMatchResult(
+                                content.Title,
+                                content.Slug,
+                                content.Url,
+                                score,
+                                BuildSnippet(content.Markdown, normalizedQuery)));
                     }
                 }
                 catch (KeyNotFoundException)
@@ -362,9 +363,9 @@ public sealed class GondwanaWikiService
         int index = 0;
 
         while ((index = text.IndexOf(
-                    value,
-                    index,
-                    StringComparison.OrdinalIgnoreCase)) >= 0)
+                   value,
+                   index,
+                   StringComparison.OrdinalIgnoreCase)) >= 0)
         {
             count++;
             index += Math.Max(value.Length, 1);

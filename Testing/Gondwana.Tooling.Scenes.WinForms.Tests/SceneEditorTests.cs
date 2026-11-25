@@ -26,10 +26,16 @@ public sealed partial class SceneEditorTests
         host.Controls.Add(editor);
         host.Show();
         Application.DoEvents();
-        var adapter = Descendants(editor).OfType<PropertyGrid>().Select(grid => grid.SelectedObject).OfType<TilePropertyAdapter>().Single();
+
+        var adapter = Descendants(editor).OfType<PropertyGrid>().Select(grid => grid.SelectedObject)
+            .OfType<TilePropertyAdapter>().Single();
+
         Assert.Equal(TileTransform.Identity, adapter.Transform);
         Assert.Empty(layer.Tiles);
-        var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.Cast<ToolStripItem>()).ToArray();
+
+        var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.Cast<ToolStripItem>())
+            .ToArray();
+
         var right = buttons.Single(item => item.Text == "Rotate right 90°");
         right.PerformClick();
         Assert.Equal(TileTransform.Rotate90, layer.Tiles.Single().Transform);
@@ -62,8 +68,10 @@ public sealed partial class SceneEditorTests
         Application.DoEvents();
 
         var preview = Descendants(editor).OfType<ScenePreviewControl>().Single();
+
         var bar = Descendants(editor).OfType<ToolStrip>().Single(strip =>
             strip.Items.OfType<ToolStripComboBox>().Any(combo => combo.Items.Contains("Fit")));
+
         var zoom = bar.Items.OfType<ToolStripComboBox>().Single(combo => combo.Items.Contains("Fit"));
         var point = new Point(20, 20);
 
@@ -94,11 +102,15 @@ public sealed partial class SceneEditorTests
     {
         var definition = new SceneDefinition
         {
-            Layers = [new SceneLayerDefinition
-            {
-                Columns = 8, Rows = 60, TileWidth = 16, TileHeight = 16
-            }]
+            Layers =
+            [
+                new SceneLayerDefinition
+                {
+                    Columns = 8, Rows = 60, TileWidth = 16, TileHeight = 16
+                }
+            ]
         };
+
         using var preview = new ScenePreviewControl { Size = new(240, 240) };
         using var host = new Form { Size = new(300, 300), Opacity = 0, ShowInTaskbar = false };
         host.Controls.Add(preview);
@@ -117,9 +129,19 @@ public sealed partial class SceneEditorTests
         // Exercise the actual WinForms wheel handler. Wheel input does not
         // raise OnScroll, unlike using the scrollbar directly.
         typeof(ScenePreviewControl)
-            .GetMethod("OnMouseWheel",
+            .GetMethod(
+                "OnMouseWheel",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-            .Invoke(preview, [new MouseEventArgs(MouseButtons.None, 0, 20, 20, 120)]);
+            .Invoke(
+                preview,
+                [
+                    new MouseEventArgs(
+                        MouseButtons.None,
+                        0,
+                        20,
+                        20,
+                        120)
+                ]);
 
         Assert.True(preview.AutoScrollPosition.Y > before);
         Assert.Contains(preview.ClientRectangle, invalidatedRegions);
@@ -135,19 +157,23 @@ public sealed partial class SceneEditorTests
     {
         string root = Path.Combine(Path.GetTempPath(), "GondwanaGaniFrame-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
+
         try
         {
             string path = Path.Combine(root, "water.gani");
-            AnimationDefinitionSerializer.Save(path, new AnimationDefinition
-            {
-                Key = "water.flow",
-                ThrottleTime = 0.1,
-                Frames =
-                [
-                    new() { Tilesheet = "terrain", RegionName = "water", XTile = 2, YTile = 3 },
-                    new() { Tilesheet = "terrain", RegionName = "water", XTile = 4, YTile = 5 }
-                ]
-            });
+
+            AnimationDefinitionSerializer.Save(
+                path,
+                new AnimationDefinition
+                {
+                    Key = "water.flow",
+                    ThrottleTime = 0.1,
+                    Frames =
+                    [
+                        new() { Tilesheet = "terrain", RegionName = "water", XTile = 2, YTile = 3 },
+                        new() { Tilesheet = "terrain", RegionName = "water", XTile = 4, YTile = 5 }
+                    ]
+                });
 
             var document = SceneDocument.Create(root);
             var layer = document.AddLayer();
@@ -159,18 +185,22 @@ public sealed partial class SceneEditorTests
 
             var structure = Descendants(editor).OfType<TreeView>()
                 .Single(tree => tree.Nodes.Count > 0 && tree.Nodes[0].Tag is SceneDefinition);
+
             structure.SelectedNode = structure.Nodes[0].Nodes.Cast<TreeNode>()
                 .Single(node => ReferenceEquals(node.Tag, layer));
+
             editor.AddAnimationSources([path]);
             Application.DoEvents();
 
             var animations = Descendants(editor).OfType<ListView>()
                 .Single(list => list.Columns.Count > 0 && list.Columns[0].Text == "Animation key");
+
             Assert.Equal("water.flow", Assert.Single(animations.SelectedItems.Cast<ListViewItem>()).Text);
 
             var assign = Descendants(editor).OfType<ToolStrip>()
                 .SelectMany(bar => bar.Items.Cast<ToolStripItem>())
                 .Single(item => item.Text == "Assign");
+
             Assert.Empty(layer.Tiles);
             assign.PerformClick();
 
@@ -183,9 +213,12 @@ public sealed partial class SceneEditorTests
             Assert.Equal(3, tile.Frame.YTile);
             Assert.True(tile.EnableAnimator);
             Assert.True(tile.StartAnimation);
-            document.History.Undo(); Assert.Empty(layer.Tiles);
-            document.History.Redo(); Assert.Same(tile, Assert.Single(layer.Tiles));
-            Assert.Equal("water.flow", tile.AnimationKey); Assert.True(tile.StartAnimation);
+            document.History.Undo();
+            Assert.Empty(layer.Tiles);
+            document.History.Redo();
+            Assert.Same(tile, Assert.Single(layer.Tiles));
+            Assert.Equal("water.flow", tile.AnimationKey);
+            Assert.True(tile.StartAnimation);
 
             // A later assignment replaces a stale frame and reenables playback.
             tile.Frame = new() { Tilesheet = "other", RegionName = "old", XTile = 9, YTile = 9 };
@@ -201,6 +234,7 @@ public sealed partial class SceneEditorTests
 
             var restored = SceneDefinitionSerializer.FromJson(
                 SceneDefinitionSerializer.ToJson(document.Definition));
+
             var stored = Assert.Single(Assert.Single(restored.Layers).Tiles);
             Assert.Equal("water.flow", stored.AnimationKey);
             Assert.Equal(2, stored.Frame!.XTile);
@@ -222,24 +256,85 @@ public sealed partial class SceneEditorTests
     {
         var document = SceneDocument.Create(Path.GetTempPath());
         var layer = document.AddLayer();
+
         var region = new TilesheetRegionDefinition
         {
             TileSize = new(40, 20),
-            TilePadding = new(1, 2, 3, 4),
-            Overhang = new(5, 6, 7, 8),
-            CollisionAdjust = new(1, 2, 3, 4),
-            Frames = [new() { XTile = 1, YTile = 0, CollisionAdjust = new(2, 4, 6, 8) }]
+            TilePadding = new(
+                1,
+                2,
+                3,
+                4),
+            Overhang = new(
+                5,
+                6,
+                7,
+                8),
+            CollisionAdjust = new(
+                1,
+                2,
+                3,
+                4),
+            Frames =
+            [
+                new()
+                {
+                    XTile = 1, YTile = 0, CollisionAdjust = new(
+                        2,
+                        4,
+                        6,
+                        8)
+                }
+            ]
         };
+
         var frame = new SceneFrameDefinition { XTile = 1 };
-        var adapter = new TilePropertyAdapter(document, layer, 0, 0, () => { }, () => (region, frame));
+
+        var adapter = new TilePropertyAdapter(
+            document,
+            layer,
+            0,
+            0,
+            () => { },
+            () => (region, frame));
+
         adapter.Transform = TileTransform.Rotate90;
         adapter.AdjustCollisionAreaByFrame = true;
         Assert.Equal(new Size(20, 40), adapter.EffectiveTileSize);
-        Assert.Equal(new Spacing(4, 1, 2, 3), adapter.EffectiveTilePadding);
-        Assert.Equal(new Spacing(8, 5, 6, 7), adapter.EffectiveOverhang);
-        Assert.Equal(new Gondwana.Physics.Collisions.CollisionAdjust(6, 8, 4, 2), adapter.EffectiveCollisionAdjust);
-        Assert.Equal(new Spacing(1, 2, 3, 4), region.TilePadding);
+
+        Assert.Equal(
+            new Spacing(
+                4,
+                1,
+                2,
+                3),
+            adapter.EffectiveTilePadding);
+
+        Assert.Equal(
+            new Spacing(
+                8,
+                5,
+                6,
+                7),
+            adapter.EffectiveOverhang);
+
+        Assert.Equal(
+            new Gondwana.Physics.Collisions.CollisionAdjust(
+                6,
+                8,
+                4,
+                2),
+            adapter.EffectiveCollisionAdjust);
+
+        Assert.Equal(
+            new Spacing(
+                1,
+                2,
+                3,
+                4),
+            region.TilePadding);
     }
+
     /// <summary>
     /// Verifies preview orients artwork without changing source.
     /// </summary>
@@ -249,50 +344,145 @@ public sealed partial class SceneEditorTests
     /// <param name="bl">The bl value for this test case.</param>
     /// <param name="br">The br value for this test case.</param>
     [Theory]
-    [InlineData(TileTransform.Identity, 0, 1, 2, 3)]
-    [InlineData(TileTransform.Rotate90, 2, 0, 3, 1)]
-    [InlineData(TileTransform.Rotate180, 3, 2, 1, 0)]
-    [InlineData(TileTransform.Rotate270, 1, 3, 0, 2)]
-    [InlineData(TileTransform.FlipHorizontal, 1, 0, 3, 2)]
-    [InlineData(TileTransform.FlipVertical, 2, 3, 0, 1)]
-    [InlineData(TileTransform.FlipDiagonal, 0, 2, 1, 3)]
-    [InlineData(TileTransform.FlipAntiDiagonal, 3, 1, 2, 0)]
-    public void PreviewOrientsArtworkWithoutChangingSource(TileTransform transform, int tl, int tr, int bl, int br) => RunSta(() =>
+    [InlineData(
+        TileTransform.Identity,
+        0,
+        1,
+        2,
+        3)]
+    [InlineData(
+        TileTransform.Rotate90,
+        2,
+        0,
+        3,
+        1)]
+    [InlineData(
+        TileTransform.Rotate180,
+        3,
+        2,
+        1,
+        0)]
+    [InlineData(
+        TileTransform.Rotate270,
+        1,
+        3,
+        0,
+        2)]
+    [InlineData(
+        TileTransform.FlipHorizontal,
+        1,
+        0,
+        3,
+        2)]
+    [InlineData(
+        TileTransform.FlipVertical,
+        2,
+        3,
+        0,
+        1)]
+    [InlineData(
+        TileTransform.FlipDiagonal,
+        0,
+        2,
+        1,
+        3)]
+    [InlineData(
+        TileTransform.FlipAntiDiagonal,
+        3,
+        1,
+        2,
+        0)]
+    public void PreviewOrientsArtworkWithoutChangingSource(
+        TileTransform transform,
+        int tl,
+        int tr,
+        int bl,
+        int br) => RunSta(() =>
     {
         string root = Path.Combine(Path.GetTempPath(), "TilePreview-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
+
         try
         {
             Color[] colors = [Color.Red, Color.Lime, Color.Blue, Color.Yellow];
+
             using (var bitmap = new Bitmap(40, 20))
             {
-                for (int y = 0; y < 20; y++) for (int x = 0; x < 40; x++) bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+                for (int y = 0; y < 20; y++)
+                    for (int x = 0; x < 40; x++)
+                        bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+
                 bitmap.Save(Path.Combine(root, "atlas.png"));
             }
+
             var gts = new TilesheetDefinition
             {
                 Name = "preview",
                 Image = new() { FilePath = "atlas.png" },
-                Regions = [new() { Name = "default", Area = new(0, 0, 40, 20), TileSize = new(40, 20) }]
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "default", Area = new(
+                            0,
+                            0,
+                            40,
+                            20),
+                        TileSize = new(40, 20)
+                    }
+                ]
             };
+
             string path = Path.Combine(root, "atlas.gts");
             TilesheetDefinitionSerializer.Save(path, gts);
             using var source = SceneTilesheetSource.Load(path);
+
             var definition = new SceneDefinition
             {
-                Layers = [new() { Columns = 1, Rows = 1, TileWidth = 40, TileHeight = 20,
-                    Tiles = [new() { Transform = transform, Frame = new() { Tilesheet = "preview", RegionName = "default" } }] }]
+                Layers =
+                [
+                    new()
+                    {
+                        Columns = 1, Rows = 1, TileWidth = 40, TileHeight = 20,
+                        Tiles =
+                        [
+                            new()
+                            {
+                                Transform = transform, Frame = new() { Tilesheet = "preview", RegionName = "default" }
+                            }
+                        ]
+                    }
+                ]
             };
+
             using var preview = new ScenePreviewControl { Size = new(240, 240), ShowGridLines = false };
             preview.Configure(definition, _ => source, _ => null);
             preview.SetZoom(2);
             using var output = new Bitmap(240, 240);
-            preview.DrawToBitmap(output, new(0, 0, 240, 240));
+
+            preview.DrawToBitmap(
+                output,
+                new(
+                    0,
+                    0,
+                    240,
+                    240));
+
             var hits = new List<Point>();
             var argb = colors.Select(color => color.ToArgb()).ToHashSet();
-            for (int y = 0; y < 240; y++) for (int x = 0; x < 240; x++) if (argb.Contains(output.GetPixel(x, y).ToArgb())) hits.Add(new(x, y));
+
+            for (int y = 0; y < 240; y++)
+                for (int x = 0; x < 240; x++)
+                    if (argb.Contains(output.GetPixel(x, y).ToArgb()))
+                        hits.Add(new(x, y));
+
             Assert.NotEmpty(hits);
-            int minX = hits.Min(p => p.X), maxX = hits.Max(p => p.X), minY = hits.Min(p => p.Y), maxY = hits.Max(p => p.Y);
+
+            int minX = hits.Min(p => p.X),
+                maxX = hits.Max(p => p.X),
+                minY = hits.Min(p => p.Y),
+                maxY = hits.Max(p => p.Y);
+
             int x1 = minX + (maxX - minX) / 4, x2 = minX + 3 * (maxX - minX) / 4;
             int y1 = minY + (maxY - minY) / 4, y2 = minY + 3 * (maxY - minY) / 4;
             Assert.Equal(colors[tl].ToArgb(), output.GetPixel(x1, y1).ToArgb());
@@ -302,8 +492,12 @@ public sealed partial class SceneEditorTests
             Assert.Equal(Color.Red.ToArgb(), source.Image!.GetPixel(5, 5).ToArgb());
             Assert.Equal(Color.Yellow.ToArgb(), source.Image.GetPixel(35, 15).ToArgb());
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     });
+
     /// <summary>
     /// Verifies document save as rebases loose gts and gani references.
     /// </summary>
@@ -313,6 +507,7 @@ public sealed partial class SceneEditorTests
         string root = Path.Combine(
             Path.GetTempPath(),
             "GondwanaGscnEditor-" + Guid.NewGuid());
+
         string first = Path.Combine(root, "first");
         string second = Path.Combine(root, "second");
         string dependencies = Path.Combine(root, "deps");
@@ -370,6 +565,7 @@ public sealed partial class SceneEditorTests
             string root = Path.Combine(
                 Path.GetTempPath(),
                 "GondwanaGscnEditor-" + Guid.NewGuid());
+
             Directory.CreateDirectory(root);
 
             try
@@ -378,18 +574,21 @@ public sealed partial class SceneEditorTests
                 var layer = document.AddLayer();
 
                 using var editor = new SceneEditorControl(document);
+
                 using var host = new Form
                 {
                     Size = new Size(1500, 950),
                     Opacity = 0,
                     ShowInTaskbar = false
                 };
+
                 host.Controls.Add(editor);
                 host.Show();
                 Application.DoEvents();
 
                 var dock = Assert.Single(
                     Descendants(editor).OfType<DockPanel>());
+
                 var panes = dock.Contents.Cast<DockContent>().ToArray();
 
                 Assert.Equal(
@@ -404,21 +603,23 @@ public sealed partial class SceneEditorTests
                     ],
                     panes.Select(pane => pane.Text).Order().ToArray());
 
-                Assert.All(panes, pane =>
-                {
-                    Assert.Same(dock, pane.DockPanel);
-                    Assert.True(pane.HideOnClose);
-                    Assert.False(
-                        pane.DockHandler.IsDockStateValid(
-                            DockState.Float));
-                });
+                Assert.All(
+                    panes,
+                    pane =>
+                    {
+                        Assert.Same(dock, pane.DockPanel);
+                        Assert.True(pane.HideOnClose);
+
+                        Assert.False(
+                            pane.DockHandler.IsDockStateValid(
+                                DockState.Float));
+                    });
 
                 Assert.Equal(
                     panes.Select(pane => pane.Text).Order(),
                     SceneEditorControl.PaneNames.Order());
 
-                var previewPane = panes.Single(
-                    pane => pane.Text == "Scene preview");
+                var previewPane = panes.Single(pane => pane.Text == "Scene preview");
                 var previewPaneBeforeClose = previewPane.Pane;
 
                 var previewControl = Descendants(previewPane)
@@ -432,6 +633,7 @@ public sealed partial class SceneEditorTests
                 Assert.Contains(
                     previewToolbar.Items.Cast<ToolStripItem>(),
                     item => item.Text == "−");
+
                 Assert.Contains(
                     previewToolbar.Items.Cast<ToolStripItem>(),
                     item => item.Text == "+");
@@ -462,6 +664,7 @@ public sealed partial class SceneEditorTests
                         new Point(10, 10),
                         120,
                         controlPressed: true));
+
                 Assert.Equal(1.25f, previewControl.Zoom, 3);
 
                 previewControl.SetZoom(1f);
@@ -481,8 +684,7 @@ public sealed partial class SceneEditorTests
                 Assert.Same(previewPaneBeforeClose, previewPane.Pane);
                 Assert.False(editor.ShowPane("Not a real pane"));
 
-                var structurePane = panes.Single(
-                    pane => pane.Text == "Scene structure");
+                var structurePane = panes.Single(pane => pane.Text == "Scene structure");
                 structurePane.Activate();
                 structurePane.Pane.CloseActiveContent();
                 Application.DoEvents();
@@ -495,15 +697,18 @@ public sealed partial class SceneEditorTests
                 layer.Columns = 100;
                 layer.Rows = 100;
                 editor.UpdateValidation();
+
                 previewControl.Configure(
                     document.Definition,
                     _ => null,
                     _ => null);
+
                 Application.DoEvents();
 
                 Assert.True(
                     previewControl.AutoScrollMinSize.Width >
                     previewControl.ClientSize.Width);
+
                 Assert.True(
                     previewControl.AutoScrollMinSize.Height >
                     previewControl.ClientSize.Height);
@@ -529,15 +734,14 @@ public sealed partial class SceneEditorTests
                 Assert.Equal(0, tile.Y);
                 Assert.False(tile.Visible);
 
-                var validation = panes.Single(
-                    pane => pane.Text == "Validation");
-                var preview = panes.Single(
-                    pane => pane.Text == "Scene preview");
+                var validation = panes.Single(pane => pane.Text == "Validation");
+                var preview = panes.Single(pane => pane.Text == "Scene preview");
 
                 validation.Show(
                     preview.Pane,
                     DockAlignment.Right,
                     .25);
+
                 Application.DoEvents();
 
                 Assert.Same(dock, validation.DockPanel);
@@ -556,6 +760,7 @@ public sealed partial class SceneEditorTests
     {
         string root = Path.Combine(Path.GetTempPath(), "SceneLayerChecks-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
+
         try
         {
             var document = SceneDocument.Create(root);
@@ -585,7 +790,9 @@ public sealed partial class SceneEditorTests
 
             var structure = Descendants(editor).OfType<TreeView>()
                 .Single(tree => tree.Nodes.Count > 0 && tree.Nodes[0].Tag is SceneDefinition);
+
             var preview = Descendants(editor).OfType<ScenePreviewControl>().Single();
+
             var buttons = Descendants(editor).OfType<ToolStrip>()
                 .SelectMany(bar => bar.Items.Cast<ToolStripItem>()).ToArray();
 
@@ -643,10 +850,22 @@ public sealed partial class SceneEditorTests
         using var preview = new ScenePreviewControl { Size = new(240, 240) };
         preview.Configure(definition, _ => null, _ => null);
         Assert.Equal(Size.Empty, preview.AutoScrollMinSize);
-        preview.Configure(definition, _ => null, _ => null, _ => true);
+
+        preview.Configure(
+            definition,
+            _ => null,
+            _ => null,
+            _ => true);
+
         Assert.True(preview.AutoScrollMinSize.Width > 0);
         Assert.False(hidden.Visible);
-        preview.Configure(definition, _ => null, _ => null, _ => false);
+
+        preview.Configure(
+            definition,
+            _ => null,
+            _ => null,
+            _ => false);
+
         Assert.Equal(Size.Empty, preview.AutoScrollMinSize);
     });
 
@@ -655,6 +874,7 @@ public sealed partial class SceneEditorTests
         foreach (Control child in parent.Controls)
         {
             yield return child;
+
             foreach (var descendant in Descendants(child))
                 yield return descendant;
         }
@@ -663,6 +883,7 @@ public sealed partial class SceneEditorTests
     private static void RunSta(Action test)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
         {
             try
@@ -670,6 +891,7 @@ public sealed partial class SceneEditorTests
                 Application.SetUnhandledExceptionMode(
                     UnhandledExceptionMode.ThrowException,
                     threadScope: true);
+
                 test();
             }
             catch (Exception ex)

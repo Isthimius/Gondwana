@@ -10,10 +10,12 @@ public sealed class PropertyHelpTests
     public void AnimationPropertiesHaveDescriptions()
     {
         var adapter = new AnimationPropertyAdapter(AnimationDocument.Create(Path.GetTempPath()));
+
         foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(adapter))
         {
             if (property.IsBrowsable)
-                Assert.False(string.IsNullOrWhiteSpace(property.Description),
+                Assert.False(
+                    string.IsNullOrWhiteSpace(property.Description),
                     $"AnimationPropertyAdapter.{property.Name} must have help text.");
         }
     }

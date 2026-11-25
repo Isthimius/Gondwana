@@ -46,10 +46,30 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     private bool _isShown;
     private bool _disposed;
 
-    private Color _normalTabColor = Color.FromArgb(255, 60, 60, 68);
-    private Color _hoverTabColor = Color.FromArgb(255, 78, 78, 88);
-    private Color _pressedTabColor = Color.FromArgb(255, 42, 42, 48);
-    private Color _selectedTabColor = Color.FromArgb(255, 48, 89, 142);
+    private Color _normalTabColor = Color.FromArgb(
+        255,
+        60,
+        60,
+        68);
+
+    private Color _hoverTabColor = Color.FromArgb(
+        255,
+        78,
+        78,
+        88);
+
+    private Color _pressedTabColor = Color.FromArgb(
+        255,
+        42,
+        42,
+        48);
+
+    private Color _selectedTabColor = Color.FromArgb(
+        255,
+        48,
+        89,
+        142);
+
     private Color _tabTextColor = Color.White;
 
     /// <summary>
@@ -69,11 +89,16 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="view">The view that renders the control.</param>
     /// <param name="bounds">The control bounds in view pixels.</param>
     /// <param name="nickname">The optional diagnostic nickname.</param>
-    public TabControlWidget(RenderSurfaceHostBase renderSurfaceHost,
-                            View view,
-                            Rectangle bounds,
-                            string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public TabControlWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -90,11 +115,16 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="sceneLayer">The scene layer that renders the control.</param>
     /// <param name="bounds">The control bounds in world pixels.</param>
     /// <param name="nickname">The optional diagnostic nickname.</param>
-    public TabControlWidget(RenderSurfaceHostBase renderSurfaceHost,
-                            SceneLayer sceneLayer,
-                            Rectangle bounds,
-                            string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public TabControlWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -112,6 +142,7 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         get
         {
             Vector2 position = GetPosition();
+
             return new Rectangle(
                 (int)MathF.Round(position.X),
                 (int)MathF.Round(position.Y),
@@ -227,7 +258,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         set
         {
             if (value < 48)
-                throw new ArgumentOutOfRangeException(nameof(value), "The preferred tab width must be at least 48 pixels.");
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "The preferred tab width must be at least 48 pixels.");
 
             if (_preferredTabWidth == value)
                 return;
@@ -274,7 +307,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         set
         {
             if (value < 0f)
-                throw new ArgumentOutOfRangeException(nameof(value), "The tab reordering threshold cannot be negative.");
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "The tab reordering threshold cannot be negative.");
 
             if (Math.Abs(_tabReorderDragThresholdPx - value) < float.Epsilon)
                 return;
@@ -293,15 +328,17 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="mnemonic">The optional <c>Alt</c>-key mnemonic that selects the new page.</param>
     /// <param name="nickname">The optional diagnostic nickname for the page.</param>
     /// <returns>The newly created page, which can own other widgets.</returns>
-    public TabPageWidget AddTab(string title,
-                                char? mnemonic = null,
-                                string? nickname = null)
+    public TabPageWidget AddTab(
+        string title,
+        char? mnemonic = null,
+        string? nickname = null)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ValidateTitle(title);
         ValidateMnemonic(mnemonic);
 
         Rectangle initialHeaderBounds = new(Bounds.Location, new Size(1, TabHeight));
+
         Rectangle initialContentBounds = new(
             Bounds.Left,
             Bounds.Top + TabHeight,
@@ -309,12 +346,34 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
             Math.Max(1, Bounds.Height - TabHeight));
 
         TabPageWidget page = Mode == DirectDrawingMode.View
-            ? new TabPageWidget(RenderSurfaceHost, _view!, initialContentBounds, title, mnemonic, nickname)
-            : new TabPageWidget(RenderSurfaceHost, _sceneLayer!, initialContentBounds, title, mnemonic, nickname);
+            ? new TabPageWidget(
+                RenderSurfaceHost,
+                _view!,
+                initialContentBounds,
+                title,
+                mnemonic,
+                nickname)
+            : new TabPageWidget(
+                RenderSurfaceHost,
+                _sceneLayer!,
+                initialContentBounds,
+                title,
+                mnemonic,
+                nickname);
 
         TabHeaderWidget header = Mode == DirectDrawingMode.View
-            ? new TabHeaderWidget(RenderSurfaceHost, _view!, initialHeaderBounds, title, $"{page.Nickname}.header")
-            : new TabHeaderWidget(RenderSurfaceHost, _sceneLayer!, initialHeaderBounds, title, $"{page.Nickname}.header");
+            ? new TabHeaderWidget(
+                RenderSurfaceHost,
+                _view!,
+                initialHeaderBounds,
+                title,
+                $"{page.Nickname}.header")
+            : new TabHeaderWidget(
+                RenderSurfaceHost,
+                _sceneLayer!,
+                initialHeaderBounds,
+                title,
+                $"{page.Nickname}.header");
 
         page.TitleChanged += OnPageTitleChanged;
         page.Disposing += OnPageDisposing;
@@ -347,8 +406,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="page">The page to remove.</param>
     /// <param name="dispose">Whether to dispose the page and its header after removal.</param>
     /// <returns><see langword="true"/> when the page was owned by this control; otherwise, <see langword="false"/>.</returns>
-    public bool RemoveTab(TabPageWidget page,
-                          bool dispose = false)
+    public bool RemoveTab(
+        TabPageWidget page,
+        bool dispose = false)
     {
         ArgumentNullException.ThrowIfNull(page);
         return RemoveTabCore(page, dispose, raiseSelectionChanged: true);
@@ -387,6 +447,7 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         ArgumentNullException.ThrowIfNull(page);
 
         int index = _tabs.IndexOf(page);
+
         if (index < 0)
             throw new ArgumentException("The page is not owned by this tab control.", nameof(page));
 
@@ -399,8 +460,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="fromIndex">The zero-based index of the page to move.</param>
     /// <param name="toIndex">The zero-based destination index.</param>
     /// <returns>The current tab control.</returns>
-    public TabControlWidget MoveTab(int fromIndex,
-                                    int toIndex)
+    public TabControlWidget MoveTab(
+        int fromIndex,
+        int toIndex)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -432,12 +494,14 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="page">The page to move.</param>
     /// <param name="toIndex">The zero-based destination index.</param>
     /// <returns>The current tab control.</returns>
-    public TabControlWidget MoveTab(TabPageWidget page,
-                                    int toIndex)
+    public TabControlWidget MoveTab(
+        TabPageWidget page,
+        int toIndex)
     {
         ArgumentNullException.ThrowIfNull(page);
 
         int fromIndex = _tabs.IndexOf(page);
+
         if (fromIndex < 0)
             throw new ArgumentException("The page is not owned by this tab control.", nameof(page));
 
@@ -482,10 +546,11 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="pressed">The unselected pressed color.</param>
     /// <param name="selected">The selected tab color.</param>
     /// <returns>The current tab control.</returns>
-    public TabControlWidget SetTabColors(Color normal,
-                                         Color hover,
-                                         Color pressed,
-                                         Color selected)
+    public TabControlWidget SetTabColors(
+        Color normal,
+        Color hover,
+        Color pressed,
+        Color selected)
     {
         _normalTabColor = normal;
         _hoverTabColor = hover;
@@ -595,11 +660,13 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         CanReceiveFocus = false;
     }
 
-    private bool RemoveTabCore(TabPageWidget page,
-                               bool dispose,
-                               bool raiseSelectionChanged)
+    private bool RemoveTabCore(
+        TabPageWidget page,
+        bool dispose,
+        bool raiseSelectionChanged)
     {
         int removedIndex = _tabs.IndexOf(page);
+
         if (removedIndex < 0)
             return false;
 
@@ -653,20 +720,23 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
             header.SetText(page.Title);
     }
 
-    private void OnPageDisposing(object? sender,
-                                 IDirectDrawable _)
+    private void OnPageDisposing(
+        object? sender,
+        IDirectDrawable _)
     {
         if (!_disposed && sender is TabPageWidget page)
             RemoveTabCore(page, dispose: true, raiseSelectionChanged: true);
     }
 
-    private void OnHeaderDisposing(object? sender,
-                                   IDirectDrawable _)
+    private void OnHeaderDisposing(
+        object? sender,
+        IDirectDrawable _)
     {
         if (_disposed || sender is not TabHeaderWidget header)
             return;
 
         TabPageWidget? page = _headers.FirstOrDefault(pair => ReferenceEquals(pair.Value, header)).Key;
+
         if (page is not null)
             RemoveTabCore(page, dispose: true, raiseSelectionChanged: true);
     }
@@ -674,18 +744,21 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
     private void OnHeaderInvoked(TabHeaderWidget header)
     {
         TabPageWidget? page = _headers.FirstOrDefault(pair => ReferenceEquals(pair.Value, header)).Key;
+
         if (page is not null)
             SelectTab(page);
     }
 
-    private void OnHeaderDragged(TabHeaderWidget header,
-                                 WidgetDragEventArgs args,
-                                 View view)
+    private void OnHeaderDragged(
+        TabHeaderWidget header,
+        WidgetDragEventArgs args,
+        View view)
     {
         if (!IsTabReorderingEnabled)
             return;
 
         TabPageWidget? page = _headers.FirstOrDefault(pair => ReferenceEquals(pair.Value, header)).Key;
+
         if (page is null)
             return;
 
@@ -701,14 +774,16 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         Relayout();
     }
 
-    private int GetHeaderIndexAt(PointF screenPositionPx,
-                                 View view)
+    private int GetHeaderIndexAt(
+        PointF screenPositionPx,
+        View view)
     {
         Point screenPosition = Point.Round(screenPositionPx);
 
         for (int index = 0; index < _tabs.Count; index++)
         {
             TabHeaderWidget header = _headers[_tabs[index]];
+
             if (header.HitTest(view, screenPosition))
             {
                 return index;
@@ -745,6 +820,7 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
                 selected ? _selectedTabColor : _normalTabColor,
                 selected ? _selectedTabColor : _hoverTabColor,
                 selected ? _selectedTabColor : _pressedTabColor);
+
             header.SetTextColor(_tabTextColor);
         }
     }
@@ -788,14 +864,16 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         int autoColumns = _tabs.Count == 0
             ? 1
             : Math.Min(_tabs.Count, Math.Max(1, bounds.Width / PreferredTabWidth));
+
         int autoRows = Math.Max(1, (int)Math.Ceiling(_tabs.Count / (double)autoColumns));
 
         return (autoRows, autoColumns);
     }
 
-    private Rectangle CreateHeaderBounds(Rectangle bounds,
-                                         int index,
-                                         int columns)
+    private Rectangle CreateHeaderBounds(
+        Rectangle bounds,
+        int index,
+        int columns)
     {
         int row = index / columns;
         int column = index % columns;
@@ -809,8 +887,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
             bounds.Top + (row + 1) * TabHeight);
     }
 
-    private Rectangle CreateContentBounds(Rectangle bounds,
-                                          int rowCount)
+    private Rectangle CreateContentBounds(
+        Rectangle bounds,
+        int rowCount)
     {
         int contentTop = bounds.Top + rowCount * TabHeight;
 
@@ -855,8 +934,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
     }
 
-    private static bool MatchesMnemonic(char? mnemonic,
-                                        int key)
+    private static bool MatchesMnemonic(
+        char? mnemonic,
+        int key)
     {
         return mnemonic is char character &&
                key >= 0 &&
@@ -866,9 +946,23 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
 
     private sealed class TabHeaderWidget : DraggableWidgetBase
     {
-        private Color _normalColor = Color.FromArgb(255, 60, 60, 68);
-        private Color _hoverColor = Color.FromArgb(255, 78, 78, 88);
-        private Color _pressedColor = Color.FromArgb(255, 42, 42, 48);
+        private Color _normalColor = Color.FromArgb(
+            255,
+            60,
+            60,
+            68);
+
+        private Color _hoverColor = Color.FromArgb(
+            255,
+            78,
+            78,
+            88);
+
+        private Color _pressedColor = Color.FromArgb(
+            255,
+            42,
+            42,
+            48);
 
         /// <summary>
         /// Occurs when a header is selected by pointer or keyboard input.
@@ -896,17 +990,32 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         /// <param name="bounds">The header bounds in view pixels.</param>
         /// <param name="text">The tab title.</param>
         /// <param name="nickname">The diagnostic nickname.</param>
-        internal TabHeaderWidget(RenderSurfaceHostBase renderSurfaceHost,
-                                 View view,
-                                 Rectangle bounds,
-                                 string text,
-                                 string nickname)
-            : base(renderSurfaceHost, DirectDrawingMode.View, bounds.Location, nickname)
+        internal TabHeaderWidget(
+            RenderSurfaceHostBase renderSurfaceHost,
+            View view,
+            Rectangle bounds,
+            string text,
+            string nickname)
+            : base(
+                renderSurfaceHost,
+                DirectDrawingMode.View,
+                bounds.Location,
+                nickname)
         {
             ArgumentNullException.ThrowIfNull(view);
 
-            Background = CreateBackground(renderSurfaceHost, view, bounds, nickname);
-            Label = CreateLabel(renderSurfaceHost, view, bounds, text);
+            Background = CreateBackground(
+                renderSurfaceHost,
+                view,
+                bounds,
+                nickname);
+
+            Label = CreateLabel(
+                renderSurfaceHost,
+                view,
+                bounds,
+                text);
+
             CompleteInitialization();
         }
 
@@ -918,17 +1027,32 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         /// <param name="bounds">The header bounds in world pixels.</param>
         /// <param name="text">The tab title.</param>
         /// <param name="nickname">The diagnostic nickname.</param>
-        internal TabHeaderWidget(RenderSurfaceHostBase renderSurfaceHost,
-                                 SceneLayer sceneLayer,
-                                 Rectangle bounds,
-                                 string text,
-                                 string nickname)
-            : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, bounds.Location, nickname)
+        internal TabHeaderWidget(
+            RenderSurfaceHostBase renderSurfaceHost,
+            SceneLayer sceneLayer,
+            Rectangle bounds,
+            string text,
+            string nickname)
+            : base(
+                renderSurfaceHost,
+                DirectDrawingMode.SceneLayer,
+                bounds.Location,
+                nickname)
         {
             ArgumentNullException.ThrowIfNull(sceneLayer);
 
-            Background = CreateBackground(renderSurfaceHost, sceneLayer, bounds, nickname);
-            Label = CreateLabel(renderSurfaceHost, sceneLayer, bounds, text);
+            Background = CreateBackground(
+                renderSurfaceHost,
+                sceneLayer,
+                bounds,
+                nickname);
+
+            Label = CreateLabel(
+                renderSurfaceHost,
+                sceneLayer,
+                bounds,
+                text);
+
             CompleteInitialization();
         }
 
@@ -987,9 +1111,10 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         /// <param name="normal">The normal color.</param>
         /// <param name="hover">The hover color.</param>
         /// <param name="pressed">The pressed color.</param>
-        internal void SetColors(Color normal,
-                                Color hover,
-                                Color pressed)
+        internal void SetColors(
+            Color normal,
+            Color hover,
+            Color pressed)
         {
             _normalColor = normal;
             _hoverColor = hover;
@@ -1017,8 +1142,9 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         }
 
         /// <inheritdoc/>
-        protected override Vector2 ConvertScreenDeltaToPositionDelta(Vector2 totalScreenDeltaPx,
-                                                                       View view)
+        protected override Vector2 ConvertScreenDeltaToPositionDelta(
+            Vector2 totalScreenDeltaPx,
+            View view)
         {
             return Vector2.Zero;
         }
@@ -1084,6 +1210,7 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         protected override void OnDragged(WidgetDragEventArgs args)
         {
             base.OnDragged(args);
+
             if (_dragView is not null)
                 ReorderDragged?.Invoke(this, args, _dragView);
         }
@@ -1126,42 +1253,65 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
             Background.SetPosition(Background.GetPosition());
         }
 
-        private static DirectRectangle CreateBackground(RenderSurfaceHostBase renderSurfaceHost,
-                                                        View view,
-                                                        Rectangle bounds,
-                                                        string nickname)
+        private static DirectRectangle CreateBackground(
+            RenderSurfaceHostBase renderSurfaceHost,
+            View view,
+            Rectangle bounds,
+            string nickname)
         {
-            return new DirectRectangle(Color.FromArgb(255, 60, 60, 68),
-                                       renderSurfaceHost,
-                                       view,
-                                       bounds,
-                                       $"{nickname}.background")
+            return new DirectRectangle(
+                    Color.FromArgb(
+                        255,
+                        60,
+                        60,
+                        68),
+                    renderSurfaceHost,
+                    view,
+                    bounds,
+                    $"{nickname}.background")
                 .SetFilled(true)
-                .SetBorderColor(Color.FromArgb(255, 150, 150, 160))
+                .SetBorderColor(
+                    Color.FromArgb(
+                        255,
+                        150,
+                        150,
+                        160))
                 .SetStrokeWidth(1.5f)
                 .SetCornerRadius(5f);
         }
 
-        private static DirectRectangle CreateBackground(RenderSurfaceHostBase renderSurfaceHost,
-                                                        SceneLayer sceneLayer,
-                                                        Rectangle bounds,
-                                                        string nickname)
+        private static DirectRectangle CreateBackground(
+            RenderSurfaceHostBase renderSurfaceHost,
+            SceneLayer sceneLayer,
+            Rectangle bounds,
+            string nickname)
         {
-            return new DirectRectangle(Color.FromArgb(255, 60, 60, 68),
-                                       renderSurfaceHost,
-                                       sceneLayer,
-                                       bounds,
-                                       $"{nickname}.background")
+            return new DirectRectangle(
+                    Color.FromArgb(
+                        255,
+                        60,
+                        60,
+                        68),
+                    renderSurfaceHost,
+                    sceneLayer,
+                    bounds,
+                    $"{nickname}.background")
                 .SetFilled(true)
-                .SetBorderColor(Color.FromArgb(255, 150, 150, 160))
+                .SetBorderColor(
+                    Color.FromArgb(
+                        255,
+                        150,
+                        150,
+                        160))
                 .SetStrokeWidth(1.5f)
                 .SetCornerRadius(5f);
         }
 
-        private static TextBlock CreateLabel(RenderSurfaceHostBase renderSurfaceHost,
-                                             View view,
-                                             Rectangle bounds,
-                                             string text)
+        private static TextBlock CreateLabel(
+            RenderSurfaceHostBase renderSurfaceHost,
+            View view,
+            Rectangle bounds,
+            string text)
         {
             return new TextBlock(renderSurfaceHost, view, bounds)
                 .SetText(text)
@@ -1171,12 +1321,17 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
                 .EnableWrapping(false);
         }
 
-        private static TextBlock CreateLabel(RenderSurfaceHostBase renderSurfaceHost,
-                                             SceneLayer sceneLayer,
-                                             Rectangle bounds,
-                                             string text)
+        private static TextBlock CreateLabel(
+            RenderSurfaceHostBase renderSurfaceHost,
+            SceneLayer sceneLayer,
+            Rectangle bounds,
+            string text)
         {
-            return new TextBlock(renderSurfaceHost, sceneLayer, view: null, worldBounds: bounds)
+            return new TextBlock(
+                    renderSurfaceHost,
+                    sceneLayer,
+                    view: null,
+                    worldBounds: bounds)
                 .SetText(text)
                 .SetFont(SKTypeface.Default, 16f, minSize: 10f)
                 .SetColors(SKColors.White, SKColors.Transparent)

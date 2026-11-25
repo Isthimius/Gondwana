@@ -19,17 +19,32 @@ public sealed partial class AnimationDocument
     public static AnimationDocument Open(AssetsFile archive, string entryName)
     {
         if (!archive.GetAllEntries().Any(entry => entry.AssetType == AssetTypes.AnimationDefinition &&
-            string.Equals(entry.AssetName, entryName, StringComparison.OrdinalIgnoreCase)))
-            throw new FileNotFoundException($"AnimationDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
-        var path = Path.GetFullPath(archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+                                                  string.Equals(
+                                                      entry.AssetName,
+                                                      entryName,
+                                                      StringComparison.OrdinalIgnoreCase)))
+            throw new FileNotFoundException(
+                $"AnimationDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
+
+        var path = Path.GetFullPath(
+            archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+
         var directory = Path.GetDirectoryName(path)!;
         var definitions = AnimationDefinitionSerializer.LoadAll(archive, entryName).ToList();
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
-        var document = new AnimationDocument(definitions[0], null, directory, false)
+
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
+
+        var document = new AnimationDocument(
+            definitions[0],
+            null,
+            directory,
+            false)
         {
             _definitions = definitions,
             PackedLocation = new(AssetTypes.AnimationDefinition, path, entryName)
         };
+
         document.RememberReferenceOrigins();
         document.History.MarkSaved();
         return document;
@@ -45,7 +60,9 @@ public sealed partial class AnimationDocument
     /// <exception cref="InvalidOperationException">The document has no packed location.</exception>
     public void AcceptPackedSave()
     {
-        if (PackedLocation is null) throw new InvalidOperationException("This document is not packed.");
+        if (PackedLocation is null)
+            throw new InvalidOperationException("This document is not packed.");
+
         RememberReferenceOrigins();
         History.MarkSaved();
     }

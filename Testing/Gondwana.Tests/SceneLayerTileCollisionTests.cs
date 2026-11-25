@@ -16,6 +16,7 @@ public sealed class SceneLayerTileCollisionTests
     public void LayerTile_CanConfigureAndRegisterItsPublicCollider()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             columnCount: 1,
             rowCount: 1,

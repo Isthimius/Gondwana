@@ -186,13 +186,21 @@ internal sealed partial class ZeldaGameHost
             GameArt.PlayerDown,
             OverworldSpawn,
             new Size(28, 28));
-        ConfigureActorCollision(_player, new CollisionAdjust(4, 3, 6, 6));
+
+        ConfigureActorCollision(
+            _player,
+            new CollisionAdjust(
+                4,
+                3,
+                6,
+                6));
 
         _sword = CreateActorSprite(
             "player-sword",
             GameArt.SwordDown,
             OverworldSpawn,
             new Size(32, 32));
+
         _sword.Visible = false;
         _sword.ZOrder = 900;
 
@@ -201,20 +209,93 @@ internal sealed partial class ZeldaGameHost
             GameArt.Elder,
             ElderPosition,
             new Size(32, 32));
+
         _elder.ZOrder = 150;
 
-        CreatePickup("field-potion", InventoryItem.Potion, 1, GameArt.Potion, new Vector2(18f, 6f));
-        CreatePickup("rusted-key", InventoryItem.RustedKey, 1, GameArt.Key, new Vector2(40f, 21f));
-        CreatePickup("sun-relic", InventoryItem.SunRelic, 1, GameArt.Relic, new Vector2(60f, 8f));
+        CreatePickup(
+            "field-potion",
+            InventoryItem.Potion,
+            1,
+            GameArt.Potion,
+            new Vector2(18f, 6f));
 
-        CreateEnemy("moss-slime-one", GameArt.Slime, new Vector2(17f, 20f), WorldArea.Overworld, 2, 2.0f, 1);
-        CreateEnemy("moss-slime-two", GameArt.Slime, new Vector2(32f, 10f), WorldArea.Overworld, 2, 2.1f, 1);
-        CreateEnemy("moss-slime-three", GameArt.Slime, new Vector2(38f, 24f), WorldArea.Overworld, 3, 2.2f, 1);
-        CreateEnemy("road-bat", GameArt.Bat, new Vector2(43f, 7f), WorldArea.Overworld, 2, 2.7f, 1);
+        CreatePickup(
+            "rusted-key",
+            InventoryItem.RustedKey,
+            1,
+            GameArt.Key,
+            new Vector2(40f, 21f));
 
-        CreateEnemy("crypt-bat-one", GameArt.Bat, new Vector2(58f, 10f), WorldArea.Dungeon, 2, 2.8f, 1);
-        CreateEnemy("crypt-bat-two", GameArt.Bat, new Vector2(61f, 20f), WorldArea.Dungeon, 2, 2.8f, 1);
-        CreateEnemy("crypt-slime", GameArt.Slime, new Vector2(62f, 15f), WorldArea.Dungeon, 3, 2.2f, 1);
+        CreatePickup(
+            "sun-relic",
+            InventoryItem.SunRelic,
+            1,
+            GameArt.Relic,
+            new Vector2(60f, 8f));
+
+        CreateEnemy(
+            "moss-slime-one",
+            GameArt.Slime,
+            new Vector2(17f, 20f),
+            WorldArea.Overworld,
+            2,
+            2.0f,
+            1);
+
+        CreateEnemy(
+            "moss-slime-two",
+            GameArt.Slime,
+            new Vector2(32f, 10f),
+            WorldArea.Overworld,
+            2,
+            2.1f,
+            1);
+
+        CreateEnemy(
+            "moss-slime-three",
+            GameArt.Slime,
+            new Vector2(38f, 24f),
+            WorldArea.Overworld,
+            3,
+            2.2f,
+            1);
+
+        CreateEnemy(
+            "road-bat",
+            GameArt.Bat,
+            new Vector2(43f, 7f),
+            WorldArea.Overworld,
+            2,
+            2.7f,
+            1);
+
+        CreateEnemy(
+            "crypt-bat-one",
+            GameArt.Bat,
+            new Vector2(58f, 10f),
+            WorldArea.Dungeon,
+            2,
+            2.8f,
+            1);
+
+        CreateEnemy(
+            "crypt-bat-two",
+            GameArt.Bat,
+            new Vector2(61f, 20f),
+            WorldArea.Dungeon,
+            2,
+            2.8f,
+            1);
+
+        CreateEnemy(
+            "crypt-slime",
+            GameArt.Slime,
+            new Vector2(62f, 15f),
+            WorldArea.Dungeon,
+            3,
+            2.2f,
+            1);
+
         CreateEnemy(
             "hollow-king",
             GameArt.Boss,
@@ -266,22 +347,37 @@ internal sealed partial class ZeldaGameHost
         bool isBoss = false)
     {
         Size size = isBoss ? new Size(64, 64) : new Size(30, 30);
-        Sprite sprite = CreateActorSprite(id, frame, position, size);
+
+        Sprite sprite = CreateActorSprite(
+            id,
+            frame,
+            position,
+            size);
+
         ConfigureActorCollision(
             sprite,
             isBoss
-                ? new CollisionAdjust(10, 8, 11, 11)
-                : new CollisionAdjust(5, 4, 5, 5));
+                ? new CollisionAdjust(
+                    10,
+                    8,
+                    11,
+                    11)
+                : new CollisionAdjust(
+                    5,
+                    4,
+                    5,
+                    5));
 
-        _enemies.Add(new EnemyState(
-            id,
-            sprite,
-            position,
-            area,
-            maximumHealth,
-            speed,
-            contactDamage,
-            isBoss));
+        _enemies.Add(
+            new EnemyState(
+                id,
+                sprite,
+                position,
+                area,
+                maximumHealth,
+                speed,
+                contactDamage,
+                isBoss));
     }
 
     private void CreatePickup(
@@ -291,8 +387,19 @@ internal sealed partial class ZeldaGameHost
         int frame,
         Vector2 position)
     {
-        Sprite sprite = CreateActorSprite(id, frame, position, new Size(24, 24));
+        Sprite sprite = CreateActorSprite(
+            id,
+            frame,
+            position,
+            new Size(24, 24));
+
         sprite.ZOrder = 80;
-        _pickups.Add(new PickupState(id, item, amount, sprite));
+
+        _pickups.Add(
+            new PickupState(
+                id,
+                item,
+                amount,
+                sprite));
     }
 }

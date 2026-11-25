@@ -37,8 +37,9 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     public RenderSurfaceHost<BitmapBackbuffer> Host { get; private set; } = null!;
 
     internal override ValueTask<CanvasOffset> GetCanvasOffsetAsync()
-        => _module is null ? ValueTask.FromResult(default(CanvasOffset))
-           : _module.InvokeAsync<CanvasOffset>("getCanvasOffset", _canvasRef);
+        => _module is null
+            ? ValueTask.FromResult(default(CanvasOffset))
+            : _module.InvokeAsync<CanvasOffset>("getCanvasOffset", _canvasRef);
 
     internal override RenderSurfaceAdapterBase? InputSurfaceAdapter => Adapter;
 
@@ -52,10 +53,13 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+            return;
 
         _module = await JS.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
+            "import",
+            "./_content/Gondwana.Blazor/gondwana-blazor.js");
+
         _moduleLoaded = true;
         _dotNetRef = DotNetObjectReference.Create(this);
 
@@ -81,11 +85,13 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <returns>A task that completes when the canvas dimensions have been updated.</returns>
     internal async Task UpdateCanvasSizeAsync()
     {
-        if (!_moduleLoaded || _module is null) return;
+        if (!_moduleLoaded || _module is null)
+            return;
 
         try
         {
             var size = await _module.InvokeAsync<CanvasSize>("getCanvasSize", _canvasRef);
+
             if (size.Width > 0 && size.Height > 0)
             {
                 Adapter.UpdateSize(size.Width, size.Height);
@@ -122,18 +128,40 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <param name="y">Destination Y position in canvas pixel coordinates.</param>
     /// <param name="canvasWidth">Full canvas width in pixels.</param>
     /// <param name="canvasHeight">Full canvas height in pixels.</param>
-    internal void EnqueueFrame(byte[] rgbaPixels, int width, int height, int x, int y, int canvasWidth, int canvasHeight)
+    internal void EnqueueFrame(
+        byte[] rgbaPixels,
+        int width,
+        int height,
+        int x,
+        int y,
+        int canvasWidth,
+        int canvasHeight)
     {
-        if (!_moduleLoaded || _module is null) return;
+        if (!_moduleLoaded || _module is null)
+            return;
 
         if (_module is IJSInProcessObjectReference inProcessModule)
         {
             try
             {
-                inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels, Adapter.Width, Adapter.Height,
-                    Adapter.Presentation.DestinationRect.Left, Adapter.Presentation.DestinationRect.Top,
-                    Adapter.Presentation.DestinationRect.Width, Adapter.Presentation.DestinationRect.Height,
+                inProcessModule.InvokeVoid(
+                    "putImageData",
+                    _canvasRef,
+                    canvasWidth,
+                    canvasHeight,
+                    width,
+                    height,
+                    x,
+                    y,
+                    rgbaPixels,
+                    Adapter.Width,
+                    Adapter.Height,
+                    Adapter.Presentation.DestinationRect.Left,
+                    Adapter.Presentation.DestinationRect.Top,
+                    Adapter.Presentation.DestinationRect.Width,
+                    Adapter.Presentation.DestinationRect.Height,
                     Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
+
                 return;
             }
             catch
@@ -144,20 +172,45 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
 
         _ = InvokeAsync(async () =>
         {
-            if (!_moduleLoaded || _module is null) return;
-            await _module.InvokeVoidAsync("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels, Adapter.Width, Adapter.Height,
-                    Adapter.Presentation.DestinationRect.Left, Adapter.Presentation.DestinationRect.Top,
-                    Adapter.Presentation.DestinationRect.Width, Adapter.Presentation.DestinationRect.Height,
-                    Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
+            if (!_moduleLoaded || _module is null)
+                return;
+
+            await _module.InvokeVoidAsync(
+                "putImageData",
+                _canvasRef,
+                canvasWidth,
+                canvasHeight,
+                width,
+                height,
+                x,
+                y,
+                rgbaPixels,
+                Adapter.Width,
+                Adapter.Height,
+                Adapter.Presentation.DestinationRect.Left,
+                Adapter.Presentation.DestinationRect.Top,
+                Adapter.Presentation.DestinationRect.Width,
+                Adapter.Presentation.DestinationRect.Height,
+                Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
         });
     }
 
     private void PresentRetainedFrame()
     {
-        if (_module is null) return;
+        if (_module is null)
+            return;
+
         var rect = Adapter.Presentation.DestinationRect;
-        _ = _module.InvokeVoidAsync("presentBitmap", _canvasRef, Adapter.Width, Adapter.Height,
-            rect.Left, rect.Top, rect.Width, rect.Height,
+
+        _ = _module.InvokeVoidAsync(
+            "presentBitmap",
+            _canvasRef,
+            Adapter.Width,
+            Adapter.Height,
+            rect.Left,
+            rect.Top,
+            rect.Width,
+            rect.Height,
             Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
     }
 

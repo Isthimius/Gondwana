@@ -103,9 +103,9 @@ public sealed class DirectImage : DirectDrawingMovableBase
         PixelPerfect
     }
 
-    private SKImage? _image;        // primary storage
-    private SKBitmap? _bitmap;      // optional if provided instead of SKImage
-    private SKRect? _src;           // source sprite region (in image pixels)
+    private SKImage? _image; // primary storage
+    private SKBitmap? _bitmap; // optional if provided instead of SKImage
+    private SKRect? _src; // source sprite region (in image pixels)
     private ScaleMode _scale = ScaleMode.Stretch;
 
     private readonly SKPaint _paint = new()
@@ -117,8 +117,8 @@ public sealed class DirectImage : DirectDrawingMovableBase
     };
 
     // visual modifiers
-    private SKColor? _tint;         // multiplied over image
-    private byte _opacity = 255;    // 0..255
+    private SKColor? _tint; // multiplied over image
+    private byte _opacity = 255; // 0..255
 
     // rotation
     private float _rotationDeg = 0f;
@@ -126,28 +126,44 @@ public sealed class DirectImage : DirectDrawingMovableBase
     // normalized anchor (0..1) where 0,0 = top-left of dest rect
     private float _anchorX = 0.5f, _anchorY = 0.5f;
 
-    private DirectImage(SKBitmap bitmap,
-                       RenderSurfaceHostBase renderSurfaceHost,
-                       DirectDrawingMode mode,
-                       SceneLayer? sceneLayer,
-                       View? view,
-                       Rectangle? screenBounds,
-                       Rectangle? worldBounds,
-                       string? name = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
+    private DirectImage(
+        SKBitmap bitmap,
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? name = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            name)
     {
         SetBitmap(bitmap);
     }
 
-    private DirectImage(SKImage image,
-                        RenderSurfaceHostBase renderSurfaceHost,
-                        DirectDrawingMode mode,
-                        SceneLayer? sceneLayer,
-                        View? view,
-                        Rectangle? screenBounds,
-                        Rectangle? worldBounds,
-                        string? nickname = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
+    private DirectImage(
+        SKImage image,
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            nickname)
     {
         SetImage(image);
     }
@@ -172,11 +188,22 @@ public sealed class DirectImage : DirectDrawingMovableBase
     /// must ensure the bitmap remains valid for the lifetime of this DirectImage instance.
     /// </para>
     /// </remarks>
-    public DirectImage(SKBitmap bitmap,
-                        RenderSurfaceHostBase renderSurfaceHost,
-                        SceneLayer sceneLayer,
-                        Rectangle worldBounds,
-                        string? nickname = null) : this(bitmap, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+    public DirectImage(
+        SKBitmap bitmap,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? nickname = null) : this(
+        bitmap,
+        renderSurfaceHost,
+        DirectDrawingMode.SceneLayer,
+        sceneLayer,
+        null,
+        null,
+        worldBounds,
+        nickname)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectImage"/> class for view (screen-space) rendering using a bitmap.
@@ -197,11 +224,22 @@ public sealed class DirectImage : DirectDrawingMovableBase
     /// must ensure the bitmap remains valid for the lifetime of this DirectImage instance.
     /// </para>
     /// </remarks>
-    public DirectImage(SKBitmap bitmap,
-                        RenderSurfaceHostBase renderSurfaceHost,
-                        View view,
-                        Rectangle screenBounds,
-                        string? nickname = null) : this(bitmap, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
+    public DirectImage(
+        SKBitmap bitmap,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? nickname = null) : this(
+        bitmap,
+        renderSurfaceHost,
+        DirectDrawingMode.View,
+        null,
+        view,
+        screenBounds,
+        null,
+        nickname)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectImage"/> class for scene-layer (world-space) rendering using a pre-encoded image.
@@ -224,11 +262,22 @@ public sealed class DirectImage : DirectDrawingMovableBase
     /// valid for the lifetime of this DirectImage instance.
     /// </para>
     /// </remarks>
-    public DirectImage(SKImage image,
-                       RenderSurfaceHostBase renderSurfaceHost,
-                       SceneLayer sceneLayer,
-                       Rectangle worldBounds,
-                       string? nickname = null) : this(image, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+    public DirectImage(
+        SKImage image,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? nickname = null) : this(
+        image,
+        renderSurfaceHost,
+        DirectDrawingMode.SceneLayer,
+        sceneLayer,
+        null,
+        null,
+        worldBounds,
+        nickname)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectImage"/> class for view (screen-space) rendering using a pre-encoded image.
@@ -250,11 +299,22 @@ public sealed class DirectImage : DirectDrawingMovableBase
     /// valid for the lifetime of this DirectImage instance.
     /// </para>
     /// </remarks>
-    public DirectImage(SKImage image,
-                        RenderSurfaceHostBase renderSurfaceHost,
-                        View view,
-                        Rectangle screenBounds,
-                        string? nickname = null) : this(image, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
+    public DirectImage(
+        SKImage image,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? nickname = null) : this(
+        image,
+        renderSurfaceHost,
+        DirectDrawingMode.View,
+        null,
+        view,
+        screenBounds,
+        null,
+        nickname)
+    {
+    }
 
     /// <summary>
     /// Replaces the backing bitmap with a new one.
@@ -582,14 +642,20 @@ public sealed class DirectImage : DirectDrawingMovableBase
 
         // get SKImage to draw
         var img = _image ?? (_bitmap != null ? SKImage.FromBitmap(_bitmap) : null);
+
         if (img is null)
             return;
 
         if (backbuffer is RecordingBackbuffer && img.IsTextureBacked)
-            throw new NotSupportedException("Desktop frame recording requires a CPU image, not a context-bound texture.");
+            throw new NotSupportedException(
+                "Desktop frame recording requires a CPU image, not a context-bound texture.");
 
         // source rect (pixels in image space)
-        SKRect src = _src ?? new SKRect(0, 0, img.Width, img.Height);
+        SKRect src = _src ?? new SKRect(
+            0,
+            0,
+            img.Width,
+            img.Height);
 
         // destination rect (screen space), computed by scale mode
         SKRect dst = ComputeDestRect(destRectScreen.ToPixelAlignedRect(), src, _scale);
@@ -597,7 +663,13 @@ public sealed class DirectImage : DirectDrawingMovableBase
         // apply tint/opacity via color filter
         // combine tint with opacity (multiply in linear-ish sRGB)
         var tint = _tint ?? SKColors.White;
-        var withAlpha = new SKColor(tint.Red, tint.Green, tint.Blue, _opacity);
+
+        var withAlpha = new SKColor(
+            tint.Red,
+            tint.Green,
+            tint.Blue,
+            _opacity);
+
         using var cf = SKColorFilter.CreateBlendMode(withAlpha, SKBlendMode.Modulate);
         _paint.ColorFilter = cf;
 
@@ -611,7 +683,11 @@ public sealed class DirectImage : DirectDrawingMovableBase
         }
 
         // draw
-        canvas.DrawImage(img, src, dst, _paint);
+        canvas.DrawImage(
+            img,
+            src,
+            dst,
+            _paint);
 
         if (_rotationDeg != 0f)
             canvas.Restore();
@@ -628,13 +704,17 @@ public sealed class DirectImage : DirectDrawingMovableBase
         if (mode == ScaleMode.Stretch)
             return dst;
 
-        if (mode == ScaleMode.Center)  // center, no scale
+        if (mode == ScaleMode.Center) // center, no scale
         {
             float w = MathF.Min(dst.Width, src.Width);
             float h = MathF.Min(dst.Height, src.Height);
             float dx = dst.MidX - w * 0.5f, dy = dst.MidY - h * 0.5f;
 
-            return new SKRect(dx, dy, dx + w, dy + h);
+            return new SKRect(
+                dx,
+                dy,
+                dx + w,
+                dy + h);
         }
 
         float srcW = src.Width, srcH = src.Height;
@@ -655,6 +735,10 @@ public sealed class DirectImage : DirectDrawingMovableBase
         float x = dst.MidX - w2 * 0.5f;
         float y = dst.MidY - h2 * 0.5f;
 
-        return new SKRect(x, y, x + w2, y + h2);
+        return new SKRect(
+            x,
+            y,
+            x + w2,
+            y + h2);
     }
 }

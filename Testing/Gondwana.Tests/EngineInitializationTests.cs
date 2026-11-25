@@ -16,18 +16,27 @@ public sealed class EngineInitializationTests
     public void TimerDrivenProfilerCountsSimulationStepsAndSingleForegroundIndependently()
     {
         var engine = CreateEngineInstance();
+
         try
         {
             engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.Configuration.TargetFPS = 0;
             engine.Configuration.MaxTimerDrivenSimulationSteps = 3;
             engine.EngineDispatcher.BindToCurrentThread();
-            typeof(Engine).GetField("_isTimerDriven", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(engine, true);
+
+            typeof(Engine).GetField("_isTimerDriven", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(
+                engine,
+                true);
+
             var steps = (Gondwana.Timers.FixedStepAccumulator)typeof(Engine)
                 .GetField("_timerDrivenSteps", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(engine)!;
+
             steps.Reset(Gondwana.Timers.HighResTimer.GetCurrentTick() - Gondwana.Timers.HighResTimer.TicksPerSecond);
             SetIsRunning(engine, true);
-            using (engine.Profiler.Start()) engine.Tick();
+
+            using (engine.Profiler.Start())
+                engine.Tick();
+
             var history = engine.Profiler.GetHistory();
             Assert.Equal(3, history.Sum(s => s.Sources[0].Metrics["cycle.cpu.ms"].Count));
             Assert.Equal(1, history.Sum(s => s.Sources[0].Metrics["foreground.cpu.ms"].Count));
@@ -47,12 +56,15 @@ public sealed class EngineInitializationTests
     public void ProfilerCollectsCyclesWhenLegacyCpsNotificationsAreDisabled()
     {
         var engine = CreateEngineInstance();
+
         try
         {
             engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.EngineDispatcher.BindToCurrentThread();
+
             using (engine.Profiler.Start())
                 InvokeCycle(engine);
+
             var snapshot = engine.Profiler.GetLatestSnapshot()!;
             var source = Assert.Single(snapshot.Sources);
             Assert.Equal(1, source.Metrics["cycle.cpu.ms"].Count);
@@ -124,10 +136,12 @@ public sealed class EngineInitializationTests
     public void Initialize_WithConfigurationStore_UsesAndPersistsSuppliedConfiguration()
     {
         var engine = CreateEngineInstance();
+
         var store = new TestConfigurationStore
         {
             AutoSave = true
         };
+
         store.Configuration.TargetFPS = 37;
 
         try
@@ -190,12 +204,13 @@ public sealed class EngineInitializationTests
             SetInitializationState(engine, isInitializing: true, isInitialized: false);
             GetInitDoneEvent(engine).Reset();
 
-            var exception = Assert.Throws<InvalidOperationException>(
-                () => engine.Start(new SynchronizationContext()));
+            var exception = Assert.Throws<InvalidOperationException>(() => engine.Start(new SynchronizationContext()));
 
             Assert.Contains("did not complete within", exception.Message);
+
             var expectedSeconds = engine.Configuration.StartInitializationWaitTimeout
                 .ToString("0.###", System.Globalization.CultureInfo.CurrentCulture);
+
             Assert.Contains($"{expectedSeconds} seconds", exception.Message);
         }
         finally
@@ -249,12 +264,15 @@ public sealed class EngineInitializationTests
     {
         var engine = CreateEngineInstance();
         Task? cycleTask = null;
-        var disposeObservedInsideCycle = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var disposeObservedInsideCycle =
+            new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         try
         {
             SetIsRunning(engine, true);
             engine.Configuration.LegacyCpsSamplingTime = 0;
+
             engine.BeforeBackgroundTasksExecute += () =>
             {
                 engine.Dispose();
@@ -293,7 +311,13 @@ public sealed class EngineInitializationTests
         var cycle = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         SetCycleTask(engine, cycle.Task);
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var stopping = Task.Run(() => { entered.SetResult(); engine.StopAndWait(); });
+
+        var stopping = Task.Run(() =>
+        {
+            entered.SetResult();
+            engine.StopAndWait();
+        });
+
         try
         {
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -317,13 +341,17 @@ public sealed class EngineInitializationTests
     public void StopAndWait_OnActiveEngineThread_RejectsSelfWait()
     {
         var engine = CreateEngineInstance();
+
         try
         {
             engine.EngineDispatcher.BindToCurrentThread();
             SetCycleTask(engine, new TaskCompletionSource().Task);
             Assert.Throws<InvalidOperationException>(() => engine.StopAndWait());
         }
-        finally { GC.SuppressFinalize(engine); }
+        finally
+        {
+            GC.SuppressFinalize(engine);
+        }
     }
 
     private static Engine CreateEngineInstance() =>
@@ -332,25 +360,27 @@ public sealed class EngineInitializationTests
     private static ManualResetEventSlim GetInitDoneEvent(Engine engine)
     {
         var field = typeof(Engine).GetField(
-            "_initDone",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine._initDone via reflection.");
+                        "_initDone",
+                        BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?? throw new InvalidOperationException("Could not find Engine._initDone via reflection.");
 
         return (ManualResetEventSlim)(field.GetValue(engine)
-            ?? throw new InvalidOperationException("Engine._initDone is null."));
+                                      ?? throw new InvalidOperationException("Engine._initDone is null."));
     }
 
     private static void SetInitializationState(Engine engine, bool isInitializing, bool isInitialized)
     {
         var initializingField = typeof(Engine).GetField(
-            "_isInitializing",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine._isInitializing via reflection.");
+                                    "_isInitializing",
+                                    BindingFlags.Instance | BindingFlags.NonPublic)
+                                ?? throw new InvalidOperationException(
+                                    "Could not find Engine._isInitializing via reflection.");
 
         var initializedField = typeof(Engine).GetField(
-            "_isInitialized",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine._isInitialized via reflection.");
+                                   "_isInitialized",
+                                   BindingFlags.Instance | BindingFlags.NonPublic)
+                               ?? throw new InvalidOperationException(
+                                   "Could not find Engine._isInitialized via reflection.");
 
         initializingField.SetValue(engine, isInitializing);
         initializedField.SetValue(engine, isInitialized);
@@ -359,9 +389,9 @@ public sealed class EngineInitializationTests
     private static void SetCycleTask(Engine engine, Task cycleTask)
     {
         var cycleTaskField = typeof(Engine).GetField(
-            "_cycleTask",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine._cycleTask via reflection.");
+                                 "_cycleTask",
+                                 BindingFlags.Instance | BindingFlags.NonPublic)
+                             ?? throw new InvalidOperationException("Could not find Engine._cycleTask via reflection.");
 
         cycleTaskField.SetValue(engine, cycleTask);
     }
@@ -369,9 +399,9 @@ public sealed class EngineInitializationTests
     private static void SetIsRunning(Engine engine, bool isRunning)
     {
         var property = typeof(Engine).GetProperty(
-            nameof(Engine.IsRunning),
-            BindingFlags.Instance | BindingFlags.Public)
-            ?? throw new InvalidOperationException("Could not find Engine.IsRunning via reflection.");
+                           nameof(Engine.IsRunning),
+                           BindingFlags.Instance | BindingFlags.Public)
+                       ?? throw new InvalidOperationException("Could not find Engine.IsRunning via reflection.");
 
         property.SetValue(engine, isRunning);
     }
@@ -424,9 +454,9 @@ public sealed class EngineInitializationTests
     private static void InvokeCycle(Engine engine)
     {
         var cycleMethod = typeof(Engine).GetMethod(
-            "Cycle",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine.Cycle via reflection.");
+                              "Cycle",
+                              BindingFlags.Instance | BindingFlags.NonPublic)
+                          ?? throw new InvalidOperationException("Could not find Engine.Cycle via reflection.");
 
         cycleMethod.Invoke(engine, null);
     }

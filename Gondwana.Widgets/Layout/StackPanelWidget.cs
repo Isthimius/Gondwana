@@ -24,13 +24,18 @@ public sealed class StackPanelWidget : ContainerWidget
     /// <param name="orientation">The orientation.</param>
     /// <param name="spacing">The spacing.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public StackPanelWidget(RenderSurfaceHostBase renderSurfaceHost,
-                            DirectDrawingMode mode,
-                            PointF anchor = default,
-                            WidgetOrientation orientation = WidgetOrientation.Vertical,
-                            float spacing = 0f,
-                            string? nickname = null)
-        : base(renderSurfaceHost, mode, anchor, nickname)
+    public StackPanelWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        WidgetOrientation orientation = WidgetOrientation.Vertical,
+        float spacing = 0f,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            anchor,
+            nickname)
     {
         _orientation = orientation;
         Spacing = spacing;
@@ -119,6 +124,7 @@ public sealed class StackPanelWidget : ContainerWidget
         for (int index = 0; index < widgets.Length; index++)
         {
             WidgetBase widget = widgets[index];
+
             Rectangle bounds = Mode == DirectDrawingMode.View
                 ? widget.ScreenBounds
                 : widget.WorldBounds;
@@ -152,9 +158,10 @@ public sealed class StackPanelWidget : ContainerWidget
     }
 
     /// <inheritdoc/>
-    public override DirectComposite Add(IDirectCompositeChild child,
-                                        bool keepCurrentOffset = true,
-                                        Vector2? explicitLocalOffsetPx = null)
+    public override DirectComposite Add(
+        IDirectCompositeChild child,
+        bool keepCurrentOffset = true,
+        Vector2? explicitLocalOffsetPx = null)
     {
         if (child is not WidgetBase)
             throw new ArgumentException("StackPanelWidget accepts widget children only.", nameof(child));

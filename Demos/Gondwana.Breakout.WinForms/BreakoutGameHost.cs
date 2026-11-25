@@ -18,10 +18,15 @@ internal sealed class BreakoutGameHost : WinFormsGpuGameHost
     protected override void CreateDirectDrawings() => _game.CreateDirectDrawings();
 
     protected override void OnKeyboardAdapterInitialized() =>
-        _game.HookKeyboard(Engine.Input.KeyboardEventPoller!,
-            ((int)Keys.Left, "left"), ((int)Keys.Right, "right"),
-            ((int)Keys.A, "a"), ((int)Keys.D, "d"),
-            ((int)Keys.Space, "space"), ((int)Keys.P, "p"), ((int)Keys.R, "r"));
+        _game.HookKeyboard(
+            Engine.Input.KeyboardEventPoller!,
+            ((int)Keys.Left, "left"),
+            ((int)Keys.Right, "right"),
+            ((int)Keys.A, "a"),
+            ((int)Keys.D, "d"),
+            ((int)Keys.Space, "space"),
+            ((int)Keys.P, "p"),
+            ((int)Keys.R, "r"));
 
     protected override void OnEngineInitialized()
     {

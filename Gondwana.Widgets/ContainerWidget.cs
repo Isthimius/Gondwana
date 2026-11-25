@@ -36,11 +36,16 @@ public abstract class ContainerWidget : WidgetBase
     /// <param name="nickname">
     /// An optional diagnostic nickname.
     /// </param>
-    protected ContainerWidget(RenderSurfaceHostBase renderSurfaceHost,
-                              DirectDrawingMode mode,
-                              PointF anchor = default,
-                              string? nickname = null)
-        : base(renderSurfaceHost, mode, anchor, nickname)
+    protected ContainerWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            anchor,
+            nickname)
     {
     }
 
@@ -58,9 +63,10 @@ public abstract class ContainerWidget : WidgetBase
     #region public methods
 
     /// <inheritdoc/>
-    public override DirectComposite Add(IDirectCompositeChild child,
-                                        bool keepCurrentOffset = true,
-                                        Vector2? explicitLocalOffsetPx = null)
+    public override DirectComposite Add(
+        IDirectCompositeChild child,
+        bool keepCurrentOffset = true,
+        Vector2? explicitLocalOffsetPx = null)
     {
         ArgumentNullException.ThrowIfNull(child);
 

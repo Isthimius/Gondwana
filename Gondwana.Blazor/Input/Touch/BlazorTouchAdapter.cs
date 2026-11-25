@@ -68,51 +68,69 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
 
     private void OnTouchStart(BrowserTouchEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         foreach (var t in e.ChangedTouches)
         {
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Began);
             _activeTouches[t.Identifier] = point;
             _pendingBegins.Enqueue(point);
         }
+
         RebuildSnapshot();
     }
 
     private void OnTouchMove(BrowserTouchEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         foreach (var t in e.ChangedTouches)
         {
-            if (!_activeTouches.ContainsKey(t.Identifier)) continue;
+            if (!_activeTouches.ContainsKey(t.Identifier))
+                continue;
+
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Moved);
             _activeTouches[t.Identifier] = point;
         }
+
         RebuildSnapshot();
     }
 
     private void OnTouchEnd(BrowserTouchEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         foreach (var t in e.ChangedTouches)
         {
-            if (!_activeTouches.ContainsKey(t.Identifier)) continue;
+            if (!_activeTouches.ContainsKey(t.Identifier))
+                continue;
+
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Ended);
             _activeTouches.Remove(t.Identifier);
             _pendingEnds.Enqueue(point);
         }
+
         RebuildSnapshot();
     }
 
     private void OnTouchCancel(BrowserTouchEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         foreach (var t in e.ChangedTouches)
         {
-            if (!_activeTouches.TryGetValue(t.Identifier, out var existing)) continue;
+            if (!_activeTouches.TryGetValue(t.Identifier, out var existing))
+                continue;
+
             var point = new GondwanaTouchPoint(existing.Id, existing.Position, TouchPhase.Cancelled);
             _activeTouches.Remove(t.Identifier);
             _pendingEnds.Enqueue(point);
         }
+
         RebuildSnapshot();
     }
 
@@ -123,8 +141,10 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             return Array.Empty<GondwanaTouchPoint>();
 
         var snapshot = new List<GondwanaTouchPoint>(_pendingBegins.Count);
+
         while (_pendingBegins.TryDequeue(out var point))
             snapshot.Add(point);
+
         return snapshot;
     }
 
@@ -135,8 +155,10 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             return Array.Empty<GondwanaTouchPoint>();
 
         var snapshot = new List<GondwanaTouchPoint>(_pendingEnds.Count);
+
         while (_pendingEnds.TryDequeue(out var point))
             snapshot.Add(point);
+
         return snapshot;
     }
 
@@ -151,7 +173,9 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     /// <summary>Releases all resources and removes event handlers registered by this adapter.</summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         _isDisposed = true;
 
         _component.TouchStart -= OnTouchStart;

@@ -13,9 +13,23 @@ namespace Gondwana.Widgets.Controls;
 /// </summary>
 public sealed class ButtonWidget : WidgetBase
 {
-    private Color _normalColor = Color.FromArgb(255, 60, 60, 68);
-    private Color _hoverColor = Color.FromArgb(255, 78, 78, 88);
-    private Color _pressedColor = Color.FromArgb(255, 42, 42, 48);
+    private Color _normalColor = Color.FromArgb(
+        255,
+        60,
+        60,
+        68);
+
+    private Color _hoverColor = Color.FromArgb(
+        255,
+        78,
+        78,
+        88);
+
+    private Color _pressedColor = Color.FromArgb(
+        255,
+        42,
+        42,
+        48);
 
     /// <summary>
     /// Occurs when the button is activated by pointer or keyboard.
@@ -32,15 +46,25 @@ public sealed class ButtonWidget : WidgetBase
     /// <param name="bounds">The widget bounds in view-local pixels.</param>
     /// <param name="text">The text to display.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
-                        View view,
-                        Rectangle bounds,
-                        string text,
-                        string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, bounds.Location, nickname)
+    public ButtonWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string text,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            bounds.Location,
+            nickname)
     {
         Background = CreateBackground(renderSurfaceHost, view, bounds);
-        Label = CreateLabel(renderSurfaceHost, view, bounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            view,
+            bounds,
+            text);
 
         CompleteInitialization();
     }
@@ -53,15 +77,25 @@ public sealed class ButtonWidget : WidgetBase
     /// <param name="bounds">The widget bounds in world pixels.</param>
     /// <param name="text">The text to display.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
-                        SceneLayer sceneLayer,
-                        Rectangle bounds,
-                        string text,
-                        string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, bounds.Location, nickname)
+    public ButtonWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string text,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            bounds.Location,
+            nickname)
     {
         Background = CreateBackground(renderSurfaceHost, sceneLayer, bounds);
-        Label = CreateLabel(renderSurfaceHost, sceneLayer, bounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            sceneLayer,
+            bounds,
+            text);
 
         CompleteInitialization();
     }
@@ -102,9 +136,10 @@ public sealed class ButtonWidget : WidgetBase
     /// <param name="hover">The color used while the pointer is over the control.</param>
     /// <param name="pressed">The color used while the control is pressed.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public ButtonWidget SetBackgroundColors(Color normal,
-                                            Color hover,
-                                            Color pressed)
+    public ButtonWidget SetBackgroundColors(
+        Color normal,
+        Color hover,
+        Color pressed)
     {
         _normalColor = normal;
         _hoverColor = hover;
@@ -242,47 +277,68 @@ public sealed class ButtonWidget : WidgetBase
 
     private DirectRectangle CreateBackground(RenderSurfaceHostBase host, View view, Rectangle bounds)
     {
-        return new DirectRectangle(_normalColor,
-                                   host,
-                                   view,
-                                   bounds,
-                                   $"{Nickname}.background").SetFilled(true)
-                                                            .SetBorderColor(Color.FromArgb(255, 150, 150, 160))
-                                                            .SetStrokeWidth(1.5f)
-                                                            .SetCornerRadius(5f);
+        return new DirectRectangle(
+                _normalColor,
+                host,
+                view,
+                bounds,
+                $"{Nickname}.background").SetFilled(true)
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    150,
+                    150,
+                    160))
+            .SetStrokeWidth(1.5f)
+            .SetCornerRadius(5f);
     }
 
     private DirectRectangle CreateBackground(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
     {
-        return new DirectRectangle(_normalColor,
-                                   host,
-                                   layer,
-                                   bounds,
-                                   $"{Nickname}.background").SetFilled(true)
-                                                            .SetBorderColor(Color.FromArgb(255, 150, 150, 160))
-                                                            .SetStrokeWidth(1.5f)
-                                                            .SetCornerRadius(5f);
+        return new DirectRectangle(
+                _normalColor,
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.background").SetFilled(true)
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    150,
+                    150,
+                    160))
+            .SetStrokeWidth(1.5f)
+            .SetCornerRadius(5f);
     }
 
-    private static TextBlock CreateLabel(RenderSurfaceHostBase host, View view, Rectangle bounds, string text)
+    private static TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string text)
     {
         return new TextBlock(host, view, bounds).SetText(text)
-                                                .SetFont(SKTypeface.Default, 16f, minSize: 10f)
-                                                .SetColors(SKColors.White, SKColors.Transparent)
-                                                .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                                                .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 16f, minSize: 10f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
     }
 
-    private static TextBlock CreateLabel(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds, string text)
+    private static TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string text)
     {
-        return new TextBlock(host,
-                             layer,
-                             view: null,
-                             worldBounds: bounds).SetText(text)
-                                                 .SetFont(SKTypeface.Default, 16f, minSize: 10f)
-                                                 .SetColors(SKColors.White, SKColors.Transparent)
-                                                 .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                                                 .EnableWrapping(false);
+        return new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds).SetText(text)
+            .SetFont(SKTypeface.Default, 16f, minSize: 10f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
     }
 
     #endregion private methods

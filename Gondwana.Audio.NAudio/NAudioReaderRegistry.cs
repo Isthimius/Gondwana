@@ -10,7 +10,8 @@ public static class NAudioReaderRegistry
 {
     private sealed record Registration(Func<Stream, WaveStream>? StreamFactory, Func<string, WaveStream>? FileFactory);
 
-    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Registration> Readers = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Registration> Readers = new(
+        StringComparer.OrdinalIgnoreCase);
 
     static NAudioReaderRegistry()
     {
@@ -65,12 +66,14 @@ public static class NAudioReaderRegistry
     internal static (WaveStream Reader, string? TemporaryFilePath) Open(byte[] data, string fileNameOrExtension)
     {
         var extension = GetExtension(fileNameOrExtension);
+
         if (!Readers.TryGetValue(extension, out var registration))
             throw new NotSupportedException($"Format '{extension}' is not supported by Gondwana.Audio.NAudio.");
 
         if (registration.StreamFactory is not null)
         {
             var stream = new MemoryStream(data, writable: false);
+
             try
             {
                 return (registration.StreamFactory(stream), null);
@@ -83,6 +86,7 @@ public static class NAudioReaderRegistry
         }
 
         var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
+
         try
         {
             File.WriteAllBytes(tempPath, data);
@@ -98,6 +102,7 @@ public static class NAudioReaderRegistry
     private static string GetExtension(string fileNameOrExtension)
     {
         var extension = Path.GetExtension(fileNameOrExtension);
+
         if (string.IsNullOrWhiteSpace(extension) &&
             !fileNameOrExtension.Contains('/') && !fileNameOrExtension.Contains('\\'))
             extension = fileNameOrExtension;

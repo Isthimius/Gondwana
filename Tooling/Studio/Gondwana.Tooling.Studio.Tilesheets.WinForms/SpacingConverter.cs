@@ -17,16 +17,23 @@ public sealed class SpacingConverter : ExpandableObjectConverter
     public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
 
     /// <inheritdoc/>
-    public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+    public override PropertyDescriptorCollection GetProperties(
+        ITypeDescriptorContext? context,
+        object? value,
+        Attribute[]? attributes)
     {
         // Exclude the calculated IsEmpty property: only the four editable edges belong here.
         var properties = TypeDescriptor.GetProperties(typeof(Spacing), attributes ?? []);
         string parentName = context?.PropertyDescriptor?.Name ?? "";
 
-        return new PropertyDescriptorCollection(Edges.Select(edge =>
-            TypeDescriptor.CreateProperty(typeof(Spacing), properties[edge]!,
-                new DescriptionAttribute(DescribeEdge(parentName, edge)),
-                NotifyParentPropertyAttribute.Yes)).ToArray(), readOnly: true);
+        return new PropertyDescriptorCollection(
+            Edges.Select(edge =>
+                TypeDescriptor.CreateProperty(
+                    typeof(Spacing),
+                    properties[edge]!,
+                    new DescriptionAttribute(DescribeEdge(parentName, edge)),
+                    NotifyParentPropertyAttribute.Yes)).ToArray(),
+            readOnly: true);
     }
 
     private static string DescribeEdge(string parentName, string edge)
@@ -47,20 +54,31 @@ public sealed class SpacingConverter : ExpandableObjectConverter
 
     /// <inheritdoc/>
     public override object CreateInstance(ITypeDescriptorContext? context, IDictionary propertyValues) =>
-        new Spacing((int)propertyValues["Left"]!, (int)propertyValues["Top"]!,
-            (int)propertyValues["Right"]!, (int)propertyValues["Bottom"]!);
+        new Spacing(
+            (int)propertyValues["Left"]!,
+            (int)propertyValues["Top"]!,
+            (int)propertyValues["Right"]!,
+            (int)propertyValues["Bottom"]!);
 
     /// <inheritdoc/>
     public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
         destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 
     /// <inheritdoc/>
-    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
+    public override object? ConvertTo(
+        ITypeDescriptorContext? context,
+        CultureInfo? culture,
+        object? value,
+        Type destinationType)
     {
         if (destinationType == typeof(string) && value is Spacing spacing)
             return $"{spacing.Top}, {spacing.Right}, {spacing.Bottom}, {spacing.Left}";
 
-        return base.ConvertTo(context, culture, value, destinationType);
+        return base.ConvertTo(
+            context,
+            culture,
+            value,
+            destinationType);
     }
 
     /// <inheritdoc/>
@@ -81,10 +99,18 @@ public sealed class SpacingConverter : ExpandableObjectConverter
 
         for (int i = 0; i < edges.Length; i++)
         {
-            if (!int.TryParse(components[i], NumberStyles.Integer, culture ?? CultureInfo.CurrentCulture, out edges[i]))
+            if (!int.TryParse(
+                    components[i],
+                    NumberStyles.Integer,
+                    culture ?? CultureInfo.CurrentCulture,
+                    out edges[i]))
                 throw new FormatException("Specify four comma-separated integers: Top, Right, Bottom, Left.");
         }
 
-        return new Spacing(edges[3], edges[0], edges[1], edges[2]);
+        return new Spacing(
+            edges[3],
+            edges[0],
+            edges[1],
+            edges[2]);
     }
 }

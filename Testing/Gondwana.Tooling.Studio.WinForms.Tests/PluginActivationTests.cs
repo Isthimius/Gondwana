@@ -10,7 +10,14 @@ public sealed partial class PluginPackageTests
     public void DisabledPackageHasMetadataButNoConstructorsOrLifecycle()
     {
         var marker = Path.Combine(_root, "constructed.txt");
-        var entry = Package("one", "sample.one", source: PluginSource("One", constructor: $"System.IO.File.WriteAllText({JsonSerializer.Serialize(marker)}, \"constructed\");"));
+
+        var entry = Package(
+            "one",
+            "sample.one",
+            source: PluginSource(
+                "One",
+                constructor: $"System.IO.File.WriteAllText({JsonSerializer.Serialize(marker)}, \"constructed\");"));
+
         var manifestPath = Path.Combine(Path.GetDirectoryName(entry)!, "plugin.json");
         var manifest = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(manifestPath))!;
         manifest["description"] = "Fixture description";
@@ -61,7 +68,11 @@ public sealed partial class PluginPackageTests
     [Fact]
     public void DisabledPackageReservesImplementationsAgainstLegacyCopies()
     {
-        var entry = Package("one", "sample.one", source: PluginSource("One", constructor: "throw new System.Exception(\"must not construct\");"));
+        var entry = Package(
+            "one",
+            "sample.one",
+            source: PluginSource("One", constructor: "throw new System.Exception(\"must not construct\");"));
+
         File.Copy(entry, Path.Combine(_root, Path.GetFileName(entry)));
         var host = new Host(_ => { }, id => id != "sample.one");
         host.DiscoverAndLoad(_root);
@@ -80,11 +91,15 @@ public sealed partial class PluginPackageTests
         var host = new Host(_ => { }, _ => false);
         host.DiscoverAndLoad(_root);
         Assert.Equal(2, host.Discovery.Count);
-        Assert.All(host.Discovery, row =>
-        {
-            Assert.Equal("sample.many", row.PreferenceId);
-            Assert.Equal(PluginLoadStatus.UserDisabled, row.Status);
-        });
+
+        Assert.All(
+            host.Discovery,
+            row =>
+            {
+                Assert.Equal("sample.many", row.PreferenceId);
+                Assert.Equal(PluginLoadStatus.UserDisabled, row.Status);
+            });
+
         Assert.Empty(host.Plugins);
     }
 
@@ -117,7 +132,14 @@ public sealed partial class PluginPackageTests
     {
         var entry = Package("incompatible", "sample.incompatible");
         var manifestPath = Path.Combine(Path.GetDirectoryName(entry)!, "plugin.json");
-        File.WriteAllText(manifestPath, File.ReadAllText(manifestPath).Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal));
+
+        File.WriteAllText(
+            manifestPath,
+            File.ReadAllText(manifestPath).Replace(
+                "\"contractVersion\":2",
+                "\"contractVersion\":1",
+                StringComparison.Ordinal));
+
         Package("a", "sample.duplicate");
         Package("b", "sample.duplicate");
         var host = new Host(_ => { }, _ => true);

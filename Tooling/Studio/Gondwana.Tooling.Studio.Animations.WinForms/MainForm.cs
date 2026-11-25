@@ -16,8 +16,10 @@ internal sealed partial class MainForm : Form
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string> ReportSessionError { get; set; }
+
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Working directory",
@@ -62,41 +64,89 @@ internal sealed partial class MainForm : Form
         Disposed += (_, _) => _undoRedo.Dispose();
         _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
         var file = new ToolStripMenuItem("&File");
-        Add(file, "&New", Keys.Control | Keys.N, NewDocument);
-        Add(file, "&Open GANI…", Keys.Control | Keys.O, OpenFiles);
-        Add(file, "Add &GTS source…", Keys.Control | Keys.Shift | Keys.O, ChooseGtsSources);
-        Add(file, "Open working &directory…", Keys.None, ChooseDirectory);
-        Add(file, "&Save", Keys.Control | Keys.S, () =>
-        {
-            if (ActiveEditor is { } document)
-                SaveDocument(document, saveAs: false);
-        });
-        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, () =>
-        {
-            if (ActiveEditor is { } document)
-                SaveDocument(document, saveAs: true);
-        });
-        Add(file, "&Close", Keys.Control | Keys.W, () =>
-            ActiveEditor?.Close());
-        Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+
+        Add(
+            file,
+            "&New",
+            Keys.Control | Keys.N,
+            NewDocument);
+
+        Add(
+            file,
+            "&Open GANI…",
+            Keys.Control | Keys.O,
+            OpenFiles);
+
+        Add(
+            file,
+            "Add &GTS source…",
+            Keys.Control | Keys.Shift | Keys.O,
+            ChooseGtsSources);
+
+        Add(
+            file,
+            "Open working &directory…",
+            Keys.None,
+            ChooseDirectory);
+
+        Add(
+            file,
+            "&Save",
+            Keys.Control | Keys.S,
+            () =>
+            {
+                if (ActiveEditor is { } document)
+                    SaveDocument(document, saveAs: false);
+            });
+
+        Add(
+            file,
+            "Save &As…",
+            Keys.Control | Keys.Shift | Keys.S,
+            () =>
+            {
+                if (ActiveEditor is { } document)
+                    SaveDocument(document, saveAs: true);
+            });
+
+        Add(
+            file,
+            "&Close",
+            Keys.Control | Keys.W,
+            () =>
+                ActiveEditor?.Close());
+
+        Add(
+            file,
+            "E&xit",
+            Keys.Alt | Keys.F4,
+            Close);
 
         var view = new ToolStripMenuItem("&View");
         view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
+
         var outerWorkspaceItem = Add(
             view,
             "Working directory",
             Keys.None,
             () => _workspace.Show());
-        Add(view, "Refresh directory", Keys.F5, RefreshDirectory);
+
+        Add(
+            view,
+            "Refresh directory",
+            Keys.F5,
+            RefreshDirectory);
 
         view.DropDownItems.Add(new ToolStripSeparator());
+
         var paneItems = new Dictionary<string, ToolStripMenuItem>(
             StringComparer.OrdinalIgnoreCase);
 
         foreach (var paneName in AnimationEditorControl.PaneNames)
         {
             string capturedName = paneName;
+
             paneItems[capturedName] = Add(
                 view,
                 capturedName,
@@ -105,24 +155,36 @@ internal sealed partial class MainForm : Form
         }
 
         view.DropDownItems.Add(new ToolStripSeparator());
+
         var showAllPanesItem = Add(
             view,
             "Show all animation panes",
             Keys.None,
             () => ActiveEditor?.ShowAllPanes());
 
-        Add(view, "Reset application layout", Keys.None, () => _layout.Reset());
-        var resetEditor = Add(view, "Reset active editor layout", Keys.None, () => ActiveEditor?.Editor.ResetLayout());
+        Add(
+            view,
+            "Reset application layout",
+            Keys.None,
+            () => _layout.Reset());
+
+        var resetEditor = Add(
+            view,
+            "Reset active editor layout",
+            Keys.None,
+            () => ActiveEditor?.Editor.ResetLayout());
 
         view.DropDownOpening += (_, _) =>
         {
             outerWorkspaceItem.Checked = !_workspace.IsHidden;
             var editor = ActiveEditor;
+
             foreach (var (paneName, item) in paneItems)
             {
                 item.Enabled = editor is not null;
                 item.Checked = editor?.IsPaneVisible(paneName) == true;
             }
+
             showAllPanesItem.Enabled = editor is not null;
             resetEditor.Enabled = editor is not null;
         };
@@ -144,6 +206,7 @@ internal sealed partial class MainForm : Form
             "Directory…",
             null,
             (_, _) => ChooseDirectory());
+
         workspaceTools.Items.Add(
             "Refresh",
             null,
@@ -184,6 +247,7 @@ internal sealed partial class MainForm : Form
         };
 
         var context = new ContextMenuStrip();
+
         context.Items.Add(
             "Open GANI",
             null,
@@ -231,12 +295,16 @@ internal sealed partial class MainForm : Form
             _layout.Start();
             RefreshDirectory();
             RestoreSession();
-            if (_documents.Count == 0 && !_session.StartEmpty) NewDocument();
+
+            if (_documents.Count == 0 && !_session.StartEmpty)
+                NewDocument();
         };
 
         FormClosing += (_, e) =>
         {
-            if (e.Cancel) return;
+            if (e.Cancel)
+                return;
+
             foreach (var document in _documents.ToArray())
             {
                 if (!document.ConfirmClose())
@@ -247,6 +315,7 @@ internal sealed partial class MainForm : Form
             }
 
             SaveSession();
+
             foreach (var document in _documents)
                 document.CloseApproved = true;
         };
@@ -255,14 +324,27 @@ internal sealed partial class MainForm : Form
     private void RestoreSession()
     {
         var messages = new List<string>();
-        _session.Restore(["gani"], path => { _directory = path; RefreshDirectory(); },
+
+        _session.Restore(
+            ["gani"],
+            path =>
+            {
+                _directory = path;
+                RefreshDirectory();
+            },
             document => OpenDocument(document.Path),
-            path => _documents.FirstOrDefault(document => string.Equals(document.Document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-            messages.Add, message => ReportSessionError(message));
+            path => _documents.FirstOrDefault(document => string.Equals(
+                document.Document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase))?.Activate(),
+            messages.Add,
+            message => ReportSessionError(message));
+
         WorkspaceSessionController.ShowStatus(this, messages);
     }
 
-    private void SaveSession() => _session.Save(_directory,
+    private void SaveSession() => _session.Save(
+        _directory,
         WorkspaceSessionController.DocumentOrder(_dock, _documents).Select(document => document.Document.FilePath),
         ActiveEditor?.Document.FilePath);
 
@@ -306,6 +388,7 @@ internal sealed partial class MainForm : Form
         try
         {
             _tree.Nodes.Clear();
+
             var root = new TreeNode(_directory)
             {
                 Tag = new DirectoryInfo(_directory),
@@ -353,6 +436,7 @@ internal sealed partial class MainForm : Form
                          .Where(file =>
                          {
                              var extension = Path.GetExtension(file);
+
                              return extension.Equals(
                                         ".gani",
                                         StringComparison.OrdinalIgnoreCase) ||
@@ -372,7 +456,7 @@ internal sealed partial class MainForm : Form
         }
         catch (Exception ex) when (
             ex is IOException or
-            UnauthorizedAccessException)
+                UnauthorizedAccessException)
         {
             parent.Nodes.Add(
                 "Cannot read directory: " + ex.Message);
@@ -414,11 +498,11 @@ internal sealed partial class MainForm : Form
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
             ShowError(ex);
         }
@@ -439,11 +523,10 @@ internal sealed partial class MainForm : Form
         {
             path = Path.GetFullPath(path);
 
-            var existing = _documents.FirstOrDefault(
-                document => string.Equals(
-                    document.Document.FilePath,
-                    path,
-                    StringComparison.OrdinalIgnoreCase));
+            var existing = _documents.FirstOrDefault(document => string.Equals(
+                document.Document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase));
 
             if (existing is not null)
             {
@@ -455,13 +538,15 @@ internal sealed partial class MainForm : Form
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
-            if (_session.IsRestoring) throw;
+            if (_session.IsRestoring)
+                throw;
+
             ShowError(ex);
         }
     }
@@ -480,6 +565,7 @@ internal sealed partial class MainForm : Form
             SaveDocument);
 
         _documents.Add(editor);
+
         editor.Disposed += (_, _) =>
             _documents.Remove(editor);
 
@@ -510,7 +596,7 @@ internal sealed partial class MainForm : Form
                         editor.Document.BaseDirectory,
                     FileName = path is null
                         ? SanitizeFileName(
-                            editor.Document.Definition.Key) +
+                              editor.Document.Definition.Key) +
                           ".gani"
                         : Path.GetFileName(path)
                 };
@@ -561,12 +647,14 @@ internal sealed partial class MainForm : Form
         }
         catch (Exception ex) when (
             ex is IOException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
-            if (editor.Sources?.SaveFailed(ex) != true) ShowError(ex);
+            if (editor.Sources?.SaveFailed(ex) != true)
+                ShowError(ex);
+
             return false;
         }
     }
@@ -578,6 +666,7 @@ internal sealed partial class MainForm : Form
             : value;
 
         var invalid = Path.GetInvalidFileNameChars();
+
         return new string(
             text.Select(character =>
                     invalid.Contains(character)
@@ -608,6 +697,11 @@ internal sealed partial class MainForm : Form
 
         base.Dispose(disposing);
     }
+
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Document.History, () => ActiveEditor?.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            ActiveEditor?.Document.History,
+            () => ActiveEditor?.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
 }

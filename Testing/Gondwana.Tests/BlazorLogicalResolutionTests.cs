@@ -13,7 +13,12 @@ public sealed class BlazorLogicalResolutionTests
     {
         var adapter = new FakeAdapter();
         var applied = new List<float>();
-        using var binding = new BlazorLogicalResolutionBinding(adapter, 769, 801, applied.Add);
+
+        using var binding = new BlazorLogicalResolutionBinding(
+            adapter,
+            769,
+            801,
+            applied.Add);
 
         Assert.Empty(applied);
         adapter.Resize(0, 0);
@@ -39,7 +44,12 @@ public sealed class BlazorLogicalResolutionTests
     {
         var adapter = new FakeAdapter(width, height);
         var applied = new List<float>();
-        using var binding = new BlazorLogicalResolutionBinding(adapter, 800, 600, applied.Add);
+
+        using var binding = new BlazorLogicalResolutionBinding(
+            adapter,
+            800,
+            600,
+            applied.Add);
 
         float scale = Assert.Single(applied);
         Assert.Equal(Math.Max(800f / width, 600f / height), scale);
@@ -53,7 +63,13 @@ public sealed class BlazorLogicalResolutionTests
     {
         var adapter = new FakeAdapter();
         var applied = new List<float>();
-        var binding = new BlazorLogicalResolutionBinding(adapter, 800, 600, applied.Add);
+
+        var binding = new BlazorLogicalResolutionBinding(
+            adapter,
+            800,
+            600,
+            applied.Add);
+
         binding.Dispose();
         binding.Dispose();
 
@@ -66,16 +82,26 @@ public sealed class BlazorLogicalResolutionTests
     public void InvalidDimensionsAreRejected()
     {
         var adapter = new FakeAdapter();
-        Assert.Throws<ArgumentOutOfRangeException>(
-            () => new BlazorLogicalResolutionBinding(adapter, 0, 600, _ => { }));
-        Assert.Throws<ArgumentOutOfRangeException>(
-            () => new BlazorLogicalResolutionBinding(adapter, 800, -1, _ => { }));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => new BlazorLogicalResolutionBinding(
+            adapter,
+            0,
+            600,
+            _ => { }));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => new BlazorLogicalResolutionBinding(
+            adapter,
+            800,
+            -1,
+            _ => { }));
     }
 
     private sealed class FakeAdapter : RenderSurfaceAdapterBase
     {
         internal FakeAdapter(int width = 1, int height = 1)
-            : base(width, height, initialSizeAvailable: width > 1 && height > 1) { }
+            : base(width, height, initialSizeAvailable: width > 1 && height > 1)
+        {
+        }
 
         internal void Resize(int width, int height) => SetDestinationSize(width, height);
 

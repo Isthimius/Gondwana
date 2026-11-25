@@ -20,8 +20,10 @@ public sealed class DefinitionSelectionBarTests
         Application.DoEvents();
         ToolingAppearance.Apply(host);
 
-        var bar = Assert.Single(editor.Controls.OfType<ToolStrip>()
-            .Where(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal)));
+        var bar = Assert.Single(
+            editor.Controls.OfType<ToolStrip>()
+                .Where(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal)));
+
         int pixels = ToolbarSizing.Pixels(32, bar.DeviceDpi);
         Assert.Equal(new Size(pixels, pixels), bar.ImageScalingSize);
         Assert.True(bar.ShowItemToolTips);
@@ -29,6 +31,7 @@ public sealed class DefinitionSelectionBarTests
         Assert.Single(bar.Items.OfType<ToolStripTextBox>());
 
         var buttons = bar.Items.OfType<ToolStripButton>().ToArray();
+
         string[] labels =
         [
             "Add definition",
@@ -37,6 +40,7 @@ public sealed class DefinitionSelectionBarTests
             "Remove definition",
             "Rename"
         ];
+
         Assert.Equal(labels, buttons.Select(button => button.ToolTipText));
 
         foreach (var button in buttons)
@@ -58,6 +62,7 @@ public sealed class DefinitionSelectionBarTests
     private static void RunSta(Action test)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
         {
             try
@@ -77,6 +82,8 @@ public sealed class DefinitionSelectionBarTests
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Definition toolbar WinForms test timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

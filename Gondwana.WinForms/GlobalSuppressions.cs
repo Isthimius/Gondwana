@@ -5,5 +5,15 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "<Pending>", Scope = "type", Target = "~T:Gondwana.WinForms.Input.Gamepad.XInput.XINPUT_GAMEPAD")]
-[assembly: SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "<Pending>", Scope = "type", Target = "~T:Gondwana.WinForms.Input.Gamepad.XInput.XINPUT_STATE")]
+[assembly: SuppressMessage(
+    "Minor Code Smell",
+    "S101:Types should be named in PascalCase",
+    Justification = "<Pending>",
+    Scope = "type",
+    Target = "~T:Gondwana.WinForms.Input.Gamepad.XInput.XINPUT_GAMEPAD")]
+[assembly: SuppressMessage(
+    "Minor Code Smell",
+    "S101:Types should be named in PascalCase",
+    Justification = "<Pending>",
+    Scope = "type",
+    Target = "~T:Gondwana.WinForms.Input.Gamepad.XInput.XINPUT_STATE")]

@@ -12,7 +12,12 @@ namespace Gondwana.Drawing.Coordinates;
 internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 {
     // Precompute half sizes repeatedly used
-    private static void WH(SceneLayer m, out int W, out int H, out float halfW, out float halfH)
+    private static void WH(
+        SceneLayer m,
+        out int W,
+        out int H,
+        out float halfW,
+        out float halfH)
     {
         W = m.TileWidth;
         H = m.TileHeight;
@@ -28,7 +33,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The anchor pixel position (top vertex of the diamond) in world space.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        WH(sceneLayer, out int W, out _, out float halfW, out float halfH);
+        WH(
+            sceneLayer,
+            out int W,
+            out _,
+            out float halfW,
+            out float halfH);
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -47,7 +57,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The corresponding grid coordinates in the scene layer.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        WH(sceneLayer, out int W, out _, out float halfW, out float halfH);
+        WH(
+            sceneLayer,
+            out int W,
+            out _,
+            out float halfW,
+            out float halfH);
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -65,10 +80,20 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <param name="worldPixelRange">The rectangular pixel range in world space.</param>
     /// <param name="includeOverhang">Whether to include tile overhang when testing for intersection.</param>
     /// <returns>A list of tiles that intersect with the specified pixel range.</returns>
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        WH(sceneLayer, out _, out _, out _, out _);
+
+        WH(
+            sceneLayer,
+            out _,
+            out _,
+            out _,
+            out _);
+
         var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
         // Corner → coarse grid bounds (continuous)
@@ -77,10 +102,17 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Bottom));
         var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right, candidateRange.Bottom));
 
-        int minX = (int)System.Math.Floor(System.Math.Min(System.Math.Min(ul.X, ur.X), System.Math.Min(ll.X, lr.X))) - 2;
-        int maxX = (int)System.Math.Ceiling(System.Math.Max(System.Math.Max(ul.X, ur.X), System.Math.Max(ll.X, lr.X))) + 2;
-        int minY = (int)System.Math.Floor(System.Math.Min(System.Math.Min(ul.Y, ur.Y), System.Math.Min(ll.Y, lr.Y))) - 2;
-        int maxY = (int)System.Math.Ceiling(System.Math.Max(System.Math.Max(ul.Y, ur.Y), System.Math.Max(ll.Y, lr.Y))) + 2;
+        int minX = (int)System.Math.Floor(System.Math.Min(System.Math.Min(ul.X, ur.X), System.Math.Min(ll.X, lr.X))) -
+                   2;
+
+        int maxX = (int)System.Math.Ceiling(System.Math.Max(System.Math.Max(ul.X, ur.X), System.Math.Max(ll.X, lr.X))) +
+                   2;
+
+        int minY = (int)System.Math.Floor(System.Math.Min(System.Math.Min(ul.Y, ur.Y), System.Math.Min(ll.Y, lr.Y))) -
+                   2;
+
+        int maxY = (int)System.Math.Ceiling(System.Math.Max(System.Math.Max(ul.Y, ur.Y), System.Math.Max(ll.Y, lr.Y))) +
+                   2;
 
         // Clamp to layer bounds (no wrapping)
         int cols = sceneLayer.GridColumnCount;
@@ -90,19 +122,26 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         int xEnd = System.Math.Min(maxX, cols - 1);
         int yStart = System.Math.Max(minY, 0);
         int yEnd = System.Math.Min(maxY, rows - 1);
-        if (xStart > xEnd || yStart > yEnd) return result;
+
+        if (xStart > xEnd || yStart > yEnd)
+            return result;
 
         for (int y = yStart; y <= yEnd; y++)
         {
             for (int x = xStart; x <= xEnd; x++)
             {
                 var gp = sceneLayer[x, y];
-                if (gp == null) continue;
+
+                if (gp == null)
+                    continue;
 
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
+
+                if (r.IntersectsWith(worldPixelRange))
+                    result.Add(gp);
             }
         }
+
         return result;
     }
 
@@ -114,13 +153,23 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The rectangular pixel bounds of the tile in world space.</returns>
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        WH(tile.SceneLayer, out int W, out int H, out float halfW, out _);
+        WH(
+            tile.SceneLayer,
+            out int W,
+            out int H,
+            out float halfW,
+            out _);
 
         // Top vertex of the diamond
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
 
         // Diamond fits exactly in W×H box whose top-left is (top.X - W/2, top.Y)
-        var rect = new Rectangle(top.X - (int)halfW, top.Y, W, H);
+        var rect = new Rectangle(
+            top.X - (int)halfW,
+            top.Y,
+            W,
+            H);
+
         return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
@@ -133,11 +182,13 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
+
         foreach (var t in tileList)
         {
             var r = GetPixelRangeForTile(t, includeOverhang);
             ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
         }
+
         return ret;
     }
 
@@ -149,7 +200,10 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The adjacent tile in the specified direction, or null if no tile exists there.</returns>
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
-        var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
+        var m = gp.SceneLayer;
+        int x = gp.GridCoordinatesAbs.X;
+        int y = gp.GridCoordinatesAbs.Y;
+
         // Square-like adjacency over the rectangular index space
         return dir switch
         {
@@ -173,17 +227,23 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>An array of points representing the diamond vertices (top, right, bottom, left).</returns>
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        WH(tile.SceneLayer, out int W, out int H, out _, out _);
+        WH(
+            tile.SceneLayer,
+            out int W,
+            out int H,
+            out _,
+            out _);
+
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         var oh = includeOverhang ? tile.Overhang : Spacing.None;
 
         // Diamond vertices (top, right, bottom, left)
         return new[]
         {
-            new Point(top.X,                   top.Y - oh.Top),
-            new Point(top.X + W/2 + oh.Right, top.Y + H/2),
-            new Point(top.X,                   top.Y + H + oh.Bottom),
-            new Point(top.X - W/2 - oh.Left,  top.Y + H/2)
+            new Point(top.X, top.Y - oh.Top),
+            new Point(top.X + W / 2 + oh.Right, top.Y + H / 2),
+            new Point(top.X, top.Y + H + oh.Bottom),
+            new Point(top.X - W / 2 - oh.Left, top.Y + H / 2)
         };
     }
 
@@ -199,8 +259,13 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         // For now, keep the simple torus mapping; if you prefer no wrap, clamp upstream.
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);
-        if (modX < 0) modX += xUpperBound + 1;
-        if (modY < 0) modY += yUpperBound + 1;
+
+        if (modX < 0)
+            modX += xUpperBound + 1;
+
+        if (modY < 0)
+            modY += yUpperBound + 1;
+
         return new PointF(modX, modY);
     }
 }

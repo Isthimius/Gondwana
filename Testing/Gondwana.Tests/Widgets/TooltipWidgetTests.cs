@@ -15,6 +15,7 @@ public sealed class TooltipWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var tooltip = new TooltipWidget(
             host,
             view,
@@ -30,9 +31,11 @@ public sealed class TooltipWidgetTests
             new Point(635, 475));
 
         Assert.True(tooltip.Visible);
+
         Assert.Equal(
             "query.cpu.ms\nTime spent querying visible drawables.",
             tooltip.Label.Text);
+
         Assert.True(view.Viewport.TargetRectPx.Contains(tooltip.Bounds));
 
         tooltip.HideTooltip();
@@ -42,7 +45,12 @@ public sealed class TooltipWidgetTests
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        var bounds = new Rectangle(0, 0, 640, 480);
+        var bounds = new Rectangle(
+            0,
+            0,
+            640,
+            480);
+
         host.ViewManager.AddView(bounds, zOrder: 0);
         return host.ViewManager.Views.Single();
     }

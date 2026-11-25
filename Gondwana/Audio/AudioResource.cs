@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Serialization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -29,17 +30,13 @@ public class AudioResource : IDisposable
     private IAudioPlaybackHandle? _playback;
     private bool _disposed;
 
-    [JsonProperty]
-    private float _volume = 1.0f;
+    [JsonProperty] private float _volume = 1.0f;
 
-    [JsonProperty]
-    private float _pan;
+    [JsonProperty] private float _pan;
 
-    [JsonProperty]
-    private float _playbackSpeed = 1.0f;
+    [JsonProperty] private float _playbackSpeed = 1.0f;
 
-    [JsonProperty]
-    private bool _isLooping;
+    [JsonProperty] private bool _isLooping;
 
     /// <summary>
     /// Event raised when non-looping playback reaches the end of the resource.
@@ -76,7 +73,9 @@ public class AudioResource : IDisposable
         _playback = playback ?? throw new ArgumentNullException(nameof(playback));
 
         AssetIdentifier = assetIdentifier;
-        SourceFilePath = assetIdentifier is null && !string.IsNullOrWhiteSpace(filePathOrExt) && File.Exists(filePathOrExt)
+
+        SourceFilePath = assetIdentifier is null && !string.IsNullOrWhiteSpace(filePathOrExt) &&
+                         File.Exists(filePathOrExt)
             ? filePathOrExt
             : null;
 
@@ -166,6 +165,7 @@ public class AudioResource : IDisposable
         set
         {
             _isLooping = value;
+
             if (_playback is not null)
                 _playback.IsLooping = value;
         }
@@ -177,8 +177,11 @@ public class AudioResource : IDisposable
         get => _volume;
         set
         {
-            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (float.IsNaN(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
             _volume = Math.Clamp(value, 0f, 1f);
+
             if (_playback is not null)
                 _playback.Volume = _volume;
         }
@@ -190,8 +193,11 @@ public class AudioResource : IDisposable
         get => _pan;
         set
         {
-            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (float.IsNaN(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
             _pan = Math.Clamp(value, -1f, 1f);
+
             if (_playback is not null)
                 _playback.Pan = _pan;
         }
@@ -205,8 +211,11 @@ public class AudioResource : IDisposable
         get => _playbackSpeed;
         set
         {
-            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (float.IsNaN(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
             _playbackSpeed = Math.Clamp(value, MinimumPlaybackSpeed, MaximumPlaybackSpeed);
+
             if (_playback is not null)
                 _playback.PlaybackSpeed = _playbackSpeed;
         }
@@ -252,9 +261,12 @@ public class AudioResource : IDisposable
     {
         SourceUri = uri;
         SourceFilePath = null;
-        SourceExtension = NormalizeExtension(Path.GetExtension(new Uri(uri, UriKind.RelativeOrAbsolute).IsAbsoluteUri
-            ? new Uri(uri).AbsolutePath
-            : uri));
+
+        SourceExtension = NormalizeExtension(
+            Path.GetExtension(
+                new Uri(uri, UriKind.RelativeOrAbsolute).IsAbsoluteUri
+                    ? new Uri(uri).AbsolutePath
+                    : uri));
     }
 
     internal void SetAssetIdentifier(AssetsFileIdentifier identifier) => AssetIdentifier = identifier;
@@ -289,22 +301,42 @@ public class AudioResource : IDisposable
             manager.Unload(Key);
 
         AudioResource loaded;
+
         if (AssetIdentifier is not null)
         {
             using var stream = AssetIdentifier.Data;
+
             if (stream is null)
                 throw new InvalidOperationException($"Missing asset data for {Key}.");
 
-            loaded = manager.LoadFromStream(Key, stream, SourceExtension ?? ".wav", Volume, Pan, PlaybackSpeed);
+            loaded = manager.LoadFromStream(
+                Key,
+                stream,
+                SourceExtension ?? ".wav",
+                Volume,
+                Pan,
+                PlaybackSpeed);
+
             loaded.SetAssetIdentifier(AssetIdentifier);
         }
         else if (!string.IsNullOrWhiteSpace(SourceFilePath))
         {
-            loaded = manager.LoadFromFile(Key, SourceFilePath, SourceExtension, Volume, Pan, PlaybackSpeed);
+            loaded = manager.LoadFromFile(
+                Key,
+                SourceFilePath,
+                SourceExtension,
+                Volume,
+                Pan,
+                PlaybackSpeed);
         }
         else if (!string.IsNullOrWhiteSpace(SourceUri))
         {
-            loaded = manager.LoadFromUri(Key, SourceUri, Volume, Pan, PlaybackSpeed);
+            loaded = manager.LoadFromUri(
+                Key,
+                SourceUri,
+                Volume,
+                Pan,
+                PlaybackSpeed);
         }
         else
         {
@@ -319,6 +351,7 @@ public class AudioResource : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
+
             return _playback ?? throw new InvalidOperationException(
                 $"AudioResource '{Key}' is not attached to an audio backend. Configure an audio backend before loading or restoring audio.");
         }

@@ -15,7 +15,8 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         /// Gets or sets the project.
         /// </summary>
         [CommandOption("-p|--project")]
-        [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
+        [Description(
+            "Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
         /// <summary>
@@ -76,6 +77,7 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
                 return ValidationResult.Error("--itch-game is required.");
 
             var parts = ItchGame.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
             return parts.Length == 2
                 ? ValidationResult.Success()
                 : ValidationResult.Error("--itch-game must be in the form 'user/game'.");
@@ -88,18 +90,27 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+
             if (error!.Contains("No .csproj found", StringComparison.Ordinal))
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
+
             return 1;
         }
 
         if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine(
+                "[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        if (!ProjectHelper.TryResolveBrowserFramework(
+                csprojPath!,
+                settings.Framework,
+                out var framework,
+                out error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
             return 1;
@@ -108,11 +119,15 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         if (!ButlerHelper.TryResolve(out var butlerPath, out _))
         {
             AnsiConsole.MarkupLine("[red]butler not found on PATH or in the standard itch install location.[/]");
-            AnsiConsole.MarkupLine("[dim]Run 'gondwana doctor --fix' or install it from https://itch.io/docs/butler/.[/]");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Run 'gondwana doctor --fix' or install it from https://itch.io/docs/butler/.[/]");
+
             return 1;
         }
 
         var zipPath = Path.Combine(Path.GetTempPath(), $"gondwana-blazor-{Path.GetRandomFileName()}.zip");
+
         var createdZipPath = ProjectHelper.CreateBlazorItchPackage(
             csprojPath!,
             settings.Configuration,
@@ -122,6 +137,7 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             settings.BaseHref,
             zipPath,
             out var exitCode);
+
         if (exitCode != 0)
             return exitCode;
 
@@ -134,19 +150,25 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
 
         try
         {
-            AnsiConsole.MarkupLine($"Uploading [bold]{Markup.Escape(settings.ItchGame!)}[/] to channel [bold]{Markup.Escape(settings.ItchChannel)}[/]...");
+            AnsiConsole.MarkupLine(
+                $"Uploading [bold]{Markup.Escape(settings.ItchGame!)}[/] to channel [bold]{Markup.Escape(settings.ItchChannel)}[/]...");
 
-            var pushExit = ProcessHelper.RunLive(butlerPath, new[]
-            {
-                "push",
-                createdZipPath,
-                $"{settings.ItchGame}:{settings.ItchChannel}"
-            });
+            var pushExit = ProcessHelper.RunLive(
+                butlerPath,
+                new[]
+                {
+                    "push",
+                    createdZipPath,
+                    $"{settings.ItchGame}:{settings.ItchChannel}"
+                });
 
             if (pushExit != 0)
             {
                 AnsiConsole.MarkupLine("[red]butler push failed.[/]");
-                AnsiConsole.MarkupLine("[dim]Check butler's output above. If authentication is the problem, run 'butler login' locally or set BUTLER_API_KEY in CI before retrying.[/]");
+
+                AnsiConsole.MarkupLine(
+                    "[dim]Check butler's output above. If authentication is the problem, run 'butler login' locally or set BUTLER_API_KEY in CI before retrying.[/]");
+
                 return pushExit;
             }
         }
@@ -157,7 +179,11 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         }
 
         AnsiConsole.MarkupLine("[green]Deployed to itch.io![/]");
-        var itchParts = settings.ItchGame!.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        var itchParts = settings.ItchGame!.Split(
+            '/',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
         Console.WriteLine($"https://{itchParts[0]}.itch.io/{itchParts[1]}");
         return 0;
     }

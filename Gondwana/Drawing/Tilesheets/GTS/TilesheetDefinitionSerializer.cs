@@ -1,5 +1,6 @@
 using Gondwana.Assets;
 using Gondwana.Physics.Collisions;
+using Gondwana.Serialization;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Tilesheets.GTS;
@@ -121,6 +122,7 @@ public static partial class TilesheetDefinitionSerializer
         ArgumentNullException.ThrowIfNull(tilesheet);
 
         var fullPath = Path.GetFullPath(filePath);
+
         if (string.IsNullOrWhiteSpace(tilesheet.ImageFilePath) &&
             string.IsNullOrWhiteSpace(tilesheet.AssetIdentifier?.AssetsFile.SourcePath))
         {
@@ -165,6 +167,7 @@ public static partial class TilesheetDefinitionSerializer
         try
         {
             var definition = JsonConvert.DeserializeObject<TilesheetDefinition>(json, Settings);
+
             if (definition is null)
             {
                 var source = string.IsNullOrWhiteSpace(sourceDescription)
@@ -178,10 +181,12 @@ public static partial class TilesheetDefinitionSerializer
             // Maintain compatibility with files written before frame-level metadata existed,
             // and tolerate explicit null collection values from hand-authored JSON.
             definition.Regions ??= [];
+
             foreach (var region in definition.Regions)
             {
                 if (region is null)
                     throw new InvalidDataException("GTS Regions cannot contain null entries.");
+
                 region.Frames ??= [];
             }
 
@@ -216,6 +221,7 @@ public static partial class TilesheetDefinitionSerializer
         if (tilesheet.AssetIdentifier is not null)
         {
             var assetIdentifier = tilesheet.AssetIdentifier;
+
             if (assetIdentifier.AssetType != AssetTypes.Image)
             {
                 throw new InvalidOperationException(
@@ -269,24 +275,25 @@ public static partial class TilesheetDefinitionSerializer
                         x,
                         y,
                         out var frameCollisionAdjust)
-                    ? frameCollisionAdjust
-                    : null;
+                        ? frameCollisionAdjust
+                        : null;
 
                 TileCollisionType? collisionType =
                     region.TryGetFrameCollisionTypeOverride(
                         x,
                         y,
                         out var frameCollisionType)
-                    ? frameCollisionType
-                    : null;
+                        ? frameCollisionType
+                        : null;
 
-                definition.Frames.Add(new TilesheetFrameDefinition
-                {
-                    XTile = x,
-                    YTile = y,
-                    CollisionAdjust = collisionAdjust,
-                    CollisionType = collisionType
-                });
+                definition.Frames.Add(
+                    new TilesheetFrameDefinition
+                    {
+                        XTile = x,
+                        YTile = y,
+                        CollisionAdjust = collisionAdjust,
+                        CollisionType = collisionType
+                    });
             }
         }
 
@@ -299,6 +306,7 @@ public static partial class TilesheetDefinitionSerializer
             return null;
 
         var color = tilesheet.MaskColor.Value;
+
         return new TilesheetMaskDefinition
         {
             Red = color.Red,

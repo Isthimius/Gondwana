@@ -17,9 +17,24 @@ public sealed class CheckBoxWidget : WidgetBase
     private const int DefaultLabelGap = 8;
     private const int MarkInset = 5;
 
-    private Color _normalColor = Color.FromArgb(255, 48, 48, 56);
-    private Color _hoverColor = Color.FromArgb(255, 66, 66, 76);
-    private Color _markColor = Color.FromArgb(255, 235, 235, 242);
+    private Color _normalColor = Color.FromArgb(
+        255,
+        48,
+        48,
+        56);
+
+    private Color _hoverColor = Color.FromArgb(
+        255,
+        66,
+        66,
+        76);
+
+    private Color _markColor = Color.FromArgb(
+        255,
+        235,
+        235,
+        242);
+
     private bool _isChecked;
 
     /// <summary>
@@ -36,13 +51,18 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <param name="text">The text to display.</param>
     /// <param name="isChecked">Whether the control starts or becomes checked.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public CheckBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                          View view,
-                          Rectangle bounds,
-                          string text,
-                          bool isChecked = false,
-                          string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public CheckBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string text,
+        bool isChecked = false,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -52,7 +72,12 @@ public sealed class CheckBoxWidget : WidgetBase
 
         Box = CreateBox(renderSurfaceHost, view, indicatorBounds);
         Mark = CreateMark(renderSurfaceHost, view, markBounds);
-        Label = CreateLabel(renderSurfaceHost, view, labelBounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            view,
+            labelBounds,
+            text);
 
         Add(Box);
         Add(Mark);
@@ -70,13 +95,18 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <param name="text">The text to display.</param>
     /// <param name="isChecked">Whether the control starts or becomes checked.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public CheckBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                          SceneLayer sceneLayer,
-                          Rectangle bounds,
-                          string text,
-                          bool isChecked = false,
-                          string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public CheckBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string text,
+        bool isChecked = false,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -86,7 +116,12 @@ public sealed class CheckBoxWidget : WidgetBase
 
         Box = CreateBox(renderSurfaceHost, sceneLayer, indicatorBounds);
         Mark = CreateMark(renderSurfaceHost, sceneLayer, markBounds);
-        Label = CreateLabel(renderSurfaceHost, sceneLayer, labelBounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            sceneLayer,
+            labelBounds,
+            text);
 
         Add(Box);
         Add(Mark);
@@ -175,9 +210,10 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <param name="hover">The color used while the pointer is over the control.</param>
     /// <param name="mark">The color used for the selection mark.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public CheckBoxWidget SetColors(Color normal,
-                                    Color hover,
-                                    Color mark)
+    public CheckBoxWidget SetColors(
+        Color normal,
+        Color hover,
+        Color mark)
     {
         _normalColor = normal;
         _hoverColor = hover;
@@ -279,81 +315,124 @@ public sealed class CheckBoxWidget : WidgetBase
         rectangle.SetPosition(rectangle.GetPosition());
     }
 
-    private DirectRectangle CreateBox(RenderSurfaceHostBase host,
-                                      View view,
-                                      Rectangle bounds)
+    private DirectRectangle CreateBox(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureBox(new DirectRectangle(_normalColor, host, view, bounds, $"{Nickname}.box"));
+        return ConfigureBox(
+            new DirectRectangle(
+                _normalColor,
+                host,
+                view,
+                bounds,
+                $"{Nickname}.box"));
     }
 
-    private DirectRectangle CreateBox(RenderSurfaceHostBase host,
-                                      SceneLayer layer,
-                                      Rectangle bounds)
+    private DirectRectangle CreateBox(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureBox(new DirectRectangle(_normalColor, host, layer, bounds, $"{Nickname}.box"));
+        return ConfigureBox(
+            new DirectRectangle(
+                _normalColor,
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.box"));
     }
 
     private static DirectRectangle ConfigureBox(DirectRectangle box)
     {
         return box.SetFilled(true)
-                  .SetBorderColor(Color.FromArgb(255, 150, 150, 160))
-                  .SetStrokeWidth(1.5f)
-                  .SetCornerRadius(3f);
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    150,
+                    150,
+                    160))
+            .SetStrokeWidth(1.5f)
+            .SetCornerRadius(3f);
     }
 
-    private DirectRectangle CreateMark(RenderSurfaceHostBase host,
-                                       View view,
-                                       Rectangle bounds)
+    private DirectRectangle CreateMark(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureMark(new DirectRectangle(_markColor, host, view, bounds, $"{Nickname}.mark"));
+        return ConfigureMark(
+            new DirectRectangle(
+                _markColor,
+                host,
+                view,
+                bounds,
+                $"{Nickname}.mark"));
     }
 
-    private DirectRectangle CreateMark(RenderSurfaceHostBase host,
-                                       SceneLayer layer,
-                                       Rectangle bounds)
+    private DirectRectangle CreateMark(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureMark(new DirectRectangle(_markColor, host, layer, bounds, $"{Nickname}.mark"));
+        return ConfigureMark(
+            new DirectRectangle(
+                _markColor,
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.mark"));
     }
 
     private static DirectRectangle ConfigureMark(DirectRectangle mark)
     {
         return mark.SetFilled(true)
-                   .SetStrokeWidth(0f)
-                   .SetCornerRadius(2f);
+            .SetStrokeWidth(0f)
+            .SetCornerRadius(2f);
     }
 
-    private static TextBlock CreateLabel(RenderSurfaceHostBase host,
-                                         View view,
-                                         Rectangle bounds,
-                                         string text)
+    private static TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string text)
     {
         return ConfigureLabel(new TextBlock(host, view, bounds), text);
     }
 
-    private static TextBlock CreateLabel(RenderSurfaceHostBase host,
-                                         SceneLayer layer,
-                                         Rectangle bounds,
-                                         string text)
+    private static TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string text)
     {
-        return ConfigureLabel(new TextBlock(host, layer, view: null, worldBounds: bounds), text);
+        return ConfigureLabel(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds),
+            text);
     }
 
     private static TextBlock ConfigureLabel(TextBlock label, string text)
     {
         return label.SetText(text ?? string.Empty)
-                    .SetFont(SKTypeface.Default, 16f, minSize: 10f)
-                    .SetColors(SKColors.White, SKColors.Transparent)
-                    .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                    .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 16f, minSize: 10f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
     }
 
     private static Rectangle GetIndicatorBounds(Rectangle bounds)
     {
         int size = Math.Min(DefaultIndicatorSize, Math.Max(10, bounds.Height - 2));
-        return new Rectangle(bounds.X,
-                             bounds.Y + (bounds.Height - size) / 2,
-                             size,
-                             size);
+
+        return new Rectangle(
+            bounds.X,
+            bounds.Y + (bounds.Height - size) / 2,
+            size,
+            size);
     }
 
     private static Rectangle GetMarkBounds(Rectangle indicatorBounds)
@@ -365,10 +444,12 @@ public sealed class CheckBoxWidget : WidgetBase
     private static Rectangle GetLabelBounds(Rectangle bounds, int indicatorWidth)
     {
         int left = bounds.X + indicatorWidth + DefaultLabelGap;
-        return new Rectangle(left,
-                             bounds.Y,
-                             Math.Max(1, bounds.Right - left),
-                             bounds.Height);
+
+        return new Rectangle(
+            left,
+            bounds.Y,
+            Math.Max(1, bounds.Right - left),
+            bounds.Height);
     }
 
     private static Rectangle ValidateBounds(Rectangle bounds)

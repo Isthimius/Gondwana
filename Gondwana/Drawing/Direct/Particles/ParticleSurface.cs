@@ -163,7 +163,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// Gets or sets the horizontal component of gravity, measured in pixels per second squared.
     /// Default is 0 (no horizontal gravity).
     /// </summary>
-    public float GravityX { get; set; } = 0f;   // px/s^2
+    public float GravityX { get; set; } = 0f; // px/s^2
 
     /// <summary>
     /// Gets or sets the gravitational acceleration along the Y-axis, measured in pixels per second squared.
@@ -182,16 +182,24 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </summary>
     public float CullingMarginY { get; set; } = 32f;
 
-    private ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
-                           DirectDrawingMode mode,
-                           SceneLayer? sceneLayer,
-                           View? view,
-                           Rectangle? screenBounds,
-                           Rectangle? worldBounds,
-                           string? nickname = null,
-                           int maxParticles = 2000,
-                           SKBitmap? particleSprite = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
+    private ParticleSurface(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? nickname = null,
+        int maxParticles = 2000,
+        SKBitmap? particleSprite = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            nickname)
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
         _particleSprite = particleSprite;
@@ -207,22 +215,25 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// <param name="nickname">An optional friendly name for debugging and identification.</param>
     /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
     /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
-    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
-                           SceneLayer sceneLayer,
-                           Rectangle? worldBounds,
-                           string? nickname = null,
-                           int maxParticles = 2000,
-                           SKBitmap? particleSprite = null)
-        : this(renderSurfaceHost,
-               DirectDrawingMode.SceneLayer,
-               sceneLayer,
-               null,
-               null,
-               worldBounds,
-               nickname,
-               maxParticles,
-               particleSprite)
-    { }
+    public ParticleSurface(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle? worldBounds,
+        string? nickname = null,
+        int maxParticles = 2000,
+        SKBitmap? particleSprite = null)
+        : this(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            null,
+            null,
+            worldBounds,
+            nickname,
+            maxParticles,
+            particleSprite)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ParticleSurface"/> class for view-based rendering
@@ -234,22 +245,25 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// <param name="nickname">An optional friendly name for debugging and identification.</param>
     /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
     /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
-    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
-                            View view,
-                            Rectangle? screenBounds,
-                            string? nickname = null,
-                            int maxParticles = 2000,
-                            SKBitmap? particleSprite = null)
-        : this(renderSurfaceHost,
-              DirectDrawingMode.View,
-              null,
-              view,
-              screenBounds,
-              null,
-              nickname,
-              maxParticles,
-              particleSprite)
-    { }
+    public ParticleSurface(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle? screenBounds,
+        string? nickname = null,
+        int maxParticles = 2000,
+        SKBitmap? particleSprite = null)
+        : this(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            null,
+            view,
+            screenBounds,
+            null,
+            nickname,
+            maxParticles,
+            particleSprite)
+    {
+    }
 
     /// <summary>
     /// Immediately spawns a fixed number of particles from the given emitter.
@@ -285,6 +299,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             _alive = 0;
             _particlesLastTick = 0;
         }
+
         base.Dispose(disposing);
     }
 
@@ -318,11 +333,17 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             em._accumulator += rate * dt;
 
             int toEmit = (int)em._accumulator;
-            if (toEmit > 0) { em._accumulator -= toEmit; EmitFrom(em, toEmit); }
+
+            if (toEmit > 0)
+            {
+                em._accumulator -= toEmit;
+                EmitFrom(em, toEmit);
+            }
         }
 
         // (C) integrate & compact
         int write = 0;
+
         for (int i = 0; i < _alive; i++)
         {
             ref var p = ref _particles[i];
@@ -361,13 +382,14 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
                 : ScreenBounds;
 
             bool isInView = p.X >= cullBounds.Left - CullingMarginX
-                         && p.X <= cullBounds.Right + CullingMarginX
-                         && p.Y >= cullBounds.Top - CullingMarginY
-                         && p.Y <= cullBounds.Bottom + CullingMarginY;
+                            && p.X <= cullBounds.Right + CullingMarginX
+                            && p.Y >= cullBounds.Top - CullingMarginY
+                            && p.Y <= cullBounds.Bottom + CullingMarginY;
 
             if (p.Life > 0 && isInView)
                 _particles[write++] = p;
         }
+
         _alive = write;
 
         ForceRefresh();
@@ -444,13 +466,22 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             if (p.ParticleSprite is null)
             {
                 float size = (p.Size * sSize) * (1f + 0.5f * t);
-                canvas.DrawCircle(x, y, size, _paint);
+
+                canvas.DrawCircle(
+                    x,
+                    y,
+                    size,
+                    _paint);
             }
             else
             {
                 float s = p.Size * sSize;
-                var dst = new SKRect(x - s * 0.5f, y - s * 0.5f,
-                                     x + s * 0.5f, y + s * 0.5f);
+
+                var dst = new SKRect(
+                    x - s * 0.5f,
+                    y - s * 0.5f,
+                    x + s * 0.5f,
+                    y + s * 0.5f);
 
                 canvas.Save();
                 canvas.RotateDegrees(p.Rotation, x, y);
@@ -500,10 +531,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             p.ParticleSprite = em.ParticleSprite ?? this._particleSprite;
 
             // tint override
-            p.Tint = em.Tint;                          // null means "use global at render"
+            p.Tint = em.Tint; // null means "use global at render"
 
             // max speed clamp
-            p.MaxVelocity = em.MaxVelocity ?? 0f;      // 0 = no clamp
+            p.MaxVelocity = em.MaxVelocity ?? 0f; // 0 = no clamp
 
             // blend mode
             p.BlendMode = em.BlendMode;
@@ -600,6 +631,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         int b = (c.Blue * tint.Blue) / 255;
         int a = (c.Alpha * lifeAlpha * tint.Alpha) / (255 * 255);
 
-        return new SKColor((byte)r, (byte)g, (byte)b, (byte)a);
+        return new SKColor(
+            (byte)r,
+            (byte)g,
+            (byte)b,
+            (byte)a);
     }
 }

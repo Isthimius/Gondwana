@@ -29,8 +29,18 @@ public sealed class BrowserAudioManager
     /// <param name="volume">The playback volume.</param>
     /// <param name="loop">Whether playback repeats at the end.</param>
     /// <returns>The resulting browser audio player.</returns>
-    public BrowserAudioPlayer Load(string key, string src, float volume, bool loop)
-        => Load(key, src, volume, loop, 0.0f, 1.0f);
+    public BrowserAudioPlayer Load(
+        string key,
+        string src,
+        float volume,
+        bool loop)
+        => Load(
+            key,
+            src,
+            volume,
+            loop,
+            0.0f,
+            1.0f);
 
     /// <summary>
     /// Loads URI-backed audio and registers a browser player under the supplied key.
@@ -51,14 +61,23 @@ public sealed class BrowserAudioManager
         float playbackSpeed = 1.0f)
     {
         AudioResourceManager.Instance.ConfigureBackend(BrowserAudioBackend.Instance);
-        var resource = AudioResourceManager.Instance.LoadFromUri(key, src, volume, pan, playbackSpeed);
+
+        var resource = AudioResourceManager.Instance.LoadFromUri(
+            key,
+            src,
+            volume,
+            pan,
+            playbackSpeed);
+
         resource.IsLooping = loop;
 
         var player = new BrowserAudioPlayer(resource);
         _players[key] = player;
+
         resource.Disposed += (_, _) =>
             ((ICollection<KeyValuePair<string, BrowserAudioPlayer>>)_players)
-                .Remove(new(key, player));
+            .Remove(new(key, player));
+
         return player;
     }
 

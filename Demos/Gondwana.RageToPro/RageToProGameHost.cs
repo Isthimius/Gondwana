@@ -21,7 +21,16 @@ internal sealed class RageToProGameHost : WinFormsGameHost
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
-        scene.AddLayer(20, 12, 64, 60, 0, 1f, CoordinateSystemTypes.Orthogonal);
+
+        scene.AddLayer(
+            20,
+            12,
+            64,
+            60,
+            0,
+            1f,
+            CoordinateSystemTypes.Orthogonal);
+
         return scene;
     }
 
@@ -38,7 +47,16 @@ internal sealed class RageToProGameHost : WinFormsGameHost
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
-        _drawing = new BedroomDrawing(RenderSurface.Host, view, new Rectangle(0, 0, 1280, 720), _game)
+
+        _drawing = new BedroomDrawing(
+            RenderSurface.Host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                1280,
+                720),
+            _game)
         {
             ZOrder = 1000
         };
@@ -49,6 +67,7 @@ internal sealed class RageToProGameHost : WinFormsGameHost
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
         keyboard.KeyDown += OnKeyDown;
+
         foreach (Keys key in MonitoredKeys)
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
@@ -74,26 +93,41 @@ internal sealed class RageToProGameHost : WinFormsGameHost
     {
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+
         if (Engine.Input.MouseEventPoller is not null)
             Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
+
         Engine.BeforeBackgroundTasksExecute -= Update;
     }
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (args.KeyAction != KeyAction.Pressed || !Enum.TryParse(args.KeyConfig.Key, true, out Keys key)) return;
-        if (key == Keys.Space) _game.TogglePlaying();
-        if (key is >= Keys.D1 and <= Keys.D4) _game.TryBuy((int)key - (int)Keys.D1);
-        if (key == Keys.R) _game.Reset();
+        if (args.KeyAction != KeyAction.Pressed || !Enum.TryParse(args.KeyConfig.Key, true, out Keys key))
+            return;
+
+        if (key == Keys.Space)
+            _game.TogglePlaying();
+
+        if (key is >= Keys.D1 and <= Keys.D4)
+            _game.TryBuy((int)key - (int)Keys.D1);
+
+        if (key == Keys.R)
+            _game.Reset();
     }
 
     private void OnMouse(Gondwana.Input.Mouse.MouseEventArgs args)
     {
         _game.Mouse = args.CurrentPosition;
-        if (!args.LeftButtonJustPressed) return;
-        if (BedroomDrawing.PlayButton.Contains(args.CurrentPosition)) _game.TogglePlaying();
+
+        if (!args.LeftButtonJustPressed)
+            return;
+
+        if (BedroomDrawing.PlayButton.Contains(args.CurrentPosition))
+            _game.TogglePlaying();
+
         for (int i = 0; i < BedroomDrawing.ShopButtons.Length; i++)
-            if (BedroomDrawing.ShopButtons[i].Contains(args.CurrentPosition)) _game.TryBuy(i);
+            if (BedroomDrawing.ShopButtons[i].Contains(args.CurrentPosition))
+                _game.TryBuy(i);
     }
 
     private void Update()
@@ -101,7 +135,10 @@ internal sealed class RageToProGameHost : WinFormsGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0f, .05f);
         _lastTick = tick;
-        if (dt <= 0) return;
+
+        if (dt <= 0)
+            return;
+
         _game.Update(dt);
         _drawing.Invalidate();
     }
@@ -109,7 +146,9 @@ internal sealed class RageToProGameHost : WinFormsGameHost
 
 internal sealed class GamerState
 {
-    internal static readonly string[] UpgradeNames = ["Less-awful RAM", "Mechanical Keyboard", "Real Gaming PC", "Pro Stream Rig"];
+    internal static readonly string[] UpgradeNames =
+        ["Less-awful RAM", "Mechanical Keyboard", "Real Gaming PC", "Pro Stream Rig"];
+
     internal static readonly int[] UpgradeCosts = [80, 180, 400, 900];
     internal static readonly string[] BrokenThings = ["keyboard", "mouse", "monitor", "desk lamp", "controller"];
 
@@ -128,6 +167,7 @@ internal sealed class GamerState
     private readonly Random _random = new();
 
     internal float HourlyPay => 7 + UpgradeLevel * 3;
+
     internal float RageMultiplier => UpgradeLevel switch
     {
         0 => 1f,
@@ -136,20 +176,34 @@ internal sealed class GamerState
         3 => .32f,
         _ => .14f
     };
+
     internal bool IsPro => UpgradeLevel == UpgradeNames.Length;
 
     internal void Reset()
     {
-        Money = 12; Rage = 8; TotalHours = 0; HourProgress = 0; UpgradeLevel = 0;
-        ThingsBroken = 0; Playing = false; SmashTime = 0;
-        Message = "Fresh start. Same terrible computer."; MessageTime = 3;
+        Money = 12;
+        Rage = 8;
+        TotalHours = 0;
+        HourProgress = 0;
+        UpgradeLevel = 0;
+        ThingsBroken = 0;
+        Playing = false;
+        SmashTime = 0;
+        Message = "Fresh start. Same terrible computer.";
+        MessageTime = 3;
     }
 
     internal void TogglePlaying()
     {
-        if (SmashTime > 0) return;
+        if (SmashTime > 0)
+            return;
+
         Playing = !Playing;
-        Message = Playing ? "Queue popped. Money and questionable decisions incoming." : "Taking five. Rage is cooling down.";
+
+        Message = Playing
+            ? "Queue popped. Money and questionable decisions incoming."
+            : "Taking five. Rage is cooling down.";
+
         MessageTime = 2;
     }
 
@@ -165,6 +219,7 @@ internal sealed class GamerState
         }
 
         HourProgress += dt;
+
         while (HourProgress >= 1f)
         {
             HourProgress -= 1f;
@@ -188,9 +243,11 @@ internal sealed class GamerState
             Rage = Math.Max(0, Rage - 1.4f);
             Message = $"Clean win! +${HourlyPay:0}";
         }
+
         MessageTime = 1.15f;
 
-        if (Rage >= 100) SmashSomething();
+        if (Rage >= 100)
+            SmashSomething();
     }
 
     private void SmashSomething()
@@ -211,20 +268,27 @@ internal sealed class GamerState
         if (slot != UpgradeLevel)
         {
             Message = slot < UpgradeLevel ? "Already installed." : "Buy the upgrades in order.";
-            MessageTime = 2; return;
+            MessageTime = 2;
+            return;
         }
 
         int cost = UpgradeCosts[slot];
+
         if (Money < cost)
         {
             Message = $"Need ${cost - Money:0} more for {UpgradeNames[slot]}.";
-            MessageTime = 2; return;
+            MessageTime = 2;
+            return;
         }
 
         Money -= cost;
         UpgradeLevel++;
         Rage = Math.Max(0, Rage - 22);
-        Message = IsPro ? "YOU WENT PRO! The setup hums. Rage is nearly obsolete." : $"Installed {UpgradeNames[slot]} — rage gain reduced!";
+
+        Message = IsPro
+            ? "YOU WENT PRO! The setup hums. Rage is nearly obsolete."
+            : $"Installed {UpgradeNames[slot]} — rage gain reduced!";
+
         MessageTime = 4;
     }
 }

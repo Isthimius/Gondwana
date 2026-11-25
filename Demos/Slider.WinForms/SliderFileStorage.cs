@@ -7,7 +7,9 @@ internal sealed class SliderFileStorage : ISliderScoreStore
 {
     private static string ScorePath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Gondwana", "Slider", "high-scores.json");
+        "Gondwana",
+        "Slider",
+        "high-scores.json");
 
     internal static void SaveGame(string path, SliderSave save)
         => File.WriteAllText(path, SliderPersistence.Serialize(save));
@@ -20,10 +22,22 @@ internal sealed class SliderFileStorage : ISliderScoreStore
         if (!File.Exists(ScorePath))
             return [];
 
-        try { return SliderPersistence.DeserializeScores(File.ReadAllText(ScorePath)); }
-        catch (IOException) { return []; }
-        catch (JsonException) { return []; }
-        catch (UnauthorizedAccessException) { return []; }
+        try
+        {
+            return SliderPersistence.DeserializeScores(File.ReadAllText(ScorePath));
+        }
+        catch (IOException)
+        {
+            return [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return [];
+        }
     }
 
     public void SaveScores(IReadOnlyList<SliderScore> scores)

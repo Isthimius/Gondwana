@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+
 [assembly: InternalsVisibleTo("Gondwana.Cli")]
 [assembly: InternalsVisibleTo("Gondwana.Tooling.Studio.Assets.WinForms")]
 [assembly: InternalsVisibleTo("Gondwana.Tests")]

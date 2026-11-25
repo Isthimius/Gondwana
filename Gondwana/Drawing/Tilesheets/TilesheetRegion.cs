@@ -161,14 +161,17 @@ public sealed class TilesheetRegion : IDisposable
     /// Gets the number of tile columns in the region.
     /// </summary>
     public int Columns => _tileCache?.GetLength(0) ?? 0;
+
     /// <summary>
     /// Gets the number of tile rows in the region.
     /// </summary>
     public int Rows => _tileCache?.GetLength(1) ?? 0;
+
     /// <summary>
     /// Gets the horizontal tile stride including padding.
     /// </summary>
     public int TileWidthIncludingPadding => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
+
     /// <summary>
     /// Gets the vertical tile stride including padding.
     /// </summary>
@@ -232,6 +235,7 @@ public sealed class TilesheetRegion : IDisposable
             BuildTileCache();
 
         var bitmaps = new Dictionary<(int x, int y), SKBitmap>();
+
         if (_tileCache == null)
             return bitmaps;
 
@@ -259,6 +263,7 @@ public sealed class TilesheetRegion : IDisposable
             BuildTileCache();
 
         var images = new Dictionary<(int x, int y), SKImage>();
+
         if (_tileCache == null)
             return images;
 
@@ -514,16 +519,18 @@ public sealed class TilesheetRegion : IDisposable
         if (_regionMargin.Left < 0 || _regionMargin.Top < 0 ||
             _regionMargin.Right < -_tilePadding.Right || _regionMargin.Bottom < -_tilePadding.Bottom)
         {
-            throw new InvalidOperationException("Leading region margins cannot be negative; trailing margins may only cancel trailing tile padding.");
+            throw new InvalidOperationException(
+                "Leading region margins cannot be negative; trailing margins may only cancel trailing tile padding.");
         }
 
         if (TileWidthIncludingPadding <= 0 || TileHeightIncludingPadding <= 0)
             return;
 
         int xTiles = (_area.Width - _regionMargin.Left - _regionMargin.Right) /
-            TileWidthIncludingPadding;
+                     TileWidthIncludingPadding;
+
         int yTiles = (_area.Height - _regionMargin.Top - _regionMargin.Bottom) /
-            TileHeightIncludingPadding;
+                     TileHeightIncludingPadding;
 
         if (xTiles <= 0 || yTiles <= 0)
             return;
@@ -605,6 +612,7 @@ public sealed class TilesheetRegion : IDisposable
         CollisionAdjust collisionAdjust)
     {
         var srcInfo = Tilesheet.SkBitmap.Info;
+
         var sliceInfo = new SKImageInfo(
             srcRect.Width,
             srcRect.Height,

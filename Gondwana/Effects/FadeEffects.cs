@@ -39,6 +39,7 @@ public abstract class FadeEffect : DisplayEffect
     private protected override void OnStarting()
     {
         _originalOpacity = EffectTargetAccess.GetOpacity(Target);
+
         _startOpacity = _startTransparentWhenOpaque && _originalOpacity >= 0.9999f
             ? 0f
             : _originalOpacity;
@@ -66,7 +67,11 @@ public sealed class FadeInEffect : FadeEffect
     public FadeInEffect(
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)
-        : base(1f, durationSeconds, easing, startTransparentWhenOpaque: true)
+        : base(
+            1f,
+            durationSeconds,
+            easing,
+            startTransparentWhenOpaque: true)
     {
     }
 }
@@ -80,7 +85,11 @@ public sealed class FadeOutEffect : FadeEffect
     public FadeOutEffect(
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)
-        : base(0f, durationSeconds, easing, startTransparentWhenOpaque: false)
+        : base(
+            0f,
+            durationSeconds,
+            easing,
+            startTransparentWhenOpaque: false)
     {
     }
 }

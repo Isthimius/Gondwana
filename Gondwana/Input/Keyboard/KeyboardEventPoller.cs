@@ -69,6 +69,7 @@ public sealed class KeyboardEventPoller
             return;
 
         var adapter = Adapter;
+
         if (adapter is null)
             return;
 
@@ -104,6 +105,7 @@ public sealed class KeyboardEventPoller
                     config._lastEventTick = tick;
                     KeyDown?.Invoke(new KeyDownEventArgs(config, mods, KeyAction.Repeated));
                 }
+
                 continue;
             }
 
@@ -126,7 +128,11 @@ public sealed class KeyboardEventPoller
     /// <param name="displayName">The display name.</param>
     /// <param name="timeBetweenEvents">The time between events.</param>
     /// <param name="isPaused">Whether event processing starts paused.</param>
-    public void StartMonitoringKey(int keyCode, string? displayName = null, double timeBetweenEvents = -1, bool isPaused = false)
+    public void StartMonitoringKey(
+        int keyCode,
+        string? displayName = null,
+        double timeBetweenEvents = -1,
+        bool isPaused = false)
     {
         _pendingOps.Enqueue(() =>
         {

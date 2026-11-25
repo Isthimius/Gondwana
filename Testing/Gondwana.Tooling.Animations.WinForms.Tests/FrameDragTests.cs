@@ -14,6 +14,7 @@ public sealed partial class AnimationEditorTests
     public void StandaloneSourcePaneDragInsertsAndAppendsWithoutRewritingExistingSource() => RunSta(() =>
     {
         string directory = CreateTempDirectory();
+
         try
         {
             string gts = CreateGts(directory);
@@ -22,8 +23,13 @@ public sealed partial class AnimationEditorTests
             var editor = host.Editor;
             editor.AddTilesheetSource(gts);
             var source = Assert.Single(document.Definition.TilesheetSources);
-            var first = new AnimationFrameDefinition { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .2 };
-            var last = new AnimationFrameDefinition { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .4 };
+
+            var first = new AnimationFrameDefinition
+            { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .2 };
+
+            var last = new AnimationFrameDefinition
+            { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .4 };
+
             document.AddFrame(first);
             document.AddFrame(last);
             document.History.ResetSaved();
@@ -36,8 +42,14 @@ public sealed partial class AnimationEditorTests
             region.Nodes[0].Expand();
             Assert.Null(AnimationEditorControl.CreateSourceFrameDrag(root));
             Assert.Null(AnimationEditorControl.CreateSourceFrameDrag(region));
-            var drag = Assert.IsType<TilesheetFrameDrag>(AnimationEditorControl.CreateSourceFrameDrag(region.Nodes[0].Nodes[1]));
-            Assert.Equal(new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, gts), "test-sheet"), drag.Address);
+
+            var drag = Assert.IsType<TilesheetFrameDrag>(
+                AnimationEditorControl.CreateSourceFrameDrag(region.Nodes[0].Nodes[1]));
+
+            Assert.Equal(
+                new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, gts), "test-sheet"),
+                drag.Address);
+
             Assert.Equal(("walk", 1, 0), (drag.RegionName, drag.X, drag.Y));
 
             var frames = Field<FrameSequenceListView>(editor, "_frames");
@@ -57,7 +69,11 @@ public sealed partial class AnimationEditorTests
 
             var inserted = document.Definition.Frames[1];
             Assert.Equal(new[] { first, inserted, last }, document.Definition.Frames);
-            Assert.Equal(("test-sheet", "walk", 1, 0), (inserted.Tilesheet, inserted.RegionName, inserted.XTile, inserted.YTile));
+
+            Assert.Equal(
+                ("test-sheet", "walk", 1, 0),
+                (inserted.Tilesheet, inserted.RegionName, inserted.XTile, inserted.YTile));
+
             Assert.Null(inserted.DurationSeconds);
             Assert.Equal(.2, first.DurationSeconds);
             Assert.Equal(.4, last.DurationSeconds);
@@ -84,7 +100,10 @@ public sealed partial class AnimationEditorTests
             Assert.Equal(new[] { first, inserted, last }, document.Definition.Frames.Take(3));
             Assert.Equal(1, document.Definition.Frames[3].XTile);
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 
     [Theory]
@@ -93,6 +112,7 @@ public sealed partial class AnimationEditorTests
     public void DropAddsOnlyExactMemberAndReplaysReferenceAcrossSaveAs(bool packed) => RunSta(() =>
     {
         string directory = CreateTempDirectory();
+
         try
         {
             var drag = CreateMultiMemberDrag(directory, packed);
@@ -104,9 +124,14 @@ public sealed partial class AnimationEditorTests
             Application.DoEvents();
 
             var frames = Field<FrameSequenceListView>(host.Editor, "_frames");
+
             if (packed)
             {
-                var basename = new AssetLocation(AssetTypes.TilesheetDefinition, drag.Address.Location.Path, "sheet.gts");
+                var basename = new AssetLocation(
+                    AssetTypes.TilesheetDefinition,
+                    drag.Address.Location.Path,
+                    "sheet.gts");
+
                 var incomplete = drag with { Address = new ResourceAddress(basename, drag.Address.Member) };
                 var rejected = DragAt(frames, new ResourceDragData<TilesheetFrameDrag>(incomplete), 50);
                 RaiseDrag(frames, "Enter", rejected);
@@ -157,16 +182,23 @@ public sealed partial class AnimationEditorTests
             var saved = reloaded.Definitions[1];
             Assert.Equal(drag.Address, SourceAddress(Assert.Single(saved.TilesheetSources), reloaded.BaseDirectory));
             var savedFrame = Assert.Single(saved.Frames);
-            Assert.Equal((frame.Tilesheet, frame.RegionName, frame.XTile, frame.YTile, frame.DurationSeconds),
-                (savedFrame.Tilesheet, savedFrame.RegionName, savedFrame.XTile, savedFrame.YTile, savedFrame.DurationSeconds));
+
+            Assert.Equal(
+                (frame.Tilesheet, frame.RegionName, frame.XTile, frame.YTile, frame.DurationSeconds),
+                (savedFrame.Tilesheet, savedFrame.RegionName, savedFrame.XTile, savedFrame.YTile,
+                    savedFrame.DurationSeconds));
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 
     [Fact]
     public void RejectedAndCanceledDropsPreserveSavePointAndRedo() => RunSta(() =>
     {
         string directory = CreateTempDirectory();
+
         try
         {
             string gts = CreateGts(directory);
@@ -186,21 +218,29 @@ public sealed partial class AnimationEditorTests
             Application.DoEvents();
 
             var frames = Field<FrameSequenceListView>(host.Editor, "_frames");
-            TilesheetFrameDrag Drag(string path, string? member = "test-sheet", AssetTypes type = AssetTypes.TilesheetDefinition) =>
-                new(new ResourceAddress(new AssetLocation(type, path), member), "walk", 0, 0);
+
+            TilesheetFrameDrag Drag(
+                string path,
+                string? member = "test-sheet",
+                AssetTypes type = AssetTypes.TilesheetDefinition) =>
+                new(
+                    new ResourceAddress(new AssetLocation(type, path), member),
+                    "walk",
+                    0,
+                    0);
 
             foreach (var invalid in new[]
-            {
-                Drag(conflicting),
-                Drag(gts, null),
-                Drag(gts, type: AssetTypes.AnimationDefinition),
-                Drag(gts, "not-a-member"),
-                Drag(gts) with { RegionName = "unknown" },
-                Drag(gts) with { X = 2 },
-                Drag(Path.Combine(directory, "missing.gts"), "unregistered"),
-                Drag(malformed, "unregistered"),
-                Drag(duplicate, "unregistered")
-            })
+                     {
+                         Drag(conflicting),
+                         Drag(gts, null),
+                         Drag(gts, type: AssetTypes.AnimationDefinition),
+                         Drag(gts, "not-a-member"),
+                         Drag(gts) with { RegionName = "unknown" },
+                         Drag(gts) with { X = 2 },
+                         Drag(Path.Combine(directory, "missing.gts"), "unregistered"),
+                         Drag(malformed, "unregistered"),
+                         Drag(duplicate, "unregistered")
+                     })
             {
                 var args = DragAt(frames, new ResourceDragData<TilesheetFrameDrag>(invalid), 50);
                 RaiseDrag(frames, "Enter", args);
@@ -239,7 +279,10 @@ public sealed partial class AnimationEditorTests
                 Assert.True(document.History.CanRedo);
             }
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 
     private static AnimationEditorDocument ShowFrameDragEditor(string directory)
@@ -251,6 +294,7 @@ public sealed partial class AnimationEditorTests
             ShowInTaskbar = false,
             Size = new Size(1200, 800)
         };
+
         host.Show();
         Application.DoEvents();
         return host;
@@ -259,7 +303,14 @@ public sealed partial class AnimationEditorTests
     private static DragEventArgs DragAt(ListView frames, IDataObject data, int y)
     {
         var point = frames.PointToScreen(new Point(15, y));
-        return new(data, 0, point.X, point.Y, DragDropEffects.Copy, DragDropEffects.None);
+
+        return new(
+            data,
+            0,
+            point.X,
+            point.Y,
+            DragDropEffects.Copy,
+            DragDropEffects.None);
     }
 
     private static void RaiseDrag(Control target, string phase, EventArgs args) =>
@@ -278,24 +329,51 @@ public sealed partial class AnimationEditorTests
         File.WriteAllBytes(Path.Combine(directory, "sheet.png"), imageBytes);
 
         var first = TilesheetDefinitionSerializer.Load(path);
+
         var second = new TilesheetDefinition
         {
             Name = "second",
             Image = new() { FilePath = "sheet.png" },
-            Regions = [new() { Name = "run", Area = new(0, 0, 32, 32), TileSize = new(16, 16) }]
+            Regions =
+            [
+                new()
+                {
+                    Name = "run", Area = new(
+                        0,
+                        0,
+                        32,
+                        32),
+                    TileSize = new(16, 16)
+                }
+            ]
         };
+
         string? entry = null;
+
         if (packed)
         {
             path = Path.Combine(directory, "pack.gaf");
             entry = "nested/sheet.gts";
             first.Image = second.Image = new() { AssetEntryName = "images/sheet.png" };
-            using var archive = AssetsFile.LoadOrCreate(path, password: null, encrypt: false, register: false);
+
+            using var archive = AssetsFile.LoadOrCreate(
+                path,
+                password: null,
+                encrypt: false,
+                register: false);
+
             using var imageData = new MemoryStream(imageBytes);
             archive.Add(AssetTypes.Image, "images/sheet.png", imageData);
-            using var decoy = new MemoryStream(Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [first] })));
+
+            using var decoy = new MemoryStream(
+                Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [first] })));
+
             archive.Add(AssetTypes.TilesheetDefinition, "decoy/sheet.gts", decoy);
-            using var data = new MemoryStream(Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [first, second] })));
+
+            using var data = new MemoryStream(
+                Encoding.UTF8.GetBytes(
+                    TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [first, second] })));
+
             archive.Add(AssetTypes.TilesheetDefinition, entry, data);
             archive.Save();
         }
@@ -304,6 +382,10 @@ public sealed partial class AnimationEditorTests
             TilesheetDefinitionSerializer.SaveAll(path, [first, second]);
         }
 
-        return new(new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, path, entry), "second"), "run", 1, 1);
+        return new(
+            new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, path, entry), "second"),
+            "run",
+            1,
+            1);
     }
 }

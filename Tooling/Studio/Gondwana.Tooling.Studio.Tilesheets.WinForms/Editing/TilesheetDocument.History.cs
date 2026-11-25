@@ -10,15 +10,24 @@ public sealed partial class TilesheetDocument : IDisposable
     private void AddMembers(IReadOnlyList<TilesheetDefinition> members, string description)
     {
         var selected = Definition;
-        History.Execute(description, () =>
-        {
-            foreach (var member in members) if (!_definitions.Contains(member)) _definitions.Add(member);
-            Definition = members[0];
-        }, () =>
-        {
-            foreach (var member in members) _definitions.Remove(member);
-            Definition = selected;
-        });
+
+        History.Execute(
+            description,
+            () =>
+            {
+                foreach (var member in members)
+                    if (!_definitions.Contains(member))
+                        _definitions.Add(member);
+
+                Definition = members[0];
+            },
+            () =>
+            {
+                foreach (var member in members)
+                    _definitions.Remove(member);
+
+                Definition = selected;
+            });
     }
 
     private void HistoryChanged(object? sender, EventArgs args)
@@ -30,7 +39,9 @@ public sealed partial class TilesheetDocument : IDisposable
     /// <summary>Edits the properties of one owned model object; child objects and collections must use their own operations.</summary>
     public bool Edit(object target, string description, Action change)
     {
-        if (!Owns(target)) throw new ArgumentException("The object does not belong to this document.", nameof(target));
+        if (!Owns(target))
+            throw new ArgumentException("The object does not belong to this document.", nameof(target));
+
         return History.Edit(description, target, change);
     }
 
@@ -42,17 +53,28 @@ public sealed partial class TilesheetDocument : IDisposable
         Changed = null;
     }
 
-    private bool Owns(object target) => _definitions.Any(d => ReferenceEquals(d, target) || ReferenceEquals(d.Mask, target) ||
+    private bool Owns(object target) => _definitions.Any(d =>
+        ReferenceEquals(d, target) || ReferenceEquals(d.Mask, target) ||
         d.Regions.Any(r => ReferenceEquals(r, target) || r.Frames.Any(f => ReferenceEquals(f, target))));
 
     /// <summary>Adds a region as one reversible operation.</summary>
-    public void AddRegion(TilesheetRegionDefinition region) => History.Insert("Add region", Definition.Regions, Definition.Regions.Count, region);
+    public void AddRegion(TilesheetRegionDefinition region) => History.Insert(
+        "Add region",
+        Definition.Regions,
+        Definition.Regions.Count,
+        region);
 
     /// <summary>Removes a region while retaining its frame metadata for undo.</summary>
-    public bool RemoveRegion(TilesheetRegionDefinition region) => History.Remove("Remove region", Definition.Regions, region);
+    public bool RemoveRegion(TilesheetRegionDefinition region) =>
+        History.Remove("Remove region", Definition.Regions, region);
 
     /// <summary>Edits one frame, creating sparse metadata only for an actual change.</summary>
-    public bool EditFrame(TilesheetRegionDefinition region, int x, int y, string description, Action<TilesheetFrameDefinition> change)
+    public bool EditFrame(
+        TilesheetRegionDefinition region,
+        int x,
+        int y,
+        string description,
+        Action<TilesheetFrameDefinition> change)
     {
         if (!Owns(region))
             throw new ArgumentException("Region does not belong to this document.", nameof(region));
@@ -64,7 +86,11 @@ public sealed partial class TilesheetDocument : IDisposable
         bool changed = History.Edit(description, frame, () => change(frame));
 
         if (changed && existing is null)
-            History.Insert(description, region.Frames, region.Frames.Count, frame);
+            History.Insert(
+                description,
+                region.Frames,
+                region.Frames.Count,
+                frame);
 
         transaction.Commit();
         return changed;
@@ -82,11 +108,20 @@ public sealed partial class TilesheetDocument : IDisposable
         foreach (var member in _definitions)
         {
             if (member.Image is { } image)
-                _origins.Restore(image, BaseDirectory, PackedLocation?.Path, image.AssetEntryName,
-                    () => image.FilePath, value => image.FilePath = value,
-                    () => image.AssetsFilePath, value => image.AssetsFilePath = value);
+                _origins.Restore(
+                    image,
+                    BaseDirectory,
+                    PackedLocation?.Path,
+                    image.AssetEntryName,
+                    () => image.FilePath,
+                    value => image.FilePath = value,
+                    () => image.AssetsFilePath,
+                    value => image.AssetsFilePath = value);
 
-            if (FilePath is not null && !string.Equals(member.Source.GtsFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
+            if (FilePath is not null && !string.Equals(
+                    member.Source.GtsFilePath,
+                    FilePath,
+                    StringComparison.OrdinalIgnoreCase))
                 member.Source = TilesheetDefinitionSource.LooseDefinitionFile(FilePath);
         }
     }

@@ -14,6 +14,7 @@ namespace Gondwana.Drawing.Direct;
 public sealed class DirectSvg : DirectDrawingMovableBase
 {
     private readonly SvgResource _svgResource;
+
     private readonly SKPaint _paint = new()
     {
         IsAntialias = true,
@@ -25,15 +26,23 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     private int _cachedWidth;
     private int _cachedHeight;
 
-    private DirectSvg(SvgResource svgResource,
-                      RenderSurfaceHostBase renderSurfaceHost,
-                      DirectDrawingMode mode,
-                      SceneLayer? sceneLayer,
-                      View? view,
-                      Rectangle? screenBounds,
-                      Rectangle? worldBounds,
-                      string? nickname = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
+    private DirectSvg(
+        SvgResource svgResource,
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            nickname)
     {
         _svgResource = svgResource ?? throw new ArgumentNullException(nameof(svgResource));
     }
@@ -46,13 +55,23 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     /// <param name="sceneLayer">The scene layer that owns the content.</param>
     /// <param name="worldBounds">The bounds in world pixels.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public DirectSvg(SvgResource svgResource,
-                     RenderSurfaceHostBase renderSurfaceHost,
-                     SceneLayer sceneLayer,
-                     Rectangle worldBounds,
-                     string? nickname = null)
-        : this(svgResource, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname)
-    { }
+    public DirectSvg(
+        SvgResource svgResource,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? nickname = null)
+        : this(
+            svgResource,
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            null,
+            null,
+            worldBounds,
+            nickname)
+    {
+    }
 
     /// <summary>
     /// Initializes a new screen-space <see cref="DirectSvg"/>.
@@ -62,13 +81,23 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     /// <param name="view">The view used for presentation and coordinate conversion.</param>
     /// <param name="screenBounds">The bounds in screen pixels.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public DirectSvg(SvgResource svgResource,
-                     RenderSurfaceHostBase renderSurfaceHost,
-                     View view,
-                     Rectangle screenBounds,
-                     string? nickname = null)
-        : this(svgResource, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname)
-    { }
+    public DirectSvg(
+        SvgResource svgResource,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? nickname = null)
+        : this(
+            svgResource,
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            null,
+            view,
+            screenBounds,
+            null,
+            nickname)
+    {
+    }
 
     /// <summary>
     /// Sets the filter quality used when drawing the cached SVG bitmap.

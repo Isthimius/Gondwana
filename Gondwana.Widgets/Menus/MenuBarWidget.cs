@@ -26,9 +26,11 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="key">The lookup key for the resource.</param>
     /// <returns>The menu item registered under the requested identifier.</returns>
     public MenuItemWidget GetItem(string key) => _itemsByKey[key];
+
     /// <summary>Gets an item by its stable key, or throws KeyNotFoundException.</summary>
     /// <param name="key">The lookup key for the resource.</param>
     public MenuItemWidget this[string key] => GetItem(key);
+
     /// <summary>Looks up a stable key; returns false and null when absent.</summary>
     /// <param name="key">The lookup key for the resource.</param>
     /// <param name="item">When this method returns, contains the item.</param>
@@ -39,28 +41,41 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     internal void ValidateRegistration(string? key, KeyGesture? shortcut)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
+
         if (key is not null)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            if (_itemsByKey.ContainsKey(key)) throw new ArgumentException($"Duplicate menu item key '{key}'.", nameof(key));
+
+            if (_itemsByKey.ContainsKey(key))
+                throw new ArgumentException($"Duplicate menu item key '{key}'.", nameof(key));
         }
+
         if (shortcut is { } gesture)
         {
-            if (gesture.Key <= 0) throw new ArgumentException("A shortcut requires a nonzero key.", nameof(shortcut));
-            if (_shortcuts.ContainsKey(gesture)) throw new ArgumentException($"Duplicate menu shortcut '{gesture}'.", nameof(shortcut));
+            if (gesture.Key <= 0)
+                throw new ArgumentException("A shortcut requires a nonzero key.", nameof(shortcut));
+
+            if (_shortcuts.ContainsKey(gesture))
+                throw new ArgumentException($"Duplicate menu shortcut '{gesture}'.", nameof(shortcut));
         }
     }
 
     internal void RegisterItem(MenuItemWidget item)
     {
-        if (item.Key is not null) _itemsByKey.Add(item.Key, item);
-        if (item.Shortcut is { } gesture) _shortcuts.Add(gesture, item);
+        if (item.Key is not null)
+            _itemsByKey.Add(item.Key, item);
+
+        if (item.Shortcut is { } gesture)
+            _shortcuts.Add(gesture, item);
     }
 
     internal void UnregisterItem(MenuItemWidget item)
     {
-        if (item.Key is not null && _itemsByKey.GetValueOrDefault(item.Key) == item) _itemsByKey.Remove(item.Key);
-        if (item.Shortcut is { } gesture && _shortcuts.GetValueOrDefault(gesture) == item) _shortcuts.Remove(gesture);
+        if (item.Key is not null && _itemsByKey.GetValueOrDefault(item.Key) == item)
+            _itemsByKey.Remove(item.Key);
+
+        if (item.Shortcut is { } gesture && _shortcuts.GetValueOrDefault(gesture) == item)
+            _shortcuts.Remove(gesture);
     }
 
     private WidgetBase? _previousFocus;
@@ -86,12 +101,17 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="bounds">The widget bounds in view-local pixels.</param>
     /// <param name="theme">The theme.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public MenuBarWidget(RenderSurfaceHostBase host,
-                         View view,
-                         Rectangle bounds,
-                         MenuBarTheme? theme = null,
-                         string? nickname = null)
-        : base(host, DirectDrawingMode.View, bounds.Location, nickname)
+    public MenuBarWidget(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        MenuBarTheme? theme = null,
+        string? nickname = null)
+        : base(
+            host,
+            DirectDrawingMode.View,
+            bounds.Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -119,6 +139,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             .SetStrokeWidth(_theme.BorderWidth);
 
         Rectangle dismissBounds = view.Viewport.TargetRectPx;
+
         _dismissLayer = new DismissLayerWidget(
             host,
             view,
@@ -173,15 +194,18 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <param name="headerWidth">The header width.</param>
     /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public MenuBarWidget AddMenu(string text,
-                                 Action<MenuDropDownWidget>? configure = null,
-                                 int? headerWidth = null,
-                                 char? mnemonic = null)
+    public MenuBarWidget AddMenu(
+        string text,
+        Action<MenuDropDownWidget>? configure = null,
+        int? headerWidth = null,
+        char? mnemonic = null)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(text);
+
         if (mnemonic is char character && _menus.Any(menu => menu.Header.Mnemonic is char existing &&
-            char.ToUpperInvariant(existing) == char.ToUpperInvariant(character)))
+                                                             char.ToUpperInvariant(existing) ==
+                                                             char.ToUpperInvariant(character)))
             throw new ArgumentException($"Duplicate top-level mnemonic '{character}'.", nameof(mnemonic));
 
         int resolvedHeaderWidth = headerWidth ?? EstimateHeaderWidth(text);
@@ -208,14 +232,16 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             headerBounds,
             text,
             _theme,
-            $"{Nickname}.header.{menuIndex}", mnemonic);
+            $"{Nickname}.header.{menuIndex}",
+            mnemonic);
 
         var dropDown = new MenuDropDownWidget(
             RenderSurfaceHost,
             _view,
             new Point(headerBounds.X, _bounds.Bottom),
             _theme,
-            $"{Nickname}.dropdown.{menuIndex}", this);
+            $"{Nickname}.dropdown.{menuIndex}",
+            this);
 
         try
         {
@@ -227,6 +253,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             header.Dispose();
             throw;
         }
+
         PositionDropDown(headerBounds, dropDown);
 
         var menu = new MenuBarMenu(header, dropDown);
@@ -361,16 +388,21 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
 
     private void HandleKeyboard(WidgetKeyboardEventArgs args)
     {
-        if (args.Handled || args.KeyAction != KeyAction.Pressed || !IsAvailable) return;
-        if (args.Key > 0 && _shortcuts.TryGetValue(new KeyGesture(args.Key, args.Modifiers), out var command) && command.CanInvoke)
+        if (args.Handled || args.KeyAction != KeyAction.Pressed || !IsAvailable)
+            return;
+
+        if (args.Key > 0 && _shortcuts.TryGetValue(new KeyGesture(args.Key, args.Modifiers), out var command) &&
+            command.CanInvoke)
         {
             args.Handled = true;
             command.PerformClick();
             return;
         }
+
         if (args.Modifiers == KeyboardModifierState.Alt)
         {
             int index = _menus.FindIndex(menu => MatchesMnemonic(menu.Header.Mnemonic, args.Key));
+
             if (index >= 0)
             {
                 args.Handled = true;
@@ -379,39 +411,63 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
                 return;
             }
         }
-        if (_openMenuIndex < 0 || args.Modifiers != KeyboardModifierState.None) return;
+
+        if (_openMenuIndex < 0 || args.Modifiers != KeyboardModifierState.None)
+            return;
+
         var dropDown = _menus[_openMenuIndex].DropDown.ActiveMenu;
+
         switch (args.Key)
         {
             case 27:
-                if (dropDown.ParentMenu is { } parent) parent.CloseChild();
-                else CloseMenu();
+                if (dropDown.ParentMenu is { } parent)
+                    parent.CloseChild();
+                else
+                    CloseMenu();
+
                 break;
             case 37:
-                if (dropDown.ParentMenu is { } previous) previous.CloseChild();
-                else OpenMenuAt((_openMenuIndex - 1 + _menus.Count) % _menus.Count);
+                if (dropDown.ParentMenu is { } previous)
+                    previous.CloseChild();
+                else
+                    OpenMenuAt((_openMenuIndex - 1 + _menus.Count) % _menus.Count);
+
                 break;
             case 39:
                 if (dropDown.SelectedItem is { SubMenu: not null } owner)
                     dropDown.OpenSubMenu(owner, selectFirst: true);
                 else if (dropDown.ParentMenu is null)
                     OpenMenuAt((_openMenuIndex + 1) % _menus.Count);
+
                 break;
-            case 38: dropDown.SelectPreviousEnabled(); break;
-            case 40: dropDown.SelectNextEnabled(); break;
+            case 38:
+                dropDown.SelectPreviousEnabled();
+                break;
+            case 40:
+                dropDown.SelectNextEnabled();
+                break;
             case 13:
-            case 32: dropDown.InvokeSelectedItem(); break;
+            case 32:
+                dropDown.InvokeSelectedItem();
+                break;
             default:
-                var item = dropDown.Items.FirstOrDefault(item => item.CanInvoke && MatchesMnemonic(item.Mnemonic, args.Key));
-                if (item is null) return;
+                var item = dropDown.Items.FirstOrDefault(item =>
+                    item.CanInvoke && MatchesMnemonic(item.Mnemonic, args.Key));
+
+                if (item is null)
+                    return;
+
                 item.PerformClick();
                 break;
         }
+
         args.Handled = true;
     }
 
     private static bool MatchesMnemonic(char? mnemonic, int key) => mnemonic is char character &&
-        key <= char.MaxValue && key >= 0 && char.ToUpperInvariant(character) == char.ToUpperInvariant((char)key);
+                                                                    key <= char.MaxValue && key >= 0 &&
+                                                                    char.ToUpperInvariant(character) ==
+                                                                    char.ToUpperInvariant((char)key);
 
     /// <inheritdoc/>
     public override void Dispose()
@@ -491,26 +547,31 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             immediate);
 
         var focused = WidgetInputRouterRegistry.GetFocusedWidget(this);
+
         if (focused is null || ContainsWidget(this, focused))
             WidgetInputRouterRegistry.RestoreFocus(this, _previousFocus);
+
         _previousFocus = null;
         MenuClosed?.Invoke(menu);
     }
 
     private static bool ContainsWidget(ContainerWidget container, WidgetBase widget) =>
         container.ChildWidgets.Any(child => ReferenceEquals(child, widget) ||
-            child is ContainerWidget nested && ContainsWidget(nested, widget));
+                                            child is ContainerWidget nested && ContainsWidget(nested, widget));
 
-    private void PositionDropDown(Rectangle headerBounds,
-                                  MenuDropDownWidget dropDown)
+    private void PositionDropDown(
+        Rectangle headerBounds,
+        MenuDropDownWidget dropDown)
     {
         Rectangle viewport = _view.Viewport.TargetRectPx;
+
         int x = Math.Clamp(
             headerBounds.X,
             viewport.Left,
             Math.Max(viewport.Left, viewport.Right - dropDown.Width));
 
         int y = Math.Clamp(_bounds.Bottom, viewport.Top, Math.Max(viewport.Top, viewport.Bottom - dropDown.Height));
+
         if (Children.Contains(dropDown))
             SetLocalOffset(dropDown, new Vector2(x - GetPosition().X, y - GetPosition().Y));
         else
@@ -543,11 +604,16 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     {
         internal event Action? DismissRequested;
 
-        internal DismissLayerWidget(RenderSurfaceHostBase host,
-                                    View view,
-                                    Rectangle bounds,
-                                    string? nickname)
-            : base(host, DirectDrawingMode.View, bounds.Location, nickname)
+        internal DismissLayerWidget(
+            RenderSurfaceHostBase host,
+            View view,
+            Rectangle bounds,
+            string? nickname)
+            : base(
+                host,
+                DirectDrawingMode.View,
+                bounds.Location,
+                nickname)
         {
             HitArea = new DirectRectangle(
                     Color.Transparent,

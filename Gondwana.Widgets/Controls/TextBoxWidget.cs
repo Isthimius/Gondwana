@@ -21,9 +21,24 @@ namespace Gondwana.Widgets.Controls;
 /// </remarks>
 public sealed class TextBoxWidget : WidgetBase
 {
-    private Color _backgroundColor = Color.FromArgb(255, 32, 32, 40);
-    private Color _borderColor = Color.FromArgb(255, 135, 135, 150);
-    private Color _focusedBorderColor = Color.FromArgb(255, 105, 155, 230);
+    private Color _backgroundColor = Color.FromArgb(
+        255,
+        32,
+        32,
+        40);
+
+    private Color _borderColor = Color.FromArgb(
+        255,
+        135,
+        135,
+        150);
+
+    private Color _focusedBorderColor = Color.FromArgb(
+        255,
+        105,
+        155,
+        230);
+
     private SKColor _textColor = SKColors.White;
     private SKColor _placeholderColor = new(170, 170, 180);
 
@@ -57,13 +72,18 @@ public sealed class TextBoxWidget : WidgetBase
     /// <param name="text">The text to display.</param>
     /// <param name="placeholder">The placeholder text displayed when the input is empty.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public TextBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                         View view,
-                         Rectangle bounds,
-                         string text = "",
-                         string? placeholder = null,
-                         string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public TextBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string text = "",
+        string? placeholder = null,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -89,13 +109,18 @@ public sealed class TextBoxWidget : WidgetBase
     /// <param name="text">The text to display.</param>
     /// <param name="placeholder">The placeholder text displayed when the input is empty.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public TextBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                         SceneLayer sceneLayer,
-                         Rectangle bounds,
-                         string text = "",
-                         string? placeholder = null,
-                         string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public TextBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string text = "",
+        string? placeholder = null,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -301,12 +326,14 @@ public sealed class TextBoxWidget : WidgetBase
             return this;
 
         string insertion = NormalizeText(text);
+
         if (insertion.Length == 0)
             return this;
 
         if (MaxLength.HasValue)
         {
             int available = MaxLength.Value - _text.Length;
+
             if (available <= 0)
                 return this;
 
@@ -370,16 +397,18 @@ public sealed class TextBoxWidget : WidgetBase
     /// <param name="border">The border.</param>
     /// <param name="focusedBorder">The focused border.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public TextBoxWidget SetColors(Color background,
-                                   Color border,
-                                   Color focusedBorder)
+    public TextBoxWidget SetColors(
+        Color background,
+        Color border,
+        Color focusedBorder)
     {
         _backgroundColor = background;
         _borderColor = border;
         _focusedBorderColor = focusedBorder;
 
         Background.SetColor(_backgroundColor)
-                  .SetBorderColor(IsFocused ? _focusedBorderColor : _borderColor);
+            .SetBorderColor(IsFocused ? _focusedBorderColor : _borderColor);
+
         Refresh(Background);
         return this;
     }
@@ -537,6 +566,7 @@ public sealed class TextBoxWidget : WidgetBase
             return;
 
         char? character = CharacterResolver(args);
+
         if (!character.HasValue)
             return;
 
@@ -564,59 +594,81 @@ public sealed class TextBoxWidget : WidgetBase
         if (IsFocused)
         {
             string withCaret = _text.Insert(_caretIndex, "|");
+
             TextBlock.SetText(withCaret)
-                     .SetColors(_textColor, SKColors.Transparent);
+                .SetColors(_textColor, SKColors.Transparent);
+
             return;
         }
 
         bool showPlaceholder = _text.Length == 0 && _placeholder.Length > 0;
+
         TextBlock.SetText(showPlaceholder ? _placeholder : _text)
-                 .SetColors(showPlaceholder ? _placeholderColor : _textColor, SKColors.Transparent);
+            .SetColors(showPlaceholder ? _placeholderColor : _textColor, SKColors.Transparent);
     }
 
-    private DirectRectangle CreateBackground(RenderSurfaceHostBase host,
-                                             View view,
-                                             Rectangle bounds)
+    private DirectRectangle CreateBackground(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureBackground(new DirectRectangle(_backgroundColor, host, view, bounds));
+        return ConfigureBackground(
+            new DirectRectangle(
+                _backgroundColor,
+                host,
+                view,
+                bounds));
     }
 
-    private DirectRectangle CreateBackground(RenderSurfaceHostBase host,
-                                             SceneLayer layer,
-                                             Rectangle bounds)
+    private DirectRectangle CreateBackground(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureBackground(new DirectRectangle(_backgroundColor, host, layer, bounds));
+        return ConfigureBackground(
+            new DirectRectangle(
+                _backgroundColor,
+                host,
+                layer,
+                bounds));
     }
 
     private DirectRectangle ConfigureBackground(DirectRectangle background)
     {
         return background.SetFilled(true)
-                         .SetBorderColor(_borderColor)
-                         .SetStrokeWidth(1.5f)
-                         .SetCornerRadius(4f);
+            .SetBorderColor(_borderColor)
+            .SetStrokeWidth(1.5f)
+            .SetCornerRadius(4f);
     }
 
-    private static TextBlock CreateTextBlock(RenderSurfaceHostBase host,
-                                             View view,
-                                             Rectangle bounds)
+    private static TextBlock CreateTextBlock(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
         return ConfigureTextBlock(new TextBlock(host, view, bounds));
     }
 
-    private static TextBlock CreateTextBlock(RenderSurfaceHostBase host,
-                                             SceneLayer layer,
-                                             Rectangle bounds)
+    private static TextBlock CreateTextBlock(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureTextBlock(new TextBlock(host, layer, view: null, worldBounds: bounds));
+        return ConfigureTextBlock(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds));
     }
 
     private static TextBlock ConfigureTextBlock(TextBlock textBlock)
     {
         return textBlock.SetFont(SKTypeface.Default, 16f, minSize: 10f)
-                        .SetColors(SKColors.White, SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                        .SetPadding(8f, 0f)
-                        .EnableWrapping(false);
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .SetPadding(8f, 0f)
+            .EnableWrapping(false);
     }
 
     private static string NormalizeText(string? text)

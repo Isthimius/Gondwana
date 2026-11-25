@@ -18,7 +18,8 @@ public interface IVideoPlayer : IDisposable
     /// a seekable stream. Backends without stream support throw without taking ownership.</summary>
     /// <param name="source">The source.</param>
     /// <param name="leaveOpen">Whether to leave the supplied stream open after use.</param>
-    void Open(Stream source, bool leaveOpen = false) => throw new NotSupportedException("This video backend does not support streams.");
+    void Open(Stream source, bool leaveOpen = false) =>
+        throw new NotSupportedException("This video backend does not support streams.");
 
     /// <summary>Gets an atomic snapshot of metadata availability and values for the current source.</summary>
     VideoMetadata Metadata => VideoMetadata.Unavailable;
@@ -112,11 +113,11 @@ public interface IVideoPlayer : IDisposable
     /// and MetadataFailed. MediaOpening must precede frames for a replacement source, after
     /// callbacks for the prior source have stopped. Events may run on background threads.
     /// </summary>
-    event EventHandler<VideoStateChangedEventArgs> StateChanged;    // generic hook
+    event EventHandler<VideoStateChangedEventArgs> StateChanged; // generic hook
 
     /// <summary>
     /// Occurs when a decoded BGRX frame is ready. The pointer is valid only during the callback.
     /// Copy it before returning. Do not call engine/render operations or player controls here.
     /// </summary>
-    event EventHandler<VideoFrameReadyEventArgs> FrameReady;        // decoded frame callback
+    event EventHandler<VideoFrameReadyEventArgs> FrameReady; // decoded frame callback
 }

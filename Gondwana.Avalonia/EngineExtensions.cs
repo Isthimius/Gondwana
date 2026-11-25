@@ -43,7 +43,10 @@ public static class EngineExtensions
     /// <param name="control">The control to capture mouse/pointer input from.</param>
     /// <param name="mouseEventConfiguration">Optional configuration for mouse event handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is null.</exception>
-    public static void InitializeAvaloniaMouseAdapter(this Engine engine, Control control, MouseEventConfiguration? mouseEventConfiguration = null)
+    public static void InitializeAvaloniaMouseAdapter(
+        this Engine engine,
+        Control control,
+        MouseEventConfiguration? mouseEventConfiguration = null)
     {
         Engine.Logger.LogInformation("Initializing AvaloniaMouseAdapter...");
 

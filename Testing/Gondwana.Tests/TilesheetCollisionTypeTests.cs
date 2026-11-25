@@ -77,7 +77,13 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
         region.SetFrameCollisionType(2, 0, TileCollisionType.None);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         var sprite = SpriteManager.Instance.CreateSprite(
             layer,
             tilesheet.GetFrame(0, 0),
@@ -119,6 +125,7 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
     public void Gts_RoundTripPreservesInheritedAndExplicitCollisionTypes()
     {
         var imagePath = WriteImage("collision-types.png");
+
         var definition = new TilesheetDefinition
         {
             Name = "CollisionTypes",
@@ -128,7 +135,11 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
                 new TilesheetRegionDefinition
                 {
                     Name = TilesheetRegion.DefaultRegionName,
-                    Area = new Rectangle(0, 0, 48, 16),
+                    Area = new Rectangle(
+                        0,
+                        0,
+                        48,
+                        16),
                     TileSize = new Size(16, 16),
                     CollisionType = TileCollisionType.Blocking,
                     Frames =
@@ -157,9 +168,11 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
 
         Assert.Equal(TileCollisionType.Blocking, jsonRegion.CollisionType);
         Assert.Null(jsonRegion.Frames[0].CollisionType);
+
         Assert.Equal(
             TileCollisionType.None,
             jsonRegion.Frames[1].CollisionType.GetValueOrDefault());
+
         Assert.Equal(
             TileCollisionType.Blocking,
             jsonRegion.Frames[2].CollisionType.GetValueOrDefault());
@@ -177,9 +190,11 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
         var serializedRegion = Assert.Single(serialized.Regions);
 
         Assert.Null(serializedRegion.Frames[0].CollisionType);
+
         Assert.Equal(
             TileCollisionType.None,
             serializedRegion.Frames[1].CollisionType.GetValueOrDefault());
+
         Assert.Equal(
             TileCollisionType.Blocking,
             serializedRegion.Frames[2].CollisionType.GetValueOrDefault());

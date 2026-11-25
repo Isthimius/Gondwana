@@ -15,13 +15,24 @@ public sealed partial class PluginPackageTests
         Package("loaded", "sample.loaded");
         Package("disabled", "sample.disabled");
         Package("runtime", "sample.runtime");
-        Package("failed", "sample.failed", source: PluginSource("Failed", constructor: "throw new System.Exception(\"Constructor needs a dependency\");"));
+
+        Package(
+            "failed",
+            "sample.failed",
+            source: PluginSource(
+                "Failed",
+                constructor: "throw new System.Exception(\"Constructor needs a dependency\");"));
+
         Package("conflictA", "sample.conflict");
         Package("conflictB", "sample.conflict");
         Directory.CreateDirectory(Path.Combine(_root, "invalid"));
         var incompatible = Package("incompatible", "sample.incompatible");
         var path = Path.Combine(Path.GetDirectoryName(incompatible)!, "plugin.json");
-        File.WriteAllText(path, File.ReadAllText(path).Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal));
+
+        File.WriteAllText(
+            path,
+            File.ReadAllText(path).Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal));
+
         var preferences = new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { });
         preferences.TrySetEnabled("sample.disabled", false, out _);
         preferences = new PluginPreferences(preferences.FilePath, _ => { });
@@ -33,8 +44,14 @@ public sealed partial class PluginPackageTests
         form.Show();
         host.DiscoverAndLoad(_root);
         Assert.Equal(7, manager.Grid.Rows.Count); // Two conflict sources share one package ID/choice.
-        foreach (var status in new[] { "Loaded", "Disabled by preference", "Failed to load", "Incompatible", "Identity conflict", "Invalid package" })
+
+        foreach (var status in new[]
+                 {
+                     "Loaded", "Disabled by preference", "Failed to load", "Incompatible", "Identity conflict",
+                     "Invalid package"
+                 })
             Assert.Contains(manager.Grid.Rows.Cast<DataGridViewRow>(), row => row.Cells[2].Value?.ToString() == status);
+
         Select(manager, "sample.failed");
         Assert.Contains("Constructor needs a dependency", manager.DetailsBox.Text);
         Assert.Contains("System.Exception", manager.DetailsBox.Text);
@@ -120,13 +137,17 @@ public sealed partial class PluginPackageTests
         var pane = studio.Workspace.Contents.OfType<DockContent>().Single(tool => tool.Text == "Plugin Manager");
         Assert.False(pane.IsHidden);
         Assert.Equal(2, studio.PluginManager.Grid.Rows.Count);
-        Assert.Contains("Project Diagnostics", studio.PluginManager.Grid.Rows.Cast<DataGridViewRow>().Select(row => row.Cells[0].Value));
+
+        Assert.Contains(
+            "Project Diagnostics",
+            studio.PluginManager.Grid.Rows.Cast<DataGridViewRow>().Select(row => row.Cells[0].Value));
     });
 
     [Fact]
     public void ManagerRestoresDockLayoutAndBothMenusWorkWithoutPlugins() => OnSta(() =>
     {
         var missing = Path.Combine(_root, "absent");
+
         using (var studio = new MainForm(loadPlugins: true, pluginDirectory: missing) { ShowInTaskbar = false })
         {
             studio.Show();
@@ -143,6 +164,7 @@ public sealed partial class PluginPackageTests
             Assert.True(pane.IsHidden);
             Assert.False(pane.IsDisposed);
         }
+
         using (var restored = new MainForm(loadPlugins: true, pluginDirectory: missing) { ShowInTaskbar = false })
         {
             restored.Show();
@@ -160,21 +182,33 @@ public sealed partial class PluginPackageTests
 
     private static void Select(PluginManagerPanel manager, string id)
     {
-        var row = manager.Grid.Rows.Cast<DataGridViewRow>().Single(row => row.Tag is PluginDiscoveryInfo[] records && records[0].PreferenceId == id);
+        var row = manager.Grid.Rows.Cast<DataGridViewRow>().Single(row =>
+            row.Tag is PluginDiscoveryInfo[] records && records[0].PreferenceId == id);
+
         manager.Grid.CurrentCell = row.Cells[0];
     }
 
     private static void OnSta(Action action)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
         {
-            try { action(); }
-            catch (Exception ex) { error = ex; }
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

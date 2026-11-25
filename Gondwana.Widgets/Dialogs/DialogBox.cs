@@ -20,6 +20,7 @@ public abstract class DialogBox : DraggableContainerWidget
     /// The default title bar height.
     /// </summary>
     protected const int DefaultTitleBarHeight = 36;
+
     /// <summary>
     /// The default close button size.
     /// </summary>
@@ -28,15 +29,29 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// The default panel color.
     /// </summary>
-    protected readonly static Color DefaultPanelColor = Color.FromArgb(245, 36, 36, 44);
+    protected readonly static Color DefaultPanelColor = Color.FromArgb(
+        245,
+        36,
+        36,
+        44);
+
     /// <summary>
     /// The default panel border color.
     /// </summary>
-    protected readonly static Color DefaultPanelBorderColor = Color.FromArgb(255, 140, 140, 155);
+    protected readonly static Color DefaultPanelBorderColor = Color.FromArgb(
+        255,
+        140,
+        140,
+        155);
+
     /// <summary>
     /// The default title bar color.
     /// </summary>
-    protected readonly static Color DefaultTitleBarColor = Color.FromArgb(255, 57, 57, 72);
+    protected readonly static Color DefaultTitleBarColor = Color.FromArgb(
+        255,
+        57,
+        57,
+        72);
 
     private const int DialogZOrderStart = 100_000;
     private const int DialogZOrderGap = 100;
@@ -62,13 +77,18 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <param name="title">The title.</param>
     /// <param name="showCloseButton">Whether the dialog displays a close button.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    protected DialogBox(RenderSurfaceHostBase renderSurfaceHost,
-                        View view,
-                        Rectangle bounds,
-                        string title,
-                        bool showCloseButton = true,
-                        string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, bounds.Location, nickname)
+    protected DialogBox(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string title,
+        bool showCloseButton = true,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            bounds.Location,
+            nickname)
     {
         ValidateBounds(bounds);
 
@@ -76,7 +96,12 @@ public abstract class DialogBox : DraggableContainerWidget
 
         Panel = CreatePanel(renderSurfaceHost, view, bounds);
         TitleBar = CreateTitleBar(renderSurfaceHost, view, bounds);
-        TitleText = CreateTitleText(renderSurfaceHost, view, bounds, title);
+
+        TitleText = CreateTitleText(
+            renderSurfaceHost,
+            view,
+            bounds,
+            title);
 
         Add(Panel);
         Add(TitleBar);
@@ -102,13 +127,18 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <param name="title">The title.</param>
     /// <param name="showCloseButton">Whether the dialog displays a close button.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    protected DialogBox(RenderSurfaceHostBase renderSurfaceHost,
-                        SceneLayer sceneLayer,
-                        Rectangle bounds,
-                        string title,
-                        bool showCloseButton = true,
-                        string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, bounds.Location, nickname)
+    protected DialogBox(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string title,
+        bool showCloseButton = true,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            bounds.Location,
+            nickname)
     {
         ValidateBounds(bounds);
 
@@ -116,7 +146,12 @@ public abstract class DialogBox : DraggableContainerWidget
 
         Panel = CreatePanel(renderSurfaceHost, sceneLayer, bounds);
         TitleBar = CreateTitleBar(renderSurfaceHost, sceneLayer, bounds);
-        TitleText = CreateTitleText(renderSurfaceHost, sceneLayer, bounds, title);
+
+        TitleText = CreateTitleText(
+            renderSurfaceHost,
+            sceneLayer,
+            bounds,
+            title);
 
         Add(Panel);
         Add(TitleBar);
@@ -244,6 +279,7 @@ public abstract class DialogBox : DraggableContainerWidget
     private void BringVisualTreeToFront()
     {
         DirectDrawingBase[] visuals = GetVisualDescendants(this).ToArray();
+
         if (visuals.Length == 0)
             return;
 
@@ -252,6 +288,7 @@ public abstract class DialogBox : DraggableContainerWidget
         int span = maximumZOrder - minimumZOrder;
 
         int targetMinimum;
+
         lock (_zOrderSyncRoot)
         {
             targetMinimum = _nextDialogZOrder;
@@ -259,6 +296,7 @@ public abstract class DialogBox : DraggableContainerWidget
         }
 
         int delta = targetMinimum - minimumZOrder;
+
         foreach (DirectDrawingBase visual in visuals)
             visual.ZOrder += delta;
     }
@@ -285,7 +323,10 @@ public abstract class DialogBox : DraggableContainerWidget
             return false;
 
         RectangleF titleBarBounds = TitleBar.GetDrawLocationScreen(args.View);
-        titleBarBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom, args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
+
+        titleBarBounds.Offset(
+            args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom,
+            args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
 
         return titleBarBounds.Contains(args.ScreenPositionPx.X, args.ScreenPositionPx.Y);
     }
@@ -368,91 +409,111 @@ public abstract class DialogBox : DraggableContainerWidget
         return new Vector2(size.Width - DefaultCloseButtonSize - 4, 4);
     }
 
-    private static DirectRectangle CreatePanel(RenderSurfaceHostBase host,
-                                               View view,
-                                               Rectangle bounds)
+    private static DirectRectangle CreatePanel(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigurePanel(new DirectRectangle(DefaultPanelColor,
-                              host,
-                              view,
-                              bounds));
+        return ConfigurePanel(
+            new DirectRectangle(
+                DefaultPanelColor,
+                host,
+                view,
+                bounds));
     }
 
-    private static DirectRectangle CreatePanel(RenderSurfaceHostBase host,
-                                               SceneLayer layer,
-                                               Rectangle bounds)
+    private static DirectRectangle CreatePanel(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigurePanel(new DirectRectangle(DefaultPanelColor,
-                              host,
-                              layer,
-                              bounds));
+        return ConfigurePanel(
+            new DirectRectangle(
+                DefaultPanelColor,
+                host,
+                layer,
+                bounds));
     }
 
     private static DirectRectangle ConfigurePanel(DirectRectangle panel)
     {
         panel.SetFilled(true)
-             .SetBorderColor(DefaultPanelBorderColor)
-             .SetStrokeWidth(2f)
-             .SetCornerRadius(8f);
+            .SetBorderColor(DefaultPanelBorderColor)
+            .SetStrokeWidth(2f)
+            .SetCornerRadius(8f);
 
         panel.ZOrder = 10_000;
 
         return panel;
     }
 
-    private static DirectRectangle CreateTitleBar(RenderSurfaceHostBase host,
-                                                  View view,
-                                                  Rectangle bounds)
+    private static DirectRectangle CreateTitleBar(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureTitleBar(new DirectRectangle(DefaultTitleBarColor,
-                                                     host,
-                                                     view,
-                                                     GetTitleBarBounds(bounds)));
+        return ConfigureTitleBar(
+            new DirectRectangle(
+                DefaultTitleBarColor,
+                host,
+                view,
+                GetTitleBarBounds(bounds)));
     }
 
-    private static DirectRectangle CreateTitleBar(RenderSurfaceHostBase host,
-                                                  SceneLayer layer,
-                                                  Rectangle bounds)
+    private static DirectRectangle CreateTitleBar(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureTitleBar(new DirectRectangle(DefaultTitleBarColor,
-                                                     host,
-                                                     layer,
-                                                     GetTitleBarBounds(bounds)));
+        return ConfigureTitleBar(
+            new DirectRectangle(
+                DefaultTitleBarColor,
+                host,
+                layer,
+                GetTitleBarBounds(bounds)));
     }
 
     private static DirectRectangle ConfigureTitleBar(DirectRectangle titleBar)
     {
         titleBar.SetFilled(true)
-                .SetCornerRadius(8f);
+            .SetCornerRadius(8f);
 
         titleBar.ZOrder = 10_001;
 
         return titleBar;
     }
 
-    private static TextBlock CreateTitleText(RenderSurfaceHostBase host,
-                                             View view,
-                                             Rectangle bounds,
-                                             string title)
+    private static TextBlock CreateTitleText(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string title)
     {
         return ConfigureTitleText(new TextBlock(host, view, GetTitleTextBounds(bounds)), title);
     }
 
-    private static TextBlock CreateTitleText(RenderSurfaceHostBase host,
-                                             SceneLayer layer,
-                                             Rectangle bounds,
-                                             string title)
+    private static TextBlock CreateTitleText(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string title)
     {
-        return ConfigureTitleText(new TextBlock(host, layer, view: null, worldBounds: GetTitleTextBounds(bounds)), title);
+        return ConfigureTitleText(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: GetTitleTextBounds(bounds)),
+            title);
     }
 
     private static TextBlock ConfigureTitleText(TextBlock titleText, string title)
     {
         titleText.SetText(title)
-                 .SetFont(SKTypeface.Default, 18f, minSize: 12f)
-                 .SetColors(SKColors.White, SKColors.Transparent)
-                 .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                 .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 18f, minSize: 12f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
 
         titleText.HorizontalPadding = 12f;
         titleText.ZOrder = 10_002;
@@ -460,46 +521,83 @@ public abstract class DialogBox : DraggableContainerWidget
         return titleText;
     }
 
-    private static ButtonWidget CreateCloseButton(RenderSurfaceHostBase host,
-                                                  View view,
-                                                  Rectangle bounds)
+    private static ButtonWidget CreateCloseButton(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureCloseButton(new ButtonWidget(host, view, GetCloseButtonBounds(bounds), "×"));
+        return ConfigureCloseButton(
+            new ButtonWidget(
+                host,
+                view,
+                GetCloseButtonBounds(bounds),
+                "×"));
     }
 
-    private static ButtonWidget CreateCloseButton(RenderSurfaceHostBase host,
-                                                  SceneLayer layer,
-                                                  Rectangle bounds)
+    private static ButtonWidget CreateCloseButton(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureCloseButton(new ButtonWidget(host, layer, GetCloseButtonBounds(bounds), "×"));
+        return ConfigureCloseButton(
+            new ButtonWidget(
+                host,
+                layer,
+                GetCloseButtonBounds(bounds),
+                "×"));
     }
 
     private static ButtonWidget ConfigureCloseButton(ButtonWidget closeButton)
     {
-        closeButton.SetBackgroundColors(Color.FromArgb(0, 0, 0, 0),
-                                        Color.FromArgb(255, 110, 55, 62),
-                                        Color.FromArgb(255, 145, 45, 55))
-                   .SetTextColor(Color.White)
-                   .SetButtonZOrder(10_003);
+        closeButton.SetBackgroundColors(
+                Color.FromArgb(
+                    0,
+                    0,
+                    0,
+                    0),
+                Color.FromArgb(
+                    255,
+                    110,
+                    55,
+                    62),
+                Color.FromArgb(
+                    255,
+                    145,
+                    45,
+                    55))
+            .SetTextColor(Color.White)
+            .SetButtonZOrder(10_003);
 
         return closeButton;
     }
 
     private static Rectangle GetTitleBarBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.X, bounds.Y, bounds.Width, DefaultTitleBarHeight);
+        return new Rectangle(
+            bounds.X,
+            bounds.Y,
+            bounds.Width,
+            DefaultTitleBarHeight);
     }
 
     private static Rectangle GetTitleTextBounds(
         Rectangle bounds)
     {
-        return new Rectangle(bounds.X, bounds.Y, bounds.Width - DefaultCloseButtonSize - 12, DefaultTitleBarHeight);
+        return new Rectangle(
+            bounds.X,
+            bounds.Y,
+            bounds.Width - DefaultCloseButtonSize - 12,
+            DefaultTitleBarHeight);
     }
 
     private static Rectangle GetCloseButtonBounds(
         Rectangle bounds)
     {
-        return new Rectangle(bounds.Right - DefaultCloseButtonSize - 4, bounds.Y + 4, DefaultCloseButtonSize, DefaultCloseButtonSize);
+        return new Rectangle(
+            bounds.Right - DefaultCloseButtonSize - 4,
+            bounds.Y + 4,
+            DefaultCloseButtonSize,
+            DefaultCloseButtonSize);
     }
 
     #endregion private methods

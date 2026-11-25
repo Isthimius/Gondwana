@@ -85,5 +85,4 @@ public sealed class SceneLayerTileDefinition
     /// Gets or sets the named scene collision profile assigned to the tile.
     /// </summary>
     public string? CollisionProfileName { get; set; }
-
 }

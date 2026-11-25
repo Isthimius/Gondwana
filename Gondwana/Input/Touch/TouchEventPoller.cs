@@ -126,6 +126,7 @@ public sealed class TouchEventPoller : ITouchInput, IDisposable
     /// Gets the pinch gesture recognizer used by this poller.
     /// </summary>
     public PinchGestureRecognizer PinchRecognizer { get; }
+
     private bool _isDisposed;
 
     private TouchEventPoller(ITouchAdapter adapter, TouchEventConfiguration config)
@@ -177,7 +178,8 @@ public sealed class TouchEventPoller : ITouchInput, IDisposable
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (_isDisposed || Adapter is null) return;
+        if (_isDisposed || Adapter is null)
+            return;
 
         var began = Adapter.ConsumeBeganTouches();
         var ended = Adapter.ConsumeEndedTouches();
@@ -227,6 +229,7 @@ public sealed class TouchEventPoller : ITouchInput, IDisposable
         }
 
         bool movementEmitted = false;
+
         if (Configuration.ReadyForNextEvent(tick))
         {
             foreach (var point in currentActive)

@@ -17,15 +17,23 @@ public sealed class NavigationPreferenceStore
     public NavigationPreferenceStore(string? settingsRoot = null, Action<string>? report = null)
     {
         settingsRoot ??= AppContext.GetData("Gondwana.Tooling.SettingsRoot") as string
-            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Hidden Worlds Games", "Gondwana", "Tooling");
+                         ?? Path.Combine(
+                             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                             "Hidden Worlds Games",
+                             "Gondwana",
+                             "Tooling");
 
         FilePath = Path.GetFullPath(Path.Combine(settingsRoot, "navigation-icon-size.txt"));
 
         string legacyApplication = AppContext.GetData("Gondwana.Tooling.ApplicationId") as string
-            ?? "Gondwana.Studio.WinForms"; // Studio's assembly name, not its project name.
+                                   ?? "Gondwana.Studio.WinForms"; // Studio's assembly name, not its project name.
 
-        _legacyPath = Path.Combine(settingsRoot, legacyApplication, "Studio", "directory-icon-size.txt");
+        _legacyPath = Path.Combine(
+            settingsRoot,
+            legacyApplication,
+            "Studio",
+            "directory-icon-size.txt");
+
         _report = report ?? (message => Trace.TraceWarning(message));
     }
 
@@ -85,6 +93,7 @@ public sealed class NavigationPreferenceStore
             throw new ArgumentOutOfRangeException(nameof(size));
 
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);

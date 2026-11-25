@@ -132,18 +132,28 @@ public sealed class SpriteRotationTests : IDisposable
     {
         var bitmap = new SKBitmap(4, 2);
         bitmap.Erase(SKColors.Red);
+
         using var tilesheet = TilesheetFactory.FromBitmap(
             $"rotation-{backbuffer.GetType().Name}",
             bitmap);
+
         tilesheet.DefaultRegion.TileSize = new Size(4, 2);
 
         Sprite sprite = CreateSprite(
             new Size(4, 2),
             tilesheet.GetFrame(0, 0));
+
         sprite.Rotation = 90f;
 
         backbuffer.Canvas.Clear(SKColors.Transparent);
-        sprite.Draw(backbuffer, new RectangleF(4f, 5f, 4f, 2f));
+
+        sprite.Draw(
+            backbuffer,
+            new RectangleF(
+                4f,
+                5f,
+                4f,
+                2f));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap rendered = SKBitmap.FromImage(snapshot);

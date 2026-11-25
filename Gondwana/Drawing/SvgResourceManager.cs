@@ -14,7 +14,8 @@ public sealed class SvgResourceManager : IDisposable
     private bool _disposed;
 
     private SvgResourceManager()
-    { }
+    {
+    }
 
     /// <summary>
     /// Gets the singleton instance of the <see cref="SvgResourceManager"/>.
@@ -52,6 +53,7 @@ public sealed class SvgResourceManager : IDisposable
                 continue;
 
             using var stream = resourceFile.Get(entry.AssetType, entry.AssetName);
+
             if (stream is null)
             {
                 Engine.Logger.LogWarning("Failed to retrieve stream for SVG resource: {Key}", entry.AssetName);
@@ -65,7 +67,11 @@ public sealed class SvgResourceManager : IDisposable
             }
             catch (Exception ex)
             {
-                Engine.Logger.LogError(ex, "Error loading SVG resource from asset file for key: {Key}", entry.AssetName);
+                Engine.Logger.LogError(
+                    ex,
+                    "Error loading SVG resource from asset file for key: {Key}",
+                    entry.AssetName);
+
                 throw;
             }
         }

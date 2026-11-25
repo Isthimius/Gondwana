@@ -11,17 +11,39 @@ namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 public sealed partial class SceneEditorControl
 {
-    private sealed record SpriteCandidate(ResourceAddress Address, SpriteDefinition Member,
-        SpriteInstanceDefinition Sprite, ISceneSpriteOwner? Owner);
-    private sealed record PlacementGesture(ResourceDragData<SpriteInstanceDrag> Data,
-        AuthoringResourceReadSnapshot Reads, SceneDefinition Scene, ResourceAddress Target, SceneLayerDefinition Layer,
+    private sealed record SpriteCandidate(
+        ResourceAddress Address,
+        SpriteDefinition Member,
+        SpriteInstanceDefinition Sprite,
+        ISceneSpriteOwner? Owner);
+
+    private sealed record PlacementGesture(
+        ResourceDragData<SpriteInstanceDrag> Data,
+        AuthoringResourceReadSnapshot Reads,
+        SceneDefinition Scene,
+        ResourceAddress Target,
+        SceneLayerDefinition Layer,
         LayerPlacementGeometry Geometry);
-    private readonly record struct LayerPlacementGeometry(string Id, Point Origin, int Width, int Height, int Columns, int Rows,
+
+    private readonly record struct LayerPlacementGeometry(
+        string Id,
+        Point Origin,
+        int Width,
+        int Height,
+        int Columns,
+        int Rows,
         CoordinateSystemTypes Projection)
     {
-        internal LayerPlacementGeometry(SceneLayerDefinition layer) : this(layer.ID, layer.OriginPx, layer.TileWidth,
-            layer.TileHeight, layer.Columns, layer.Rows, layer.CoordinateSystemType)
-        { }
+        internal LayerPlacementGeometry(SceneLayerDefinition layer) : this(
+            layer.ID,
+            layer.OriginPx,
+            layer.TileWidth,
+            layer.TileHeight,
+            layer.Columns,
+            layer.Rows,
+            layer.CoordinateSystemType)
+        {
+        }
     }
 
     private readonly AssetPackageCatalog _spriteDiscoveryPackages = new();
@@ -52,13 +74,20 @@ public sealed partial class SceneEditorControl
     /// <summary>Refreshes sprite preview data after the host changes a live source or its registry.</summary>
     public void InvalidateSpriteOwners(bool reloadSaved = false)
     {
-        if (reloadSaved) _spriteSourcesScanned = false;
-        if (IsDisposed || Disposing || _refreshSpritesPending || !IsHandleCreated) return;
+        if (reloadSaved)
+            _spriteSourcesScanned = false;
+
+        if (IsDisposed || Disposing || _refreshSpritesPending || !IsHandleCreated)
+            return;
+
         _refreshSpritesPending = true;
+
         BeginInvoke(() =>
         {
             _refreshSpritesPending = false;
-            if (!IsDisposed && !Disposing && Visible) RefreshSpriteVisuals();
+
+            if (!IsDisposed && !Disposing && Visible)
+                RefreshSpriteVisuals();
         });
     }
 
@@ -89,17 +118,24 @@ public sealed partial class SceneEditorControl
     {
         _preview.SpriteSelected += SelectPreviewSprite;
         _preview.HandleCreated += (_, _) => InvalidateSpriteOwners();
+
         _preview.SpriteMoved += (_, position) =>
         {
             var gesture = _spriteMove;
             _spriteMove = null;
-            if (gesture is not null) CommitSpritePlacement(gesture, position);
+
+            if (gesture is not null)
+                CommitSpritePlacement(gesture, position);
         };
+
         _preview.SpriteMoveCanceled += () => _spriteMove = null;
+
         VisibleChanged += (_, _) =>
         {
-            if (Visible) InvalidateSpriteOwners(reloadSaved: true);
-            else CancelSpritePlacement();
+            if (Visible)
+                InvalidateSpriteOwners(reloadSaved: true);
+            else
+                CancelSpritePlacement();
         };
     }
 
@@ -108,34 +144,49 @@ public sealed partial class SceneEditorControl
         var show = new ToolStripButton("Show Sprites") { CheckOnClick = true, Checked = true };
         show.CheckedChanged += (_, _) => _preview.ShowSprites(show.Checked);
         bar.Items.Add(show);
-        bar.Items.Add("Sprite Sources…", null, (_, _) =>
-        {
-            using var dialog = new OpenFileDialog
+
+        bar.Items.Add(
+            "Sprite Sources…",
+            null,
+            (_, _) =>
             {
-                InitialDirectory = Document.BaseDirectory,
-                Filter = "Sprite sources (*.gspr;*.gaf)|*.gspr;*.gaf",
-                Multiselect = true,
-                Title = "Load saved sprite previews"
-            };
-            if (dialog.ShowDialog(this) != DialogResult.OK) return;
-            foreach (var path in dialog.FileNames) _explicitSpriteSources.Add(path);
-            _spriteSourcesScanned = false;
-            RefreshSpriteVisuals();
-        });
+                using var dialog = new OpenFileDialog
+                {
+                    InitialDirectory = Document.BaseDirectory,
+                    Filter = "Sprite sources (*.gspr;*.gaf)|*.gspr;*.gaf",
+                    Multiselect = true,
+                    Title = "Load saved sprite previews"
+                };
+
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                foreach (var path in dialog.FileNames)
+                    _explicitSpriteSources.Add(path);
+
+                _spriteSourcesScanned = false;
+                RefreshSpriteVisuals();
+            });
     }
 
     private ResourceAddress? SceneAddress()
     {
         var location = Document.PackedLocation;
+
         if (location is null && Document.FilePath is { } file)
             location = new AssetLocation(AssetTypes.SceneDefinition, file);
+
         return location is null || string.IsNullOrWhiteSpace(Definition.ID) ? null : new(location, Definition.ID);
     }
 
     private static bool ViewerDiscovers(AssetLocation sprites, ResourceAddress scene) =>
-        string.Equals(Path.GetDirectoryName(sprites.Path), Path.GetDirectoryName(scene.Location.Path),
+        string.Equals(
+            Path.GetDirectoryName(sprites.Path),
+            Path.GetDirectoryName(scene.Location.Path),
             StringComparison.OrdinalIgnoreCase) &&
-        string.Equals(Path.GetExtension(sprites.Path), sprites.AssetEntryName is null ? ".gspr" : ".gaf",
+        string.Equals(
+            Path.GetExtension(sprites.Path),
+            sprites.AssetEntryName is null ? ".gspr" : ".gaf",
             StringComparison.OrdinalIgnoreCase);
 
     private void ScanSavedSprites(string? root, IReadOnlyList<ISceneSpriteOwner> owners)
@@ -149,6 +200,7 @@ public sealed partial class SceneEditorControl
         _spriteDiscoveryPackages.Clear();
 
         IEnumerable<string> paths = _explicitSpriteSources;
+
         if (root is not null && Directory.Exists(root))
         {
             try
@@ -156,12 +208,18 @@ public sealed partial class SceneEditorControl
                 _neighborFiles = Directory.GetFiles(root);
                 paths = paths.Concat(_neighborFiles);
             }
-            catch (Exception ex) when (IsAuthoringException(ex)) { _spriteDiscoveryWarning = ex.Message; }
+            catch (Exception ex) when (IsAuthoringException(ex))
+            {
+                _spriteDiscoveryWarning = ex.Message;
+            }
         }
-        foreach (string path in paths.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(path => path, StringComparer.Ordinal))
+
+        foreach (string path in paths.Distinct(StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(path => path, StringComparer.Ordinal))
         {
             bool explicitSource = _explicitSpriteSources.Contains(path);
             var packages = explicitSource ? _packages : _spriteDiscoveryPackages;
+
             try
             {
                 var resources = Path.GetExtension(path).ToLowerInvariant() switch
@@ -170,12 +228,22 @@ public sealed partial class SceneEditorControl
                     ".gaf" => packages.GetResources(path, AssetTypes.SpriteDefinition),
                     _ => []
                 };
+
                 foreach (var resource in resources)
                 {
                     var address = new ResourceAddress(resource);
-                    if (owners.Any(owner => Owns(owner, address))) continue;
-                    try { _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource)); }
-                    catch (Exception ex) when (IsAuthoringException(ex)) { _spriteDiscoveryWarning = ex.Message; }
+
+                    if (owners.Any(owner => Owns(owner, address)))
+                        continue;
+
+                    try
+                    {
+                        _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource));
+                    }
+                    catch (Exception ex) when (IsAuthoringException(ex))
+                    {
+                        _spriteDiscoveryWarning = ex.Message;
+                    }
                 }
             }
             catch (Exception ex) when (IsAuthoringException(ex) || ex is OperationCanceledException)
@@ -193,6 +261,7 @@ public sealed partial class SceneEditorControl
             _neighborArtwork.Add(type, available);
             string extension = type == AssetTypes.TilesheetDefinition ? ".gts" : ".gani";
             var resolver = new AuthoringResourceResolver(_spriteDiscoveryPackages);
+
             foreach (string path in _neighborFiles)
             {
                 try
@@ -203,22 +272,28 @@ public sealed partial class SceneEditorControl
                         var candidate when candidate == extension => new[] { new AuthoringResource(path, type) },
                         _ => []
                     };
+
                     foreach (var resource in resources)
                         foreach (string identity in resolver.GetMembers(resource))
                             available.Add(new(resource, identity));
                 }
-                catch (Exception ex) when (IsAuthoringException(ex)) { }
+                catch (Exception ex) when (IsAuthoringException(ex))
+                {
+                }
             }
         }
 
-        var matches = available.Where(address => DefinitionReferenceQuery.MembersEqual(type, address.Member!, member)).ToArray();
+        var matches = available.Where(address => DefinitionReferenceQuery.MembersEqual(type, address.Member!, member))
+            .ToArray();
+
         var loose = matches.Where(address => address.Location.AssetEntryName is null).ToArray();
         var preferred = loose.Length > 0 ? loose : matches;
         return preferred.Length == 1 ? preferred[0] : null;
     }
 
     private static bool Owns(ISceneSpriteOwner owner, ResourceAddress address) =>
-        owner.Location is { } location && new ResourceAddress(location) == address with { Member = null, FieldPath = null };
+        owner.Location is { } location &&
+        new ResourceAddress(location) == address with { Member = null, FieldPath = null };
 
     private IReadOnlyList<ISceneSpriteOwner> LiveOwners() => _getSpriteOwners?.Invoke() ?? [];
 
@@ -234,10 +309,16 @@ public sealed partial class SceneEditorControl
                 foreach (var candidate in FromMembers(location, owner.Definitions, owner))
                     yield return candidate;
 
-        static IEnumerable<SpriteCandidate> FromMembers(AssetLocation location,
-            IReadOnlyList<SpriteDefinition> definitions, ISceneSpriteOwner? owner) =>
+        static IEnumerable<SpriteCandidate> FromMembers(
+            AssetLocation location,
+            IReadOnlyList<SpriteDefinition> definitions,
+            ISceneSpriteOwner? owner) =>
             definitions.SelectMany(member => member.Sprites.Select(sprite =>
-                new SpriteCandidate(new ResourceAddress(location, member.Key), member, sprite, owner)));
+                new SpriteCandidate(
+                    new ResourceAddress(location, member.Key),
+                    member,
+                    sprite,
+                    owner)));
     }
 
     private static bool ConflictingInstance(SpriteInstanceDefinition left, SpriteInstanceDefinition right) =>
@@ -253,14 +334,25 @@ public sealed partial class SceneEditorControl
     private static string? SceneReferenceRestriction(SpriteCandidate sprite, ResourceAddress target)
     {
         var references = sprite.Member.SceneSources.Where(source => source.SceneId == target.Member).Take(2).ToArray();
-        if (references.Length > 1) return "Multiple scene sources use this ID. Resolve them in GSPR before moving the sprite.";
-        if (references.Length == 0) return null;
+
+        if (references.Length > 1)
+            return "Multiple scene sources use this ID. Resolve them in GSPR before moving the sprite.";
+
+        if (references.Length == 0)
+            return null;
+
         try
         {
-            var address = AuthoringResourceResolver.SpriteSceneSource(references[0], Path.GetDirectoryName(sprite.Address.Location.Path)!);
+            var address = AuthoringResourceResolver.SpriteSceneSource(
+                references[0],
+                Path.GetDirectoryName(sprite.Address.Location.Path)!);
+
             return address == target ? null : "This sprite references a different scene source with the same ID.";
         }
-        catch (Exception ex) when (IsAuthoringException(ex)) { return ex.Message; }
+        catch (Exception ex) when (IsAuthoringException(ex))
+        {
+            return ex.Message;
+        }
     }
 
     private void RefreshSpriteVisuals()
@@ -268,6 +360,7 @@ public sealed partial class SceneEditorControl
         var scene = SceneAddress();
         string? root = scene is null ? null : Path.GetDirectoryName(scene.Location.Path);
         var owners = LiveOwners();
+
         if (!_spriteSourcesScanned || !string.Equals(root, _spriteContentRoot, StringComparison.OrdinalIgnoreCase))
             ScanSavedSprites(root, owners);
 
@@ -279,59 +372,105 @@ public sealed partial class SceneEditorControl
         }
 
         var matching = Candidates(owners).Where(item => item.Sprite.SceneId == Definition.ID).ToArray();
+
         var loose = matching.Where(item => item.Address.Location.AssetEntryName is null &&
-            scene is not null && ViewerDiscovers(item.Address.Location, scene)).ToArray();
+                                           scene is not null &&
+                                           ViewerDiscovers(item.Address.Location, scene)).ToArray();
+
         var visible = matching.Where(item => item.Sprite.Visible &&
-            (item.Address.Location.AssetEntryName is null || scene is null || !ViewerDiscovers(item.Address.Location, scene) ||
-             !loose.Any(other => ConflictingInstance(item.Sprite, other.Sprite)))).ToArray();
+                                             (item.Address.Location.AssetEntryName is null || scene is null ||
+                                              !ViewerDiscovers(item.Address.Location, scene) ||
+                                              !loose.Any(other => ConflictingInstance(item.Sprite, other.Sprite))))
+            .ToArray();
 
         var visuals = new List<SceneSpriteVisual>();
+
         foreach (var item in visible)
         {
             var layers = Definition.Layers.Where(layer => layer.ID == item.Sprite.SceneLayerId).Take(2).ToArray();
-            if (layers.Length != 1 || !float.IsFinite(item.Sprite.Position.X) || !float.IsFinite(item.Sprite.Position.Y) ||
-                !float.IsFinite(item.Sprite.Rotation) || item.Sprite.RenderSize.Width < 0 || item.Sprite.RenderSize.Height < 0)
+
+            if (layers.Length != 1 || !float.IsFinite(item.Sprite.Position.X) ||
+                !float.IsFinite(item.Sprite.Position.Y) ||
+                !float.IsFinite(item.Sprite.Rotation) || item.Sprite.RenderSize.Width < 0 ||
+                item.Sprite.RenderSize.Height < 0)
                 continue;
 
-            string? restriction = scene is null ? "Save this scene before placing sprites." :
-                !ViewerDiscovers(item.Address.Location, scene) ? OutsideViewerScope() :
-                item.Owner is not { CanPlace: true } ? "Read-only sprite. Open its GSPR document in Studio to edit it." :
-                item.Sprite.Id == Guid.Empty || matching.Count(other => other.Address == item.Address && other.Sprite.Id == item.Sprite.Id) != 1
-                    ? "This GSPR member needs a unique sprite ID." : SceneReferenceRestriction(item, scene);
+            string? restriction = scene is null
+                ? "Save this scene before placing sprites."
+                : !ViewerDiscovers(item.Address.Location, scene)
+                    ? OutsideViewerScope()
+                    : item.Owner is not { CanPlace: true }
+                        ? "Read-only sprite. Open its GSPR document in Studio to edit it."
+                        : item.Sprite.Id == Guid.Empty || matching.Count(other =>
+                            other.Address == item.Address && other.Sprite.Id == item.Sprite.Id) != 1
+                            ? "This GSPR member needs a unique sprite ID."
+                            : SceneReferenceRestriction(item, scene);
+
             if (restriction is null && matching.Any(other => ConflictsWithPlacement(item, other, scene!)))
-                restriction = "Multiple neighboring sprites use this ID or nickname. Resolve the conflict in GSPR before placing it.";
+                restriction =
+                    "Multiple neighboring sprites use this ID or nickname. Resolve the conflict in GSPR before placing it.";
 
             visuals.Add(CreateVisual(item, layers[0], restriction));
         }
 
         _spriteVisuals = visuals;
         var previousHistory = SelectedSpriteHistory;
+
         if (_spriteSelection is { Owner: { } previousOwner } &&
             !owners.Any(owner => ReferenceEquals(owner.Session, previousOwner.Session)))
             _spriteSelection = null;
+
         _selectedSprite = _spriteSelection is { } previous ? visuals.FirstOrDefault(previous.SameInstance) : null;
-        if (_selectedSprite is not null) _spriteSelection = _selectedSprite;
+
+        if (_selectedSprite is not null)
+            _spriteSelection = _selectedSprite;
+
         _preview.SetSprites(visuals);
         _preview.SelectSprite(_selectedSprite);
-        if (_spriteMove is { } gesture && (!PlacementTargetIsCurrent(gesture, requireSelection: false) || ResolveLiveSprite(gesture.Data.Payload!) is null))
+
+        if (_spriteMove is { } gesture && (!PlacementTargetIsCurrent(gesture, requireSelection: false) ||
+                                           ResolveLiveSprite(gesture.Data.Payload!) is null))
             CancelSpritePlacement();
+
         UpdateSpriteStatus();
-        if (previousHistory != SelectedSpriteHistory) SpriteHistorySelectionChanged?.Invoke();
+
+        if (previousHistory != SelectedSpriteHistory)
+            SpriteHistorySelectionChanged?.Invoke();
     }
 
     private SceneSpriteVisual CreateVisual(SpriteCandidate candidate, SceneLayerDefinition layer, string? restriction)
     {
         SceneSpriteArtwork? art = null;
+
         try
         {
             // Discovery uses a non-interactive catalog. Explicit sources and live
             // editors use the host's normal archive authentication and cache.
-            var packages = candidate.Owner is not null || _explicitSpriteSources.Contains(candidate.Address.Location.Path)
-                ? _packages : _spriteDiscoveryPackages;
-            art = _spriteArtwork.Find(candidate.Address.Location, candidate.Member, candidate.Sprite, packages, FindTilesheet, FindAnimation, FindNeighborArtwork);
+            var packages = candidate.Owner is not null ||
+                           _explicitSpriteSources.Contains(candidate.Address.Location.Path)
+                ? _packages
+                : _spriteDiscoveryPackages;
+
+            art = _spriteArtwork.Find(
+                candidate.Address.Location,
+                candidate.Member,
+                candidate.Sprite,
+                packages,
+                FindTilesheet,
+                FindAnimation,
+                FindNeighborArtwork);
         }
-        catch (Exception ex) when (IsAuthoringException(ex) || ex is OperationCanceledException or OverflowException) { }
-        return new(candidate.Address, candidate.Sprite, layer, art, candidate.Owner, restriction);
+        catch (Exception ex) when (IsAuthoringException(ex) || ex is OperationCanceledException or OverflowException)
+        {
+        }
+
+        return new(
+            candidate.Address,
+            candidate.Sprite,
+            layer,
+            art,
+            candidate.Owner,
+            restriction);
     }
 
     private bool SelectPreviewSprite(SceneSpriteVisual? visual)
@@ -341,13 +480,22 @@ public sealed partial class SceneEditorControl
             ClearPreviewSpriteSelection();
             return false;
         }
+
         _selectedSprite = _spriteSelection = visual;
         _spriteMove = null;
         bool canMove = false;
-        if (visual is { Restriction: null, Owner: { CanPlace: true } owner, Address.Member: { } member } && owner.CommitEdits())
+
+        if (visual is { Restriction: null, Owner: { CanPlace: true } owner, Address.Member: { } member } &&
+            owner.CommitEdits())
         {
             owner.Select(member, visual.Sprite.Id);
-            var payload = new SpriteInstanceDrag(visual.Address, visual.Sprite.Id, owner.Session, owner.Revision);
+
+            var payload = new SpriteInstanceDrag(
+                visual.Address,
+                visual.Sprite.Id,
+                owner.Session,
+                owner.Revision);
+
             if (ResolveLiveSprite(payload) is not null && SceneAddress() is { } target)
             {
                 try
@@ -363,6 +511,7 @@ public sealed partial class SceneEditorControl
                 }
             }
         }
+
         UpdateSpriteStatus();
         SpriteHistorySelectionChanged?.Invoke();
         return canMove;
@@ -370,7 +519,9 @@ public sealed partial class SceneEditorControl
 
     private void ClearPreviewSpriteSelection()
     {
-        if (_spriteSelection is null) return;
+        if (_spriteSelection is null)
+            return;
+
         _selectedSprite = _spriteSelection = null;
         CancelSpritePlacement();
         _preview.SelectSprite(null);
@@ -382,17 +533,30 @@ public sealed partial class SceneEditorControl
     {
         _preview.SpriteStatus = message ?? (_selectedSprite is { } selected
             ? $"Sprite: {selected.Sprite.Nickname ?? selected.Sprite.Id.ToString()}  {selected.Sprite.Position.X:0.###}, {selected.Sprite.Position.Y:0.###}" +
-                (selected.Restriction is { } restriction ? $"  {restriction}" : "  Hold Alt for precision.") +
-                (selected.Artwork is null ? "  Artwork unresolved." : string.Empty)
-            : _spriteDiscoveryWarning ?? (_spriteVisuals.Count > 0 ? "Click a sprite to select it. Drag to move. Hold Alt for precision." : null));
+              (selected.Restriction is { } restriction ? $"  {restriction}" : "  Hold Alt for precision.") +
+              (selected.Artwork is null ? "  Artwork unresolved." : string.Empty)
+            : _spriteDiscoveryWarning ?? (_spriteVisuals.Count > 0
+                ? "Click a sprite to select it. Drag to move. Hold Alt for precision."
+                : null));
+
         _preview.Invalidate();
     }
 
-    private PlacementGesture NewPlacement(ResourceDragData<SpriteInstanceDrag> data, ResourceAddress target, SceneLayerDefinition layer)
+    private PlacementGesture NewPlacement(
+        ResourceDragData<SpriteInstanceDrag> data,
+        ResourceAddress target,
+        SceneLayerDefinition layer)
     {
         var reads = data.BeginRead();
         reads.Observe(target.Location.Path);
-        return new(data, reads, Definition, target, layer, new(layer));
+
+        return new(
+            data,
+            reads,
+            Definition,
+            target,
+            layer,
+            new(layer));
     }
 
     private bool PlacementTargetIsCurrent(PlacementGesture gesture, bool requireSelection) =>
@@ -402,20 +566,35 @@ public sealed partial class SceneEditorControl
         Definition.Layers.Contains(gesture.Layer) && gesture.Layer.Columns > 0 && gesture.Layer.Rows > 0 &&
         IsLayerVisibleInPreview(gesture.Layer) &&
         new LayerPlacementGeometry(gesture.Layer) == gesture.Geometry &&
-        (!requireSelection || ReferenceEquals(_selectedLayer, gesture.Layer) && ReferenceEquals(_structure.SelectedNode?.Tag, gesture.Layer));
+        (!requireSelection || ReferenceEquals(_selectedLayer, gesture.Layer) &&
+            ReferenceEquals(_structure.SelectedNode?.Tag, gesture.Layer));
 
     private SpriteCandidate? ResolveLiveSprite(SpriteInstanceDrag drag)
     {
         if (drag.SpriteId == Guid.Empty || drag.Address.Location.AssetType != AssetTypes.SpriteDefinition ||
-            string.IsNullOrWhiteSpace(drag.Address.Member)) return null;
+            string.IsNullOrWhiteSpace(drag.Address.Member))
+            return null;
+
         var owners = LiveOwners().Where(owner => Owns(owner, drag.Address)).Take(2).ToArray();
+
         if (owners.Length != 1 || !owners[0].CanPlace || !ReferenceEquals(owners[0].Session, drag.Session) ||
             owners[0].Revision != drag.Revision || owners[0].History.InTransaction || owners[0].History.IsExecuting)
             return null;
+
         var members = owners[0].Definitions.Where(member => member.Key == drag.Address.Member).Take(2).ToArray();
-        if (members.Length != 1) return null;
+
+        if (members.Length != 1)
+            return null;
+
         var instances = members[0].Sprites.Where(sprite => sprite.Id == drag.SpriteId).Take(2).ToArray();
-        return instances.Length == 1 ? new(drag.Address, members[0], instances[0], owners[0]) : null;
+
+        return instances.Length == 1
+            ? new(
+                drag.Address,
+                members[0],
+                instances[0],
+                owners[0])
+            : null;
     }
 
     private bool CommitSpritePlacement(PlacementGesture gesture, PointF position, bool requireSelection = false)
@@ -424,32 +603,57 @@ public sealed partial class SceneEditorControl
         {
             if (!PlacementTargetIsCurrent(gesture, requireSelection) || gesture.Data.Payload is not { } payload)
                 return false;
+
             if (!ViewerDiscovers(payload.Address.Location, gesture.Target))
                 throw new InvalidDataException(OutsideViewerScope());
+
             if (ResolveLiveSprite(payload) is not { } sprite)
                 throw new InvalidDataException("The owning GSPR document or sprite changed. Start a new placement.");
+
             gesture.Reads.Verify();
             var resolver = new AuthoringResourceResolver(_packages, gesture.Reads.Observe);
             var saved = resolver.ResolveSceneLayer(new(gesture.Target, gesture.Layer.ID));
-            if (new LayerPlacementGeometry(saved.Layers.Single(layer => layer.ID == gesture.Layer.ID)) != gesture.Geometry)
+
+            if (new LayerPlacementGeometry(saved.Layers.Single(layer => layer.ID == gesture.Layer.ID)) !=
+                gesture.Geometry)
                 throw new InvalidDataException("Save the changed scene layer before placing sprites on it.");
+
             gesture.Reads.Verify();
+
             if (!PlacementTargetIsCurrent(gesture, requireSelection) || ResolveLiveSprite(payload) is null)
                 return false;
 
             if (Candidates(LiveOwners()).Any(other => other.Sprite.SceneId == Definition.ID &&
-                ConflictsWithPlacement(sprite, other, gesture.Target)))
-                throw new InvalidDataException("A neighboring GSPR already assigns this sprite ID or nickname to the scene. Resolve the conflict before placing it.");
+                                                      ConflictsWithPlacement(sprite, other, gesture.Target)))
+                throw new InvalidDataException(
+                    "A neighboring GSPR already assigns this sprite ID or nickname to the scene. Resolve the conflict before placing it.");
 
-            bool changed = sprite.Owner!.Place(payload, gesture.Target, gesture.Layer.ID, position);
-            if (payload.Address.Member is { } member) sprite.Owner.Select(member, payload.SpriteId);
-            _spriteSelection = new(sprite.Address, sprite.Sprite, gesture.Layer, null, sprite.Owner, null);
+            bool changed = sprite.Owner!.Place(
+                payload,
+                gesture.Target,
+                gesture.Layer.ID,
+                position);
+
+            if (payload.Address.Member is { } member)
+                sprite.Owner.Select(member, payload.SpriteId);
+
+            _spriteSelection = new(
+                sprite.Address,
+                sprite.Sprite,
+                gesture.Layer,
+                null,
+                sprite.Owner,
+                null);
+
             RefreshSpriteVisuals();
             SpriteHistorySelectionChanged?.Invoke();
             _preview.Focus();
             return changed;
         }
-        catch (OperationCanceledException) { return false; }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
         catch (Exception ex) when (IsAuthoringException(ex))
         {
             UpdateSpriteStatus(ex.Message);
@@ -462,15 +666,29 @@ public sealed partial class SceneEditorControl
 
     private void SpriteDragEnter(ResourceDragData<SpriteInstanceDrag> data, DragEventArgs e)
     {
-        if (_preview.HasGesture || _preview.HasSpriteGesture || (e.AllowedEffect & DragDropEffects.Move) == 0) return;
-        if (SceneAddress() is not { } target) { UpdateSpriteStatus("Save this scene before placing sprites."); return; }
-        if (!ViewerDiscovers(data.Address.Location, target)) { UpdateSpriteStatus(OutsideViewerScope()); return; }
+        if (_preview.HasGesture || _preview.HasSpriteGesture || (e.AllowedEffect & DragDropEffects.Move) == 0)
+            return;
+
+        if (SceneAddress() is not { } target)
+        {
+            UpdateSpriteStatus("Save this scene before placing sprites.");
+            return;
+        }
+
+        if (!ViewerDiscovers(data.Address.Location, target))
+        {
+            UpdateSpriteStatus(OutsideViewerScope());
+            return;
+        }
+
         if (data.Payload is not { } drag || ResolveLiveSprite(drag) is not { } sprite)
         {
             UpdateSpriteStatus("Open the owning GSPR document and drag a sprite with a unique ID.");
             return;
         }
-        if (_selectedLayer is not { } layer || !ReferenceEquals(_structure.SelectedNode?.Tag, layer) || !IsLayerVisibleInPreview(layer))
+
+        if (_selectedLayer is not { } layer || !ReferenceEquals(_structure.SelectedNode?.Tag, layer) ||
+            !IsLayerVisibleInPreview(layer))
         {
             UpdateSpriteStatus("Select a visible scene layer before placing the sprite.");
             return;
@@ -489,7 +707,10 @@ public sealed partial class SceneEditorControl
             UpdateSpriteStatus("Release to place the sprite. Hold Alt for precision.");
             SpriteDragOver(e);
         }
-        catch (Exception ex) when (IsAuthoringException(ex)) { UpdateSpriteStatus(ex.Message); }
+        catch (Exception ex) when (IsAuthoringException(ex))
+        {
+            UpdateSpriteStatus(ex.Message);
+        }
     }
 
     private SceneSpriteVisual? _dropSpriteVisual;
@@ -498,10 +719,16 @@ public sealed partial class SceneEditorControl
     {
         const int AltKey = 32;
         position = default;
+
         return gesture is not null && ReferenceEquals(gesture.Data, e.Data) &&
-            (e.AllowedEffect & DragDropEffects.Move) != 0 && PlacementTargetIsCurrent(gesture, requireSelection: true) &&
-            ResolveLiveSprite(gesture.Data.Payload!) is not null &&
-            _preview.TryGetSpriteDropPosition(gesture.Layer, new Point(e.X, e.Y), (e.KeyState & AltKey) == 0, out position);
+               (e.AllowedEffect & DragDropEffects.Move) != 0 &&
+               PlacementTargetIsCurrent(gesture, requireSelection: true) &&
+               ResolveLiveSprite(gesture.Data.Payload!) is not null &&
+               _preview.TryGetSpriteDropPosition(
+                   gesture.Layer,
+                   new Point(e.X, e.Y),
+                   (e.KeyState & AltKey) == 0,
+                   out position);
     }
 
     private void SpriteDragOver(DragEventArgs e)
@@ -516,12 +743,17 @@ public sealed partial class SceneEditorControl
         var gesture = _spriteDrop;
         bool valid = SpriteDropPosition(gesture, e, out var position);
         ClearSpriteDrop();
-        e.Effect = valid && CommitSpritePlacement(gesture!, position, requireSelection: true) ? DragDropEffects.Move : DragDropEffects.None;
+
+        e.Effect = valid && CommitSpritePlacement(gesture!, position, requireSelection: true)
+            ? DragDropEffects.Move
+            : DragDropEffects.None;
     }
 
     private void ClearSpriteDrop()
     {
-        if (_spriteDrop is null) return;
+        if (_spriteDrop is null)
+            return;
+
         _spriteDrop = null;
         _dropSpriteVisual = null;
         _preview.SetSpriteGhost(null);

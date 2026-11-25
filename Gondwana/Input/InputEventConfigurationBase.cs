@@ -16,10 +16,12 @@ public abstract class InputEventConfigurationBase
     /// based on the configured throttling interval. Input pollers update this value when events are raised.
     /// </summary>
     protected internal long _lastEventTick;
+
     private long _ticksBetweenEvents;
 
     private InputEventConfigurationBase()
-    { }
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InputEventConfigurationBase"/> class with the specified

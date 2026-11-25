@@ -43,16 +43,17 @@ public static class ServiceCollectionExtensions
         // to Gondwana.
         services.Remove(factoryDescriptor);
 
-        services.Add(ServiceDescriptor.Describe(
-            typeof(ILoggerFactory),
-            provider =>
-            {
-                var factory = CreateLoggerFactory(provider, factoryDescriptor);
-                EngineLogger.Initialize(factory);
+        services.Add(
+            ServiceDescriptor.Describe(
+                typeof(ILoggerFactory),
+                provider =>
+                {
+                    var factory = CreateLoggerFactory(provider, factoryDescriptor);
+                    EngineLogger.Initialize(factory);
 
-                return factory;
-            },
-            factoryDescriptor.Lifetime));
+                    return factory;
+                },
+                factoryDescriptor.Lifetime));
 
         return services;
     }

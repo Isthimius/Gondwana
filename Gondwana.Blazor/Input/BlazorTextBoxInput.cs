@@ -106,6 +106,7 @@ public static class BlazorTextBoxInput
         if (key is >= BlazorKey.Digit1 and <= BlazorKey.Digit9)
         {
             int offset = (int)key - (int)BlazorKey.Digit1;
+
             if (!shift)
                 return (char)('1' + offset);
 

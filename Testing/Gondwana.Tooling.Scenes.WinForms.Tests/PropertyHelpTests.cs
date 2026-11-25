@@ -14,7 +14,14 @@ public sealed class PropertyHelpTests
         AssertHelp(new SceneLayerDefinition());
         var document = SceneDocument.Create(Path.GetTempPath());
         var layer = document.AddLayer();
-        AssertHelp(new TilePropertyAdapter(document, layer, 0, 0, () => { }));
+
+        AssertHelp(
+            new TilePropertyAdapter(
+                document,
+                layer,
+                0,
+                0,
+                () => { }));
 
         var parallax = TypeDescriptor.GetProperties(layer)[nameof(SceneLayerDefinition.Parallax)]!;
         Assert.Contains("0.5", parallax.Description);
@@ -28,7 +35,8 @@ public sealed class PropertyHelpTests
         foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(model))
         {
             if (property.IsBrowsable)
-                Assert.False(string.IsNullOrWhiteSpace(property.Description),
+                Assert.False(
+                    string.IsNullOrWhiteSpace(property.Description),
                     $"{model.GetType().Name}.{property.Name} must have property-grid help.");
         }
     }
@@ -62,5 +70,4 @@ public sealed class PropertyHelpTests
             if (property.IsBrowsable)
                 Assert.NotEqual("Misc", property.Category);
     }
-
 }

@@ -60,12 +60,14 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
         }
 
         CanvasStyle = DefaultCanvasStyle;
+
         if (AdditionalAttributes.TryGetValue("style", out var styleObj) && styleObj is not null)
             CanvasStyle = $"{DefaultCanvasStyle} {styleObj}";
 
         var attributes = new Dictionary<string, object>(
             AdditionalAttributes,
             StringComparer.OrdinalIgnoreCase);
+
         attributes.Remove("style");
         CanvasAttributes = attributes;
     }
@@ -95,17 +97,22 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
     protected void HandleWheel(WheelEventArgs e) => Wheel?.Invoke(e);
 
     internal readonly record struct CanvasOffset(float Left, float Top);
+
     internal virtual ValueTask<CanvasOffset> GetCanvasOffsetAsync() => ValueTask.FromResult(default(CanvasOffset));
 
     private async Task ForwardTouch(TouchEventArgs args, Action<TouchEventArgs>? handler)
     {
-        if (handler is null) return;
+        if (handler is null)
+            return;
+
         var offset = await GetCanvasOffsetAsync();
+
         foreach (var point in args.ChangedTouches)
         {
             point.ClientX -= offset.Left;
             point.ClientY -= offset.Top;
         }
+
         handler(args);
     }
 

@@ -35,23 +35,40 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <param name="items">The items.</param>
     /// <param name="dropDownHeight">The drop down height.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ComboBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                          View view,
-                          Rectangle bounds,
-                          IEnumerable<string>? items = null,
-                          int dropDownHeight = DefaultDropDownHeight,
-                          string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public ComboBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        IEnumerable<string>? items = null,
+        int dropDownHeight = DefaultDropDownHeight,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
         ValidateDropDownHeight(dropDownHeight);
 
-        Header = new ButtonWidget(renderSurfaceHost, view, bounds, string.Empty, $"{Nickname}.header");
-        DropDown = new ListBoxWidget(renderSurfaceHost,
-                                     view,
-                                     new Rectangle(bounds.X, bounds.Bottom, bounds.Width, dropDownHeight),
-                                     items,
-                                     $"{Nickname}.list");
+        Header = new ButtonWidget(
+            renderSurfaceHost,
+            view,
+            bounds,
+            string.Empty,
+            $"{Nickname}.header");
+
+        DropDown = new ListBoxWidget(
+            renderSurfaceHost,
+            view,
+            new Rectangle(
+                bounds.X,
+                bounds.Bottom,
+                bounds.Width,
+                dropDownHeight),
+            items,
+            $"{Nickname}.list");
+
         _chevron = new DropDownChevronDrawing(
             renderSurfaceHost,
             view,
@@ -70,23 +87,40 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <param name="items">The items.</param>
     /// <param name="dropDownHeight">The drop down height.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ComboBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                          SceneLayer sceneLayer,
-                          Rectangle bounds,
-                          IEnumerable<string>? items = null,
-                          int dropDownHeight = DefaultDropDownHeight,
-                          string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public ComboBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        IEnumerable<string>? items = null,
+        int dropDownHeight = DefaultDropDownHeight,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
         ValidateDropDownHeight(dropDownHeight);
 
-        Header = new ButtonWidget(renderSurfaceHost, sceneLayer, bounds, string.Empty, $"{Nickname}.header");
-        DropDown = new ListBoxWidget(renderSurfaceHost,
-                                     sceneLayer,
-                                     new Rectangle(bounds.X, bounds.Bottom, bounds.Width, dropDownHeight),
-                                     items,
-                                     $"{Nickname}.list");
+        Header = new ButtonWidget(
+            renderSurfaceHost,
+            sceneLayer,
+            bounds,
+            string.Empty,
+            $"{Nickname}.header");
+
+        DropDown = new ListBoxWidget(
+            renderSurfaceHost,
+            sceneLayer,
+            new Rectangle(
+                bounds.X,
+                bounds.Bottom,
+                bounds.Width,
+                dropDownHeight),
+            items,
+            $"{Nickname}.list");
+
         _chevron = new DropDownChevronDrawing(
             renderSurfaceHost,
             sceneLayer,
@@ -305,6 +339,7 @@ public sealed class ComboBoxWidget : ContainerWidget
         // for that click to toggle it closed normally. Any other focus target means
         // the user has moved on, so collapse without stealing focus back.
         WidgetBase? focusedWidget = WidgetInputRouterRegistry.GetFocusedWidget(DropDown);
+
         if (ReferenceEquals(focusedWidget, Header) || ReferenceEquals(focusedWidget, DropDown))
             return;
 
@@ -348,6 +383,7 @@ public sealed class ComboBoxWidget : ContainerWidget
     private static Rectangle ResolveChevronBounds(Rectangle bounds)
     {
         const int width = 18;
+
         return new Rectangle(
             Math.Max(bounds.Left, bounds.Right - width - 4),
             bounds.Top,
@@ -378,7 +414,14 @@ public sealed class ComboBoxWidget : ContainerWidget
             View view,
             Rectangle bounds,
             string nickname)
-            : base(host, DirectDrawingMode.View, null, view, bounds, null, nickname)
+            : base(
+                host,
+                DirectDrawingMode.View,
+                null,
+                view,
+                bounds,
+                null,
+                nickname)
         {
         }
 
@@ -387,13 +430,25 @@ public sealed class ComboBoxWidget : ContainerWidget
             SceneLayer sceneLayer,
             Rectangle bounds,
             string nickname)
-            : base(host, DirectDrawingMode.SceneLayer, sceneLayer, null, null, bounds, nickname)
+            : base(
+                host,
+                DirectDrawingMode.SceneLayer,
+                sceneLayer,
+                null,
+                null,
+                bounds,
+                nickname)
         {
         }
 
         internal void SetColor(Color color)
         {
-            _color = new SKColor(color.R, color.G, color.B, color.A);
+            _color = new SKColor(
+                color.R,
+                color.G,
+                color.B,
+                color.A);
+
             ForceRefresh();
         }
 
@@ -413,6 +468,7 @@ public sealed class ComboBoxWidget : ContainerWidget
                 StrokeCap = SKStrokeCap.Round,
                 StrokeJoin = SKStrokeJoin.Round
             };
+
             using var path = new SKPath();
 
             path.MoveTo(centerX - width / 2f, centerY - 2f);

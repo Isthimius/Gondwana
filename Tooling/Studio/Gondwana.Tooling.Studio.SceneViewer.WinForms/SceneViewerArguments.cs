@@ -6,7 +6,11 @@ internal sealed record SceneViewerStressOptions(
     int TileCount,
     CoordinateSystemTypes Projection);
 
-internal sealed record SceneViewerSceneOptions(string ScenePath, string? SceneId, string? ContentRoot, bool TemporaryScene);
+internal sealed record SceneViewerSceneOptions(
+    string ScenePath,
+    string? SceneId,
+    string? ContentRoot,
+    bool TemporaryScene);
 
 internal static class SceneViewerArguments
 {
@@ -23,7 +27,9 @@ internal static class SceneViewerArguments
     /// <summary>Parses a scene launch and its optional original content root and temporary ownership.</summary>
     internal static SceneViewerSceneOptions? ParseScene(string[] args, string baseDirectory)
     {
-        if (args.Length == 0) return null;
+        if (args.Length == 0)
+            return null;
+
         if (args.Length < 2 || args[0] != "--scene" || string.IsNullOrWhiteSpace(args[1]))
             throw new ArgumentException(Usage);
 
@@ -31,36 +37,59 @@ internal static class SceneViewerArguments
         string? contentRoot = null;
         bool temporary = false;
         int index = 2;
+
         if (index < args.Length && args[index] == "--scene-id")
         {
-            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index])) throw new ArgumentException(Usage);
+            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index]))
+                throw new ArgumentException(Usage);
+
             sceneId = args[index++];
         }
+
         if (index < args.Length && args[index] == "--content-root")
         {
-            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index])) throw new ArgumentException(Usage);
+            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index]))
+                throw new ArgumentException(Usage);
+
             contentRoot = Path.GetFullPath(args[index++], baseDirectory);
-            if (!Directory.Exists(contentRoot)) throw new DirectoryNotFoundException($"Scene content directory not found: {contentRoot}");
+
+            if (!Directory.Exists(contentRoot))
+                throw new DirectoryNotFoundException($"Scene content directory not found: {contentRoot}");
         }
+
         if (index < args.Length && args[index] == "--temporary-scene")
         {
             temporary = true;
             index++;
         }
-        if (index != args.Length || (temporary && contentRoot is null)) throw new ArgumentException(Usage);
+
+        if (index != args.Length || (temporary && contentRoot is null))
+            throw new ArgumentException(Usage);
+
         var path = Normalize(args[1], baseDirectory);
+
         if (temporary && !IsOwnedTemporaryPath(path))
-            throw new ArgumentException("Temporary scene cleanup is only supported for Gondwana Scene Viewer snapshots.");
-        return new(path, sceneId, contentRoot, temporary);
+            throw new ArgumentException(
+                "Temporary scene cleanup is only supported for Gondwana Scene Viewer snapshots.");
+
+        return new(
+            path,
+            sceneId,
+            contentRoot,
+            temporary);
     }
 
     private static bool IsOwnedTemporaryPath(string path)
     {
         var directory = Path.Combine(Path.GetTempPath(), "Gondwana", "SceneViewer");
         var name = Path.GetFileNameWithoutExtension(path);
-        return string.Equals(Path.GetDirectoryName(path), Path.GetFullPath(directory), StringComparison.OrdinalIgnoreCase) &&
-            name.StartsWith("scene-", StringComparison.Ordinal) &&
-            Guid.TryParseExact(name["scene-".Length..], "N", out _);
+
+        return string.Equals(
+                   Path.GetDirectoryName(path),
+                   Path.GetFullPath(directory),
+                   StringComparison.OrdinalIgnoreCase) &&
+               name.StartsWith("scene-", StringComparison.Ordinal) &&
+               Guid.TryParseExact(name["scene-".Length..], "N", out _);
     }
 
     internal static SceneViewerStressOptions? ParseStress(string[] args)
@@ -77,6 +106,7 @@ internal static class SceneViewerArguments
         }
 
         var projection = CoordinateSystemTypes.Orthogonal;
+
         if (args.Length == 4)
         {
             if (args[2] != "--projection" ||
@@ -93,10 +123,13 @@ internal static class SceneViewerArguments
     internal static string Normalize(string path, string baseDirectory)
     {
         var fullPath = Path.GetFullPath(path, baseDirectory);
+
         if (!string.Equals(Path.GetExtension(fullPath), ".gscn", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Choose a .gscn scene file.");
+
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"Scene file not found: {fullPath}", fullPath);
+
         return fullPath;
     }
 }

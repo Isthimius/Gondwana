@@ -37,6 +37,7 @@ internal sealed class BlazorLogicalResolutionBinding : IDisposable
 
         // Subscribe first so a paint between subscription and the size check is not missed.
         _adapter.Resized += OnResized;
+
         try
         {
             TryEstablish(_adapter.Width, _adapter.Height);

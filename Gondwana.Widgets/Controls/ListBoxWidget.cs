@@ -52,12 +52,17 @@ public sealed class ListBoxWidget : WidgetBase
     /// <param name="bounds">The widget bounds in view-local pixels.</param>
     /// <param name="items">The items.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ListBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                         View view,
-                         Rectangle bounds,
-                         IEnumerable<string>? items = null,
-                         string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public ListBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        IEnumerable<string>? items = null,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -82,12 +87,17 @@ public sealed class ListBoxWidget : WidgetBase
     /// <param name="bounds">The widget bounds in world pixels.</param>
     /// <param name="items">The items.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ListBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
-                         SceneLayer sceneLayer,
-                         Rectangle bounds,
-                         IEnumerable<string>? items = null,
-                         string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public ListBoxWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        IEnumerable<string>? items = null,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -179,7 +189,8 @@ public sealed class ListBoxWidget : WidgetBase
     public bool IsVerticalScrollBarVisible => Visible && NeedsVerticalScrollBar;
 
     private bool NeedsVerticalScrollBar => VerticalScrollBarVisibility != ScrollBarVisibility.Never
-        && (VerticalScrollBarVisibility == ScrollBarVisibility.Always || _items.Count > VisibleItemCount);
+                                           && (VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
+                                               _items.Count > VisibleItemCount);
 
     /// <summary>Gets or sets the number of items scrolled for one wheel notch.</summary>
     public int MouseWheelScrollItems
@@ -187,7 +198,9 @@ public sealed class ListBoxWidget : WidgetBase
         get => _mouseWheelScrollItems;
         set => _mouseWheelScrollItems = value > 0
             ? value
-            : throw new ArgumentOutOfRangeException(nameof(value), "Mouse-wheel scrolling must advance at least one item.");
+            : throw new ArgumentOutOfRangeException(
+                nameof(value),
+                "Mouse-wheel scrolling must advance at least one item.");
     }
 
     /// <summary>Gets the minimum height used for a visible scrollbar thumb.</summary>
@@ -202,6 +215,7 @@ public sealed class ListBoxWidget : WidgetBase
         set
         {
             int clamped = Math.Clamp(value, 0, GetMaximumTopIndex());
+
             if (_topIndex == clamped)
                 return;
 
@@ -432,7 +446,11 @@ public sealed class ListBoxWidget : WidgetBase
         }
 
         RectangleF screenBounds = Background.GetDrawLocationScreen(args.View);
-        screenBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom, args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
+
+        screenBounds.Offset(
+            args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom,
+            args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
+
         if (screenBounds.Height <= 0f || Bounds.Height <= 0)
             return;
 
@@ -477,6 +495,7 @@ public sealed class ListBoxWidget : WidgetBase
         args.Handled = true;
         _scrollBarPointerId = args.PointerId;
         _suppressScrollBarClick = true;
+
         if (thumbBounds.Contains(Point.Round(local)))
         {
             _isDraggingScrollBarThumb = true;
@@ -574,7 +593,9 @@ public sealed class ListBoxWidget : WidgetBase
                 SetSelectedIndex(Math.Max(0, (_selectedIndex < 0 ? 0 : _selectedIndex) - VisibleItemCount));
                 break;
             case 34: // Page Down
-                SetSelectedIndex(Math.Min(_items.Count - 1, (_selectedIndex < 0 ? 0 : _selectedIndex) + VisibleItemCount));
+                SetSelectedIndex(
+                    Math.Min(_items.Count - 1, (_selectedIndex < 0 ? 0 : _selectedIndex) + VisibleItemCount));
+
                 break;
             default:
                 return;
@@ -611,6 +632,7 @@ public sealed class ListBoxWidget : WidgetBase
         }
 
         int lastVisible = _topIndex + VisibleItemCount - 1;
+
         if (_selectedIndex > lastVisible)
         {
             _topIndex = Math.Min(GetMaximumTopIndex(), _selectedIndex - VisibleItemCount + 1);
@@ -665,19 +687,24 @@ public sealed class ListBoxWidget : WidgetBase
     {
         TextBlock row = Mode == DirectDrawingMode.View
             ? new TextBlock(RenderSurfaceHost, View!, bounds)
-            : new TextBlock(RenderSurfaceHost, SceneLayer!, view: null, worldBounds: bounds);
+            : new TextBlock(
+                RenderSurfaceHost,
+                SceneLayer!,
+                view: null,
+                worldBounds: bounds);
 
         return row.SetText(text)
-                  .SetFont(SKTypeface.Default, 15f, minSize: 9f)
-                  .SetColors(SKColors.White, SKColors.Transparent)
-                  .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                  .SetPadding(6f, 0f)
-                  .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 15f, minSize: 9f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .SetPadding(6f, 0f)
+            .EnableWrapping(false);
     }
 
     private void RefreshSelectionHighlight()
     {
-        if (!Visible || _selectedIndex < TopIndex || _selectedIndex >= TopIndex + VisibleItemCount || _selectedIndex >= _items.Count)
+        if (!Visible || _selectedIndex < TopIndex || _selectedIndex >= TopIndex + VisibleItemCount ||
+            _selectedIndex >= _items.Count)
         {
             SelectionHighlight.Visible = false;
             return;
@@ -685,9 +712,11 @@ public sealed class ListBoxWidget : WidgetBase
 
         int rowIndex = _selectedIndex - TopIndex;
         Rectangle selectionBounds = GetRowBounds(Bounds, rowIndex);
+
         Rectangle currentBounds = Mode == DirectDrawingMode.View
             ? SelectionHighlight.ScreenBounds
             : SelectionHighlight.WorldBounds;
+
         Rectangle resizedBounds = new(currentBounds.Location, selectionBounds.Size);
 
         if (Mode == DirectDrawingMode.View)
@@ -705,10 +734,15 @@ public sealed class ListBoxWidget : WidgetBase
     private Rectangle GetRowBounds(Rectangle bounds, int rowIndex)
     {
         int y = bounds.Y + ContentPadding + rowIndex * ItemHeight;
-        return new Rectangle(bounds.X + ContentPadding,
-                             y,
-                             Math.Max(1, bounds.Width - ContentPadding * 2 - (NeedsVerticalScrollBar ? ScrollBarWidth + ScrollBarMargin * 2 : 0)),
-                             Math.Min(ItemHeight, Math.Max(1, bounds.Bottom - ContentPadding - y)));
+
+        return new Rectangle(
+            bounds.X + ContentPadding,
+            y,
+            Math.Max(
+                1,
+                bounds.Width - ContentPadding * 2 -
+                (NeedsVerticalScrollBar ? ScrollBarWidth + ScrollBarMargin * 2 : 0)),
+            Math.Min(ItemHeight, Math.Max(1, bounds.Bottom - ContentPadding - y)));
     }
 
     private void RefreshScrollBar()
@@ -728,35 +762,49 @@ public sealed class ListBoxWidget : WidgetBase
 
     private Rectangle GetScrollBarTrackBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.Right - ScrollBarMargin - ScrollBarWidth,
-                             bounds.Top + ContentPadding + ScrollBarMargin,
-                             ScrollBarWidth,
-                             Math.Max(1, bounds.Height - (ContentPadding + ScrollBarMargin) * 2));
+        return new Rectangle(
+            bounds.Right - ScrollBarMargin - ScrollBarWidth,
+            bounds.Top + ContentPadding + ScrollBarMargin,
+            ScrollBarWidth,
+            Math.Max(1, bounds.Height - (ContentPadding + ScrollBarMargin) * 2));
     }
 
     private Rectangle GetScrollBarThumbBounds(Rectangle bounds)
     {
         Rectangle trackBounds = GetScrollBarTrackBounds(bounds);
+
         int thumbHeight = _items.Count == 0
             ? trackBounds.Height
-            : Math.Clamp((int)MathF.Round(trackBounds.Height * Math.Min(1f, (float)VisibleItemCount / _items.Count)),
-                         Math.Min(MinimumScrollBarThumbHeight, trackBounds.Height),
-                         trackBounds.Height);
+            : Math.Clamp(
+                (int)MathF.Round(trackBounds.Height * Math.Min(1f, (float)VisibleItemCount / _items.Count)),
+                Math.Min(MinimumScrollBarThumbHeight, trackBounds.Height),
+                trackBounds.Height);
+
         int travel = trackBounds.Height - thumbHeight;
         int maximumTopIndex = GetMaximumTopIndex();
         int offset = maximumTopIndex == 0 ? 0 : (int)MathF.Round(travel * ((float)TopIndex / maximumTopIndex));
-        return new Rectangle(trackBounds.Left, trackBounds.Top + offset, trackBounds.Width, thumbHeight);
+
+        return new Rectangle(
+            trackBounds.Left,
+            trackBounds.Top + offset,
+            trackBounds.Width,
+            thumbHeight);
     }
 
     private PointF GetLocalPointerPosition(WidgetPointerEventArgs args)
     {
         RectangleF screenBounds = Background.GetDrawLocationScreen(args.View);
-        screenBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom,
-                            args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
+
+        screenBounds.Offset(
+            args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom,
+            args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
+
         float scaleX = screenBounds.Width / Bounds.Width;
         float scaleY = screenBounds.Height / Bounds.Height;
-        return new PointF(Bounds.Left + (args.ScreenPositionPx.X - screenBounds.Left) / scaleX,
-                          Bounds.Top + (args.ScreenPositionPx.Y - screenBounds.Top) / scaleY);
+
+        return new PointF(
+            Bounds.Left + (args.ScreenPositionPx.X - screenBounds.Left) / scaleX,
+            Bounds.Top + (args.ScreenPositionPx.Y - screenBounds.Top) / scaleY);
     }
 
     private bool IsPointerOverScrollBar(WidgetPointerEventArgs args)
@@ -775,57 +823,120 @@ public sealed class ListBoxWidget : WidgetBase
         SetLocalOffset(rectangle, new Vector2(bounds.X, bounds.Y) - GetPosition());
     }
 
-    private static DirectRectangle CreateBackground(RenderSurfaceHostBase host,
-                                                    View view,
-                                                    Rectangle bounds)
+    private static DirectRectangle CreateBackground(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureBackground(new DirectRectangle(Color.FromArgb(255, 36, 36, 44), host, view, bounds));
+        return ConfigureBackground(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    36,
+                    36,
+                    44),
+                host,
+                view,
+                bounds));
     }
 
-    private static DirectRectangle CreateBackground(RenderSurfaceHostBase host,
-                                                    SceneLayer layer,
-                                                    Rectangle bounds)
+    private static DirectRectangle CreateBackground(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureBackground(new DirectRectangle(Color.FromArgb(255, 36, 36, 44), host, layer, bounds));
+        return ConfigureBackground(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    36,
+                    36,
+                    44),
+                host,
+                layer,
+                bounds));
     }
 
     private static DirectRectangle ConfigureBackground(DirectRectangle background)
     {
         return background.SetFilled(true)
-                         .SetBorderColor(Color.FromArgb(255, 140, 140, 155))
-                         .SetStrokeWidth(1.5f)
-                         .SetCornerRadius(4f);
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    140,
+                    140,
+                    155))
+            .SetStrokeWidth(1.5f)
+            .SetCornerRadius(4f);
     }
 
-    private static DirectRectangle CreateSelectionHighlight(RenderSurfaceHostBase host,
-                                                            View view,
-                                                            Rectangle bounds)
+    private static DirectRectangle CreateSelectionHighlight(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureSelectionHighlight(new DirectRectangle(Color.FromArgb(220, 63, 91, 138), host, view, bounds));
+        return ConfigureSelectionHighlight(
+            new DirectRectangle(
+                Color.FromArgb(
+                    220,
+                    63,
+                    91,
+                    138),
+                host,
+                view,
+                bounds));
     }
 
-    private static DirectRectangle CreateSelectionHighlight(RenderSurfaceHostBase host,
-                                                            SceneLayer layer,
-                                                            Rectangle bounds)
+    private static DirectRectangle CreateSelectionHighlight(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureSelectionHighlight(new DirectRectangle(Color.FromArgb(220, 63, 91, 138), host, layer, bounds));
+        return ConfigureSelectionHighlight(
+            new DirectRectangle(
+                Color.FromArgb(
+                    220,
+                    63,
+                    91,
+                    138),
+                host,
+                layer,
+                bounds));
     }
 
     private static DirectRectangle ConfigureSelectionHighlight(DirectRectangle highlight)
     {
         return highlight.SetFilled(true)
-                        .SetStrokeWidth(0f)
-                        .SetCornerRadius(2f);
+            .SetStrokeWidth(0f)
+            .SetCornerRadius(2f);
     }
 
     private static DirectRectangle CreateScrollBarTrack(RenderSurfaceHostBase host, View view, Rectangle bounds)
     {
-        return ConfigureScrollBarTrack(new DirectRectangle(Color.FromArgb(255, 26, 26, 32), host, view, bounds));
+        return ConfigureScrollBarTrack(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    26,
+                    26,
+                    32),
+                host,
+                view,
+                bounds));
     }
 
     private static DirectRectangle CreateScrollBarTrack(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
     {
-        return ConfigureScrollBarTrack(new DirectRectangle(Color.FromArgb(255, 26, 26, 32), host, layer, bounds));
+        return ConfigureScrollBarTrack(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    26,
+                    26,
+                    32),
+                host,
+                layer,
+                bounds));
     }
 
     private static DirectRectangle ConfigureScrollBarTrack(DirectRectangle track)
@@ -835,12 +946,30 @@ public sealed class ListBoxWidget : WidgetBase
 
     private static DirectRectangle CreateScrollBarThumb(RenderSurfaceHostBase host, View view, Rectangle bounds)
     {
-        return ConfigureScrollBarThumb(new DirectRectangle(Color.FromArgb(255, 126, 126, 142), host, view, bounds));
+        return ConfigureScrollBarThumb(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    126,
+                    126,
+                    142),
+                host,
+                view,
+                bounds));
     }
 
     private static DirectRectangle CreateScrollBarThumb(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
     {
-        return ConfigureScrollBarThumb(new DirectRectangle(Color.FromArgb(255, 126, 126, 142), host, layer, bounds));
+        return ConfigureScrollBarThumb(
+            new DirectRectangle(
+                Color.FromArgb(
+                    255,
+                    126,
+                    126,
+                    142),
+                host,
+                layer,
+                bounds));
     }
 
     private static DirectRectangle ConfigureScrollBarThumb(DirectRectangle thumb)
@@ -850,10 +979,11 @@ public sealed class ListBoxWidget : WidgetBase
 
     private static Rectangle GetInitialSelectionBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.X + ContentPadding,
-                             bounds.Y + ContentPadding,
-                             Math.Max(1, bounds.Width - ContentPadding * 2),
-                             DefaultItemHeight);
+        return new Rectangle(
+            bounds.X + ContentPadding,
+            bounds.Y + ContentPadding,
+            Math.Max(1, bounds.Width - ContentPadding * 2),
+            DefaultItemHeight);
     }
 
     private static void Refresh(DirectRectangle rectangle)

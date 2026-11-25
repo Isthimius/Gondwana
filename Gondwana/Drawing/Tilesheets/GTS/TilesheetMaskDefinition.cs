@@ -1,4 +1,5 @@
 using System.ComponentModel;
+
 namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>
@@ -44,6 +45,7 @@ public sealed class TilesheetMaskDefinition
     /// range to match. For example, a tolerance of 5 would match colors where each component (R, G, B, A)
     /// differs by no more than 5 from the mask color.
     /// </remarks>
-    [Description("Maximum allowed difference per color component when matching the mask color. 0 requires an exact match; larger values match more colors.")]
+    [Description(
+        "Maximum allowed difference per color component when matching the mask color. 0 requires an exact match; larger values match more colors.")]
     public byte Tolerance { get; set; } = 5;
 }

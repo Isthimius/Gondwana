@@ -121,7 +121,13 @@ public sealed class ListBoxScrollingTests
     {
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         router.Start();
         using var list = CreateList(host, view, 20);
         list.Activate();
@@ -154,7 +160,13 @@ public sealed class ListBoxScrollingTests
     {
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         router.Start();
         using var lower = CreateList(host, view, 20);
         using var upper = CreateList(host, view, 20);
@@ -182,7 +194,13 @@ public sealed class ListBoxScrollingTests
     {
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         router.Start();
         using var list = CreateList(host, view, 20);
         list.Activate();
@@ -194,15 +212,29 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(4, list.TopIndex);
         Click(router, new Point(track.Left + 3, track.Top + 1));
         Assert.Equal(0, list.TopIndex);
+
         for (int i = 0; i < 8; i++)
             Click(router, below);
+
         Assert.Equal(16, list.TopIndex);
         var thumb = list.VerticalScrollBarThumb.ScreenBounds;
         var grab = new Point(thumb.Left + 3, thumb.Top + 3);
         Mouse(router, grab, down: true);
-        Mouse(router, new Point(grab.X, -100), down: true, previous: grab);
+
+        Mouse(
+            router,
+            new Point(grab.X, -100),
+            down: true,
+            previous: grab);
+
         Assert.Equal(0, list.TopIndex);
-        Mouse(router, new Point(grab.X, 300), down: true, previous: new Point(grab.X, -100));
+
+        Mouse(
+            router,
+            new Point(grab.X, 300),
+            down: true,
+            previous: new Point(grab.X, -100));
+
         Assert.Equal(16, list.TopIndex);
         // Release over a row: the scrollbar gesture must not select or commit it.
         Mouse(router, new Point(30, 40), release: true);
@@ -253,10 +285,36 @@ public sealed class ListBoxScrollingTests
     {
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         router.Start();
-        using var combo = new ComboBoxWidget(host, view, new Rectangle(10, 20, 200, 32), Items(count), 100);
-        using var other = new ButtonWidget(host, view, new Rectangle(300, 20, 100, 32), "Other");
+
+        using var combo = new ComboBoxWidget(
+            host,
+            view,
+            new Rectangle(
+                10,
+                20,
+                200,
+                32),
+            Items(count),
+            100);
+
+        using var other = new ButtonWidget(
+            host,
+            view,
+            new Rectangle(
+                300,
+                20,
+                100,
+                32),
+            "Other");
+
         other.Activate();
         combo.OpenDropDown();
         Assert.Same(combo.DropDown, router.FocusedWidget);
@@ -285,7 +343,13 @@ public sealed class ListBoxScrollingTests
     {
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         router.Start();
         using var list = CreateList(host, view, 20);
         list.Activate();
@@ -293,7 +357,13 @@ public sealed class ListBoxScrollingTests
         var grab = new Point(thumb.Left + 3, thumb.Top + 3);
         Mouse(router, grab, down: true);
         list.Hide().Show();
-        Mouse(router, new Point(grab.X, 100), down: true, previous: grab);
+
+        Mouse(
+            router,
+            new Point(grab.X, 100),
+            down: true,
+            previous: grab);
+
         Assert.Equal(0, list.TopIndex);
         Mouse(router, grab, release: true);
         Mouse(router, grab, down: true);
@@ -315,19 +385,43 @@ public sealed class ListBoxScrollingTests
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
         view.Viewport.Zoom = zoom;
-        var layer = host.Scene.AddLayer(20, 20, width: 32, height: 32);
-        using var list = new ListBoxWidget(host, layer, new Rectangle(10, 20, 200, 100), Items(20));
+
+        var layer = host.Scene.AddLayer(
+            20,
+            20,
+            width: 32,
+            height: 32);
+
+        using var list = new ListBoxWidget(
+            host,
+            layer,
+            new Rectangle(
+                10,
+                20,
+                200,
+                100),
+            Items(20));
+
         var screenThumb = list.VerticalScrollBarThumb.GetDrawLocationScreen(view);
         var screenTrack = list.VerticalScrollBarTrack.GetDrawLocationScreen(view);
         var instanceOffset = new PointF(640, 0);
         var grab = new PointF(screenThumb.Left + 3 * zoom + instanceOffset.X * zoom, screenThumb.Top + 3 * zoom);
+
         void Pointer(string method, PointF position, int id = 7)
         {
-            var args = new WidgetPointerEventArgs(list, view, position, WidgetPointerButtonEnum.Touch, pointerId: id);
+            var args = new WidgetPointerEventArgs(
+                list,
+                view,
+                position,
+                WidgetPointerButtonEnum.Touch,
+                pointerId: id);
+
             typeof(WidgetPointerEventArgs).GetProperty(nameof(WidgetPointerEventArgs.WrappedOffsetWorldPx))!
                 .SetValue(args, instanceOffset);
+
             typeof(WidgetBase).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(list, [args]);
         }
+
         Pointer("DispatchPointerDown", grab);
         Pointer("DispatchPointerMove", new PointF(grab.X, screenTrack.Bottom + 10), id: 8);
         Assert.Equal(0, list.TopIndex); // A second touch cannot move the captured thumb.
@@ -350,27 +444,53 @@ public sealed class ListBoxScrollingTests
         list.ItemHeight = 200;
         list.SelectedIndex = 0;
         Assert.True(list.Bounds.Contains(list.SelectionHighlight.ScreenBounds));
-        Assert.All(list.Children.OfType<TextBlock>(), row =>
-        {
-            Assert.True(list.Bounds.Contains(row.ScreenBounds));
-            Assert.True(row.ScreenBounds.Right < list.VerticalScrollBarTrack.ScreenBounds.Left);
-        });
+
+        Assert.All(
+            list.Children.OfType<TextBlock>(),
+            row =>
+            {
+                Assert.True(list.Bounds.Contains(row.ScreenBounds));
+                Assert.True(row.ScreenBounds.Right < list.VerticalScrollBarTrack.ScreenBounds.Left);
+            });
     }
 
     private static IEnumerable<string> Items(int count) => Enumerable.Range(0, count).Select(i => $"Item {i}");
 
     private static ListBoxWidget CreateList(TestRenderSurfaceHost host, View view, int count)
-        => new(host, view, new Rectangle(10, 20, 200, 100), Items(count));
+        => new(
+            host,
+            view,
+            new Rectangle(
+                10,
+                20,
+                200,
+                100),
+            Items(count));
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        host.ViewManager.AddView(new Rectangle(0, 0, 640, 480), zOrder: 10);
+        host.ViewManager.AddView(
+            new Rectangle(
+                0,
+                0,
+                640,
+                480),
+            zOrder: 10);
+
         return host.ViewManager.Views.Single(view => view.ZOrder == 10);
     }
 
     private static void Key(WidgetBase widget, int key)
         => typeof(WidgetBase).GetMethod("DispatchKeyboardInput", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(widget, [new WidgetKeyboardEventArgs(widget, key, KeyAction.Pressed, KeyboardModifierState.None)]);
+            .Invoke(
+                widget,
+                [
+                    new WidgetKeyboardEventArgs(
+                        widget,
+                        key,
+                        KeyAction.Pressed,
+                        KeyboardModifierState.None)
+                ]);
 
     private static void Click(WidgetInputRouter router, Point position)
     {
@@ -378,17 +498,30 @@ public sealed class ListBoxScrollingTests
         Mouse(router, position, release: true);
     }
 
-    private static void Mouse(WidgetInputRouter router, Point position, int delta = 0,
-                              bool down = false, bool release = false, Point? previous = null)
+    private static void Mouse(
+        WidgetInputRouter router,
+        Point position,
+        int delta = 0,
+        bool down = false,
+        bool release = false,
+        Point? previous = null)
     {
         var buttons = new Dictionary<MouseButton, MouseButtonState>
         {
-            [MouseButton.Left] = new() { IsDown = down, JustPressed = down && !previous.HasValue, JustReleased = release }
+            [MouseButton.Left] = new()
+            { IsDown = down, JustPressed = down && !previous.HasValue, JustReleased = release }
         };
-        var args = new MouseEventArgs(new MouseEventConfiguration(true), KeyboardModifierState.None,
-                                      buttons, previous ?? position, position, delta, 1);
+
+        var args = new MouseEventArgs(
+            new MouseEventConfiguration(true),
+            KeyboardModifierState.None,
+            buttons,
+            previous ?? position,
+            position,
+            delta,
+            1);
+
         typeof(WidgetInputRouter).GetMethod("OnMouseEvent", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(router, [args]);
     }
-
 }

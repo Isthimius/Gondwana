@@ -49,20 +49,54 @@ internal static class FlappyArt
             Color = new SKColor(250, 204, 58)
         };
 
-        var bodyRect = new SKRect(x + 11, 17, x + 50, 48);
+        var bodyRect = new SKRect(
+            x + 11,
+            17,
+            x + 50,
+            48);
+
         canvas.DrawOval(bodyRect, body);
         canvas.DrawOval(bodyRect, outline);
 
         body.Color = new SKColor(245, 232, 101);
-        canvas.DrawOval(new SKRect(x + 10, 29, x + 31, 47), body);
-        canvas.DrawOval(new SKRect(x + 10, 29, x + 31, 47), outline);
+
+        canvas.DrawOval(
+            new SKRect(
+                x + 10,
+                29,
+                x + 31,
+                47),
+            body);
+
+        canvas.DrawOval(
+            new SKRect(
+                x + 10,
+                29,
+                x + 31,
+                47),
+            outline);
 
         body.Color = SKColors.White;
-        canvas.DrawCircle(x + 42, 25, 8f, body);
-        canvas.DrawCircle(x + 42, 25, 8f, outline);
+
+        canvas.DrawCircle(
+            x + 42,
+            25,
+            8f,
+            body);
+
+        canvas.DrawCircle(
+            x + 42,
+            25,
+            8f,
+            outline);
 
         body.Color = new SKColor(35, 35, 35);
-        canvas.DrawCircle(x + 45, 25, 3f, body);
+
+        canvas.DrawCircle(
+            x + 45,
+            25,
+            3f,
+            body);
 
         body.Color = new SKColor(240, 94, 47);
         var beak = new SKPath();
@@ -105,15 +139,69 @@ internal static class FlappyArt
             Color = new SKColor(42, 93, 38)
         };
 
-        canvas.DrawRect(new SKRect(x + 12, 0, x + 52, 53), fill);
-        canvas.DrawRect(new SKRect(x + 39, 0, x + 52, 53), shadow);
-        canvas.DrawRect(new SKRect(x + 17, 0, x + 23, 53), highlight);
-        canvas.DrawRect(new SKRect(x + 12, 0, x + 52, 53), outline);
+        canvas.DrawRect(
+            new SKRect(
+                x + 12,
+                0,
+                x + 52,
+                53),
+            fill);
 
-        canvas.DrawRect(new SKRect(x + 5, 49, x + 59, 64), fill);
-        canvas.DrawRect(new SKRect(x + 43, 49, x + 59, 64), shadow);
-        canvas.DrawRect(new SKRect(x + 11, 49, x + 18, 64), highlight);
-        canvas.DrawRect(new SKRect(x + 5, 49, x + 59, 64), outline);
+        canvas.DrawRect(
+            new SKRect(
+                x + 39,
+                0,
+                x + 52,
+                53),
+            shadow);
+
+        canvas.DrawRect(
+            new SKRect(
+                x + 17,
+                0,
+                x + 23,
+                53),
+            highlight);
+
+        canvas.DrawRect(
+            new SKRect(
+                x + 12,
+                0,
+                x + 52,
+                53),
+            outline);
+
+        canvas.DrawRect(
+            new SKRect(
+                x + 5,
+                49,
+                x + 59,
+                64),
+            fill);
+
+        canvas.DrawRect(
+            new SKRect(
+                x + 43,
+                49,
+                x + 59,
+                64),
+            shadow);
+
+        canvas.DrawRect(
+            new SKRect(
+                x + 11,
+                49,
+                x + 18,
+                64),
+            highlight);
+
+        canvas.DrawRect(
+            new SKRect(
+                x + 5,
+                49,
+                x + 59,
+                64),
+            outline);
     }
 
     private static void DrawCloud(SKCanvas canvas, int x)
@@ -122,13 +210,40 @@ internal static class FlappyArt
         {
             IsAntialias = true,
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 255, 255, 210)
+            Color = new SKColor(
+                255,
+                255,
+                255,
+                210)
         };
 
-        canvas.DrawCircle(x + 20, 37, 11f, paint);
-        canvas.DrawCircle(x + 33, 28, 15f, paint);
-        canvas.DrawCircle(x + 47, 38, 11f, paint);
-        canvas.DrawRoundRect(new SKRect(x + 14, 36, x + 54, 49), 7, 7, paint);
+        canvas.DrawCircle(
+            x + 20,
+            37,
+            11f,
+            paint);
+
+        canvas.DrawCircle(
+            x + 33,
+            28,
+            15f,
+            paint);
+
+        canvas.DrawCircle(
+            x + 47,
+            38,
+            11f,
+            paint);
+
+        canvas.DrawRoundRect(
+            new SKRect(
+                x + 14,
+                36,
+                x + 54,
+                49),
+            7,
+            7,
+            paint);
     }
 
     private static void DrawGround(SKCanvas canvas, int x)
@@ -140,12 +255,26 @@ internal static class FlappyArt
             Color = new SKColor(213, 184, 106)
         };
 
-        canvas.DrawRect(new SKRect(x, 0, x + 64, 64), dirt);
+        canvas.DrawRect(
+            new SKRect(
+                x,
+                0,
+                x + 64,
+                64),
+            dirt);
 
         dirt.Color = new SKColor(116, 197, 77);
-        canvas.DrawRect(new SKRect(x, 0, x + 64, 10), dirt);
+
+        canvas.DrawRect(
+            new SKRect(
+                x,
+                0,
+                x + 64,
+                10),
+            dirt);
 
         dirt.Color = new SKColor(239, 220, 137);
+
         for (int offset = -48; offset < 96; offset += 24)
         {
             var stripe = new SKPath();

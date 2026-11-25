@@ -35,11 +35,16 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <param name="mode">The mode.</param>
     /// <param name="anchor">The anchor.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    protected DraggableWidgetBase(RenderSurfaceHostBase renderSurfaceHost,
-                                  DirectDrawingMode mode,
-                                  PointF anchor = default,
-                                  string? nickname = null)
-        : base(renderSurfaceHost, mode, anchor, nickname)
+    protected DraggableWidgetBase(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            anchor,
+            nickname)
     {
         _dragBehavior = new WidgetDragBehavior(this);
     }
@@ -136,8 +141,9 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <param name="totalScreenDeltaPx">The total screen delta px.</param>
     /// <param name="view">The view used for presentation and coordinate conversion.</param>
     /// <returns>The drag displacement converted into the widget position coordinate space.</returns>
-    protected virtual Vector2 ConvertScreenDeltaToPositionDelta(Vector2 totalScreenDeltaPx,
-                                                                View view)
+    protected virtual Vector2 ConvertScreenDeltaToPositionDelta(
+        Vector2 totalScreenDeltaPx,
+        View view)
     {
         return _dragBehavior.ConvertScreenDeltaToPositionDelta(totalScreenDeltaPx, view);
     }

@@ -24,6 +24,7 @@ public sealed class ViewCoordinateConversionTests
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(100, 100);
+
         var view = CreateView(
             scene,
             zoom: zoom,
@@ -52,6 +53,7 @@ public sealed class ViewCoordinateConversionTests
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(100, 100);
+
         var view = CreateView(
             scene,
             zoom: zoom,
@@ -73,10 +75,15 @@ public sealed class ViewCoordinateConversionTests
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(100, 100);
+
         var view = CreateView(
             scene,
             zoom: 2f,
-            targetRectPx: new Rectangle(400, 100, 800, 600),
+            targetRectPx: new Rectangle(
+                400,
+                100,
+                800,
+                600),
             screenOffsetPx: new PointF(10f, 20f),
             cameraPositionPx: new PointF(100f, 50f));
 
@@ -95,6 +102,7 @@ public sealed class ViewCoordinateConversionTests
     public void PointConversions_RoundTripWithCameraOffsetsZoomAndParallax()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             100,
             100,
@@ -103,7 +111,11 @@ public sealed class ViewCoordinateConversionTests
         var view = CreateView(
             scene,
             zoom: 1.75f,
-            targetRectPx: new Rectangle(300, 120, 900, 500),
+            targetRectPx: new Rectangle(
+                300,
+                120,
+                900,
+                500),
             screenOffsetPx: new PointF(7f, -3f),
             cameraPositionPx: new PointF(120f, 80f));
 
@@ -128,6 +140,7 @@ public sealed class ViewCoordinateConversionTests
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(100, 100);
+
         var view = CreateView(
             scene,
             zoom: 2f,
@@ -135,10 +148,18 @@ public sealed class ViewCoordinateConversionTests
 
         RectangleF screenRect = view.WorldRectToScreenRect(
             layer,
-            new RectangleF(125f, 70f, 40f, 30f));
+            new RectangleF(
+                125f,
+                70f,
+                40f,
+                30f));
 
         AssertClose(
-            new RectangleF(50f, 40f, 80f, 60f),
+            new RectangleF(
+                50f,
+                40f,
+                80f,
+                60f),
             screenRect);
     }
 
@@ -149,6 +170,7 @@ public sealed class ViewCoordinateConversionTests
     public void RectangleConversions_RoundTripWithCameraOffsetsZoomAndParallax()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             100,
             100,
@@ -157,12 +179,20 @@ public sealed class ViewCoordinateConversionTests
         var view = CreateView(
             scene,
             zoom: 1.75f,
-            targetRectPx: new Rectangle(300, 120, 900, 500),
+            targetRectPx: new Rectangle(
+                300,
+                120,
+                900,
+                500),
             screenOffsetPx: new PointF(7f, -3f),
             cameraPositionPx: new PointF(120f, 80f));
 
         var originalWorldRect =
-            new RectangleF(450.25f, 275.75f, 125.5f, 64.25f);
+            new RectangleF(
+                450.25f,
+                275.75f,
+                125.5f,
+                64.25f);
 
         RectangleF screenRect = view.WorldRectToScreenRect(
             layer,
@@ -182,6 +212,7 @@ public sealed class ViewCoordinateConversionTests
     public void ZoomAroundScreenPoint_WhenSnapped_PreservesWorldPointUnderCursor()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             100,
             100,
@@ -190,11 +221,16 @@ public sealed class ViewCoordinateConversionTests
         var view = CreateView(
             scene,
             zoom: 1f,
-            targetRectPx: new Rectangle(100, 50, 800, 600),
+            targetRectPx: new Rectangle(
+                100,
+                50,
+                800,
+                600),
             screenOffsetPx: new PointF(20f, 10f),
             cameraPositionPx: new PointF(200f, 100f));
 
         var cursorScreenPx = new PointF(500f, 350f);
+
         PointF worldBefore = view.ScreenPxToWorldPx(
             layer,
             cursorScreenPx);
@@ -230,7 +266,11 @@ public sealed class ViewCoordinateConversionTests
     {
         var viewport = new Viewport
         {
-            TargetRectPx = new Rectangle(0, 0, 800, 600),
+            TargetRectPx = new Rectangle(
+                0,
+                0,
+                800,
+                600),
             Zoom = zoom
         };
 
@@ -246,16 +286,31 @@ public sealed class ViewCoordinateConversionTests
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(100, 100, parallax: 0.75f);
+
         var view = CreateView(
             scene,
             zoom: 1.5f,
-            targetRectPx: new Rectangle(100, 50, 800, 600),
+            targetRectPx: new Rectangle(
+                100,
+                50,
+                800,
+                600),
             screenOffsetPx: new PointF(12f, -8f),
             cameraPositionPx: new PointF(120f, 80f));
 
         var worldPoint = new PointF(410f, 260f);
-        var worldRect = new RectangleF(390f, 240f, 64f, 48f);
-        var screenRect = new RectangleF(250f, 180f, 96f, 72f);
+
+        var worldRect = new RectangleF(
+            390f,
+            240f,
+            64f,
+            48f);
+
+        var screenRect = new RectangleF(
+            250f,
+            180f,
+            96f,
+            72f);
 
         PointF pointBefore;
         PointF pointAfter;
@@ -267,6 +322,7 @@ public sealed class ViewCoordinateConversionTests
         Rectangle viewportAfter;
 
         Gondwana.Rendering.RenderContext.Push(view, tick: 1);
+
         try
         {
             pointBefore = view.WorldPxToScreenPx(layer, worldPoint);
@@ -276,7 +332,13 @@ public sealed class ViewCoordinateConversionTests
 
             view.Camera.SnapTo(new PointF(500f, 350f));
             view.Viewport.Zoom = 2.5f;
-            view.Viewport.TargetRectPx = new Rectangle(300, 200, 1024, 768);
+
+            view.Viewport.TargetRectPx = new Rectangle(
+                300,
+                200,
+                1024,
+                768);
+
             view.Viewport.ScreenOffsetPx = new PointF(-30f, 40f);
 
             pointAfter = view.WorldPxToScreenPx(layer, worldPoint);
@@ -307,7 +369,11 @@ public sealed class ViewCoordinateConversionTests
     {
         var viewport = new Viewport
         {
-            TargetRectPx = targetRectPx ?? new Rectangle(0, 0, 800, 600),
+            TargetRectPx = targetRectPx ?? new Rectangle(
+                0,
+                0,
+                800,
+                600),
             ScreenOffsetPx = screenOffsetPx ?? PointF.Empty,
             Zoom = zoom
         };

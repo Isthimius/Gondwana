@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Gondwana.Assets;
+using Gondwana.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Audio;
@@ -9,8 +10,7 @@ namespace Gondwana.Audio;
 /// </summary>
 public sealed class AudioResourceManager : IDisposable
 {
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionProvenance? DefinitionProvenance { get; set; }
 
     private static readonly Lazy<AudioResourceManager> _instance = new(() => new AudioResourceManager());
     private readonly ConcurrentDictionary<string, AudioResource> _soundResources = new(StringComparer.Ordinal);
@@ -72,8 +72,17 @@ public sealed class AudioResourceManager : IDisposable
     /// <param name="volume">Initial volume (0.0 to 1.0).</param>
     /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
     /// <returns>The loaded <see cref="AudioResource"/>.</returns>
-    public AudioResource LoadFromFile(string key, string filePath, float volume, float pan)
-        => LoadFromFile(key, filePath, volume, pan, 1.0f);
+    public AudioResource LoadFromFile(
+        string key,
+        string filePath,
+        float volume,
+        float pan)
+        => LoadFromFile(
+            key,
+            filePath,
+            volume,
+            pan,
+            1.0f);
 
     /// <summary>
     /// Loads an audio resource from a file on disk.
@@ -90,7 +99,13 @@ public sealed class AudioResourceManager : IDisposable
         float volume = 1.0f,
         float pan = 0.0f,
         float playbackSpeed = 1.0f)
-        => LoadFromFile(key, filePath, null, volume, pan, playbackSpeed);
+        => LoadFromFile(
+            key,
+            filePath,
+            null,
+            volume,
+            pan,
+            playbackSpeed);
 
     /// <summary>Loads a loose file with an optional explicit media format while retaining its physical source.</summary>
     /// <param name="key">The resource key.</param>
@@ -100,10 +115,24 @@ public sealed class AudioResourceManager : IDisposable
     /// <param name="pan">Initial stereo pan.</param>
     /// <param name="playbackSpeed">Initial playback speed.</param>
     /// <returns>The resource with its loose source and media format retained.</returns>
-    internal AudioResource LoadFromFile(string key, string filePath, string? sourceExtension, float volume, float pan, float playbackSpeed)
+    internal AudioResource LoadFromFile(
+        string key,
+        string filePath,
+        string? sourceExtension,
+        float volume,
+        float pan,
+        float playbackSpeed)
     {
         var bytes = File.ReadAllBytes(filePath);
-        var resource = LoadFromBytes(key, bytes, string.IsNullOrWhiteSpace(sourceExtension) ? filePath : sourceExtension, volume, pan, playbackSpeed);
+
+        var resource = LoadFromBytes(
+            key,
+            bytes,
+            string.IsNullOrWhiteSpace(sourceExtension) ? filePath : sourceExtension,
+            volume,
+            pan,
+            playbackSpeed);
+
         resource.SetSourceFilePath(filePath);
         return resource;
     }
@@ -118,8 +147,19 @@ public sealed class AudioResourceManager : IDisposable
     /// <param name="volume">Initial volume (0.0 to 1.0).</param>
     /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
     /// <returns>The loaded <see cref="AudioResource"/>.</returns>
-    public AudioResource LoadFromStream(string key, Stream input, string fileExt, float volume, float pan)
-        => LoadFromStream(key, input, fileExt, volume, pan, 1.0f);
+    public AudioResource LoadFromStream(
+        string key,
+        Stream input,
+        string fileExt,
+        float volume,
+        float pan)
+        => LoadFromStream(
+            key,
+            input,
+            fileExt,
+            volume,
+            pan,
+            1.0f);
 
     /// <summary>
     /// Loads an audio resource from the provided <see cref="Stream"/>.
@@ -141,7 +181,14 @@ public sealed class AudioResourceManager : IDisposable
     {
         using var ms = new MemoryStream();
         input.CopyTo(ms);
-        return LoadFromBytes(key, ms.ToArray(), fileExt, volume, pan, playbackSpeed);
+
+        return LoadFromBytes(
+            key,
+            ms.ToArray(),
+            fileExt,
+            volume,
+            pan,
+            playbackSpeed);
     }
 
     /// <summary>
@@ -166,13 +213,32 @@ public sealed class AudioResourceManager : IDisposable
             if (string.IsNullOrWhiteSpace(uri))
                 throw new ArgumentException("Audio URI cannot be empty.", nameof(uri));
 
-            ValidateSettings(key, volume, pan, playbackSpeed);
+            ValidateSettings(
+                key,
+                volume,
+                pan,
+                playbackSpeed);
+
             var speed = ClampPlaybackSpeed(playbackSpeed);
-            var playback = RequireBackend().CreateFromUri(key, uri, Math.Clamp(volume, 0f, 1f), Math.Clamp(pan, -1f, 1f), speed);
+
+            var playback = RequireBackend().CreateFromUri(
+                key,
+                uri,
+                Math.Clamp(volume, 0f, 1f),
+                Math.Clamp(pan, -1f, 1f),
+                speed);
+
             AudioResource? resource = null;
+
             try
             {
-                resource = new AudioResource(key, playback, volume, pan, speed);
+                resource = new AudioResource(
+                    key,
+                    playback,
+                    volume,
+                    pan,
+                    speed);
+
                 resource.SetSourceUri(uri);
                 RegisterLoadedSound(key, resource);
                 return resource;
@@ -194,7 +260,11 @@ public sealed class AudioResourceManager : IDisposable
     /// <param name="defaultPan">Default pan to apply to loaded resources.</param>
     /// <returns>A list of loaded <see cref="AudioResource"/> instances.</returns>
     public List<AudioResource> LoadFromEngineAssetsFile(AssetsFile resourceFile, float defaultVolume, float defaultPan)
-        => LoadFromEngineAssetsFile(resourceFile, defaultVolume, defaultPan, 1.0f);
+        => LoadFromEngineAssetsFile(
+            resourceFile,
+            defaultVolume,
+            defaultPan,
+            1.0f);
 
     /// <summary>
     /// Loads all audio entries from the provided <see cref="AssetsFile"/> and returns the loaded resources.
@@ -226,6 +296,7 @@ public sealed class AudioResourceManager : IDisposable
                 }
 
                 var stream = resourceFile.Get(entry.AssetType, entry.AssetName);
+
                 if (stream is null)
                 {
                     Engine.Logger.LogWarning("Failed to retrieve stream for audio resource: {Key}", entry.AssetName);
@@ -238,6 +309,7 @@ public sealed class AudioResourceManager : IDisposable
                     using (var ms = new MemoryStream())
                     {
                         stream.CopyTo(ms);
+
                         var sound = LoadFromBytes(
                             entry.AssetName,
                             ms.ToArray(),
@@ -245,7 +317,10 @@ public sealed class AudioResourceManager : IDisposable
                             defaultVolume,
                             defaultPan,
                             defaultPlaybackSpeed);
-                        sound.SetAssetIdentifier(new AssetsFileIdentifier(resourceFile, AssetTypes.Audio, entry.AssetName));
+
+                        sound.SetAssetIdentifier(
+                            new AssetsFileIdentifier(resourceFile, AssetTypes.Audio, entry.AssetName));
+
                         loadedSounds.Add(sound);
                     }
 
@@ -271,8 +346,17 @@ public sealed class AudioResourceManager : IDisposable
     /// <param name="volume">Optional volume override for the clone.</param>
     /// <param name="pan">Optional pan override for the clone.</param>
     /// <returns>The cloned <see cref="AudioResource"/> or null if the source was not found or could not be cloned.</returns>
-    public AudioResource? Clone(string key, string? newKey, float? volume, float? pan)
-        => Clone(key, newKey, volume, pan, null);
+    public AudioResource? Clone(
+        string key,
+        string? newKey,
+        float? volume,
+        float? pan)
+        => Clone(
+            key,
+            newKey,
+            volume,
+            pan,
+            null);
 
     /// <summary>
     /// Creates a clone of an existing <see cref="AudioResource"/>. The clone may inherit or override
@@ -300,6 +384,7 @@ public sealed class AudioResourceManager : IDisposable
             }
 
             newKey ??= $"{key}_clone_{Guid.NewGuid()}";
+
             if (_soundResources.ContainsKey(newKey))
             {
                 Engine.Logger.LogWarning("AudioResource with key '{Key}' already exists. Cannot clone.", newKey);
@@ -307,9 +392,11 @@ public sealed class AudioResourceManager : IDisposable
             }
 
             AudioResource clone;
+
             if (original.OriginalBytes is not null && !string.IsNullOrEmpty(original.SourceExtension))
             {
                 using var stream = new MemoryStream(original.OriginalBytes, writable: false);
+
                 clone = LoadFromStream(
                     newKey,
                     stream,
@@ -329,7 +416,10 @@ public sealed class AudioResourceManager : IDisposable
             }
             else
             {
-                Engine.Logger.LogWarning("Cannot clone AudioResource '{Key}' because its source cannot be recreated.", key);
+                Engine.Logger.LogWarning(
+                    "Cannot clone AudioResource '{Key}' because its source cannot be recreated.",
+                    key);
+
                 return null;
             }
 
@@ -350,14 +440,21 @@ public sealed class AudioResourceManager : IDisposable
         lock (_backendLock)
         {
             var ext = Path.GetExtension(fileHint);
+
             if (string.IsNullOrWhiteSpace(ext))
             {
                 throw new InvalidOperationException(
                     $"Audio asset '{key}' has no file extension. Ensure audio AssetsFile entries retain their extension.");
             }
 
-            ValidateSettings(key, volume, pan, playbackSpeed);
+            ValidateSettings(
+                key,
+                volume,
+                pan,
+                playbackSpeed);
+
             var speed = ClampPlaybackSpeed(playbackSpeed);
+
             var playback = RequireBackend().CreateFromBytes(
                 key,
                 bytes,
@@ -367,9 +464,18 @@ public sealed class AudioResourceManager : IDisposable
                 speed);
 
             AudioResource? sound = null;
+
             try
             {
-                sound = new AudioResource(key, playback, volume, pan, speed, fileHint, bytes);
+                sound = new AudioResource(
+                    key,
+                    playback,
+                    volume,
+                    pan,
+                    speed,
+                    fileHint,
+                    bytes);
+
                 RegisterLoadedSound(key, sound);
                 return sound;
             }
@@ -420,19 +526,32 @@ public sealed class AudioResourceManager : IDisposable
         {
             if (_retainedDefinitionResources is not null)
                 throw new InvalidOperationException("A definition document load is already in progress.");
+
             var previous = GetAll();
-            var settings = previous.Values.ToDictionary(resource => resource,
+
+            var settings = previous.Values.ToDictionary(
+                resource => resource,
                 resource => (resource.Volume, resource.Pan, resource.PlaybackSpeed, resource.IsLooping));
+
             var provenance = DefinitionProvenance;
             _retainedDefinitionResources = previous.Values.ToHashSet();
             T result;
-            try { result = load(); }
+
+            try
+            {
+                result = load();
+            }
             catch
             {
                 foreach (var resource in _soundResources.Values.ToArray())
-                    if (!_retainedDefinitionResources.Contains(resource)) resource.Dispose();
+                    if (!_retainedDefinitionResources.Contains(resource))
+                        resource.Dispose();
+
                 _soundResources.Clear();
-                foreach (var pair in previous) _soundResources[pair.Key] = pair.Value;
+
+                foreach (var pair in previous)
+                    _soundResources[pair.Key] = pair.Value;
+
                 foreach (var pair in settings)
                 {
                     pair.Key.Volume = pair.Value.Volume;
@@ -440,20 +559,31 @@ public sealed class AudioResourceManager : IDisposable
                     pair.Key.PlaybackSpeed = pair.Value.PlaybackSpeed;
                     pair.Key.IsLooping = pair.Value.IsLooping;
                 }
+
                 DefinitionProvenance = provenance;
                 throw;
             }
-            finally { _retainedDefinitionResources = null; }
+            finally
+            {
+                _retainedDefinitionResources = null;
+            }
+
             foreach (var pair in previous)
                 if (!_soundResources.TryGetValue(pair.Key, out var current) || !ReferenceEquals(current, pair.Value))
                     pair.Value.Dispose();
+
             return result;
         }
     }
 
-    private static void ValidateSettings(string key, float volume, float pan, float speed)
+    private static void ValidateSettings(
+        string key,
+        float volume,
+        float pan,
+        float speed)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
         if (float.IsNaN(volume) || float.IsNaN(pan) || float.IsNaN(speed))
             throw new ArgumentOutOfRangeException(nameof(speed), "Audio settings must not be NaN.");
     }
@@ -462,6 +592,7 @@ public sealed class AudioResourceManager : IDisposable
     {
         ReplaceExisting(key);
         _soundResources[key] = sound;
+
         sound.Disposed += (_, _) =>
         {
             if (((ICollection<KeyValuePair<string, AudioResource>>)_soundResources).Remove(new(key, sound)))
@@ -472,8 +603,8 @@ public sealed class AudioResourceManager : IDisposable
     }
 
     private IAudioBackend RequireBackend() => _backend
-        ?? throw new InvalidOperationException(
-            "No Gondwana audio backend is configured. Install and initialize a backend such as Gondwana.Audio.NAudio or Gondwana.Audio.Browser before loading audio.");
+                                              ?? throw new InvalidOperationException(
+                                                  "No Gondwana audio backend is configured. Install and initialize a backend such as Gondwana.Audio.NAudio or Gondwana.Audio.Browser before loading audio.");
 
     private static float ClampPlaybackSpeed(float speed) =>
         Math.Clamp(speed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
@@ -496,6 +627,7 @@ public sealed class AudioResourceManager : IDisposable
     public void Clear()
     {
         DefinitionProvenance = null;
+
         lock (_backendLock)
         {
             foreach (var resource in _soundResources.Values.ToArray())

@@ -22,8 +22,9 @@ public sealed class DarkBlueDockTheme : VS2015DarkTheme
         // IImageService exposes both generated images and two shared resource lookup maps.
         // Never dispose the latter: other DockPanels use the same resource instances.
         foreach (var image in typeof(IImageService).GetProperties()
-            .Where(property => property.Name is not "Dockindicator_PaneDiamond_Hotspot" and not "DockIndicator_PaneDiamond_HotspotIndex")
-            .Select(property => property.GetValue(ImageService)).OfType<Image>().Distinct())
+                     .Where(property => property.Name is not "Dockindicator_PaneDiamond_Hotspot"
+                         and not "DockIndicator_PaneDiamond_HotspotIndex")
+                     .Select(property => property.GetValue(ImageService)).OfType<Image>().Distinct())
         {
             image.Dispose();
         }

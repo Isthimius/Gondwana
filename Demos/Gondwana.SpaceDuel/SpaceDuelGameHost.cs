@@ -144,29 +144,32 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             rotation: 0f,
             isPlayer: true);
 
-        _enemies.Add(CreateShip(
-            "raider-one",
-            frameColumn: 1,
-            frameRow: 0,
-            position: new Vector2(8f, 5f),
-            rotation: 135f,
-            isPlayer: false));
+        _enemies.Add(
+            CreateShip(
+                "raider-one",
+                frameColumn: 1,
+                frameRow: 0,
+                position: new Vector2(8f, 5f),
+                rotation: 135f,
+                isPlayer: false));
 
-        _enemies.Add(CreateShip(
-            "raider-two",
-            frameColumn: 0,
-            frameRow: 1,
-            position: new Vector2(23f, 6f),
-            rotation: 225f,
-            isPlayer: false));
+        _enemies.Add(
+            CreateShip(
+                "raider-two",
+                frameColumn: 0,
+                frameRow: 1,
+                position: new Vector2(23f, 6f),
+                rotation: 225f,
+                isPlayer: false));
 
-        _enemies.Add(CreateShip(
-            "raider-three",
-            frameColumn: 1,
-            frameRow: 1,
-            position: new Vector2(20f, 14f),
-            rotation: 315f,
-            isPlayer: false));
+        _enemies.Add(
+            CreateShip(
+                "raider-three",
+                frameColumn: 1,
+                frameRow: 1,
+                position: new Vector2(20f, 14f),
+                rotation: 315f,
+                isPlayer: false));
 
         _ships.Add(_player);
         _ships.AddRange(_enemies);
@@ -188,7 +191,12 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
                 nickname: $"{ship.Sprite.Nickname}-health");
 
             if (!ship.IsPlayer)
-                bar.SetFillColor(Color.FromArgb(245, 244, 98, 78));
+                bar.SetFillColor(
+                    Color.FromArgb(
+                        245,
+                        244,
+                        98,
+                        78));
 
             bar.SetZOrder(200);
             bar.Show();
@@ -216,13 +224,26 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         var view = RenderSurface.Host.ViewManager.Views[0];
 
         var hudPanel = new DirectRectangle(
-                Color.FromArgb(210, 9, 18, 37),
+                Color.FromArgb(
+                    210,
+                    9,
+                    18,
+                    37),
                 RenderSurface.Host,
                 view,
-                new Rectangle(12, 12, 535, 69),
+                new Rectangle(
+                    12,
+                    12,
+                    535,
+                    69),
                 "space-duel-hud-panel")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(230, 82, 207, 236))
+            .SetBorderColor(
+                Color.FromArgb(
+                    230,
+                    82,
+                    207,
+                    236))
             .SetStrokeWidth(2f)
             .SetCornerRadius(8f);
 
@@ -231,7 +252,11 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         _hudText = new TextBlock(
                 RenderSurface.Host,
                 view,
-                new Rectangle(26, 21, 507, 51),
+                new Rectangle(
+                    26,
+                    21,
+                    507,
+                    51),
                 "space-duel-hud")
             .SetFont(SKTypeface.Default, 17f)
             .SetColors(SKColors.White, SKColors.Transparent)
@@ -244,10 +269,20 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         _messageText = new TextBlock(
                 RenderSurface.Host,
                 view,
-                new Rectangle(170, 236, 620, 150),
+                new Rectangle(
+                    170,
+                    236,
+                    620,
+                    150),
                 "space-duel-message")
             .SetFont(SKTypeface.Default, 34f, minSize: 22f)
-            .SetColors(SKColors.White, new SKColor(8, 18, 38, 225))
+            .SetColors(
+                SKColors.White,
+                new SKColor(
+                    8,
+                    18,
+                    38,
+                    225))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(3)
             .UseShadow()
@@ -276,7 +311,13 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
                     performanceHeight),
                 "space-duel-performance")
             .SetFont(SKTypeface.Default, 18f)
-            .SetColors(SKColors.White, new SKColor(8, 18, 38, 180))
+            .SetColors(
+                SKColors.White,
+                new SKColor(
+                    8,
+                    18,
+                    38,
+                    180))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .EnableWrapping(false)
             .UseShadow();
@@ -287,16 +328,17 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
     private void UpdatePerformanceText()
     {
         var snapshot = Engine.Profiler.GetLatestSnapshot();
+
         if (snapshot is null || snapshot.EndedSeconds <= _lastPerformanceSnapshotEnd)
             return;
 
         _lastPerformanceSnapshotEnd = snapshot.EndedSeconds;
 
         var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
-        var renderSource = snapshot.Sources.FirstOrDefault(
-            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+        var renderSource = snapshot.Sources.FirstOrDefault(source => source.Id == RenderSurface.Host.Telemetry?.Id);
 
         double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
+
         double? fps =
             GetRate(renderSource, "presentation.count", snapshot.ElapsedSeconds)
             ?? GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
@@ -311,10 +353,10 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         double elapsedSeconds)
     {
         return elapsedSeconds > 0d &&
-            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
-            metric.Availability == Diagnostics.TelemetryAvailability.Available
-                ? metric.Count / elapsedSeconds
-                : null;
+               source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+               metric.Availability == Diagnostics.TelemetryAvailability.Available
+            ? metric.Count / elapsedSeconds
+            : null;
     }
 
     private static string FormatRate(double? rate) => rate?.ToString("0.0") ?? "n/a";
@@ -417,6 +459,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         sprite.Rotation = rotation;
         sprite.Visible = true;
         sprite.ZOrder = 30;
+
         sprite.AdjustCollisionArea = new CollisionAdjust(
             top: 18,
             bottom: 18,
@@ -445,6 +488,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
                 if (key == Keys.R)
                     RestartGame();
+
                 break;
 
             case KeyAction.Released:
@@ -456,10 +500,12 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
     private void BeforeBackgroundTasksExecute()
     {
         long tick = HighResTimer.GetCurrentTick();
+
         _frameDelta = Math.Clamp(
             HighResTimer.GetDuration(_lastUpdateTick, tick),
             0f,
             0.05f);
+
         _lastUpdateTick = tick;
 
         if (_gameState != GameState.Playing || _frameDelta <= 0f)
@@ -519,11 +565,13 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
                 Vector2 firstVelocity =
                     first.Sprite.Movement.MovementState.Velocity;
+
                 Vector2 secondVelocity =
                     second.Sprite.Movement.MovementState.Velocity;
 
                 first.Sprite.Movement.SetVelocity(
                     secondVelocity * ShipCollisionBounce);
+
                 second.Sprite.Movement.SetVelocity(
                     firstVelocity * ShipCollisionBounce);
             }
@@ -546,6 +594,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             int totalSeparation = overlap.Width + 1;
             int firstMove = totalSeparation / 2;
             int secondMove = totalSeparation - firstMove;
+
             bool firstIsLeft =
                 firstBounds.Left + firstBounds.Width * 0.5f <=
                 secondBounds.Left + secondBounds.Width * 0.5f;
@@ -558,6 +607,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             int totalSeparation = overlap.Height + 1;
             int firstMove = totalSeparation / 2;
             int secondMove = totalSeparation - firstMove;
+
             bool firstIsAbove =
                 firstBounds.Top + firstBounds.Height * 0.5f <=
                 secondBounds.Top + secondBounds.Height * 0.5f;
@@ -579,7 +629,9 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
         float turn = turnLeft == turnRight
             ? 0f
-            : turnLeft ? -1f : 1f;
+            : turnLeft
+                ? -1f
+                : 1f;
 
         _player.Sprite.Rotation = NormalizeDegrees(
             _player.Sprite.Rotation + turn * PlayerTurnSpeed * dt);
@@ -611,6 +663,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             _player.Sprite.GetPosition());
 
         float distance = delta.Length();
+
         float desiredRotation = NormalizeDegrees(
             MathF.Atan2(delta.X, -delta.Y) * 180f / MathF.PI);
 
@@ -619,6 +672,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             desiredRotation);
 
         float maxTurn = EnemyTurnSpeed * dt;
+
         enemy.Sprite.Rotation = NormalizeDegrees(
             enemy.Sprite.Rotation + Math.Clamp(angleDelta, -maxTurn, maxTurn));
 
@@ -651,6 +705,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             thrust ? forward * acceleration : Vector2.Zero);
 
         sprite.Movement.SetMaxSpeed(maxSpeed);
+
         sprite.Movement.SetLinearDamping(
             thrust ? ThrustDamping : CoastingDamping);
     }
@@ -672,6 +727,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         laser.Rotation = owner.Sprite.Rotation;
         laser.Visible = true;
         laser.ZOrder = 40;
+
         laser.AdjustCollisionArea = new CollisionAdjust(
             top: 4,
             bottom: 4,
@@ -680,6 +736,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
         laser.Movement.WrapX = true;
         laser.Movement.WrapY = true;
+
         laser.Movement.SetVelocity(
             owner.Sprite.Movement.MovementState.Velocity +
             forward * LaserSpeed);
@@ -762,7 +819,11 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
                 lifeRange: (0.18f, 0.42f),
                 velocityRange: 165f,
                 sizeRange: (2f, 5f),
-                color: new SKColor(255, 194, 72, 245)),
+                color: new SKColor(
+                    255,
+                    194,
+                    72,
+                    245)),
             count: 22);
     }
 
@@ -774,7 +835,11 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
                 lifeRange: (0.55f, 1.15f),
                 velocityRange: 430f,
                 sizeRange: (4f, 10f),
-                color: new SKColor(255, 102, 34, 255)),
+                color: new SKColor(
+                    255,
+                    102,
+                    34,
+                    255)),
             count: 110);
 
         _particleSurface.Burst(
@@ -783,7 +848,11 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
                 lifeRange: (0.75f, 1.5f),
                 velocityRange: 260f,
                 sizeRange: (6f, 14f),
-                color: new SKColor(255, 214, 112, 220)),
+                color: new SKColor(
+                    255,
+                    214,
+                    112,
+                    220)),
             count: 48);
     }
 
@@ -862,6 +931,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
     private void UpdateHud(bool force = false)
     {
         int enemiesRemaining = _enemies.Count(enemy => enemy.IsAlive);
+
         string state = _gameState switch
         {
             GameState.Won => "Sector secure",
@@ -929,9 +999,11 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             SpawnPosition = spawnPosition;
             SpawnRotation = spawnRotation;
             IsPlayer = isPlayer;
+
             MaxHealth = isPlayer
                 ? PlayerStartingHealth
                 : EnemyStartingHealth;
+
             Health = MaxHealth;
         }
 
@@ -965,14 +1037,17 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         /// Specifies starting.
         /// </summary>
         Starting,
+
         /// <summary>
         /// Specifies playing.
         /// </summary>
         Playing,
+
         /// <summary>
         /// Specifies won.
         /// </summary>
         Won,
+
         /// <summary>
         /// Specifies lost.
         /// </summary>

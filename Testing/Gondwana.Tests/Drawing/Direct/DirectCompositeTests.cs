@@ -91,8 +91,7 @@ public sealed class DirectCompositeTests
 
         firstParent.Add(child);
 
-        Assert.Throws<InvalidOperationException>(
-            () => secondParent.Add(child));
+        Assert.Throws<InvalidOperationException>(() => secondParent.Add(child));
     }
 
     /// <summary>
@@ -146,8 +145,7 @@ public sealed class DirectCompositeTests
 
         parent.Add(child);
 
-        Assert.Throws<InvalidOperationException>(
-            () => child.Add(parent));
+        Assert.Throws<InvalidOperationException>(() => child.Add(parent));
     }
 
     /// <summary>
@@ -200,8 +198,7 @@ public sealed class DirectCompositeTests
 
         composite.Add(first);
 
-        Assert.Throws<ArgumentException>(
-            () => composite.Add(second));
+        Assert.Throws<ArgumentException>(() => composite.Add(second));
     }
 
     /// <summary>
@@ -244,8 +241,7 @@ public sealed class DirectCompositeTests
 
         composite.Add(first);
 
-        Assert.Throws<ArgumentException>(
-            () => composite.Add(second));
+        Assert.Throws<ArgumentException>(() => composite.Add(second));
     }
 
     /// <summary>
@@ -303,6 +299,7 @@ public sealed class DirectCompositeTests
                 40));
 
         composite.Add(child);
+
         composite.SetPosition(
             new Vector2(
                 100,
@@ -311,6 +308,7 @@ public sealed class DirectCompositeTests
         composite.SetIsVisible(false);
         composite.SetZOrder(17);
         composite.SetOpacity(0.4f);
+
         composite.FadeTo(
             0.75f,
             0.25f);
@@ -322,6 +320,7 @@ public sealed class DirectCompositeTests
             child.GetPosition());
 
         Assert.False(child.Visible);
+
         Assert.Equal(
             17,
             child.AppliedZOrder);
@@ -383,6 +382,7 @@ public sealed class DirectCompositeTests
             RenderSurfaceHost = renderSurfaceHost;
             View = view;
             _screenBounds = screenBounds;
+
             _position = new Vector2(
                 screenBounds.X,
                 screenBounds.Y);
@@ -524,8 +524,8 @@ public sealed class DirectCompositeTests
             View view)
         {
             return ReferenceEquals(
-                    View,
-                    view)
+                View,
+                view)
                 ? _screenBounds
                 : RectangleF.Empty;
         }
@@ -558,6 +558,7 @@ public sealed class DirectCompositeTests
                 return;
 
             _disposed = true;
+
             Disposing?.Invoke(
                 this,
                 this);
@@ -609,7 +610,7 @@ public sealed class DirectCompositeTests
             .Single(view =>
                 view.ZOrder == zOrder &&
                 view.Viewport.TargetRectPx ==
-                    targetBounds);
+                targetBounds);
     }
 
     private static SceneLayer AddLayer(
@@ -623,6 +624,6 @@ public sealed class DirectCompositeTests
             zOrder: host.Scene.SceneLayers.Count,
             parallax: 1f,
             coordinateSystem:
-                CoordinateSystemTypes.Orthogonal);
+            CoordinateSystemTypes.Orthogonal);
     }
 }

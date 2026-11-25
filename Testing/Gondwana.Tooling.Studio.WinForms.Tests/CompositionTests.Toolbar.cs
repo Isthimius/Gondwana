@@ -21,15 +21,20 @@ public sealed partial class CompositionTests
         Assert.Equal(new Size(imagePixels, imagePixels), bar.ImageScalingSize);
         // Theme application must not replace Studio's native hover tooltips.
         Assert.True(bar.ShowItemToolTips);
-        Assert.All(bar.Items.OfType<ToolStripButton>(), item =>
-        {
-            Assert.False(item.AutoSize);
-            Assert.Equal(new Size(buttonPixels, buttonPixels), item.Size);
-            Assert.Equal(bar.ImageScalingSize, item.Image!.Size);
-            Assert.False(item.AutoToolTip);
-            Assert.False(string.IsNullOrWhiteSpace(item.ToolTipText));
-        });
+
+        Assert.All(
+            bar.Items.OfType<ToolStripButton>(),
+            item =>
+            {
+                Assert.False(item.AutoSize);
+                Assert.Equal(new Size(buttonPixels, buttonPixels), item.Size);
+                Assert.Equal(bar.ImageScalingSize, item.Image!.Size);
+                Assert.False(item.AutoToolTip);
+                Assert.False(string.IsNullOrWhiteSpace(item.ToolTipText));
+            });
+
         Assert.Equal(3, bar.Items.OfType<ToolStripSeparator>().Count());
+
         Assert.Equal(
             new[] { "Open", "Save", "SaveAll", "WorkingDirectory", "Refresh", "Preview", "Validate" },
             bar.Items.OfType<ToolStripButton>().Select(item => item.Name));
@@ -40,7 +45,9 @@ public sealed partial class CompositionTests
         Assert.Equal("New document (choose a Gondwana format)", create.ToolTipText);
         Assert.False(create.AutoSize);
         Assert.Equal(new Size(buttonPixels, buttonPixels), create.Size);
-        Assert.Equal(MainForm.NewFileFormats.Select(format => format.Label),
+
+        Assert.Equal(
+            MainForm.NewFileFormats.Select(format => format.Label),
             create.DropDownItems.OfType<ToolStripMenuItem>().Select(item => item.Text));
 
         ToolStripButton Get(string name) => bar.Items.OfType<ToolStripButton>().Single(item => item.Name == name);
@@ -88,6 +95,7 @@ public sealed partial class CompositionTests
 
         var saveAll = studio.StudioToolbar.Items.OfType<ToolStripButton>()
             .Single(button => button.Name == "SaveAll");
+
         // Remains enabled with clean documents so pending PropertyGrid edits can be committed.
         Assert.True(saveAll.Enabled);
         Assert.True(AwaitUi(studio.SaveAllDocuments()));
@@ -112,8 +120,10 @@ public sealed partial class CompositionTests
         Assert.True(sound.Document.Dirty());
         Assert.Empty(Directory.GetFiles(directory, "*.gani"));
         Assert.Empty(Directory.GetFiles(directory, "*.gsnd"));
-        Assert.True(studio.StudioToolbar.Items.OfType<ToolStripButton>()
-            .Single(button => button.Name == "SaveAll").Enabled);
+
+        Assert.True(
+            studio.StudioToolbar.Items.OfType<ToolStripButton>()
+                .Single(button => button.Name == "SaveAll").Enabled);
     });
 
     [Fact]
@@ -125,17 +135,21 @@ public sealed partial class CompositionTests
         var errors = studio.ValidateActiveDocument();
         Assert.NotNull(errors);
         Assert.Equal(document.Document.Validate(), errors);
+
         if (errors.Count > 0)
             Assert.True(document.Document.IsPaneVisible("Validation"));
     });
+
     [Fact]
     public void ArchiveDocumentsDoNotClaimDefinitionValidation() => RunSta(root =>
     {
         var path = NativeArchive(root);
         using var studio = Host(root);
         studio.OpenDocument(path);
+
         var validate = studio.StudioToolbar.Items.OfType<ToolStripButton>()
             .Single(button => button.Name == "Validate");
+
         Assert.False(validate.Enabled);
         Assert.Null(studio.ValidateActiveDocument());
         var child = studio.OpenDocument(NativeLocation(path, "gts"));
@@ -154,18 +168,25 @@ public sealed partial class CompositionTests
         RenameFirst(child.Document, "child-edited");
         var parent = studio.OpenDocument(path);
         var asset = (AssetEditorControl)parent.Document.Editor;
+
         using (var payload = new MemoryStream([4, 5, 6]))
             asset.AssetsFile.Add(AssetTypes.Misc, "unrelated.bin", payload);
+
         asset.MarkChanged();
 
         Assert.True(AwaitUi(studio.SaveAllDocuments()));
         Assert.False(parent.Document.Dirty());
         Assert.False(child.Document.Dirty());
         using var saved = StudioArchiveSnapshot.Open(path, null);
-        Assert.Equal(new byte[] { 4, 5, 6 },
+
+        Assert.Equal(
+            new byte[] { 4, 5, 6 },
             StudioArchiveSnapshot.Entry(saved.Archive, new(AssetTypes.Misc, path, "unrelated.bin")));
-        Assert.Contains("child-edited", Encoding.UTF8.GetString(
-            StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gani"))));
+
+        Assert.Contains(
+            "child-edited",
+            Encoding.UTF8.GetString(
+                StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gani"))));
     });
 
     [Fact]
@@ -177,8 +198,10 @@ public sealed partial class CompositionTests
         RenameFirst(child.Document, "child-edited");
         var parent = studio.OpenDocument(path);
         var asset = (AssetEditorControl)parent.Document.Editor;
+
         using (var bytes = new MemoryStream(Encoding.UTF8.GetBytes(NativeJson("gsnd", "parent-edited"))))
             asset.AssetsFile.Add(AssetTypes.AudioDefinition, "nested/same.gsnd", bytes);
+
         asset.MarkChanged();
 
         Exception? failure = null;
@@ -190,8 +213,9 @@ public sealed partial class CompositionTests
         Assert.True(child.Document.Dirty());
         Assert.False(parent.Document.Dirty());
         using var persisted = StudioArchiveSnapshot.Open(path, null);
-        Assert.Equal(NativeJson("gsnd", "parent-edited"),
+
+        Assert.Equal(
+            NativeJson("gsnd", "parent-edited"),
             Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(persisted.Archive, NativeLocation(path, "gsnd"))));
     });
-
 }

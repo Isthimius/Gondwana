@@ -36,9 +36,16 @@ public sealed class NAudioAudioBackend : IAudioBackend
         float playbackSpeed)
     {
         var (reader, tempPath) = NAudioReaderRegistry.Open(data, fileNameOrExtension);
+
         try
         {
-            return new NAudioPlaybackHandle(key, reader, tempPath, volume, pan, playbackSpeed);
+            return new NAudioPlaybackHandle(
+                key,
+                reader,
+                tempPath,
+                volume,
+                pan,
+                playbackSpeed);
         }
         catch
         {

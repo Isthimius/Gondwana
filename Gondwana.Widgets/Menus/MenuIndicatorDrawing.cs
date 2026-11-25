@@ -16,23 +16,38 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
         /// Draws a check mark.
         /// </summary>
         Check,
+
         /// <summary>
         /// Draws a radio selection mark.
         /// </summary>
         Radio,
+
         /// <summary>
         /// Draws a submenu arrow.
         /// </summary>
         Arrow
     }
+
     private readonly Shape _shape;
     private readonly MenuBarTheme _theme;
     private bool _active;
     private SKColor _color;
 
-    internal MenuIndicatorDrawing(RenderSurfaceHostBase host, View view, Rectangle bounds,
-        Shape shape, MenuBarTheme theme, string nickname)
-        : base(host, DirectDrawingMode.View, null, view, bounds, null, nickname)
+    internal MenuIndicatorDrawing(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        Shape shape,
+        MenuBarTheme theme,
+        string nickname)
+        : base(
+            host,
+            DirectDrawingMode.View,
+            null,
+            view,
+            bounds,
+            null,
+            nickname)
     {
         _shape = shape;
         _theme = theme;
@@ -48,10 +63,13 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
     /// <inheritdoc/>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        if (!_active) return;
+        if (!_active)
+            return;
+
         float size = Math.Min(_theme.IndicatorSize, Math.Min(destRectScreen.Width, destRectScreen.Height));
         float x = destRectScreen.X + (destRectScreen.Width - size) / 2;
         float y = destRectScreen.Y + (destRectScreen.Height - size) / 2;
+
         using var paint = new SKPaint
         {
             Color = _color,
@@ -61,12 +79,20 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
             StrokeJoin = SKStrokeJoin.Round,
             Style = _shape == Shape.Radio ? SKPaintStyle.Fill : SKPaintStyle.Stroke
         };
+
         if (_shape == Shape.Radio)
         {
-            backbuffer.Canvas.DrawCircle(x + size / 2, y + size / 2, size / 4, paint);
+            backbuffer.Canvas.DrawCircle(
+                x + size / 2,
+                y + size / 2,
+                size / 4,
+                paint);
+
             return;
         }
+
         using var path = new SKPath();
+
         if (_shape == Shape.Check)
         {
             path.MoveTo(x + size * .15f, y + size * .5f);
@@ -79,6 +105,7 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
             path.LineTo(x + size * .65f, y + size * .5f);
             path.LineTo(x + size * .35f, y + size * .8f);
         }
+
         backbuffer.Canvas.DrawPath(path, paint);
     }
 }

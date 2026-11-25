@@ -10,13 +10,15 @@ public static class DpiDiagnostics
     {
 #if DEBUG
         string? previous = null;
+
         void Record(string reason)
         {
             var state = $"{strip.FindForm()?.Name}/{strip.Name} ({strip.GetType().Name}) " +
-                $"DPI={strip.DeviceDpi}, awareness={Application.HighDpiMode}, bounds={strip.Bounds}, " +
-                $"ImageScalingSize={strip.ImageScalingSize}; " + string.Join("; ",
-                    strip.Items.Cast<ToolStripItem>().Select(item =>
-                        $"{item.Name}/{item.Text}: bounds={item.Bounds}, image={item.Image?.Size}, margin={item.Margin}"));
+                        $"DPI={strip.DeviceDpi}, awareness={Application.HighDpiMode}, bounds={strip.Bounds}, " +
+                        $"ImageScalingSize={strip.ImageScalingSize}; " + string.Join(
+                            "; ",
+                            strip.Items.Cast<ToolStripItem>().Select(item =>
+                                $"{item.Name}/{item.Text}: bounds={item.Bounds}, image={item.Image?.Size}, margin={item.Margin}"));
 
             if (state == previous)
                 return;

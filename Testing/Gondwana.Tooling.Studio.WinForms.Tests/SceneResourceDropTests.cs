@@ -19,15 +19,35 @@ public sealed partial class CompositionTests
         const string entry = "animations/nested/torch.gani";
         const string password = "scene-drop";
         var path = Path.Combine(root, "assets.gaf");
+
         using (var bitmap = new Bitmap(32, 32))
             bitmap.Save(Path.Combine(root, "atlas.png"), System.Drawing.Imaging.ImageFormat.Png);
-        TilesheetDefinitionSerializer.Save(Path.Combine(root, "atlas.gts"), new()
-        {
-            Name = "torch",
-            Image = new() { FilePath = "atlas.png" },
-            Regions = [new() { Name = "flame", Area = new(0, 0, 32, 32), TileSize = new(16, 16) }]
-        });
-        using (var archive = AssetsFile.LoadOrCreate(path, password, encrypt: true, register: false))
+
+        TilesheetDefinitionSerializer.Save(
+            Path.Combine(root, "atlas.gts"),
+            new()
+            {
+                Name = "torch",
+                Image = new() { FilePath = "atlas.png" },
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "flame", Area = new(
+                            0,
+                            0,
+                            32,
+                            32),
+                        TileSize = new(16, 16)
+                    }
+                ]
+            });
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   password,
+                   encrypt: true,
+                   register: false))
         {
             var definition = new AnimationDefinition
             {
@@ -36,15 +56,21 @@ public sealed partial class CompositionTests
                 TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("torch", "atlas.gts")],
                 Frames = [new() { Tilesheet = "torch", RegionName = "flame", XTile = 1, YTile = 1 }]
             };
-            using var gani = new MemoryStream(Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToDocumentJson(new()
-            {
-                Definitions = [new() { Key = "other" }, definition]
-            })));
+
+            using var gani = new MemoryStream(
+                Encoding.UTF8.GetBytes(
+                    AnimationDefinitionSerializer.ToDocumentJson(
+                        new()
+                        {
+                            Definitions = [new() { Key = "other" }, definition]
+                        })));
+
             archive.Add(AssetTypes.AnimationDefinition, entry, gani);
             archive.Save();
         }
 
         string scenePath = Path.Combine(root, "dungeon.gscn");
+
         using (var model = SceneDocument.Create(root))
         {
             model.AddLayer();
@@ -59,7 +85,11 @@ public sealed partial class CompositionTests
         const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         var createDrag = typeof(AnimationEditorControl).GetMethod("CreateAnimationDrag", Private)!;
         var drag = Assert.IsType<AnimationDrag>(createDrag.Invoke(animation, null));
-        Assert.Equal(new ResourceAddress(new AssetLocation(AssetTypes.AnimationDefinition, path, entry), "torch.burn"), drag.Address);
+
+        Assert.Equal(
+            new ResourceAddress(new AssetLocation(AssetTypes.AnimationDefinition, path, entry), "torch.burn"),
+            drag.Address);
+
         animation.Document.RenameDefinition("unsaved");
         Assert.Null(createDrag.Invoke(animation, null));
         animation.Document.History.Undo();
@@ -74,8 +104,15 @@ public sealed partial class CompositionTests
         var offset = (PointF)preview.GetType().GetField("_offset", Private)!.GetValue(preview)!;
         var zoom = (float)preview.GetType().GetProperty("Zoom")!.GetValue(preview)!;
         var point = preview.PointToScreen(Point.Round(new(offset.X + 48 * zoom, offset.Y + 48 * zoom)));
-        var args = new DragEventArgs(new ResourceDragData<AnimationDrag>(drag), 0,
-            point.X, point.Y, DragDropEffects.Copy, DragDropEffects.None);
+
+        var args = new DragEventArgs(
+            new ResourceDragData<AnimationDrag>(drag),
+            0,
+            point.X,
+            point.Y,
+            DragDropEffects.Copy,
+            DragDropEffects.None);
+
         typeof(Control).GetMethod("OnDragEnter", Private)!.Invoke(preview, [args]);
         Assert.Equal(DragDropEffects.Copy, args.Effect);
         Assert.False(target.Document.Dirty());
@@ -84,8 +121,15 @@ public sealed partial class CompositionTests
 
         var layer = Assert.Single(editor.Definition.Layers);
         var tile = Assert.Single(layer.Tiles);
-        Assert.Equal((1, 1, "torch.burn", true, true), (tile.X, tile.Y, tile.AnimationKey, tile.EnableAnimator, tile.StartAnimation));
-        Assert.Equal(("torch", "flame", 1, 1), (tile.Frame!.Tilesheet, tile.Frame.RegionName, tile.Frame.XTile, tile.Frame.YTile));
+
+        Assert.Equal(
+            (1, 1, "torch.burn", true, true),
+            (tile.X, tile.Y, tile.AnimationKey, tile.EnableAnimator, tile.StartAnimation));
+
+        Assert.Equal(
+            ("torch", "flame", 1, 1),
+            (tile.Frame!.Tilesheet, tile.Frame.RegionName, tile.Frame.XTile, tile.Frame.YTile));
+
         var dependency = Assert.Single(editor.Definition.AnimationSources);
         Assert.Equal(entry, dependency.AssetEntryName);
         Assert.Equal(path, editor.Document.ResolveReferencePath(dependency.AssetsFilePath!));

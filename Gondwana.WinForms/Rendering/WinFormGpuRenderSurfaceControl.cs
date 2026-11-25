@@ -54,6 +54,7 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
 
         // Fire once after this control is realized
         HandleCreated += (_, __) => _adapter?.RefreshDestinationSize();
+
         if (IsHandleCreated)
             BeginInvoke((Action)(() => _adapter?.RefreshDestinationSize()));
     }
@@ -65,6 +66,7 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
     protected override void OnParentChanged(EventArgs e)
     {
         base.OnParentChanged(e);
+
         if (IsHandleCreated)
             BeginInvoke((Action)(() => _adapter?.RefreshDestinationSize()));
     }
@@ -72,6 +74,7 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
     private void UpdateGlControlBounds()
     {
         var rect = DisplayRectangle;
+
         _glControl.SetBounds(
             rect.X,
             rect.Y,

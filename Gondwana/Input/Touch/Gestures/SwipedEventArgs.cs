@@ -37,7 +37,11 @@ public sealed class SwipedEventArgs : EventArgs
     /// <param name="startPosition">The position where the swipe began.</param>
     /// <param name="endPosition">The position where the swipe ended.</param>
     /// <param name="speedPixelsPerSecond">The speed of the swipe in pixels per second.</param>
-    public SwipedEventArgs(SwipeDirection direction, Point startPosition, Point endPosition, double speedPixelsPerSecond)
+    public SwipedEventArgs(
+        SwipeDirection direction,
+        Point startPosition,
+        Point endPosition,
+        double speedPixelsPerSecond)
     {
         Direction = direction;
         StartPosition = startPosition;

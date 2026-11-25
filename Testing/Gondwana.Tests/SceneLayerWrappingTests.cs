@@ -15,7 +15,8 @@ public sealed class SceneLayerWrappingTests
     /// <summary>
     /// Gets the projections.
     /// </summary>
-    public static IEnumerable<object[]> Projections => Enum.GetValues<CoordinateSystemTypes>().Select(p => new object[] { p });
+    public static IEnumerable<object[]> Projections =>
+        Enum.GetValues<CoordinateSystemTypes>().Select(p => new object[] { p });
 
     /// <summary>
     /// Verifies lookup only enabled axes wrap and indexer never wraps.
@@ -51,9 +52,17 @@ public sealed class SceneLayerWrappingTests
     public void RepeatVectors_MatchVirtualAnchors_AndRenderingKeepsCanonicalIdentity(CoordinateSystemTypes projection)
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(4, 6, 32, 32, coordinateSystem: projection);
+
+        var layer = scene.AddLayer(
+            4,
+            6,
+            32,
+            32,
+            coordinateSystem: projection);
+
         layer.WrapHorizontally = layer.WrapVertically = true;
         var period = layer.GetPeriod();
+
         for (int x = -9; x < 10; x++)
             for (int y = -13; y < 14; y++)
             {
@@ -64,6 +73,7 @@ public sealed class SceneLayerWrappingTests
                 Assert.Equal(new PointF(original.X + offset.X, original.Y + offset.Y), anchor);
                 Assert.Same(layer[(int)canonical.X, (int)canonical.Y], layer.ResolveWrappedTile(x, y));
             }
+
         var target = period.Offset(-3, 4);
         var rect = layer[0, 0]!.DrawLocationWorld;
         rect.Offset(Point.Round(target));
@@ -79,7 +89,9 @@ public sealed class SceneLayerWrappingTests
     [Theory]
     [InlineData(CoordinateSystemTypes.HexAxialFlatTop, true)]
     [InlineData(CoordinateSystemTypes.HexAxialPointedTop, false)]
-    public void StaggerValidation_IsDeferredUntilUse_AndDisabledAxisIsAllowed(CoordinateSystemTypes projection, bool horizontal)
+    public void StaggerValidation_IsDeferredUntilUse_AndDisabledAxisIsAllowed(
+        CoordinateSystemTypes projection,
+        bool horizontal)
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(3, 3, coordinateSystem: projection);
@@ -132,13 +144,37 @@ public sealed class SceneLayerWrappingTests
     public void LargeView_RepeatsMoreThanNineCopies_AndSortsTranslatedBounds()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         layer.WrapHorizontally = layer.WrapVertically = true;
-        var draws = layer.GetDrawablesInWorldRect(new(-32, -32, 80, 80)).Cast<WrappedDrawable>().ToArray();
+
+        var draws = layer.GetDrawablesInWorldRect(
+            new(
+                -32,
+                -32,
+                80,
+                80)).Cast<WrappedDrawable>().ToArray();
+
         Assert.Equal(25, draws.Length);
         Assert.All(draws, d => Assert.Same(layer[0, 0], d.Owner));
         Assert.Equal(draws.OrderBy(d => d.Offset.Y).ThenBy(d => d.Offset.X).ToArray(), draws);
-        Assert.Throws<InvalidOperationException>(() => layer.GetWrappedOffsets(new(0, 0, 16, 16), new(0, 0, 1e9f, 1e9f)).ToArray());
+
+        Assert.Throws<InvalidOperationException>(() => layer.GetWrappedOffsets(
+            new(
+                0,
+                0,
+                16,
+                16),
+            new(
+                0,
+                0,
+                1e9f,
+                1e9f)).ToArray());
     }
 
     /// <summary>
@@ -161,14 +197,31 @@ public sealed class SceneLayerWrappingTests
         tile.CollisionsEnabled = true;
         tile.Collider!.CollisionGroup = tile.Collider.CollidesWith = 1;
         var results = new List<ColliderInstance>();
-        var area = new Aabb(x, y, x + 10, y + 10);
-        layer.ColliderRegistry.QueryInstances(area, 1, 1, results);
+
+        var area = new Aabb(
+            x,
+            y,
+            x + 10,
+            y + 10);
+
+        layer.ColliderRegistry.QueryInstances(
+            area,
+            1,
+            1,
+            results);
+
         var hit = Assert.Single(results);
         Assert.Same(tile.Collider, hit.Collider);
         Assert.True(area.Intersects(hit.BoundsWorldPx));
         Assert.Same(tile, hit.Collider.Owner);
-        layer.ColliderRegistry.QueryInstances(area, 1, 1, results, tile.Collider);
+
+        layer.ColliderRegistry.QueryInstances(
+            area,
+            1,
+            1,
+            results,
+            tile.Collider);
+
         Assert.Empty(results);
     }
-
 }

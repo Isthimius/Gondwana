@@ -109,13 +109,22 @@ public sealed class ToastWidget : WidgetBase
         TargetBounds = targetBounds;
 
         Background = new DirectRectangle(
-                Color.FromArgb(232, 35, 38, 45),
+                Color.FromArgb(
+                    232,
+                    35,
+                    38,
+                    45),
                 renderSurfaceHost,
                 view,
                 targetBounds,
                 $"{Nickname}.background")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(245, 215, 219, 225))
+            .SetBorderColor(
+                Color.FromArgb(
+                    245,
+                    215,
+                    219,
+                    225))
             .SetStrokeWidth(1f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
             .SetCornerRadius(6f);
@@ -169,7 +178,11 @@ public sealed class ToastWidget : WidgetBase
         : this(
             renderSurfaceHost,
             view,
-            GetAnchoredBounds(view, size, targetAnchor, marginPx),
+            GetAnchoredBounds(
+                view,
+                size,
+                targetAnchor,
+                marginPx),
             text,
             nickname)
     {
@@ -289,6 +302,7 @@ public sealed class ToastWidget : WidgetBase
         }
 
         CurrentState = ToastState.Exiting;
+
         BeginPhase(
             GetPosition(),
             Transition == ToastTransition.Slide
@@ -363,6 +377,7 @@ public sealed class ToastWidget : WidgetBase
                 {
                     Dismiss();
                 }
+
                 break;
 
             case ToastState.Exiting:
@@ -391,6 +406,7 @@ public sealed class ToastWidget : WidgetBase
         _lastAnimationTick = HighResTimer.GetCurrentTick();
 
         Vector2 target = new(TargetBounds.X, TargetBounds.Y);
+
         Vector2 source = Transition == ToastTransition.Slide
             ? GetSourcePosition()
             : target;
@@ -454,10 +470,11 @@ public sealed class ToastWidget : WidgetBase
 
         float eased = Math.Clamp(easing(progress), 0f, 1f);
 
-        SetPosition(Vector2.Lerp(
-            _phaseStartPosition,
-            _phaseEndPosition,
-            eased));
+        SetPosition(
+            Vector2.Lerp(
+                _phaseStartPosition,
+                _phaseEndPosition,
+                eased));
 
         SetOpacity(
             _phaseStartOpacity
@@ -549,25 +566,35 @@ public sealed class ToastWidget : WidgetBase
         int x = anchor switch
         {
             WidgetAnchor.TopLeft or WidgetAnchor.CenterLeft or WidgetAnchor.BottomLeft => viewport.Left + marginPx,
-            WidgetAnchor.TopCenter or WidgetAnchor.Center or WidgetAnchor.BottomCenter => viewport.Left + (viewport.Width - size.Width) / 2,
-            WidgetAnchor.TopRight or WidgetAnchor.CenterRight or WidgetAnchor.BottomRight => viewport.Right - size.Width - marginPx,
+            WidgetAnchor.TopCenter or WidgetAnchor.Center or WidgetAnchor.BottomCenter => viewport.Left +
+                (viewport.Width - size.Width) / 2,
+            WidgetAnchor.TopRight or WidgetAnchor.CenterRight or WidgetAnchor.BottomRight => viewport.Right -
+                size.Width - marginPx,
             _ => throw new ArgumentOutOfRangeException(nameof(anchor), anchor, null)
         };
 
         int y = anchor switch
         {
             WidgetAnchor.TopLeft or WidgetAnchor.TopCenter or WidgetAnchor.TopRight => viewport.Top + marginPx,
-            WidgetAnchor.CenterLeft or WidgetAnchor.Center or WidgetAnchor.CenterRight => viewport.Top + (viewport.Height - size.Height) / 2,
-            WidgetAnchor.BottomLeft or WidgetAnchor.BottomCenter or WidgetAnchor.BottomRight => viewport.Bottom - size.Height - marginPx,
+            WidgetAnchor.CenterLeft or WidgetAnchor.Center or WidgetAnchor.CenterRight => viewport.Top +
+                (viewport.Height - size.Height) / 2,
+            WidgetAnchor.BottomLeft or WidgetAnchor.BottomCenter or WidgetAnchor.BottomRight => viewport.Bottom -
+                size.Height - marginPx,
             _ => throw new ArgumentOutOfRangeException(nameof(anchor), anchor, null)
         };
 
-        return new Rectangle(x, y, size.Width, size.Height);
+        return new Rectangle(
+            x,
+            y,
+            size.Width,
+            size.Height);
     }
 
     private static void ValidateBounds(Rectangle bounds)
     {
         if (bounds.Width <= 0 || bounds.Height <= 0)
-            throw new ArgumentOutOfRangeException(nameof(bounds), "Toast bounds must have a positive width and height.");
+            throw new ArgumentOutOfRangeException(
+                nameof(bounds),
+                "Toast bounds must have a positive width and height.");
     }
 }

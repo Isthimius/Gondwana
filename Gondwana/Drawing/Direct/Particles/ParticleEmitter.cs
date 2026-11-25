@@ -112,7 +112,11 @@ public sealed class ParticleEmitter
     /// <summary>
     /// Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired.
     /// </summary>
-    public SKColor Color { get; set; } = new SKColor(200, 200, 255, 255);
+    public SKColor Color { get; set; } = new SKColor(
+        200,
+        200,
+        255,
+        255);
 
     /// <summary>
     /// Blend mode used when rendering particles from this emitter.

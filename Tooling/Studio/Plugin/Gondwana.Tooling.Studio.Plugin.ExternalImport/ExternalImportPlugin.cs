@@ -18,13 +18,18 @@ public sealed class ExternalImportPlugin : IStudioPlugin, IStudioPluginHostServi
     public void AttachHostServices(IStudioPluginHostServices hostServices)
     {
         services = hostServices;
+
         if (panel is not null)
             panel.HostServices = services;
     }
 
     /// <summary>Creates the import panel once, choosing its initial output directory from the project, host, or process.</summary>
     /// <returns>The cached panel, which Studio owns and disposes after hosting it.</returns>
-    public Control CreatePanel() => panel ??= new ExternalImportPanel { HostServices = services, OutputDirectory = directory ?? services?.CurrentWorkingDirectory ?? Environment.CurrentDirectory };
+    public Control CreatePanel() => panel ??= new ExternalImportPanel
+    {
+        HostServices = services,
+        OutputDirectory = directory ?? services?.CurrentWorkingDirectory ?? Environment.CurrentDirectory
+    };
 
     /// <summary>Creates a Plugins menu entry containing an Analyze source command.</summary>
     /// <returns>A new menu item owned by its caller; the command starts analysis in the cached import panel.</returns>
@@ -39,14 +44,22 @@ public sealed class ExternalImportPlugin : IStudioPlugin, IStudioPluginHostServi
     /// <param name="projectPath">The authoring directory to retain and show as the output directory.</param>
     public void OnProjectOpened(string projectPath)
     {
-        OnProjectClosed(); directory = projectPath;
-        if (panel is not null && !panel.IsDisposed) panel.OutputDirectory = projectPath;
+        OnProjectClosed();
+        directory = projectPath;
+
+        if (panel is not null && !panel.IsDisposed)
+            panel.OutputDirectory = projectPath;
     }
 
     /// <summary>Forgets the working directory, cancels tracked import work, and clears the live panel's output directory.</summary>
     public void OnProjectClosed()
     {
         directory = null;
-        if (panel is not null && !panel.IsDisposed) { panel.Cancel(); panel.OutputDirectory = string.Empty; }
+
+        if (panel is not null && !panel.IsDisposed)
+        {
+            panel.Cancel();
+            panel.OutputDirectory = string.Empty;
+        }
     }
 }

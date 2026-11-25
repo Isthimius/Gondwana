@@ -93,6 +93,71 @@ When modifying engine code:
 - Check world-space, layer-space, and screen-space assumptions when touching coordinates, cameras, views, collisions, or input.
 - Do not manually edit generated documentation output merely to make it agree with code.
 
+## C# Formatting and Code Generation
+
+Apply the following conventions to new and modified C# code, including engine code, tooling, demos, tests, templates, and generated game examples, whether they are written inside or outside this repository. Follow the root `.editorconfig` where supported; these instructions also cover formatting that an IDE cannot fully enforce.
+
+- Write one statement per physical line. Never combine declarations, assignments, method calls, or other statements on one line. Semicolons within a `for` header are not separate statements for this purpose.
+- Put the body of every control-flow statement (`if`, `else`, `for`, `foreach`, `while`, `do`, and similar constructs) on subsequent indented lines. Never put the body on the same line as its header.
+- Use the existing Allman brace style for executable blocks when braces are present. Both opening and closing braces of a nonempty executable block must start on their own lines at the appropriate indentation, including blocks nested inside lambdas and anonymous methods. Never append a closing brace to the last executable statement (for example, `removed = true; }`). A closing brace may be followed by required enclosing-expression punctuation such as `},`, `});`, or `};`. Never keep a nonempty executable block on one line, including a single-statement `try`, `catch`, or `finally` body. Unbraced single-statement bodies remain permitted where appropriate; this is a layout rule, not a requirement to add braces.
+- Prefer one empty line both before and after a complete control-flow statement, whether braced or unbraced, when adjacent to another statement at the same scope. Consecutive control-flow statements share a single separating blank line. Do not separate an `if` from its associated `else if` or `else`, a `try` from its `catch` or `finally`, or a `do` body from its terminating `while`. Do not add an otherwise unnecessary empty line immediately after an opening scope brace or before a closing scope brace.
+- Auto-properties and other property declarations with only bodyless `get`, `set`, or `init` accessors should remain on a single line, including accessor accessibility modifiers and initializers. These accessors are not executable statements. Properties with executable accessor blocks must follow the standard multiline conventions. Single-line expression-bodied properties are also permitted.
+- Do not collapse existing multiline executable statements or blocks to save vertical space. Keep formatting changes focused on the code being added or modified rather than reformatting unrelated files.
+
+For example, prefer:
+
+```csharp
+var x = 1;
+var y = 2;
+
+if (x == 3)
+    ExecuteMethod();
+
+foreach (var item in items)
+{
+    Process(item);
+}
+
+ExecuteAlternative();
+```
+
+Compact bodyless property declarations are also preferred:
+
+```csharp
+public Scene Scene { get; private set; }
+internal float X { get; set; } = 0;
+public string Name { get; init; }
+public bool IsActive { get; }
+```
+
+The blank lines around control-flow statements are intentional. The same conventions apply within exception handlers:
+
+```csharp
+try
+{
+    if (settings.TypeFilter is not null)
+        throw new ArgumentException("Type filters are not supported.");
+
+    var errors = ValidateContents(settings);
+
+    foreach (var error in errors)
+        Report(error);
+
+    if (errors.Count == 0)
+        ReportSuccess();
+
+    return errors.Count == 0 ? 0 : 1;
+}
+catch (Exception ex)
+{
+    return ProjectCommand.Fail(ex);
+}
+```
+
+Do not insert a blank line between the closing brace of `try` and its `catch`. Check generated code for these conventions before returning it, including when the formatter does not enforce them.
+
+For optional local formatting cleanup, use [`Tooling/scripts/Format-Code.ps1`](Tooling/scripts/README.md#format-codeps1) with `-Files` for the specific files being changed. Use `-All` only for an explicitly requested repository-wide cleanup. This tool is not a substitute for generating properly formatted code in the first place and is not required by CI or developer setup.
+
 ## Demos and Game Boilerplate
 
 When creating or changing sample game code:

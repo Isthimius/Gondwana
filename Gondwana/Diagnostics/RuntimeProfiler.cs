@@ -31,7 +31,14 @@ public sealed class RuntimeProfiler : IDisposable
     public bool IsCollecting => Volatile.Read(ref _requests) != 0;
 
     /// <summary>Current immutable settings.</summary>
-    public TelemetryOptions Options { get { lock (_sync) return _options; } }
+    public TelemetryOptions Options
+    {
+        get
+        {
+            lock (_sync)
+                return _options;
+        }
+    }
 
     /// <summary>Changes shared settings while inactive, clearing previous measurements.</summary>
     /// <param name="options">Validated bounded settings.</param>
@@ -39,12 +46,18 @@ public sealed class RuntimeProfiler : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
         options.Validate();
+
         lock (_sync)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
-            if (_requests != 0) throw new InvalidOperationException("Configure telemetry while inactive.");
-            if (_sources.Count > options.SourceCapacity || _sources.Values.Any(s => s.Metrics.Count > options.MetricCapacity))
+
+            if (_requests != 0)
+                throw new InvalidOperationException("Configure telemetry while inactive.");
+
+            if (_sources.Count > options.SourceCapacity ||
+                _sources.Values.Any(s => s.Metrics.Count > options.MetricCapacity))
                 throw new InvalidOperationException("Configured limits are smaller than registered detail.");
+
             _options = options;
             _history = new Queue<TelemetrySnapshot>(options.HistoryCapacity);
             ResetCore();
@@ -58,14 +71,18 @@ public sealed class RuntimeProfiler : IDisposable
         lock (_sync)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
+
             if (_requests == 0)
             {
                 _generation++;
                 _started = _clock();
                 ClearAccumulators();
+
                 foreach (var source in _sources.Values)
-                    foreach (var accumulator in source.Metrics.Values) accumulator.Rebase();
+                    foreach (var accumulator in source.Metrics.Values)
+                        accumulator.Rebase();
             }
+
             _requests++;
             return new Request(this);
         }
@@ -79,11 +96,23 @@ public sealed class RuntimeProfiler : IDisposable
     {
         ValidateName(name);
         ValidateName(backend);
+
         lock (_sync)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
-            if (_sources.Count >= _options.SourceCapacity) { _truncated = true; return null; }
-            var source = new TelemetrySource(this, ++_nextId, name, backend);
+
+            if (_sources.Count >= _options.SourceCapacity)
+            {
+                _truncated = true;
+                return null;
+            }
+
+            var source = new TelemetrySource(
+                this,
+                ++_nextId,
+                name,
+                backend);
+
             _sources.Add(source.Id, source);
             return source;
         }
@@ -122,14 +151,23 @@ public sealed class RuntimeProfiler : IDisposable
     }
 
     /// <summary>Clears telemetry history and rebases observations without changing renderer counters or leases.</summary>
-    public void Reset() { lock (_sync) { ObjectDisposedException.ThrowIf(_disposed, this); ResetCore(); } }
+    public void Reset()
+    {
+        lock (_sync)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            ResetCore();
+        }
+    }
 
     /// <summary>Stops collection, invalidates in-flight samples, and retires all source handles.</summary>
     public void Dispose()
     {
         lock (_sync)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
+
             _disposed = true;
             _requests = 0;
             _generation++;
@@ -149,19 +187,34 @@ public sealed class RuntimeProfiler : IDisposable
     /// <param name="availability">Support state before sampling.</param>
     /// <param name="kind">Observation interpretation.</param>
     /// <returns>Whether the definition was retained.</returns>
-    internal bool Define(TelemetrySource source, string name, TelemetryAvailability availability, TelemetryMetricKind kind)
+    internal bool Define(
+        TelemetrySource source,
+        string name,
+        TelemetryAvailability availability,
+        TelemetryMetricKind kind)
     {
         ValidateName(name);
+
         lock (_sync)
         {
-            if (!_sources.ContainsKey(source.Id)) return false;
+            if (!_sources.ContainsKey(source.Id))
+                return false;
+
             if (source.Metrics.TryGetValue(name, out var existing))
             {
-                if (existing.Availability == TelemetryAvailability.Unsupported && availability == TelemetryAvailability.NotYetSampled)
+                if (existing.Availability == TelemetryAvailability.Unsupported &&
+                    availability == TelemetryAvailability.NotYetSampled)
                     existing.Availability = availability;
+
                 return true;
             }
-            if (source.Metrics.Count >= _options.MetricCapacity) { _truncated = true; return false; }
+
+            if (source.Metrics.Count >= _options.MetricCapacity)
+            {
+                _truncated = true;
+                return false;
+            }
+
             source.Metrics.Add(name, new Accumulator { Availability = availability, Kind = kind });
             return true;
         }
@@ -172,33 +225,55 @@ public sealed class RuntimeProfiler : IDisposable
     /// <param name="generation">Epoch captured before work.</param>
     /// <param name="metric">Previously registered key.</param>
     /// <param name="value">Finite observation in declared units.</param>
-    internal void Record(TelemetrySource source, long generation, string metric, double value)
+    internal void Record(
+        TelemetrySource source,
+        long generation,
+        string metric,
+        double value)
     {
-        if (generation == 0 || !IsCollecting || !double.IsFinite(value)) return;
+        if (generation == 0 || !IsCollecting || !double.IsFinite(value))
+            return;
+
         lock (_sync)
         {
-            if (_requests == 0 || generation != _generation || !_sources.ContainsKey(source.Id)) return;
+            if (_requests == 0 || generation != _generation || !_sources.ContainsKey(source.Id))
+                return;
+
             Advance();
-            if (!source.Metrics.TryGetValue(metric, out var accumulator)) return;
-            if (accumulator.Availability is TelemetryAvailability.Unsupported or TelemetryAvailability.NotApplicable) return;
+
+            if (!source.Metrics.TryGetValue(metric, out var accumulator))
+                return;
+
+            if (accumulator.Availability is TelemetryAvailability.Unsupported or TelemetryAvailability.NotApplicable)
+                return;
+
             accumulator.Add(value, _clock());
         }
     }
 
     /// <summary>Retires a source; previously detached history stays readable.</summary>
     /// <param name="source">Source whose subsequent observations must be ignored.</param>
-    internal void Retire(TelemetrySource source) { lock (_sync) _sources.Remove(source.Id); }
+    internal void Retire(TelemetrySource source)
+    {
+        lock (_sync)
+            _sources.Remove(source.Id);
+    }
 
     /// <summary>Marks omitted detail for the current collection generation.</summary>
     /// <param name="generation">Epoch of the omitted observations.</param>
     internal void MarkTruncated(long generation)
     {
-        lock (_sync) { if (generation == _generation && _requests != 0) _truncated = true; }
+        lock (_sync)
+        {
+            if (generation == _generation && _requests != 0)
+                _truncated = true;
+        }
     }
 
     private static void ValidateName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > 96) throw new ArgumentException("Names must contain 1–96 characters.", nameof(name));
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 96)
+            throw new ArgumentException("Names must contain 1–96 characters.", nameof(name));
     }
 
     private void ResetCore()
@@ -208,29 +283,49 @@ public sealed class RuntimeProfiler : IDisposable
         _latestSnapshot = null;
         _started = _clock();
         ClearAccumulators();
+
         foreach (var source in _sources.Values)
-            foreach (var accumulator in source.Metrics.Values) accumulator.Rebase();
+            foreach (var accumulator in source.Metrics.Values)
+                accumulator.Rebase();
     }
 
     private void ClearAccumulators()
     {
         foreach (var source in _sources.Values)
-            foreach (var accumulator in source.Metrics.Values) accumulator.Clear();
+            foreach (var accumulator in source.Metrics.Values)
+                accumulator.Clear();
     }
 
     private void Advance()
     {
-        if (_requests == 0) return;
+        if (_requests == 0)
+            return;
+
         double now = _clock();
-        if (now - _started >= _options.Interval.TotalSeconds) Publish(now);
+
+        if (now - _started >= _options.Interval.TotalSeconds)
+            Publish(now);
     }
 
     private void Publish(double now)
     {
-        var sources = _sources.Values.Select(source => new TelemetrySourceSnapshot(source.Id, source.Name, source.Backend,
-            new ReadOnlyDictionary<string, TelemetrySummary>(source.Metrics.ToDictionary(p => p.Key, p => p.Value.Snapshot())))).ToArray();
-        if (_history.Count == _options.HistoryCapacity) _history.Dequeue();
-        _latestSnapshot = new(_generation, _started, now, Array.AsReadOnly(sources), _truncated);
+        var sources = _sources.Values.Select(source => new TelemetrySourceSnapshot(
+            source.Id,
+            source.Name,
+            source.Backend,
+            new ReadOnlyDictionary<string, TelemetrySummary>(
+                source.Metrics.ToDictionary(p => p.Key, p => p.Value.Snapshot())))).ToArray();
+
+        if (_history.Count == _options.HistoryCapacity)
+            _history.Dequeue();
+
+        _latestSnapshot = new(
+            _generation,
+            _started,
+            now,
+            Array.AsReadOnly(sources),
+            _truncated);
+
         _history.Enqueue(_latestSnapshot);
         ClearAccumulators();
         _started = now;
@@ -240,13 +335,19 @@ public sealed class RuntimeProfiler : IDisposable
     {
         lock (_sync)
         {
-            if (_requests == 0) return;
+            if (_requests == 0)
+                return;
+
             if (_requests == 1)
             {
                 double now = _clock();
-                if (now > _started) Publish(now);
+
+                if (now > _started)
+                    Publish(now);
+
                 _generation++;
             }
+
             _requests--;
         }
     }
@@ -254,6 +355,7 @@ public sealed class RuntimeProfiler : IDisposable
     private sealed class Request(RuntimeProfiler owner) : IDisposable
     {
         private RuntimeProfiler? _owner = owner;
+
         /// <summary>
         /// Releases the resources owned by this instance.
         /// </summary>
@@ -265,11 +367,14 @@ public sealed class RuntimeProfiler : IDisposable
     {
         /// <summary>Support state used when a window has no observations.</summary>
         internal TelemetryAvailability Availability;
+
         /// <summary>Interpretation for cumulative values and gauges.</summary>
         internal TelemetryMetricKind Kind;
+
         private long _count;
         private double _sum, _min, _max, _last, _observed;
         private double? _baseline;
+
         /// <summary>Adds a finite observation under the collector lock.</summary>
         /// <param name="value">Observation in the defined units.</param>
         /// <param name="observed">Monotonic observation time in seconds.</param>
@@ -282,18 +387,35 @@ public sealed class RuntimeProfiler : IDisposable
             _last = value;
             _observed = observed;
         }
+
         /// <summary>Starts a new window, preserving the cumulative-counter baseline.</summary>
-        internal void Clear() { if (_count > 0) _baseline = _last; _count = 0; _sum = 0; }
+        internal void Clear()
+        {
+            if (_count > 0)
+                _baseline = _last;
+
+            _count = 0;
+            _sum = 0;
+        }
+
         /// <summary>Discards the counter baseline after reset or a collection gap.</summary>
         internal void Rebase() => _baseline = null;
+
         /// <summary>Copies sufficient statistics into an immutable value.</summary>
         /// <returns>Detached observations, support state, and timestamp.</returns>
-        internal TelemetrySummary Snapshot() => new(_count == 0 ? Availability : TelemetryAvailability.Available,
-            _count, _sum, _count == 0 ? null : _min, _count == 0 ? null : _max, _count == 0 ? null : _last)
+        internal TelemetrySummary Snapshot() => new(
+            _count == 0 ? Availability : TelemetryAvailability.Available,
+            _count,
+            _sum,
+            _count == 0 ? null : _min,
+            _count == 0 ? null : _max,
+            _count == 0 ? null : _last)
         {
             Kind = Kind,
             LastObservedSeconds = _count == 0 ? null : _observed,
-            WindowDelta = Kind == TelemetryMetricKind.LifetimeCounter && _count > 0 && _baseline is { } baseline ? _last - baseline : null
+            WindowDelta = Kind == TelemetryMetricKind.LifetimeCounter && _count > 0 && _baseline is { } baseline
+                ? _last - baseline
+                : null
         };
     }
 }
@@ -302,40 +424,64 @@ public sealed class RuntimeProfiler : IDisposable
 public sealed class TelemetrySource : IDisposable
 {
     private readonly RuntimeProfiler _owner;
+
     /// <summary>Bounded accumulators; access is protected by the owner collector lock.</summary>
     internal Dictionary<string, RuntimeProfiler.Accumulator> Metrics { get; } = [];
+
     /// <summary>Creates a neutral handle without retaining the measured runtime object.</summary>
     /// <param name="owner">Collector that owns observations.</param>
     /// <param name="id">Never-reused session identity.</param>
     /// <param name="name">Bounded source label.</param>
     /// <param name="backend">Bounded backend label.</param>
-    internal TelemetrySource(RuntimeProfiler owner, long id, string name, string backend)
+    internal TelemetrySource(
+        RuntimeProfiler owner,
+        long id,
+        string name,
+        string backend)
         => (_owner, Id, Name, Backend) = (owner, id, name, backend);
+
     /// <summary>Session-local identity, unchanged by collector reset or temporary context loss.</summary>
     public long Id { get; }
+
     /// <summary>Source label.</summary>
     public string Name { get; }
+
     /// <summary>Backend label.</summary>
     public string Backend { get; }
+
     /// <summary>Defines a measurement before use. Include units and scope in its name.</summary>
     /// <param name="name">Bounded unique metric name, such as update.cpu.ms.</param>
     /// <param name="availability">Unsupported, NotApplicable, or NotYetSampled; Available is normalized to NotYetSampled.</param>
     /// <param name="kind">Interpretation of observations across windows.</param>
     /// <returns>False if the source is retired or configured detail capacity is exhausted.</returns>
-    public bool Define(string name, TelemetryAvailability availability = TelemetryAvailability.NotYetSampled,
+    public bool Define(
+        string name,
+        TelemetryAvailability availability = TelemetryAvailability.NotYetSampled,
         TelemetryMetricKind kind = TelemetryMetricKind.Sample)
-        => _owner.Define(this, name, availability == TelemetryAvailability.Available ? TelemetryAvailability.NotYetSampled : availability, kind);
+        => _owner.Define(
+            this,
+            name,
+            availability == TelemetryAvailability.Available ? TelemetryAvailability.NotYetSampled : availability,
+            kind);
+
     /// <summary>Reports omitted source detail without allocating a diagnostic object.</summary>
     /// <param name="generation">Epoch of the omitted observations.</param>
     internal void MarkTruncated(long generation) => _owner.MarkTruncated(generation);
+
     /// <summary>Captures an epoch before measured work; zero means disabled.</summary>
     /// <returns>A token to pass to Record; reset, stop, and source retirement invalidate old tokens.</returns>
     public long BeginSample() => _owner.Begin();
+
     /// <summary>Records a finite observation without retaining raw samples.</summary>
     /// <param name="generation">Token captured before the measured operation.</param>
     /// <param name="metric">Previously defined measurement name.</param>
     /// <param name="value">Value in the metric's declared units.</param>
-    public void Record(long generation, string metric, double value) => _owner.Record(this, generation, metric, value);
+    public void Record(long generation, string metric, double value) => _owner.Record(
+        this,
+        generation,
+        metric,
+        value);
+
     /// <summary>Permanently retires the source; late observations are ignored.</summary>
     public void Dispose() => _owner.Retire(this);
 }

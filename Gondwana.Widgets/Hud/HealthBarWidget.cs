@@ -61,19 +61,32 @@ public sealed class HealthBarWidget : WidgetBase
         IsPointerInputEnabled = false;
 
         _track = new DirectRectangle(
-                Color.FromArgb(220, 20, 24, 31),
+                Color.FromArgb(
+                    220,
+                    20,
+                    24,
+                    31),
                 renderSurfaceHost,
                 Target.SceneLayer,
                 new Rectangle(Point.Empty, _size),
                 $"{nickname ?? Target.Nickname ?? "sprite"}-health-track")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(235, 235, 241, 247))
+            .SetBorderColor(
+                Color.FromArgb(
+                    235,
+                    235,
+                    241,
+                    247))
             .SetStrokeWidth(1f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
             .SetCornerRadius(2f);
 
         _fill = new DirectRectangle(
-                Color.FromArgb(245, 55, 210, 105),
+                Color.FromArgb(
+                    245,
+                    55,
+                    210,
+                    105),
                 renderSurfaceHost,
                 Target.SceneLayer,
                 GetFillBounds(Point.Empty),

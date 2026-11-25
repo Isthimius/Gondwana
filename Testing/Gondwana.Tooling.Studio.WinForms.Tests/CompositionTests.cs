@@ -47,6 +47,7 @@ public sealed partial class CompositionTests
         var contents = inner.Contents.Cast<DockContent>().ToArray();
         Assert.Equal(model.PaneNames.Count, contents.Length);
         Assert.All(contents, pane => Assert.Same(inner, pane.DockPanel));
+
         if (model.Editor is SpriteEditorControl sprites)
         {
             foreach (var name in new[] { "player", "guard-01", "guard-02" })
@@ -57,18 +58,33 @@ public sealed partial class CompositionTests
                 entry.SceneLayerId = "actors";
             }
         }
+
         Assert.True(AwaitUi(studio.SaveDocument(document, destination: firstPath)));
         Assert.False(model.Dirty());
         Assert.Equal("first." + format, document.Text);
+
         switch (model.Editor)
         {
-            case TilesheetEditorControl editor: editor.Document.MarkChanged(); break;
-            case AnimationEditorControl editor: editor.Document.MarkChanged(); break;
-            case AudioEditorControl editor: editor.Document.MarkChanged(); break;
-            case SceneEditorControl editor: editor.Document.MarkChanged(); break;
-            case SpriteEditorControl editor: editor.Document.MarkChanged(); break;
-            case AssetEditorControl editor: editor.MarkChanged(); break;
+            case TilesheetEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case AnimationEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case AudioEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case SceneEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case SpriteEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case AssetEditorControl editor:
+                editor.MarkChanged();
+                break;
         }
+
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
         Assert.Same(document, studio.OpenDocument(Path.Combine(directory, ".", "FIRST." + format)));
@@ -85,7 +101,10 @@ public sealed partial class CompositionTests
         Assert.True(model.IsPaneVisible(target.Text));
         Assert.Contains(target, inner.Contents.Cast<DockContent>());
         target.Pane.CloseActiveContent();
-        view.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text!.StartsWith("Show all ")).PerformClick();
+
+        view.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text!.StartsWith("Show all "))
+            .PerformClick();
+
         Assert.True(model.IsPaneVisible(target.Text));
 
         var secondPath = Path.Combine(directory, "second." + format);
@@ -109,9 +128,15 @@ public sealed partial class CompositionTests
         Assert.All(contents, pane => Assert.True(pane.IsDisposed));
         var reopened = studio.OpenDocument(secondPath);
         Assert.NotSame(document, reopened);
+
         if (reopened.Document.Editor is SpriteEditorControl restoredSprites)
-            Assert.Equal(new[] { "player", "guard-01", "guard-02" }, restoredSprites.Document.Definition.Sprites.Select(sprite => sprite.Nickname));
-        Assert.Equal(model.PaneNames.Count, Assert.Single(Descendants(reopened.Document.Editor).OfType<DockPanel>()).Contents.Count);
+            Assert.Equal(
+                new[] { "player", "guard-01", "guard-02" },
+                restoredSprites.Document.Definition.Sprites.Select(sprite => sprite.Nickname));
+
+        Assert.Equal(
+            model.PaneNames.Count,
+            Assert.Single(Descendants(reopened.Document.Editor).OfType<DockPanel>()).Contents.Count);
     });
 
     /// <summary>Document tabs keep their own 16-pixel artwork when the directory tree is resized.</summary>
@@ -137,8 +162,10 @@ public sealed partial class CompositionTests
     public void MixedDocuments_CloseCancelSaveAndShutdownAreTransactional() => RunSta(directory =>
     {
         using var studio = Host(directory);
+
         foreach (var format in new[] { "gts", "gani", "gsnd", "gscn", "gspr", "gaf" })
             studio.NewDocument(format, format == "gaf" ? Path.Combine(directory, "assets.gaf") : null);
+
         Assert.Equal(6, studio.Documents.Count);
         Assert.Equal(10, studio.Workspace.Contents.Count); // Six documents and four built-in tool panes.
         var documents = studio.Documents.ToArray();
@@ -156,7 +183,13 @@ public sealed partial class CompositionTests
         Assert.True(documents[0].IsDisposed);
         Assert.True(File.Exists(Path.Combine(directory, "saved.gts")));
         prompts = 0;
-        studio.AskSave = _ => { prompts++; return DialogResult.No; };
+
+        studio.AskSave = _ =>
+        {
+            prompts++;
+            return DialogResult.No;
+        };
+
         studio.Close();
         Assert.Equal(5, prompts);
         Assert.All(documents, doc => Assert.True(doc.IsDisposed));
@@ -171,12 +204,18 @@ public sealed partial class CompositionTests
     {
         var registry = AssetsFile.AllAssetsFiles.ToArray();
         var source = Path.Combine(directory, "source.gaf");
-        using (var assets = AssetsFile.LoadOrCreate(source, "secret", true, register: false))
+
+        using (var assets = AssetsFile.LoadOrCreate(
+                   source,
+                   "secret",
+                   true,
+                   register: false))
         {
             using var bytes = new MemoryStream([1, 2, 3]);
             assets.Add(AssetTypes.Misc, "example", bytes);
             assets.Save();
         }
+
         using var studio = Host(directory);
         studio.AssetPassword = _ => "secret";
         var document = studio.OpenDocument(source);
@@ -190,12 +229,18 @@ public sealed partial class CompositionTests
         Assert.False(editor.IsDirty);
         Assert.Same(document, studio.OpenDocument(destination));
         Assert.Equal(registry, AssetsFile.AllAssetsFiles);
-        using (var saved = AssetsFile.LoadOrCreate(destination, "secret", true, register: false))
+
+        using (var saved = AssetsFile.LoadOrCreate(
+                   destination,
+                   "secret",
+                   true,
+                   register: false))
         using (var stream = saved[AssetTypes.Misc, "example"])
         {
             Assert.NotNull(stream);
             Assert.Equal(1, stream.ReadByte());
         }
+
         Assert.ThrowsAny<Exception>(() => AssetsFile.LoadOrCreate(destination));
         Assert.Equal(registry, AssetsFile.AllAssetsFiles);
         document.Close();
@@ -243,14 +288,19 @@ public sealed partial class CompositionTests
         var animation = studio.NewDocument("gani");
         var scene = studio.NewDocument("gscn");
         var view = (ToolStripMenuItem)studio.MainMenuStrip!.Items[1];
+
         foreach (var document in new[] { animation, scene, animation })
         {
             document.Activate();
             Application.DoEvents();
             studio.RebuildViewMenu();
             var items = view.DropDownItems.OfType<ToolStripMenuItem>().ToArray();
-            Assert.Equal(document.Document.PaneNames, items.Where(item => document.Document.PaneNames.Contains(item.Text)).Select(item => item.Text));
+
+            Assert.Equal(
+                document.Document.PaneNames,
+                items.Where(item => document.Document.PaneNames.Contains(item.Text)).Select(item => item.Text));
         }
+
         var output = studio.Workspace.Contents.Cast<DockContent>().Single(content => content.Text == "Output");
         output.Hide();
         studio.RebuildViewMenu();
@@ -267,6 +317,7 @@ public sealed partial class CompositionTests
     public void SelectedProjectFolderPersistsAndMissingFolderFallsBack() => RunSta(directory =>
     {
         string project = Directory.CreateDirectory(Path.Combine(directory, "project")).FullName;
+
         using (var studio = new MainForm(loadPlugins: false))
             studio.SetWorkingDirectory(project);
 
@@ -303,8 +354,10 @@ public sealed partial class CompositionTests
     {
         var child = Directory.CreateDirectory(Path.Combine(directory, "child"));
         File.WriteAllText(Path.Combine(child.FullName, "nested.gts"), "{}");
+
         foreach (var extension in new[] { "gaf", "zip", "gts", "gani", "gsnd", "gscn", "gspr", "txt" })
             File.WriteAllText(Path.Combine(directory, "file." + extension), "{}");
+
         using var studio = Host(directory);
         var root = Assert.Single(studio.Browser.Tree.Nodes.Cast<TreeNode>());
         Assert.Equal(8, root.Nodes.Count);
@@ -321,28 +374,47 @@ public sealed partial class CompositionTests
     [Fact]
     public void BrowserGroupsFilesAndRoutesContextMenuActions() => RunSta(directory =>
     {
-        foreach (var name in new[] { "asset.GAF", "package.zip", "tiles.GTS", "animation.gani", "scene.gscn", "sprite.gspr", "sound.gsnd", "notes.txt", "README" })
+        foreach (var name in new[]
+                 {
+                     "asset.GAF", "package.zip", "tiles.GTS", "animation.gani", "scene.gscn", "sprite.gspr",
+                     "sound.gsnd", "notes.txt", "README"
+                 })
             File.WriteAllText(Path.Combine(directory, name), "{}");
+
         using var studio = Host(directory);
         var browser = studio.Browser;
         var root = browser.Tree.Nodes[0];
-        Assert.Equal(new[] { "Assets (.gaf)", "Tilesheets (.gts)", "Animations (.gani)", "Scenes (.gscn)", "Sprites (.gspr)", "Sound (.gsnd)", "Misc" },
+
+        Assert.Equal(
+            new[]
+            {
+                "Assets (.gaf)", "Tilesheets (.gts)", "Animations (.gani)", "Scenes (.gscn)", "Sprites (.gspr)",
+                "Sound (.gsnd)", "Misc"
+            },
             root.Nodes.Cast<TreeNode>().Select(node => node.Text));
+
         Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.Name).Distinct().Count());
         Assert.Equal("application", root.ImageKey);
-        Assert.All(root.Nodes.Cast<TreeNode>(), node =>
-        {
-            string expectedKey = node.Name == "misc" ? "misc"
-                : node.IsExpanded ? "directory-open" : "directory";
-            Assert.Equal(expectedKey, node.ImageKey);
-            Assert.Equal(expectedKey, node.SelectedImageKey);
-        });
+
+        Assert.All(
+            root.Nodes.Cast<TreeNode>(),
+            node =>
+            {
+                string expectedKey = node.Name == "misc" ? "misc"
+                    : node.IsExpanded ? "directory-open" : "directory";
+
+                Assert.Equal(expectedKey, node.ImageKey);
+                Assert.Equal(expectedKey, node.SelectedImageKey);
+            });
+
         Assert.Equal(9, root.Nodes.Cast<TreeNode>().Sum(node => node.Nodes.Count));
         Assert.True(browser.Tree.ImageList!.Images.ContainsKey("gaf"));
         Assert.False(browser.PrepareFileMenu(root));
+
         foreach (TreeNode group in root.Nodes)
         {
             Assert.False(browser.PrepareFileMenu(group));
+
             foreach (TreeNode file in group.Nodes)
             {
                 Assert.Equal(group.Name, file.ImageKey);
@@ -352,9 +424,13 @@ public sealed partial class CompositionTests
                 Assert.Same(file, browser.Tree.SelectedNode);
                 // Available reflects intended visibility even while the menu itself is hidden.
                 Assert.Equal(group.Text != "Misc", browser.FileMenu.Items[0].Available);
-                Assert.Equal(!file.Text.EndsWith(".gaf", StringComparison.OrdinalIgnoreCase), browser.FileMenu.Items[1].Available);
+
+                Assert.Equal(
+                    !file.Text.EndsWith(".gaf", StringComparison.OrdinalIgnoreCase),
+                    browser.FileMenu.Items[1].Available);
             }
         }
+
         string? externalPath = null;
         browser.OpenExternal = path => externalPath = path;
         var misc = root.Nodes[6].Nodes[0];
@@ -395,29 +471,42 @@ public sealed partial class CompositionTests
         foreach (Control child in parent.Controls)
         {
             yield return child;
-            foreach (var descendant in Descendants(child)) yield return descendant;
+
+            foreach (var descendant in Descendants(child))
+                yield return descendant;
         }
     }
 
     private static void RunSta(Action<string> action)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "GondwanaStudio-" + Guid.NewGuid());
-            Directory.CreateDirectory(directory);
-            try
             {
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
-                action(directory);
-            }
-            catch (Exception ex) { error = ex; }
-            finally { Directory.Delete(directory, recursive: true); }
-        })
+                string directory = Path.Combine(Path.GetTempPath(), "GondwanaStudio-" + Guid.NewGuid());
+                Directory.CreateDirectory(directory);
+
+                try
+                {
+                    Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
+                    action(directory);
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+                finally
+                {
+                    Directory.Delete(directory, recursive: true);
+                }
+            })
         { IsBackground = true };
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Studio interaction timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

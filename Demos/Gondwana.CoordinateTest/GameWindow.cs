@@ -24,6 +24,7 @@ public partial class GameWindow : Form
 
         // Optional: allow ESC to close (handy for borderless windows while testing)
         this.KeyPreview = true;
+
         this.KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Escape)
@@ -56,7 +57,7 @@ public partial class GameWindow : Form
         this.WindowState = FormWindowState.Normal; // force apply bounds first
         this.WindowState = FormWindowState.Maximized;
 
-        _game!.InitializeGame();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _game!.InitializeGame(); // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
 
     /// <inheritdoc/>

@@ -47,7 +47,11 @@ public readonly struct GamepadStickState
     /// <param name="rawY">
     /// The raw vertical value from the underlying input system. Default is 0.
     /// </param>
-    public GamepadStickState(float x, float y, int rawX = 0, int rawY = 0)
+    public GamepadStickState(
+        float x,
+        float y,
+        int rawX = 0,
+        int rawY = 0)
     {
         X = x;
         Y = y;
@@ -69,7 +73,12 @@ public readonly struct GamepadStickState
         const float range = 32767f; // signed range: -32768 to 32767
         float normX = Math.Clamp(rawX / range, -1f, 1f);
         float normY = Math.Clamp(rawY / range, -1f, 1f);
-        return new GamepadStickState(normX, normY, rawX, rawY);
+
+        return new GamepadStickState(
+            normX,
+            normY,
+            rawX,
+            rawY);
     }
 
     /// <summary>
@@ -85,7 +94,12 @@ public readonly struct GamepadStickState
     {
         float normX = (rawX - 32768f) / 32767f;
         float normY = (rawY - 32768f) / 32767f;
-        return new GamepadStickState(normX, normY, rawX, rawY);
+
+        return new GamepadStickState(
+            normX,
+            normY,
+            rawX,
+            rawY);
     }
 
     /// <summary>
@@ -112,13 +126,22 @@ public readonly struct GamepadStickState
     /// <returns>The stick direction after applying the deadzone.</returns>
     public StickDirection Direction(float threshold = 0.15f)
     {
-        if (!IsEngaged(threshold)) return StickDirection.None;
+        if (!IsEngaged(threshold))
+            return StickDirection.None;
 
         var dir = StickDirection.None;
-        if (Y >= threshold) dir |= StickDirection.Up;
-        if (Y <= -threshold) dir |= StickDirection.Down;
-        if (X <= -threshold) dir |= StickDirection.Left;
-        if (X >= threshold) dir |= StickDirection.Right;
+
+        if (Y >= threshold)
+            dir |= StickDirection.Up;
+
+        if (Y <= -threshold)
+            dir |= StickDirection.Down;
+
+        if (X <= -threshold)
+            dir |= StickDirection.Left;
+
+        if (X >= threshold)
+            dir |= StickDirection.Right;
 
         return dir;
     }
@@ -130,7 +153,13 @@ public readonly struct GamepadStickState
     /// <returns>A stick state using the requested deadzone.</returns>
     public GamepadStickState WithDeadzone(float threshold = 0.15f)
     {
-        return IsEngaged(threshold) ? this : new GamepadStickState(0, 0, RawX, RawY);
+        return IsEngaged(threshold)
+            ? this
+            : new GamepadStickState(
+                0,
+                0,
+                RawX,
+                RawY);
     }
 
     /// <summary>

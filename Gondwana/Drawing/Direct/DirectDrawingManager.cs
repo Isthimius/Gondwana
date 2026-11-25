@@ -135,6 +135,7 @@ public sealed class DirectDrawingManager : IDisposable
     public void ClearAll()
     {
         var toDispose = _directDrawings.Values.ToArray();
+
         foreach (var d in toDispose)
             d.Dispose(); // removal happens via event handler
     }
@@ -156,7 +157,9 @@ public sealed class DirectDrawingManager : IDisposable
     /// </remarks>
     public void Clear(string name)
     {
-        if (string.IsNullOrEmpty(name)) return;
+        if (string.IsNullOrEmpty(name))
+            return;
+
         if (_directDrawings.TryGetValue(name, out var d))
             d.Dispose();
     }
@@ -240,19 +243,27 @@ public sealed class DirectDrawingManager : IDisposable
     }
 
     private static readonly IComparer<DirectDrawingBase> _defaultComparer =
-        Comparer<DirectDrawingBase>.Create((Comparison<DirectDrawingBase>)((a, b) =>
-        {
-            if (a == null && b == null) return 0;
-            if (a == null) return -1;
-            if (b == null) return 1;
+        Comparer<DirectDrawingBase>.Create(
+            (Comparison<DirectDrawingBase>)((a, b) =>
+            {
+                if (a == null && b == null)
+                    return 0;
 
-            // First compare ZOrder
-            int z = a.ZOrder.CompareTo(b.ZOrder);
-            if (z != 0) return z;
+                if (a == null)
+                    return -1;
 
-            // If ZOrder equal, fall back to Name
-            return string.Compare(a.Nickname, b.Nickname, StringComparison.Ordinal);
-        }));
+                if (b == null)
+                    return 1;
+
+                // First compare ZOrder
+                int z = a.ZOrder.CompareTo(b.ZOrder);
+
+                if (z != 0)
+                    return z;
+
+                // If ZOrder equal, fall back to Name
+                return string.Compare(a.Nickname, b.Nickname, StringComparison.Ordinal);
+            }));
 
     private void OnDrawingDisposing(object? sender, IDirectDrawable drawing)
     {

@@ -54,10 +54,16 @@ public sealed class TemplateInstallTests
     {
         var versions = new[] { "2.6.1", "2.6.2-beta.9", "2.6.2-beta.10", "2.6.2-beta.2", "2.6.0" };
         Assert.Equal("2.6.2-beta.10", TemplatePackageHelper.LatestAvailableVersion(versions));
-        Assert.Equal("2.6.2", TemplatePackageHelper.LatestAvailableVersion(
-            [.. versions, "2.6.2"]));
-        Assert.Equal("2.7.0", TemplatePackageHelper.LatestAvailableVersion(
-            [.. versions, "2.7.0"]));
+
+        Assert.Equal(
+            "2.6.2",
+            TemplatePackageHelper.LatestAvailableVersion(
+                [.. versions, "2.6.2"]));
+
+        Assert.Equal(
+            "2.7.0",
+            TemplatePackageHelper.LatestAvailableVersion(
+                [.. versions, "2.7.0"]));
     }
 
     /// <summary>
@@ -67,10 +73,16 @@ public sealed class TemplateInstallTests
     [Fact]
     public void LatestAvailable_HandlesIdentifiersAndMissingVersions()
     {
-        Assert.Equal("2.6.2-rc.1", TemplatePackageHelper.LatestAvailableVersion(
-            ["2.6.2-alpha.5", "2.6.2-beta.9", "2.6.2-rc.1"]));
-        Assert.Equal("2.6.2-beta.1.1", TemplatePackageHelper.LatestAvailableVersion(
-            ["2.6.2-beta.1", "2.6.2-beta.1.1"]));
+        Assert.Equal(
+            "2.6.2-rc.1",
+            TemplatePackageHelper.LatestAvailableVersion(
+                ["2.6.2-alpha.5", "2.6.2-beta.9", "2.6.2-rc.1"]));
+
+        Assert.Equal(
+            "2.6.2-beta.1.1",
+            TemplatePackageHelper.LatestAvailableVersion(
+                ["2.6.2-beta.1", "2.6.2-beta.1.1"]));
+
         Assert.Throws<InvalidOperationException>(() =>
             TemplatePackageHelper.LatestAvailableVersion(["unknown", "latest"]));
     }
@@ -82,9 +94,12 @@ public sealed class TemplateInstallTests
     [Fact]
     public void InstallArguments_PreserveDefaultAndPinExplicitVersions()
     {
-        Assert.Equal(["new", "install", "Gondwana.Templates"],
+        Assert.Equal(
+            ["new", "install", "Gondwana.Templates"],
             TemplatePackageHelper.InstallArguments());
-        Assert.Equal(["new", "install", "Gondwana.Templates::2.6.2-beta.1", "--force"],
+
+        Assert.Equal(
+            ["new", "install", "Gondwana.Templates::2.6.2-beta.1", "--force"],
             TemplatePackageHelper.InstallArguments("2.6.2-beta.1"));
     }
 
@@ -99,9 +114,11 @@ public sealed class TemplateInstallTests
     {
         var app = new CommandApp();
         app.Configure(config => config.AddCommand<TemplatesInstallCommand>("install"));
+
         var args = prerelease
             ? new[] { "install", "--prerelease", "--version", version }
             : new[] { "install", "--version", version };
+
         Assert.Equal(1, app.Run(args));
     }
 }

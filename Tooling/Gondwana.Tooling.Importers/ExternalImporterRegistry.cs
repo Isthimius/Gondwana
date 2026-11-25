@@ -6,5 +6,8 @@ public static class ExternalImporterRegistry
     /// <summary>Creates fresh Godot TileSet/scene, Tiled tileset/map, and Aseprite providers in auto-detection order.</summary>
     /// <returns>A new provider list; no shared provider instances are retained by the registry.</returns>
     public static IReadOnlyList<IExternalAssetImporter> CreateProviders() =>
-        [new GodotTilesetImporter(), new GodotSceneImporter(), new TiledTilesetImporter(), new TiledMapImporter(), new AsepriteImporter()];
+    [
+        new GodotTilesetImporter(), new GodotSceneImporter(), new TiledTilesetImporter(), new TiledMapImporter(),
+        new AsepriteImporter()
+    ];
 }

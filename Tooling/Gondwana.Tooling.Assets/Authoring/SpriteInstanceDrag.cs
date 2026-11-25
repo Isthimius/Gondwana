@@ -5,4 +5,8 @@ namespace Gondwana.Tooling.Assets;
 /// <param name="SpriteId">The stable authored instance ID.</param>
 /// <param name="Session">An opaque host token that changes when the document is reopened.</param>
 /// <param name="Revision">The live session revision at gesture start.</param>
-public sealed record SpriteInstanceDrag(ResourceAddress Address, Guid SpriteId, object Session, long Revision) : IAuthoringResourceDrag;
+public sealed record SpriteInstanceDrag(
+    ResourceAddress Address,
+    Guid SpriteId,
+    object Session,
+    long Revision) : IAuthoringResourceDrag;

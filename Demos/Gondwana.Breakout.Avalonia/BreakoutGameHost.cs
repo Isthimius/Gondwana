@@ -19,10 +19,15 @@ internal sealed class BreakoutGameHost : AvaloniaGpuGameHost
     protected override void CreateDirectDrawings() => _game.CreateDirectDrawings();
 
     protected override void OnKeyboardAdapterInitialized() =>
-        _game.HookKeyboard(Engine.Input.KeyboardEventPoller!,
-            ((int)Key.Left, "left"), ((int)Key.Right, "right"),
-            ((int)Key.A, "a"), ((int)Key.D, "d"),
-            ((int)Key.Space, "space"), ((int)Key.P, "p"), ((int)Key.R, "r"));
+        _game.HookKeyboard(
+            Engine.Input.KeyboardEventPoller!,
+            ((int)Key.Left, "left"),
+            ((int)Key.Right, "right"),
+            ((int)Key.A, "a"),
+            ((int)Key.D, "d"),
+            ((int)Key.Space, "space"),
+            ((int)Key.P, "p"),
+            ((int)Key.R, "r"));
 
     protected override void OnEngineInitialized()
     {

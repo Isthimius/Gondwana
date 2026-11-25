@@ -13,8 +13,10 @@ internal sealed class SceneEditorDocument : DockContent
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>
     public SceneDocument Document { get; }
+
     /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public SceneEditorControl Editor { get; }
+
     /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool CloseApproved { get; set; }
@@ -35,6 +37,7 @@ internal sealed class SceneEditorDocument : DockContent
         Controls.Add(Editor);
 
         Document.Changed += DocumentChanged;
+
         FormClosing += (_, e) =>
         {
             if (!CloseApproved)
@@ -124,9 +127,9 @@ internal sealed class SceneEditorDocument : DockContent
     private void UpdateCaption()
     {
         Text = (Document.FilePath is null
-                ? "Untitled.gscn"
-                : Path.GetFileName(Document.FilePath)) +
-            (Document.IsDirty ? " *" : string.Empty);
+                   ? "Untitled.gscn"
+                   : Path.GetFileName(Document.FilePath)) +
+               (Document.IsDirty ? " *" : string.Empty);
 
         ToolTipText =
             Document.FilePath ??
@@ -140,6 +143,8 @@ internal sealed class SceneEditorDocument : DockContent
             Document.Changed -= DocumentChanged;
 
         base.Dispose(disposing);
-        if (disposing) Document.Dispose();
+
+        if (disposing)
+            Document.Dispose();
     }
 }

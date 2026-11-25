@@ -13,7 +13,12 @@ internal sealed class RenderFrameSnapshot : IDisposable
 {
     private readonly SKPicture _commands;
 
-    internal RenderFrameSnapshot(SKPicture commands, long sequence, long producedTick, int width, int height)
+    internal RenderFrameSnapshot(
+        SKPicture commands,
+        long sequence,
+        long producedTick,
+        int width,
+        int height)
     {
         _commands = commands;
         Sequence = sequence;

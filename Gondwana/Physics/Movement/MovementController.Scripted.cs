@@ -136,16 +136,17 @@ public sealed partial class MovementController
         Func<float, float>? easing = null,
         float snapEpsilon = 0.5f)
     {
-        return StartScript(new ScriptedMovement
-        {
-            Type = MovementScriptType.TweenTo,
-            Origin = _mover.GetPosition(),
-            Target = target,
-            DurationSec = MathF.Max(0f, durationSec),
-            ElapsedSec = 0f,
-            SnapEpsilon = MathF.Max(0f, snapEpsilon),
-            Easing = easing
-        });
+        return StartScript(
+            new ScriptedMovement
+            {
+                Type = MovementScriptType.TweenTo,
+                Origin = _mover.GetPosition(),
+                Target = target,
+                DurationSec = MathF.Max(0f, durationSec),
+                ElapsedSec = 0f,
+                SnapEpsilon = MathF.Max(0f, snapEpsilon),
+                Easing = easing
+            });
     }
 
     /// <summary>
@@ -310,13 +311,14 @@ public sealed partial class MovementController
         float speedPerSec,
         float snapEpsilon = 0.5f)
     {
-        return StartScript(new ScriptedMovement
-        {
-            Type = MovementScriptType.Toward,
-            Target = target,
-            SpeedPerSec = MathF.Max(0f, speedPerSec),
-            SnapEpsilon = MathF.Max(0f, snapEpsilon)
-        });
+        return StartScript(
+            new ScriptedMovement
+            {
+                Type = MovementScriptType.Toward,
+                Target = target,
+                SpeedPerSec = MathF.Max(0f, speedPerSec),
+                SnapEpsilon = MathF.Max(0f, snapEpsilon)
+            });
     }
 
     /// <summary>
@@ -483,6 +485,7 @@ public sealed partial class MovementController
         var direction = to / distance;
 
         _state.Acceleration = Vector2.Zero;
+
         _state.Velocity =
             direction *
             _state.Script.SpeedPerSec;

@@ -19,12 +19,18 @@ public sealed partial class TilesheetDocument
     public static TilesheetDocument Open(AssetsFile archive, string entryName)
     {
         if (!archive.GetAllEntries().Any(entry => entry.AssetType == AssetTypes.TilesheetDefinition &&
-            string.Equals(entry.AssetName, entryName, StringComparison.OrdinalIgnoreCase)))
+                                                  string.Equals(
+                                                      entry.AssetName,
+                                                      entryName,
+                                                      StringComparison.OrdinalIgnoreCase)))
         {
-            throw new FileNotFoundException($"TilesheetDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
+            throw new FileNotFoundException(
+                $"TilesheetDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
         }
 
-        var path = Path.GetFullPath(archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+        var path = Path.GetFullPath(
+            archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+
         var directory = Path.GetDirectoryName(path)!;
         var definitions = TilesheetDefinitionSerializer.LoadAll(archive, entryName).ToList();
 

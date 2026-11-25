@@ -55,7 +55,11 @@ public abstract class GameHostBase : IDisposable
         string? configPath = null,
         bool? autoSaveConfig = null,
         LogLevel logLevel = LogLevel.Warning)
-        => InitializeCore(configPath, autoSaveConfig, logLevel, configurationStore: null);
+        => InitializeCore(
+            configPath,
+            autoSaveConfig,
+            logLevel,
+            configurationStore: null);
 
     /// <summary>
     /// Initializes the game host using a caller-supplied configuration persistence store.
@@ -73,7 +77,12 @@ public abstract class GameHostBase : IDisposable
         LogLevel logLevel = LogLevel.Warning)
     {
         ArgumentNullException.ThrowIfNull(configurationStore);
-        InitializeCore(configPath: null, autoSaveConfig, logLevel, configurationStore);
+
+        InitializeCore(
+            configPath: null,
+            autoSaveConfig,
+            logLevel,
+            configurationStore);
     }
 
     private void InitializeCore(
@@ -261,8 +270,8 @@ public abstract class GameHostBase : IDisposable
     protected void CreateSceneGraph()
     {
         Scene = CreateInitialScene()
-            ?? throw new InvalidOperationException(
-                $"{nameof(CreateInitialScene)} returned null.");
+                ?? throw new InvalidOperationException(
+                    $"{nameof(CreateInitialScene)} returned null.");
 
         CreateInitialViews();
         OnSceneGraphCreated();
@@ -370,6 +379,7 @@ public abstract class GameHostBase : IDisposable
                 configurationStore,
                 autoSaveConfig: autoSaveConfig);
         }
+
         _engineInitialized = true;
 
         OnEngineInitialized();
@@ -392,8 +402,8 @@ public abstract class GameHostBase : IDisposable
     protected void StartEngine()
     {
         var syncContext = GetSynchronizationContext()
-            ?? throw new InvalidOperationException(
-                $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
+                          ?? throw new InvalidOperationException(
+                              $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
 
         StartEngineCore(syncContext);
         _engineStarted = true;

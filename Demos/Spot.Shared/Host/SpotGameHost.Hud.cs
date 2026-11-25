@@ -24,90 +24,141 @@ internal sealed partial class SpotGameRuntime
     private void CreateTextBlockFields()
     {
         // upper left
-        _player1Text = new TextBlock(SurfaceHost,
-                                     SurfaceHost.ViewManager.Views[0],
-                                     new Rectangle(10, PersistentMenuHeight + 10, 200, 50));
+        _player1Text = new TextBlock(
+            SurfaceHost,
+            SurfaceHost.ViewManager.Views[0],
+            new Rectangle(
+                10,
+                PersistentMenuHeight + 10,
+                200,
+                50));
+
         _player1Text.SetFont(_font, 24, 12)
-                    .SetColors(SpotGame.Players[0].ColorItem.TextColor, SKColors.Transparent)
-                    .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                    .SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]))
-                    .SetMaxLines(1)
-                    .UseShadow()
-                    .SetShadow(3, 3, 200, 3.0f);
+            .SetColors(SpotGame.Players[0].ColorItem.TextColor, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]))
+            .SetMaxLines(1)
+            .UseShadow()
+            .SetShadow(
+                3,
+                3,
+                200,
+                3.0f);
+
         _player1Text.ZOrder = 20;
 
-        _player1Rectangle = new DirectRectangle(SpotGame.Players[0].ColorItem.Color.ToColor(),
-                                                SurfaceHost,
-                                                SurfaceHost.ViewManager.Views[0],
-                                                _player1Text.ScreenBounds);
+        _player1Rectangle = new DirectRectangle(
+            SpotGame.Players[0].ColorItem.Color.ToColor(),
+            SurfaceHost,
+            SurfaceHost.ViewManager.Views[0],
+            _player1Text.ScreenBounds);
+
         _player1Rectangle.SetCornerRadius(30)
-                         .SetFilled(true);
+            .SetFilled(true);
 
         // bottom right
-        _player2Text = new TextBlock(SurfaceHost,
-                                     SurfaceHost.ViewManager.Views[0],
-                                     new Rectangle(SurfaceWidth - 210, SurfaceHeight - 60, 200, 50));
+        _player2Text = new TextBlock(
+            SurfaceHost,
+            SurfaceHost.ViewManager.Views[0],
+            new Rectangle(
+                SurfaceWidth - 210,
+                SurfaceHeight - 60,
+                200,
+                50));
+
         _player2Text.SetFont(_font, 24, 12)
-                    .SetColors(SpotGame.Players[1].ColorItem.TextColor, SKColors.Transparent)
-                    .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                    .SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]))
-                    .SetMaxLines(1)
-                    .UseShadow()
-                    .SetShadow(3, 3, 200, 3.0f);
+            .SetColors(SpotGame.Players[1].ColorItem.TextColor, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]))
+            .SetMaxLines(1)
+            .UseShadow()
+            .SetShadow(
+                3,
+                3,
+                200,
+                3.0f);
+
         _player2Text.ZOrder = 20;
 
-        _player2Rectangle = new DirectRectangle(SpotGame.Players[1].ColorItem.Color.ToColor(),
-                                                SurfaceHost,
-                                                SurfaceHost.ViewManager.Views[0],
-                                                _player2Text.ScreenBounds);
+        _player2Rectangle = new DirectRectangle(
+            SpotGame.Players[1].ColorItem.Color.ToColor(),
+            SurfaceHost,
+            SurfaceHost.ViewManager.Views[0],
+            _player2Text.ScreenBounds);
+
         _player2Rectangle.SetCornerRadius(30)
-                         .SetFilled(true);
+            .SetFilled(true);
 
         if (SpotGame.Players.Length >= 3)
         {
             // upper right
-            _player3Text = new TextBlock(SurfaceHost,
-                                         SurfaceHost.ViewManager.Views[0],
-                                         new Rectangle(SurfaceWidth - 210, PersistentMenuHeight + 10, 200, 50));
+            _player3Text = new TextBlock(
+                SurfaceHost,
+                SurfaceHost.ViewManager.Views[0],
+                new Rectangle(
+                    SurfaceWidth - 210,
+                    PersistentMenuHeight + 10,
+                    200,
+                    50));
+
             _player3Text.SetFont(_font, 24, 12)
-                        .SetColors(SpotGame.Players[2].ColorItem.TextColor, SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                        .SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]))
-                        .SetMaxLines(1)
-                        .UseShadow()
-                        .SetShadow(3, 3, 200, 3.0f);
+                .SetColors(SpotGame.Players[2].ColorItem.TextColor, SKColors.Transparent)
+                .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                .SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]))
+                .SetMaxLines(1)
+                .UseShadow()
+                .SetShadow(
+                    3,
+                    3,
+                    200,
+                    3.0f);
+
             _player3Text.ZOrder = 20;
 
-            _player3Rectangle = new DirectRectangle(SpotGame.Players[2].ColorItem.Color.ToColor(),
-                                                    SurfaceHost,
-                                                    SurfaceHost.ViewManager.Views[0],
-                                                    _player3Text.ScreenBounds);
+            _player3Rectangle = new DirectRectangle(
+                SpotGame.Players[2].ColorItem.Color.ToColor(),
+                SurfaceHost,
+                SurfaceHost.ViewManager.Views[0],
+                _player3Text.ScreenBounds);
+
             _player3Rectangle.SetCornerRadius(30)
-                             .SetFilled(true);
+                .SetFilled(true);
         }
 
         if (SpotGame.Players.Length >= 4)
         {
             // bottom left
-            _player4Text = new TextBlock(SurfaceHost,
-                                         SurfaceHost.ViewManager.Views[0],
-                                         new Rectangle(10, SurfaceHeight - 60, 200, 50));
+            _player4Text = new TextBlock(
+                SurfaceHost,
+                SurfaceHost.ViewManager.Views[0],
+                new Rectangle(
+                    10,
+                    SurfaceHeight - 60,
+                    200,
+                    50));
+
             _player4Text.SetFont(_font, 24, 12)
-                        .SetColors(SpotGame.Players[3].ColorItem.TextColor, SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                        .SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]))
-                        .SetMaxLines(1)
-                        .UseShadow()
-                        .SetShadow(3, 3, 200, 3.0f);
+                .SetColors(SpotGame.Players[3].ColorItem.TextColor, SKColors.Transparent)
+                .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                .SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]))
+                .SetMaxLines(1)
+                .UseShadow()
+                .SetShadow(
+                    3,
+                    3,
+                    200,
+                    3.0f);
 
             _player4Text.ZOrder = 20;
 
-            _player4Rectangle = new DirectRectangle(SpotGame.Players[3].ColorItem.Color.ToColor(),
-                                                    SurfaceHost,
-                                                    SurfaceHost.ViewManager.Views[0],
-                                                    _player4Text.ScreenBounds);
+            _player4Rectangle = new DirectRectangle(
+                SpotGame.Players[3].ColorItem.Color.ToColor(),
+                SurfaceHost,
+                SurfaceHost.ViewManager.Views[0],
+                _player4Text.ScreenBounds);
+
             _player4Rectangle.SetCornerRadius(30)
-                             .SetFilled(true);
+                .SetFilled(true);
         }
 
         if (SpotGame.SpotGameField.GridRowCount > 10)
@@ -183,6 +234,7 @@ internal sealed partial class SpotGameRuntime
             multipleWinners = true;
 
             var names = winningPlayers.Select(p => p.Name).ToList();
+
             var formatted = names.Count == 2
                 ? string.Join(" and ", names)
                 : string.Join(", ", names.Take(names.Count - 1)) + $", and {names.Last()}";
@@ -193,33 +245,41 @@ internal sealed partial class SpotGameRuntime
             secondaryFillColor = winningPlayers[1].ColorItem.Color.ToColor();
         }
 
-        _gameMessageText = new TextBlock(SurfaceHost,
-                                         SurfaceHost.ViewManager.Views[0],
-                                         new Rectangle(
-                                             SurfaceWidth / 2 - 180,
-                                             PersistentMenuHeight + ((SurfaceHeight - PersistentMenuHeight) / 2) - 40,
-                                             360,
-                                             80));
+        _gameMessageText = new TextBlock(
+            SurfaceHost,
+            SurfaceHost.ViewManager.Views[0],
+            new Rectangle(
+                SurfaceWidth / 2 - 180,
+                PersistentMenuHeight + ((SurfaceHeight - PersistentMenuHeight) / 2) - 40,
+                360,
+                80));
+
         _gameMessageText.SetFont(_font, 48, 16)
-                        .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                        .SetText(message)
-                        .UseShadow()
-                        .SetShadow(5, 5, 200, 3.0f)
-                        .EnableWrapping();
+            .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .SetText(message)
+            .UseShadow()
+            .SetShadow(
+                5,
+                5,
+                200,
+                3.0f)
+            .EnableWrapping();
 
         _gameMessageText.ZOrder = 20;
 
-        _gameMessageRectangle = new DirectRectangle(primaryFillColor,
-                                                    SurfaceHost,
-                                                    SurfaceHost.ViewManager.Views[0],
-                                                    _gameMessageText.ScreenBounds);
+        _gameMessageRectangle = new DirectRectangle(
+            primaryFillColor,
+            SurfaceHost,
+            SurfaceHost.ViewManager.Views[0],
+            _gameMessageText.ScreenBounds);
+
         _gameMessageRectangle.SetCornerRadius(40)
-                             .SetFilled(true)
-                             .SetColor(primaryFillColor)
-                             .SetBorderColor(primaryTextColor)
-                             .SetStrokeWidth(2f)
-                             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside);
+            .SetFilled(true)
+            .SetColor(primaryFillColor)
+            .SetBorderColor(primaryTextColor)
+            .SetStrokeWidth(2f)
+            .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside);
 
         if (multipleWinners)
         {

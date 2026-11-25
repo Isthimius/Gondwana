@@ -15,7 +15,8 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         /// Gets or sets the project.
         /// </summary>
         [CommandOption("-p|--project")]
-        [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
+        [Description(
+            "Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
         /// <summary>
@@ -79,7 +80,8 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         /// Gets or sets whether no mirror is enabled.
         /// </summary>
         [CommandOption("--no-mirror")]
-        [Description("Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted).")]
+        [Description(
+            "Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted).")]
         public bool NoMirror { get; init; }
     }
 
@@ -87,11 +89,15 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
     public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var useLocal = !string.IsNullOrWhiteSpace(settings.WebRoot);
-        var useRemote = !string.IsNullOrWhiteSpace(settings.RemoteHost) && !string.IsNullOrWhiteSpace(settings.RemotePath);
+
+        var useRemote = !string.IsNullOrWhiteSpace(settings.RemoteHost) &&
+                        !string.IsNullOrWhiteSpace(settings.RemotePath);
 
         if (!useLocal && !useRemote)
         {
-            AnsiConsole.MarkupLine("[red]Specify a deployment target: --web-root <path> or --remote-host <user@host> --remote-path <path>[/]");
+            AnsiConsole.MarkupLine(
+                "[red]Specify a deployment target: --web-root <path> or --remote-host <user@host> --remote-path <path>[/]");
+
             return 1;
         }
 
@@ -104,18 +110,27 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+
             if (error!.Contains("No .csproj found", StringComparison.Ordinal))
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
+
             return 1;
         }
 
         if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine(
+                "[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        if (!ProjectHelper.TryResolveBrowserFramework(
+                csprojPath!,
+                settings.Framework,
+                out var framework,
+                out error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
             return 1;
@@ -129,6 +144,7 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
             settings.SkipWorkload,
             settings.BaseHref,
             out var exitCode);
+
         if (exitCode != 0)
             return exitCode;
 
@@ -168,14 +184,19 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         }
 
         ProcessHelper.Run("rsync", "--version", out var rsyncCheckExit);
+
         if (rsyncCheckExit != 0)
         {
             AnsiConsole.MarkupLine("[red]rsync not found on PATH.[/]");
-            AnsiConsole.MarkupLine("[dim]Install rsync (available on Linux/macOS natively, or via WSL / Git Bash on Windows).[/]");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Install rsync (available on Linux/macOS natively, or via WSL / Git Bash on Windows).[/]");
+
             return 1;
         }
 
-        AnsiConsole.MarkupLine($"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
+        AnsiConsole.MarkupLine(
+            $"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
 
         var rsyncArgs = settings.NoMirror
             ? new[] { "-avz", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" }
@@ -199,10 +220,13 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
     private static void PrintHostingReminder(string? baseHref)
     {
         if (string.IsNullOrWhiteSpace(baseHref))
-            AnsiConsole.MarkupLine("[dim]If the game is hosted below the site root, republish/deploy with --base-href matching its public URL path.[/]");
+            AnsiConsole.MarkupLine(
+                "[dim]If the game is hosted below the site root, republish/deploy with --base-href matching its public URL path.[/]");
         else
-            AnsiConsole.MarkupLine($"[dim]Published base href: {Markup.Escape(ProjectHelper.NormalizeBaseHref(baseHref))}[/]");
+            AnsiConsole.MarkupLine(
+                $"[dim]Published base href: {Markup.Escape(ProjectHelper.NormalizeBaseHref(baseHref))}[/]");
 
-        AnsiConsole.MarkupLine("[dim]COOP/COEP headers are only needed if the application explicitly enables .NET WASM multithreading; Gondwana's default browser/WebGL path does not require them.[/]");
+        AnsiConsole.MarkupLine(
+            "[dim]COOP/COEP headers are only needed if the application explicitly enables .NET WASM multithreading; Gondwana's default browser/WebGL path does not require them.[/]");
     }
 }

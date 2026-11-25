@@ -103,6 +103,7 @@ public sealed class TouchInputTests : IDisposable
     {
         var adapter = new SnapshotOnlyTouchAdapter(
             new TouchPoint(7, new Point(5, 6), TouchPhase.Moved));
+
         TouchEventPoller.Initialize(adapter, new TouchEventConfiguration());
         TouchPhase? phase = null;
         TouchEventPoller.Instance!.TouchBegan += (_, e) => phase = e.Touch.Phase;
@@ -221,6 +222,7 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(
             [PinchPhase.Began, PinchPhase.Updated, PinchPhase.Ended],
             events.Select(e => e.Phase));
+
         Assert.Equal([2, 5], events[1].TouchIds);
         Assert.Equal(new PointF(5, 0), events[0].Center);
         Assert.Equal(new PointF(10, 0), events[1].Center);
@@ -254,6 +256,7 @@ public sealed class TouchInputTests : IDisposable
 
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active.Values.ToArray();
+
         /// <summary>
         /// Gets whether the object is disposed.
         /// </summary>
@@ -292,8 +295,10 @@ public sealed class TouchInputTests : IDisposable
 
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeBeganTouches() => Drain(_began);
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => Drain(_ended);
+
         /// <inheritdoc/>
         public void Dispose() => IsDisposed = true;
 
@@ -309,6 +314,7 @@ public sealed class TouchInputTests : IDisposable
     {
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches { get; } = points;
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => Array.Empty<TouchPoint>();
     }
@@ -316,12 +322,16 @@ public sealed class TouchInputTests : IDisposable
     private sealed class FakeTouchInput : ITouchInput
     {
         private readonly Dictionary<int, TouchPoint> _active = new();
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active.Values.ToArray();
+
         /// <inheritdoc/>
         public event EventHandler<TouchEventArgs>? TouchBegan;
+
         /// <inheritdoc/>
         public event EventHandler<TouchEventArgs>? TouchMoved;
+
         /// <inheritdoc/>
         public event EventHandler<TouchEventArgs>? TouchEnded;
 
@@ -360,6 +370,7 @@ public sealed class TouchInputTests : IDisposable
         public void End(int id, Point position, long tick)
         {
             _active.Remove(id);
+
             TouchEnded?.Invoke(
                 this,
                 new TouchEventArgs(new TouchPoint(id, position, TouchPhase.Ended), tick));

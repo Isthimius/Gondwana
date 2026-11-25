@@ -212,6 +212,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
             case KeyAction.Pressed:
                 if (_keysDown.Add(key))
                     HandlePressedKey(key);
+
                 break;
 
             case KeyAction.Released:
@@ -229,11 +230,13 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
                     StartNewGame();
                 else if (key is Keys.L or Keys.F9)
                     TryLoadGame();
+
                 return;
 
             case GameMode.Dialogue:
                 if (key is Keys.E or Keys.Enter or Keys.Space)
                     AdvanceDialogue();
+
                 return;
 
             case GameMode.Inventory:
@@ -241,11 +244,13 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
                     CloseInventory();
                 else if (key == Keys.H)
                     UsePotion();
+
                 return;
 
             case GameMode.Paused:
                 if (key is Keys.P or Keys.Enter)
                     ResumeGame();
+
                 return;
 
             case GameMode.GameOver:
@@ -254,6 +259,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
                     EnterTitleMode();
                 else if (key is Keys.L or Keys.F9)
                     TryLoadGame();
+
                 return;
         }
 
@@ -322,6 +328,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
     private void PollGamepad()
     {
         var adapter = Engine.Input.GamepadManager?.ConnectedAdapters.FirstOrDefault();
+
         var currentButtons = adapter?.PressedButtons is { } buttons
             ? new HashSet<string>(buttons, StringComparer.Ordinal)
             : new HashSet<string>(StringComparer.Ordinal);
@@ -345,11 +352,13 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
                     StartNewGame();
                 else if (button == "Y")
                     TryLoadGame();
+
                 return;
 
             case GameMode.Dialogue:
                 if (button is "A" or "B")
                     AdvanceDialogue();
+
                 return;
 
             case GameMode.Inventory:
@@ -357,11 +366,13 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
                     CloseInventory();
                 else if (button is "A" or "B")
                     UsePotion();
+
                 return;
 
             case GameMode.Paused:
                 if (button is "Start" or "A")
                     ResumeGame();
+
                 return;
 
             case GameMode.GameOver:
@@ -370,6 +381,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
                     EnterTitleMode();
                 else if (button == "Y")
                     TryLoadGame();
+
                 return;
         }
 
@@ -431,13 +443,21 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
             maximum: PlayerMaximumHealth,
             size: new Size(64, 9),
             nickname: "player-health");
-        _playerHealthBar.SetFillColor(Color.FromArgb(245, 61, 210, 97));
+
+        _playerHealthBar.SetFillColor(
+            Color.FromArgb(
+                245,
+                61,
+                210,
+                97));
+
         _playerHealthBar.SetZOrder(200);
         _playerHealthBar.Show();
 
         foreach (EnemyState enemy in _enemies)
         {
             var size = enemy.IsBoss ? new Size(88, 10) : new Size(48, 8);
+
             var bar = new GameHealthBar(
                 RenderSurface.Host,
                 enemy.Sprite,
@@ -447,8 +467,17 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
 
             bar.SetFillColor(
                 enemy.IsBoss
-                    ? Color.FromArgb(245, 194, 51, 64)
-                    : Color.FromArgb(245, 232, 126, 67));
+                    ? Color.FromArgb(
+                        245,
+                        194,
+                        51,
+                        64)
+                    : Color.FromArgb(
+                        245,
+                        232,
+                        126,
+                        67));
+
             bar.SetZOrder(200);
             bar.Show();
             enemy.HealthBar = bar;
@@ -461,92 +490,162 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         var view = host.ViewManager.Views[0];
 
         _hudPanel = new DirectRectangle(
-                Color.FromArgb(218, 24, 31, 35),
+                Color.FromArgb(
+                    218,
+                    24,
+                    31,
+                    35),
                 host,
                 view,
-                new Rectangle(12, 12, 650, 66),
+                new Rectangle(
+                    12,
+                    12,
+                    650,
+                    66),
                 "hud-panel")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(235, 219, 198, 133))
+            .SetBorderColor(
+                Color.FromArgb(
+                    235,
+                    219,
+                    198,
+                    133))
             .SetStrokeWidth(2f)
             .SetCornerRadius(8f);
+
         _hudPanel.ZOrder = 1000;
 
         _hudText = new TextBlock(
                 host,
                 view,
-                new Rectangle(26, 20, 624, 50),
+                new Rectangle(
+                    26,
+                    20,
+                    624,
+                    50),
                 "hud-text")
             .SetFont(SKTypeface.Default, 17f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
             .EnableWrapping(false)
             .UseShadow();
+
         _hudText.ZOrder = 1001;
 
         _messagePanel = new DirectRectangle(
-                Color.FromArgb(232, 24, 27, 31),
+                Color.FromArgb(
+                    232,
+                    24,
+                    27,
+                    31),
                 host,
                 view,
-                new Rectangle(100, 480, 760, 130),
+                new Rectangle(
+                    100,
+                    480,
+                    760,
+                    130),
                 "message-panel")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(240, 219, 198, 133))
+            .SetBorderColor(
+                Color.FromArgb(
+                    240,
+                    219,
+                    198,
+                    133))
             .SetStrokeWidth(3f)
             .SetCornerRadius(10f);
+
         _messagePanel.ZOrder = 1100;
 
         _messageText = new TextBlock(
                 host,
                 view,
-                new Rectangle(122, 495, 716, 100),
+                new Rectangle(
+                    122,
+                    495,
+                    716,
+                    100),
                 "message-text")
             .SetFont(SKTypeface.Default, 22f, minSize: 17f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
             .SetMaxLines(3)
             .UseShadow();
+
         _messageText.HorizontalPadding = 8f;
         _messageText.ZOrder = 1101;
 
         _inventoryPanel = new DirectRectangle(
-                Color.FromArgb(244, 24, 27, 31),
+                Color.FromArgb(
+                    244,
+                    24,
+                    27,
+                    31),
                 host,
                 view,
-                new Rectangle(235, 115, 490, 410),
+                new Rectangle(
+                    235,
+                    115,
+                    490,
+                    410),
                 "inventory-panel")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(240, 219, 198, 133))
+            .SetBorderColor(
+                Color.FromArgb(
+                    240,
+                    219,
+                    198,
+                    133))
             .SetStrokeWidth(3f)
             .SetCornerRadius(12f);
+
         _inventoryPanel.ZOrder = 1200;
 
         _inventoryText = new TextBlock(
                 host,
                 view,
-                new Rectangle(265, 145, 430, 350),
+                new Rectangle(
+                    265,
+                    145,
+                    430,
+                    350),
                 "inventory-text")
             .SetFont(SKTypeface.Default, 24f, minSize: 18f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
             .SetMaxLines(12)
             .UseShadow();
+
         _inventoryText.ZOrder = 1201;
 
         _titlePanel = new DirectRectangle(
-                Color.FromArgb(246, 17, 30, 25),
+                Color.FromArgb(
+                    246,
+                    17,
+                    30,
+                    25),
                 host,
                 view,
-                new Rectangle(0, 0, GameWindow.GameSize.Width, GameWindow.GameSize.Height),
+                new Rectangle(
+                    0,
+                    0,
+                    GameWindow.GameSize.Width,
+                    GameWindow.GameSize.Height),
                 "title-panel")
             .SetFilled(true)
             .SetStrokeWidth(0f);
+
         _titlePanel.ZOrder = 2000;
 
         _titleText = new TextBlock(
                 host,
                 view,
-                new Rectangle(90, 105, 780, 185),
+                new Rectangle(
+                    90,
+                    105,
+                    780,
+                    185),
                 "title-text")
             .SetFont(SKTypeface.Default, 52f, minSize: 30f)
             .SetColors(new SKColor(238, 218, 143), SKColors.Transparent)
@@ -554,36 +653,60 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
             .SetMaxLines(3)
             .UseShadow()
             .UseOutline();
+
         _titleText.ZOrder = 2001;
 
         _titleOptionsText = new TextBlock(
                 host,
                 view,
-                new Rectangle(135, 310, 690, 240),
+                new Rectangle(
+                    135,
+                    310,
+                    690,
+                    240),
                 "title-options")
             .SetFont(SKTypeface.Default, 23f, minSize: 18f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(9)
             .UseShadow();
+
         _titleOptionsText.ZOrder = 2002;
 
         _pausePanel = new DirectRectangle(
-                Color.FromArgb(224, 12, 15, 18),
+                Color.FromArgb(
+                    224,
+                    12,
+                    15,
+                    18),
                 host,
                 view,
-                new Rectangle(250, 200, 460, 240),
+                new Rectangle(
+                    250,
+                    200,
+                    460,
+                    240),
                 "pause-panel")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(240, 219, 198, 133))
+            .SetBorderColor(
+                Color.FromArgb(
+                    240,
+                    219,
+                    198,
+                    133))
             .SetStrokeWidth(3f)
             .SetCornerRadius(12f);
+
         _pausePanel.ZOrder = 1500;
 
         _pauseText = new TextBlock(
                 host,
                 view,
-                new Rectangle(275, 225, 410, 190),
+                new Rectangle(
+                    275,
+                    225,
+                    410,
+                    190),
                 "pause-text")
             .SetText("PAUSED\n\nP / Enter / Start to continue")
             .SetFont(SKTypeface.Default, 32f, minSize: 20f)
@@ -591,6 +714,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(5)
             .UseShadow();
+
         _pauseText.ZOrder = 1501;
 
         SetMessageVisible(false);

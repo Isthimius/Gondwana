@@ -21,58 +21,103 @@ public sealed partial class MainForm : IResourceNavigator
     internal DefinitionReferenceDiscovery? DependencyScan => _dependencyScan;
     internal DependencyExplorerPanel DependencyPanel => _dependencies;
     internal Task DependencyRefresh { get; private set; } = Task.CompletedTask;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    internal Func<string, Func<string, string?>, CancellationToken, Task<DefinitionReferenceDiscovery>> InspectDependencies { get; set; } =
+    internal Func<string, Func<string, string?>, CancellationToken, Task<DefinitionReferenceDiscovery>>
+        InspectDependencies
+    { get; set; } =
         (scope, credentials, token) => Task.Run(() => DefinitionReferenceDiscovery.Inspect(scope, credentials, token));
 
     /// <summary>Uses the existing document registry and editor factory without reloading an open document.</summary>
     public ResourceNavigationResult Navigate(ResourceAddress address)
     {
-        if (InvokeRequired) throw new InvalidOperationException("Studio navigation must run on its UI thread.");
+        if (InvokeRequired)
+            throw new InvalidOperationException("Studio navigation must run on its UI thread.");
+
         try
         {
             var format = StudioDocument.FormatFor(address.Location.AssetType) ??
-                (address.Location.AssetType == Gondwana.Assets.AssetTypes.Misc && address.Location.AssetEntryName is null &&
-                AssetArchiveFormat.IsArchive(address.Location.Path) ? "gaf" : null);
-            if (format is null) return new(false, false, $"No Studio definition editor supports {address.Location}.");
+                         (address.Location.AssetType == Gondwana.Assets.AssetTypes.Misc &&
+                          address.Location.AssetEntryName is null &&
+                          AssetArchiveFormat.IsArchive(address.Location.Path)
+                             ? "gaf"
+                             : null);
+
+            if (format is null)
+                return new(false, false, $"No Studio definition editor supports {address.Location}.");
+
             if (address.Location.AssetEntryName is null && StudioDocument.FormatFor(address.Location.Path) != format)
                 return new(false, false, $"Expected {format} document: {address.Location}.");
+
             var document = OpenDocument(address.Location);
+
             if (address.Member is not null && !document.Document.SelectMember(address.Member))
-                return new(true, false, $"Opened document; member '{address.Member}' is missing or ambiguous in the current editor: {address.Location}.");
+                return new(
+                    true,
+                    false,
+                    $"Opened document; member '{address.Member}' is missing or ambiguous in the current editor: {address.Location}.");
+
             document.Activate();
             document.Document.Editor.Focus();
-            return address.FieldPath is null ? new(true, true, $"Opened {address}.")
+
+            return address.FieldPath is null
+                ? new(true, true, $"Opened {address}.")
                 : new(true, false, $"Selected nearest supported member. Reference field: {address.FieldPath}");
         }
-        catch (OperationCanceledException) { return new(false, false, "Navigation cancelled; archive authentication may be required."); }
-        catch (Exception ex) { return new(false, false, $"Cannot navigate to {address}: {ex.Message}"); }
+        catch (OperationCanceledException)
+        {
+            return new(false, false, "Navigation cancelled; archive authentication may be required.");
+        }
+        catch (Exception ex)
+        {
+            return new(false, false, $"Cannot navigate to {address}: {ex.Message}");
+        }
     }
 
     private void InitializeDependencies()
     {
-        _dependencyTool = AddTool("shell.dependencies", "Dependency Explorer", _dependencies, DockState.DockRight);
-        _dependencies.RefreshRequested += () => { InvalidateDependencies(); _ = RefreshDependenciesAsync(); };
+        _dependencyTool = AddTool(
+            "shell.dependencies",
+            "Dependency Explorer",
+            _dependencies,
+            DockState.DockRight);
+
+        _dependencies.RefreshRequested += () =>
+        {
+            InvalidateDependencies();
+            _ = RefreshDependenciesAsync();
+        };
+
         _dependencies.ScopeRequested += wholeDocument =>
         {
-            if (_dependencyTarget is null || (!wholeDocument && _dependencyTarget.Member is null)) return;
+            if (_dependencyTarget is null || (!wholeDocument && _dependencyTarget.Member is null))
+                return;
+
             _dependencyWholeDocument = wholeDocument;
             UpdateDependencyScopeControls();
             _ = RefreshDependenciesAsync(); // Requery the existing scan, never rescan just to switch scope.
         };
+
         _dependencies.NavigateRequested += address =>
         {
             var result = Navigate(address);
             _output.Log(result.Message);
-            if (!result.Exact) _dependencies.SetStatus(result.Message);
+
+            if (!result.Exact)
+                _dependencies.SetStatus(result.Message);
         };
+
         Browser.Tree.ItemDrag += (_, e) =>
         {
             if (e.Button == MouseButtons.Left && e.Item is TreeNode node && DirectoryDragAddress(node) is { } address)
                 StartResourceDrag(Browser.Tree, address);
         };
+
         _dependencies.ResourceDragRequested += StartResourceDrag;
-        Browser.ReferencesRequested += (location, dependents) => ShowDependencies(new(location), follow: false, dependents);
+
+        Browser.ReferencesRequested +=
+            (location, dependents) => ShowDependencies(new(location), follow: false, dependents);
+
         _dependencies.InspectRequested += (address, dependents) => ShowDependencies(address, follow: false, dependents);
     }
 
@@ -88,15 +133,20 @@ public sealed partial class MainForm : IResourceNavigator
     }
 
     private ResourceAddress? ActiveAddress() => ActiveDocument?.Document is { Location: { } location } document
-        ? new(location, document.SelectedMember) : null;
+        ? new(location, document.SelectedMember)
+        : null;
 
     private void UpdateDependencyScopeControls() =>
-        _dependencies.SetScope(_dependencyWholeDocument || _dependencyTarget?.Member is null,
-            _dependencyTarget?.Member is not null, _dependencyTarget is not null);
+        _dependencies.SetScope(
+            _dependencyWholeDocument || _dependencyTarget?.Member is null,
+            _dependencyTarget?.Member is not null,
+            _dependencyTarget is not null);
 
     private void DependencySelectionChanged(object? sender = null, EventArgs? e = null)
     {
-        if (!_followDependencySelection || _disposed) return;
+        if (!_followDependencySelection || _disposed)
+            return;
+
         _dependencyTarget = ActiveAddress();
         UpdateDependencyScopeControls();
         _ = RefreshDependenciesAsync();
@@ -105,27 +155,37 @@ public sealed partial class MainForm : IResourceNavigator
     private void InvalidateDependencies()
     {
         _dependencyGeneration++;
-        foreach (var source in _dependencySources) source.Dispose();
+
+        foreach (var source in _dependencySources)
+            source.Dispose();
+
         _dependencySources.Clear();
         _dependencyCancellation?.Cancel();
         _dependencyCancellation?.Dispose();
         _dependencyCancellation = null;
         _dependencyScan = null;
-        if (!_disposed) _dependencies.SetStatus("Saved content changed. Refresh / Rescan to update dependencies.");
+
+        if (!_disposed)
+            _dependencies.SetStatus("Saved content changed. Refresh / Rescan to update dependencies.");
     }
 
     internal async Task RefreshDependenciesAsync()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
+
         if (_dependencyTarget is null)
         {
             UpdateDependencyScopeControls();
             _dependencies.SetStatus("Select a saved document or use Find References in the working directory.");
             return;
         }
+
         if (_dependencyScan is null)
         {
-            if (_dependencyCancellation is not null) return;
+            if (_dependencyCancellation is not null)
+                return;
+
             var cancellation = _dependencyCancellation = new CancellationTokenSource();
             var token = cancellation.Token;
             var generation = _dependencyGeneration;
@@ -133,54 +193,78 @@ public sealed partial class MainForm : IResourceNavigator
             // Never prompt or access the UI-owned credential cache from the scanner thread.
             var credentials = new Dictionary<string, string?>(_archivePasswords, StringComparer.OrdinalIgnoreCase);
             _dependencies.SetStatus($"Scanning saved content in {scope}…");
+
             try
             {
                 var scan = await Browser.RunArchiveReadAsync(
-                    () => InspectDependencies(scope, path => credentials.GetValueOrDefault(path), token), token).ConfigureAwait(false);
-                await Task.Run(() =>
-                {
-                    foreach (var (path, version) in scan.SourceVersions)
+                    () => InspectDependencies(scope, path => credentials.GetValueOrDefault(path), token),
+                    token).ConfigureAwait(false);
+
+                await Task.Run(
+                    () =>
                     {
-                        token.ThrowIfCancellationRequested();
-                        DocumentSourceSave.Verify(new(Gondwana.Assets.AssetTypes.Misc, path), version);
-                    }
-                }, token).ConfigureAwait(false);
-                await OnDependencyUiAsync(() =>
-                {
-                    if (_disposed || generation != _dependencyGeneration || token.IsCancellationRequested) return;
-                    _dependencyScan = scan;
-                    RegisterDependencyScanSources(scan, generation);
-                    _dependencyCancellation = null;
-                    PresentDependencies();
-                }, token).ConfigureAwait(false);
+                        foreach (var (path, version) in scan.SourceVersions)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            DocumentSourceSave.Verify(new(Gondwana.Assets.AssetTypes.Misc, path), version);
+                        }
+                    },
+                    token).ConfigureAwait(false);
+
+                await OnDependencyUiAsync(
+                    () =>
+                    {
+                        if (_disposed || generation != _dependencyGeneration || token.IsCancellationRequested)
+                            return;
+
+                        _dependencyScan = scan;
+                        RegisterDependencyScanSources(scan, generation);
+                        _dependencyCancellation = null;
+                        PresentDependencies();
+                    },
+                    token).ConfigureAwait(false);
             }
-            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+            }
             catch (Exception ex)
             {
                 try
                 {
-                    await OnDependencyUiAsync(() =>
-                    {
-                        if (!_disposed && generation == _dependencyGeneration)
+                    await OnDependencyUiAsync(
+                        () =>
                         {
-                            _dependencyCancellation = null;
-                            _dependencies.SetStatus($"Scan failed: {ex.Message}");
-                        }
-                    }, token).ConfigureAwait(false);
+                            if (!_disposed && generation == _dependencyGeneration)
+                            {
+                                _dependencyCancellation = null;
+                                _dependencies.SetStatus($"Scan failed: {ex.Message}");
+                            }
+                        },
+                        token).ConfigureAwait(false);
                 }
-                catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
+                {
+                }
             }
-            finally { credentials.Clear(); cancellation.Dispose(); }
+            finally
+            {
+                credentials.Clear();
+                cancellation.Dispose();
+            }
+
             return;
         }
+
         PresentDependencies();
     }
 
     private void PresentDependencies()
     {
         if (_dependencyTarget is not null && _dependencyScan is not null && !_disposed)
-            _dependencies.ShowResults(_dependencyWholeDocument ? new ResourceAddress(_dependencyTarget.Location) : _dependencyTarget,
-                _dependencyScan, _documents.Any(d => d.Document.Dirty()));
+            _dependencies.ShowResults(
+                _dependencyWholeDocument ? new ResourceAddress(_dependencyTarget.Location) : _dependencyTarget,
+                _dependencyScan,
+                _documents.Any(d => d.Document.Dirty()));
     }
 
     private void RegisterDependencyScanSources(DefinitionReferenceDiscovery scan, long generation)
@@ -189,15 +273,25 @@ public sealed partial class MainForm : IResourceNavigator
         // additions outside this inventory still require explicit Refresh / Rescan.
         foreach (var (path, version) in scan.SourceVersions)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(path))) continue;
-            _dependencySources.Add(_sourceMonitor.Register(new(Gondwana.Assets.AssetTypes.Misc, path), version,
-                DocumentSourceRole.Dependency, change => _dependencyUi.Post(_ =>
-                {
-                    if (_disposed || generation != _dependencyGeneration) return;
-                    InvalidateDependencies();
-                    _packages.Invalidate(change.Location.Path);
-                    QueueSourceBrowserRefresh();
-                }, null)));
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                continue;
+
+            _dependencySources.Add(
+                _sourceMonitor.Register(
+                    new(Gondwana.Assets.AssetTypes.Misc, path),
+                    version,
+                    DocumentSourceRole.Dependency,
+                    change => _dependencyUi.Post(
+                        _ =>
+                        {
+                            if (_disposed || generation != _dependencyGeneration)
+                                return;
+
+                            InvalidateDependencies();
+                            _packages.Invalidate(change.Location.Path);
+                            QueueSourceBrowserRefresh();
+                        },
+                        null)));
         }
     }
 
@@ -206,12 +300,25 @@ public sealed partial class MainForm : IResourceNavigator
         token.ThrowIfCancellationRequested();
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var registration = token.Register(() => completion.TrySetCanceled(token));
-        _dependencyUi.Post(_ =>
-        {
-            if (token.IsCancellationRequested) return;
-            try { action(); completion.TrySetResult(); }
-            catch (Exception ex) { completion.TrySetException(ex); }
-        }, null);
+
+        _dependencyUi.Post(
+            _ =>
+            {
+                if (token.IsCancellationRequested)
+                    return;
+
+                try
+                {
+                    action();
+                    completion.TrySetResult();
+                }
+                catch (Exception ex)
+                {
+                    completion.TrySetException(ex);
+                }
+            },
+            null);
+
         await completion.Task.ConfigureAwait(false);
     }
 }

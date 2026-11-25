@@ -43,8 +43,10 @@ public sealed class SvgResource : IDisposable
             throw new InvalidOperationException("Failed to parse SVG content.");
 
         var cull = svg.Picture.CullRect;
-        var intrinsic = new SizeF(cull.Width > 0 ? cull.Width : 1f,
-                                  cull.Height > 0 ? cull.Height : 1f);
+
+        var intrinsic = new SizeF(
+            cull.Width > 0 ? cull.Width : 1f,
+            cull.Height > 0 ? cull.Height : 1f);
 
         return new SvgResource(svg.Picture, intrinsic);
     }
@@ -79,14 +81,24 @@ public sealed class SvgResource : IDisposable
             if (_cachedBitmaps.TryGetValue((width, height), out var cachedBitmap))
                 return cachedBitmap;
 
-            var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+            var bitmap = new SKBitmap(
+                width,
+                height,
+                SKColorType.Bgra8888,
+                SKAlphaType.Premul);
+
             using var canvas = new SKCanvas(bitmap);
             canvas.Clear(SKColors.Transparent);
 
             var src = _picture.CullRect;
+
             if (src.Width <= 0 || src.Height <= 0)
             {
-                src = new SKRect(0, 0, Math.Max(1f, IntrinsicSize.Width), Math.Max(1f, IntrinsicSize.Height));
+                src = new SKRect(
+                    0,
+                    0,
+                    Math.Max(1f, IntrinsicSize.Width),
+                    Math.Max(1f, IntrinsicSize.Height));
             }
 
             canvas.Scale(width / src.Width, height / src.Height);

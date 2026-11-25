@@ -11,5 +11,11 @@ public sealed partial class AssetRelocationPlan
     /// <param name="checkpoint">Checkpoint observer.</param>
     /// <param name="cancellation">Cancellation token.</param>
     internal void CommitCore(Action<string, int>? checkpoint, CancellationToken cancellation)
-        => new AssetFileTransaction(_scan, _looseWrites, _archiveWrites, _removals, _mappings, _preview).CommitCore(checkpoint, cancellation);
+        => new AssetFileTransaction(
+            _scan,
+            _looseWrites,
+            _archiveWrites,
+            _removals,
+            _mappings,
+            _preview).CommitCore(checkpoint, cancellation);
 }

@@ -23,7 +23,13 @@ public sealed class SpriteGsprTests
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap($"gspr-{Guid.NewGuid()}", new SKBitmap(32, 16));
         sheet.DefaultRegion.TileSize = new Size(16, 16);
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            2,
+            16,
+            16);
+
         var original = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(1, 0), "player");
         original.SetPosition(new Vector2(1.25f, -2.75f));
         original.RenderSize = new Size(27, 39);
@@ -39,6 +45,7 @@ public sealed class SpriteGsprTests
         var loaded = SpriteDefinitionSerializer.FromJson(json);
         Assert.Equal(count, SpriteManager.Instance.AllSprites.Count);
         var restored = Assert.Single(SpriteDefinitionSerializer.ToSprites(loaded));
+
         try
         {
             Assert.Same(layer, restored.SceneLayer);
@@ -67,16 +74,25 @@ public sealed class SpriteGsprTests
     {
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap($"gspr-{Guid.NewGuid()}", new SKBitmap(16, 16));
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         var definition = new SpriteDefinition();
+
         foreach (var name in new[] { "first", "second" })
-            definition.Sprites.Add(new()
-            {
-                Nickname = name,
-                SceneId = scene.ID,
-                SceneLayerId = layer.ID,
-                Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name }
-            });
+            definition.Sprites.Add(
+                new()
+                {
+                    Nickname = name,
+                    SceneId = scene.ID,
+                    SceneLayerId = layer.ID,
+                    Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name }
+                });
+
         definition.Sprites[1].SceneLayerId = "missing";
         var count = SpriteManager.Instance.AllSprites.Count;
         Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.ToSprites(definition));

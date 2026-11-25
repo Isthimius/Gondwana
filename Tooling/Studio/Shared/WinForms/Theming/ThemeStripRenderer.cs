@@ -1,6 +1,7 @@
 namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
-public sealed class ThemeStripRenderer(ToolingPalette palette) : ToolStripProfessionalRenderer(new ThemeColorTable(palette))
+public sealed class ThemeStripRenderer(ToolingPalette palette)
+    : ToolStripProfessionalRenderer(new ThemeColorTable(palette))
 {
     protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
     {

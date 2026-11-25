@@ -19,6 +19,7 @@ internal enum Inheritance
     /// </summary>
     Override
 }
+
 internal enum FrameCollisionChoice
 {
     /// <summary>
@@ -50,7 +51,11 @@ internal sealed class PropertyFields : CustomTypeDescriptor
 
     public PropertyFields(TilesheetDocument? document = null) => _document = document;
 
-    private void Edit(object model, string name, Action change, Action changed)
+    private void Edit(
+        object model,
+        string name,
+        Action change,
+        Action changed)
     {
         if (_document is not null)
             _document.Edit(model, "Change " + name, change);
@@ -77,12 +82,23 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="get">Callback reading the current value.</param>
     /// <param name="set">Callback assigning a value, or null for a read-only property.</param>
     /// <param name="description">Help text displayed when the property is selected.</param>
-    public void Add<T>(string name, string category, Func<T> get, Action<T>? set = null, string description = "")
+    public void Add<T>(
+        string name,
+        string category,
+        Func<T> get,
+        Action<T>? set = null,
+        string description = "")
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException($"Missing help text for {name}.", nameof(description));
 
-        _fields.Add(new Field<T>(name, category, get, set, description));
+        _fields.Add(
+            new Field<T>(
+                name,
+                category,
+                get,
+                set,
+                description));
     }
 
     /// <summary>Adds writable scalar properties and writable integer components of value-type properties using reflection.</summary>
@@ -95,8 +111,11 @@ internal sealed class PropertyFields : CustomTypeDescriptor
 
         if (model is TilesheetRegionDefinition)
         {
-            string[] ordered = ["Name", "Area", "TileSize", "RegionMargin", "Overhang", "TilePadding",
-                "CollisionType", "CollisionAdjust"];
+            string[] ordered =
+            [
+                "Name", "Area", "TileSize", "RegionMargin", "Overhang", "TilePadding",
+                "CollisionType", "CollisionAdjust"
+            ];
 
             properties = properties.OrderBy(p =>
             {
@@ -108,66 +127,102 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         foreach (var property in properties)
         {
             // Group the region's metadata by purpose instead of giving each field its own heading.
-            string? category = model is TilesheetRegionDefinition ? property.Name switch
-            {
-                // WinForms orders category headings alphabetically; a leading space puts
-                // identity first without adding a separate PropertyGrid or changing its label.
-                nameof(TilesheetRegionDefinition.Name) => " Region",
-                nameof(TilesheetRegionDefinition.Area) or nameof(TilesheetRegionDefinition.TileSize)
-                    or nameof(TilesheetRegionDefinition.TilePadding) or nameof(TilesheetRegionDefinition.RegionMargin)
-                    or nameof(TilesheetRegionDefinition.Overhang) => "Geometry",
-                nameof(TilesheetRegionDefinition.CollisionAdjust) or nameof(TilesheetRegionDefinition.CollisionType) => "Collision",
-                _ => null
-            } : null;
+            string? category = model is TilesheetRegionDefinition
+                ? property.Name switch
+                {
+                    // WinForms orders category headings alphabetically; a leading space puts
+                    // identity first without adding a separate PropertyGrid or changing its label.
+                    nameof(TilesheetRegionDefinition.Name) => " Region",
+                    nameof(TilesheetRegionDefinition.Area) or nameof(TilesheetRegionDefinition.TileSize)
+                        or nameof(TilesheetRegionDefinition.TilePadding)
+                        or nameof(TilesheetRegionDefinition.RegionMargin)
+                        or nameof(TilesheetRegionDefinition.Overhang) => "Geometry",
+                    nameof(TilesheetRegionDefinition.CollisionAdjust)
+                        or nameof(TilesheetRegionDefinition.CollisionType) => "Collision",
+                    _ => null
+                }
+                : null;
 
             if (model is TilesheetRegionDefinition && property.Name is
-                nameof(TilesheetRegionDefinition.Area) or
-                nameof(TilesheetRegionDefinition.TileSize) or
-                nameof(TilesheetRegionDefinition.TilePadding) or
-                nameof(TilesheetRegionDefinition.RegionMargin) or
-                nameof(TilesheetRegionDefinition.Overhang) or
-                nameof(TilesheetRegionDefinition.CollisionAdjust))
+                    nameof(TilesheetRegionDefinition.Area) or
+                    nameof(TilesheetRegionDefinition.TileSize) or
+                    nameof(TilesheetRegionDefinition.TilePadding) or
+                    nameof(TilesheetRegionDefinition.RegionMargin) or
+                    nameof(TilesheetRegionDefinition.Overhang) or
+                    nameof(TilesheetRegionDefinition.CollisionAdjust))
             {
                 // Use editable, expandable parent values so related components stay together.
                 // The reflected setter writes the complete value type back to the model,
                 // preserving document history and property-grid child edits.
-                AddReflected(model, [property], changed, category);
+                AddReflected(
+                    model,
+                    [property],
+                    changed,
+                    category);
             }
-            else if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
-                AddReflected(model, [property], changed, category);
+            else if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive ||
+                     property.PropertyType.IsEnum)
+                AddReflected(
+                    model,
+                    [property],
+                    changed,
+                    category);
             else if (property.PropertyType.IsValueType)
-                foreach (var child in property.PropertyType.GetProperties().Where(p => p.CanWrite && p.PropertyType == typeof(int)))
-                    AddReflected(model, [property, child], changed, category);
+                foreach (var child in property.PropertyType.GetProperties()
+                             .Where(p => p.CanWrite && p.PropertyType == typeof(int)))
+                    AddReflected(
+                        model,
+                        [property, child],
+                        changed,
+                        category);
         }
     }
 
-    private void AddReflected(object model, PropertyInfo[] path, Action changed, string? category = null)
+    private void AddReflected(
+        object model,
+        PropertyInfo[] path,
+        Action changed,
+        string? category = null)
     {
         var leaf = path[^1];
 
         object? Read()
         {
             object? value = model;
-            foreach (var p in path) value = p.GetValue(value);
+
+            foreach (var p in path)
+                value = p.GetValue(value);
+
             return value;
         }
 
         void Write(object? value)
         {
-            Edit(model, string.Join(".", path.Select(p => p.Name)), () =>
-            {
-                if (path.Length == 1)
-                    leaf.SetValue(model, value);
-                else
+            Edit(
+                model,
+                string.Join(".", path.Select(p => p.Name)),
+                () =>
                 {
-                    var boxed = path[0].GetValue(model)!;
-                    leaf.SetValue(boxed, value);
-                    path[0].SetValue(model, boxed);
-                }
-            }, changed);
+                    if (path.Length == 1)
+                        leaf.SetValue(model, value);
+                    else
+                    {
+                        var boxed = path[0].GetValue(model)!;
+                        leaf.SetValue(boxed, value);
+                        path[0].SetValue(model, boxed);
+                    }
+                },
+                changed);
         }
 
-        _fields.Add(new ReflectedField(string.Join(".", path.Select(p => p.Name)), category ?? path[0].Name, leaf.PropertyType, Read, Write, DescribeReflected(path)));
+        _fields.Add(
+            new ReflectedField(
+                string.Join(".", path.Select(p => p.Name)),
+                category ?? path[0].Name,
+                leaf.PropertyType,
+                Read,
+                Write,
+                DescribeReflected(path)));
     }
 
     private static string DescribeReflected(PropertyInfo[] path)
@@ -191,10 +246,13 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             },
             "TileSize" => $"Frame {edge} in source-image pixels; changing this adjusts the frame grid.",
             "RegionMargin" => $"Unused {edge}-edge margin between the region rectangle and the frame grid, in pixels.",
-            "TilePadding" => $"Unused {edge}-edge padding around each frame; adjacent frames include both adjoining padding edges.",
+            "TilePadding" =>
+                $"Unused {edge}-edge padding around each frame; adjacent frames include both adjoining padding edges.",
             "Overhang" => $"Amount of artwork extending beyond the logical tile on its {edge} side, in pixels.",
-            "CollisionAdjust" => $"Collision-box inset on the {edge} edge, in pixels. Positive shrinks; negative expands.",
-            _ => parentDescription ?? throw new InvalidOperationException($"Missing help text for {path[0].Name}.{path[^1].Name}.")
+            "CollisionAdjust" =>
+                $"Collision-box inset on the {edge} edge, in pixels. Positive shrinks; negative expands.",
+            _ => parentDescription ??
+                 throw new InvalidOperationException($"Missing help text for {path[0].Name}.{path[^1].Name}.")
         };
     }
 
@@ -204,39 +262,101 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="document">The document displayed or edited by the control.</param>
     /// <param name="changed">The callback invoked when a property changes.</param>
     /// <returns>The property descriptors for the tilesheet definition.</returns>
-    public static PropertyFields Definition(TilesheetDocument document, Action changed, System.Drawing.Size? imageSize = null)
+    public static PropertyFields Definition(
+        TilesheetDocument document,
+        Action changed,
+        System.Drawing.Size? imageSize = null)
     {
         var model = document.Definition;
         var fields = new PropertyFields(document);
-        fields.Add("Name", "Definition", () => model.Name, v => document.Edit(model, "Rename tilesheet", () => model.Name = v), "Logical tilesheet name referenced by animations, scenes, and sprites.");
-        fields.Add("Image Size", "Definition", () => imageSize ?? System.Drawing.Size.Empty,
-            description: "Dimensions of the decoded backing bitmap in source-image pixels; read-only. Zero means no image preview is available.");
-        fields.Add("PremultiplyAlpha", "Definition", () => model.PremultiplyAlpha, v => document.Edit(model, "Change alpha premultiplication", () => model.PremultiplyAlpha = v),
+
+        fields.Add(
+            "Name",
+            "Definition",
+            () => model.Name,
+            v => document.Edit(model, "Rename tilesheet", () => model.Name = v),
+            "Logical tilesheet name referenced by animations, scenes, and sprites.");
+
+        fields.Add(
+            "Image Size",
+            "Definition",
+            () => imageSize ?? System.Drawing.Size.Empty,
+            description:
+            "Dimensions of the decoded backing bitmap in source-image pixels; read-only. Zero means no image preview is available.");
+
+        fields.Add(
+            "PremultiplyAlpha",
+            "Definition",
+            () => model.PremultiplyAlpha,
+            v => document.Edit(model, "Change alpha premultiplication", () => model.PremultiplyAlpha = v),
             "Multiply color channels by alpha when preparing tilesheet imagery for blending. Masking is configured separately and takes precedence at runtime when enabled.");
-        fields.Add("Image.FilePath", "Image", () => model.Image?.FilePath ?? "", v => document.SetImage(v),
+
+        fields.Add(
+            "Image.FilePath",
+            "Image",
+            () => model.Image?.FilePath ?? "",
+            v => document.SetImage(v),
             "Relative to the GTS directory. Editing this switches to a loose image source.");
-        fields.Add("Source.Kind", "Provenance (read only)", () => model.Source.Kind, description: "Read-only origin type for this tilesheet definition (loose or packed).");
-        fields.Add("Source.GtsFilePath", "Provenance (read only)", () => model.Source.GtsFilePath ?? "", description: "Original GTS document path, if loaded from a loose file; read-only.");
-        fields.Add("Source.AssetsFilePath", "Provenance (read only)", () => model.Source.AssetsFilePath ?? "", description: "Source GAF package path when this definition was loaded from a packed entry; read-only.");
-        fields.Add("Source.AssetEntryName", "Provenance (read only)", () => model.Source.AssetEntryName ?? "", description: "Name of this definition inside the source GAF package; read-only.");
-        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => document.Edit(model, "Change masking", () => model.Mask = v ? model.Mask ?? new() : null),
+
+        fields.Add(
+            "Source.Kind",
+            "Provenance (read only)",
+            () => model.Source.Kind,
+            description: "Read-only origin type for this tilesheet definition (loose or packed).");
+
+        fields.Add(
+            "Source.GtsFilePath",
+            "Provenance (read only)",
+            () => model.Source.GtsFilePath ?? "",
+            description: "Original GTS document path, if loaded from a loose file; read-only.");
+
+        fields.Add(
+            "Source.AssetsFilePath",
+            "Provenance (read only)",
+            () => model.Source.AssetsFilePath ?? "",
+            description: "Source GAF package path when this definition was loaded from a packed entry; read-only.");
+
+        fields.Add(
+            "Source.AssetEntryName",
+            "Provenance (read only)",
+            () => model.Source.AssetEntryName ?? "",
+            description: "Name of this definition inside the source GAF package; read-only.");
+
+        fields.Add(
+            "Mask enabled",
+            "Mask",
+            () => model.Mask is not null,
+            v => document.Edit(model, "Change masking", () => model.Mask = v ? model.Mask ?? new() : null),
             "Enable color-key masking. Choose an RGB color below; alpha is stored but ignored during runtime matching.");
+
         if (model.Mask is { } mask)
         {
-            fields.Add("Color", "Mask", () => new MaskRgb(mask.Red, mask.Green, mask.Blue),
-                color => document.Edit(mask, "Change mask color", () =>
-                {
-                    mask.Red = color.Red;
-                    mask.Green = color.Green;
-                    mask.Blue = color.Blue;
-                }),
+            fields.Add(
+                "Color",
+                "Mask",
+                () => new MaskRgb(mask.Red, mask.Green, mask.Blue),
+                color => document.Edit(
+                    mask,
+                    "Change mask color",
+                    () =>
+                    {
+                        mask.Red = color.Red;
+                        mask.Green = color.Green;
+                        mask.Blue = color.Blue;
+                    }),
                 "RGB color to match for transparency masking. Use the builder button to open the color picker.");
 
-            fields.Add("Alpha", "Mask", () => mask.Alpha,
+            fields.Add(
+                "Alpha",
+                "Mask",
+                () => mask.Alpha,
                 value => document.Edit(mask, "Change mask alpha", () => mask.Alpha = value),
                 "Stored alpha component (0 to 255); runtime mask matching uses only RGB and ignores alpha.");
 
-            fields.Add("Tolerance", "Mask", () => mask.Tolerance,
+            fields.Add(
+                "Tolerance",
+                "Mask",
+                () => mask.Tolerance,
                 value => document.Edit(mask, "Change mask tolerance", () => mask.Tolerance = value),
                 "Maximum allowed difference per RGB component when matching the mask color; 0 requires an exact match.");
         }
@@ -251,40 +371,100 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <param name="y">Zero-based frame row.</param>
     /// <param name="changed">Callback responsible for notifying the editor of a mutation.</param>
     /// <returns>Property descriptors reading the frame override or inherited region values.</returns>
-    public static PropertyFields Frame(TilesheetDocument document, TilesheetRegionDefinition region, int x, int y, Action changed)
+    public static PropertyFields Frame(
+        TilesheetDocument document,
+        TilesheetRegionDefinition region,
+        int x,
+        int y,
+        Action changed)
     {
         var fields = new PropertyFields(document);
         TilesheetFrameDefinition? Current() => document.FindFrame(region, x, y);
-        fields.Add("XTile", " Coordinates (read only)", () => x, description: "Zero-based frame column within this region; read-only.");
-        fields.Add("YTile", " Coordinates (read only)", () => y, description: "Zero-based frame row within this region; read-only.");
-        fields.Add("CollisionAdjust mode", "Collision", () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
-            v => document.EditFrame(region, x, y, "Change frame collision insets", frame => frame.CollisionAdjust = v == Inheritance.InheritRegion ? null : frame.CollisionAdjust ?? region.CollisionAdjust), "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
-        fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
-            v => document.EditFrame(region, x, y, "Change frame collision type", frame => frame.CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString())), "Choose inherited region behavior, None for no collider, Blocking, or Trigger for non-blocking contact.");
+
+        fields.Add(
+            "XTile",
+            " Coordinates (read only)",
+            () => x,
+            description: "Zero-based frame column within this region; read-only.");
+
+        fields.Add(
+            "YTile",
+            " Coordinates (read only)",
+            () => y,
+            description: "Zero-based frame row within this region; read-only.");
+
+        fields.Add(
+            "CollisionAdjust mode",
+            "Collision",
+            () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
+            v => document.EditFrame(
+                region,
+                x,
+                y,
+                "Change frame collision insets",
+                frame => frame.CollisionAdjust =
+                    v == Inheritance.InheritRegion ? null : frame.CollisionAdjust ?? region.CollisionAdjust),
+            "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
+
+        fields.Add(
+            "CollisionType",
+            "Collision",
+            () => Current()?.CollisionType is { } t
+                ? Enum.Parse<FrameCollisionChoice>(t.ToString())
+                : FrameCollisionChoice.InheritRegion,
+            v => document.EditFrame(
+                region,
+                x,
+                y,
+                "Change frame collision type",
+                frame => frame.CollisionType = v == FrameCollisionChoice.InheritRegion
+                    ? null
+                    : Enum.Parse<TileCollisionType>(v.ToString())),
+            "Choose inherited region behavior, None for no collider, Blocking, or Trigger for non-blocking contact.");
 
         foreach (string edge in new[] { "Top", "Right", "Bottom", "Left" })
         {
             var property = typeof(CollisionAdjust).GetProperty(edge)!;
             bool inherited = Current()?.CollisionAdjust is null;
 
-            fields.Add(property.Name, "Collision", () => (int)property.GetValue(Current()?.CollisionAdjust ?? region.CollisionAdjust)!,
-                inherited ? null : v =>
-                {
-                    object boxed = Current()!.CollisionAdjust!.Value;
-                    property.SetValue(boxed, v);
-                    document.EditFrame(region, x, y, "Change frame collision inset", frame => frame.CollisionAdjust = (CollisionAdjust)boxed);
-                }, inherited ? $"Collision inset on the {property.Name.ToLowerInvariant()} side; inherited from the region. Select Override to edit." : $"Collision inset on the {property.Name.ToLowerInvariant()} side. Positive shrinks the box; negative expands it.");
+            fields.Add(
+                property.Name,
+                "Collision",
+                () => (int)property.GetValue(Current()?.CollisionAdjust ?? region.CollisionAdjust)!,
+                inherited
+                    ? null
+                    : v =>
+                    {
+                        object boxed = Current()!.CollisionAdjust!.Value;
+                        property.SetValue(boxed, v);
+
+                        document.EditFrame(
+                            region,
+                            x,
+                            y,
+                            "Change frame collision inset",
+                            frame => frame.CollisionAdjust = (CollisionAdjust)boxed);
+                    },
+                inherited
+                    ? $"Collision inset on the {property.Name.ToLowerInvariant()} side; inherited from the region. Select Override to edit."
+                    : $"Collision inset on the {property.Name.ToLowerInvariant()} side. Positive shrinks the box; negative expands it.");
         }
 
         return fields;
     }
 
-    private sealed class Field<T>(string name, string category, Func<T> get, Action<T>? set, string description)
+    private sealed class Field<T>(
+        string name,
+        string category,
+        Func<T> get,
+        Action<T>? set,
+        string description)
         : PropertyDescriptor(name, AttributesFor(category, description))
     {
         private static Attribute[] AttributesFor(string category, string description)
         {
             List<Attribute> attributes = [new CategoryAttribute(category), new DescriptionAttribute(description)];
+
             if (typeof(T) == typeof(MaskRgb))
             {
                 // The property descriptors also compile into platform-neutral Gondwana.Tests.
@@ -328,10 +508,26 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         public override bool ShouldSerializeValue(object component) => false;
     }
 
-    private sealed class ReflectedField(string name, string category, Type type, Func<object?> get, Action<object?> set, string description)
-        : PropertyDescriptor(name, AttributesFor(name, category, type, description))
+    private sealed class ReflectedField(
+        string name,
+        string category,
+        Type type,
+        Func<object?> get,
+        Action<object?> set,
+        string description)
+        : PropertyDescriptor(
+            name,
+            AttributesFor(
+                name,
+                category,
+                type,
+                description))
     {
-        private static Attribute[] AttributesFor(string name, string category, Type type, string description)
+        private static Attribute[] AttributesFor(
+            string name,
+            string category,
+            Type type,
+            string description)
         {
             string displayName = name switch
             {
@@ -394,24 +590,43 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     internal sealed class MaskRgbConverter : ExpandableObjectConverter
     {
         public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
-        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+
+        public override PropertyDescriptorCollection GetProperties(
+            ITypeDescriptorContext? context,
+            object? value,
+            Attribute[]? attributes)
         {
             var properties = TypeDescriptor.GetProperties(typeof(MaskRgb), attributes ?? []);
-            return new PropertyDescriptorCollection(new[] { "Red", "Green", "Blue" }.Select(name =>
-                TypeDescriptor.CreateProperty(typeof(MaskRgb), properties[name]!, NotifyParentPropertyAttribute.Yes)).ToArray(), true);
+
+            return new PropertyDescriptorCollection(
+                new[] { "Red", "Green", "Blue" }.Select(name =>
+                    TypeDescriptor.CreateProperty(
+                        typeof(MaskRgb),
+                        properties[name]!,
+                        NotifyParentPropertyAttribute.Yes)).ToArray(),
+                true);
         }
 
         public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
+
         public override object CreateInstance(ITypeDescriptorContext? context, System.Collections.IDictionary values) =>
             new MaskRgb((byte)values["Red"]!, (byte)values["Green"]!, (byte)values["Blue"]!);
 
         public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
             destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
-        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture,
-            object? value, Type destinationType) =>
+
+        public override object? ConvertTo(
+            ITypeDescriptorContext? context,
+            System.Globalization.CultureInfo? culture,
+            object? value,
+            Type destinationType) =>
             destinationType == typeof(string) && value is MaskRgb rgb
                 ? $"{rgb.Red}, {rgb.Green}, {rgb.Blue}"
-                : base.ConvertTo(context, culture, value, destinationType);
+                : base.ConvertTo(
+                    context,
+                    culture,
+                    value,
+                    destinationType);
     }
 
     /// <summary>GTS collision insets expand in CSS order: top, right, bottom, left.</summary>
@@ -421,27 +636,47 @@ internal sealed class PropertyFields : CustomTypeDescriptor
 
         public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
 
-        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
+        public override PropertyDescriptorCollection GetProperties(
+            ITypeDescriptorContext? context,
+            object? value,
+            Attribute[]? attributes)
         {
             var properties = TypeDescriptor.GetProperties(typeof(CollisionAdjust), attributes ?? []);
-            return new PropertyDescriptorCollection(Edges.Select(edge =>
-                TypeDescriptor.CreateProperty(typeof(CollisionAdjust), properties[edge]!,
-                    new DescriptionAttribute($"Collision inset on the {edge.ToLowerInvariant()} edge; positive shrinks, negative expands."),
-                    NotifyParentPropertyAttribute.Yes)).ToArray(), true);
+
+            return new PropertyDescriptorCollection(
+                Edges.Select(edge =>
+                    TypeDescriptor.CreateProperty(
+                        typeof(CollisionAdjust),
+                        properties[edge]!,
+                        new DescriptionAttribute(
+                            $"Collision inset on the {edge.ToLowerInvariant()} edge; positive shrinks, negative expands."),
+                        NotifyParentPropertyAttribute.Yes)).ToArray(),
+                true);
         }
 
         public override bool GetCreateInstanceSupported(ITypeDescriptorContext? context) => true;
 
         public override object CreateInstance(ITypeDescriptorContext? context, System.Collections.IDictionary values) =>
-            new CollisionAdjust((int)values["Top"]!, (int)values["Bottom"]!, (int)values["Left"]!, (int)values["Right"]!);
+            new CollisionAdjust(
+                (int)values["Top"]!,
+                (int)values["Bottom"]!,
+                (int)values["Left"]!,
+                (int)values["Right"]!);
 
         public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) =>
             destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 
-        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture,
-            object? value, Type destinationType) =>
+        public override object? ConvertTo(
+            ITypeDescriptorContext? context,
+            System.Globalization.CultureInfo? culture,
+            object? value,
+            Type destinationType) =>
             destinationType == typeof(string) && value is CollisionAdjust insets
                 ? $"{insets.Top}, {insets.Right}, {insets.Bottom}, {insets.Left}"
-                : base.ConvertTo(context, culture, value, destinationType);
+                : base.ConvertTo(
+                    context,
+                    culture,
+                    value,
+                    destinationType);
     }
 }

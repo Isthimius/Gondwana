@@ -16,8 +16,12 @@ public sealed class ReferenceRelocation
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(destination);
+
         if (source.AssetType != destination.AssetType)
-            throw new ArgumentException($"Incompatible relocation from {source.AssetType} to {destination.AssetType}.", nameof(destination));
+            throw new ArgumentException(
+                $"Incompatible relocation from {source.AssetType} to {destination.AssetType}.",
+                nameof(destination));
+
         Source = source;
         Destination = destination;
     }

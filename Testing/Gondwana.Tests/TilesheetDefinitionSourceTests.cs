@@ -102,7 +102,8 @@ public sealed class TilesheetDefinitionSourceTests
     [InlineData("   ")]
     public void PackedDefinitionFile_NullOrWhitespaceAssetsPath_ThrowsArgumentException(string? assetsPath)
     {
-        Assert.Throws<ArgumentException>(() => TilesheetDefinitionSource.PackedDefinitionFile(assetsPath!, "entry.gts"));
+        Assert.Throws<ArgumentException>(() =>
+            TilesheetDefinitionSource.PackedDefinitionFile(assetsPath!, "entry.gts"));
     }
 
     /// <summary>
@@ -115,7 +116,8 @@ public sealed class TilesheetDefinitionSourceTests
     [InlineData("   ")]
     public void PackedDefinitionFile_NullOrWhitespaceEntryName_ThrowsArgumentException(string? entryName)
     {
-        Assert.Throws<ArgumentException>(() => TilesheetDefinitionSource.PackedDefinitionFile("/data/assets.gaf", entryName!));
+        Assert.Throws<ArgumentException>(() =>
+            TilesheetDefinitionSource.PackedDefinitionFile("/data/assets.gaf", entryName!));
     }
 
     // -----------------------------------------------------------------------

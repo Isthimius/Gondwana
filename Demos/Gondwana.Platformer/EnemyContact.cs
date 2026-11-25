@@ -4,12 +4,17 @@ namespace Gondwana.Demos.Platformer;
 
 internal static class EnemyContact
 {
-    internal static bool IsStomp(Rectangle previousPlayer, Rectangle player,
-        Rectangle previousEnemy, Rectangle enemy, float verticalVelocity)
+    internal static bool IsStomp(
+        Rectangle previousPlayer,
+        Rectangle player,
+        Rectangle previousEnemy,
+        Rectangle enemy,
+        float verticalVelocity)
     {
         // Test the top crossing before overlap, so a fast fall cannot tunnel through the head.
         var oldGap = previousPlayer.Bottom - previousEnemy.Top;
         var newGap = player.Bottom - enemy.Top;
+
         if (verticalVelocity <= 0f || oldGap > 1 || newGap < 0 || newGap <= oldGap)
             return false;
 

@@ -86,8 +86,7 @@ public sealed class TypedValueBag : ICloneable
     /// This data is intentionally not preserved by JSON serialization.
     /// </para>
     /// </summary>
-    [JsonIgnore]
-    private readonly Dictionary<string, object?> _data = new();
+    [JsonIgnore] private readonly Dictionary<string, object?> _data = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TypedValueBag"/> class.

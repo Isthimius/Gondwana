@@ -30,10 +30,15 @@ public sealed class WidgetsTests : IDisposable
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var checkBox = new CheckBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 180, 28),
+            new Rectangle(
+                10,
+                20,
+                180,
+                28),
             "Music");
 
         bool? changedTo = null;
@@ -59,7 +64,11 @@ public sealed class WidgetsTests : IDisposable
         using var first = new RadioButtonWidget(
             host,
             view,
-            new Rectangle(10, 20, 180, 28),
+            new Rectangle(
+                10,
+                20,
+                180,
+                28),
             "Windowed",
             group,
             isSelected: true);
@@ -67,7 +76,11 @@ public sealed class WidgetsTests : IDisposable
         using var second = new RadioButtonWidget(
             host,
             view,
-            new Rectangle(10, 52, 180, 28),
+            new Rectangle(
+                10,
+                52,
+                180,
+                28),
             "Fullscreen",
             group);
 
@@ -86,10 +99,15 @@ public sealed class WidgetsTests : IDisposable
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var listBox = new ListBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 180, 64),
+            new Rectangle(
+                10,
+                20,
+                180,
+                64),
             ["One", "Two", "Three", "Four", "Five", "Six"]);
 
         listBox.ItemHeight = 20;
@@ -108,13 +126,24 @@ public sealed class WidgetsTests : IDisposable
     public void ComboBoxWidget_NavigationKeepsDropDownOpenUntilSelectionIsCommitted()
     {
         using var host = new TestRenderSurfaceHost();
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         View view = AddView(host);
         router.Start();
+
         using var comboBox = new ComboBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 200, 32),
+            new Rectangle(
+                10,
+                20,
+                200,
+                32),
             ["Easy", "Normal", "Hard"]);
 
         comboBox.OpenDropDown();
@@ -144,20 +173,34 @@ public sealed class WidgetsTests : IDisposable
     public void ComboBoxWidget_LosingDropDownFocus_CollapsesWithoutStealingFocus()
     {
         using var host = new TestRenderSurfaceHost();
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         View view = AddView(host);
         router.Start();
 
         using var comboBox = new ComboBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 200, 32),
+            new Rectangle(
+                10,
+                20,
+                200,
+                32),
             ["Easy", "Normal", "Hard"]);
 
         using var otherButton = new ButtonWidget(
             host,
             view,
-            new Rectangle(10, 70, 120, 32),
+            new Rectangle(
+                10,
+                70,
+                120,
+                32),
             "Other");
 
         comboBox.Show();
@@ -181,10 +224,15 @@ public sealed class WidgetsTests : IDisposable
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var textBox = new TextBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 220, 32),
+            new Rectangle(
+                10,
+                20,
+                220,
+                32),
             text: "ac");
 
         textBox.CaretIndex = 1;
@@ -213,10 +261,15 @@ public sealed class WidgetsTests : IDisposable
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var textBox = new TextBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 220, 32));
+            new Rectangle(
+                10,
+                20,
+                220,
+                32));
 
         Assert.Equal(1.25, textBox.InitialKeyRepeatDelaySeconds);
         Assert.Equal(0.05, textBox.RepeatedKeyIntervalSeconds);
@@ -256,13 +309,21 @@ public sealed class WidgetsTests : IDisposable
         using var first = new StackingTestDialog(
             host,
             view,
-            new Rectangle(20, 20, 260, 180),
+            new Rectangle(
+                20,
+                20,
+                260,
+                180),
             "First");
 
         using var second = new StackingTestDialog(
             host,
             view,
-            new Rectangle(60, 60, 260, 180),
+            new Rectangle(
+                60,
+                60,
+                260,
+                180),
             "Second");
 
         first.Show();
@@ -288,10 +349,15 @@ public sealed class WidgetsTests : IDisposable
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var conversation = new ConversationBox(
             host,
             view,
-            new Rectangle(20, 300, 500, 140),
+            new Rectangle(
+                20,
+                300,
+                500,
+                140),
             "Guard",
             "Halt!");
 
@@ -317,11 +383,52 @@ public sealed class WidgetsTests : IDisposable
         SceneLayer layer = AddLayer(host);
         Sprite sprite = CreateSprite(layer, new Vector2(2, 3));
 
-        using var checkBox = new CheckBoxWidget(host, view, new Rectangle(10, 20, 180, 28), "Music");
-        using var radioButton = new RadioButtonWidget(host, view, new Rectangle(10, 52, 180, 28), "Windowed");
-        using var listBox = new ListBoxWidget(host, view, new Rectangle(10, 84, 180, 64), ["One", "Two", "Three"]);
-        using var conversation = new ConversationBox(host, view, new Rectangle(20, 300, 500, 140), "Guard", "Halt!");
-        using var nameTag = new NameTagWidget(host, sprite, "Merchant", size: new Size(100, 24));
+        using var checkBox = new CheckBoxWidget(
+            host,
+            view,
+            new Rectangle(
+                10,
+                20,
+                180,
+                28),
+            "Music");
+
+        using var radioButton = new RadioButtonWidget(
+            host,
+            view,
+            new Rectangle(
+                10,
+                52,
+                180,
+                28),
+            "Windowed");
+
+        using var listBox = new ListBoxWidget(
+            host,
+            view,
+            new Rectangle(
+                10,
+                84,
+                180,
+                64),
+            ["One", "Two", "Three"]);
+
+        using var conversation = new ConversationBox(
+            host,
+            view,
+            new Rectangle(
+                20,
+                300,
+                500,
+                140),
+            "Guard",
+            "Halt!");
+
+        using var nameTag = new NameTagWidget(
+            host,
+            sprite,
+            "Merchant",
+            size: new Size(100, 24));
 
         conversation.ShowContinueIndicator(false);
         nameTag.ShowBackground(false);
@@ -347,10 +454,15 @@ public sealed class WidgetsTests : IDisposable
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var textBox = new TextBoxWidget(
             host,
             view,
-            new Rectangle(10, 20, 220, 32),
+            new Rectangle(
+                10,
+                20,
+                220,
+                32),
             text: "ab");
 
         textBox.CharacterResolver = null!;
@@ -381,6 +493,7 @@ public sealed class WidgetsTests : IDisposable
         sprite.NudgeY = 10;
 
         Assert.NotEqual(before.Location, nameTag.BoundsWorld.Location);
+
         Assert.Equal(
             sprite.DrawLocationWorld.Top - 24 - 6,
             nameTag.BoundsWorld.Top);
@@ -408,6 +521,7 @@ public sealed class WidgetsTests : IDisposable
 
         Assert.Equal("Shopkeeper", nameTag.Text);
         Assert.NotEqual(before.Location, nameTag.BoundsWorld.Location);
+
         Assert.Equal(
             sprite.DrawLocationWorld.Left + (sprite.DrawLocationWorld.Width - 100) / 2,
             nameTag.BoundsWorld.Left);
@@ -425,7 +539,12 @@ public sealed class WidgetsTests : IDisposable
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        var bounds = new Rectangle(0, 0, 640, 480);
+        var bounds = new Rectangle(
+            0,
+            0,
+            640,
+            480);
+
         int zOrder = host.ViewManager.Views.Count;
 
         host.ViewManager.AddView(bounds, zOrder: zOrder);
@@ -463,13 +582,22 @@ public sealed class WidgetsTests : IDisposable
             View view,
             Rectangle bounds,
             string title)
-            : base(host, view, bounds, title, showCloseButton: false)
-        {
-            ContentButton = new ButtonWidget(
+            : base(
                 host,
                 view,
-                new Rectangle(bounds.Left + 20, bounds.Top + 60, 120, 32),
-                "Content")
+                bounds,
+                title,
+                showCloseButton: false)
+        {
+            ContentButton = new ButtonWidget(
+                    host,
+                    view,
+                    new Rectangle(
+                        bounds.Left + 20,
+                        bounds.Top + 60,
+                        120,
+                        32),
+                    "Content")
                 .SetButtonZOrder(10_100);
 
             Add(ContentButton);
@@ -497,7 +625,13 @@ public sealed class WidgetsTests : IDisposable
             .GetMethod("DispatchKeyboardInput", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(
                 widget,
-                [new WidgetKeyboardEventArgs(widget, key, keyAction, modifiers)]);
+                [
+                    new WidgetKeyboardEventArgs(
+                        widget,
+                        key,
+                        keyAction,
+                        modifiers)
+                ]);
     }
 
     private static void DispatchPointerClick(
@@ -510,6 +644,13 @@ public sealed class WidgetsTests : IDisposable
             .GetMethod("DispatchPointerClick", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(
                 widget,
-                [new WidgetPointerEventArgs(widget, view, screenPositionPx, button, clickCount: 1)]);
+                [
+                    new WidgetPointerEventArgs(
+                        widget,
+                        view,
+                        screenPositionPx,
+                        button,
+                        clickCount: 1)
+                ]);
     }
 }

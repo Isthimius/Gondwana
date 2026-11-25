@@ -18,9 +18,11 @@ public sealed class MouseInputTests : IDisposable
     public void Poller_DoesNotEmitPhantomZeroScrollAfterRealScroll()
     {
         var adapter = new FakeMouseAdapter();
+
         MouseEventPoller.Initialize(
             adapter,
             new MouseEventConfiguration(trackMouseMovement: false));
+
         var deltas = new List<int>();
         MouseEventPoller.Instance!.MouseEvent += e => deltas.Add(e.ScrollDelta);
 
@@ -39,7 +41,11 @@ public sealed class MouseInputTests : IDisposable
     public void Poller_EmitsEqualWheelDeltasOnConsecutivePolls()
     {
         var adapter = new FakeMouseAdapter();
-        MouseEventPoller.Initialize(adapter, new MouseEventConfiguration(trackMouseMovement: false, secondsBetweenEvents: 0));
+
+        MouseEventPoller.Initialize(
+            adapter,
+            new MouseEventConfiguration(trackMouseMovement: false, secondsBetweenEvents: 0));
+
         var deltas = new List<int>();
         MouseEventPoller.Instance!.MouseEvent += e => deltas.Add(e.ScrollDelta);
 
@@ -58,11 +64,13 @@ public sealed class MouseInputTests : IDisposable
     public void Poller_AdvancesThrottleTimestampAfterEvent()
     {
         var adapter = new FakeMouseAdapter();
+
         MouseEventPoller.Initialize(
             adapter,
             new MouseEventConfiguration(
                 trackMouseMovement: true,
                 secondsBetweenEvents: 1));
+
         var events = 0;
         MouseEventPoller.Instance!.MouseEvent += _ => events++;
         var start = HighResTimer.TicksPerSecond;
@@ -82,6 +90,7 @@ public sealed class MouseInputTests : IDisposable
     public void Reset_DisposesAdapterAndClearsSingleton()
     {
         var adapter = new FakeMouseAdapter();
+
         MouseEventPoller.Initialize(
             adapter,
             new MouseEventConfiguration(trackMouseMovement: true));
@@ -98,22 +107,28 @@ public sealed class MouseInputTests : IDisposable
     private sealed class FakeMouseAdapter : IMouseAdapter, IDisposable
     {
         private int _scrollDelta;
+
         /// <inheritdoc/>
         public Point CurrentPosition { get; set; }
+
         /// <inheritdoc/>
         public HashSet<MouseButton> PressedButtons { get; } = [];
+
         /// <inheritdoc/>
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
+
         /// <inheritdoc/>
         public int ScrollDelta
         {
             get => Interlocked.Exchange(ref _scrollDelta, 0);
             set => _scrollDelta = value;
         }
+
         /// <summary>
         /// Gets whether the object is disposed.
         /// </summary>
         public bool IsDisposed { get; private set; }
+
         /// <inheritdoc/>
         public void Dispose() => IsDisposed = true;
     }

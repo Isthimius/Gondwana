@@ -23,7 +23,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void RequiresNet10Sdk(string? version, int exitCode)
     {
         var result = BlazorScaffoldPrerequisites.Prepare(
-            version, exitCode, skipWorkload: false,
+            version,
+            exitCode,
+            skipWorkload: false,
             checkWorkload: () => throw new InvalidOperationException("Workload check should not run."),
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
@@ -60,9 +62,16 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void CompatibleWorkloadDoesNotInstall(string manifestVersion)
     {
         var checks = 0;
+
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
-            checkWorkload: () => { checks++; return new(true, manifestVersion, null); },
+            "10.0.401",
+            0,
+            skipWorkload: false,
+            checkWorkload: () =>
+            {
+                checks++;
+                return new(true, manifestVersion, null);
+            },
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
             canPrompt: true);
@@ -81,11 +90,22 @@ public sealed class BlazorScaffoldPrerequisitesTests
         var checks = 0;
         var prompts = 0;
         var installs = 0;
+
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
+            "10.0.401",
+            0,
+            skipWorkload: false,
             checkWorkload: () => ++checks == 1 ? new(true, null, null) : new(true, "10.0.300", null),
-            confirmInstall: () => { prompts++; return true; },
-            installWorkload: () => { installs++; return 0; },
+            confirmInstall: () =>
+            {
+                prompts++;
+                return true;
+            },
+            installWorkload: () =>
+            {
+                installs++;
+                return 0;
+            },
             canPrompt: true);
 
         Assert.True(result.CanCreate);
@@ -102,8 +122,11 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void IncompatibleWorkloadPromptsForInstall()
     {
         var checks = 0;
+
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
+            "10.0.401",
+            0,
+            skipWorkload: false,
             checkWorkload: () => ++checks == 1 ? new(true, "8.0.400", null) : new(true, "10.0.300", null),
             confirmInstall: () => true,
             installWorkload: () => 0,
@@ -121,7 +144,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void DecliningInstallationAllowsScaffoldingWithoutClaimingReadiness()
     {
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
+            "10.0.401",
+            0,
+            skipWorkload: false,
             checkWorkload: () => new(true, null, null),
             confirmInstall: () => false,
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
@@ -142,8 +167,11 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void FailedInstallOrVerificationBlocksScaffolding(int installExitCode, string? afterVersion)
     {
         var checkCount = 0;
+
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
+            "10.0.401",
+            0,
+            skipWorkload: false,
             checkWorkload: () => ++checkCount == 1 ? new(true, null, null) : new(true, afterVersion, null),
             confirmInstall: () => true,
             installWorkload: () => installExitCode,
@@ -161,7 +189,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void SkipWorkloadNeverProbesPromptsOrInstalls()
     {
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: true,
+            "10.0.401",
+            0,
+            skipWorkload: true,
             checkWorkload: () => throw new InvalidOperationException("Workload check should not run."),
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
@@ -179,7 +209,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void MissingWorkloadInNonInteractiveShellGivesActionableError()
     {
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
+            "10.0.401",
+            0,
+            skipWorkload: false,
             checkWorkload: () => new(true, null, null),
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
@@ -197,7 +229,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void FailedWorkloadProbeBlocksScaffolding()
     {
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.401", 0, skipWorkload: false,
+            "10.0.401",
+            0,
+            skipWorkload: false,
             checkWorkload: () => new(false, null, "dotnet workload list failed."),
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
@@ -214,7 +248,9 @@ public sealed class BlazorScaffoldPrerequisitesTests
     public void StableMinimumSdkIsAccepted()
     {
         var result = BlazorScaffoldPrerequisites.Prepare(
-            "10.0.100", 0, skipWorkload: true,
+            "10.0.100",
+            0,
+            skipWorkload: true,
             checkWorkload: () => throw new InvalidOperationException("Workload check should not run."),
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
@@ -232,6 +268,7 @@ public sealed class BlazorScaffoldPrerequisitesTests
         var root = Path.Combine(Path.GetTempPath(), "GondwanaBlazorScope_" + Guid.NewGuid().ToString("N"));
         var output = Path.Combine(root, "project");
         Directory.CreateDirectory(output);
+
         try
         {
             File.WriteAllText(Path.Combine(output, "global.json"), "{ \"sdk\": { \"version\": \"8.0.100\" } }");
@@ -252,6 +289,7 @@ public sealed class BlazorScaffoldPrerequisitesTests
         var root = Path.Combine(Path.GetTempPath(), "GondwanaBlazorScope_" + Guid.NewGuid().ToString("N"));
         var parent = Path.Combine(root, "parent");
         Directory.CreateDirectory(parent);
+
         try
         {
             File.WriteAllText(Path.Combine(parent, "global.json"), "{ \"sdk\": { \"version\": \"8.0.100\" } }");

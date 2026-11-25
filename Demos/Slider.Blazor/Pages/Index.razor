@@ -14,7 +14,7 @@
 
 <div class="game-shell">
     <div class="game-board" @ref="_container">
-        <BlazorGpuRenderSurfaceComponent @ref="_surface" style="position:absolute;inset:0;" />
+        <BlazorGpuRenderSurfaceComponent @ref="_surface" style="position:absolute;inset:0;"/>
 
         @if (_loading)
         {
@@ -29,13 +29,13 @@
                     {
                         <h2 id="slider-picker-title">Open picture</h2>
                         <p>Select an image on this device (up to 16 MiB).</p>
-                        <InputFile OnChange="OnPictureSelected" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" />
+                        <InputFile OnChange="OnPictureSelected" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp"/>
                     }
                     else
                     {
                         <h2 id="slider-picker-title">Load puzzle</h2>
                         <p>Select a Slider .slider.json save file (up to 64 MiB).</p>
-                        <InputFile OnChange="OnGameSelected" accept=".slider.json,.json,application/json" />
+                        <InputFile OnChange="OnGameSelected" accept=".slider.json,.json,application/json"/>
                     }
                     <button @onclick="ClosePicker">Cancel</button>
                 </div>
@@ -58,7 +58,12 @@
     private const int MinLogicalWidth = 1200;
     private const int MinLogicalHeight = 780;
 
-    private enum PickerMode { None, Picture, SavedGame }
+    private enum PickerMode
+    {
+        None,
+        Picture,
+        SavedGame
+    }
 
     private ElementReference _container;
     private BlazorGpuRenderSurfaceComponent? _surface;
@@ -279,7 +284,7 @@
             ClosePicker();
         }
         catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException
-            or InvalidDataException or JsonException or FormatException)
+                                       or InvalidDataException or JsonException or FormatException)
         {
             ShowNotice("Unable to load saved puzzle: " + ex.Message);
         }
@@ -314,7 +319,9 @@
     private sealed class BrowserSize
     {
         // Explicit public constructor allows System.Text.Json interop deserialization.
-        public BrowserSize() { }
+        public BrowserSize()
+        {
+        }
 
         public int Width { get; set; }
         public int Height { get; set; }
@@ -379,7 +386,9 @@
             {
                 // Browser navigation can detach JavaScript before disposal.
             }
+
             _module = null;
         }
     }
+
 }

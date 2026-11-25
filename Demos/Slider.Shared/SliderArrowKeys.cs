@@ -4,7 +4,11 @@ namespace Gondwana.Demos.Slider;
 /// Platform keyboard identifiers. Keep the numeric mapping in the host rather
 /// than referencing WinForms or Blazor key enums from the shared runtime.
 /// </summary>
-internal readonly record struct SliderArrowKeys(int Left, int Right, int Up, int Down)
+internal readonly record struct SliderArrowKeys(
+    int Left,
+    int Right,
+    int Up,
+    int Down)
 {
     /// <summary>Offsets point to the piece beside the empty square.</summary>
     internal bool TryGetOffset(string? key, out int columnOffset, out int rowOffset)

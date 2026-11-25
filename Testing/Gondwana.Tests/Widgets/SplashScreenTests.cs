@@ -17,11 +17,18 @@ public sealed class SplashScreenTests
     public void ViewportResize_UpdatesFullScreenImageBounds()
     {
         using var host = new TestRenderSurfaceHost();
-        var initialBounds = new Rectangle(0, 0, 1, 1);
+
+        var initialBounds = new Rectangle(
+            0,
+            0,
+            1,
+            1);
+
         host.ViewManager.AddView(initialBounds, zOrder: 0);
         View view = Assert.Single(host.ViewManager.Views);
 
         using var imageStream = CreatePngStream();
+
         using var splash = SplashScreen.TryCreate(
             imageStream,
             host,
@@ -33,7 +40,12 @@ public sealed class SplashScreenTests
         Assert.NotNull(splash);
         Assert.Equal(initialBounds, splash.Image.ScreenBounds);
 
-        var resizedBounds = new Rectangle(0, 0, 769, 801);
+        var resizedBounds = new Rectangle(
+            0,
+            0,
+            769,
+            801);
+
         view.Viewport.TargetRectPx = resizedBounds;
 
         Assert.Equal(resizedBounds, splash.Image.ScreenBounds);
@@ -46,11 +58,18 @@ public sealed class SplashScreenTests
     public void InitialBounds_UseViewportOrigin()
     {
         using var host = new TestRenderSurfaceHost();
-        var viewportBounds = new Rectangle(25, 40, 320, 240);
+
+        var viewportBounds = new Rectangle(
+            25,
+            40,
+            320,
+            240);
+
         host.ViewManager.AddView(viewportBounds, zOrder: 0);
         View view = Assert.Single(host.ViewManager.Views);
 
         using var imageStream = CreatePngStream();
+
         using var splash = SplashScreen.TryCreate(
             imageStream,
             host,

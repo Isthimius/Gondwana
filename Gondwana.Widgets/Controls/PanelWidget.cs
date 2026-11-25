@@ -23,16 +23,26 @@ public sealed class PanelWidget : ContainerWidget
     /// <param name="bounds">The widget bounds in view-local pixels.</param>
     /// <param name="backgroundColor">The background color.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public PanelWidget(RenderSurfaceHostBase renderSurfaceHost,
-                       View view,
-                       Rectangle bounds,
-                       Color backgroundColor,
-                       string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public PanelWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        Color backgroundColor,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
-        Background = new DirectRectangle(backgroundColor, renderSurfaceHost, view, bounds, $"{Nickname}.background")
+        Background = new DirectRectangle(
+                backgroundColor,
+                renderSurfaceHost,
+                view,
+                bounds,
+                $"{Nickname}.background")
             .SetFilled(true)
             .SetStrokeWidth(0f);
 
@@ -48,16 +58,26 @@ public sealed class PanelWidget : ContainerWidget
     /// <param name="bounds">The widget bounds in world pixels.</param>
     /// <param name="backgroundColor">The background color.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public PanelWidget(RenderSurfaceHostBase renderSurfaceHost,
-                       SceneLayer sceneLayer,
-                       Rectangle bounds,
-                       Color backgroundColor,
-                       string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public PanelWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        Color backgroundColor,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
-        Background = new DirectRectangle(backgroundColor, renderSurfaceHost, sceneLayer, bounds, $"{Nickname}.background")
+        Background = new DirectRectangle(
+                backgroundColor,
+                renderSurfaceHost,
+                sceneLayer,
+                bounds,
+                $"{Nickname}.background")
             .SetFilled(true)
             .SetStrokeWidth(0f);
 
@@ -105,9 +125,12 @@ public sealed class PanelWidget : ContainerWidget
         ArgumentNullException.ThrowIfNull(widget);
 
         Point offset = offsetPx ?? Point.Empty;
-        Add(widget,
+
+        Add(
+            widget,
             keepCurrentOffset: false,
             explicitLocalOffsetPx: new Vector2(offset.X, offset.Y));
+
         SetWidgetZOrder(widget, _panelZOrder + 1);
         return this;
     }
@@ -181,13 +204,20 @@ public sealed class PanelWidget : ContainerWidget
     /// <param name="offsetPx">The offset in pixels.</param>
     /// <param name="filterQuality">The filter quality.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public PanelWidget SetBackgroundImage(SKBitmap bitmap,
-                                          DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
-                                          float scale = 1f,
-                                          SKPoint? offsetPx = null,
-                                          SKFilterQuality filterQuality = SKFilterQuality.Medium)
+    public PanelWidget SetBackgroundImage(
+        SKBitmap bitmap,
+        DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
+        float scale = 1f,
+        SKPoint? offsetPx = null,
+        SKFilterQuality filterQuality = SKFilterQuality.Medium)
     {
-        Background.SetFillImage(bitmap, mode, scale, offsetPx, filterQuality);
+        Background.SetFillImage(
+            bitmap,
+            mode,
+            scale,
+            offsetPx,
+            filterQuality);
+
         return this;
     }
 
@@ -200,13 +230,20 @@ public sealed class PanelWidget : ContainerWidget
     /// <param name="offsetPx">The offset in pixels.</param>
     /// <param name="filterQuality">The filter quality.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public PanelWidget SetBackgroundImage(SKImage image,
-                                          DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
-                                          float scale = 1f,
-                                          SKPoint? offsetPx = null,
-                                          SKFilterQuality filterQuality = SKFilterQuality.Medium)
+    public PanelWidget SetBackgroundImage(
+        SKImage image,
+        DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
+        float scale = 1f,
+        SKPoint? offsetPx = null,
+        SKFilterQuality filterQuality = SKFilterQuality.Medium)
     {
-        Background.SetFillImage(image, mode, scale, offsetPx, filterQuality);
+        Background.SetFillImage(
+            image,
+            mode,
+            scale,
+            offsetPx,
+            filterQuality);
+
         return this;
     }
 
@@ -264,6 +301,7 @@ public sealed class PanelWidget : ContainerWidget
     private static void SetWidgetZOrder(WidgetBase widget, int zOrder)
     {
         DirectDrawingBase[] visuals = EnumerateVisuals(widget).ToArray();
+
         if (visuals.Length == 0)
             return;
 

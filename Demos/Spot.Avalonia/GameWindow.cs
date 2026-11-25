@@ -124,6 +124,7 @@ internal sealed class GameWindow : Window
             }
 
             var splash = _gameHost.CreateSplash(_gpuRenderSurface.Host, CompleteStartup);
+
             if (splash is null)
                 CompleteStartup();
         }
@@ -177,6 +178,7 @@ internal sealed class GameWindow : Window
 
         bool audioAvailable = _gameHost.AudioAvailable;
         var view = _gpuRenderSurface.Host.ViewManager.Views[0];
+
         var state = new SpotMenuState(
             audioAvailable && ReadBoolSetting(SpotSettings.Music, defaultValue: true),
             audioAvailable && ReadBoolSetting(SpotSettings.SoundEffects, defaultValue: true),
@@ -284,15 +286,17 @@ internal sealed class GameWindow : Window
 
         _aboutSpotLogo ??= LoadImage("spot.png");
         _aboutGondwanaLogo ??= LoadImage("gondwana-logo-text.png");
+
         _aboutTypeface ??= SKTypeface.FromStream(fontStream)
-            ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
+                           ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
     }
 
     private SKImage LoadImage(string path)
     {
         using var stream = _gameHost!.OpenAsset(AssetTypes.Image, path);
+
         return SKImage.FromEncodedData(stream)
-            ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
+               ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
     }
 
     private sealed class AvaloniaExternalUriLauncher : IExternalUriLauncher
@@ -307,11 +311,12 @@ internal sealed class GameWindow : Window
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = uri.AbsoluteUri,
-                UseShellExecute = true
-            });
+            Process.Start(
+                new ProcessStartInfo
+                {
+                    FileName = uri.AbsoluteUri,
+                    UseShellExecute = true
+                });
 
             return ValueTask.CompletedTask;
         }

@@ -18,28 +18,71 @@ internal sealed partial class SemanticPackPlan
     /// <param name="failed">Optional diagnostic receiver; allows inspection to continue at the next member.</param>
     /// <param name="external">Optional observer for URI references, which are never fetched.</param>
     /// <returns>The validated authoring document with inferred source metadata, if native.</returns>
-    internal static PackDefinitionDocument? Discover(AssetLocation owner, byte[] bytes,
+    internal static PackDefinitionDocument? Discover(
+        AssetLocation owner,
+        byte[] bytes,
         Func<AssetLocation?, AssetTypes, string?, (AssetLocation Location, byte[] Bytes)> resolve,
-        Action<DefinitionReference> observe, CancellationToken cancellation,
-        Action<DefinitionReference?, Exception>? failed = null, Action<string, string, string>? external = null)
+        Action<DefinitionReference> observe,
+        CancellationToken cancellation,
+        Action<DefinitionReference?, Exception>? failed = null,
+        Action<string, string, string>? external = null)
     {
-        var plan = new SemanticPackPlan(Path.GetDirectoryName(owner.Path)!, owner.Path, null, false, true, cancellation);
+        var plan = new SemanticPackPlan(
+            Path.GetDirectoryName(owner.Path)!,
+            owner.Path,
+            null,
+            false,
+            true,
+            cancellation);
+
         var entry = ReadEntry(owner, owner, bytes);
         entry.Document?.Validate(owner.ToString());
-        if (failed is not null) plan._discoveryProblem = error => failed(null, error);
+
+        if (failed is not null)
+            plan._discoveryProblem = error => failed(null, error);
+
         plan._externalReference = external;
-        plan._referenceResolver = (location, type, selector, label) =>
+
+        plan._referenceResolver = (
+            location, type, selector,
+            label) =>
         {
-            DefinitionReference? reference = location is null ? null : new(owner, plan._referenceMember, location, selector, label);
+            DefinitionReference? reference = location is null
+                ? null
+                : new(
+                    owner,
+                    plan._referenceMember,
+                    location,
+                    selector,
+                    label);
+
             try
             {
                 var resolved = resolve(location, type, selector);
-                reference = new(owner, plan._referenceMember, resolved.Location, selector, label);
+
+                reference = new(
+                    owner,
+                    plan._referenceMember,
+                    resolved.Location,
+                    selector,
+                    label);
+
                 var target = ReadEntry(resolved.Location, resolved.Location, resolved.Bytes);
                 target.Document?.Validate(resolved.Location.ToString());
+
                 if (selector is not null && !Contains(target, selector))
-                    throw new ReferenceInspectionException(ReferenceProblemKind.Missing, $"Missing logical member '{selector}' in {resolved.Location}.");
-                observe(new(owner, plan._referenceMember, resolved.Location, selector, label));
+                    throw new ReferenceInspectionException(
+                        ReferenceProblemKind.Missing,
+                        $"Missing logical member '{selector}' in {resolved.Location}.");
+
+                observe(
+                    new(
+                        owner,
+                        plan._referenceMember,
+                        resolved.Location,
+                        selector,
+                        label));
+
                 return target;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
@@ -48,6 +91,7 @@ internal sealed partial class SemanticPackPlan
                 throw new InvalidDataException($"{label}: {ex.Message}", ex);
             }
         };
+
         plan.Analyze(entry);
         return entry.Document;
     }

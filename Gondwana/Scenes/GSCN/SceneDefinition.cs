@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using Gondwana.Serialization;
+
 namespace Gondwana.Scenes.GSCN;
 
 /// <summary>
@@ -6,8 +8,7 @@ namespace Gondwana.Scenes.GSCN;
 /// </summary>
 public sealed class SceneDefinition
 {
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionLoadStamp? LoadStamp { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionLoadStamp? LoadStamp { get; set; }
 
     private SceneDefinitionSource _source = SceneDefinitionSource.None();
 
@@ -15,7 +16,8 @@ public sealed class SceneDefinition
     /// Gets or sets the stable scene identifier. An empty value generates a new ID when materialized.
     /// </summary>
     [Category("Identity")]
-    [Description("Unique scene key used to find and instantiate this scene. Leave blank to generate an identifier when materialized.")]
+    [Description(
+        "Unique scene key used to find and instantiate this scene. Leave blank to generate an identifier when materialized.")]
     public string ID { get; set; } = string.Empty;
 
     /// <summary>
@@ -37,7 +39,8 @@ public sealed class SceneDefinition
     /// Runtime materialization continues to resolve frames through registered tilesheet names.
     /// </summary>
     [Category("Sources")]
-    [Description("GTS files or packed entries referenced by the scene for tile artwork; these are authoring-time source locations.")]
+    [Description(
+        "GTS files or packed entries referenced by the scene for tile artwork; these are authoring-time source locations.")]
     public List<SceneTilesheetSourceDefinition> TilesheetSources { get; set; } = [];
 
     /// <summary>
@@ -45,14 +48,16 @@ public sealed class SceneDefinition
     /// Runtime materialization continues to resolve animations through registered cycle keys.
     /// </summary>
     [Category("Sources")]
-    [Description("GANI files or packed entries referenced by the scene for animation cycles; these are authoring-time source locations.")]
+    [Description(
+        "GANI files or packed entries referenced by the scene for animation cycles; these are authoring-time source locations.")]
     public List<SceneAnimationSourceDefinition> AnimationSources { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the layers contained by the scene.
     /// </summary>
     [Category("Structure")]
-    [Description("Scene layers, drawn according to their ZOrder. Each layer has its own dimensions, visibility, and scrolling behavior.")]
+    [Description(
+        "Scene layers, drawn according to their ZOrder. Each layer has its own dimensions, visibility, and scrolling behavior.")]
     public List<SceneLayerDefinition> Layers { get; set; } = [];
 
     /// <summary>

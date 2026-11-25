@@ -13,18 +13,22 @@ internal sealed class RenderFrameMailbox : IDisposable
         /// The slot is available for a new frame.
         /// </summary>
         Free,
+
         /// <summary>
         /// The producer is constructing the frame.
         /// </summary>
         Building,
+
         /// <summary>
         /// The completed frame is waiting for a renderer.
         /// </summary>
         Published,
+
         /// <summary>
         /// The renderer owns the frame.
         /// </summary>
         Rendering,
+
         /// <summary>
         /// The slot is releasing its frame resources.
         /// </summary>
@@ -59,11 +63,17 @@ internal sealed class RenderFrameMailbox : IDisposable
     {
         lock (_gate)
         {
-            if (_closed) return null;
+            if (_closed)
+                return null;
+
             if (_slots.Any(s => s.Ownership == State.Building))
                 throw new InvalidOperationException("Only one snapshot producer is supported.");
+
             var slot = _slots.FirstOrDefault(s => s.Ownership == State.Free);
-            if (slot is null) return null;
+
+            if (slot is null)
+                return null;
+
             slot.Ownership = State.Building;
             return slot;
         }
@@ -73,10 +83,12 @@ internal sealed class RenderFrameMailbox : IDisposable
     internal void Publish(Slot slot, RenderFrameSnapshot frame)
     {
         Slot? retired;
+
         lock (_gate)
         {
             Require(slot, State.Building);
             slot.Frame = frame;
+
             if (_closed)
             {
                 slot.Ownership = State.Releasing;
@@ -85,17 +97,21 @@ internal sealed class RenderFrameMailbox : IDisposable
             else
             {
                 retired = _published;
+
                 if (retired is not null)
                 {
                     retired.Ownership = State.Releasing;
                     _droppedCount++;
                 }
+
                 slot.Ownership = State.Published;
                 _published = slot;
                 _publishedCount++;
             }
         }
-        if (retired is not null) Recycle(retired);
+
+        if (retired is not null)
+            Recycle(retired);
     }
 
     internal void AbortBuild(Slot slot)
@@ -111,9 +127,12 @@ internal sealed class RenderFrameMailbox : IDisposable
     {
         lock (_gate)
         {
-            if (_closed || _published is null) return null;
+            if (_closed || _published is null)
+                return null;
+
             if (_slots.Any(s => s.Ownership == State.Rendering))
                 throw new InvalidOperationException("Only one snapshot consumer is supported.");
+
             var slot = _published;
             _published = null;
             slot.Ownership = State.Rendering;
@@ -128,6 +147,7 @@ internal sealed class RenderFrameMailbox : IDisposable
             Require(slot, State.Rendering);
             slot.Ownership = State.Releasing;
         }
+
         Recycle(slot);
     }
 
@@ -139,7 +159,10 @@ internal sealed class RenderFrameMailbox : IDisposable
 
     private void Recycle(Slot slot)
     {
-        try { slot.Frame?.Dispose(); }
+        try
+        {
+            slot.Frame?.Dispose();
+        }
         finally
         {
             lock (_gate)
@@ -156,16 +179,22 @@ internal sealed class RenderFrameMailbox : IDisposable
     public void Dispose()
     {
         Slot? retired;
+
         lock (_gate)
         {
-            if (_closed) return;
+            if (_closed)
+                return;
+
             _closed = true;
             retired = _published;
             _published = null;
-            if (retired is not null) retired.Ownership = State.Releasing;
+
+            if (retired is not null)
+                retired.Ownership = State.Releasing;
             // Building and Rendering belong to their callers until Publish/Abort/Release.
         }
-        if (retired is not null) Recycle(retired);
+
+        if (retired is not null)
+            Recycle(retired);
     }
 }
-

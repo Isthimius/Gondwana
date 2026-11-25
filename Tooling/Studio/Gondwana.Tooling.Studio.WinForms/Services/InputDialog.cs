@@ -1,4 +1,5 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+
 namespace Gondwana.Tooling.Studio.WinForms.Services;
 
 /// <summary>
@@ -13,7 +14,12 @@ internal static class InputDialog
     /// <param name="owner">The owner window, or <see langword="null"/> to use the default owner.</param>
     /// <param name="password">Whether to mask the entered text with the system password character.</param>
     /// <returns>The untrimmed text, including an empty string, on OK; otherwise <see langword="null"/>.</returns>
-    public static string? Show(string message, string title, string? defaultValue = null, IWin32Window? owner = null, bool password = false)
+    public static string? Show(
+        string message,
+        string title,
+        string? defaultValue = null,
+        IWin32Window? owner = null,
+        bool password = false)
     {
         using var form = new Form
         {
@@ -44,8 +50,17 @@ internal static class InputDialog
             Location = new System.Drawing.Point(16, 58)
         };
 
-        var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new System.Drawing.Point(240, 100), Width = 80 };
-        var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new System.Drawing.Point(330, 100), Width = 80 };
+        var ok = new Button
+        { Text = "OK", DialogResult = DialogResult.OK, Location = new System.Drawing.Point(240, 100), Width = 80 };
+
+        var cancel = new Button
+        {
+            Text = "Cancel",
+            DialogResult = DialogResult.Cancel,
+            Location = new System.Drawing.Point(330, 100),
+            Width = 80
+        };
+
         form.AcceptButton = ok;
         form.CancelButton = cancel;
 

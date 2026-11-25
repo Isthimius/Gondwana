@@ -4,9 +4,11 @@
         <SpotGafPath Condition="'$(SpotGafPath)' == ''">$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\spot.gaf</SpotGafPath>
     </PropertyGroup>
     <ItemGroup Condition="'$(SpotBrowserAssets)' != 'true'">
-        <Content Include="$(SpotGafPath)" Link="assets\spot.gaf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+        <Content Include="$(SpotGafPath)" Link="assets\spot.gaf" CopyToOutputDirectory="PreserveNewest"
+                 CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
-    <UsingTask TaskName="PackSpotGaf" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="PackSpotGaf" TaskFactory="RoslynCodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <SourceRoot ParameterType="System.String" Required="true" />
             <OutputPath ParameterType="System.String" Required="true" />

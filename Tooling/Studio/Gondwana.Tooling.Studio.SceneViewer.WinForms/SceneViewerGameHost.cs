@@ -48,6 +48,7 @@ internal sealed class SceneViewerGameHost(
             return;
 
         var bitmap = new SKBitmap(StressTileSize * 2, StressTileSize * 2);
+
         using (var canvas = new SKCanvas(bitmap))
         using (var paint = new SKPaint())
         {
@@ -64,6 +65,7 @@ internal sealed class SceneViewerGameHost(
                 for (int x = 0; x < 2; x++)
                 {
                     paint.Color = colors[y * 2 + x];
+
                     canvas.DrawRect(
                         x * StressTileSize,
                         y * StressTileSize,
@@ -77,6 +79,7 @@ internal sealed class SceneViewerGameHost(
         _stressTilesheet = Engine.Managers.Tilesheets.LoadFromBitmap(
             $"scene-viewer-stress-{Guid.NewGuid():N}",
             bitmap);
+
         _stressTilesheet.DefaultRegion.TileSize = new Size(StressTileSize, StressTileSize);
     }
 
@@ -97,12 +100,14 @@ internal sealed class SceneViewerGameHost(
         int rows = (int)Math.Ceiling(stress.TileCount / (double)columns);
 
         var scene = new Scene();
+
         _stressLayer = scene.AddLayer(
             columns,
             rows,
             StressTileSize,
             StressTileSize,
             coordinateSystem: stress.Projection);
+
         Frame[] frames =
         [
             _stressTilesheet.GetFrame(0, 0),
@@ -134,11 +139,11 @@ internal sealed class SceneViewerGameHost(
             _view.Camera.SnapTo(PointF.Empty);
 
         var zoomLayer = Scene!.SceneLayers
-            .Where(layer => layer.Visible && Math.Abs(layer.Parallax) > 1e-6f)
-            .OrderBy(layer => Math.Abs(layer.Parallax - 1f))
-            .ThenByDescending(layer => layer.ZOrder)
-            .FirstOrDefault()
-            ?? Scene.SceneLayers.FirstOrDefault();
+                            .Where(layer => layer.Visible && Math.Abs(layer.Parallax) > 1e-6f)
+                            .OrderBy(layer => Math.Abs(layer.Parallax - 1f))
+                            .ThenByDescending(layer => layer.ZOrder)
+                            .FirstOrDefault()
+                        ?? Scene.SceneLayers.FirstOrDefault();
 
         Camera = new ViewerCameraController(_view, zoomLayer);
     }
@@ -147,12 +152,14 @@ internal sealed class SceneViewerGameHost(
     {
         var bounds = layer.GetLayerBoundsPx();
         var viewport = view.Viewport.TargetRectPx;
+
         if (bounds.IsEmpty || viewport.Width <= 0 || viewport.Height <= 0)
             return;
 
         float zoom = Math.Min(
             viewport.Width / bounds.Width,
             viewport.Height / bounds.Height) * .95f;
+
         zoom = Math.Clamp(
             zoom,
             ViewerCameraController.MinimumZoom,
@@ -160,9 +167,11 @@ internal sealed class SceneViewerGameHost(
 
         view.Viewport.SnapZoom(zoom);
         var visible = view.Viewport.VisibleWorldSizePx;
-        view.Camera.SnapTo(new PointF(
-            bounds.Left + (bounds.Width - visible.Width) / 2f,
-            bounds.Top + (bounds.Height - visible.Height) / 2f));
+
+        view.Camera.SnapTo(
+            new PointF(
+                bounds.Left + (bounds.Width - visible.Width) / 2f,
+                bounds.Top + (bounds.Height - visible.Height) / 2f));
     }
 
     /// <summary>Creates the diagnostics overlay and subscribes to viewport resizing.</summary>
@@ -205,6 +214,7 @@ internal sealed class SceneViewerGameHost(
     {
         var mouse = Engine.Input.MouseEventPoller!;
         mouse.MouseEvent += OnMouse;
+
         mouse.StartMonitoringMouse(
             trackMouseMovement: false,
             timeBetweenEvents: 0);
@@ -314,10 +324,17 @@ internal sealed class SceneViewerGameHost(
         bool east = _keysDown.Contains(Keys.D) || _keysDown.Contains(Keys.Right);
 
         var modifiers = Engine.Input.KeyboardEventPoller?.Adapter?.CurrentKeyboardModifiers
-            ?? KeyboardModifierState.None;
+                        ?? KeyboardModifierState.None;
+
         bool fast = (modifiers & KeyboardModifierState.Shift) != 0;
 
-        camera.Move(north, south, west, east, fast, elapsed);
+        camera.Move(
+            north,
+            south,
+            west,
+            east,
+            fast,
+            elapsed);
     }
 
     private void ToggleAnimations()
@@ -348,6 +365,7 @@ internal sealed class SceneViewerGameHost(
         yield return stress is null
             ? $"Scene: {Path.GetFileName(scenePath)}"
             : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}";
+
         yield return $"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]";
         yield return $"GPU FPS (presentation.count): {GetPresentationRate(context)}";
     }
@@ -355,17 +373,19 @@ internal sealed class SceneViewerGameHost(
     private static string GetPresentationRate(ProfilerWidgetExtensionContext context)
     {
         TelemetrySnapshot? snapshot = context.Snapshot;
+
         if (snapshot is null || snapshot.ElapsedSeconds <= 0d)
             return "n/a";
 
         long? renderSourceId = context.RenderSurfaceHost.Telemetry?.Id;
+
         TelemetrySourceSnapshot? renderSource = snapshot.Sources
             .FirstOrDefault(source => source.Id == renderSourceId);
 
         return renderSource?.Metrics.TryGetValue("presentation.count", out var summary) == true &&
-            summary.Availability == TelemetryAvailability.Available
-                ? (summary.Count / snapshot.ElapsedSeconds).ToString("0.0")
-                : "n/a";
+               summary.Availability == TelemetryAvailability.Available
+            ? (summary.Count / snapshot.ElapsedSeconds).ToString("0.0")
+            : "n/a";
     }
 
     private static void ConfigureSceneViewerDiagnostics(ProfilerWidget widget)
@@ -421,6 +441,7 @@ internal sealed class SceneViewerGameHost(
         int width = Math.Min(
             DiagnosticsWidth,
             Math.Max(1, viewport.Width - DiagnosticsMargin * 2));
+
         int height = Math.Min(
             DiagnosticsHeight,
             Math.Max(1, viewport.Height - DiagnosticsMargin * 2));
@@ -442,6 +463,7 @@ internal sealed class SceneViewerGameHost(
         // during content loading, before its engine-initialized flag was set.
         if (!Engine.IsDisposed)
             Engine.Dispose();
+
         (Engine.Input.KeyboardEventPoller?.Adapter as IDisposable)?.Dispose();
     }
 
@@ -459,8 +481,10 @@ internal sealed class SceneViewerGameHost(
 
         /// <inheritdoc/>
         public bool AutoSave { get; set; }
+
         /// <summary>Performs no persistence; viewer configuration remains in memory.</summary>
         public void Save() { }
+
         /// <summary>Completes configuration-store disposal; this in-memory store owns no disposable resources.</summary>
         public void Dispose() { }
     }

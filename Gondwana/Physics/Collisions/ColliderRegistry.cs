@@ -17,26 +17,55 @@ public sealed class ColliderRegistry
     /// <param name="collidesWithMask">The collides with mask.</param>
     /// <param name="results">The results.</param>
     /// <param name="ignore">The ignore.</param>
-    public void QueryInstances(in Aabb area, int layerMask, int collidesWithMask,
-        List<ColliderInstance> results, ICollider? ignore = null)
+    public void QueryInstances(
+        in Aabb area,
+        int layerMask,
+        int collidesWithMask,
+        List<ColliderInstance> results,
+        ICollider? ignore = null)
     {
         results.Clear();
         var layer = SceneLayer;
         var periodic = layer is not null && (layer.WrapHorizontally || layer.WrapVertically);
         var period = periodic ? layer!.GetPeriod() : default;
-        var query = new System.Drawing.RectangleF(area.MinX, area.MinY, area.Width, area.Height);
+
+        var query = new System.Drawing.RectangleF(
+            area.MinX,
+            area.MinY,
+            area.Width,
+            area.Height);
+
         foreach (var collider in _static.Concat(_dynamic))
         {
-            if (ReferenceEquals(collider, ignore) || (collider.CollisionGroup & collidesWithMask) == 0 || (layerMask & collider.CollidesWith) == 0)
+            if (ReferenceEquals(collider, ignore) || (collider.CollisionGroup & collidesWithMask) == 0 ||
+                (layerMask & collider.CollidesWith) == 0)
                 continue;
+
             var bounds = collider.BoundsWorldPx;
+
             if (!periodic)
             {
-                if (area.Intersects(bounds)) results.Add(new(collider, bounds));
+                if (area.Intersects(bounds))
+                    results.Add(new(collider, bounds));
+
                 continue;
             }
-            foreach (var offset in period.Offsets(new(bounds.MinX, bounds.MinY, bounds.Width, bounds.Height), query))
-                results.Add(new(collider, new(bounds.MinX + offset.X, bounds.MinY + offset.Y, bounds.MaxX + offset.X, bounds.MaxY + offset.Y)));
+
+            foreach (var offset in period.Offsets(
+                         new(
+                             bounds.MinX,
+                             bounds.MinY,
+                             bounds.Width,
+                             bounds.Height),
+                         query))
+                results.Add(
+                    new(
+                        collider,
+                        new(
+                            bounds.MinX + offset.X,
+                            bounds.MinY + offset.Y,
+                            bounds.MaxX + offset.X,
+                            bounds.MaxY + offset.Y)));
         }
     }
 
@@ -105,9 +134,18 @@ public sealed class ColliderRegistry
         ICollider? ignore = null)
     {
         var instances = new List<ColliderInstance>();
-        QueryInstances(area, layerMask, collidesWithMask, instances, ignore);
+
+        QueryInstances(
+            area,
+            layerMask,
+            collidesWithMask,
+            instances,
+            ignore);
+
         results.Clear();
+
         foreach (var instance in instances)
-            if (!results.Contains(instance.Collider)) results.Add(instance.Collider);
+            if (!results.Contains(instance.Collider))
+                results.Add(instance.Collider);
     }
 }

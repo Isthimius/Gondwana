@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace Gondwana;
+namespace Gondwana.Serialization;
 
 // Owned by the materialized object (or collection manager), never by a global name map.
 // Compare the serializer's complete runtime projection, including nested mutable data.
@@ -9,11 +9,18 @@ internal sealed class DefinitionProvenance
     internal string? FilePath { get; }
     internal string? AssetsFilePath { get; }
     internal string? AssetEntryName { get; }
+
     /// <summary>Gets the logical member identity within the physical source.</summary>
     internal string? DefinitionIdentity { get; }
+
     private readonly JToken _baseline;
 
-    private DefinitionProvenance(string? filePath, string? assetsFilePath, string? entryName, object definition, string? definitionIdentity)
+    private DefinitionProvenance(
+        string? filePath,
+        string? assetsFilePath,
+        string? entryName,
+        object definition,
+        string? definitionIdentity)
     {
         FilePath = string.IsNullOrWhiteSpace(filePath) ? null : Path.GetFullPath(filePath);
         AssetsFilePath = string.IsNullOrWhiteSpace(assetsFilePath) ? null : Path.GetFullPath(assetsFilePath);
@@ -29,13 +36,23 @@ internal sealed class DefinitionProvenance
     /// <param name="capture">Produces the member's runtime projection.</param>
     /// <param name="definitionIdentity">The logical member identity.</param>
     /// <returns>Owned provenance, or null for an anonymous source.</returns>
-    internal static DefinitionProvenance? Capture(string? filePath, string? assetsFilePath,
-        string? entryName, Func<object> capture, string? definitionIdentity = null)
+    internal static DefinitionProvenance? Capture(
+        string? filePath,
+        string? assetsFilePath,
+        string? entryName,
+        Func<object> capture,
+        string? definitionIdentity = null)
     {
         if (string.IsNullOrWhiteSpace(filePath) &&
             (string.IsNullOrWhiteSpace(assetsFilePath) || string.IsNullOrWhiteSpace(entryName)))
             return null;
-        return new(filePath, assetsFilePath, entryName, capture(), definitionIdentity);
+
+        return new(
+            filePath,
+            assetsFilePath,
+            entryName,
+            capture(),
+            definitionIdentity);
     }
 
     internal bool Matches(object definition) => JToken.DeepEquals(_baseline, JToken.FromObject(definition));
@@ -64,7 +81,12 @@ internal sealed class DefinitionLoadStamp
     /// <param name="assetsFilePath">The archive path.</param>
     /// <param name="entryName">The typed document entry name.</param>
     /// <param name="definitionIdentity">The logical member identity.</param>
-    internal DefinitionLoadStamp(object definition, string? filePath = null, string? assetsFilePath = null, string? entryName = null, string? definitionIdentity = null)
+    internal DefinitionLoadStamp(
+        object definition,
+        string? filePath = null,
+        string? assetsFilePath = null,
+        string? entryName = null,
+        string? definitionIdentity = null)
     {
         _definition = JToken.FromObject(definition);
         _filePath = string.IsNullOrWhiteSpace(filePath) ? null : Path.GetFullPath(filePath);
@@ -75,6 +97,11 @@ internal sealed class DefinitionLoadStamp
 
     internal DefinitionProvenance? Materialized(object definition, Func<object> capture) =>
         JToken.DeepEquals(_definition, JToken.FromObject(definition))
-            ? DefinitionProvenance.Capture(_filePath, _assetsFilePath, _entryName, capture, _definitionIdentity)
+            ? DefinitionProvenance.Capture(
+                _filePath,
+                _assetsFilePath,
+                _entryName,
+                capture,
+                _definitionIdentity)
             : null;
 }

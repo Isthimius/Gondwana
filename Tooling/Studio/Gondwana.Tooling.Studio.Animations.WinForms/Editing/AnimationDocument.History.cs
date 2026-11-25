@@ -11,7 +11,9 @@ public sealed partial class AnimationDocument : IDisposable
     // that migration behavior without manufacturing an authoring undo operation.
     internal void RecoverLooseTilesheetSource(string tilesheet, string path)
     {
-        Definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Loose(tilesheet, MakeReferencePath(path, BaseDirectory)));
+        Definition.TilesheetSources.Add(
+            AnimationTilesheetSourceDefinition.Loose(tilesheet, MakeReferencePath(path, BaseDirectory)));
+
         RememberReferenceOrigins();
         History.MarkUntracked();
     }
@@ -19,15 +21,23 @@ public sealed partial class AnimationDocument : IDisposable
     private void AddMembers(IReadOnlyList<AnimationDefinition> members, string description)
     {
         var selected = Definition;
-        History.Execute(description, () =>
-        {
-            foreach (var member in members) _definitions.Add(member);
-            Definition = members[0];
-        }, () =>
-        {
-            foreach (var member in members) _definitions.Remove(member);
-            Definition = selected;
-        });
+
+        History.Execute(
+            description,
+            () =>
+            {
+                foreach (var member in members)
+                    _definitions.Add(member);
+
+                Definition = members[0];
+            },
+            () =>
+            {
+                foreach (var member in members)
+                    _definitions.Remove(member);
+
+                Definition = selected;
+            });
     }
 
     private void HistoryChanged(object? sender, EventArgs args)
@@ -39,8 +49,10 @@ public sealed partial class AnimationDocument : IDisposable
     /// <summary>Records changed scalar or value-type properties before notifying the editor.</summary>
     public bool Edit(object target, string description, Action change)
     {
-        if (!_definitions.Any(member => ReferenceEquals(member, target) || member.Frames.Any(frame => ReferenceEquals(frame, target))))
+        if (!_definitions.Any(member =>
+                ReferenceEquals(member, target) || member.Frames.Any(frame => ReferenceEquals(frame, target))))
             throw new ArgumentException("The object does not belong to this document.", nameof(target));
+
         return History.Edit(description, target, change);
     }
 
@@ -56,7 +68,8 @@ public sealed partial class AnimationDocument : IDisposable
     {
         foreach (var member in _definitions)
         {
-            foreach (var source in member.TilesheetSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.TilesheetSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
         }
     }
 
@@ -66,11 +79,21 @@ public sealed partial class AnimationDocument : IDisposable
         {
             foreach (var source in member.TilesheetSources)
             {
-                _origins.Restore(source, BaseDirectory, PackedLocation?.Path, source.AssetEntryName,
-                    () => source.GtsPath, value => source.GtsPath = value,
-                    () => source.AssetsFilePath, value => source.AssetsFilePath = value);
+                _origins.Restore(
+                    source,
+                    BaseDirectory,
+                    PackedLocation?.Path,
+                    source.AssetEntryName,
+                    () => source.GtsPath,
+                    value => source.GtsPath = value,
+                    () => source.AssetsFilePath,
+                    value => source.AssetsFilePath = value);
             }
-            if (FilePath is not null && !string.Equals(member.Source.GaniFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
+
+            if (FilePath is not null && !string.Equals(
+                    member.Source.GaniFilePath,
+                    FilePath,
+                    StringComparison.OrdinalIgnoreCase))
                 member.Source = AnimationDefinitionSource.LooseDefinitionFile(FilePath);
         }
     }
@@ -79,20 +102,40 @@ public sealed partial class AnimationDocument : IDisposable
     public void AddFrame(AnimationFrameDefinition frame) => InsertFrame(Definition.Frames.Count, frame);
 
     internal void InsertFrame(int index, AnimationFrameDefinition frame) =>
-        History.Insert("Add animation frame", Definition.Frames, index, frame);
+        History.Insert(
+            "Add animation frame",
+            Definition.Frames,
+            index,
+            frame);
 
     /// <summary>Removes a frame and restores its identity and index on undo.</summary>
-    public bool RemoveFrame(AnimationFrameDefinition frame) => History.Remove("Remove animation frame", Definition.Frames, frame);
+    public bool RemoveFrame(AnimationFrameDefinition frame) =>
+        History.Remove("Remove animation frame", Definition.Frames, frame);
 
     /// <summary>Moves a frame by an offset; boundary moves do not create history.</summary>
     public bool MoveFrame(int index, int offset)
     {
         var frames = Definition.Frames;
         int target = index + offset;
-        if (index < 0 || index >= frames.Count || target < 0 || target >= frames.Count || index == target) return false;
+
+        if (index < 0 || index >= frames.Count || target < 0 || target >= frames.Count || index == target)
+            return false;
+
         var frame = frames[index];
-        History.Execute("Move animation frame", () => { frames.RemoveAt(index); frames.Insert(target, frame); },
-            () => { frames.RemoveAt(target); frames.Insert(index, frame); });
+
+        History.Execute(
+            "Move animation frame",
+            () =>
+            {
+                frames.RemoveAt(index);
+                frames.Insert(target, frame);
+            },
+            () =>
+            {
+                frames.RemoveAt(target);
+                frames.Insert(index, frame);
+            });
+
         return true;
     }
 }

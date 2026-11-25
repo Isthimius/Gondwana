@@ -43,8 +43,11 @@ public abstract class BlazorGameHostBase : GameHostBase
     public void ConfigureLogicalResolution(int logicalWidth, int logicalHeight)
     {
         EnsureNotDisposed();
+
         if (!Engine.IsInitialized)
-            throw new InvalidOperationException("Logical resolution can only be configured after engine initialization.");
+            throw new InvalidOperationException(
+                "Logical resolution can only be configured after engine initialization.");
+
         if (_logicalResolution is not null)
             throw new InvalidOperationException("Logical resolution is already configured for this host.");
 
@@ -127,8 +130,8 @@ public abstract class BlazorGameHostBase : GameHostBase
     protected sealed override void BindScene()
     {
         var scene = Scene
-            ?? throw new InvalidOperationException(
-                $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
+                    ?? throw new InvalidOperationException(
+                        $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
         BindSceneCore(scene);
     }

@@ -48,6 +48,7 @@ public sealed class SdlGamepadAdapter : IGamepadAdapter
     public SdlGamepadAdapter(int deviceIndex)
     {
         _controller = SDL_GameControllerOpen(deviceIndex);
+
         if (_controller == IntPtr.Zero)
             throw new InvalidOperationException($"Failed to open SDL_GameController at index {deviceIndex}");
 

@@ -9,26 +9,32 @@ internal enum GameMode
     /// Specifies title.
     /// </summary>
     Title,
+
     /// <summary>
     /// Specifies playing.
     /// </summary>
     Playing,
+
     /// <summary>
     /// Specifies dialogue.
     /// </summary>
     Dialogue,
+
     /// <summary>
     /// Specifies inventory.
     /// </summary>
     Inventory,
+
     /// <summary>
     /// Specifies paused.
     /// </summary>
     Paused,
+
     /// <summary>
     /// Specifies game over.
     /// </summary>
     GameOver,
+
     /// <summary>
     /// Specifies victory.
     /// </summary>
@@ -41,6 +47,7 @@ internal enum WorldArea
     /// Specifies overworld.
     /// </summary>
     Overworld,
+
     /// <summary>
     /// Specifies dungeon.
     /// </summary>
@@ -53,14 +60,17 @@ internal enum Facing
     /// Specifies up.
     /// </summary>
     Up,
+
     /// <summary>
     /// Specifies down.
     /// </summary>
     Down,
+
     /// <summary>
     /// Specifies left.
     /// </summary>
     Left,
+
     /// <summary>
     /// Specifies right.
     /// </summary>
@@ -73,14 +83,17 @@ internal enum InventoryItem
     /// Specifies sword.
     /// </summary>
     Sword,
+
     /// <summary>
     /// Specifies rusted key.
     /// </summary>
     RustedKey,
+
     /// <summary>
     /// Specifies potion.
     /// </summary>
     Potion,
+
     /// <summary>
     /// Specifies sun relic.
     /// </summary>
@@ -125,7 +138,11 @@ internal sealed class EnemyState
 
 internal sealed class PickupState
 {
-    internal PickupState(string id, InventoryItem item, int amount, Sprite sprite)
+    internal PickupState(
+        string id,
+        InventoryItem item,
+        int amount,
+        Sprite sprite)
     {
         Id = id;
         Item = item;

@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Serialization;
 
 namespace Gondwana.Drawing.Sprites.GSPR;
 
@@ -10,7 +11,17 @@ public static partial class SpriteDefinitionSerializer
     /// <returns>The complete definition document.</returns>
     public static SpriteDefinitionDocument FromDocumentJson(string json, string? sourceIdentity = null) => new()
     {
-        Definitions = DefinitionDocumentJson.Read<SpriteDefinition>(json, ParseDefinition, definition => definition.Key, definition => { if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred ? inferred : "sprite"; })
+        Definitions = DefinitionDocumentJson.Read<SpriteDefinition>(
+            json,
+            ParseDefinition,
+            definition => definition.Key,
+            definition =>
+            {
+                if (string.IsNullOrWhiteSpace(definition.Key))
+                    definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred
+                        ? inferred
+                        : "sprite";
+            })
     };
 
     /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
@@ -31,11 +42,13 @@ public static partial class SpriteDefinitionSerializer
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         var path = Path.GetFullPath(filePath);
         var document = FromDocumentJson(File.ReadAllText(path), path);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -45,7 +58,10 @@ public static partial class SpriteDefinitionSerializer
     public static SpriteDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
+
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -58,17 +74,26 @@ public static partial class SpriteDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+
         using var stream = assetsFile.Get(AssetTypes.SpriteDefinition, entryName)
-            ?? throw new FileNotFoundException($"GSPR asset entry not found: {entryName}", entryName);
+                           ?? throw new FileNotFoundException($"GSPR asset entry not found: {entryName}", entryName);
+
         using var reader = new StreamReader(stream);
         var document = FromDocumentJson(reader.ReadToEnd(), entryName);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
                 ? SpriteDefinitionSource.None()
                 : SpriteDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
-            definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Key);
+
+            definition.LoadStamp = new(
+                definition,
+                assetsFilePath: assetsFile.SourcePath,
+                entryName: entryName,
+                definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -79,11 +104,22 @@ public static partial class SpriteDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+
+        try
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
-                errors.AddRange(SpriteDefinitionValidator.Validate(definition).Select(error => $"Sprite '{definition.Key}': {error}"));
+                errors.AddRange(
+                    SpriteDefinitionValidator.Validate(definition)
+                        .Select(error => $"Sprite '{definition.Key}': {error}"));
+
         return errors;
     }
 
@@ -99,13 +135,17 @@ public static partial class SpriteDefinitionSerializer
     /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
-    public static void SaveAll(string filePath, IEnumerable<SpriteDefinition> definitions) => SaveAll(filePath, definitions, null);
+    public static void SaveAll(string filePath, IEnumerable<SpriteDefinition> definitions) =>
+        SaveAll(filePath, definitions, null);
 
     /// <summary>Saves with a pre-install check after preparation and staging. Throw to abort; the callback must not alter the staging file.</summary>
     /// <param name="filePath">Final destination used for reference rebasing.</param>
     /// <param name="definitions">All members to persist.</param>
     /// <param name="beforeInstall">Receives the sibling staging path immediately before atomic installation.</param>
-    public static void SaveAll(string filePath, IEnumerable<SpriteDefinition> definitions, Action<string>? beforeInstall)
+    public static void SaveAll(
+        string filePath,
+        IEnumerable<SpriteDefinition> definitions,
+        Action<string>? beforeInstall)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         ArgumentNullException.ThrowIfNull(definitions);
@@ -120,28 +160,44 @@ public static partial class SpriteDefinitionSerializer
     private static SpriteDefinition PrepareDocumentMember(SpriteDefinition definition, string path)
     {
         var clone = ParseDefinition(ToJson(definition));
-        if (string.IsNullOrWhiteSpace(clone.Key)) clone.Key = Path.GetFileNameWithoutExtension(path);
+
+        if (string.IsNullOrWhiteSpace(clone.Key))
+            clone.Key = Path.GetFileNameWithoutExtension(path);
+
         var origin = definition.Source.GsprFilePath ?? definition.Source.AssetsFilePath;
+
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
+                           (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin)
+                               ? null
+                               : Path.GetDirectoryName(origin));
+
         var newDirectory = Path.GetDirectoryName(path)!;
-        string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
-            Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
+        string? RebasePath(string? value) =>
+            string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value))
+                ? value
+                : Path.GetRelativePath(
+                    newDirectory,
+                    oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
         foreach (var source in clone.TilesheetSources)
         {
             source.GtsPath = RebasePath(source.GtsPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.SceneSources)
         {
             source.GscnPath = RebasePath(source.GscnPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.AnimationSources)
         {
             source.GaniPath = RebasePath(source.GaniPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         clone.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }
@@ -174,7 +230,8 @@ public static partial class SpriteDefinitionSerializer
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry name.</param>
     /// <returns>All definitions.</returns>
-    public static IReadOnlyList<SpriteDefinition> LoadAll(AssetsFile assetsFile, string entryName) => LoadDocument(assetsFile, entryName).Definitions;
+    public static IReadOnlyList<SpriteDefinition> LoadAll(AssetsFile assetsFile, string entryName) =>
+        LoadDocument(assetsFile, entryName).Definitions;
 
     /// <summary>Loads a logical member by its case-sensitive Key.</summary>
     /// <param name="assetsFile">The archive.</param>
@@ -200,13 +257,15 @@ public static partial class SpriteDefinitionSerializer
     /// <param name="entryName">The document entry.</param>
     /// <param name="identity">The logical identity; null requires a singleton.</param>
     /// <returns>The materialized runtime content.</returns>
-    public static List<Sprite> LoadSprites(AssetsFile assetsFile, string entryName, string? identity) => ToSprites(Load(assetsFile, entryName, identity));
+    public static List<Sprite> LoadSprites(AssetsFile assetsFile, string entryName, string? identity) =>
+        ToSprites(Load(assetsFile, entryName, identity));
 
     /// <summary>Materializes all document members, rolling back newly created content on failure.</summary>
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry.</param>
     /// <returns>The materialized members in document order.</returns>
-    public static IReadOnlyList<List<Sprite>> LoadAllSprites(AssetsFile assetsFile, string entryName) => ToAllSprites(LoadDocument(assetsFile, entryName));
+    public static IReadOnlyList<List<Sprite>> LoadAllSprites(AssetsFile assetsFile, string entryName) =>
+        ToAllSprites(LoadDocument(assetsFile, entryName));
 
     /// <summary>Materializes all members and rolls back new runtime content on failure.</summary>
     /// <param name="document">The document to materialize.</param>
@@ -214,13 +273,21 @@ public static partial class SpriteDefinitionSerializer
     public static IReadOnlyList<List<Sprite>> ToAllSprites(SpriteDefinitionDocument document)
     {
         var errors = ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
         var created = new List<List<Sprite>>();
         var previous = SpriteManager.Instance.DefinitionProvenance;
+
         try
         {
-            foreach (var definition in document.Definitions) created.Add(ToSprites(definition));
-            if (created.Count != 1) SpriteManager.Instance.DefinitionProvenance = null;
+            foreach (var definition in document.Definitions)
+                created.Add(ToSprites(definition));
+
+            if (created.Count != 1)
+                SpriteManager.Instance.DefinitionProvenance = null;
+
             return created;
         }
         catch
@@ -230,6 +297,7 @@ public static partial class SpriteDefinitionSerializer
                 SpriteManager.Instance._spriteList.Remove(sprite);
                 sprite.DisposeImmediate();
             }
+
             SpriteManager.Instance.DefinitionProvenance = previous;
             throw;
         }

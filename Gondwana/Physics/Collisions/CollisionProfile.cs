@@ -73,6 +73,7 @@ public sealed class CollisionProfile
     public int ResolveCollidesWith(CollisionGroupRegistry groups)
     {
         ArgumentNullException.ThrowIfNull(groups);
+
         return CollidesWithAll
             ? CollisionMasks.All
             : groups.GetMask(CollidesWith);

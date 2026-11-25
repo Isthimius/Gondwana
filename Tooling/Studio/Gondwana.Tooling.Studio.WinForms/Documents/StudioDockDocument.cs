@@ -6,8 +6,10 @@ namespace Gondwana.Tooling.Studio.WinForms.Documents;
 internal sealed class StudioDockDocument : DockContent
 {
     internal StudioDocument Document { get; }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool CloseApproved { get; set; }
+
     private readonly Func<StudioDockDocument, Task<bool>> _confirmClose;
     private bool _closePending;
     private readonly Icon _tabIcon;
@@ -27,14 +29,18 @@ internal sealed class StudioDockDocument : DockContent
     internal void UpdateCaption()
     {
         Text = Document.Caption
-             + (Document.Dirty() ? " *" : "")
-             + (Document.ContentStale ? Document.Dirty() ? " [conflict]" : " [reload]" : "")
-             + (Document.PreviewStale ? " [preview]" : "");
+               + (Document.Dirty() ? " *" : "")
+               + (Document.ContentStale ? Document.Dirty() ? " [conflict]" : " [reload]" : "")
+               + (Document.PreviewStale ? " [preview]" : "");
 
         ToolTipText = Document.Tooltip
-                    + (Document.ContentStale ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately." : "")
-                    + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
-        if (Document.SourceProblem is { } problem) ToolTipText += "\n" + problem;
+                      + (Document.ContentStale
+                          ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately."
+                          : "")
+                      + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
+
+        if (Document.SourceProblem is { } problem)
+            ToolTipText += "\n" + problem;
     }
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();
@@ -55,6 +61,7 @@ internal sealed class StudioDockDocument : DockContent
         }
 
         var approval = _confirmClose(this);
+
         if (approval.IsCompleted)
         {
             e.Cancel = !approval.GetAwaiter().GetResult();
@@ -94,6 +101,7 @@ internal sealed class StudioDockDocument : DockContent
         }
 
         base.Dispose(disposing);
+
         if (disposing)
             _tabIcon.Dispose();
     }

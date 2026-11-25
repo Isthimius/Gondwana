@@ -33,42 +33,61 @@ public sealed partial class EngineState
         /// Gets or sets the path to the loose GSPR sprite definition.
         /// </summary>
         public string? GsprPath { get; set; }
+
         /// <summary>
         /// Gets or sets the definition.
         /// </summary>
         public SpriteDefinition? Definition { get; set; }
+
         /// <summary>
         /// Gets or sets the legacy sprites.
         /// </summary>
-        [JsonIgnore] public List<Sprite>? LegacySprites { get; set; }
+        [JsonIgnore]
+        public List<Sprite>? LegacySprites { get; set; }
     }
 
     private sealed class SpriteStateEntryConverter : JsonConverter<SpriteStateEntry>
     {
         /// <inheritdoc/>
-        public override SpriteStateEntry? ReadJson(JsonReader reader, Type objectType,
-            SpriteStateEntry? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override SpriteStateEntry? ReadJson(
+            JsonReader reader,
+            Type objectType,
+            SpriteStateEntry? existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
+            if (reader.TokenType == JsonToken.Null)
+                return null;
+
             var token = JToken.Load(reader);
+
             // PreserveReferencesHandling.All wrapped historical arrays in $values.
             if (token is JArray || token["$values"] is not null)
                 return new() { LegacySprites = token.ToObject<List<Sprite>>(serializer) };
+
             if (token is not JObject obj)
                 throw new JsonSerializationException("Invalid Sprite state entry.");
+
             return new()
             {
-                AssetsFilePath = obj.GetValue("AssetsFilePath", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
-                AssetEntryName = obj.GetValue("AssetEntryName", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
-                DefinitionIdentity = obj.GetValue("DefinitionIdentity", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
+                AssetsFilePath = obj.GetValue("AssetsFilePath", StringComparison.OrdinalIgnoreCase)
+                    ?.ToObject<string>(serializer),
+                AssetEntryName = obj.GetValue("AssetEntryName", StringComparison.OrdinalIgnoreCase)
+                    ?.ToObject<string>(serializer),
+                DefinitionIdentity = obj.GetValue("DefinitionIdentity", StringComparison.OrdinalIgnoreCase)
+                    ?.ToObject<string>(serializer),
                 GsprPath = obj.GetValue("GsprPath", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
-                Definition = obj.GetValue("Definition", StringComparison.OrdinalIgnoreCase)?.ToObject<SpriteDefinition>(serializer)
+                Definition = obj.GetValue("Definition", StringComparison.OrdinalIgnoreCase)
+                    ?.ToObject<SpriteDefinition>(serializer)
             };
         }
+
         /// <inheritdoc/>
         public override bool CanWrite => false;
+
         /// <inheritdoc/>
-        public override void WriteJson(JsonWriter writer, SpriteStateEntry? value, JsonSerializer serializer) => throw new NotSupportedException();
+        public override void WriteJson(JsonWriter writer, SpriteStateEntry? value, JsonSerializer serializer) =>
+            throw new NotSupportedException();
     }
 
     /// <summary>
@@ -181,9 +200,12 @@ public sealed partial class EngineState
             {
                 return new SceneStateEntry
                 {
-                    AssetsFilePath = obj.GetValue("AssetsFilePath", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
-                    AssetEntryName = obj.GetValue("AssetEntryName", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
-                    DefinitionIdentity = obj.GetValue("DefinitionIdentity", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
+                    AssetsFilePath = obj.GetValue("AssetsFilePath", StringComparison.OrdinalIgnoreCase)
+                        ?.ToObject<string>(serializer),
+                    AssetEntryName = obj.GetValue("AssetEntryName", StringComparison.OrdinalIgnoreCase)
+                        ?.ToObject<string>(serializer),
+                    DefinitionIdentity = obj.GetValue("DefinitionIdentity", StringComparison.OrdinalIgnoreCase)
+                        ?.ToObject<string>(serializer),
                     GscnPath = obj.GetValue(
                         nameof(SceneStateEntry.GscnPath),
                         StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
@@ -197,8 +219,8 @@ public sealed partial class EngineState
             // directly in the Scenes list. Keep the deserialized instance intact so any
             // preserved references from other legacy objects still resolve to it.
             var legacyScene = obj.ToObject<Scene>(serializer)
-                ?? throw new JsonSerializationException(
-                    "Legacy EngineState scene entry deserialized to null.");
+                              ?? throw new JsonSerializationException(
+                                  "Legacy EngineState scene entry deserialized to null.");
 
             return new SceneStateEntry
             {
@@ -374,24 +396,27 @@ public sealed partial class EngineState
     /// embedded inline in the engine-state JSON.
     /// </param>
     /// <param name="separateGsprFile">Writes the complete sprite collection to one external GSPR file.</param>
-    public void SaveToFile(string path,
-                           bool compress = false,
-                           bool separateGtsFiles = false,
-                           EngineStateParts parts = EngineStateParts.All,
-                           bool separateGscnFiles = false,
-                           bool separateGaniFiles = false,
-                           bool separateGsndFile = false,
-                           bool separateGsprFile = false)
-        => SaveToFile(path, new EngineStateSaveOptions
-        {
-            Compress = compress,
-            Parts = parts,
-            Tilesheets = separateGtsFiles ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
-            Scenes = separateGscnFiles ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
-            Cycles = separateGaniFiles ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
-            Audio = separateGsndFile ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
-            Sprites = separateGsprFile ? DefinitionPersistence.Loose : DefinitionPersistence.Inline
-        });
+    public void SaveToFile(
+        string path,
+        bool compress = false,
+        bool separateGtsFiles = false,
+        EngineStateParts parts = EngineStateParts.All,
+        bool separateGscnFiles = false,
+        bool separateGaniFiles = false,
+        bool separateGsndFile = false,
+        bool separateGsprFile = false)
+        => SaveToFile(
+            path,
+            new EngineStateSaveOptions
+            {
+                Compress = compress,
+                Parts = parts,
+                Tilesheets = separateGtsFiles ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
+                Scenes = separateGscnFiles ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
+                Cycles = separateGaniFiles ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
+                Audio = separateGsndFile ? DefinitionPersistence.Loose : DefinitionPersistence.Inline,
+                Sprites = separateGsprFile ? DefinitionPersistence.Loose : DefinitionPersistence.Inline
+            });
 
     /// <summary>Saves selected state using per-format definition persistence choices.</summary>
     /// <param name="path">Destination state file.</param>
@@ -405,14 +430,25 @@ public sealed partial class EngineState
         var baseDirectory = Path.GetDirectoryName(fullPath);
 
         ArgumentNullException.ThrowIfNull(options);
-        foreach (var mode in new[] { options.Tilesheets, options.Cycles, options.Scenes, options.Audio, options.Sprites })
-            if (!Enum.IsDefined(mode)) throw new ArgumentOutOfRangeException(nameof(options));
+
+        foreach (var mode in new[]
+                     { options.Tilesheets, options.Cycles, options.Scenes, options.Audio, options.Sprites })
+            if (!Enum.IsDefined(mode))
+                throw new ArgumentOutOfRangeException(nameof(options));
+
         var parts = options.Parts;
+
         if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource)
             parts |= EngineStateParts.Scenes | EngineStateParts.Cycles | EngineStateParts.Tilesheets;
+
         if (parts.HasFlag(EngineStateParts.Scenes) && options.Scenes == DefinitionPersistence.PreserveSource)
             parts |= EngineStateParts.Cycles | EngineStateParts.Tilesheets;
-        var snapshot = BuildSnapshot(NormalizeParts(parts), baseDirectory, fullPath, options);
+
+        var snapshot = BuildSnapshot(
+            NormalizeParts(parts),
+            baseDirectory,
+            fullPath,
+            options);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
@@ -466,7 +502,12 @@ public sealed partial class EngineState
             ?? new EngineStateSnapshot();
 
         // Merge into the live engine state (registries)
-        ApplySnapshot(snapshot, clearExisting: true, overwriteExisting: true, parts, baseDirectory);
+        ApplySnapshot(
+            snapshot,
+            clearExisting: true,
+            overwriteExisting: true,
+            parts,
+            baseDirectory);
     }
 
     /// <summary>
@@ -493,7 +534,11 @@ public sealed partial class EngineState
     /// from <see cref="EngineStateParts"/> to select specific components. Dependencies are
     /// automatically included. Default is <see cref="EngineStateParts.All"/>.
     /// </param>
-    public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
+    public static void MergeFromFile(
+        string path,
+        bool compressed = false,
+        bool overwriteExisting = false,
+        EngineStateParts parts = EngineStateParts.All)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
@@ -508,7 +553,12 @@ public sealed partial class EngineState
             ?? new EngineStateSnapshot();
 
         // Merge into the live engine state (registries)
-        ApplySnapshot(snapshot, clearExisting: false, overwriteExisting: overwriteExisting, parts, baseDirectory);
+        ApplySnapshot(
+            snapshot,
+            clearExisting: false,
+            overwriteExisting: overwriteExisting,
+            parts,
+            baseDirectory);
     }
 
     #region deserialization helpers
@@ -516,58 +566,84 @@ public sealed partial class EngineState
     private sealed class EngineStateSnapshot
     {
         /// <summary>Gets or sets independently preserved logical audio groups.</summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<AudioStateEntry>? AudioGroups { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public List<AudioStateEntry>? AudioGroups { get; set; }
+
         /// <summary>Gets or sets independently preserved logical sprite groups.</summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<SpriteStateEntry>? SpriteGroups { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public List<SpriteStateEntry>? SpriteGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the assets-file references included in the saved state.
         /// </summary>
         [JsonProperty(TypeNameHandling = TypeNameHandling.None, ItemTypeNameHandling = TypeNameHandling.None)]
         public List<AssetsFileStateEntry>? AssetsFiles { get; set; }
+
         /// <summary>
         /// Gets or sets the tilesheet state entries keyed by name.
         /// </summary>
-        [JsonProperty] public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
+        [JsonProperty]
+        public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
+
         /// <summary>
         /// Gets or sets the animation state entries keyed by animation key.
         /// </summary>
-        [JsonProperty] public Dictionary<string, AnimationStateEntry>? Cycles { get; set; }
+        [JsonProperty]
+        public Dictionary<string, AnimationStateEntry>? Cycles { get; set; }
+
         /// <summary>
         /// Gets or sets the scene state entries.
         /// </summary>
-        [JsonProperty] public List<SceneStateEntry>? Scenes { get; set; }
+        [JsonProperty]
+        public List<SceneStateEntry>? Scenes { get; set; }
+
         /// <summary>
         /// Gets or sets the sprite definition or legacy sprite state.
         /// </summary>
-        [JsonProperty] public SpriteStateEntry? Sprites { get; set; }
+        [JsonProperty]
+        public SpriteStateEntry? Sprites { get; set; }
+
         /// <summary>
         /// Gets or sets the audio definition state.
         /// </summary>
-        [JsonProperty] public AudioStateEntry? Audio { get; set; }
+        [JsonProperty]
+        public AudioStateEntry? Audio { get; set; }
 
         // Legacy compatibility: pre-GSND EngineState files serialized runtime
         // AudioResource objects directly under SoundResources.
         /// <summary>
         /// Gets or sets the legacy audio resources retained for backwards-compatible loading.
         /// </summary>
-        [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
+        [JsonProperty]
+        public Dictionary<string, AudioResource>? SoundResources { get; set; }
     }
 
     private static EngineStateParts NormalizeParts(EngineStateParts parts, EngineStateSnapshot? snapshot = null)
     {
         // Expand content dependencies for packed definitions without changing legacy
         // sprite-only and scene-only merges that deliberately use existing registries.
-        if (parts.HasFlag(EngineStateParts.Sprites) && (snapshot?.Sprites?.AssetsFilePath is not null || snapshot?.SpriteGroups?.Any(entry => entry.AssetsFilePath is not null) == true))
+        if (parts.HasFlag(EngineStateParts.Sprites) && (snapshot?.Sprites?.AssetsFilePath is not null ||
+                                                        snapshot?.SpriteGroups?.Any(entry =>
+                                                            entry.AssetsFilePath is not null) == true))
         {
-            if (snapshot.Scenes is not null) parts |= EngineStateParts.Scenes;
-            if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
-            if (snapshot.Tilesheets is not null) parts |= EngineStateParts.Tilesheets;
+            if (snapshot.Scenes is not null)
+                parts |= EngineStateParts.Scenes;
+
+            if (snapshot.Cycles is not null)
+                parts |= EngineStateParts.Cycles;
+
+            if (snapshot.Tilesheets is not null)
+                parts |= EngineStateParts.Tilesheets;
         }
-        if (parts.HasFlag(EngineStateParts.Scenes) && snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true)
+
+        if (parts.HasFlag(EngineStateParts.Scenes) &&
+            snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true)
         {
-            if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
-            if (snapshot.Tilesheets is not null) parts |= EngineStateParts.Tilesheets;
+            if (snapshot.Cycles is not null)
+                parts |= EngineStateParts.Cycles;
+
+            if (snapshot.Tilesheets is not null)
+                parts |= EngineStateParts.Tilesheets;
         }
 
         // GANI definitions resolve Frame references through the TilesheetRegistry.
@@ -577,8 +653,11 @@ public sealed partial class EngineState
         // Tilesheets and Audio may depend on AssetsFiles for AssetIdentifier.Data.
         if (parts.HasFlag(EngineStateParts.Tilesheets) ||
             parts.HasFlag(EngineStateParts.Audio) ||
-            (parts.HasFlag(EngineStateParts.Scenes) && snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true) ||
-            (parts.HasFlag(EngineStateParts.Sprites) && (snapshot?.Sprites?.AssetsFilePath is not null || snapshot?.SpriteGroups?.Any(entry => entry.AssetsFilePath is not null) == true)))
+            (parts.HasFlag(EngineStateParts.Scenes) &&
+             snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true) ||
+            (parts.HasFlag(EngineStateParts.Sprites) && (snapshot?.Sprites?.AssetsFilePath is not null ||
+                                                         snapshot?.SpriteGroups?.Any(entry =>
+                                                             entry.AssetsFilePath is not null) == true)))
         {
             parts |= EngineStateParts.AssetsFiles;
         }
@@ -586,15 +665,21 @@ public sealed partial class EngineState
         return parts;
     }
 
-    private EngineStateSnapshot BuildSnapshot(EngineStateParts parts,
-                                              string? baseDirectory,
-                                              string engineStatePath,
-                                              EngineStateSaveOptions options)
+    private EngineStateSnapshot BuildSnapshot(
+        EngineStateParts parts,
+        string? baseDirectory,
+        string engineStatePath,
+        EngineStateSaveOptions options)
     {
         var audioGroups = parts.HasFlag(EngineStateParts.Audio) && options.Audio == DefinitionPersistence.PreserveSource
-            ? CaptureAudioGroups(baseDirectory) : null;
-        var spriteGroups = parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource
-            ? CaptureSpriteGroups(baseDirectory) : null;
+            ? CaptureAudioGroups(baseDirectory)
+            : null;
+
+        var spriteGroups = parts.HasFlag(EngineStateParts.Sprites) &&
+                           options.Sprites == DefinitionPersistence.PreserveSource
+            ? CaptureSpriteGroups(baseDirectory)
+            : null;
+
         return new EngineStateSnapshot
         {
             AudioGroups = audioGroups,
@@ -647,18 +732,33 @@ public sealed partial class EngineState
         };
     }
 
-    private SpriteStateEntry CaptureSpriteEntry(string? baseDirectory, string engineStatePath, DefinitionPersistence persistence)
+    private SpriteStateEntry CaptureSpriteEntry(
+        string? baseDirectory,
+        string engineStatePath,
+        DefinitionPersistence persistence)
     {
         var definition = SpriteDefinitionSerializer.FromSprites(SpriteManager.Instance.AllSprites);
         var entry = new SpriteStateEntry();
-        if (TryPreserve(entry, SpriteManager.Instance.DefinitionProvenance, definition, persistence, baseDirectory, out var loosePath))
+
+        if (TryPreserve(
+                entry,
+                SpriteManager.Instance.DefinitionProvenance,
+                definition,
+                persistence,
+                baseDirectory,
+                out var loosePath))
         {
             entry.GsprPath = loosePath;
             return entry;
         }
-        if (persistence != DefinitionPersistence.Loose) return new() { Definition = definition };
-        var path = Path.Combine(Path.GetDirectoryName(engineStatePath)!,
+
+        if (persistence != DefinitionPersistence.Loose)
+            return new() { Definition = definition };
+
+        var path = Path.Combine(
+            Path.GetDirectoryName(engineStatePath)!,
             Path.GetFileNameWithoutExtension(engineStatePath) + ".sprites.gspr");
+
         SpriteDefinitionSerializer.Save(path, definition);
         return new() { GsprPath = MakeRelativePath(path, baseDirectory) };
     }
@@ -670,45 +770,59 @@ public sealed partial class EngineState
     {
         var entry = new AudioStateEntry();
         var currentAudio = AudioDefinitionSerializer.FromManager(AudioResourceManager.Instance);
-        if (TryPreserve(entry, AudioResourceManager.Instance.DefinitionProvenance,
-            currentAudio, persistence, baseDirectory, out var loosePath))
+
+        if (TryPreserve(
+                entry,
+                AudioResourceManager.Instance.DefinitionProvenance,
+                currentAudio,
+                persistence,
+                baseDirectory,
+                out var loosePath))
         {
             entry.GsndPath = loosePath;
             return entry;
         }
+
         // Anonymous stream packages cannot be named in a reloadable GSND. Export their
         // audio payloads to loose files; do not invent or mutate an archive.
         var anonymousAudio = currentAudio.Resources.Where(resource =>
             resource.SourceKind == AudioResourceSourceKind.PackedAsset &&
             string.IsNullOrWhiteSpace(resource.AssetsFilePath)).ToList();
+
         if (anonymousAudio.Count != 0)
         {
             var directory = GetAudioStateDirectory(engineStatePath);
             Directory.CreateDirectory(directory);
+
             for (int i = 0; i < anonymousAudio.Count; i++)
             {
                 var resource = anonymousAudio[i];
                 var runtime = AudioResourceManager.Instance.Get(resource.Key)!;
                 var extension = Path.GetExtension(runtime.SourceExtension ?? ".wav");
                 var mediaPath = Path.Combine(directory, $"{i}-{SanitizeFileName(resource.Key)}{extension}");
+
                 using (var source = runtime.AssetIdentifier!.Data)
                 using (var output = File.Create(mediaPath))
                     source.CopyTo(output);
+
                 resource.SourceKind = AudioResourceSourceKind.LooseFile;
                 resource.FilePath = mediaPath;
                 resource.AssetsFilePath = null;
                 resource.AssetEntryName = null;
             }
+
             var definitionPath = Path.Combine(directory, "audio.gsnd");
             AudioDefinitionSerializer.Save(definitionPath, currentAudio);
             return new AudioStateEntry { GsndPath = MakeRelativePath(definitionPath, baseDirectory) };
         }
+
         if (persistence == DefinitionPersistence.Loose)
         {
             var gsndDirectory = GetAudioStateDirectory(engineStatePath);
             Directory.CreateDirectory(gsndDirectory);
 
             var gsndFullPath = Path.Combine(gsndDirectory, "audio.gsnd");
+
             AudioDefinitionSerializer.Save(
                 gsndFullPath,
                 AudioResourceManager.Instance);
@@ -744,8 +858,15 @@ public sealed partial class EngineState
                 continue;
 
             var preserved = new AnimationStateEntry();
+
             if (cycle.DefinitionProvenance is { } provenance &&
-                TryPreserve(preserved, provenance, AnimationDefinitionSerializer.FromCycle(cycle), persistence, baseDirectory, out var loosePath))
+                TryPreserve(
+                    preserved,
+                    provenance,
+                    AnimationDefinitionSerializer.FromCycle(cycle),
+                    persistence,
+                    baseDirectory,
+                    out var loosePath))
             {
                 preserved.GaniPath = loosePath;
                 result[key] = preserved;
@@ -803,8 +924,15 @@ public sealed partial class EngineState
                 continue;
 
             var preserved = new SceneStateEntry();
+
             if (scene.DefinitionProvenance is { } provenance &&
-                TryPreserve(preserved, provenance, SceneDefinitionSerializer.FromScene(scene), persistence, baseDirectory, out var loosePath))
+                TryPreserve(
+                    preserved,
+                    provenance,
+                    SceneDefinitionSerializer.FromScene(scene),
+                    persistence,
+                    baseDirectory,
+                    out var loosePath))
             {
                 preserved.GscnPath = loosePath;
                 result.Add(preserved);
@@ -829,19 +957,21 @@ public sealed partial class EngineState
                 // clean scene definition without EngineState $id/$ref metadata.
                 SceneDefinitionSerializer.Save(gscnFullPath, scene);
 
-                result.Add(new SceneStateEntry
-                {
-                    GscnPath = MakeRelativePath(
-                        gscnFullPath,
-                        baseDirectory)
-                });
+                result.Add(
+                    new SceneStateEntry
+                    {
+                        GscnPath = MakeRelativePath(
+                            gscnFullPath,
+                            baseDirectory)
+                    });
             }
             else
             {
-                result.Add(new SceneStateEntry
-                {
-                    Definition = SceneDefinitionSerializer.FromScene(scene)
-                });
+                result.Add(
+                    new SceneStateEntry
+                    {
+                        Definition = SceneDefinitionSerializer.FromScene(scene)
+                    });
             }
         }
 
@@ -894,21 +1024,30 @@ public sealed partial class EngineState
             ClearSelected(parts);
 
         if (parts.HasFlag(EngineStateParts.AssetsFiles))
-            LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFileStateEntry>(), overwriteExisting, baseDirectory, PackedEntries(snapshot, parts));
+            LoadAssetsFiles(
+                snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFileStateEntry>(),
+                overwriteExisting,
+                baseDirectory,
+                PackedEntries(snapshot, parts));
 
         if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is { } groups)
         {
-            foreach (var group in groups) MergeAudio(null, group, null, overwriteExisting, baseDirectory);
-        }
-        else
-            if (parts.HasFlag(EngineStateParts.Audio))
+            foreach (var group in groups)
                 MergeAudio(
-                    snapshot.AssetsFiles?.Select(raw => FindAssetsFile(ResolvePath(raw.FilePath, baseDirectory)))
-                        .OfType<AssetsFile>().ToList(),
-                    snapshot.Audio,
-                    snapshot.SoundResources,
+                    null,
+                    group,
+                    null,
                     overwriteExisting,
                     baseDirectory);
+        }
+        else if (parts.HasFlag(EngineStateParts.Audio))
+            MergeAudio(
+                snapshot.AssetsFiles?.Select(raw => FindAssetsFile(ResolvePath(raw.FilePath, baseDirectory)))
+                    .OfType<AssetsFile>().ToList(),
+                snapshot.Audio,
+                snapshot.SoundResources,
+                overwriteExisting,
+                baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Tilesheets))
             MergeTilesheets(snapshot.Tilesheets, overwriteExisting, baseDirectory);
@@ -921,21 +1060,38 @@ public sealed partial class EngineState
 
         if (parts.HasFlag(EngineStateParts.Sprites))
         {
-            foreach (var entry in snapshot.SpriteGroups ?? (snapshot.Sprites is { } singleton ? [singleton] : new List<SpriteStateEntry>()))
+            foreach (var entry in snapshot.SpriteGroups ??
+                                  (snapshot.Sprites is { } singleton ? [singleton] : new List<SpriteStateEntry>()))
                 if (entry is not null)
                 {
                     var incoming = entry.LegacySprites;
+
                     if (incoming is null)
                     {
                         var definition = entry.AssetsFilePath is not null
-                            ? LoadPacked(entry, baseDirectory, AssetTypes.SpriteDefinition, (archive, name) => SpriteDefinitionSerializer.Load(archive, name, entry.DefinitionIdentity))
+                            ? LoadPacked(
+                                entry,
+                                baseDirectory,
+                                AssetTypes.SpriteDefinition,
+                                (archive, name) => SpriteDefinitionSerializer.Load(
+                                    archive,
+                                    name,
+                                    entry.DefinitionIdentity))
                             : !string.IsNullOrWhiteSpace(entry.GsprPath)
-                            ? SpriteDefinitionSerializer.Load(ResolvePath(entry.GsprPath, baseDirectory), entry.DefinitionIdentity)
-                            : entry.Definition ?? throw new InvalidDataException("Sprite state entry requires GsprPath or Definition.");
-                        incoming = WithDefinitionContext(entry, baseDirectory,
+                                ? SpriteDefinitionSerializer.Load(
+                                    ResolvePath(entry.GsprPath, baseDirectory),
+                                    entry.DefinitionIdentity)
+                                : entry.Definition ?? throw new InvalidDataException(
+                                    "Sprite state entry requires GsprPath or Definition.");
+
+                        incoming = WithDefinitionContext(
+                            entry,
+                            baseDirectory,
                             () => SpriteDefinitionSerializer.ToSprites(definition, allowDuplicateNicknames: true));
+
                         DetachSnapshotSprites(incoming);
                     }
+
                     MergeSprites(incoming, overwriteExisting);
                 }
         }
@@ -961,6 +1117,7 @@ public sealed partial class EngineState
         if (parts.HasFlag(EngineStateParts.Sprites))
         {
             SpriteManager.Instance.DefinitionProvenance = null;
+
             // EngineState replacement is synchronous; normal game-loop disposal is deferred.
             foreach (var sprite in SpriteManager.Instance.AllSprites)
             {
@@ -973,7 +1130,11 @@ public sealed partial class EngineState
             AudioResourceManager.Instance.Dispose();
     }
 
-    private static void LoadAssetsFiles(IEnumerable<AssetsFileStateEntry> resourceFiles, bool overwriteExisting, string? baseDirectory, IEnumerable<DefinitionStateEntry> packedEntries)
+    private static void LoadAssetsFiles(
+        IEnumerable<AssetsFileStateEntry> resourceFiles,
+        bool overwriteExisting,
+        string? baseDirectory,
+        IEnumerable<DefinitionStateEntry> packedEntries)
     {
         // Replace raw deserialized resource files with proper loaded instances
         if (resourceFiles.Any())
@@ -984,9 +1145,12 @@ public sealed partial class EngineState
                 {
                     var path = ResolvePath(raw.FilePath, baseDirectory);
                     var loaded = FindAssetsFile(path);
+
                     if (loaded is null)
                     {
-                        if (!File.Exists(path)) throw new FileNotFoundException($"EngineState assets file not found: {path}", path);
+                        if (!File.Exists(path))
+                            throw new FileNotFoundException($"EngineState assets file not found: {path}", path);
+
                         loaded = AssetsFile.LoadOrCreate(path, raw.Password, raw.UseEncryption);
                     }
 
@@ -1001,11 +1165,17 @@ public sealed partial class EngineState
                 catch (Exception ex)
                 {
                     Engine.Logger.LogError(ex, "Failed to load resource file '{FilePath}'", raw.FilePath);
+
                     var dependency = packedEntries.FirstOrDefault(entry => string.Equals(
-                        ResolvePath(entry.AssetsFilePath!, baseDirectory), ResolvePath(raw.FilePath, baseDirectory),
+                        ResolvePath(entry.AssetsFilePath!, baseDirectory),
+                        ResolvePath(raw.FilePath, baseDirectory),
                         OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
+
                     if (dependency is not null)
-                        throw new InvalidDataException($"Cannot load packed definition '{dependency.AssetEntryName}' from GAF '{ResolvePath(raw.FilePath, baseDirectory)}'.", ex);
+                        throw new InvalidDataException(
+                            $"Cannot load packed definition '{dependency.AssetEntryName}' from GAF '{ResolvePath(raw.FilePath, baseDirectory)}'.",
+                            ex);
+
                     throw;
                 }
             }
@@ -1025,12 +1195,17 @@ public sealed partial class EngineState
 
             if (audio.AssetsFilePath is not null)
             {
-                definition = LoadPacked(audio, baseDirectory, AssetTypes.AudioDefinition, (archive, name) => AudioDefinitionSerializer.Load(archive, name, audio.DefinitionIdentity));
+                definition = LoadPacked(
+                    audio,
+                    baseDirectory,
+                    AssetTypes.AudioDefinition,
+                    (archive, name) => AudioDefinitionSerializer.Load(archive, name, audio.DefinitionIdentity));
             }
             else if (!string.IsNullOrWhiteSpace(audio.GsndPath))
             {
                 definition = AudioDefinitionSerializer.Load(
-                    ResolvePath(audio.GsndPath, baseDirectory), audio.DefinitionIdentity);
+                    ResolvePath(audio.GsndPath, baseDirectory),
+                    audio.DefinitionIdentity);
             }
             else if (audio.Definition is not null)
             {
@@ -1042,11 +1217,16 @@ public sealed partial class EngineState
                     "Audio state entry does not contain a GSND path or inline definition.");
             }
 
-            WithDefinitionContext(audio, baseDirectory, () => AudioDefinitionSerializer.LoadIntoManager(
-                definition,
-                overwriteExisting,
-                audio.Definition is not null ? baseDirectory :
-                    audio.GsndPath is not null ? Path.GetDirectoryName(ResolvePath(audio.GsndPath, baseDirectory)) : null));
+            WithDefinitionContext(
+                audio,
+                baseDirectory,
+                () => AudioDefinitionSerializer.LoadIntoManager(
+                    definition,
+                    overwriteExisting,
+                    audio.Definition is not null ? baseDirectory :
+                    audio.GsndPath is not null ? Path.GetDirectoryName(ResolvePath(audio.GsndPath, baseDirectory)) :
+                    null));
+
             return;
         }
 
@@ -1080,6 +1260,7 @@ public sealed partial class EngineState
                 if (!overwriteExisting)
                 {
                     var existing = AudioResourceManager.Instance.Get(key);
+
                     if (existing is not null)
                     {
                         existing.Volume = spec.Volume;
@@ -1087,6 +1268,7 @@ public sealed partial class EngineState
                         existing.PlaybackSpeed = spec.PlaybackSpeed;
                         existing.IsLooping = spec.IsLooping;
                     }
+
                     continue;
                 }
 
@@ -1120,8 +1302,15 @@ public sealed partial class EngineState
         foreach (var (key, tilesheet) in TilesheetRegistry.Instance.GetAll())
         {
             var preserved = new TilesheetStateEntry();
+
             if (tilesheet.DefinitionProvenance is { } provenance &&
-                TryPreserve(preserved, provenance, TilesheetDefinitionSerializer.FromTilesheet(tilesheet), persistence, baseDirectory, out var loosePath))
+                TryPreserve(
+                    preserved,
+                    provenance,
+                    TilesheetDefinitionSerializer.FromTilesheet(tilesheet),
+                    persistence,
+                    baseDirectory,
+                    out var loosePath))
             {
                 preserved.GtsPath = loosePath;
                 result[key] = preserved;
@@ -1222,6 +1411,7 @@ public sealed partial class EngineState
             return Guid.NewGuid().ToString("N");
 
         var invalidChars = Path.GetInvalidFileNameChars();
+
         var sanitized = new string(
             value.Select(ch => invalidChars.Contains(ch) ? '_' : ch).ToArray());
 
@@ -1254,7 +1444,11 @@ public sealed partial class EngineState
 
             if (entry.AssetsFilePath is not null)
             {
-                rebuilt = LoadPacked(entry, baseDirectory, AssetTypes.TilesheetDefinition, (archive, name) => TilesheetFactory.FromDefinitionAsset(archive, name, entry.DefinitionIdentity));
+                rebuilt = LoadPacked(
+                    entry,
+                    baseDirectory,
+                    AssetTypes.TilesheetDefinition,
+                    (archive, name) => TilesheetFactory.FromDefinitionAsset(archive, name, entry.DefinitionIdentity));
             }
             else if (!string.IsNullOrWhiteSpace(entry.GtsPath))
             {
@@ -1310,6 +1504,7 @@ public sealed partial class EngineState
         {
             if (entry is null)
                 continue;
+
             if (!incomingKeys.Add(key))
                 throw new InvalidDataException($"Duplicate GANI animation key '{key}'.");
 
@@ -1320,7 +1515,11 @@ public sealed partial class EngineState
 
             if (entry.AssetsFilePath is not null)
             {
-                definition = LoadPacked(entry, baseDirectory, AssetTypes.AnimationDefinition, (archive, name) => AnimationDefinitionSerializer.Load(archive, name, entry.DefinitionIdentity));
+                definition = LoadPacked(
+                    entry,
+                    baseDirectory,
+                    AssetTypes.AnimationDefinition,
+                    (archive, name) => AnimationDefinitionSerializer.Load(archive, name, entry.DefinitionIdentity));
             }
             else if (!string.IsNullOrWhiteSpace(entry.GaniPath))
             {
@@ -1343,8 +1542,11 @@ public sealed partial class EngineState
             }
             else if (!string.Equals(definition.Key, key, StringComparison.OrdinalIgnoreCase))
             {
-                throw DefinitionError(entry, baseDirectory, new InvalidDataException(
-                    $"Animation state entry '{key}' contains definition key '{definition.Key}'."));
+                throw DefinitionError(
+                    entry,
+                    baseDirectory,
+                    new InvalidDataException(
+                        $"Animation state entry '{key}' contains definition key '{definition.Key}'."));
             }
 
             definitions.Add(definition);
@@ -1369,8 +1571,11 @@ public sealed partial class EngineState
                     StringComparison.OrdinalIgnoreCase) &&
                 !availableKeys.Contains(definition.NextCycleKey))
             {
-                throw DefinitionError(sourceEntries[definition], baseDirectory, new InvalidDataException(
-                    $"GANI animation '{definition.Key}' references next cycle '{definition.NextCycleKey}', but no matching animation is available."));
+                throw DefinitionError(
+                    sourceEntries[definition],
+                    baseDirectory,
+                    new InvalidDataException(
+                        $"GANI animation '{definition.Key}' references next cycle '{definition.NextCycleKey}', but no matching animation is available."));
             }
         }
 
@@ -1378,17 +1583,23 @@ public sealed partial class EngineState
 
         foreach (var definition in definitions)
         {
-            var cycle = WithDefinitionContext(sourceEntries[definition], baseDirectory,
+            var cycle = WithDefinitionContext(
+                sourceEntries[definition],
+                baseDirectory,
                 () => AnimationDefinitionSerializer.MaterializeCycle(definition));
+
             materialized.Add((cycle, definition));
         }
 
         foreach (var (cycle, definition) in materialized)
-            WithDefinitionContext(sourceEntries[definition], baseDirectory, () =>
-            {
-                AnimationDefinitionSerializer.ApplyNextCycle(cycle, definition);
-                return cycle;
-            });
+            WithDefinitionContext(
+                sourceEntries[definition],
+                baseDirectory,
+                () =>
+                {
+                    AnimationDefinitionSerializer.ApplyNextCycle(cycle, definition);
+                    return cycle;
+                });
     }
 
     private static void DetachLegacySnapshotScenes(List<SceneStateEntry>? scenes)
@@ -1412,9 +1623,11 @@ public sealed partial class EngineState
             return;
 
         var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
+
         for (int i = 0; i < Scene._allScenes.Count; i++)
         {
             var id = Scene._allScenes[i].ID;
+
             if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
                 existingIndexById.Add(id, i);
         }
@@ -1437,7 +1650,12 @@ public sealed partial class EngineState
             }
             else if (entry.AssetsFilePath is not null)
             {
-                incoming = LoadPacked(entry, baseDirectory, AssetTypes.SceneDefinition, (archive, name) => SceneDefinitionSerializer.LoadScene(archive, name, entry.DefinitionIdentity));
+                incoming = LoadPacked(
+                    entry,
+                    baseDirectory,
+                    AssetTypes.SceneDefinition,
+                    (archive, name) => SceneDefinitionSerializer.LoadScene(archive, name, entry.DefinitionIdentity));
+
                 materializedFromDefinition = true;
             }
             else if (!string.IsNullOrWhiteSpace(entry.GscnPath))
@@ -1490,6 +1708,7 @@ public sealed partial class EngineState
     private static void RebindSpriteSceneLayer(Sprite sprite)
     {
         var layerId = sprite.SerializedSceneLayerIdForBinding;
+
         if (string.IsNullOrWhiteSpace(layerId))
         {
             if (!ReferenceEquals(sprite.SceneLayer, SceneLayer.Empty))
@@ -1504,8 +1723,10 @@ public sealed partial class EngineState
 
         if (!string.IsNullOrWhiteSpace(sceneId))
         {
-            var scene = Scene._allScenes.FirstOrDefault(
-                candidate => string.Equals(candidate.ID, sceneId, StringComparison.Ordinal));
+            var scene = Scene._allScenes.FirstOrDefault(candidate => string.Equals(
+                candidate.ID,
+                sceneId,
+                StringComparison.Ordinal));
 
             targetLayer = scene?.GetSceneLayerByID(layerId);
         }
@@ -1554,9 +1775,11 @@ public sealed partial class EngineState
             return;
 
         var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
+
         for (int i = 0; i < SpriteManager.Instance._spriteList.Count; i++)
         {
             var id = SpriteManager.Instance._spriteList[i].Nickname;
+
             if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
                 existingIndexById.Add(id, i);
         }

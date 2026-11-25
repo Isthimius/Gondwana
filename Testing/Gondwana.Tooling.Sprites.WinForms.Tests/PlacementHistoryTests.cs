@@ -14,18 +14,56 @@ public sealed partial class InteractionTests
         string gspr = Path.Combine(root, "actors.gspr");
         document.Save(gspr, allowInvalid: true);
         var member = document.Definition;
-        var scene = new ResourceAddress(new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "world.gaf"), "maps/city.gscn"), "city");
-        SpriteInstanceDrag Drag() => new(new ResourceAddress(document.Location!, member.Key), sprite.Id, document, document.Revision);
+
+        var scene = new ResourceAddress(
+            new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "world.gaf"), "maps/city.gscn"),
+            "city");
+
+        SpriteInstanceDrag Drag() => new(
+            new ResourceAddress(document.Location!, member.Key),
+            sprite.Id,
+            document,
+            document.Revision);
 
         var first = Drag();
-        Assert.True(document.PlaceInstance(first, scene, "front", new(-2.25f, 4.5f)));
-        Assert.False(document.PlaceInstance(Drag(), scene, "front", new(-2.25f, 4.5f)));
-        Assert.Throws<InvalidOperationException>(() => document.PlaceInstance(first, scene, "front", new(1, 1)));
+
+        Assert.True(
+            document.PlaceInstance(
+                first,
+                scene,
+                "front",
+                new(-2.25f, 4.5f)));
+
+        Assert.False(
+            document.PlaceInstance(
+                Drag(),
+                scene,
+                "front",
+                new(-2.25f, 4.5f)));
+
+        Assert.Throws<InvalidOperationException>(() => document.PlaceInstance(
+            first,
+            scene,
+            "front",
+            new(1, 1)));
+
         var reference = Assert.Single(member.SceneSources);
         Assert.Equal("maps/city.gscn", reference.AssetEntryName);
-        var conflicting = scene with { Location = new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "other.gscn")) };
-        Assert.Throws<InvalidDataException>(() => document.PlaceInstance(Drag(), conflicting, "other", new(8, 9)));
-        Assert.Equal(("city", "front", new PointF(-2.25f, 4.5f)), (sprite.SceneId, sprite.SceneLayerId, sprite.Position));
+
+        var conflicting = scene with
+        {
+            Location = new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "other.gscn"))
+        };
+
+        Assert.Throws<InvalidDataException>(() => document.PlaceInstance(
+            Drag(),
+            conflicting,
+            "other",
+            new(8, 9)));
+
+        Assert.Equal(
+            ("city", "front", new PointF(-2.25f, 4.5f)),
+            (sprite.SceneId, sprite.SceneLayerId, sprite.Position));
 
         document.History.Undo();
         Assert.Empty(member.SceneSources);
@@ -45,7 +83,11 @@ public sealed partial class InteractionTests
         Assert.Empty(member.SceneSources);
         Assert.True(document.IsDirty);
         document.History.Redo();
-        Assert.Equal(scene.Location.Path, document.ResolveReferencePath(Assert.Single(member.SceneSources).AssetsFilePath!));
+
+        Assert.Equal(
+            scene.Location.Path,
+            document.ResolveReferencePath(Assert.Single(member.SceneSources).AssetsFilePath!));
+
         Assert.False(document.IsDirty);
     });
 
@@ -58,17 +100,41 @@ public sealed partial class InteractionTests
         sprite.SceneLayerId = "front";
         sprite.Position = new(-2.25f, 4.5f);
         document.Save(Path.Combine(root, "actors.gspr"));
-        var scene = new ResourceAddress(new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "city.gscn")), "city");
-        SpriteInstanceDrag Drag() => new(new ResourceAddress(document.Location!, document.Definition.Key), sprite.Id, document, document.Revision);
 
-        Assert.True(document.PlaceInstance(Drag(), scene, "front", sprite.Position));
+        var scene = new ResourceAddress(
+            new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(root, "city.gscn")),
+            "city");
+
+        SpriteInstanceDrag Drag() => new(
+            new ResourceAddress(document.Location!, document.Definition.Key),
+            sprite.Id,
+            document,
+            document.Revision);
+
+        Assert.True(
+            document.PlaceInstance(
+                Drag(),
+                scene,
+                "front",
+                sprite.Position));
+
         Assert.Equal("city.gscn", Assert.Single(document.Definition.SceneSources).GscnPath);
-        Assert.False(document.PlaceInstance(Drag(), scene, "front", sprite.Position));
+
+        Assert.False(
+            document.PlaceInstance(
+                Drag(),
+                scene,
+                "front",
+                sprite.Position));
 
         document.History.Undo();
         Assert.Empty(document.Definition.SceneSources);
         Assert.False(document.IsDirty);
-        Assert.Equal(("city", "front", new PointF(-2.25f, 4.5f)), (sprite.SceneId, sprite.SceneLayerId, sprite.Position));
+
+        Assert.Equal(
+            ("city", "front", new PointF(-2.25f, 4.5f)),
+            (sprite.SceneId, sprite.SceneLayerId, sprite.Position));
+
         document.History.Redo();
         Assert.Equal("city.gscn", Assert.Single(document.Definition.SceneSources).GscnPath);
     });

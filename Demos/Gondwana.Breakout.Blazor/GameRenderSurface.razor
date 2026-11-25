@@ -5,7 +5,7 @@
 @inject ILogger<GameRenderSurface> Logger
 
 <div class="render-surface-container" style="@PresentationStyle">
-    <BlazorGpuRenderSurfaceComponent @ref="_surface" style="position:absolute;inset:0;" />
+    <BlazorGpuRenderSurfaceComponent @ref="_surface" style="position:absolute;inset:0;"/>
     @if (_loading)
     {
         <div class="status-overlay" role="status">Preparing Breakout...</div>
@@ -19,6 +19,7 @@
 @code {
     private const int LogicalWidth = BreakoutGame.Width;
     private const int LogicalHeight = BreakoutGame.Height;
+
     private static readonly string PresentationStyle =
         $"width: min({LogicalWidth}px, 100vw, calc(100vh * {LogicalWidth} / {LogicalHeight})); " +
         $"width: min({LogicalWidth}px, 100vw, calc(100dvh * {LogicalWidth} / {LogicalHeight})); " +
@@ -51,6 +52,7 @@
             _loading = false;
             StateHasChanged();
         }
+
         return Task.CompletedTask;
     }
 
@@ -59,4 +61,5 @@
         _host?.Dispose();
         _host = null;
     }
+
 }

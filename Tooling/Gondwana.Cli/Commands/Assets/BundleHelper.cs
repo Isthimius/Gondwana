@@ -31,12 +31,19 @@ internal static class BundleHelper
         // entries and collapses duplicate keys for ordinary application usage.
         AssetsFile.Validate(path, password, testData);
         var bundle = AssetsFile.LoadOrCreate(path, password);
+
         try
         {
-            foreach (var entry in bundle.GetAllEntries()) SafeFilePath.ValidateRelative(entry.AssetName);
+            foreach (var entry in bundle.GetAllEntries())
+                SafeFilePath.ValidateRelative(entry.AssetName);
+
             return bundle;
         }
-        catch { bundle.Dispose(); throw; }
+        catch
+        {
+            bundle.Dispose();
+            throw;
+        }
     }
 
     /// <summary>
@@ -49,11 +56,18 @@ internal static class BundleHelper
     {
         using var bundle = Open(path, password);
         var errors = new List<string>();
-        foreach (var entry in bundle.GetAllEntries().Where(e => e.AssetType == AssetTypes.TilesheetDefinition).OrderBy(e => e.AssetName, StringComparer.Ordinal))
+
+        foreach (var entry in bundle.GetAllEntries().Where(e => e.AssetType == AssetTypes.TilesheetDefinition)
+                     .OrderBy(e => e.AssetName, StringComparer.Ordinal))
         {
             using var stream = bundle[entry.AssetType, entry.AssetName]!;
-            errors.AddRange(TilesheetInspection.AllFromStream(stream, Path.GetDirectoryName(Path.GetFullPath(path))!, bundle).SelectMany(result => result.Errors.Select(e => $"{entry.AssetName} :: {result.Definition?.Name}: {e}")));
+
+            errors.AddRange(
+                TilesheetInspection.AllFromStream(stream, Path.GetDirectoryName(Path.GetFullPath(path))!, bundle)
+                    .SelectMany(result =>
+                        result.Errors.Select(e => $"{entry.AssetName} :: {result.Definition?.Name}: {e}")));
         }
+
         return errors;
     }
 
@@ -66,8 +80,20 @@ internal static class BundleHelper
     /// <param name="type">The type.</param>
     /// <param name="overwrite">Whether existing output files may be replaced.</param>
     /// <returns>The number of entries extracted.</returns>
-    public static int Extract(string path, string output, string? password, AssetTypes? type, bool overwrite)
+    public static int Extract(
+        string path,
+        string output,
+        string? password,
+        AssetTypes? type,
+        bool overwrite)
     {
-        return SemanticUnpackPlan.Create(path, output, password, type, null, overwrite, default).Commit();
+        return SemanticUnpackPlan.Create(
+            path,
+            output,
+            password,
+            type,
+            null,
+            overwrite,
+            default).Commit();
     }
 }

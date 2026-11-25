@@ -43,14 +43,19 @@ public sealed class HyperlinkWidget : WidgetBase
     /// <param name="text">The text to display for the link.</param>
     /// <param name="navigateUri">The URI to navigate to when the link is activated.</param>
     /// <param name="nickname">An optional nickname for the widget.</param>
-    public HyperlinkWidget(IExternalUriLauncher uriLauncher,
-                           RenderSurfaceHostBase renderSurfaceHost,
-                           View view,
-                           Rectangle bounds,
-                           string text,
-                           Uri navigateUri,
-                           string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, bounds.Location, nickname)
+    public HyperlinkWidget(
+        IExternalUriLauncher uriLauncher,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string text,
+        Uri navigateUri,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            bounds.Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(uriLauncher);
         ArgumentNullException.ThrowIfNull(view);
@@ -61,7 +66,12 @@ public sealed class HyperlinkWidget : WidgetBase
 
         _uriLauncher = uriLauncher;
         NavigateUri = navigateUri;
-        Label = CreateLabel(renderSurfaceHost, view, bounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            view,
+            bounds,
+            text);
 
         Add(Label);
         CompleteInitialization();
@@ -77,14 +87,19 @@ public sealed class HyperlinkWidget : WidgetBase
     /// <param name="text">The text to display for the link.</param>
     /// <param name="navigateUri">The URI to navigate to when the link is activated.</param>
     /// <param name="nickname">An optional nickname for the widget.</param>
-    public HyperlinkWidget(IExternalUriLauncher uriLauncher,
-                           RenderSurfaceHostBase renderSurfaceHost,
-                           SceneLayer sceneLayer,
-                           Rectangle bounds,
-                           string text,
-                           Uri navigateUri,
-                           string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, bounds.Location, nickname)
+    public HyperlinkWidget(
+        IExternalUriLauncher uriLauncher,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string text,
+        Uri navigateUri,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            bounds.Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(uriLauncher);
         ArgumentNullException.ThrowIfNull(sceneLayer);
@@ -93,7 +108,11 @@ public sealed class HyperlinkWidget : WidgetBase
         _uriLauncher = uriLauncher;
         NavigateUri = navigateUri;
 
-        Label = CreateLabel(renderSurfaceHost, sceneLayer, bounds, text);
+        Label = CreateLabel(
+            renderSurfaceHost,
+            sceneLayer,
+            bounds,
+            text);
 
         Add(Label);
         CompleteInitialization();
@@ -196,10 +215,11 @@ public sealed class HyperlinkWidget : WidgetBase
         IsKeyboardInputEnabled = true;
     }
 
-    private TextBlock CreateLabel(RenderSurfaceHostBase host,
-                                  View view,
-                                  Rectangle bounds,
-                                  string text)
+    private TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string text)
     {
         return new TextBlock(host, view, bounds)
             .SetText(text)
@@ -209,12 +229,17 @@ public sealed class HyperlinkWidget : WidgetBase
             .EnableWrapping(false);
     }
 
-    private TextBlock CreateLabel(RenderSurfaceHostBase host,
-                                  SceneLayer layer,
-                                  Rectangle bounds,
-                                  string text)
+    private TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string text)
     {
-        return new TextBlock(host, layer, view: null, worldBounds: bounds)
+        return new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds)
             .SetText(text)
             .SetFont(SKTypeface.Default, 16f, minSize: 10f)
             .SetColors(_normalColor, SKColors.Transparent)

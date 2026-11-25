@@ -53,7 +53,17 @@ public partial class Form1 : Form
         Engine.Instance.Start();
         Engine.Instance.Configuration.TargetFPS = 60;
 
-        _particleSurface = new ParticleSurface(renderSurface, renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
+        _particleSurface = new ParticleSurface(
+            renderSurface,
+            renderSurface.ViewManager.Views[0],
+            new Rectangle(
+                0,
+                0,
+                adapter.Width,
+                adapter.Height),
+            null,
+            10000);
+
         _particleSurface.CullingMarginX = 1300f;
         _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
@@ -69,7 +79,16 @@ public partial class Form1 : Form
         //_particleSurface.FadeOut(15f);
         //_particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
 
-        var glowBox = new DirectRectangle(Color.Blue, renderSurface, renderSurface.ViewManager.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null)
+        var glowBox = new DirectRectangle(
+                Color.Blue,
+                renderSurface,
+                renderSurface.ViewManager.Views[0],
+                new Rectangle(
+                    20,
+                    adapter.Height * 7 / 10,
+                    adapter.Width - 40,
+                    160),
+                null)
             .SetAlpha(128)
             .SetCornerRadius(6f)
             .SetBorderColor(Color.White)
@@ -82,7 +101,15 @@ public partial class Form1 : Form
 
         glowBox.ZOrder = 1;
 
-        _textBlock = new TextBlock(renderSurface, renderSurface.ViewManager.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null)
+        _textBlock = new TextBlock(
+                renderSurface,
+                renderSurface.ViewManager.Views[0],
+                new Rectangle(
+                    20,
+                    adapter.Height * 7 / 10,
+                    adapter.Width - 40,
+                    160),
+                null)
             .SetFont(SKTypeface.FromFamilyName("Papyrus"), 16f, minSize: 14f)
             .SetColors(Color.White, Color.Transparent)
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
@@ -90,15 +117,20 @@ public partial class Form1 : Form
             .SetMaxLines(6)
             //.PulseColor(Color.Red, Color.White, 1.75f)
             .UseShadow()
-            .SetShadow(6, 6, 200, 3.0f)
+            .SetShadow(
+                6,
+                6,
+                200,
+                3.0f)
             .UseOutline();
         //.StartTypewriter(5); 
 
         _textBlock.ZOrder = 10;
 
         var composite = new DirectComposite(renderSurface, DirectDrawingMode.View);
+
         composite.Add(glowBox)
-                 .Add(_textBlock);
+            .Add(_textBlock);
         //.FadeOut(10f);
         //glowBox.Movement.MoveTo(new Vector2(glowBox.Bounds.Left, glowBox.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
 
@@ -109,6 +141,7 @@ public partial class Form1 : Form
     private void UpdateProfilerText()
     {
         var snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
+
         if (snapshot is null || snapshot.EndedSeconds <= _lastProfilerSnapshotEnd)
             return;
 
@@ -134,10 +167,10 @@ public partial class Form1 : Form
         double elapsedSeconds)
     {
         return elapsedSeconds > 0d &&
-            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
-            metric.Availability == TelemetryAvailability.Available
-                ? metric.Count / elapsedSeconds
-                : null;
+               source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+               metric.Availability == TelemetryAvailability.Available
+            ? metric.Count / elapsedSeconds
+            : null;
     }
 
     private static string FormatRate(double? rate) => rate?.ToString("N2") ?? "n/a";
@@ -170,6 +203,7 @@ public partial class Form1 : Form
     private ParticleEmitter GetColorfulSparks(float width, float height)
     {
         var rng = new Random();
+
         var sparks = new ParticleEmitter
         {
             Position = new PointF(width / 2, height),
@@ -205,12 +239,19 @@ public partial class Form1 : Form
         float m = v - c;
 
         float r, g, b;
-        if (h < 60) (r, g, b) = (c, x, 0);
-        else if (h < 120) (r, g, b) = (x, c, 0);
-        else if (h < 180) (r, g, b) = (0, c, x);
-        else if (h < 240) (r, g, b) = (0, x, c);
-        else if (h < 300) (r, g, b) = (x, 0, c);
-        else (r, g, b) = (c, 0, x);
+
+        if (h < 60)
+            (r, g, b) = (c, x, 0);
+        else if (h < 120)
+            (r, g, b) = (x, c, 0);
+        else if (h < 180)
+            (r, g, b) = (0, c, x);
+        else if (h < 240)
+            (r, g, b) = (0, x, c);
+        else if (h < 300)
+            (r, g, b) = (x, 0, c);
+        else
+            (r, g, b) = (c, 0, x);
 
         return new SKColor(
             (byte)((r + m) * 255),
@@ -228,12 +269,16 @@ public partial class Form1 : Form
             // we’ll override X/Y per-particle in OnSpawn
             Position = new PointF(0f, 0f),
 
-            EmitRate = 800f,                 // density
-            LifeRange = (1.0f, 1.5f),        // long enough to fall through view
-            VelocityRangeX = (-10f, 10f),    // slight horizontal drift
-            VelocityRangeY = (500f, 700f),   // falling fast
-            SizeRange = (1f, 2f),            // thin drops
-            Color = new SKColor(120, 160, 255, 180),
+            EmitRate = 800f, // density
+            LifeRange = (1.0f, 1.5f), // long enough to fall through view
+            VelocityRangeX = (-10f, 10f), // slight horizontal drift
+            VelocityRangeY = (500f, 700f), // falling fast
+            SizeRange = (1f, 2f), // thin drops
+            Color = new SKColor(
+                120,
+                160,
+                255,
+                180),
 
             OnSpawn = (ref Particle p) =>
             {
@@ -252,16 +297,17 @@ public partial class Form1 : Form
     private ParticleEmitter GetSnow(float w)
     {
         var rng = new Random();
+
         var snow = new ParticleEmitter
         {
             // we’ll override X/Y per-particle in OnSpawn
             Position = new PointF(0f, 0f),
 
-            EmitRate = 200f,                 // density
-            LifeRange = (5.0f, 10.0f),       // long enough to fall through view
-            VelocityRangeX = (-20f, 20f),    // slight horizontal drift
-            VelocityRangeY = (50f, 100f),    // falling slowly
-            SizeRange = (2f, 5f),            // fluffy flakes
+            EmitRate = 200f, // density
+            LifeRange = (5.0f, 10.0f), // long enough to fall through view
+            VelocityRangeX = (-20f, 20f), // slight horizontal drift
+            VelocityRangeY = (50f, 100f), // falling slowly
+            SizeRange = (2f, 5f), // fluffy flakes
             GravityY = 50f,
             Color = SKColors.White,
 
@@ -275,6 +321,7 @@ public partial class Form1 : Form
                 p.VX += (float)(rng.NextDouble() * 40f - 20f);
             }
         };
+
         return snow;
     }
 
@@ -288,7 +335,11 @@ public partial class Form1 : Form
             VelocityRangeX = (-40f, 40f),
             VelocityRangeY = (-120f, -60f),
             SizeRange = (8f, 16f),
-            Color = new SKColor(80, 80, 80, 200),
+            Color = new SKColor(
+                80,
+                80,
+                80,
+                200),
             GravityY = -20f // slight upward drift
         };
     }
@@ -308,7 +359,11 @@ public partial class Form1 : Form
 
             SizeRange = (40f, 80f),
 
-            Color = new SKColor(80, 80, 80, 30),
+            Color = new SKColor(
+                80,
+                80,
+                80,
+                30),
 
             GravityY = 0f
         };
@@ -336,7 +391,11 @@ public partial class Form1 : Form
 
             GravityY = -60f,
 
-            Color = new SKColor(255, 150, 60, 240), // default fallback
+            Color = new SKColor(
+                255,
+                150,
+                60,
+                240), // default fallback
 
             OnSpawn = (ref Particle p) =>
             {
@@ -349,19 +408,39 @@ public partial class Form1 : Form
                 switch (r)
                 {
                     case 0:
-                        p.Color = new SKColor(255, 90, 20, 240);   // deep orange/red
+                        p.Color = new SKColor(
+                            255,
+                            90,
+                            20,
+                            240); // deep orange/red
+
                         break;
 
                     case 1:
-                        p.Color = new SKColor(255, 140, 40, 240);  // orange
+                        p.Color = new SKColor(
+                            255,
+                            140,
+                            40,
+                            240); // orange
+
                         break;
 
                     case 2:
-                        p.Color = new SKColor(255, 190, 60, 240);  // bright flame
+                        p.Color = new SKColor(
+                            255,
+                            190,
+                            60,
+                            240); // bright flame
+
                         break;
 
                     default:
-                        p.Color = new SKColor(255, 230, 120, 240); // hot yellow tip
+                        p.Color = new SKColor(
+                            255,
+                            230,
+                            120,
+                            240); // hot yellow tip
+
                         p.Size *= 0.7f;
                         break;
                 }
@@ -397,7 +476,11 @@ public partial class Form1 : Form
 
             GravityY = -15f,
 
-            Color = new SKColor(70, 70, 70, 140),
+            Color = new SKColor(
+                70,
+                70,
+                70,
+                140),
 
             OnSpawn = (ref Particle p) =>
             {
@@ -427,7 +510,11 @@ public partial class Form1 : Form
 
             SizeRange = (2f, 4f),
 
-            Color = new SKColor(255, 210, 120, 255),
+            Color = new SKColor(
+                255,
+                210,
+                120,
+                255),
 
             GravityY = -20f
         };
@@ -455,7 +542,11 @@ public partial class Form1 : Form
 
             GravityY = -10f,
 
-            Color = new SKColor(255, 120, 40, 180),
+            Color = new SKColor(
+                255,
+                120,
+                40,
+                180),
 
             OnSpawn = (ref Particle p) =>
             {
@@ -464,20 +555,40 @@ public partial class Form1 : Form
                 switch (roll)
                 {
                     case 0:
-                        p.Color = new SKColor(255, 80, 20, (byte)(160 + rng.Next(60)));
+                        p.Color = new SKColor(
+                            255,
+                            80,
+                            20,
+                            (byte)(160 + rng.Next(60)));
+
                         break;
 
                     case 1:
                     case 2:
-                        p.Color = new SKColor(255, 110, 30, (byte)(170 + rng.Next(60)));
+                        p.Color = new SKColor(
+                            255,
+                            110,
+                            30,
+                            (byte)(170 + rng.Next(60)));
+
                         break;
 
                     case 3:
-                        p.Color = new SKColor(255, 150, 50, (byte)(180 + rng.Next(50)));
+                        p.Color = new SKColor(
+                            255,
+                            150,
+                            50,
+                            (byte)(180 + rng.Next(50)));
+
                         break;
 
                     default:
-                        p.Color = new SKColor(255, 200, 80, (byte)(140 + rng.Next(40)));
+                        p.Color = new SKColor(
+                            255,
+                            200,
+                            80,
+                            (byte)(140 + rng.Next(40)));
+
                         p.Size *= 0.8f;
                         break;
                 }
@@ -488,5 +599,4 @@ public partial class Form1 : Form
         };
     }
 #pragma warning restore IDE0051
-
 }

@@ -24,11 +24,13 @@ public sealed class AudioSampleProviderTests
         var buffer = new float[100];
         var read = provider.Read(buffer, 2, 96);
         Assert.Equal(expectedFrames * 2, read);
+
         for (var frame = 0; frame < expectedFrames; frame++)
         {
             Assert.Equal(Math.Min(frame * speed, 7), buffer[2 + frame * 2]);
             Assert.Equal(buffer[2 + frame * 2] + 10, buffer[3 + frame * 2]);
         }
+
         Assert.Equal(0, provider.Read(buffer, 0, buffer.Length));
         provider.Reset(() => source.Position = 0);
         Assert.Equal(read, provider.Read(buffer, 2, 96));
@@ -55,10 +57,12 @@ public sealed class AudioSampleProviderTests
         /// Gets or sets the position.
         /// </summary>
         public int Position { get; set; }
+
         /// <summary>
         /// Gets the wave format.
         /// </summary>
         public WaveFormat WaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
+
         /// <summary>
         /// Reads an Aseprite file.
         /// </summary>
@@ -69,7 +73,14 @@ public sealed class AudioSampleProviderTests
         public int Read(float[] buffer, int offset, int count)
         {
             var read = Math.Min(count, samples.Length - Position);
-            Array.Copy(samples, Position, buffer, offset, read);
+
+            Array.Copy(
+                samples,
+                Position,
+                buffer,
+                offset,
+                read);
+
             Position += read;
             return read;
         }

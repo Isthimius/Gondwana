@@ -77,10 +77,13 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     private void ConnectToTopLevel()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
 
         var tl = TopLevel.GetTopLevel(_lifetimeOwner);
-        if (tl == null || ReferenceEquals(tl, _topLevel)) return;
+
+        if (tl == null || ReferenceEquals(tl, _topLevel))
+            return;
 
         _topLevel = tl;
         tl.AddHandler(InputElement.KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
@@ -89,7 +92,8 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     private void DisconnectFromTopLevel()
     {
-        if (_topLevel == null) return;
+        if (_topLevel == null)
+            return;
 
         _topLevel.RemoveHandler(InputElement.KeyDownEvent, OnKeyDown);
         _topLevel.RemoveHandler(InputElement.KeyUpEvent, OnKeyUp);
@@ -98,14 +102,18 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         SetDown((int)e.Key, true);
         UpdateMods(e.KeyModifiers);
     }
 
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         SetDown((int)e.Key, false);
         UpdateMods(e.KeyModifiers);
     }
@@ -119,14 +127,18 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsDown(int keyCode)
     {
-        if ((uint)keyCode >= (uint)_down.Length) return false;
+        if ((uint)keyCode >= (uint)_down.Length)
+            return false;
+
         return Volatile.Read(ref _down[keyCode]) != 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetDown(int keyCode, bool down)
     {
-        if ((uint)keyCode >= (uint)_down.Length) return;
+        if ((uint)keyCode >= (uint)_down.Length)
+            return;
+
         Volatile.Write(ref _down[keyCode], down ? 1 : 0);
     }
 
@@ -134,9 +146,16 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
     private void UpdateMods(KeyModifiers km)
     {
         int mods = 0;
-        if ((km & KeyModifiers.Shift) != 0) mods |= (int)KeyboardModifierState.Shift;
-        if ((km & KeyModifiers.Control) != 0) mods |= (int)KeyboardModifierState.Ctrl;
-        if ((km & KeyModifiers.Alt) != 0) mods |= (int)KeyboardModifierState.Alt;
+
+        if ((km & KeyModifiers.Shift) != 0)
+            mods |= (int)KeyboardModifierState.Shift;
+
+        if ((km & KeyModifiers.Control) != 0)
+            mods |= (int)KeyboardModifierState.Ctrl;
+
+        if ((km & KeyModifiers.Alt) != 0)
+            mods |= (int)KeyboardModifierState.Alt;
+
         Volatile.Write(ref _modsBits, mods);
     }
 
@@ -145,7 +164,8 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
 
         _isDisposed = true;
 

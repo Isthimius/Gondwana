@@ -92,6 +92,7 @@ public sealed class BrowserConsoleLoggerProviderTests
 
             const string expectedLine =
                 "[info] Gondwana.Tests.Blazor.BrowserConsoleLoggerProviderTests: Queued browser log 7";
+
             string console = output.ToString();
             Assert.Contains(expectedLine, console, StringComparison.Ordinal);
             Assert.Equal(1, CountOccurrences(console, expectedLine));
@@ -177,11 +178,14 @@ public sealed class BrowserConsoleLoggerProviderTests
 
             var providers =
                 (Dictionary<string, Func<ILoggerProvider>>)PersistentProvidersField.GetValue(null)!;
+
             providers.Clear();
+
             foreach (KeyValuePair<string, Func<ILoggerProvider>> provider in _originalProviders)
                 providers.Add(provider.Key, provider.Value);
 
             var cache = LoggerCacheField.GetValue(null)!;
+
             cache.GetType()
                 .GetMethod(nameof(System.Collections.IDictionary.Clear))!
                 .Invoke(cache, null);

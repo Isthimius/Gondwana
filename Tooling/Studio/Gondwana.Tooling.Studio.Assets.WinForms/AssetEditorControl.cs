@@ -25,26 +25,36 @@ public sealed class AssetEditorControl : UserControl
     private AssetsFile _assetsFile;
     private AssetsFile? _ownedSavedCopy;
     private bool _refreshFailed;
+
     /// <summary>Exact accepted physical archive version. Independent of automatic monitoring.</summary>
     public DocumentSourceVersion SourceVersion { get; private set; }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<Exception, bool>? SourceSaveFailed { get; set; }
+
     internal event Action? SourceSaved;
 
     /// <summary>Dirty state for edits made through this editor.</summary>
     public bool IsDirty => History.IsDirty;
+
     private readonly AssetEditSession _edits;
+
     /// <summary>Document-local entry history.</summary>
     public EditHistory History => _edits.History;
+
     /// <summary>Whether current buffers can be safely persisted; a failed post-commit refresh requires reopening.</summary>
     public bool CanSave => !_refreshFailed;
+
     /// <summary>Commits pending editor fields. A failed refresh still permits discard, close, and reload.</summary>
     public bool CommitEdits() => true;
 
     private void RequireUsableArchive()
     {
-        if (_refreshFailed) throw new InvalidOperationException("The disk transaction committed but archive refresh failed. Close and reopen this document before editing or saving.");
+        if (_refreshFailed)
+            throw new InvalidOperationException(
+                "The disk transaction committed but archive refresh failed. Close and reopen this document before editing or saving.");
     }
+
     /// <summary>Occurs synchronously when edits mark the archive dirty or an accepted save clears the dirty state.</summary>
     public event EventHandler? Changed;
 
@@ -59,15 +69,19 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Allows a host to prevent Save As from colliding with another open document.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<string, bool> IsDocumentOpen { get; set; } = _ => false;
+
     /// <summary>Suggested directory or archive scope for semantic moves and deletions; the user reviews it.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Func<string>? RelocationScope { get; set; }
+
     /// <summary>Allows a host to require other in-scope documents to be saved and closed.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Action<AssetRelocationPlan>? ValidateRelocation { get; set; }
+
     /// <summary>Allows the host to protect other open authoring documents before deletion.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Action<AssetDeletionPlan>? ValidateDeletion { get; set; }
+
     private readonly BindingList<AssetRecord> _records = new();
 
     private readonly DataGridView _grid;
@@ -87,6 +101,7 @@ public sealed class AssetEditorControl : UserControl
 
     /// <summary>Gets the mutable archive currently displayed; callers must not dispose it while the editor is using it.</summary>
     public AssetsFile AssetsFile => _assetsFile;
+
     /// <summary>Gets the full source path of the currently displayed archive.</summary>
     public string FilePath => Path.GetFullPath(_assetsFile.SourcePath!);
 
@@ -130,25 +145,31 @@ public sealed class AssetEditorControl : UserControl
         };
 
         filterTools.Items.Add(new ToolStripLabel("Type:"));
+
         _typeComboBox = new ToolStripComboBox
         {
             Width = 150,
             DropDownStyle = ComboBoxStyle.DropDownList
         };
+
         _typeComboBox.Items.Add("All Types");
+
         foreach (var value in Enum.GetValues<AssetTypes>())
             _typeComboBox.Items.Add(value);
+
         _typeComboBox.SelectedIndex = 0;
         _typeComboBox.SelectedIndexChanged += (_, _) => RefreshEntries();
         filterTools.Items.Add(_typeComboBox);
 
         filterTools.Items.Add(new ToolStripSeparator());
         filterTools.Items.Add(new ToolStripLabel("Search:"));
+
         _searchTextBox = new ToolStripTextBox
         {
             Width = 250,
             AutoSize = false
         };
+
         _searchTextBox.TextChanged += (_, _) => RefreshEntries();
         filterTools.Items.Add(_searchTextBox);
 
@@ -164,32 +185,36 @@ public sealed class AssetEditorControl : UserControl
             DataSource = _records
         };
 
-        _grid.Columns.Add(new DataGridViewTextBoxColumn
-        {
-            HeaderText = "Type",
-            DataPropertyName = nameof(AssetRecord.AssetType),
-            Width = 120
-        });
+        _grid.Columns.Add(
+            new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Type",
+                DataPropertyName = nameof(AssetRecord.AssetType),
+                Width = 120
+            });
 
-        _grid.Columns.Add(new DataGridViewTextBoxColumn
-        {
-            HeaderText = "Name",
-            DataPropertyName = nameof(AssetRecord.AssetName),
-            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-        });
+        _grid.Columns.Add(
+            new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Name",
+                DataPropertyName = nameof(AssetRecord.AssetName),
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
 
-        _grid.Columns.Add(new DataGridViewTextBoxColumn
-        {
-            HeaderText = "Size",
-            DataPropertyName = nameof(AssetRecord.DisplaySize),
-            Width = 120
-        });
+        _grid.Columns.Add(
+            new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Size",
+                DataPropertyName = nameof(AssetRecord.DisplaySize),
+                Width = 120
+            });
 
         _grid.CellDoubleClick += (_, e) =>
         {
             if (e.RowIndex >= 0)
                 ExportSelectedAsset();
         };
+
         _grid.SelectionChanged += (_, _) => UpdateUiState();
 
         var statusStrip = new StatusStrip();
@@ -199,7 +224,14 @@ public sealed class AssetEditorControl : UserControl
         _workspace = new EditorDockWorkspace("gaf");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var entries = _workspace.AddPane("assets", "Assets", _grid, filterTools, fileTools);
+
+        var entries = _workspace.AddPane(
+            "assets",
+            "Assets",
+            _grid,
+            filterTools,
+            fileTools);
+
         var status = _workspace.AddPane("status", "Status", statusStrip);
         _workspace.Place(entries, () => entries.Show(dock, DockState.Document));
         _workspace.Place(status, () => status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650));
@@ -221,10 +253,13 @@ public sealed class AssetEditorControl : UserControl
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    private bool ConfirmNonUndoable(long bytes) => ThemedMessageBox.Show(this,
+    private bool ConfirmNonUndoable(long bytes) => ThemedMessageBox.Show(
+        this,
         $"This edit needs {bytes / (1024d * 1024):F1} MiB of history, exceeding the {History.ByteLimit / (1024d * 1024):F1} MiB budget. " +
         "Continue without Undo? All existing Undo and Redo for this archive will be cleared after success. Cancel leaves the archive and history unchanged.",
-        "Edit exceeds Undo budget", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+        "Edit exceeds Undo budget",
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Warning) == DialogResult.Yes;
 
     private static ToolStripButton AddButton(ToolStrip strip, string text, EventHandler onClick)
     {
@@ -262,14 +297,21 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Routes Save to the host, or saves to the current path and displays standalone save failures in a dialog.</summary>
     public void Save()
     {
-        if (SaveRequested is { } save) { save(false); return; }
+        if (SaveRequested is { } save)
+        {
+            save(false);
+            return;
+        }
+
         try
         {
             SaveTo(FilePath);
         }
         catch (Exception ex)
         {
-            if (SourceSaveFailed?.Invoke(ex) == true) return;
+            if (SourceSaveFailed?.Invoke(ex) == true)
+                return;
+
             ShowError("Failed to save asset file.", ex);
         }
     }
@@ -278,7 +320,12 @@ public sealed class AssetEditorControl : UserControl
     /// <remarks>The standalone flow retains the original path and dirty state and reports save failures in a dialog.</remarks>
     public void SaveAs()
     {
-        if (SaveRequested is { } save) { save(true); return; }
+        if (SaveRequested is { } save)
+        {
+            save(true);
+            return;
+        }
+
         using var dialog = new SaveFileDialog
         {
             Title = "Save Asset File As",
@@ -292,6 +339,7 @@ public sealed class AssetEditorControl : UserControl
             return;
 
         var destination = Path.GetFullPath(dialog.FileName);
+
         if (IsDocumentOpen(destination))
         {
             ThemedMessageBox.Show(
@@ -300,6 +348,7 @@ public sealed class AssetEditorControl : UserControl
                 "Choose Another Destination",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+
             return;
         }
 
@@ -313,9 +362,11 @@ public sealed class AssetEditorControl : UserControl
                 MessageBoxIcon.Question) == DialogResult.Yes;
 
             string? password = null;
+
             if (encrypt)
             {
                 password = InputDialog.Show(this, "Password", "Enter password for the saved copy:");
+
                 if (string.IsNullOrWhiteSpace(password))
                 {
                     ThemedMessageBox.Show(
@@ -324,6 +375,7 @@ public sealed class AssetEditorControl : UserControl
                         "Password Required",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
+
                     return;
                 }
             }
@@ -342,10 +394,20 @@ public sealed class AssetEditorControl : UserControl
     public void SaveCopyTo(string destination, string? password, bool encrypt)
     {
         RequireUsableArchive();
-        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
+
+        if (History.IsExecuting || History.InTransaction)
+            throw new InvalidOperationException("Archive history is busy.");
+
         destination = Path.GetFullPath(destination);
-        if (IsDocumentOpen(destination)) throw new InvalidOperationException("The copy destination is already open.");
-        AssetArchiveCopy.Save(_assetsFile, destination, password, encrypt);
+
+        if (IsDocumentOpen(destination))
+            throw new InvalidOperationException("The copy destination is already open.");
+
+        AssetArchiveCopy.Save(
+            _assetsFile,
+            destination,
+            password,
+            encrypt);
     }
 
     /// <summary>Notify the editor after a host edits its borrowed AssetsFile directly.</summary>
@@ -362,29 +424,44 @@ public sealed class AssetEditorControl : UserControl
     {
         ArgumentNullException.ThrowIfNull(replacement);
         _ = replacement.GetAllEntries().ToArray(); // validate before transferring ownership or advancing the checkpoint
-        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
+
+        if (History.IsExecuting || History.InTransaction)
+            throw new InvalidOperationException("Archive history is busy.");
+
         if (ReferenceEquals(_assetsFile, replacement))
         {
             _edits.AcceptSavedArchive(_assetsFile, externalRefresh);
         }
         else if (string.Equals(FilePath, replacement.SourcePath, StringComparison.OrdinalIgnoreCase) &&
-            _assetsFile.Password == replacement.Password && _assetsFile.UseEncryption == replacement.UseEncryption)
+                 _assetsFile.Password == replacement.Password && _assetsFile.UseEncryption == replacement.UseEncryption)
         {
             // Preserve borrowed-instance compatibility for same-path refreshes. Read everything
             // before mutation and compensate if copying fails; never advance a failed checkpoint.
             var before = AssetImportPlan.Snapshot(_assetsFile);
             var after = AssetImportPlan.Snapshot(replacement);
+
             void Copy(IReadOnlyDictionary<AssetsFileEntry, byte[]> contents)
             {
-                foreach (var entry in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(entry.AssetType, entry.AssetName);
+                foreach (var entry in _assetsFile.GetAllEntries().ToArray())
+                    _assetsFile.Remove(entry.AssetType, entry.AssetName);
+
                 foreach (var pair in contents)
                 {
                     using var bytes = new MemoryStream(pair.Value, writable: false);
                     _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, bytes);
                 }
             }
-            try { Copy(after); }
-            catch { Copy(before); throw; }
+
+            try
+            {
+                Copy(after);
+            }
+            catch
+            {
+                Copy(before);
+                throw;
+            }
+
             replacement.Dispose();
             _edits.AcceptSavedArchive(_assetsFile, externalRefresh);
         }
@@ -396,6 +473,7 @@ public sealed class AssetEditorControl : UserControl
             _edits.AcceptSavedArchive(replacement, externalRefresh);
             previous?.Dispose();
         }
+
         SetStatus($"Saved: {FilePath}");
     }
 
@@ -408,10 +486,16 @@ public sealed class AssetEditorControl : UserControl
     public void SaveTo(string destination)
     {
         RequireUsableArchive();
-        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
+
+        if (History.IsExecuting || History.InTransaction)
+            throw new InvalidOperationException("Archive history is busy.");
+
         if (SaveRequested is not null)
-            throw new InvalidOperationException("This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
+            throw new InvalidOperationException(
+                "This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
+
         destination = Path.GetFullPath(destination);
+
         if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
         {
             // Never call Save on the live archive: a failed Save can invalidate its loaded buffer.
@@ -423,13 +507,31 @@ public sealed class AssetEditorControl : UserControl
         }
         else
         {
-            var installed = AssetArchiveCopy.SaveVersioned(_assetsFile, destination, _assetsFile.Password, _assetsFile.UseEncryption);
+            var installed = AssetArchiveCopy.SaveVersioned(
+                _assetsFile,
+                destination,
+                _assetsFile.Password,
+                _assetsFile.UseEncryption);
+
             var fingerprint = Convert.ToHexString(installed);
             var version = new DocumentSourceVersion(DocumentSourceStatus.Available, fingerprint, fingerprint);
-            var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption,
+
+            var replacement = AssetsFile.LoadOrCreate(
+                destination,
+                _assetsFile.Password,
+                _assetsFile.UseEncryption,
                 register: AssetsFile.AllAssetsFiles.Contains(_assetsFile));
-            try { DocumentSourceSave.Verify(new(AssetTypes.Misc, destination), version); }
-            catch { replacement.Dispose(); throw; }
+
+            try
+            {
+                DocumentSourceSave.Verify(new(AssetTypes.Misc, destination), version);
+            }
+            catch
+            {
+                replacement.Dispose();
+                throw;
+            }
+
             _ownedSavedCopy?.Dispose();
             _ownedSavedCopy = replacement;
             _assetsFile = replacement;
@@ -453,6 +555,7 @@ public sealed class AssetEditorControl : UserControl
             _ownedSavedCopy?.Dispose();
             _ownedSavedCopy = null;
         }
+
         base.Dispose(disposing);
     }
 
@@ -464,9 +567,15 @@ public sealed class AssetEditorControl : UserControl
     {
         RequireUsableArchive();
         int count = _edits.Import(plan, ConfirmNonUndoable, cancellation);
-        if (count > 0) SetStatus(History.CanUndo ? $"Imported {count} asset(s). Undo available; Save to persist." :
-            $"Imported {count} asset(s) without Undo (history budget). Earlier history cleared; Save to persist.");
-        else SetStatus("No new entries imported; archive and history unchanged.");
+
+        if (count > 0)
+            SetStatus(
+                History.CanUndo
+                    ? $"Imported {count} asset(s). Undo available; Save to persist."
+                    : $"Imported {count} asset(s) without Undo (history budget). Earlier history cleared; Save to persist.");
+        else
+            SetStatus("No new entries imported; archive and history unchanged.");
+
         return count;
     }
 
@@ -474,9 +583,18 @@ public sealed class AssetEditorControl : UserControl
     public bool ReplaceAsset(AssetTypes type, string name, byte[] replacement)
     {
         RequireUsableArchive();
-        bool changed = _edits.Replace(type, name, replacement, ConfirmNonUndoable);
-        SetStatus(!changed ? "Replacement identical; archive and history unchanged." : History.CanUndo ?
-            $"Replaced: {name}. Undo available; Save to persist." : $"Replaced: {name} without Undo (history budget). Earlier history cleared; Save to persist.");
+
+        bool changed = _edits.Replace(
+            type,
+            name,
+            replacement,
+            ConfirmNonUndoable);
+
+        SetStatus(
+            !changed ? "Replacement identical; archive and history unchanged." :
+            History.CanUndo ? $"Replaced: {name}. Undo available; Save to persist." :
+            $"Replaced: {name} without Undo (history budget). Earlier history cleared; Save to persist.");
+
         return changed;
     }
 
@@ -493,6 +611,7 @@ public sealed class AssetEditorControl : UserControl
             return;
 
         using var typePicker = new AssetTypePickerForm(dialog.FileNames);
+
         if (typePicker.ShowDialog(this) != DialogResult.OK)
             return;
 
@@ -500,10 +619,16 @@ public sealed class AssetEditorControl : UserControl
         {
             var plan = AssetImportPlan.Create(_assetsFile, typePicker.Sources, typePicker.ImportDependencies);
             using var preview = new AssetImportPreviewForm(plan);
-            if (preview.ShowDialog(this) != DialogResult.OK) return;
+
+            if (preview.ShowDialog(this) != DialogResult.OK)
+                return;
+
             ApplyImport(plan);
         }
-        catch (OperationCanceledException) { SetStatus("Import cancelled; archive and history unchanged."); }
+        catch (OperationCanceledException)
+        {
+            SetStatus("Import cancelled; archive and history unchanged.");
+        }
         catch (Exception ex)
         {
             ShowError("Failed to import one or more assets.", ex);
@@ -513,6 +638,7 @@ public sealed class AssetEditorControl : UserControl
     private void ReplaceSelectedAsset()
     {
         var selected = GetSelectedRecord();
+
         if (selected is null)
             return;
 
@@ -529,7 +655,10 @@ public sealed class AssetEditorControl : UserControl
         {
             ReplaceAsset(selected.AssetType, selected.AssetName, File.ReadAllBytes(dialog.FileName));
         }
-        catch (OperationCanceledException) { SetStatus("Replacement cancelled; archive and history unchanged."); }
+        catch (OperationCanceledException)
+        {
+            SetStatus("Replacement cancelled; archive and history unchanged.");
+        }
         catch (Exception ex)
         {
             ShowError("Failed to replace asset.", ex);
@@ -562,19 +691,34 @@ public sealed class AssetEditorControl : UserControl
     private void ValidateDiskOperation(IReadOnlyList<string> affectedFiles, IReadOnlyList<string> retiredFiles)
     {
         RequireUsableArchive();
-        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
-        if (IsDirty) throw new InvalidOperationException("Save this archive before modifying resources.");
+
+        if (History.IsExecuting || History.InTransaction)
+            throw new InvalidOperationException("Archive history is busy.");
+
+        if (IsDirty)
+            throw new InvalidOperationException("Save this archive before modifying resources.");
+
         if (retiredFiles.Contains(FilePath, StringComparer.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Close this archive and use the workspace or CLI to remove or move the whole GAF.");
+            throw new InvalidOperationException(
+                "Close this archive and use the workspace or CLI to remove or move the whole GAF.");
+
         foreach (var path in affectedFiles)
             if (!string.Equals(path, FilePath, StringComparison.OrdinalIgnoreCase) && IsDocumentOpen(path))
                 throw new InvalidOperationException($"Save and close affected document before modifying: {path}");
-        using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
+
+        using (var disk = AssetsFile.LoadOrCreate(
+                   FilePath,
+                   _assetsFile.Password,
+                   _assetsFile.UseEncryption,
+                   register: false))
         {
             var current = AssetImportPlan.Snapshot(_assetsFile);
             var saved = AssetImportPlan.Snapshot(disk);
-            if (current.Count != saved.Count || current.Any(p => !saved.TryGetValue(p.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(p.Value)))
-                throw new InvalidOperationException("The open archive differs from disk. Save or reopen it before modifying.");
+
+            if (current.Count != saved.Count || current.Any(p =>
+                    !saved.TryGetValue(p.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(p.Value)))
+                throw new InvalidOperationException(
+                    "The open archive differs from disk. Save or reopen it before modifying.");
         }
     }
 
@@ -583,15 +727,25 @@ public sealed class AssetEditorControl : UserControl
         try
         {
             var version = DocumentSourceVersion.Read(new(AssetTypes.Misc, FilePath));
-            using var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false);
+
+            using var disk = AssetsFile.LoadOrCreate(
+                FilePath,
+                _assetsFile.Password,
+                _assetsFile.UseEncryption,
+                register: false);
+
             var contents = AssetImportPlan.Snapshot(disk); // read successfully before touching the borrowed instance
             DocumentSourceSave.Verify(new(AssetTypes.Misc, FilePath), version);
-            foreach (var key in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(key.AssetType, key.AssetName);
+
+            foreach (var key in _assetsFile.GetAllEntries().ToArray())
+                _assetsFile.Remove(key.AssetType, key.AssetName);
+
             foreach (var pair in contents)
             {
                 using var stream = new MemoryStream(pair.Value, writable: false);
                 _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
             }
+
             SourceVersion = version;
         }
         catch (Exception ex)
@@ -602,8 +756,12 @@ public sealed class AssetEditorControl : UserControl
             Enabled = false;
             History.MarkUntracked();
             WorkspaceChanged();
-            throw new IOException("Disk transaction committed, but archive refresh failed. It is not undoable. Close and reopen this document before editing or saving.", ex);
+
+            throw new IOException(
+                "Disk transaction committed, but archive refresh failed. It is not undoable. Close and reopen this document before editing or saving.",
+                ex);
         }
+
         History.ResetSaved();
         SourceSaved?.Invoke();
         WorkspaceChanged();
@@ -613,14 +771,21 @@ public sealed class AssetEditorControl : UserControl
     private void RenameSelectedAsset()
     {
         var selected = GetSelectedRecord();
-        if (selected is null) return;
+
+        if (selected is null)
+            return;
+
         if (IsDirty)
         {
             ThemedMessageBox.Show(this, "Save this archive before moving resources.", "Save required");
             return;
         }
-        AssetMoveDialog.Show(this, new(selected.AssetType, FilePath, selected.AssetName),
-            RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!, ApplyRelocation,
+
+        AssetMoveDialog.Show(
+            this,
+            new(selected.AssetType, FilePath, selected.AssetName),
+            RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!,
+            ApplyRelocation,
             knownPasswords: new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
     }
 
@@ -629,22 +794,38 @@ public sealed class AssetEditorControl : UserControl
     /// <param name="destination">Final loose destination filename.</param>
     /// <param name="overwrite">Whether replacement of an existing loose file was authorized.</param>
     /// <param name="cancellation">Cancellation token.</param>
-    internal void ExportAsset(AssetsFileEntry entry, string destination, bool overwrite, CancellationToken cancellation = default)
+    internal void ExportAsset(
+        AssetsFileEntry entry,
+        string destination,
+        bool overwrite,
+        CancellationToken cancellation = default)
     {
         if (IsDirty && PackDefinitionDocument.IsNative(entry.AssetType))
-            throw new InvalidOperationException("Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.");
-        SemanticUnpackPlan.CreateEntry(_assetsFile, entry, destination, overwrite, cancellation).Commit();
+            throw new InvalidOperationException(
+                "Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.");
+
+        SemanticUnpackPlan.CreateEntry(
+            _assetsFile,
+            entry,
+            destination,
+            overwrite,
+            cancellation).Commit();
     }
 
     private void ExportSelectedAsset()
     {
         var selected = GetSelectedRecord();
+
         if (selected is null)
             return;
 
         if (IsDirty && PackDefinitionDocument.IsNative(selected.AssetType))
         {
-            ThemedMessageBox.Show(this, "Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.", "Save required");
+            ThemedMessageBox.Show(
+                this,
+                "Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.",
+                "Save required");
+
             return;
         }
 
@@ -660,8 +841,11 @@ public sealed class AssetEditorControl : UserControl
 
         try
         {
-            ExportAsset(new AssetsFileEntry { AssetType = selected.AssetType, AssetName = selected.AssetName },
-                dialog.FileName, overwrite: true);
+            ExportAsset(
+                new AssetsFileEntry { AssetType = selected.AssetType, AssetName = selected.AssetName },
+                dialog.FileName,
+                overwrite: true);
+
             SetStatus($"Exported: {selected.AssetName}");
         }
         catch (Exception ex)
@@ -673,14 +857,22 @@ public sealed class AssetEditorControl : UserControl
     private void DeleteSelectedAsset()
     {
         var selected = GetSelectedRecord();
-        if (selected is null) return;
+
+        if (selected is null)
+            return;
+
         if (IsDirty)
         {
             ThemedMessageBox.Show(this, "Save this archive before deleting resources.", "Save required");
             return;
         }
-        AssetDeleteDialog.Show(this, [new(selected.AssetType, FilePath, selected.AssetName)], [],
-            RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!, (plan, force) => ApplyDeletion(plan, force),
+
+        AssetDeleteDialog.Show(
+            this,
+            [new(selected.AssetType, FilePath, selected.AssetName)],
+            [],
+            RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!,
+            (plan, force) => ApplyDeletion(plan, force),
             new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
     }
 
@@ -712,6 +904,7 @@ public sealed class AssetEditorControl : UserControl
 
                 long size = 0;
                 using var stream = _assetsFile[entry.AssetType, entry.AssetName];
+
                 if (stream is not null && stream.CanSeek)
                 {
                     size = stream.Length;
@@ -723,12 +916,13 @@ public sealed class AssetEditorControl : UserControl
                     size = buffer.Length;
                 }
 
-                _records.Add(new AssetRecord
-                {
-                    AssetType = entry.AssetType,
-                    AssetName = entry.AssetName,
-                    SizeBytes = size
-                });
+                _records.Add(
+                    new AssetRecord
+                    {
+                        AssetType = entry.AssetType,
+                        AssetName = entry.AssetName,
+                        SizeBytes = size
+                    });
             }
 
             SetStatus($"{FilePath} ({_records.Count} asset(s))");
@@ -740,10 +934,15 @@ public sealed class AssetEditorControl : UserControl
 
         if (_grid.Rows.Count > 0)
         {
-            int index = _records.ToList().FindIndex(r => r.AssetType == selected?.AssetType && r.AssetName == selected.AssetName);
+            int index = _records.ToList()
+                .FindIndex(r => r.AssetType == selected?.AssetType && r.AssetName == selected.AssetName);
+
             _grid.CurrentCell = _grid.Rows[index >= 0 ? index : Math.Min(oldRow, _grid.Rows.Count - 1)].Cells[0];
-            if (scroll >= 0) _grid.FirstDisplayedScrollingRowIndex = Math.Min(scroll, _grid.Rows.Count - 1);
+
+            if (scroll >= 0)
+                _grid.FirstDisplayedScrollingRowIndex = Math.Min(scroll, _grid.Rows.Count - 1);
         }
+
         UpdateUiState();
     }
 
@@ -751,14 +950,22 @@ public sealed class AssetEditorControl : UserControl
         _grid.CurrentRow?.DataBoundItem as AssetRecord;
 
     internal AssetsFileEntry? SelectedEntry => GetSelectedRecord() is { } record
-        ? new() { AssetType = record.AssetType, AssetName = record.AssetName } : null;
+        ? new() { AssetType = record.AssetType, AssetName = record.AssetName }
+        : null;
 
     internal void SelectEntry(AssetsFileEntry? entry)
     {
-        if (entry is null) return;
+        if (entry is null)
+            return;
+
         var index = _records.ToList().FindIndex(r => r.AssetType == entry.AssetType &&
-            string.Equals(r.AssetName, entry.AssetName, StringComparison.OrdinalIgnoreCase));
-        if (index >= 0) _grid.CurrentCell = _grid.Rows[index].Cells[0];
+                                                     string.Equals(
+                                                         r.AssetName,
+                                                         entry.AssetName,
+                                                         StringComparison.OrdinalIgnoreCase));
+
+        if (index >= 0)
+            _grid.CurrentCell = _grid.Rows[index].Cells[0];
     }
 
     private void UpdateUiState()
@@ -777,7 +984,11 @@ public sealed class AssetEditorControl : UserControl
 
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, Enabled ? History : null, () => Enabled) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            Enabled ? History : null,
+            () => Enabled) || base.ProcessCmdKey(ref msg, keyData);
 
     private void SetStatus(string message)
     {
@@ -792,7 +1003,7 @@ public sealed class AssetEditorControl : UserControl
             "AssetFiles Editor",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
+
         SetStatus(message);
     }
-
 }

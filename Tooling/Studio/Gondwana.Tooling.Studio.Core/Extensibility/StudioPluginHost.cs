@@ -34,7 +34,12 @@ public class StudioPluginHost
     /// <summary>Creates a host sharing the core contract and the supplied platform contracts.</summary>
     /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
     /// <param name="sharedContracts">Host assemblies to reuse by simple name instead of loading private plugin copies.</param>
-    public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts) : this(log, _ => true, sharedContracts) { }
+    public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts) : this(
+        log,
+        _ => true,
+        sharedContracts)
+    {
+    }
 
     /// <summary>Creates a host using the supplied startup activation policy before constructing any plugin.</summary>
     public StudioPluginHost(Action<string> log, Func<string, bool> isEnabled, params Assembly[] sharedContracts)
@@ -56,11 +61,20 @@ public class StudioPluginHost
     public void AttachHostServices(IStudioPluginHostServices services)
     {
         ArgumentNullException.ThrowIfNull(services);
+
         foreach (var plugin in _plugins.Where(p => p.Enabled))
         {
-            if (plugin.Instance is not IStudioPluginHostServicesAware aware) continue;
-            try { aware.AttachHostServices(services); }
-            catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex}"); }
+            if (plugin.Instance is not IStudioPluginHostServicesAware aware)
+                continue;
+
+            try
+            {
+                aware.AttachHostServices(services);
+            }
+            catch (Exception ex)
+            {
+                DisablePlugin(plugin, $"AttachHostServices threw: {ex}");
+            }
         }
     }
 
@@ -80,6 +94,7 @@ public class StudioPluginHost
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(pluginDir);
         pluginDir = Path.GetFullPath(pluginDir);
+
         try
         {
             if (!Directory.Exists(pluginDir))
@@ -87,11 +102,15 @@ public class StudioPluginHost
                 _log($"[Plugin] Directory not found: {pluginDir}");
                 return;
             }
+
             _sharedAssemblies ??= PluginLoadContext.GetSharedAssemblies(_sharedContracts);
             var candidates = new List<string>();
+
             foreach (var directory in Directory.GetDirectories(pluginDir).Order(StringComparer.Ordinal))
             {
-                if (_discovery.ContainsKey(directory)) continue;
+                if (_discovery.ContainsKey(directory))
+                    continue;
+
                 var info = InspectPackage(directory);
                 _discovery.Add(directory, [info]);
                 candidates.Add(directory);
@@ -102,6 +121,7 @@ public class StudioPluginHost
                 .GroupBy(row => row.Info.Id, StringComparer.Ordinal)
                 .Where(group => group.Select(row => row.Source).Distinct(PluginPackagePaths.Comparer).Count() > 1)
                 .ToArray();
+
             foreach (var conflict in conflicts)
             {
                 foreach (var source in conflict.Select(row => row.Source).Distinct(PluginPackagePaths.Comparer))
@@ -109,56 +129,103 @@ public class StudioPluginHost
                     _discovery[source] = _discovery[source].Select(info => info with
                     {
                         Status = PluginLoadStatus.Conflict,
-                        Diagnostic = $"Duplicate plugin id '{conflict.Key}'. Remove or rename the conflicting package and restart Studio."
+                        Diagnostic =
+                        $"Duplicate plugin id '{conflict.Key}'. Remove or rename the conflicting package and restart Studio."
                     }).ToList();
-                    foreach (var loaded in _plugins.Where(p => PluginPackagePaths.Comparer.Equals(p.SourcePath, _discovery[source][0].EntryAssembly)))
+
+                    foreach (var loaded in _plugins.Where(p =>
+                                 PluginPackagePaths.Comparer.Equals(p.SourcePath, _discovery[source][0].EntryAssembly)))
                         loaded.Enabled = false;
+
                     LogResult(_discovery[source][0]);
                 }
             }
+
             foreach (var source in candidates)
             {
                 var info = _discovery[source][0];
-                if (info.Status == PluginLoadStatus.Loaded) LoadAssemblyPlugins(source, info);
-                else LogResult(info);
+
+                if (info.Status == PluginLoadStatus.Loaded)
+                    LoadAssemblyPlugins(source, info);
+                else
+                    LogResult(info);
             }
-            foreach (var dll in Directory.GetFiles(pluginDir).Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).Order(StringComparer.Ordinal))
+
+            foreach (var dll in Directory.GetFiles(pluginDir)
+                         .Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                         .Order(StringComparer.Ordinal))
             {
-                if (_discovery.ContainsKey(dll)) continue;
-                var info = new PluginDiscoveryInfo(null, null, null, pluginDir, dll, true,
-                    PluginCompatibility.Unknown, PluginLoadStatus.Loaded, null);
+                if (_discovery.ContainsKey(dll))
+                    continue;
+
+                var info = new PluginDiscoveryInfo(
+                    null,
+                    null,
+                    null,
+                    pluginDir,
+                    dll,
+                    true,
+                    PluginCompatibility.Unknown,
+                    PluginLoadStatus.Loaded,
+                    null);
+
                 _discovery.Add(dll, [info]);
                 LoadAssemblyPlugins(dll, info);
             }
         }
         catch (Exception ex)
         {
-            var info = new PluginDiscoveryInfo(null, null, null, pluginDir, null, false,
-                PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, $"Cannot discover plugins: {ex}");
+            var info = new PluginDiscoveryInfo(
+                null,
+                null,
+                null,
+                pluginDir,
+                null,
+                false,
+                PluginCompatibility.Unknown,
+                PluginLoadStatus.InvalidPackage,
+                $"Cannot discover plugins: {ex}");
+
             // Preserve successful child records if root enumeration subsequently fails.
             _discovery[pluginDir + Path.DirectorySeparatorChar] = [info];
             LogResult(info);
         }
-        finally { DiscoveryChanged?.Invoke(this, EventArgs.Empty); }
+        finally
+        {
+            DiscoveryChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private PluginDiscoveryInfo StartupChoice(PluginDiscoveryInfo info, string? id)
     {
-        if (string.IsNullOrWhiteSpace(id)) return info;
+        if (string.IsNullOrWhiteSpace(id))
+            return info;
+
         if (!_startupChoices.TryGetValue(id, out var enabled))
             _startupChoices[id] = enabled = _isEnabled(id);
+
         return info with { PreferenceId = id, EnabledAtStartup = enabled };
     }
 
     private PluginDiscoveryInfo InspectPackage(string directory)
     {
-        var info = new PluginDiscoveryInfo(null, null, null, directory, null, false,
-            PluginCompatibility.Unknown, PluginLoadStatus.InvalidPackage, null);
+        var info = new PluginDiscoveryInfo(
+            null,
+            null,
+            null,
+            directory,
+            null,
+            false,
+            PluginCompatibility.Unknown,
+            PluginLoadStatus.InvalidPackage,
+            null);
+
         try
         {
             PluginPackagePaths.EnsureNoLinks(directory);
             PluginPackagePaths.EnsureNoLinks(Path.Combine(directory, "plugin.json"));
             var manifest = PluginManifest.Read(directory);
+
             info = info with
             {
                 Id = manifest.Id,
@@ -167,20 +234,27 @@ public class StudioPluginHost
                 Description = manifest.Description,
                 Author = manifest.Author
             };
+
             info = StartupChoice(info, PluginManifest.IsValidId(manifest.Id) ? manifest.Id : null);
             PluginPackagePaths.ValidateTree(directory);
             manifest.Validate();
             var entry = Path.Combine(directory, manifest.EntryAssembly!);
             info = info with { EntryAssembly = entry };
+
             if (manifest.ContractVersion != PluginManifest.SupportedContractVersion)
                 return info with
                 {
                     Compatibility = PluginCompatibility.Incompatible,
                     Status = PluginLoadStatus.Incompatible,
-                    Diagnostic = $"Contract {manifest.ContractVersion} is unsupported; this host supports contract {PluginManifest.SupportedContractVersion}. Obtain a compatible plugin."
+                    Diagnostic =
+                    $"Contract {manifest.ContractVersion} is unsupported; this host supports contract {PluginManifest.SupportedContractVersion}. Obtain a compatible plugin."
                 };
+
             info = info with { Compatibility = PluginCompatibility.Compatible };
-            if (!File.Exists(entry)) throw new FileNotFoundException($"Entry assembly not found: {entry}");
+
+            if (!File.Exists(entry))
+                throw new FileNotFoundException($"Entry assembly not found: {entry}");
+
             PluginLoadContext.ValidateAssemblies(directory, _sharedAssemblies!);
             return info with { Status = PluginLoadStatus.Loaded };
         }
@@ -191,7 +265,8 @@ public class StudioPluginHost
     }
 
     private void LogResult(PluginDiscoveryInfo info)
-        => _log($"{(info.Status is PluginLoadStatus.Loaded or PluginLoadStatus.UserDisabled ? "" : "Error: ")}[Plugin] {info.Status}: {info.Id ?? info.SourceDirectory}: {info.Diagnostic}");
+        => _log(
+            $"{(info.Status is PluginLoadStatus.Loaded or PluginLoadStatus.UserDisabled ? "" : "Error: ")}[Plugin] {info.Status}: {info.Id ?? info.SourceDirectory}: {info.Diagnostic}");
 
     /// <summary>Notifies enabled plugins of the selected working directory, disabling and logging plugins that throw.</summary>
     /// <param name="projectPath">The authoring directory path to pass unchanged to each plugin.</param>
@@ -233,7 +308,7 @@ public class StudioPluginHost
     /// <returns>A deferred sequence of matching instances in discovery order, evaluated when enumerated.</returns>
     protected IEnumerable<TPlugin> GetPluginsAs<TPlugin>() where TPlugin : class
         => _plugins.Where(p => p.Enabled && p.Instance is TPlugin)
-                   .Select(p => (TPlugin)p.Instance);
+            .Select(p => (TPlugin)p.Instance);
 
     /// <summary>Writes a plugin-related message to the configured log sink.</summary>
     /// <param name="message">The complete diagnostic text to pass to the callback.</param>
@@ -245,13 +320,20 @@ public class StudioPluginHost
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {
         plugin.Enabled = false;
+
         foreach (var source in _discovery.Keys.ToArray())
             _discovery[source] = _discovery[source].Select(info =>
-                PluginPackagePaths.Comparer.Equals(info.EntryAssembly, plugin.SourcePath) && info.Implementation == plugin.Instance.GetType().FullName
-                    ? info with { Status = PluginLoadStatus.Disabled, Diagnostic = reason } : info).ToList();
+                PluginPackagePaths.Comparer.Equals(info.EntryAssembly, plugin.SourcePath) &&
+                info.Implementation == plugin.Instance.GetType().FullName
+                    ? info with { Status = PluginLoadStatus.Disabled, Diagnostic = reason }
+                    : info).ToList();
+
         var name = _discovery.Values.SelectMany(rows => rows)
-            .FirstOrDefault(info => info.EntryAssembly == plugin.SourcePath && info.Implementation == plugin.Instance.GetType().FullName)?.DisplayName
-            ?? plugin.Instance.GetType().FullName;
+                       .FirstOrDefault(info =>
+                           info.EntryAssembly == plugin.SourcePath &&
+                           info.Implementation == plugin.Instance.GetType().FullName)?.DisplayName
+                   ?? plugin.Instance.GetType().FullName;
+
         _log($"Warning: [Plugin] Disabled '{name}': {reason}");
         DiscoveryChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -261,36 +343,53 @@ public class StudioPluginHost
         var rows = new List<PluginDiscoveryInfo>();
         _discovery[source] = rows;
         var dllPath = info.EntryAssembly!;
+
         try
         {
             var loadContext = new PluginLoadContext(dllPath, _sharedAssemblies!, info.IsLegacy);
             var assembly = loadContext.LoadFromAssemblyPath(dllPath);
+
             var pluginTypes = assembly.GetTypes()
                 .Where(t => !t.IsAbstract && !t.ContainsGenericParameters && typeof(IStudioPlugin).IsAssignableFrom(t))
                 .OrderBy(t => t.FullName, StringComparer.Ordinal).ToArray();
+
             foreach (var type in pluginTypes)
             {
-                var identity = $"{assembly.GetName().Name!.ToUpperInvariant()}:{Convert.ToHexString(assembly.GetName().GetPublicKeyToken() ?? [])}:{type.FullName}";
+                var identity =
+                    $"{assembly.GetName().Name!.ToUpperInvariant()}:{Convert.ToHexString(assembly.GetName().GetPublicKeyToken() ?? [])}:{type.FullName}";
+
                 var row = info with { Id = info.Id ?? $"legacy:{identity}", Implementation = type.FullName };
+
                 if (_implementations.TryGetValue(identity, out var existingKey))
                 {
                     row = StartupChoice(row, info.IsLegacy ? existingKey : row.Id);
-                    row = row with { Status = PluginLoadStatus.Conflict, Diagnostic = $"Implementation '{identity}' was already discovered. Packages precede legacy DLLs; restart after removing redundant copies." };
+
+                    row = row with
+                    {
+                        Status = PluginLoadStatus.Conflict,
+                        Diagnostic =
+                        $"Implementation '{identity}' was already discovered. Packages precede legacy DLLs; restart after removing redundant copies."
+                    };
                 }
                 else
                 {
                     row = StartupChoice(row, row.Id);
                     _implementations.Add(identity, row.PreferenceId!);
+
                     if (row.EnabledAtStartup == false)
                     {
-                        rows.Add(row with
-                        {
-                            Status = PluginLoadStatus.UserDisabled,
-                            Diagnostic = "Disabled by user preference at startup. Enable it in Plugin Manager and restart Studio to activate it."
-                        });
+                        rows.Add(
+                            row with
+                            {
+                                Status = PluginLoadStatus.UserDisabled,
+                                Diagnostic =
+                                "Disabled by user preference at startup. Enable it in Plugin Manager and restart Studio to activate it."
+                            });
+
                         LogResult(rows[^1]);
                         continue;
                     }
+
                     try
                     {
                         var plugin = (IStudioPlugin)Activator.CreateInstance(type)!;
@@ -304,16 +403,27 @@ public class StudioPluginHost
                         row = row with
                         {
                             Status = PluginLoadStatus.FailedToLoad,
-                            Diagnostic = $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}{Environment.NewLine}{ex}"
+                            Diagnostic =
+                            $"Failed to instantiate {type.FullName}: {ex.GetBaseException().Message}{Environment.NewLine}{ex}"
                         };
                     }
                 }
+
                 rows.Add(row);
-                if (row.Status != PluginLoadStatus.Loaded) LogResult(row);
+
+                if (row.Status != PluginLoadStatus.Loaded)
+                    LogResult(row);
             }
+
             if (rows.Count == 0 && !info.IsLegacy)
             {
-                rows.Add(info with { Status = PluginLoadStatus.FailedToLoad, Diagnostic = "No concrete IStudioPlugin implementation found in entry assembly." });
+                rows.Add(
+                    info with
+                    {
+                        Status = PluginLoadStatus.FailedToLoad,
+                        Diagnostic = "No concrete IStudioPlugin implementation found in entry assembly."
+                    });
+
                 LogResult(rows[0]);
             }
         }
@@ -322,11 +432,14 @@ public class StudioPluginHost
             var detail = ex is ReflectionTypeLoadException reflection
                 ? string.Join("; ", reflection.LoaderExceptions.Select(error => error?.ToString()))
                 : ex.ToString();
-            rows.Add(info with
-            {
-                Status = PluginLoadStatus.FailedToLoad,
-                Diagnostic = $"Failed loading {Path.GetFileName(dllPath)}: {detail}"
-            });
+
+            rows.Add(
+                info with
+                {
+                    Status = PluginLoadStatus.FailedToLoad,
+                    Diagnostic = $"Failed loading {Path.GetFileName(dllPath)}: {detail}"
+                });
+
             LogResult(rows[^1]);
         }
     }

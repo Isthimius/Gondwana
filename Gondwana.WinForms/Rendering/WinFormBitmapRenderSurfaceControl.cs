@@ -49,6 +49,7 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
 
         // Fire once after this control is realized
         HandleCreated += (_, __) => Adapter.RefreshDestinationSize();
+
         if (IsHandleCreated)
             BeginInvoke((Action)Adapter.RefreshDestinationSize);
     }
@@ -60,6 +61,7 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
     protected override void OnParentChanged(EventArgs e)
     {
         base.OnParentChanged(e);
+
         if (IsHandleCreated)
             BeginInvoke((Action)Adapter.RefreshDestinationSize);
     }

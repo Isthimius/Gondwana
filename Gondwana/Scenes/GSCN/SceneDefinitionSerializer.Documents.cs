@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Serialization;
 
 namespace Gondwana.Scenes.GSCN;
 
@@ -10,7 +11,10 @@ public static partial class SceneDefinitionSerializer
     /// <returns>The complete definition document.</returns>
     public static SceneDefinitionDocument FromDocumentJson(string json, string? sourceIdentity = null) => new()
     {
-        Definitions = DefinitionDocumentJson.Read<SceneDefinition>(json, json => ParseDefinition(json, null), definition => definition.ID)
+        Definitions = DefinitionDocumentJson.Read<SceneDefinition>(
+            json,
+            json => ParseDefinition(json, null),
+            definition => definition.ID)
     };
 
     /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
@@ -31,11 +35,13 @@ public static partial class SceneDefinitionSerializer
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         var path = Path.GetFullPath(filePath);
         var document = FromDocumentJson(File.ReadAllText(path), path);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = SceneDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.ID);
         }
+
         return document;
     }
 
@@ -45,7 +51,10 @@ public static partial class SceneDefinitionSerializer
     public static SceneDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
+
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -58,17 +67,26 @@ public static partial class SceneDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+
         using var stream = assetsFile.Get(AssetTypes.SceneDefinition, entryName)
-            ?? throw new FileNotFoundException($"GSCN asset entry not found: {entryName}", entryName);
+                           ?? throw new FileNotFoundException($"GSCN asset entry not found: {entryName}", entryName);
+
         using var reader = new StreamReader(stream);
         var document = FromDocumentJson(reader.ReadToEnd(), entryName);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
                 ? SceneDefinitionSource.None()
                 : SceneDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
-            definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.ID);
+
+            definition.LoadStamp = new(
+                definition,
+                assetsFilePath: assetsFile.SourcePath,
+                entryName: entryName,
+                definitionIdentity: definition.ID);
         }
+
         return document;
     }
 
@@ -79,11 +97,21 @@ public static partial class SceneDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.ID); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+
+        try
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.ID);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
-                errors.AddRange(SceneDefinitionValidator.Validate(definition).Select(error => $"Scene '{definition.ID}': {error}"));
+                errors.AddRange(
+                    SceneDefinitionValidator.Validate(definition).Select(error => $"Scene '{definition.ID}': {error}"));
+
         return errors;
     }
 
@@ -99,7 +127,8 @@ public static partial class SceneDefinitionSerializer
     /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
-    public static void SaveAll(string filePath, IEnumerable<SceneDefinition> definitions) => SaveAll(filePath, definitions, null);
+    public static void SaveAll(string filePath, IEnumerable<SceneDefinition> definitions) =>
+        SaveAll(filePath, definitions, null);
 
     /// <summary>Saves with a pre-install check after preparation and staging. Throw to abort; the callback must not alter the staging file.</summary>
     /// <param name="filePath">Final destination used for reference rebasing.</param>
@@ -120,23 +149,38 @@ public static partial class SceneDefinitionSerializer
     private static SceneDefinition PrepareDocumentMember(SceneDefinition definition, string path)
     {
         var clone = ParseDefinition(ToJson(definition), null);
-        if (string.IsNullOrWhiteSpace(clone.ID)) clone.ID = Path.GetFileNameWithoutExtension(path);
+
+        if (string.IsNullOrWhiteSpace(clone.ID))
+            clone.ID = Path.GetFileNameWithoutExtension(path);
+
         var origin = definition.Source.GscnFilePath ?? definition.Source.AssetsFilePath;
+
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
+                           (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin)
+                               ? null
+                               : Path.GetDirectoryName(origin));
+
         var newDirectory = Path.GetDirectoryName(path)!;
-        string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
-            Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
+        string? RebasePath(string? value) =>
+            string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value))
+                ? value
+                : Path.GetRelativePath(
+                    newDirectory,
+                    oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
         foreach (var source in clone.TilesheetSources)
         {
             source.GtsPath = RebasePath(source.GtsPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.AnimationSources)
         {
             source.GaniPath = RebasePath(source.GaniPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         clone.Source = SceneDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }
@@ -169,7 +213,8 @@ public static partial class SceneDefinitionSerializer
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry name.</param>
     /// <returns>All definitions.</returns>
-    public static IReadOnlyList<SceneDefinition> LoadAll(AssetsFile assetsFile, string entryName) => LoadDocument(assetsFile, entryName).Definitions;
+    public static IReadOnlyList<SceneDefinition> LoadAll(AssetsFile assetsFile, string entryName) =>
+        LoadDocument(assetsFile, entryName).Definitions;
 
     /// <summary>Loads a logical member by its case-sensitive ID.</summary>
     /// <param name="assetsFile">The archive.</param>
@@ -195,13 +240,15 @@ public static partial class SceneDefinitionSerializer
     /// <param name="entryName">The document entry.</param>
     /// <param name="identity">The logical identity; null requires a singleton.</param>
     /// <returns>The materialized runtime content.</returns>
-    public static Scene LoadScene(AssetsFile assetsFile, string entryName, string? identity) => ToScene(Load(assetsFile, entryName, identity));
+    public static Scene LoadScene(AssetsFile assetsFile, string entryName, string? identity) =>
+        ToScene(Load(assetsFile, entryName, identity));
 
     /// <summary>Materializes all document members, rolling back newly created content on failure.</summary>
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry.</param>
     /// <returns>The materialized members in document order.</returns>
-    public static IReadOnlyList<Scene> LoadAllScenes(AssetsFile assetsFile, string entryName) => ToAllScenes(LoadDocument(assetsFile, entryName));
+    public static IReadOnlyList<Scene> LoadAllScenes(AssetsFile assetsFile, string entryName) =>
+        ToAllScenes(LoadDocument(assetsFile, entryName));
 
     /// <summary>Materializes all members and rolls back new runtime content on failure.</summary>
     /// <param name="document">The document to materialize.</param>
@@ -209,16 +256,24 @@ public static partial class SceneDefinitionSerializer
     public static IReadOnlyList<Scene> ToAllScenes(SceneDefinitionDocument document)
     {
         var errors = ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
         var created = new List<Scene>();
+
         try
         {
-            foreach (var definition in document.Definitions) created.Add(ToScene(definition));
+            foreach (var definition in document.Definitions)
+                created.Add(ToScene(definition));
+
             return created;
         }
         catch
         {
-            foreach (var item in created) item.Dispose();
+            foreach (var item in created)
+                item.Dispose();
+
             throw;
         }
     }

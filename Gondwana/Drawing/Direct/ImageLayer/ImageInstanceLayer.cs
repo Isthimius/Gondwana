@@ -107,6 +107,7 @@ namespace Gondwana.Drawing.Direct.ImageLayer;
 public sealed class ImageInstanceLayer : DirectDrawingMovableBase
 {
     private readonly Random _rng = new();
+
     private readonly SKPaint _paint = new()
     {
         IsAntialias = true,
@@ -231,17 +232,19 @@ public sealed class ImageInstanceLayer : DirectDrawingMovableBase
     /// <param name="view">The view to render into.</param>
     /// <param name="screenBounds">The screen-space bounds for this layer.</param>
     /// <param name="nickname">Optional friendly name for debugging.</param>
-    public ImageInstanceLayer(RenderSurfaceHostBase renderSurfaceHost,
-                              View view,
-                              Rectangle screenBounds,
-                              string? nickname = null)
-        : base(renderSurfaceHost,
-               DirectDrawingMode.View,
-               sceneLayer: null,
-               view: view,
-               screenBounds: screenBounds,
-               worldBounds: null,
-               name: nickname)
+    public ImageInstanceLayer(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            sceneLayer: null,
+            view: view,
+            screenBounds: screenBounds,
+            worldBounds: null,
+            name: nickname)
     {
     }
 
@@ -252,17 +255,19 @@ public sealed class ImageInstanceLayer : DirectDrawingMovableBase
     /// <param name="sceneLayer">The scene layer to render into.</param>
     /// <param name="worldBounds">The world-space bounds for this layer.</param>
     /// <param name="nickname">Optional friendly name for debugging.</param>
-    public ImageInstanceLayer(RenderSurfaceHostBase renderSurfaceHost,
-                              SceneLayer sceneLayer,
-                              Rectangle worldBounds,
-                              string? nickname = null)
-        : base(renderSurfaceHost,
-               DirectDrawingMode.SceneLayer,
-               sceneLayer: sceneLayer,
-               view: null,
-               screenBounds: null,
-               worldBounds: worldBounds,
-               name: nickname)
+    public ImageInstanceLayer(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer: sceneLayer,
+            view: null,
+            screenBounds: null,
+            worldBounds: worldBounds,
+            name: nickname)
     {
     }
 
@@ -277,15 +282,20 @@ public sealed class ImageInstanceLayer : DirectDrawingMovableBase
     /// <param name="recycleInstance">Optional callback used to create a replacement instance when recycling occurs.</param>
     /// <param name="updateInstance">Optional callback invoked after the built-in motion update for each instance.</param>
     /// <param name="nickname">Optional friendly name for debugging.</param>
-    public ImageInstanceLayer(RenderSurfaceHostBase renderSurfaceHost,
-                              View view,
-                              Rectangle screenBounds,
-                              Func<Rectangle, Random, IEnumerable<ImageInstance>>? initializer,
-                              Func<ImageInstance, Rectangle, bool>? shouldRecycle = null,
-                              Func<ImageInstance, Rectangle, Random, ImageInstance>? recycleInstance = null,
-                              Action<ImageInstance, float>? updateInstance = null,
-                              string? nickname = null)
-        : this(renderSurfaceHost, view, screenBounds, nickname)
+    public ImageInstanceLayer(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        Func<Rectangle, Random, IEnumerable<ImageInstance>>? initializer,
+        Func<ImageInstance, Rectangle, bool>? shouldRecycle = null,
+        Func<ImageInstance, Rectangle, Random, ImageInstance>? recycleInstance = null,
+        Action<ImageInstance, float>? updateInstance = null,
+        string? nickname = null)
+        : this(
+            renderSurfaceHost,
+            view,
+            screenBounds,
+            nickname)
     {
         Initializer = initializer;
         ShouldRecycle = shouldRecycle;
@@ -307,15 +317,20 @@ public sealed class ImageInstanceLayer : DirectDrawingMovableBase
     /// <param name="recycleInstance">Optional callback used to create a replacement instance when recycling occurs.</param>
     /// <param name="updateInstance">Optional callback invoked after the built-in motion update for each instance.</param>
     /// <param name="nickname">Optional friendly name for debugging.</param>
-    public ImageInstanceLayer(RenderSurfaceHostBase renderSurfaceHost,
-                              SceneLayer sceneLayer,
-                              Rectangle worldBounds,
-                              Func<Rectangle, Random, IEnumerable<ImageInstance>>? initializer,
-                              Func<ImageInstance, Rectangle, bool>? shouldRecycle = null,
-                              Func<ImageInstance, Rectangle, Random, ImageInstance>? recycleInstance = null,
-                              Action<ImageInstance, float>? updateInstance = null,
-                              string? nickname = null)
-        : this(renderSurfaceHost, sceneLayer, worldBounds, nickname)
+    public ImageInstanceLayer(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        Func<Rectangle, Random, IEnumerable<ImageInstance>>? initializer,
+        Func<ImageInstance, Rectangle, bool>? shouldRecycle = null,
+        Func<ImageInstance, Rectangle, Random, ImageInstance>? recycleInstance = null,
+        Action<ImageInstance, float>? updateInstance = null,
+        string? nickname = null)
+        : this(
+            renderSurfaceHost,
+            sceneLayer,
+            worldBounds,
+            nickname)
     {
         Initializer = initializer;
         ShouldRecycle = shouldRecycle;

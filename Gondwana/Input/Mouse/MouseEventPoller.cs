@@ -95,7 +95,8 @@ public sealed class MouseEventPoller : IDisposable
     /// If no adapter is configured, returns <see cref="KeyboardModifierState.None"/>.
     /// This allows mouse event handlers to detect modified mouse operations like Ctrl+Click or Shift+Drag.
     /// </summary>
-    public KeyboardModifierState CurrentKeyboardModifiers => Adapter?.CurrentKeyboardModifiers ?? KeyboardModifierState.None;
+    public KeyboardModifierState CurrentKeyboardModifiers =>
+        Adapter?.CurrentKeyboardModifiers ?? KeyboardModifierState.None;
 
     /// <summary>
     /// Gets a read-only dictionary containing the current state of all monitored mouse buttons,
@@ -148,8 +149,11 @@ public sealed class MouseEventPoller : IDisposable
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (Adapter is null) return;
-        if ((Configuration?.IsPaused ?? true) || !(Configuration?.ReadyForNextEvent(tick) ?? false)) return;
+        if (Adapter is null)
+            return;
+
+        if ((Configuration?.IsPaused ?? true) || !(Configuration?.ReadyForNextEvent(tick) ?? false))
+            return;
 
         var currentPos = Adapter.CurrentPosition;
         var pressed = Adapter.PressedButtons;
@@ -188,14 +192,15 @@ public sealed class MouseEventPoller : IDisposable
 
         if (anyButtonChange || moved || scrolled || isAnyButtonDown)
         {
-            MouseEvent?.Invoke(new MouseEventArgs(
-                Configuration!,
-                CurrentKeyboardModifiers,
-                ButtonStates,
-                _lastPosition,
-                currentPos,
-                scrollDelta,
-                tick));
+            MouseEvent?.Invoke(
+                new MouseEventArgs(
+                    Configuration!,
+                    CurrentKeyboardModifiers,
+                    ButtonStates,
+                    _lastPosition,
+                    currentPos,
+                    scrollDelta,
+                    tick));
 
             _lastPosition = currentPos;
             Configuration!._lastEventTick = tick;
@@ -223,7 +228,10 @@ public sealed class MouseEventPoller : IDisposable
     /// When paused, the mouse will not generate events even if moved, clicked, or scrolled.
     /// Default is <c>false</c>.
     /// </param>
-    public void StartMonitoringMouse(bool trackMouseMovement = true, double timeBetweenEvents = -1, bool isPaused = false)
+    public void StartMonitoringMouse(
+        bool trackMouseMovement = true,
+        double timeBetweenEvents = -1,
+        bool isPaused = false)
     {
         if (timeBetweenEvents < 0)
             timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenMouseEvents;
@@ -242,7 +250,9 @@ public sealed class MouseEventPoller : IDisposable
     /// <summary>Releases the current platform adapter when it supports disposal.</summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
+
         _isDisposed = true;
         (Adapter as IDisposable)?.Dispose();
         Adapter = null;

@@ -26,6 +26,7 @@ internal static class SpotSettings
             Section,
             key,
             value ? "true" : "false");
+
         engine.SaveConfiguration();
     }
 }

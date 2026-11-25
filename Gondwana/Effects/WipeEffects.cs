@@ -85,7 +85,11 @@ public sealed class FillEffect : WipeEffect
         EffectDirection direction,
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)
-        : base(direction, durationSeconds, easing, isFill: true)
+        : base(
+            direction,
+            durationSeconds,
+            easing,
+            isFill: true)
     {
     }
 }
@@ -101,7 +105,11 @@ public sealed class EraseEffect : WipeEffect
         EffectDirection direction,
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)
-        : base(direction, durationSeconds, easing, isFill: false)
+        : base(
+            direction,
+            durationSeconds,
+            easing,
+            isFill: false)
     {
     }
 }

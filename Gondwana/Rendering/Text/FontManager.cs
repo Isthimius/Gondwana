@@ -44,6 +44,7 @@ public sealed class FontManager : IDisposable
             throw new ArgumentException("Font file path cannot be null or whitespace.", nameof(filePath));
 
         var typeface = SKTypeface.FromFile(filePath);
+
         if (typeface == null)
             throw new InvalidOperationException($"Failed to load font from file: {filePath}");
 
@@ -75,11 +76,13 @@ public sealed class FontManager : IDisposable
             throw new ArgumentException("Resource name cannot be null or whitespace.", nameof(resourceName));
 
         using var stream = assembly.GetManifestResourceStream(resourceName);
+
         if (stream == null)
             throw new InvalidOperationException(
                 $"Embedded font resource not found: '{resourceName}' in assembly '{assembly.FullName}'.");
 
         var typeface = SKTypeface.FromStream(stream);
+
         if (typeface == null)
             throw new InvalidOperationException($"Failed to load font from embedded resource: {resourceName}");
 
