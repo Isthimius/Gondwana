@@ -36,7 +36,11 @@ public sealed class WrappedSpriteTests
             sprite.Movement.AdvanceMovement(0.2f);
             Assert.InRange(sprite.GetPosition().X, movementWrap ? 0.09f : 4.09f, movementWrap ? 0.11f : 4.11f);
         }
-        finally { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+        finally
+        {
+            SpriteManager.Instance._spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+        }
     }
 
     /// <summary>
@@ -77,6 +81,10 @@ public sealed class WrappedSpriteTests
             var instances = layer.GetDrawablesInWorldRect(new(125, 30, 30, 30)).Cast<WrappedDrawable>();
             Assert.Contains(instances, d => ReferenceEquals(d.Owner, sprite) && d.Offset.X == 128);
         }
-        finally { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+        finally
+        {
+            SpriteManager.Instance._spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+        }
     }
 }

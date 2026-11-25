@@ -49,14 +49,24 @@ internal sealed class DependencyExplorerPanel : UserControl
             });
         _menu.Opening += (_, e) => e.Cancel = _tree.SelectedNode?.Tag is not ResourceAddress;
         _tree.ContextMenuStrip = _menu;
-        _tree.NodeMouseClick += (_, e) => { if (e.Button == MouseButtons.Right) _tree.SelectedNode = e.Node; };
+        _tree.NodeMouseClick += (_, e) =>
+        {
+            if (e.Button == MouseButtons.Right)
+                _tree.SelectedNode = e.Node;
+        };
         _tree.ItemDrag += (_, e) =>
         {
             if (e.Button == MouseButtons.Left && e.Item is TreeNode { Tag: ResourceAddress address })
                 ResourceDragRequested?.Invoke(_tree, address);
         };
         _tree.NodeMouseDoubleClick += (_, _) => OpenSelection();
-        _tree.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) { OpenSelection(); e.Handled = true; } };
+        _tree.KeyDown += (_, e) =>
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                OpenSelection();
+                e.Handled = true; }
+        };
         Controls.Add(_tree);
         Controls.Add(_status);
         Controls.Add(bar);
@@ -130,6 +140,7 @@ internal sealed class DependencyExplorerPanel : UserControl
                 if (problem.Reference is { } reference)
                     node.Tag = new ResourceAddress(reference.Document, reference.Member, reference.ReferencePath);
             }
+
             _tree.ExpandAll();
             if (RequestedSection is { } dependents)
             {
@@ -137,6 +148,7 @@ internal sealed class DependencyExplorerPanel : UserControl
                 _tree.SelectedNode.EnsureVisible();
                 RequestedSection = null;
             }
+
             SetStatus($"Query: {(target.Member is null ? "Whole document" : $"Selected member '{target.Member}'")}\n" +
                 $"Target: {target.Location}\nScan scope: {scan.Scope}\n" +
                 (scan.IsCancelled ? "Cancelled — partial results." : scan.IsComplete ? "Completed scan." : "Incomplete scan — see diagnostics; absence is not proof of no references.") +
@@ -144,7 +156,10 @@ internal sealed class DependencyExplorerPanel : UserControl
                 (!scan.IsWithinScope(target.Location) ? " Query target is outside this scope; its outbound references were not inspected." : "") +
                 (dirty ? " Open editors have unsaved changes not represented here." : ""));
         }
-        finally { _tree.EndUpdate(); }
+        finally
+        {
+            _tree.EndUpdate();
+        }
 
         void Add(string title, IReadOnlyList<DefinitionReference> references, bool outbound)
         {
@@ -172,7 +187,11 @@ internal sealed class DependencyExplorerPanel : UserControl
     protected override void Dispose(bool disposing)
     {
         if (disposing)
-        { _menu.Dispose(); _tips.Dispose(); }
+        {
+            _menu.Dispose();
+            _tips.Dispose();
+        }
+
         base.Dispose(disposing);
     }
 }

@@ -99,6 +99,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             source.Verify();
             Assert.Single(changes);
         }
+
         Assert.Equal(DocumentSourceChangeKind.Unchanged, source.Verify().Kind);
         Assert.Equal(2, changes.Count);
     }
@@ -137,8 +138,13 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             File.WriteAllText(replacement, "external");
             File.Replace(replacement, location.Path, destinationBackupFileName: null);
         }
+
         IEnumerable<T> Prepare<T>(T member)
-        { Replace(); yield return member; }
+        {
+            Replace();
+            yield return member;
+        }
+
         Assert.Throws<DocumentSourceConflictException>(() => DocumentSourceSave.Save(location, version, check =>
         {
             switch (format)
@@ -174,6 +180,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             archive.Add(AssetTypes.Image, "b", second);
             archive.Save();
         }
+
         Save("a", "b");
         var a = new AssetLocation(AssetTypes.Image, path, "a");
         var b = new AssetLocation(AssetTypes.Image, path, "b");
@@ -235,6 +242,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             monitor.Signal(location.Path);
             monitor.VerifyPending();
         }
+
         Assert.Empty(changes);
         monitor.VerifyPending();
         monitor.VerifyPending();
@@ -261,15 +269,35 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             _ => OpenAudio()
         };
         Action OpenTilesheet()
-        { var d = Tooling.Studio.Tilesheets.WinForms.Editing.TilesheetDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        {
+            var d = Tooling.Studio.Tilesheets.WinForms.Editing.TilesheetDocument.Open(location.Path);
+            return () => d.Save(location.Path, allowInvalid: true);
+        }
+
         Action OpenAnimation()
-        { var d = Tooling.Animations.Editing.AnimationDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        {
+            var d = Tooling.Animations.Editing.AnimationDocument.Open(location.Path);
+            return () => d.Save(location.Path, allowInvalid: true);
+        }
+
         Action OpenScene()
-        { var d = Tooling.Scenes.Editing.SceneDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        {
+            var d = Tooling.Scenes.Editing.SceneDocument.Open(location.Path);
+            return () => d.Save(location.Path, allowInvalid: true);
+        }
+
         Action OpenSprite()
-        { var d = Tooling.Sprites.Editing.SpriteDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        {
+            var d = Tooling.Sprites.Editing.SpriteDocument.Open(location.Path);
+            return () => d.Save(location.Path, allowInvalid: true);
+        }
+
         Action OpenAudio()
-        { var d = Tooling.Audio.Editing.AudioDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        {
+            var d = Tooling.Audio.Editing.AudioDocument.Open(location.Path);
+            return () => d.Save(location.Path, allowInvalid: true);
+        }
+
         save(); // Successful save updates the accepted version, so another save is valid.
         save();
         Write(location, "external");
@@ -286,7 +314,11 @@ public sealed class DocumentSourceMonitorTests : IDisposable
         var completion = new TaskCompletionSource<DocumentSourceChange>(TaskCreationOptions.RunContinuationsAsynchronously);
         var count = 0;
         using var source = monitor.Register(location, DocumentSourceVersion.Read(location), DocumentSourceRole.Primary,
-            change => { Interlocked.Increment(ref count); completion.TrySetResult(change); });
+            change =>
+            {
+                Interlocked.Increment(ref count);
+                completion.TrySetResult(change);
+            });
         var replacement = location.Path + ".tmp";
         File.WriteAllText(replacement, "final");
         File.Replace(replacement, location.Path, destinationBackupFileName: null);
@@ -313,6 +345,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             Assert.Equal(DocumentSourceChangeKind.Inaccessible, source.Verify().Kind);
             Assert.True(source.Pending);
         }
+
         monitor.VerifyPending();
         monitor.VerifyPending();
         Assert.False(source.Pending);
@@ -333,6 +366,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             archive.Add(AssetTypes.Image, "image.jpg", jpg);
             archive.Save();
         }
+
         var location = new AssetLocation(AssetTypes.Image, path, "image.png");
         Assert.Equal(DocumentSourceStatus.Available, DocumentSourceVersion.Read(location).Status);
         using (var archive = AssetsFile.LoadOrCreate(path, password: null, encrypt: false, register: false))
@@ -340,6 +374,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             archive.Remove(AssetTypes.Image, "image.png");
             archive.Save();
         }
+
         var current = DocumentSourceVersion.Read(location);
         Assert.Equal(DocumentSourceStatus.Missing, current.Status);
         Assert.NotNull(current.PhysicalHash);
@@ -361,6 +396,7 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             archive.Add(AssetTypes.Image, "image.jpg", jpg);
             archive.Save();
         }
+
         WriteArchive("first");
         var pngLocation = new AssetLocation(AssetTypes.Image, path, "image.png");
         var jpgLocation = new AssetLocation(AssetTypes.Image, path, "image.jpg");

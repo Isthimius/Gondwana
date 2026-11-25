@@ -36,7 +36,12 @@ internal sealed class VideoMetadataState
     private readonly object _gate = new();
     private long _generation;
     private VideoMetadata _current = VideoMetadata.Unavailable;
-    internal VideoMetadata Current { get { lock (_gate) return _current; } }
+    internal VideoMetadata Current { get
+        {
+            lock (_gate)
+                return _current;
+        }
+    }
     internal long Begin()
     {
         lock (_gate)
@@ -58,6 +63,9 @@ internal sealed class VideoMetadataState
     internal void Reset()
     {
         lock (_gate)
-        { ++_generation; _current = VideoMetadata.Unavailable; }
+        {
+            ++_generation;
+            _current = VideoMetadata.Unavailable;
+        }
     }
 }

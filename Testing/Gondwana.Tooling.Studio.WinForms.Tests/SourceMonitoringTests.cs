@@ -78,7 +78,11 @@ public sealed partial class CompositionTests
         Assert.Contains("[conflict]", tab.Text);
         Assert.Equal("local", tab.Document.SelectedMember);
         int prompts = 0;
-        studio.AskSourceConflict = _ => { prompts++; return MainForm.SourceConflictChoice.KeepEdits; };
+        studio.AskSourceConflict = _ =>
+        {
+            prompts++;
+            return MainForm.SourceConflictChoice.KeepEdits;
+        };
         Assert.False(AwaitUi(studio.SaveDocument(tab)));
         Application.DoEvents();
         Assert.False(AwaitUi(studio.SaveDocument(tab)));
@@ -154,7 +158,11 @@ public sealed partial class CompositionTests
         var image = Path.Combine(root, "one.png");
         var other = Path.Combine(root, "two.png");
         using (var bitmap = new Bitmap(8, 8))
-        { bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png); bitmap.Save(other, System.Drawing.Imaging.ImageFormat.Png); }
+        {
+            bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+            bitmap.Save(other, System.Drawing.Imaging.ImageFormat.Png);
+        }
+
         var path = Path.Combine(root, "source.gts");
         TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "one", Image = new() { FilePath = image } }]);
         using var studio = Host(root);
@@ -290,7 +298,11 @@ public sealed partial class CompositionTests
         var scan = DefinitionReferenceDiscovery.Inspect(root);
         var completion = new TaskCompletionSource<DefinitionReferenceDiscovery>(TaskCreationOptions.RunContinuationsAsynchronously);
         CancellationToken token = default;
-        studio.InspectDependencies = (_, _, cancellation) => { token = cancellation; return completion.Task; };
+        studio.InspectDependencies = (_, _, cancellation) =>
+        {
+            token = cancellation;
+            return completion.Task;
+        };
         studio.ShowDependencies();
         tab.Document.History!.MarkUntracked();
         WriteMonitored(sheet, "gts", "changed");
@@ -337,6 +349,7 @@ public sealed partial class CompositionTests
             Assert.Contains("inaccessible", tab.Document.SourceProblem);
             Assert.True(tab.Document.ContentStale);
         }
+
         VerifySources(studio);
         Assert.False(tab.Document.ContentStale);
         File.Move(path, path + ".renamed");
@@ -359,7 +372,10 @@ public sealed partial class CompositionTests
         tab.Document.Changed += (_, _) =>
         {
             if (!written && !tab.Document.Dirty())
-            { written = true; WriteMonitored(path, "gts", "external"); }
+            {
+                written = true;
+                WriteMonitored(path, "gts", "external");
+            }
         };
         Assert.True(AwaitUi(studio.SaveDocument(tab)));
         Assert.True(written);
@@ -382,6 +398,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.TilesheetDefinition, "sheet.gts", source);
             archive.Save();
         }
+
         using var studio = Host(root);
         var tab = studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "sheet.gts"), password);
         tab.Document.History!.MarkUntracked();
@@ -391,6 +408,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.Misc, "external.bin", payload);
             archive.Save();
         }
+
         VerifySources(studio);
         Assert.False(tab.Document.ContentStale);
         Assert.True(AwaitUi(studio.SaveDocument(tab)));

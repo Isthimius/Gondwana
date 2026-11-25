@@ -48,13 +48,21 @@ internal sealed class ScenePropertyView(SceneDocument document, object model) : 
             {
                 var edited = inner.EditValue(context, service, value);
                 if (service.Cancelled)
-                { snapshot.Restore(); return value; }
+                {
+                    snapshot.Restore();
+                    return value;
+                }
+
                 document.RecordCollectionEdit(snapshot, "Edit " + property.DisplayName);
                 document.Edit(model, "Change " + property.DisplayName, () => property.SetValue(model, edited));
                 transaction.Commit();
                 return edited;
             }
-            catch { snapshot.Restore(); throw; }
+            catch
+            {
+                snapshot.Restore();
+                throw;
+            }
         }
     }
 

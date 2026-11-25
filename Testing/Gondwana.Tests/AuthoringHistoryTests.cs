@@ -137,10 +137,16 @@ public sealed class AuthoringHistoryTests : IDisposable
         using (var group = d.History.BeginTransaction("Many tiles"))
         {
             for (int x = 0; x < 30; x++)
-            for (int y = 0; y < 10; y++)
-                d.EditTile(layer, x, y, "Assign", tile => { tile.AnimationKey = "walk"; tile.EnableAnimator = true; tile.Transform = TileTransform.Rotate90; });
+                for (int y = 0; y < 10; y++)
+                    d.EditTile(layer, x, y, "Assign", tile =>
+                    {
+                        tile.AnimationKey = "walk";
+                        tile.EnableAnimator = true;
+                        tile.Transform = TileTransform.Rotate90;
+                    });
             group.Commit();
         }
+
         Assert.Equal(1, changes);
         Assert.Equal(300, layer.Tiles.Count);
         d.History.Undo();
@@ -251,9 +257,16 @@ public sealed class AuthoringHistoryTests : IDisposable
         object source = animation ? d.Definition.AnimationSources.Single() : d.Definition.TilesheetSources.Single();
         var snapshot = new ModelSnapshot(animation ? (object)d.Definition.AnimationSources : d.Definition.TilesheetSources);
         if (animation)
-        { d.Definition.AnimationSources[0].GaniPath = "edited.gani"; d.Definition.AnimationSources.Clear(); }
+        {
+            d.Definition.AnimationSources[0].GaniPath = "edited.gani";
+            d.Definition.AnimationSources.Clear();
+        }
         else
-        { d.Definition.TilesheetSources[0].GtsPath = "edited.gts"; d.Definition.TilesheetSources.Clear(); }
+        {
+            d.Definition.TilesheetSources[0].GtsPath = "edited.gts";
+            d.Definition.TilesheetSources.Clear();
+        }
+
         d.RecordCollectionEdit(snapshot, "Edit then remove source");
         d.Save(Path.Combine(_root, "nested", "saved.gscn"));
         for (int replay = 0; replay < 3; replay++)

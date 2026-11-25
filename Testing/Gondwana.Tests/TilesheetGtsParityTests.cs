@@ -58,6 +58,7 @@ public sealed class TilesheetGtsParityTests : IDisposable
             Assert.Throws<InvalidOperationException>(() => TilesheetFactory.FromDefinition(definition));
             return;
         }
+
         var restored = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(definition));
         using var sheet = TilesheetFactory.FromDefinition(restored);
         Assert.Equal(3, sheet.GetRegion(TilesheetRegion.DefaultRegionName)!.Columns);

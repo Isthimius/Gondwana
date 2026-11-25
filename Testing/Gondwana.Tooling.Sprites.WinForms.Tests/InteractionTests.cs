@@ -29,6 +29,7 @@ public sealed partial class InteractionTests
             graphics.Clear(Color.Red);
             bitmap.Save(imagePath);
         }
+
         var gts = Path.Combine(directory, "actors.gts");
         TilesheetDefinitionSerializer.Save(gts, new TilesheetDefinition
         {
@@ -104,8 +105,10 @@ public sealed partial class InteractionTests
                     if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30)
                         return new Point(x, y);
                 }
+
             return null;
         }
+
         Assert.NotNull(FirstRedPixel(before));
         Assert.Null(FirstRedPixel(after));
         entry.Visible = true;
@@ -215,7 +218,11 @@ public sealed partial class InteractionTests
         var path = Path.Combine(directory, "actors.gspr");
         Assert.Throws<InvalidDataException>(() => document.Save(path));
         foreach (var entry in document.Definition.Sprites)
-        { entry.SceneId = "level"; entry.SceneLayerId = "actors"; }
+        {
+            entry.SceneId = "level";
+            entry.SceneLayerId = "actors";
+        }
+
         var sourcePath = Path.Combine(directory, "level.gscn");
         SceneDefinitionSerializer.Save(sourcePath, new SceneDefinition { ID = "level", Layers = [new() { ID = "actors", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }] });
         editor.AddSceneSources([sourcePath]);
@@ -250,11 +257,16 @@ public sealed partial class InteractionTests
             Application.DoEvents();
             return (host, editor, Descendants(editor).OfType<DockPanel>().Single());
         }
+
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gspr");
         var first = Open();
         var panes = first.Dock.Contents.OfType<DockContent>().ToArray();
         Assert.Equal(6, panes.Length);
-        Assert.All(panes, pane => { Assert.Same(first.Dock, pane.DockPanel); Assert.Equal(DockAreas.Document, pane.DockAreas); });
+        Assert.All(panes, pane =>
+        {
+            Assert.Same(first.Dock, pane.DockPanel);
+            Assert.Equal(DockAreas.Document, pane.DockAreas);
+        });
         panes[1].Show(panes[0].Pane, DockAlignment.Right, .62);
         panes.Single(pane => pane.Text == "Validation").Hide();
         first.Host.Dispose();
@@ -318,14 +330,24 @@ public sealed partial class InteractionTests
     private static IEnumerable<Control> Descendants(Control control)
     {
         foreach (Control child in control.Controls)
-        { yield return child; foreach (var nested in Descendants(child)) yield return nested; }
+        {
+            yield return child;
+            foreach (var nested in Descendants(child))
+                yield return nested;
+        }
     }
     private static void Sta(Action<string> action)
     {
         Exception? error = null;
         var directory = Path.Combine(Path.GetTempPath(), "GsprTests-" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
-        var thread = new Thread(() => { try { action(directory); } catch (Exception ex) { error = ex; } });
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action(directory); } catch (Exception ex) {
+                error = ex; }
+        });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();

@@ -58,7 +58,10 @@ public sealed partial class AnimationEditorTests
             Application.DoEvents();
             Assert.Same(first, frames.Items[0].Tag);
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
     [Theory]
     [InlineData(true)]
@@ -96,6 +99,7 @@ public sealed partial class AnimationEditorTests
                 members.SelectedIndex = 1;
                 members.SelectedIndex = 0;
             }
+
             Application.DoEvents();
             Assert.Same(original, document.Definition);
             Assert.Empty(original.TilesheetSources);
@@ -111,6 +115,9 @@ public sealed partial class AnimationEditorTests
             Application.DoEvents();
             Assert.Empty(original.TilesheetSources);
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 }

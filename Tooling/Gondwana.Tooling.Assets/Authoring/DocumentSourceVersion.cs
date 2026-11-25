@@ -33,6 +33,7 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
                     version = ReadLoose(location.Path);
                     _loose.Add(location.Path, version);
                 }
+
                 return version;
             }
 
@@ -42,6 +43,7 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
                 snapshot = ArchiveSnapshot.Open(location.Path, password);
                 _archives.Add(key, snapshot);
             }
+
             return snapshot.Read(location.AssetType, location.AssetEntryName);
         }
 
@@ -62,9 +64,18 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
             var hash = Convert.ToHexString(SHA256.HashData(file));
             return new(DocumentSourceStatus.Available, hash, hash);
         }
-        catch (FileNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
-        catch (DirectoryNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
-        catch (Exception ex) when (IsInaccessible(ex)) { return new(DocumentSourceStatus.Inaccessible, null, null); }
+        catch (FileNotFoundException)
+        {
+            return new(DocumentSourceStatus.Missing, null, null);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return new(DocumentSourceStatus.Missing, null, null);
+        }
+        catch (Exception ex) when (IsInaccessible(ex))
+        {
+            return new(DocumentSourceStatus.Inaccessible, null, null);
+        }
     }
 
     private sealed class ArchiveSnapshot : IDisposable
@@ -97,9 +108,18 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
                 var archive = AssetsFile.Load(buffer, password, register: false, sourcePath: path);
                 return new ArchiveSnapshot(DocumentSourceStatus.Available, hash, archive);
             }
-            catch (FileNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
-            catch (DirectoryNotFoundException) { return new(DocumentSourceStatus.Missing, null, null); }
-            catch (Exception ex) when (IsInaccessible(ex)) { return new(DocumentSourceStatus.Inaccessible, null, null); }
+            catch (FileNotFoundException)
+            {
+                return new(DocumentSourceStatus.Missing, null, null);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return new(DocumentSourceStatus.Missing, null, null);
+            }
+            catch (Exception ex) when (IsInaccessible(ex))
+            {
+                return new(DocumentSourceStatus.Inaccessible, null, null);
+            }
         }
 
         internal DocumentSourceVersion Read(AssetTypes type, string name)
@@ -120,6 +140,7 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
                     ? new(DocumentSourceStatus.Missing, _physicalHash, null)
                     : new(DocumentSourceStatus.Available, _physicalHash, Convert.ToHexString(SHA256.HashData(entry)));
             }
+
             _versions.Add(key, version);
             return version;
         }
@@ -140,7 +161,10 @@ public sealed class DocumentSourceConflictException : IOException
     public DocumentSourceVersion Current { get; }
     public DocumentSourceConflictException(AssetLocation location, DocumentSourceVersion current)
         : base($"Source changed or cannot be verified: {location}. Reload or save to a new location.")
-    { Location = location; Current = current; }
+    {
+        Location = location;
+        Current = current;
+    }
 }
 
 /// <summary>Optimistic protection for existing native serializers, including their preparation interval.</summary>

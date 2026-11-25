@@ -135,6 +135,7 @@ public sealed partial class MainForm : Form
                 item.Enabled = editor is not null;
                 item.Checked = editor?.IsPaneVisible(paneName) == true;
             }
+
             showAllPanesItem.Enabled = editor is not null;
             resetEditor.Enabled = editor is not null;
         };
@@ -165,7 +166,11 @@ public sealed partial class MainForm : Form
                 return;
             foreach (var document in _documents.ToArray())
                 if (!document.ConfirmClose())
-                { e.Cancel = true; return; }
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
             SaveSession();
             foreach (var document in _documents)
                 document.CloseApproved = true;
@@ -386,6 +391,7 @@ public sealed partial class MainForm : Form
             if (_documents.Any(document => document != editor))
                 throw new InvalidOperationException("Save and close other open archives before moving or deleting content.");
         }
+
         editor.Editor.ValidateRelocation = _ => ValidateContentOperation();
         editor.Editor.ValidateDeletion = _ => ValidateContentOperation();
         editor.Disposed += (_, _) =>
@@ -424,6 +430,7 @@ public sealed partial class MainForm : Form
                 document.Dispose();
             _workspace.Dispose();
         }
+
         base.Dispose(disposing);
         if (disposing)
             _theme.Dispose();

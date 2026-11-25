@@ -62,6 +62,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.SceneDefinition, sceneEntry, contents);
             archive.Save();
         }
+
         using (var model = SpriteDocument.Create(root))
         {
             model.AddSprite();

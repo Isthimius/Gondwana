@@ -212,8 +212,16 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         var accept = new Button { Text = "Import", DialogResult = DialogResult.OK, AutoSize = true };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
 
-        all.Click += (_, _) => { for (int i = 0; i < list.Items.Count; i++) list.SetItemChecked(i, true); };
-        none.Click += (_, _) => { for (int i = 0; i < list.Items.Count; i++) list.SetItemChecked(i, false); };
+        all.Click += (_, _) =>
+        {
+            for (int i = 0; i < list.Items.Count; i++)
+                list.SetItemChecked(i, true);
+        };
+        none.Click += (_, _) =>
+        {
+            for (int i = 0; i < list.Items.Count; i++)
+                list.SetItemChecked(i, false);
+        };
 
         buttons.Controls.AddRange([all, none, accept, cancel]);
         dialog.Controls.Add(list);
@@ -351,7 +359,11 @@ public static class DefinitionRenameDialog
         dialog.Controls.Add(layout);
         dialog.AcceptButton = accept;
         dialog.CancelButton = cancel;
-        dialog.Shown += (_, _) => { nameBox.Focus(); nameBox.SelectAll(); };
+        dialog.Shown += (_, _) =>
+        {
+            nameBox.Focus();
+            nameBox.SelectAll();
+        };
         ToolingAppearance.Apply(dialog);
         return dialog.ShowDialog(owner) == DialogResult.OK;
     }

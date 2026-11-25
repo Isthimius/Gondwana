@@ -104,18 +104,21 @@ public sealed partial class SpriteDocument : IDisposable
                     () => source.GtsPath, value => source.GtsPath = value,
                     () => source.AssetsFilePath, value => source.AssetsFilePath = value);
             }
+
             foreach (var source in member.AnimationSources)
             {
                 _origins.Restore(source, BaseDirectory, PackedLocation?.Path, source.AssetEntryName,
                     () => source.GaniPath, value => source.GaniPath = value,
                     () => source.AssetsFilePath, value => source.AssetsFilePath = value);
             }
+
             foreach (var source in member.SceneSources)
             {
                 _origins.Restore(source, BaseDirectory, PackedLocation?.Path, source.AssetEntryName,
                     () => source.GscnPath, value => source.GscnPath = value,
                     () => source.AssetsFilePath, value => source.AssetsFilePath = value);
             }
+
             if (FilePath is not null && !string.Equals(member.Source.GsprFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
                 member.Source = SpriteDefinitionSource.LooseDefinitionFile(FilePath);
         }

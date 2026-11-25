@@ -16,7 +16,9 @@ public sealed class SymbolicLinkTheoryAttribute : TheoryAttribute
         {
             File.WriteAllText(target, "probe");
             try
-            { File.CreateSymbolicLink(link, target); }
+            {
+                File.CreateSymbolicLink(link, target);
+            }
             catch (IOException ex) when ((ex.HResult & 0xffff) == 1314)
             {
                 Skip = "Windows does not grant this test process the symbolic-link privilege (ERROR_PRIVILEGE_NOT_HELD). Junction security tests still run.";

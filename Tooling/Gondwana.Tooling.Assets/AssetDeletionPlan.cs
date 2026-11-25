@@ -64,6 +64,7 @@ public sealed class AssetDeletionPlan
                 keys.Add(DefinitionReferenceDiscovery.Key(location));
             }
         }
+
         foreach (var target in targets)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -93,10 +94,13 @@ public sealed class AssetDeletionPlan
                     var original = plan._scan.Archives[target.Path];
                     plan._archiveWrites.Add(target.Path, replacement = new(original.Password, original.Encrypt, new(original.Entries)));
                 }
+
                 replacement.Entries.Remove(new() { AssetType = target.AssetType, AssetName = target.AssetEntryName });
             }
+
             plan._targets.Add(target);
         }
+
         if (plan._targets.Count == 0 && plan._archives.Count == 0)
             throw new InvalidDataException("Select at least one resource to delete.");
         plan._scan.Analyze();
@@ -108,6 +112,7 @@ public sealed class AssetDeletionPlan
             if (plan._scan.Found.Any(r => r.Target.AssetEntryName is null && DefinitionReferenceDiscovery.Paths.Equals(r.Target.Path, target.Path) && r.Target.AssetType != target.AssetType))
                 throw new InvalidDataException($"Loose target has references with a different type: {target}.");
         }
+
         plan.InboundReferences = plan._targets.SelectMany(plan._scan.FindInbound).Distinct().ToArray();
         plan.InternalReferences = plan.InboundReferences.Where(r => keys.Contains(DefinitionReferenceDiscovery.Key(r.Document))).ToArray();
         plan.BlockingReferences = plan.InboundReferences.Except(plan.InternalReferences).ToArray();

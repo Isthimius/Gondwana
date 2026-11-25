@@ -29,6 +29,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
             archive.Save();
         }
+
         using var studio = Host(directory);
         using var borrowed = AssetsFile.LoadOrCreate(path, null, false, register: false);
         var document = hosted ? studio.OpenDocument(path) : null;

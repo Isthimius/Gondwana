@@ -63,6 +63,7 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
                 throw new InvalidOperationException("--root must contain a published index.html.");
             return root;
         }
+
         if (!ProjectHelper.TryResolveProject(settings.Project, out var project, out var error))
             throw new InvalidOperationException(error);
         if (!ProjectHelper.TryResolveBrowserFramework(project!, settings.Framework, out var framework, out error))
@@ -80,7 +81,11 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
                 throw new ArgumentException("Port must be between 1 and 65535.");
             var root = ResolveRoot(settings);
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            ConsoleCancelEventHandler handler = (_, e) => { e.Cancel = true; stop.Cancel(); };
+            ConsoleCancelEventHandler handler = (_, e) =>
+            {
+                e.Cancel = true;
+                stop.Cancel();
+            };
             Console.CancelKeyPress += handler;
             try
             {
@@ -91,11 +96,21 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
                         ProcessHelper.OpenBrowser(url);
                 }, stop.Token);
             }
-            finally { Console.CancelKeyPress -= handler; }
+            finally
+            {
+                Console.CancelKeyPress -= handler;
+            }
+
             return 0;
         }
-        catch (OperationCanceledException) { return 0; }
-        catch (Exception ex) { return ProjectCommand.Fail(ex); }
+        catch (OperationCanceledException)
+        {
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            return ProjectCommand.Fail(ex);
+        }
     }
 }
 
@@ -117,6 +132,7 @@ internal static class PublishedServer
             var relative = Path.GetRelativePath(root, file).Replace('\\', '/');
             files.Add(relative, new PublishedFile(relative, SafeFilePath.Resolve(root, relative)));
         }
+
         return files;
     }
 
@@ -178,14 +194,30 @@ internal static class PublishedServer
             response.Headers["X-Content-Type-Options"] = "nosniff";
             response.Headers["Cache-Control"] = "no-cache";
             if (context.Request.RemoteEndPoint is not { } remote || !IPAddress.IsLoopback(remote.Address))
-            { response.StatusCode = 403; return; }
+            {
+                response.StatusCode = 403;
+                return;
+            }
+
             if (context.Request.HttpMethod is not ("GET" or "HEAD"))
-            { response.StatusCode = 405; return; }
+            {
+                response.StatusCode = 405;
+                return;
+            }
+
             var urlPath = context.Request.Url!.AbsolutePath;
             if (urlPath == "/" && basePath != "/")
-            { response.Redirect(basePath); return; }
+            {
+                response.Redirect(basePath);
+                return;
+            }
+
             if (!urlPath.StartsWith(basePath, StringComparison.Ordinal))
-            { response.StatusCode = 404; return; }
+            {
+                response.StatusCode = 404;
+                return;
+            }
+
             var name = Uri.UnescapeDataString(urlPath[basePath.Length..]);
             if (name.Length == 0)
                 name = "index.html";
@@ -193,23 +225,42 @@ internal static class PublishedServer
             // Only filesystem-discovered values reach file APIs. Request data is
             // a lookup key, never a component of a filesystem path.
             if (!files.TryGetValue(name, out var file))
-            { response.StatusCode = 404; return; }
+            {
+                response.StatusCode = 404;
+                return;
+            }
             // Recheck link ancestry in case the published tree changed after indexing.
             SafeFilePath.Resolve(root, file.RelativePath);
             var path = file.FullPath;
             if (!File.Exists(path))
-            { response.StatusCode = 404; return; }
+            {
+                response.StatusCode = 404;
+                return;
+            }
+
             response.ContentType = ContentType(path);
             using var stream = File.OpenRead(path);
             response.ContentLength64 = stream.Length;
             if (context.Request.HttpMethod == "GET")
                 await stream.CopyToAsync(response.OutputStream, cancellationToken);
         }
-        catch (InvalidDataException) { response.StatusCode = 400; }
-        catch (UnauthorizedAccessException) { response.StatusCode = 403; }
-        catch (IOException) { response.StatusCode = 500; }
+        catch (InvalidDataException)
+        {
+            response.StatusCode = 400;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            response.StatusCode = 403;
+        }
+        catch (IOException)
+        {
+            response.StatusCode = 500;
+        }
         catch (Exception ex) when (ex is HttpListenerException or OperationCanceledException or ObjectDisposedException) { }
-        finally { response.Close(); }
+        finally
+        {
+            response.Close();
+        }
     }
 
     internal static string ContentType(string path) => Path.GetExtension(path).ToLowerInvariant() switch

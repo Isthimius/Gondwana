@@ -125,6 +125,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
             group = new NativeOutput<T>(path, kind, identity, validate, serialize);
             _planned.Add(group);
         }
+
         group.Members.Add(definition);
     }
 
@@ -194,6 +195,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
             {
                 Report(ExternalImportSeverity.Error, "native.validation", $"{output.Path}: {ex.Message}");
             }
+
             Outputs.Add((artifact, content));
             if (!paths.Add(artifact.OutputPath))
                 Report(ExternalImportSeverity.Error, "output.duplicate", $"Duplicate output: {artifact.OutputPath}");
@@ -205,6 +207,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
             if (Dependencies.Append(Path.GetFullPath(Request.SourcePath)).Any(p => string.Equals(Path.GetFullPath(p), artifact.OutputPath, StringComparison.OrdinalIgnoreCase)))
                 Report(ExternalImportSeverity.Error, "output.source", $"Output would replace a source dependency: {artifact.OutputPath}");
         }
+
         foreach (var dependency in Dependencies.Distinct(StringComparer.OrdinalIgnoreCase))
             if (!File.Exists(dependency))
                 Report(ExternalImportSeverity.Error, "dependency.missing", $"Missing source dependency: {dependency}");
@@ -243,13 +246,16 @@ public sealed class ImportPlan(ExternalImportRequest request)
                     Report(ExternalImportSeverity.Warning, "key.unchecked", $"Cannot inspect existing native keys in {file}: {ex.Message}");
                     continue;
                 }
+
                 foreach (var key in existingKeys)
                     if (plannedKeys.Contains(key))
                         Report(ExternalImportSeverity.Error, "key.exists", $"Logical key {key} already exists in {file}.");
             }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        { Report(ExternalImportSeverity.Error, "output.unreadable", ex.Message); }
+        {
+            Report(ExternalImportSeverity.Error, "output.unreadable", ex.Message);
+        }
     }
 }
 
@@ -288,6 +294,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         {
             plan.Report(ExternalImportSeverity.Error, "source.invalid", ex.Message);
         }
+
         return (plan, plan.Analyze(Id, token));
     }
 
@@ -309,8 +316,13 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
     {
         WriteGate.Wait(cancellationToken);
         try
-        { return ImportCore(request, cancellationToken); }
-        finally { WriteGate.Release(); }
+        {
+            return ImportCore(request, cancellationToken);
+        }
+        finally
+        {
+            WriteGate.Release();
+        }
     }
 
     private ExternalImportResult ImportCore(ExternalImportRequest request, CancellationToken cancellationToken)
@@ -331,6 +343,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
                 cancellationToken.ThrowIfCancellationRequested();
                 File.WriteAllBytes(Path.Combine(stage, i.ToString()), plan.Outputs[i].Content);
             }
+
             for (int i = 0; i < plan.Outputs.Count; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -347,6 +360,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
                 File.Move(Path.Combine(stage, i.ToString()), target);
                 committed[^1] = (target, backup, true);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             return new(analysis, committed.Select(x => x.Target).ToArray());
         }
@@ -362,9 +376,18 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
                         File.Move(backup, target);
                 }
             }
-            catch { cleanup = false; throw new IOException($"Import rollback could not complete. Recovery files remain in {stage}."); }
+            catch
+            {
+                cleanup = false;
+                throw new IOException($"Import rollback could not complete. Recovery files remain in {stage}.");
+            }
+
             throw;
         }
-        finally { if (cleanup) Directory.Delete(stage, recursive: true); }
+        finally
+        {
+            if (cleanup)
+                Directory.Delete(stage, recursive: true);
+        }
     }
 }

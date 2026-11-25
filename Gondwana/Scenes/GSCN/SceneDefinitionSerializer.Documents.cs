@@ -37,6 +37,7 @@ public static partial class SceneDefinitionSerializer
             definition.Source = SceneDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.ID);
         }
+
         return document;
     }
 
@@ -71,6 +72,7 @@ public static partial class SceneDefinitionSerializer
                 : SceneDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
             definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.ID);
         }
+
         return document;
     }
 
@@ -82,8 +84,14 @@ public static partial class SceneDefinitionSerializer
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
         try
-        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.ID); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.ID);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
                 errors.AddRange(SceneDefinitionValidator.Validate(definition).Select(error => $"Scene '{definition.ID}': {error}"));
@@ -136,11 +144,13 @@ public static partial class SceneDefinitionSerializer
             source.GtsPath = RebasePath(source.GtsPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.AnimationSources)
         {
             source.GaniPath = RebasePath(source.GaniPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         clone.Source = SceneDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }

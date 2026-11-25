@@ -85,8 +85,12 @@ public static class PackedResourcePicker
                 entries.Items.AddRange(catalog.GetResources(archivePath, type).Cast<object>().ToArray());
                 status.Text = entries.Items.Count == 0 ? $"No {type} entries in this archive." : "Select an exact entry, then a logical member for definitions.";
             }
-            catch (Exception ex) { status.Text = ex.Message; }
+            catch (Exception ex)
+            {
+                status.Text = ex.Message;
+            }
         }
+
         entries.SelectedIndexChanged += (_, _) =>
         {
             members.Items.Clear();
@@ -103,10 +107,17 @@ public static class PackedResourcePicker
                     members.SelectedIndex = 0;
                 status.Text = media ? resource.EntryName : "Select the logical definition to add.";
             }
-            catch (Exception ex) { status.Text = ex.Message; }
+            catch (Exception ex)
+            {
+                status.Text = ex.Message;
+            }
         };
         members.SelectedIndexChanged += (_, _) => ok.Enabled = members.SelectedItem is string;
-        reload.Click += (_, _) => { catalog.Invalidate(archivePath); LoadEntries(); };
+        reload.Click += (_, _) =>
+        {
+            catalog.Invalidate(archivePath);
+            LoadEntries();
+        };
         ok.Click += (_, _) =>
         {
             if (entries.SelectedItem is not AuthoringResource resource)
@@ -120,7 +131,10 @@ public static class PackedResourcePicker
                 dialog.DialogResult = DialogResult.OK;
                 dialog.Close();
             }
-            catch (Exception ex) { status.Text = ex.Message; }
+            catch (Exception ex)
+            {
+                status.Text = ex.Message;
+            }
         };
         ToolingAppearance.Apply(dialog);
         LoadEntries();

@@ -46,8 +46,10 @@ internal sealed class BulkTilePropertiesDialog : Form
                     MessageBox.Show(this, $"Enter a value for {name}, or uncheck it.", "Mixed property");
                     return;
                 }
+
                 _values.Edits[name] = _values.Initial[name];
             }
+
             DialogResult = DialogResult.OK;
         };
         buttons.Controls.Add(cancel);
@@ -91,7 +93,11 @@ internal sealed class BulkTilePropertiesDialog : Form
         public override string DisplayName => source.DisplayName + (values.Mixed.Contains(Name) && !values.Edits.ContainsKey(Name) ? " (mixed)" : "");
         public override object? GetValue(object? component) => values.Edits.TryGetValue(Name, out var edit) ? edit :
             values.Mixed.Contains(Name) ? null : values.Initial[Name];
-        public override void SetValue(object? component, object? value) { values.Edits[Name] = value; OnValueChanged(component, EventArgs.Empty); }
+        public override void SetValue(object? component, object? value)
+        {
+            values.Edits[Name] = value;
+            OnValueChanged(component, EventArgs.Empty);
+        }
         public override bool CanResetValue(object component) => false;
         public override void ResetValue(object component) { }
         public override bool ShouldSerializeValue(object component) => false;

@@ -14,6 +14,7 @@ internal static class PointerCoordinates
             var dpi = TopLevel.GetTopLevel(gpu)?.RenderScaling ?? 1d;
             return gpu.Adapter.AdapterPxToScreenPx(new PointF((float)(point.X * dpi), (float)(point.Y * dpi)));
         }
+
         if (control is AvaloniaBitmapRenderSurfaceControl bitmap)
             return bitmap.Adapter.AdapterPxToScreenPx(point);
         return new Point((int)Math.Floor(point.X), (int)Math.Floor(point.Y));

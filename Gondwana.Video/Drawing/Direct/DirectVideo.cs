@@ -39,7 +39,13 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     public StretchMode Stretch
     {
         get => _stretch;
-        set { if (_stretch != value) { _stretch = value; ForceRefresh(); } }
+        set
+        {
+            if (_stretch != value)
+            {
+                _stretch = value;
+                ForceRefresh(); }
+        }
     }
 
     private double _playbackRate = 1.0;
@@ -199,6 +205,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
                 _player.StateChanged -= OnPlayerStateChanged;
                 _player.Dispose();
             }
+
             base.Dispose(true); // Construction registered this drawing; undo on failure.
             throw;
         }
@@ -389,7 +396,11 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     protected override void Dispose(bool disposing)
     {
         if (!disposing)
-        { base.Dispose(false); return; }
+        {
+            base.Dispose(false);
+            return;
+        }
+
         if (_videoDisposed)
             return;
         _videoDisposed = true;
@@ -397,7 +408,9 @@ public sealed class DirectVideo : DirectDrawingMovableBase
         _player.FrameReady -= OnFrameReady;
         _player.StateChanged -= OnPlayerStateChanged;
         try
-        { _player.Dispose(); }
+        {
+            _player.Dispose();
+        }
         finally
         {
             _frame?.Dispose();

@@ -38,7 +38,11 @@ public sealed class VideoWidgetTests
         var player = new FakeVideoPlayer();
         int created = 0;
         IVideoPlayer Factory()
-        { created++; return player; }
+        {
+            created++;
+            return player;
+        }
+
         using var widget = world
             ? new VideoWidget(host, host.Scene.AddLayer(20, 20, 16, 16), InitialBounds, Source, Factory)
             : new VideoWidget(host, view, InitialBounds, Source, Factory);
@@ -147,6 +151,7 @@ public sealed class VideoWidgetTests
             Call(router, "ProcessMouseMove", start, end, 2L);
             Call(router, "ProcessMouseUp", end, MouseButton.Left, 3L);
         }
+
         Gesture();
         Assert.Equal(InitialBounds, widget.Bounds);
         Assert.Empty(dragEvents);
@@ -208,7 +213,11 @@ public sealed class VideoWidgetTests
         var player = new FakeVideoPlayer();
         using var widget = new VideoWidget(host, AddView(host), InitialBounds, Source, player);
         var events = new List<string>();
-        widget.Started += (sender, _) => { Assert.Same(player, sender); events.Add("start"); };
+        widget.Started += (sender, _) =>
+        {
+            Assert.Same(player, sender);
+            events.Add("start");
+        };
         widget.Paused += (_, _) => events.Add("pause");
         widget.Stopped += (_, _) => events.Add("stop");
         widget.Ended += (_, _) => events.Add("end");
@@ -328,7 +337,10 @@ public sealed class VideoWidgetTests
             Assert.Equal(0, failedPlayer.FrameSubscribers);
             Assert.DoesNotContain(DirectDrawingManager.Instance.DirectDrawings, d => ReferenceEquals(d.RenderSurfaceHost, host));
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>

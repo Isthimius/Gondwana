@@ -72,6 +72,7 @@ public static class AudioDefinitionValidator
                     {
                         errors.Add($"{label}: packed audio requires SourceExtension when AssetEntryName has no extension.");
                     }
+
                     break;
 
                 case AudioResourceSourceKind.Uri:

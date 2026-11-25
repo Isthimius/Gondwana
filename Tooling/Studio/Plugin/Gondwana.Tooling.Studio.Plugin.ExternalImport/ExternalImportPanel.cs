@@ -152,14 +152,24 @@ public sealed class ExternalImportPanel : UserControl
         timer.Start();
     }
 
-    private void InvalidateAnalysis() { Analysis = null; import.Enabled = false; artifacts.Items.Clear(); diagnostics.Clear(); }
+    private void InvalidateAnalysis()
+    {
+        Analysis = null;
+        import.Enabled = false;
+        artifacts.Items.Clear();
+        diagnostics.Clear();
+    }
     /// <summary>Starts background analysis without writing outputs and clears any previous analysis.</summary>
     /// <remarks>Does nothing while busy or disposed. Missing input or an unrecognized source is reported in the panel.</remarks>
 
     public void Analyze() => Start(false);
     /// <summary>Starts provider import with the current options when <see cref="CanImport"/> is true.</summary>
     /// <remarks>Clears the displayed analysis and disables inputs while the worker runs. Results are applied by <see cref="Poll"/>.</remarks>
-    public void Import() { if (CanImport) Start(true); }
+    public void Import()
+    {
+        if (CanImport)
+            Start(true);
+    }
 
     private void Start(bool write)
     {

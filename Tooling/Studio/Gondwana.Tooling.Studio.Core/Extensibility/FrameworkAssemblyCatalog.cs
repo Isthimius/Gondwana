@@ -38,6 +38,7 @@ internal static class FrameworkAssemblyCatalog
                 }
             }
         }
+
         return names;
     }
 }

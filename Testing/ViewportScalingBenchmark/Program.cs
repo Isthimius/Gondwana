@@ -15,6 +15,7 @@ using (var paint = new SKPaint())
     paint.Shader = shader;
     canvas.DrawPaint(paint);
 }
+
 using var image = SKImage.FromBitmap(source);
 foreach (int width in new[] { 1920, 3840 })
 {

@@ -114,8 +114,13 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.Image, Path.Combine(root, "atlas.png"), "images/atlas.png");
             package.Save();
         }
+
         var prompts = 0;
-        packages.PasswordProvider = _ => { prompts++; return null; };
+        packages.PasswordProvider = _ =>
+        {
+            prompts++;
+            return null;
+        };
         for (var i = 0; i < 2; i++)
             Assert.Throws<InvalidDataException>(() => packages.OpenAsset(locked, AssetTypes.Image, "images/atlas.png"));
         Assert.Equal(1, prompts);
@@ -147,6 +152,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.Image, invalid, "invalid.png");
             package.Save();
         }
+
         packages.Invalidate(archive);
         Assert.Throws<InvalidDataException>(() => resolver.LoadTilesheet(new(archive, AssetTypes.TilesheetDefinition, "invalid.gts"), "terrain"));
         var badImage = PreviewSheet("terrain", "assets.gaf");
@@ -248,6 +254,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.AnimationDefinition, path, "definitions/water.gani");
             package.Save();
         }
+
         var scene = PreviewScene("scene.gaf");
         scene.AnimationSources = [SceneAnimationSourceDefinition.Packed("water.flow", "animation.gaf", "definitions/water.gani")];
         var scenePath = Path.Combine(root, "scene.gscn");
@@ -267,6 +274,7 @@ public sealed partial class CompositionTests
             AssertPreviewColor(Property<Bitmap>(result!, "Image"), Color.LimeGreen);
             AssertRenderedColor((Control)preview, Color.LimeGreen);
         }
+
         AssertRenderedColor((Control)preview, Color.Blue);
         Assert.False(editor.Document.IsDirty);
     });

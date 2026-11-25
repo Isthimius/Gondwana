@@ -537,6 +537,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
             enemy.Sprite.Movement.StopAllMovement();
             enemy.Sprite.Dispose();
         }
+
         _enemies.Clear();
     }
 

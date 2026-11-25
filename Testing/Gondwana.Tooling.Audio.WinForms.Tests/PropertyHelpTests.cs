@@ -15,6 +15,7 @@ public sealed class PropertyHelpTests
                 Assert.False(string.IsNullOrWhiteSpace(property.Description),
                     $"AudioResourceDefinition.{property.Name} must have help text.");
         }
+
         Assert.Contains("-1", TypeDescriptor.GetProperties(typeof(AudioResourceDefinition))[nameof(AudioResourceDefinition.Pan)]!.Description);
     }
 

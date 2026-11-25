@@ -303,6 +303,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
                     .AsReadOnly();
                 _visibleSortedDirty = false;
             }
+
             return _visibleSortedCache;
         }
     }

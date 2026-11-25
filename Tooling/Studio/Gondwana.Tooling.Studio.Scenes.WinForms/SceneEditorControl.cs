@@ -29,8 +29,15 @@ public sealed partial class SceneEditorControl : UserControl
         var resource = selection.Resource;
         var source = SceneTilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
         try
-        { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
-        catch { source.Dispose(); throw; }
+        {
+            Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!);
+        }
+        catch
+        {
+            source.Dispose();
+            throw;
+        }
+
         _tilesheetSources.Add(source);
         RefreshSourceTree();
         RefreshPreview();
@@ -46,8 +53,15 @@ public sealed partial class SceneEditorControl : UserControl
         var resource = selection.Resource;
         var source = SceneAnimationSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
         try
-        { Document.AddPackedAnimationSource(selection.Member!, resource.Path, resource.EntryName!); }
-        catch { source.Dispose(); throw; }
+        {
+            Document.AddPackedAnimationSource(selection.Member!, resource.Path, resource.EntryName!);
+        }
+        catch
+        {
+            source.Dispose();
+            throw;
+        }
+
         _animationSources.Add(source);
         RefreshAnimationList();
         RefreshPreview();
@@ -163,7 +177,12 @@ public sealed partial class SceneEditorControl : UserControl
     public float? PreviewZoom
     {
         get => _preview.IsFit ? null : _preview.Zoom;
-        set { if (value is { } zoom) _preview.SetZoom(zoom); else _preview.Fit(); }
+        set
+        {
+            if (value is { } zoom)
+                _preview.SetZoom(zoom); else
+                _preview.Fit();
+        }
     }
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
@@ -579,6 +598,7 @@ public sealed partial class SceneEditorControl : UserControl
             _toolButtons.Add(tool, button);
             bar.Items.Add(button);
         }
+
         bar.Items.Add(new ToolStripSeparator());
 
         bar.Items.Add("−", null, (_, _) => _preview.ZoomOut());
@@ -649,8 +669,10 @@ public sealed partial class SceneEditorControl : UserControl
                     File.Delete(snapshot);
                     throw;
                 }
+
                 return;
             }
+
             if (SaveRequestedAsync is not null)
             {
                 if (Document.IsDirty || Document.FilePath is null)
@@ -659,10 +681,12 @@ public sealed partial class SceneEditorControl : UserControl
                         !await SaveRequestedAsync())
                         return;
                 }
+
                 if (Document.FilePath is { } savedPath && !Document.IsDirty)
                     SceneViewerLauncher.Launch(savedPath, Document.SelectedDefinition.ID);
                 return;
             }
+
             SceneViewerLauncher.ViewSavedScene(Document, () =>
                 ThemedMessageBox.Show(this,
                     "This scene must be saved before viewing. Save and view the scene?",
@@ -765,6 +789,7 @@ public sealed partial class SceneEditorControl : UserControl
             });
             button.ToolTipText = label;
         }
+
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Apply to selection", null, (_, _) => EditSelectedCells(erase: false))
@@ -866,7 +891,11 @@ public sealed partial class SceneEditorControl : UserControl
                 {
                     _tilesheetSources.Add(SceneTilesheetSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.Tilesheet, _packages));
                 }
-                catch (Exception ex) { _declaredSourceDiagnostics[source] = ex.Message; }
+                catch (Exception ex)
+                {
+                    _declaredSourceDiagnostics[source] = ex.Message;
+                }
+
                 continue;
             }
 
@@ -902,7 +931,11 @@ public sealed partial class SceneEditorControl : UserControl
                 {
                     _animationSources.Add(SceneAnimationSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.AnimationKey, _packages));
                 }
-                catch (Exception ex) { _declaredSourceDiagnostics[source] = ex.Message; }
+                catch (Exception ex)
+                {
+                    _declaredSourceDiagnostics[source] = ex.Message;
+                }
+
                 continue;
             }
 
@@ -1204,7 +1237,11 @@ public sealed partial class SceneEditorControl : UserControl
             return;
         }
 
-        Document.Edit(tile, "Clear animation", () => { tile.AnimationKey = null; tile.StartAnimation = false; });
+        Document.Edit(tile, "Clear animation", () =>
+        {
+            tile.AnimationKey = null;
+            tile.StartAnimation = false;
+        });
 
         RefreshTileProperties();
         RefreshPreview();
@@ -1249,6 +1286,7 @@ public sealed partial class SceneEditorControl : UserControl
             _preview.CancelGesture();
             preserveSelection = false;
         }
+
         _selectedLayer = layer;
 
         _syncingTileCoordinates = true;
@@ -1356,6 +1394,7 @@ public sealed partial class SceneEditorControl : UserControl
         {
             _syncingStructureChecks = false;
         }
+
         RefreshPreview();
     }
 
@@ -1533,9 +1572,13 @@ public sealed partial class SceneEditorControl : UserControl
             {
                 _structure.SelectedNode = _structure.Nodes[0];
             }
+
             _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
         }
-        finally { _refreshingStructure = false; }
+        finally
+        {
+            _refreshingStructure = false;
+        }
     }
 
     private void RefreshSourceTree()
@@ -1588,6 +1631,7 @@ public sealed partial class SceneEditorControl : UserControl
 
             root.Nodes.Add(regionNode);
         }
+
         return root;
     }
 
@@ -1899,11 +1943,13 @@ public sealed partial class SceneEditorControl : UserControl
                         UpdatePaintSourceLabel();
                     }
                 }
+
                 if (_selectedLayer is null || !Definition.Layers.Contains(_selectedLayer))
                 {
                     _selectedLayer = Definition.Layers.FirstOrDefault();
                     _selectedCells = Rectangle.Empty;
                 }
+
                 RefreshStructure();
                 ClampTileSelection();
                 RefreshTileProperties();
@@ -1981,9 +2027,17 @@ public sealed partial class SceneEditorControl : UserControl
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == Keys.Escape && _preview.HasGesture)
-        { _preview.CancelGesture(); return true; }
+        {
+            _preview.CancelGesture();
+            return true;
+        }
+
         if (keyData == Keys.Escape && _preview.HasSpriteGesture)
-        { CancelSpritePlacement(); return true; }
+        {
+            CancelSpritePlacement();
+            return true;
+        }
+
         return UndoRedoMenu.TryShortcut(this, keyData, SelectedSpriteHistory ?? Document.History, CommitPreviewHistoryEdits) || base.ProcessCmdKey(ref msg, keyData);
     }
 

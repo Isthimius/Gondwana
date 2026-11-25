@@ -37,7 +37,10 @@ public sealed class MultiDefinitionDocumentTests
             Assert.Equal(3, AudioDefinitionSerializer.LoadAll(destination).Count);
             Assert.Equal("second", document.Definitions[1].Key);
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
     /// <summary>Atomic Save As never persists staging names and preserves every member's dependency base.</summary>
     [Fact]
@@ -55,6 +58,7 @@ public sealed class MultiDefinitionDocumentTests
                 member.Source = AudioDefinitionSource.LooseDefinitionFile(Path.Combine(root, "original.gsnd"));
                 member.Resources.Add(new() { Key = "sound", FilePath = "sound.wav" });
             }
+
             var destination = Path.Combine(root, "nested", "members.gsnd");
             document.Save(destination, allowInvalid: true);
             document.Save(destination, allowInvalid: true);
@@ -69,8 +73,12 @@ public sealed class MultiDefinitionDocumentTests
                 Assert.Equal(Path.Combine(root, "sound.wav"), Path.GetFullPath(member.Resources[0].FilePath!, reloaded.BaseDirectory));
                 Assert.Equal(destination, member.Source.GsndFilePath);
             }
+
             Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(destination)!, "*.tmp"));
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
 }

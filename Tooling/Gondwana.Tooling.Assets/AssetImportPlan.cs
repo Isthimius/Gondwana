@@ -91,6 +91,7 @@ public sealed class AssetImportPlan
                     _destination.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
                 }
             }
+
             cancellation.ThrowIfCancellationRequested();
         }
         catch
@@ -99,6 +100,7 @@ public sealed class AssetImportPlan
                 _destination.Remove(key.AssetType, key.AssetName);
             throw;
         }
+
         return _additions.Count;
     }
 
@@ -123,6 +125,7 @@ public sealed class AssetImportPlan
             stream.CopyTo(buffer);
             result.Add(new() { AssetType = entry.AssetType, AssetName = entry.AssetName }, buffer.ToArray());
         }
+
         return result;
     }
 }

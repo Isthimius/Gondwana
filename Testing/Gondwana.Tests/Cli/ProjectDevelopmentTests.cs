@@ -29,7 +29,12 @@ public sealed class ProjectDevelopmentTests : IDisposable
     private static int Run(params string[] args)
     {
         var app = new CommandApp();
-        app.Configure(c => { c.AddCommand<UpgradeCommand>("upgrade"); c.AddCommand<AddCommand>("add"); c.AddCommand<CheckCommand>("check"); });
+        app.Configure(c =>
+        {
+            c.AddCommand<UpgradeCommand>("upgrade");
+            c.AddCommand<AddCommand>("add");
+            c.AddCommand<CheckCommand>("check");
+        });
         return app.Run(args);
     }
 
@@ -85,7 +90,10 @@ public sealed class ProjectDevelopmentTests : IDisposable
             Assert.Contains("VideoLAN.LibVLC.Windows", result.Detail);
             Assert.Contains("cannot validate", result.Detail);
         }
-        finally { Directory.SetCurrentDirectory(previous); }
+        finally
+        {
+            Directory.SetCurrentDirectory(previous);
+        }
     }
 
     /// <summary>
@@ -374,6 +382,7 @@ public sealed class ProjectDevelopmentTests : IDisposable
                     throw new UnauthorizedAccessException("Access denied");
                 throw new IOException("Directory disappeared");
             }
+
             return new DirectoryInfo(path).GetFileSystemInfos();
         }).ToArray();
         Assert.Equal(new[] { blocked }, warnings);

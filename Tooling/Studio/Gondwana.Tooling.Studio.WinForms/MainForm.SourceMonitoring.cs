@@ -55,7 +55,9 @@ public sealed partial class MainForm
         var observed = new HashSet<AssetLocation>(DocumentLocationComparer.Instance);
         AssetLocation[] dependencies;
         try
-        { dependencies = DocumentDependencies(model, discovered, observed).ToArray(); }
+        {
+            dependencies = DocumentDependencies(model, discovered, observed).ToArray();
+        }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
             NullReferenceException or Newtonsoft.Json.JsonException)
         {
@@ -64,6 +66,7 @@ public sealed partial class MainForm
             observed.UnionWith(model.Sources.Where(p => p.Value.Role == DocumentSourceRole.Dependency).Select(p => p.Key));
             dependencies = observed.ToArray();
         }
+
         var generation = ++model.SourceGeneration;
         foreach (var registration in model.Sources.Values)
             registration.Dispose();
@@ -121,7 +124,10 @@ public sealed partial class MainForm
         {
             var accepted = model.AcceptedSource;
             if (change.Current == accepted)
-            { model.ContentStale = false; model.SourceProblem = null; }
+            {
+                model.ContentStale = false;
+                model.SourceProblem = null;
+            }
             else if (change.Kind == DocumentSourceChangeKind.ContainerChanged && model.PackedLocation() is not null &&
                 change.Current.ContentHash == accepted?.ContentHash)
             {
@@ -162,7 +168,10 @@ public sealed partial class MainForm
         {
             _sourceBrowserRefreshQueued = false;
             if (!_disposed)
-            { Browser.RefreshDirectory(); SyncActiveDocumentSelection(); }
+            {
+                Browser.RefreshDirectory();
+                SyncActiveDocumentSelection();
+            }
         }, null);
     }
 
@@ -222,6 +231,7 @@ public sealed partial class MainForm
                     await ResolveSourceConflict(tab);
             }, null);
         }
+
         return true;
     }
 }

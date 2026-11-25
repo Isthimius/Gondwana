@@ -47,8 +47,15 @@ public sealed partial class AudioDocument : IDisposable
         string? archive = PackedLocation?.Path;
         var before = new ModelSnapshot(resource);
         try
-        { change(); }
-        catch { before.Restore(); throw; }
+        {
+            change();
+        }
+        catch
+        {
+            before.Restore();
+            throw;
+        }
+
         before.Record(History, description, (target, property, value) =>
         {
             _origins.Remember(target, BaseDirectory, PackedLocation?.Path);
@@ -94,6 +101,7 @@ public sealed partial class AudioDocument : IDisposable
                     () => source.FilePath, value => source.FilePath = value,
                     () => source.AssetsFilePath, value => source.AssetsFilePath = value);
             }
+
             if (FilePath is not null && !string.Equals(member.Source.GsndFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
                 member.Source = AudioDefinitionSource.LooseDefinitionFile(FilePath);
         }

@@ -219,7 +219,11 @@ public sealed class MenuFeaturesTests
         context.Key(39);
         context.Key(13);
         Assert.Equal(1, count);
-        Assert.All(new[] { root, export, image }, menu => { Assert.False(menu.Visible); Assert.False(menu.IsOpen); });
+        Assert.All(new[] { root, export, image }, menu =>
+        {
+            Assert.False(menu.Visible);
+            Assert.False(menu.IsOpen);
+        });
         context.Bar.OpenMenuAt(0);
         context.Key(39);
         context.Key(39);
@@ -227,7 +231,11 @@ public sealed class MenuFeaturesTests
         context.Bar["png"].Disposing += (_, _) => disposed++;
         context.Bar.Dispose();
         Assert.Equal(1, disposed);
-        Assert.All(new[] { root, export, image }, menu => { Assert.False(menu.Visible); Assert.False(menu.IsOpen); });
+        Assert.All(new[] { root, export, image }, menu =>
+        {
+            Assert.False(menu.Visible);
+            Assert.False(menu.IsOpen);
+        });
         context.Key('P', KeyboardModifierState.Ctrl);
         Assert.Equal(1, count);
     }
@@ -378,7 +386,11 @@ public sealed class MenuFeaturesTests
         using var textBox = new TextBoxWidget(context.Host, context.View, new Rectangle(10, 250, 200, 30));
         textBox.Show();
         bool consume = true;
-        textBox.KeyboardInput += args => { sequence.Add("focused"); args.Handled = consume; };
+        textBox.KeyboardInput += args =>
+        {
+            sequence.Add("focused");
+            args.Handled = consume;
+        };
         context.Router.Focus(textBox);
         context.Key('F', mnemonic ? KeyboardModifierState.Alt : KeyboardModifierState.Ctrl);
         Assert.Equal(new[] { "focused" }, sequence);

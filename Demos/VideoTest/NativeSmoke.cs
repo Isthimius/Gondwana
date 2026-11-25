@@ -33,6 +33,7 @@ internal static class NativeSmoke
                 if (red != 255 || blue != 255)
                     Volatile.Write(ref colorError, $"Native BGRX mismatch: red={red:X6}, blue={blue:X6}");
             }
+
             if (Interlocked.Increment(ref frames) == 1)
                 Console.WriteLine($"First frame: {frame.Width}x{frame.Height}, BGRX={Marshal.ReadInt32(frame.Pixels):X8}");
         };
@@ -70,6 +71,7 @@ internal static class NativeSmoke
             if (player.IsPlaying)
                 throw new Exception("Loop restarted despite an explicit Stop in Ended.");
         }
+
         player.Stop();
         string gafPath = Path.Combine(Path.GetTempPath(), $"gondwana-video-smoke-{Guid.NewGuid():N}.gaf");
         try
@@ -79,6 +81,7 @@ internal static class NativeSmoke
                 assets.Add(AssetTypes.Video, path, "clip" + Path.GetExtension(path));
                 assets.Save();
             }
+
             using var archive = AssetsFile.LoadOrCreate(gafPath, null, false, register: false);
             using var assetStream = archive.Get(AssetTypes.Video, "clip")!;
             player.Open(assetStream, leaveOpen: false);
@@ -89,7 +92,11 @@ internal static class NativeSmoke
             if (assetStream.CanRead)
                 throw new Exception("Owned GAF stream was not closed on replacement.");
         }
-        finally { File.Delete(gafPath); }
+        finally
+        {
+            File.Delete(gafPath);
+        }
+
         for (int i = 0; i < 10; i++)
             player.Open(uri); // Cancel/replace pending parse repeatedly.
         before = Volatile.Read(ref frames);
@@ -114,6 +121,7 @@ internal static class NativeSmoke
                     using var output = File.Create(imagePath);
                     data.SaveTo(output);
                 }
+
                 player.Open(new Uri(imagePath));
                 Volatile.Write(ref checkColors, 1);
                 before = Volatile.Read(ref frames);
@@ -127,8 +135,12 @@ internal static class NativeSmoke
                 Volatile.Write(ref checkColors, 0);
                 Console.WriteLine($"Verified native red/blue pixels and {size.Item1}x{size.Item2} dimensions.");
             }
-            finally { File.Delete(imagePath); }
+            finally
+            {
+                File.Delete(imagePath);
+            }
         }
+
         player.Dispose();
         player.Dispose();
         if (!stream.CanRead)

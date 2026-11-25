@@ -38,6 +38,7 @@ internal sealed class SceneSpriteArtworkCache : IDisposable
                     definition = new AuthoringResourceResolver(packages).LoadAnimation(animation.Resource, key);
                     _animations.Add(animation, definition);
                 }
+
                 if (SceneAnimationSource.FirstPreviewFrame(definition) is { } frame)
                 {
                     var sheet = definition.TilesheetSources.Where(item => item.Tilesheet == frame.Tilesheet).SingleOrDefault();
@@ -46,10 +47,12 @@ internal sealed class SceneSpriteArtworkCache : IDisposable
                         var resource = AuthoringResourceResolver.TilesheetSource(sheet, animation.Resource.BaseDirectory);
                         return Resolve(new ResourceAddress(resource, frame.Tilesheet), frame, packages);
                     }
+
                     return ResolveSpriteFrame(frame);
                 }
             }
         }
+
         return sprite.Frame is { } still
             ? ResolveSpriteFrame(Frame(still.Tilesheet, still.RegionName, still.XTile, still.YTile)) : null;
 
@@ -72,6 +75,7 @@ internal sealed class SceneSpriteArtworkCache : IDisposable
             source = SceneTilesheetSource.LoadResource(address.Resource, address.Member, packages);
             _sheets.Add(address, source);
         }
+
         return Artwork(source, frame);
     }
 

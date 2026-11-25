@@ -81,7 +81,10 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
                 project.Save();
             return 0;
         }
-        catch (Exception ex) { return ProjectCommand.Fail(ex); }
+        catch (Exception ex)
+        {
+            return ProjectCommand.Fail(ex);
+        }
     }
 }
 
@@ -132,7 +135,10 @@ internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
                 project.Save();
             return 0;
         }
-        catch (Exception ex) { return ProjectCommand.Fail(ex); }
+        catch (Exception ex)
+        {
+            return ProjectCommand.Fail(ex);
+        }
     }
 }
 
@@ -168,6 +174,7 @@ internal static class PackageVersions
             else
                 common.IntersectWith(versions);
         }
+
         return common?.OrderByDescending(StableNumber).FirstOrDefault()
             ?? throw new InvalidOperationException("No common stable version found on nuget.org for the referenced Gondwana packages. Use --version for a private feed or explicit version.");
     }

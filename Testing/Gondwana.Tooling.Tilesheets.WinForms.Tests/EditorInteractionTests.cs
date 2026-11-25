@@ -453,6 +453,7 @@ public sealed partial class EditorInteractionTests
             editor.ChooseImage(Path.Combine(assets, "forest.png"));
             editor.AddRegion();
         }
+
         var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
         grid = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         Edit(grid, "Name", "Edited in the inspector");
@@ -502,7 +503,10 @@ public sealed partial class EditorInteractionTests
             Assert.Equal(-7, loaded.Regions[0].Frames[0].CollisionAdjust!.Value.Left);
             Assert.Equal(TileCollisionType.Blocking, loaded.Regions[0].Frames[0].CollisionType);
         }
-        finally { File.Delete(output); }
+        finally
+        {
+            File.Delete(output);
+        }
     });
 
     /// <summary>
@@ -635,6 +639,7 @@ public sealed partial class EditorInteractionTests
                 foreach (Control control in layout.Controls)
                     Assert.True(control.Bottom <= layout.Height, "Legend controls must fit inside their row.");
             }
+
             settings.SetColor(OverlayKind.Collision, Color.Lime);
             Application.DoEvents();
             Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
@@ -642,7 +647,10 @@ public sealed partial class EditorInteractionTests
             Assert.False(first.Document.IsDirty);
             Assert.False(second.Document.IsDirty);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     });
 
     private static EditorDocument Show(TilesheetDocument document, OverlaySettings? settings = null)
@@ -682,6 +690,7 @@ public sealed partial class EditorInteractionTests
             Application.DoEvents();
             item = parent.GridItems.Cast<GridItem>().Single(i => i.PropertyDescriptor?.Name == parts[1]);
         }
+
         Assert.False(item.PropertyDescriptor!.IsReadOnly);
         grid.SelectedGridItem = item;
         grid.Focus();
@@ -701,8 +710,14 @@ public sealed partial class EditorInteractionTests
                     list.SelectedIndex = index;
                     view.GetType().GetMethod("OnListClick", PrivateInstance)!.Invoke(view, [list, EventArgs.Empty]);
                 }
-                catch (Exception ex) { failure = ex; }
-                finally { view.GetType().GetMethod("CloseDropDown", PrivateInstance)!.Invoke(view, null); }
+                catch (Exception ex)
+                {
+                    failure = ex;
+                }
+                finally
+                {
+                    view.GetType().GetMethod("CloseDropDown", PrivateInstance)!.Invoke(view, null);
+                }
             });
             view.GetType().GetMethod("F4Selection", PrivateInstance)!.Invoke(view, [false]);
             if (failure is not null)
@@ -710,6 +725,7 @@ public sealed partial class EditorInteractionTests
             Application.DoEvents();
             return;
         }
+
         textbox.Focus();
         textbox.Text = text;
         if (enter)
@@ -724,6 +740,7 @@ public sealed partial class EditorInteractionTests
             focusTarget.BringToFront();
             focusTarget.Focus();
         }
+
         Application.DoEvents();
     }
 
@@ -764,7 +781,10 @@ public sealed partial class EditorInteractionTests
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
                 test();
             }
-            catch (Exception ex) { error = ex; }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         })
         { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);

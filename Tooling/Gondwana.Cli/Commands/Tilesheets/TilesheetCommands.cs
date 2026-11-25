@@ -50,9 +50,11 @@ internal sealed class TilesheetInfoCommand : Command<TilesheetSettings>
                     AnsiConsole.WriteLine($"    collision {region.CollisionType}; insets L/T/R/B {region.CollisionAdjust.Left}/{region.CollisionAdjust.Top}/{region.CollisionAdjust.Right}/{region.CollisionAdjust.Bottom}; overhang {region.Overhang}");
                 }
             }
+
             foreach (var error in result.Errors)
                 AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(error)}");
         }
+
         return results.All(result => result.Errors.Count == 0) ? 0 : 1;
     }
 }

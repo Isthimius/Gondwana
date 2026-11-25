@@ -72,6 +72,7 @@ public sealed partial class CompositionTests
             Assert.True(button.Bounds.Bottom <= strip.ClientSize.Height);
             Assert.Equal("Keep command", button.ToolTipText);
         }
+
         var last = button.Image!;
         strip.Dispose();
         Assert.Throws<ArgumentException>(() => last.Width);
@@ -116,6 +117,7 @@ public sealed partial class CompositionTests
                 using var image = ToolbarGlyphs.Studio(command, ToolbarSizing.Pixels(24, dpi), palette);
                 AssertGlyph(image, palette.Foreground);
             }
+
             foreach (var command in Enum.GetValues<ToolbarGlyphs.DefinitionCommand>())
             {
                 using var image = ToolbarGlyphs.Definition(command, ToolbarSizing.Pixels(32, dpi), palette);
@@ -136,6 +138,7 @@ public sealed partial class CompositionTests
                 if (x == 0 || y == 0 || x == image.Width - 1 || y == image.Height - 1)
                     Assert.True(pixel.A < 250, "A solid glyph stroke reaches the bitmap edge.");
             }
+
         Assert.True(hasForeground);
     }
 

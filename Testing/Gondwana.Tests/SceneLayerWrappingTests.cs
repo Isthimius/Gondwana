@@ -64,6 +64,7 @@ public sealed class SceneLayerWrappingTests
                 Assert.Equal(new PointF(original.X + offset.X, original.Y + offset.Y), anchor);
                 Assert.Same(layer[(int)canonical.X, (int)canonical.Y], layer.ResolveWrappedTile(x, y));
             }
+
         var target = period.Offset(-3, 4);
         var rect = layer[0, 0]!.DrawLocationWorld;
         rect.Offset(Point.Round(target));

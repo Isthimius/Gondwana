@@ -672,6 +672,7 @@ public sealed class Camera
                 target = period.Nearest(target, followReference);
             }
         }
+
         var desiredUL = DesiredUpperLeftToContainTarget(target);
         if (_hardFollow || FollowLerpPerSecond <= 0f)
         {
@@ -781,6 +782,7 @@ public sealed class Camera
             return period.Offset(layer.WrapHorizontally ? position.X : Math.Clamp(position.X, lowX, highX),
                 layer.WrapVertically ? position.Y : Math.Clamp(position.Y, lowY, highY));
         }
+
         float minX = WorldBoundsPx.Left;
         float minY = WorldBoundsPx.Top;
         float maxX = WorldBoundsPx.Right - vis.Width;

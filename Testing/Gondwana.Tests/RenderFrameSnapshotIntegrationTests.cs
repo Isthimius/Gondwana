@@ -29,6 +29,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
         using var buffer = host.Backbuffer;
         using (profiler.Start())
         { }
+
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal("Bitmap", source.Backend);
         Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["replay.cpu.ms"].Availability);
@@ -115,6 +116,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
             host.ProduceRenderFrameSnapshot(1);
             using var image = host.GlRenderAndSnapshot();
         }
+
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal(1, source.Metrics["build.cpu.ms"].Count);
         Assert.Equal(1, source.Metrics["replay.cpu.ms"].Count);
@@ -612,7 +614,11 @@ public sealed class RenderFrameSnapshotIntegrationTests
             }).WaitAsync(TimeSpan.FromSeconds(5));
             Assert.Equal(1, calls);
         }
-        finally { release.Set(); await blocker; }
+        finally
+        {
+            release.Set();
+            await blocker;
+        }
     }
 
     /// <summary>

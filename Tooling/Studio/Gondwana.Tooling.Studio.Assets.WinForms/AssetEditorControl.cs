@@ -264,7 +264,11 @@ public sealed class AssetEditorControl : UserControl
     public void Save()
     {
         if (SaveRequested is { } save)
-        { save(false); return; }
+        {
+            save(false);
+            return;
+        }
+
         try
         {
             SaveTo(FilePath);
@@ -282,7 +286,11 @@ public sealed class AssetEditorControl : UserControl
     public void SaveAs()
     {
         if (SaveRequested is { } save)
-        { save(true); return; }
+        {
+            save(true);
+            return;
+        }
+
         using var dialog = new SaveFileDialog
         {
             Title = "Save Asset File As",
@@ -391,9 +399,17 @@ public sealed class AssetEditorControl : UserControl
                     _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, bytes);
                 }
             }
+
             try
-            { Copy(after); }
-            catch { Copy(before); throw; }
+            {
+                Copy(after);
+            }
+            catch
+            {
+                Copy(before);
+                throw;
+            }
+
             replacement.Dispose();
             _edits.AcceptSavedArchive(_assetsFile, externalRefresh);
         }
@@ -405,6 +421,7 @@ public sealed class AssetEditorControl : UserControl
             _edits.AcceptSavedArchive(replacement, externalRefresh);
             previous?.Dispose();
         }
+
         SetStatus($"Saved: {FilePath}");
     }
 
@@ -439,8 +456,15 @@ public sealed class AssetEditorControl : UserControl
             var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption,
                 register: AssetsFile.AllAssetsFiles.Contains(_assetsFile));
             try
-            { DocumentSourceSave.Verify(new(AssetTypes.Misc, destination), version); }
-            catch { replacement.Dispose(); throw; }
+            {
+                DocumentSourceSave.Verify(new(AssetTypes.Misc, destination), version);
+            }
+            catch
+            {
+                replacement.Dispose();
+                throw;
+            }
+
             _ownedSavedCopy?.Dispose();
             _ownedSavedCopy = replacement;
             _assetsFile = replacement;
@@ -464,6 +488,7 @@ public sealed class AssetEditorControl : UserControl
             _ownedSavedCopy?.Dispose();
             _ownedSavedCopy = null;
         }
+
         base.Dispose(disposing);
     }
 
@@ -517,7 +542,10 @@ public sealed class AssetEditorControl : UserControl
                 return;
             ApplyImport(plan);
         }
-        catch (OperationCanceledException) { SetStatus("Import cancelled; archive and history unchanged."); }
+        catch (OperationCanceledException)
+        {
+            SetStatus("Import cancelled; archive and history unchanged.");
+        }
         catch (Exception ex)
         {
             ShowError("Failed to import one or more assets.", ex);
@@ -543,7 +571,10 @@ public sealed class AssetEditorControl : UserControl
         {
             ReplaceAsset(selected.AssetType, selected.AssetName, File.ReadAllBytes(dialog.FileName));
         }
-        catch (OperationCanceledException) { SetStatus("Replacement cancelled; archive and history unchanged."); }
+        catch (OperationCanceledException)
+        {
+            SetStatus("Replacement cancelled; archive and history unchanged.");
+        }
         catch (Exception ex)
         {
             ShowError("Failed to replace asset.", ex);
@@ -609,6 +640,7 @@ public sealed class AssetEditorControl : UserControl
                 using var stream = new MemoryStream(pair.Value, writable: false);
                 _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
             }
+
             SourceVersion = version;
         }
         catch (Exception ex)
@@ -621,6 +653,7 @@ public sealed class AssetEditorControl : UserControl
             WorkspaceChanged();
             throw new IOException("Disk transaction committed, but archive refresh failed. It is not undoable. Close and reopen this document before editing or saving.", ex);
         }
+
         History.ResetSaved();
         SourceSaved?.Invoke();
         WorkspaceChanged();
@@ -637,6 +670,7 @@ public sealed class AssetEditorControl : UserControl
             ThemedMessageBox.Show(this, "Save this archive before moving resources.", "Save required");
             return;
         }
+
         AssetMoveDialog.Show(this, new(selected.AssetType, FilePath, selected.AssetName),
             RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!, ApplyRelocation,
             knownPasswords: new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
@@ -698,6 +732,7 @@ public sealed class AssetEditorControl : UserControl
             ThemedMessageBox.Show(this, "Save this archive before deleting resources.", "Save required");
             return;
         }
+
         AssetDeleteDialog.Show(this, [new(selected.AssetType, FilePath, selected.AssetName)], [],
             RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!, (plan, force) => ApplyDeletion(plan, force),
             new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
@@ -764,6 +799,7 @@ public sealed class AssetEditorControl : UserControl
             if (scroll >= 0)
                 _grid.FirstDisplayedScrollingRowIndex = Math.Min(scroll, _grid.Rows.Count - 1);
         }
+
         UpdateUiState();
     }
 

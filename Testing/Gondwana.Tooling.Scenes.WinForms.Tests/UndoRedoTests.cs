@@ -33,6 +33,7 @@ public sealed partial class SceneEditorTests
             document.History.Redo();
             Assert.Equal("new group", Assert.Single(groups));
         }
+
         Assert.False(document.History.InTransaction);
     });
 

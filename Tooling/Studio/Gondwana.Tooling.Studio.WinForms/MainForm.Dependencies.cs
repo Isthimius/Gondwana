@@ -47,14 +47,24 @@ public sealed partial class MainForm : IResourceNavigator
             return address.FieldPath is null ? new(true, true, $"Opened {address}.")
                 : new(true, false, $"Selected nearest supported member. Reference field: {address.FieldPath}");
         }
-        catch (OperationCanceledException) { return new(false, false, "Navigation cancelled; archive authentication may be required."); }
-        catch (Exception ex) { return new(false, false, $"Cannot navigate to {address}: {ex.Message}"); }
+        catch (OperationCanceledException)
+        {
+            return new(false, false, "Navigation cancelled; archive authentication may be required.");
+        }
+        catch (Exception ex)
+        {
+            return new(false, false, $"Cannot navigate to {address}: {ex.Message}");
+        }
     }
 
     private void InitializeDependencies()
     {
         _dependencyTool = AddTool("shell.dependencies", "Dependency Explorer", _dependencies, DockState.DockRight);
-        _dependencies.RefreshRequested += () => { InvalidateDependencies(); _ = RefreshDependenciesAsync(); };
+        _dependencies.RefreshRequested += () =>
+        {
+            InvalidateDependencies();
+            _ = RefreshDependenciesAsync();
+        };
         _dependencies.ScopeRequested += wholeDocument =>
         {
             if (_dependencyTarget is null || (!wholeDocument && _dependencyTarget.Member is null))
@@ -131,6 +141,7 @@ public sealed partial class MainForm : IResourceNavigator
             _dependencies.SetStatus("Select a saved document or use Find References in the working directory.");
             return;
         }
+
         if (_dependencyScan is null)
         {
             if (_dependencyCancellation is not null)
@@ -180,9 +191,15 @@ public sealed partial class MainForm : IResourceNavigator
                 }
                 catch (OperationCanceledException) when (token.IsCancellationRequested) { }
             }
-            finally { credentials.Clear(); cancellation.Dispose(); }
+            finally
+            {
+                credentials.Clear();
+                cancellation.Dispose();
+            }
+
             return;
         }
+
         PresentDependencies();
     }
 
@@ -223,8 +240,14 @@ public sealed partial class MainForm : IResourceNavigator
             if (token.IsCancellationRequested)
                 return;
             try
-            { action(); completion.TrySetResult(); }
-            catch (Exception ex) { completion.TrySetException(ex); }
+            {
+                action();
+                completion.TrySetResult();
+            }
+            catch (Exception ex)
+            {
+                completion.TrySetException(ex);
+            }
         }, null);
         await completion.Task.ConfigureAwait(false);
     }

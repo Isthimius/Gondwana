@@ -22,7 +22,11 @@ public sealed partial class MainForm
             Archive = true,
             Password = path => string.Equals(path, editor.FilePath, StringComparison.OrdinalIgnoreCase) ? editor.AssetsFile.Password : null,
             SaveAs = editor.SaveAs,
-            RefreshPreviews = () => { editor.RefreshEntries(); return true; },
+            RefreshPreviews = () =>
+            {
+                editor.RefreshEntries();
+                return true;
+            },
             Reload = () =>
             {
                 var selected = editor.SelectedEntry;
@@ -41,7 +45,11 @@ public sealed partial class MainForm
                         return replacement;
                     }, () => tab.CloseApproved = true);
                 }
-                catch { loaded.Dispose(); throw; }
+                catch
+                {
+                    loaded.Dispose();
+                    throw;
+                }
             }
         });
         editor.Changed += tab.Sources.Changed;
@@ -54,6 +62,10 @@ public sealed partial class MainForm
             tab.Sources.Changed(editor, EventArgs.Empty);
             workspaceChanged();
         };
-        tab.Disposed += (_, _) => { editor.Changed -= tab.Sources.Changed; editor.SourceSaved -= tab.Sources.Saved; };
+        tab.Disposed += (_, _) =>
+        {
+            editor.Changed -= tab.Sources.Changed;
+            editor.SourceSaved -= tab.Sources.Saved;
+        };
     }
 }

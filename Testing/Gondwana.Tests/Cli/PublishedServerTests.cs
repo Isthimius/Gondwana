@@ -90,9 +90,14 @@ public sealed class PublishedServerTests : IDisposable
                 using var unsafePath = await client.GetAsync(url + name);
                 Assert.Equal(HttpStatusCode.BadRequest, unsafePath.StatusCode);
             }
+
             using var doubleEncoded = await client.GetAsync(url + "%252e%252e%255csecret.txt");
             Assert.Equal(HttpStatusCode.NotFound, doubleEncoded.StatusCode);
         }
-        finally { stop.Cancel(); await server.WaitAsync(TimeSpan.FromSeconds(5)); }
+        finally
+        {
+            stop.Cancel();
+            await server.WaitAsync(TimeSpan.FromSeconds(5));
+        }
     }
 }

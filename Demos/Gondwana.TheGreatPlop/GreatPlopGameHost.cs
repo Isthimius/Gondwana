@@ -278,6 +278,7 @@ internal sealed class PlopState
                 Velocity = new Vector2((i == 0 ? -1 : 1) * 18, 35)
             });
         }
+
         Shake = Math.Clamp(pressure, .15f, 1f);
         Message = pressure >= .82f ? "TITANIC PLOP! Roll that monument to market!" : $"Fresh inventory: ${MathF.Round(1 + pressure * pressure * 235):0}";
         MessageTime = 2.4f;
@@ -295,9 +296,19 @@ internal sealed class PlopState
             _ => (600, Beetle, "Beetle Assistant")
         };
         if (item.owned)
-        { Message = $"{item.name} already installed."; MessageTime = 1.5f; return; }
+        {
+            Message = $"{item.name} already installed.";
+            MessageTime = 1.5f;
+            return;
+        }
+
         if (Money < item.cost)
-        { Message = $"Need ${item.cost:0} for {item.name}."; MessageTime = 1.5f; return; }
+        {
+            Message = $"Need ${item.cost:0} for {item.name}.";
+            MessageTime = 1.5f;
+            return;
+        }
+
         Money -= item.cost;
         switch (slot)
         {
@@ -320,6 +331,7 @@ internal sealed class PlopState
                 Beetle = true;
                 break;
         }
+
         Message = $"UPGRADE ACQUIRED: {item.name}!";
         MessageTime = 2;
     }

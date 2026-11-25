@@ -130,12 +130,15 @@ public sealed partial class AssetRelocationPlan
                         _archiveWrites.Add(destination.Path, new(password, password is not null, new()));
                     }
                 }
+
                 var existing = _archiveWrites.GetValueOrDefault(destination.Path) ?? _scan.Archives[destination.Path];
                 if (existing.Entries.ContainsKey(new() { AssetType = destination.AssetType, AssetName = destination.AssetEntryName }))
                     throw new InvalidDataException($"Destination entry exists: {destination}.");
             }
+
             _preview.Add($"Move {source} → {destination}");
         }
+
         if (sourceKeys.Overlaps(destinationKeys))
             throw new InvalidDataException("Source/destination identity collisions are not supported.");
         _scan.Analyze();
@@ -162,9 +165,11 @@ public sealed partial class AssetRelocationPlan
                     var dependency = _mappings.FirstOrDefault(m => DefinitionReferenceDiscovery.Same(m.Source, reference.Target))?.Destination ?? reference.Target;
                     _preview.Add($"Outbound {reference.ReferencePath}: {reference.Target} → {dependency}; relative to {target.Path}");
                 }
+
                 if (mapping is not null)
                     Retire(content.Location);
             }
+
             if (!_final.TryAdd(DefinitionReferenceDiscovery.Key(target), (target, bytes)))
                 throw new InvalidDataException($"Duplicate final identity: {target}.");
         }
@@ -192,6 +197,7 @@ public sealed partial class AssetRelocationPlan
             var original = _scan.ReadArchive(path);
             _archiveWrites.Add(path, archive = new(original.Password, original.Encrypt, new(original.Entries)));
         }
+
         return archive;
     }
 

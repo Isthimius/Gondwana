@@ -55,6 +55,7 @@ internal sealed class NewWinFormsCommand : Command<NewWinFormsCommand.Settings>
             args.Add("-o");
             args.Add(settings.Output);
         }
+
         if (backbuffer is not null)
         {
             args.Add("--Backbuffer");

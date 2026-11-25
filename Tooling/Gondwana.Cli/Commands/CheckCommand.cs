@@ -51,6 +51,7 @@ internal static class ProjectHealth
             foreach (var element in project.Project.Descendants().Where(e => e.Name.LocalName == "WasmEnableThreads" && !ProjectPackages.Conditional(e) && e.Value.Equals("false", StringComparison.OrdinalIgnoreCase)))
                 Report("WASM threads", "Warning", "WasmEnableThreads is explicitly false; verify this is intended for the game.");
         }
+
         var root = Path.GetDirectoryName(project.Path)!;
         foreach (var item in project.Project.Descendants().Where(e => e.Name.LocalName is "ProjectReference" or "Content" or "EmbeddedResource" or "None"))
         {
@@ -61,6 +62,7 @@ internal static class ProjectHealth
             if (!File.Exists(path) && !Directory.Exists(path))
                 Report("Referenced file", item.Name.LocalName == "ProjectReference" ? "Fail" : "Warning", $"Missing {include}" + (item.Name.LocalName == "ProjectReference" ? "" : " (may be generated during build)"));
         }
+
         int bundles = 0, sheets = 0;
         foreach (var file in SourceFiles(root, (path, error) => Report(Path.GetRelativePath(root, path), "Warning", "Asset scan incomplete: " + error)))
         {
@@ -86,13 +88,21 @@ internal static class ProjectHealth
                 {
                     bundles++;
                     if (BundleHelper.NeedsPassword(file))
-                    { Report(label, "Warning", "Protected bundle; use assets validate --password to inspect contents."); continue; }
+                    {
+                        Report(label, "Warning", "Protected bundle; use assets validate --password to inspect contents.");
+                        continue;
+                    }
+
                     foreach (var error in BundleHelper.ValidateContents(file, null))
                         Report(label, "Fail", error);
                 }
             }
-            catch (Exception ex) { Report(label, "Fail", ex.Message); }
+            catch (Exception ex)
+            {
+                Report(label, "Fail", ex.Message);
+            }
         }
+
         Report("Asset scan", "OK", $"Inspected {bundles} bundle(s), {sheets} loose tilesheet(s); bin/obj and directory links excluded.");
         return results;
     }
@@ -102,20 +112,36 @@ internal static class ProjectHealth
         readEntries ??= path => new DirectoryInfo(path).GetFileSystemInfos();
         FileSystemInfo[]? entries = null;
         try
-        { entries = readEntries(directory); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { warning(directory, ex.Message); }
+        {
+            entries = readEntries(directory);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            warning(directory, ex.Message);
+        }
+
         if (entries is null)
             yield break;
         foreach (var entry in entries.OrderBy(e => e.FullName, StringComparer.Ordinal))
         {
             FileAttributes? attributes = null;
             try
-            { attributes = entry.Attributes; }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { warning(entry.FullName, ex.Message); }
+            {
+                attributes = entry.Attributes;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                warning(entry.FullName, ex.Message);
+            }
+
             if (attributes is null || (attributes & FileAttributes.ReparsePoint) != 0)
                 continue;
             if ((attributes & FileAttributes.Directory) == 0)
-            { yield return entry.FullName; continue; }
+            {
+                yield return entry.FullName;
+                continue;
+            }
+
             if (new[] { "bin", "obj", ".git", ".vs", "node_modules" }.Contains(entry.Name, StringComparer.OrdinalIgnoreCase))
                 continue;
             foreach (var file in SourceFiles(entry.FullName, warning, readEntries))
@@ -171,11 +197,18 @@ internal sealed class CheckCommand : Command<CheckCommand.Settings>
                 if (changes.Count > 0)
                     project.Save();
             }
-            catch (InvalidOperationException ex) { AnsiConsole.MarkupLine($"[yellow]No automatic fix:[/] {Markup.Escape(ex.Message)}"); }
+            catch (InvalidOperationException ex)
+            {
+                AnsiConsole.MarkupLine($"[yellow]No automatic fix:[/] {Markup.Escape(ex.Message)}");
+            }
+
             AnsiConsole.WriteLine("Re-checking...");
             return Print(ProjectHealth.Inspect(ProjectCommand.Load(settings.Project)));
         }
-        catch (Exception ex) { return ProjectCommand.Fail(ex); }
+        catch (Exception ex)
+        {
+            return ProjectCommand.Fail(ex);
+        }
     }
 
     private static int Print(IReadOnlyList<ProjectDiagnostic> results)
@@ -186,6 +219,7 @@ internal sealed class CheckCommand : Command<CheckCommand.Settings>
             var color = result.Status == "Fail" ? "red" : result.Status == "Warning" ? "yellow" : "green";
             table.AddRow(Markup.Escape(result.Label), $"[{color}]{result.Status}[/]", Markup.Escape(result.Detail));
         }
+
         AnsiConsole.Write(table);
         var failures = results.Count(r => r.Status == "Fail");
         AnsiConsole.WriteLine($"{failures} failure(s), {results.Count(r => r.Status == "Warning")} warning(s).");

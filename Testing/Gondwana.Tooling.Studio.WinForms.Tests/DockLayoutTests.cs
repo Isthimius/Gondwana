@@ -37,6 +37,7 @@ public sealed class DockLayoutTests
             Application.DoEvents();
             return form;
         }
+
         using (var first = Open())
         {
             var dock = first.Controls.OfType<DockPanel>().Single();
@@ -45,6 +46,7 @@ public sealed class DockLayoutTests
             dock.DockRightPortion = .42;
             tool.Hide();
         }
+
         using (var second = Open())
         {
             var dock = second.Controls.OfType<DockPanel>().Single();
@@ -64,6 +66,7 @@ public sealed class DockLayoutTests
             Assert.Equal(DockState.DockLeft, tool.DockState);
             Assert.False(File.Exists(Layout("shell")));
         }
+
         using (var third = Open())
         {
             var tool = third.Controls.OfType<DockPanel>().Single().Contents.OfType<DockContent>().Single(p => p.HideOnClose);
@@ -116,6 +119,7 @@ public sealed class DockLayoutTests
             panes[1].Hide();
             owned = panes;
         }
+
         Assert.All(owned, pane => Assert.True(pane.IsDisposed));
         Assert.True(File.Exists(Layout(kind)));
         using (var editor = Editor(kind))
@@ -139,6 +143,7 @@ public sealed class DockLayoutTests
             panes[1].DockHandler.DockTo(panes[0].Pane, DockStyle.Fill, -1);
             panes[1].Hide();
         }
+
         using (var editor = Editor(kind))
         {
             var panes = names.Select(name => Panes(editor.Model).Single(p => p.Text == name)).ToArray();
@@ -150,6 +155,7 @@ public sealed class DockLayoutTests
             Assert.False(File.Exists(Layout(kind)));
             Assert.Equal(count, Panes(editor.Model).Select(p => p.Pane).Distinct().Count());
         }
+
         using (var editor = Editor(kind))
         {
             Assert.All(Panes(editor.Model), pane => Assert.False(pane.IsHidden));
@@ -172,6 +178,7 @@ public sealed class DockLayoutTests
             using var next = Editor("gts");
             Assert.False(next.Model.IsPaneVisible("Validation"));
         }
+
         using (var next = Editor("gts"))
             Assert.False(next.Model.IsPaneVisible("Validation"));
         using (var other = Editor("gani"))
@@ -215,6 +222,7 @@ public sealed class DockLayoutTests
                 xml.Root!.Element("Panes")!.Elements().First().SetAttributeValue("ActiveContent", "9999");
             xml.Save(Layout(kind));
         }
+
         using var restored = Editor(kind);
         Assert.Equal(kind == "gspr" ? 6 : 7, Panes(restored.Model).Length);
         Assert.True(restored.Model.IsPaneVisible(kind == "gspr" ? "GSCN scene/layer sources" : "GANI animations"));
@@ -239,6 +247,7 @@ public sealed class DockLayoutTests
             working.Hide();
             studio.NewDocument("gts");
         }
+
         var persisted = File.ReadAllText(Layout("shell"));
         Assert.DoesNotContain(Root, persisted);
         Assert.Contains("ignored-document", persisted);
@@ -265,6 +274,7 @@ public sealed class DockLayoutTests
             Assert.Equal(DockState.DockLeft, working.DockState);
             Assert.Equal(DockState.DockBottom, Tool(studio, "Output").DockState);
         }
+
         using (var studio = Studio())
         {
             Assert.Empty(studio.Documents);
@@ -306,7 +316,11 @@ public sealed class DockLayoutTests
             Application.DoEvents();
         }
         /// <inheritdoc/>
-        public void Dispose() { Model.Dispose(); _host.Dispose(); }
+        public void Dispose()
+        {
+            Model.Dispose();
+            _host.Dispose();
+        }
     }
     private static EditorHost Editor(string kind) => new(kind);
     private static DockContent[] Panes(StudioDocument editor) => Descendants(editor.Editor).OfType<DockPanel>().Single().Contents.Cast<DockContent>().ToArray();
@@ -332,7 +346,11 @@ public sealed class DockLayoutTests
     {
         var elapsed = Stopwatch.StartNew();
         while (!done() && elapsed.Elapsed < TimeSpan.FromSeconds(5))
-        { Application.DoEvents(); Thread.Sleep(20); }
+        {
+            Application.DoEvents();
+            Thread.Sleep(20);
+        }
+
         Assert.True(done(), "Debounced layout save did not complete.");
     }
     private static void Sta(Action action)
@@ -345,7 +363,10 @@ public sealed class DockLayoutTests
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
                 action();
             }
-            catch (Exception ex) { error = ex; }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         })
         { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);

@@ -311,7 +311,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 try
                 {
                     try
-                    { if (File.Exists(zipPath)) File.Delete(zipPath); }
+                    {
+                        if (File.Exists(zipPath))
+                            File.Delete(zipPath);
+                    }
                     catch { }
 
                     using var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -364,7 +367,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         finally
         {
             try
-            { if (File.Exists(zipPath)) File.Delete(zipPath); }
+            {
+                if (File.Exists(zipPath))
+                    File.Delete(zipPath);
+            }
             catch { }
         }
     }

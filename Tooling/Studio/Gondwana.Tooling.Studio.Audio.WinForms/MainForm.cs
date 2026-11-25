@@ -123,6 +123,7 @@ internal sealed partial class MainForm : Form
                 item.Enabled = editor is not null;
                 item.Checked = editor?.IsPaneVisible(paneName) == true;
             }
+
             showAllPanesItem.Enabled = editor is not null;
             resetEditor.Enabled = editor is not null;
         };
@@ -200,7 +201,11 @@ internal sealed partial class MainForm : Form
     private void RestoreSession()
     {
         var messages = new List<string>();
-        _session.Restore(["gsnd"], path => { _directory = path; RefreshDirectory(); },
+        _session.Restore(["gsnd"], path =>
+        {
+            _directory = path;
+            RefreshDirectory();
+        },
             document => OpenDocument(document.Path),
             path => _documents.FirstOrDefault(document => string.Equals(document.Document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
             messages.Add, message => ReportSessionError(message));

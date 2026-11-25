@@ -84,6 +84,7 @@ public sealed partial class SceneEditorControl
             SpriteDragEnter(sprite, e);
             return;
         }
+
         if (_preview.HasSpriteGesture || _preview.HasGesture || _selectedLayer is not { } layer || GetResourceData(e) is not { } data)
             return;
 
@@ -115,6 +116,7 @@ public sealed partial class SceneEditorControl
             SpriteDragOver(e);
             return;
         }
+
         bool valid = TryGetDropCell(_resourceHover, e, out var cell);
         _preview.SetResourceDropCell(valid ? _resourceHover!.Layer : null, cell);
         e.Effect = valid ? DragDropEffects.Copy : DragDropEffects.None;
@@ -146,6 +148,7 @@ public sealed partial class SceneEditorControl
             SpriteDragDrop(e);
             return;
         }
+
         var hover = _resourceHover;
         bool valid = TryGetDropCell(hover, e, out var cell);
         ClearResourceDrop();

@@ -94,6 +94,7 @@ internal sealed partial class PluginManagerPanel : UserControl
                     string.Join(" + ", records.Select(row => row.IsLegacy ? "Legacy" : "Packaged").Distinct()));
                 Grid.Rows[index].Tag = records;
             }
+
             var restore = Grid.Rows.Cast<DataGridViewRow>().FirstOrDefault(row => row.Tag is PluginDiscoveryInfo[] records &&
                 records.Any(record => selected is not null && (selected.PreferenceId is not null
                     ? record.PreferenceId == selected.PreferenceId : record.SourceDirectory == selected.SourceDirectory)));
@@ -111,7 +112,11 @@ internal sealed partial class PluginManagerPanel : UserControl
             if (_operations?.Operations.Any(o => o.State is PluginPackageOperationState.Failed or PluginPackageOperationState.RecoveryRequired) == true)
                 StatusLabel.Text += " Package operation failed; select its pending-operation row for diagnostics.";
         }
-        finally { _updating = false; }
+        finally
+        {
+            _updating = false;
+        }
+
         ShowSelection();
     }
 
@@ -140,6 +145,7 @@ internal sealed partial class PluginManagerPanel : UserControl
                     details.AppendLine($"Requested next startup: {(_preferences.IsEnabled(id) ? "Enabled" : "Disabled")}");
                     details.AppendLine(_preferences.IsPending(id) ? "Restart required." : "No pending activation change.");
                 }
+
                 details.AppendLine("Enabling does not bypass package validation or compatibility checks.");
                 foreach (var row in records)
                 {
@@ -170,10 +176,14 @@ internal sealed partial class PluginManagerPanel : UserControl
                         details.AppendLine($"Suggested action: {action}");
                 }
             }
+
             details.AppendLine("Package management: legacy flat DLLs are inspection/activation-only. Bundled Studio plugins are protected; disabling remains available.");
             DetailsBox.Text = details.ToString();
         }
-        finally { _updating = false; }
+        finally
+        {
+            _updating = false;
+        }
     }
 
     private void ChangePreference()
@@ -203,6 +213,7 @@ internal sealed partial class PluginManagerPanel : UserControl
             _host.DiscoveryChanged -= DiscoveryChanged;
             SourceMenu.Dispose();
         }
+
         base.Dispose(disposing);
     }
 }

@@ -340,13 +340,16 @@ public sealed partial class SceneDocument
                 member.TilesheetSources[j].GtsPath = persisted.TilesheetSources[j].GtsPath;
                 member.TilesheetSources[j].AssetsFilePath = persisted.TilesheetSources[j].AssetsFilePath;
             }
+
             for (int j = 0; j < member.AnimationSources.Count; j++)
             {
                 member.AnimationSources[j].GaniPath = persisted.AnimationSources[j].GaniPath;
                 member.AnimationSources[j].AssetsFilePath = persisted.AnimationSources[j].AssetsFilePath;
             }
+
             member.Source = SceneDefinitionSource.LooseDefinitionFile(path);
         }
+
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
@@ -490,11 +493,13 @@ public sealed partial class SceneDocument
                 source.GtsPath = Rebase(source.GtsPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
+
             foreach (var source in clone.AnimationSources ?? [])
             {
                 source.GaniPath = Rebase(source.GaniPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
+
             return clone;
         }, member => member.ID, (member, identity) => member.ID = identity, "scene");
         if (imported.Count == 0)

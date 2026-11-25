@@ -204,6 +204,7 @@ internal sealed class GamerState
             Rage = Math.Max(0, Rage - 1.4f);
             Message = $"Clean win! +${HourlyPay:0}";
         }
+
         MessageTime = 1.15f;
 
         if (Rage >= 100)

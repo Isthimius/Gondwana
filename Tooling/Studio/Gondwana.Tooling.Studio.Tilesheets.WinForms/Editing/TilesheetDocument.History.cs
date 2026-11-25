@@ -13,8 +13,8 @@ public sealed partial class TilesheetDocument : IDisposable
         History.Execute(description, () =>
         {
             foreach (var member in members)
-            if (!_definitions.Contains(member))
-                _definitions.Add(member);
+                if (!_definitions.Contains(member))
+                    _definitions.Add(member);
             Definition = members[0];
         }, () =>
         {

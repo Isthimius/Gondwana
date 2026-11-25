@@ -21,7 +21,12 @@ public sealed partial class SceneEditorTests
             var layer = document.Definition.Layers[0];
             layer.CoordinateSystemType = projection;
             layer.OriginPx = new(17, -23);
-            document.EditTile(layer, 2, 2, "Seed", t => { t.Nickname = "keep"; t.Transform = TileTransform.Rotate90; t.EnableFog = true; });
+            document.EditTile(layer, 2, 2, "Seed", t =>
+            {
+                t.Nickname = "keep";
+                t.Transform = TileTransform.Rotate90;
+                t.EnableFog = true;
+            });
             SelectPaintFrame(source);
             SaveGestureBaseline(editor, root);
             string before = JsonConvert.SerializeObject(layer.Tiles);
@@ -43,6 +48,7 @@ public sealed partial class SceneEditorTests
                 Assert.Equal("keep", document.FindTile(layer, 2, 2)!.Nickname);
                 Assert.Equal(TileTransform.Rotate90, document.FindTile(layer, 2, 2)!.Transform);
             }
+
             string after = JsonConvert.SerializeObject(layer.Tiles);
             document.History.Undo();
             Assert.Equal(before, JsonConvert.SerializeObject(layer.Tiles));
@@ -120,7 +126,12 @@ public sealed partial class SceneEditorTests
             layer.Columns = layer.Rows = 5;
             for (int y = 0; y < 5; y++)
                 document.EditTile(layer, 2, y, "Barrier", t => t.Frame = new() { Tilesheet = "barrier" });
-            document.EditTile(layer, 1, 1, "Metadata", t => { t.Nickname = "kept"; t.Transform = TileTransform.Rotate90; t.EnableFog = true; });
+            document.EditTile(layer, 1, 1, "Metadata", t =>
+            {
+                t.Nickname = "kept";
+                t.Transform = TileTransform.Rotate90;
+                t.EnableFog = true;
+            });
             SelectPaintFrame(source);
             SaveGestureBaseline(editor, root);
             string before = JsonConvert.SerializeObject(layer.Tiles);
@@ -158,8 +169,17 @@ public sealed partial class SceneEditorTests
         {
             var document = editor.Document;
             var layer = document.Definition.Layers[0];
-            document.EditTile(layer, 1, 1, "Seed", t => { t.Visible = false; t.Nickname = "one"; t.Transform = TileTransform.Rotate90; });
-            document.EditTile(layer, 2, 1, "Seed", t => { t.EnableFog = true; t.Nickname = "two"; });
+            document.EditTile(layer, 1, 1, "Seed", t =>
+            {
+                t.Visible = false;
+                t.Nickname = "one";
+                t.Transform = TileTransform.Rotate90;
+            });
+            document.EditTile(layer, 2, 1, "Seed", t =>
+            {
+                t.EnableFog = true;
+                t.Nickname = "two";
+            });
             var tiles = layer.Tiles.ToArray();
             SaveGestureBaseline(editor, root);
             Pointer(preview, "OnMouseDown", PreviewCellPoint(preview, layer, 1, 1));
@@ -217,7 +237,12 @@ public sealed partial class SceneEditorTests
             SaveGestureBaseline(editor, root);
             Tool(editor, tool).PerformClick();
             int confirmations = 0;
-            editor.ConfirmLargeEdit = count => { Assert.Equal(10201, count); confirmations++; return false; };
+            editor.ConfirmLargeEdit = count =>
+            {
+                Assert.Equal(10201, count);
+                confirmations++;
+                return false;
+            };
             void Run()
             {
                 // Invoke the same gesture handlers with grid endpoints; no huge desktop canvas is needed.
@@ -225,6 +250,7 @@ public sealed partial class SceneEditorTests
                 typeof(SceneEditorControl).GetMethod("PreviewCellClicked", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(editor, [layer, 100, 100]);
                 typeof(SceneEditorControl).GetMethod("EndPreviewGesture", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(editor, [false]);
             }
+
             Run();
             Assert.Equal(1, confirmations);
             Assert.Empty(layer.Tiles);
@@ -232,7 +258,12 @@ public sealed partial class SceneEditorTests
             editor.ConfirmLargeEdit = _ => true;
             Run();
             if (tool == "Rectangle Erase")
-            { Assert.Empty(layer.Tiles); Assert.False(document.History.CanUndo); return; }
+            {
+                Assert.Empty(layer.Tiles);
+                Assert.False(document.History.CanUndo);
+                return;
+            }
+
             Assert.Equal(10201, layer.Tiles.Count);
             Assert.Equal(tool == "Fill" ? "Fill region" : "Rectangle edit", document.History.UndoDescription);
             for (int repeat = 0; repeat < 3; repeat++)
@@ -409,17 +440,26 @@ public sealed partial class SceneEditorTests
                         choices.SetItemChecked(choices.Items.IndexOf("Visible"), true);
                     Descendants(dialog).OfType<Button>().Single(b => b.Text == (action == "Cancel" ? "Cancel" : "Apply")).PerformClick();
                 }
-                catch (Exception error) { failure = error; dialog.Close(); }
+                catch (Exception error)
+                {
+                    failure = error;
+                    dialog.Close();
+                }
             });
             Descendants(editor).OfType<ToolStrip>().SelectMany(b => b.Items.Cast<ToolStripItem>())
                 .Single(item => item.Text == "Edit selected properties").PerformClick();
             Assert.Null(failure);
             if (action == "Apply")
             {
-                Assert.All(layer.Tiles, t => { Assert.True(t.Visible); Assert.Equal(TileTransform.Identity, t.Transform); });
+                Assert.All(layer.Tiles, t =>
+                {
+                    Assert.True(t.Visible);
+                    Assert.Equal(TileTransform.Identity, t.Transform);
+                });
                 Assert.Equal(2, layer.Tiles.Count);
                 document.History.Undo();
             }
+
             Assert.Equal(before, JsonConvert.SerializeObject(layer.Tiles));
             Assert.False(document.History.CanUndo);
             Assert.False(document.IsDirty);

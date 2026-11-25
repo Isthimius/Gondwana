@@ -53,11 +53,13 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
                 return 1;
             }
+
             if (found.Length > 1)
             {
                 AnsiConsole.MarkupLine("[red]Multiple .csproj files found. Pass -p|--project <path-to.csproj> to specify one.[/]");
                 return 1;
             }
+
             csprojPath = found[0];
         }
         else

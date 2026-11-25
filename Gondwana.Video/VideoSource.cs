@@ -46,8 +46,14 @@ public sealed class VideoSource
             var stream = assets.Get(AssetTypes.Video, name)
                 ?? throw new FileNotFoundException($"Video asset '{name}' was not found in '{assets.FilePath}'.", name);
             try
-            { player.Open(stream, leaveOpen: false); }
-            catch { stream.Dispose(); throw; }
+            {
+                player.Open(stream, leaveOpen: false);
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
         });
     }
 }

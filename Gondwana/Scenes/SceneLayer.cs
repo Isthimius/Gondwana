@@ -846,7 +846,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             _ = GetPeriod();
 
         static int Mod(int value, int period)
-        { int remainder = value % period; return remainder < 0 ? remainder + period : remainder; }
+        {
+            int remainder = value % period;
+            return remainder < 0 ? remainder + period : remainder;
+        }
 
         return this[WrapHorizontally ? Mod(column, GridColumnCount) : column,
             WrapVertically ? Mod(row, GridRowCount) : row];

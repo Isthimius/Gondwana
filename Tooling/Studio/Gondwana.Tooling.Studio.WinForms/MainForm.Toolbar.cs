@@ -43,13 +43,18 @@ public sealed partial class MainForm
             var selectedFormat = format;
             create.DropDownItems.Add(label, null, (_, _) => TryNew(selectedFormat));
         }
+
         bar.Items.Add(create);
         bar.SetGlyph(create, pixels => ToolbarGlyphs.Studio("new", pixels, ToolingAppearance.Palette));
         AddButton(bar, "Open", "Open documents (Ctrl+O)", "open", OpenFiles);
         bar.Items.Add(new ToolStripSeparator());
 
         _saveButton = AddButton(bar, "Save", "Save active document (Ctrl+S)", "save",
-            async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
+            async () =>
+            {
+                if (ActiveDocument is { } doc)
+                    await SaveDocument(doc);
+            });
         _saveAllButton = AddButton(bar, "SaveAll", "Save all modified documents (Ctrl+Alt+S)", "save-all",
             async () => await SaveAllDocuments());
         bar.Items.Add(new ToolStripSeparator());
@@ -141,6 +146,7 @@ public sealed partial class MainForm
                 if (document.Document.Dirty() && !await SaveDocument(document))
                     return false;
             }
+
             return true;
         }
         catch (Exception ex)
@@ -175,6 +181,7 @@ public sealed partial class MainForm
                 foreach (var error in errors)
                     _output.Log("  Error: " + error);
             }
+
             return errors;
         }
         catch (Exception ex)

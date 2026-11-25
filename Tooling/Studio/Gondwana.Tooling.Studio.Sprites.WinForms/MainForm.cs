@@ -214,7 +214,11 @@ internal sealed partial class MainForm : Form
     private void RestoreSession()
     {
         var messages = new List<string>();
-        _session.Restore(["gspr"], path => { _directory = path; RefreshDirectory(); },
+        _session.Restore(["gspr"], path =>
+        {
+            _directory = path;
+            RefreshDirectory();
+        },
             document => OpenDocument(document.Path),
             path => _documents.FirstOrDefault(document => string.Equals(document.Document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
             messages.Add, message => ReportSessionError(message));

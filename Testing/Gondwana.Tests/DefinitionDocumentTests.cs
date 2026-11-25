@@ -21,7 +21,11 @@ public sealed class DefinitionDocumentTests : IDisposable
     public DefinitionDocumentTests() => Directory.CreateDirectory(_root);
 
     /// <inheritdoc/>
-    public void Dispose() { AssetsFile.ClearAll(); Directory.Delete(_root, true); }
+    public void Dispose()
+    {
+        AssetsFile.ClearAll();
+        Directory.Delete(_root, true);
+    }
 
     private sealed record Format(string Extension, string Identity, AssetTypes Type,
         Func<string, object[]> Parse, Func<string, object> Singleton,
@@ -158,6 +162,7 @@ public sealed class DefinitionDocumentTests : IDisposable
             Assert.Equal((string?)JObject.FromObject(member)[format.Identity], stamp.DefinitionIdentity);
             Assert.Null(stamp.FilePath);
         }
+
         format.Save(path, [members[0]]);
         Assert.Single((JArray)JObject.Parse(File.ReadAllText(path))["Definitions"]!);
         Assert.Equal("first", (string?)JObject.FromObject(format.Loose(path, null))[format.Identity]);
@@ -197,6 +202,7 @@ public sealed class DefinitionDocumentTests : IDisposable
                 else
                     member["TilesheetSources"] = new JArray(new JObject { ["Tilesheet"] = "terrain", ["GtsPath"] = "tiles.gts" });
             }
+
             var path = Path.Combine(original, "all." + extension);
             File.WriteAllText(path, Envelope(members));
             var loaded = new[] { format.Loose(path, "first"), format.Loose(path, "second") };

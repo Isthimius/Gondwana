@@ -43,6 +43,7 @@ public sealed class AssetEditSession : IDisposable
             foreach (var update in updates)
                 update.Payload.AcceptAdoption(update.References);
         }
+
         if (externalRefresh)
             _payloads.Clear();
         _archive = archive;
@@ -141,18 +142,32 @@ public sealed class AssetEditSession : IDisposable
             else
             {
                 try
-                { History.Capture(command.Execute); }
+                {
+                    History.Capture(command.Execute);
+                }
                 catch
                 {
                     try
-                    { History.Capture(command.Undo); }
-                    catch { History.MarkUntracked(); throw; }
+                    {
+                        History.Capture(command.Undo);
+                    }
+                    catch
+                    {
+                        History.MarkUntracked();
+                        throw;
+                    }
+
                     throw;
                 }
+
                 History.MarkUntracked();
             }
         }
-        finally { command.InitialCancellation = default; command.InitialWriter = null; }
+        finally
+        {
+            command.InitialCancellation = default;
+            command.InitialWriter = null;
+        }
     }
 
     private Payload Capture(AssetTypes type, string name, byte[] bytes, bool raw)
@@ -163,6 +178,7 @@ public sealed class AssetEditSession : IDisposable
             _payloads.RemoveAll(w => !w.TryGetTarget(out _));
             _payloads.Add(new(payload));
         }
+
         return payload;
     }
 
@@ -191,7 +207,10 @@ public sealed class AssetEditSession : IDisposable
                 // Validate physical source kinds as well, without touching any external resource.
                 definition.Relocate(_origin, _origin, _references, false);
             }
-            catch (Exception ex) when (raw && IsOpaqueFailure(ex)) { _references = null; }
+            catch (Exception ex) when (raw && IsOpaqueFailure(ex))
+            {
+                _references = null;
+            }
         }
 
         private static bool IsOpaqueFailure(Exception ex) => ex is Newtonsoft.Json.JsonException or InvalidDataException or ArgumentException or NotSupportedException or FormatException or OverflowException;
@@ -215,7 +234,10 @@ public sealed class AssetEditSession : IDisposable
                 return PackDefinitionDocument.Read(_origin.AssetType, Bytes, _origin.AssetEntryName!)!.Relocate(
                     _origin, new(_origin.AssetType, path, _origin.AssetEntryName), _references, false);
             }
-            catch (Exception ex) when (_raw && IsOpaqueFailure(ex)) { return Bytes; }
+            catch (Exception ex) when (_raw && IsOpaqueFailure(ex))
+            {
+                return Bytes;
+            }
         }
     }
 
@@ -252,11 +274,17 @@ public sealed class AssetEditSession : IDisposable
                     archive.Add(d.Type, d.Name, stream);
                 }
             }
+
             if (!undo)
                 InitialCancellation.ThrowIfCancellationRequested();
         }
     }
 
     /// <summary>Releases retained commands and the current borrowed archive reference; does not dispose the archive.</summary>
-    public void Dispose() { History.Dispose(); _payloads.Clear(); _archive = null; }
+    public void Dispose()
+    {
+        History.Dispose();
+        _payloads.Clear();
+        _archive = null;
+    }
 }

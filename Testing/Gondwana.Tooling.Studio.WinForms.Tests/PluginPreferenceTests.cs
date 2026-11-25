@@ -125,6 +125,7 @@ public sealed class PluginPreferenceTests : IDisposable
             Assert.False(preferences.RestartRequired);
             Assert.False(File.Exists(FilePath));
         }
+
         Assert.True(preferences.TrySetEnabled("sample.plugin", false, out _));
         Assert.False(new PluginPreferences(FilePath, _ => { }).IsEnabled("sample.plugin"));
     }

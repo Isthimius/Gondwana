@@ -18,7 +18,10 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
         {
             return Inspect(TilesheetDefinitionSerializer.Load(path), Path.GetDirectoryName(Path.GetFullPath(path))!, null);
         }
-        catch (Exception ex) { return new(null, null, null, [ex.Message]); }
+        catch (Exception ex)
+        {
+            return new(null, null, null, [ex.Message]);
+        }
     }
 
     /// <summary>
@@ -31,8 +34,13 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
     public static TilesheetInspection FromStream(Stream stream, string baseDirectory, AssetsFile defaultBundle)
     {
         try
-        { return Inspect(TilesheetDefinitionSerializer.Load(stream), baseDirectory, defaultBundle); }
-        catch (Exception ex) { return new(null, null, null, [ex.Message]); }
+        {
+            return Inspect(TilesheetDefinitionSerializer.Load(stream), baseDirectory, defaultBundle);
+        }
+        catch (Exception ex)
+        {
+            return new(null, null, null, [ex.Message]);
+        }
     }
 
     /// <summary>Inspects every logical tilesheet in a physical file.</summary>
@@ -41,8 +49,13 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
     public static IReadOnlyList<TilesheetInspection> AllFromFile(string path)
     {
         try
-        { return TilesheetDefinitionSerializer.LoadAll(path).Select(definition => Inspect(definition, Path.GetDirectoryName(Path.GetFullPath(path))!, null)).ToList(); }
-        catch (Exception ex) { return [new(null, null, null, [ex.Message])]; }
+        {
+            return TilesheetDefinitionSerializer.LoadAll(path).Select(definition => Inspect(definition, Path.GetDirectoryName(Path.GetFullPath(path))!, null)).ToList();
+        }
+        catch (Exception ex)
+        {
+            return [new(null, null, null, [ex.Message])];
+        }
     }
 
     /// <summary>Inspects every logical tilesheet in a typed archive entry.</summary>
@@ -53,8 +66,13 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
     public static IReadOnlyList<TilesheetInspection> AllFromStream(Stream stream, string baseDirectory, AssetsFile defaultBundle)
     {
         try
-        { return TilesheetDefinitionSerializer.LoadAll(stream).Select(definition => Inspect(definition, baseDirectory, defaultBundle)).ToList(); }
-        catch (Exception ex) { return [new(null, null, null, [ex.Message])]; }
+        {
+            return TilesheetDefinitionSerializer.LoadAll(stream).Select(definition => Inspect(definition, baseDirectory, defaultBundle)).ToList();
+        }
+        catch (Exception ex)
+        {
+            return [new(null, null, null, [ex.Message])];
+        }
     }
 
     private static TilesheetInspection Inspect(TilesheetDefinition definition, string baseDirectory, AssetsFile? defaultBundle)
@@ -86,8 +104,10 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
                     if (defaultBundle is null || !Path.GetFullPath(defaultBundle.FilePath).Equals(path, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                         bundle = ownedBundle = AssetsFile.LoadOrCreate(path);
                 }
+
                 stream = bundle![AssetTypes.Image, image.AssetEntryName!] ?? throw new InvalidDataException("Image entry not found: " + image.AssetEntryName);
             }
+
             using (stream)
             using (var codec = SKCodec.Create(stream))
             {
@@ -97,8 +117,15 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
                 height = codec.Info.Height;
             }
         }
-        catch (Exception ex) { errors.Add("Image: " + ex.Message); }
-        finally { ownedBundle?.Dispose(); }
+        catch (Exception ex)
+        {
+            errors.Add("Image: " + ex.Message);
+        }
+        finally
+        {
+            ownedBundle?.Dispose();
+        }
+
         errors.AddRange(TilesheetDefinitionValidator.Validate(definition, width, height));
         return new(definition, width, height, errors);
     }

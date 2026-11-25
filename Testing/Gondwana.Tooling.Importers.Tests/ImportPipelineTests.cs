@@ -102,7 +102,11 @@ public sealed partial class ImportPipelineTests : IDisposable
     public void CancellationBeforeWritingDoesNotCreateOutput()
     {
         using var cancellation = new CancellationTokenSource();
-        var provider = new Provider(p => { Add(p, "one.gts"); cancellation.Cancel(); });
+        var provider = new Provider(p =>
+        {
+            Add(p, "one.gts");
+            cancellation.Cancel();
+        });
         Assert.Throws<OperationCanceledException>(() => provider.Import(request, cancellation.Token));
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -120,7 +124,11 @@ public sealed partial class ImportPipelineTests : IDisposable
         string first = Path.Combine(request.OutputDirectory, "one.txt"), second = Path.Combine(request.OutputDirectory, "two.txt");
         File.WriteAllText(first, "original one");
         File.WriteAllText(second, "original two");
-        var provider = new Provider(p => { Add(p, "one.txt"); Add(p, "two.txt"); });
+        var provider = new Provider(p =>
+        {
+            Add(p, "one.txt");
+            Add(p, "two.txt");
+        });
         using (var locked = new FileStream(second, FileMode.Open, FileAccess.Read, FileShare.Read))
             Assert.ThrowsAny<IOException>(() => provider.Import(request with { Overwrite = true }));
         Assert.Equal("original one", File.ReadAllText(first));

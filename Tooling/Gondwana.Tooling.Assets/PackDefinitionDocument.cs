@@ -69,16 +69,23 @@ internal sealed class PackDefinitionDocument
                 throw new InvalidDataException("Missing or conflicting physical dependency source.");
             return new(type, Path.GetFullPath(loose ? file! : archive!, Path.GetDirectoryName(owner.Path)!), packed ? entry : null);
         }
+
         IEnumerable<AssetLocation> Resolve(AssetTypes type, string? file, string? archive, string? entry)
         {
             AssetLocation? location = null;
             try
-            { location = Physical(type, file, archive, entry); }
+            {
+                location = Physical(type, file, archive, entry);
+            }
             catch (Exception ex) when (invalid is not null && ex is InvalidDataException or ArgumentException or IOException)
-            { invalid(ex); }
+            {
+                invalid(ex);
+            }
+
             if (location is not null)
                 yield return location;
         }
+
         foreach (var (_, member) in Members())
         {
             switch (member)

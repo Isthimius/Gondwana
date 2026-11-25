@@ -26,6 +26,7 @@ internal static class DefinitionDocumentJson
                 legacy?.Invoke(singleton);
                 return [singleton];
             }
+
             if (properties.Length != 1 || root.Properties().Count() != 1)
                 throw new InvalidDataException("Definition document cannot combine Definitions with singleton properties.");
             if (properties[0].Value is not JArray array)
@@ -37,10 +38,14 @@ internal static class DefinitionDocumentJson
                     throw new InvalidDataException($"Definitions[{definitions.Count}] must be a non-null definition object.");
                 definitions.Add(read(member.ToString()));
             }
+
             Check(definitions, identity, identityComparer: identityComparer);
             return definitions;
         }
-        catch (JsonException ex) { throw new InvalidDataException("Failed to deserialize definition document.", ex); }
+        catch (JsonException ex)
+        {
+            throw new InvalidDataException("Failed to deserialize definition document.", ex);
+        }
     }
 
     /// <summary>Checks structural integrity and ordinal logical identity uniqueness.</summary>
@@ -78,6 +83,7 @@ internal static class DefinitionDocumentJson
                 throw new InvalidDataException($"Document contains {definitions.Count} definitions. Specify a logical identity or use LoadAll.");
             return definitions[0];
         }
+
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         foreach (var member in definitions)
             if ((identityComparer ?? StringComparer.Ordinal).Equals(identity(member), key))

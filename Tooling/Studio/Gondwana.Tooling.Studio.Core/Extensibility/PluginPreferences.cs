@@ -40,6 +40,7 @@ public sealed class PluginPreferences
             _log($"Error: [Plugin preferences] {error}");
             return false;
         }
+
         if (IsEnabled(id) == enabled)
             return true;
         var next = new HashSet<string>(_disabled, StringComparer.Ordinal);
@@ -66,6 +67,7 @@ public sealed class PluginPreferences
                 stream.Write(bytes);
                 stream.Flush(flushToDisk: true);
             }
+
             File.Move(temporary, FilePath, overwrite: true);
             _disabled = next;
             return true;
@@ -79,8 +81,14 @@ public sealed class PluginPreferences
         finally
         {
             try
-            { if (File.Exists(temporary)) File.Delete(temporary); }
-            catch (Exception ex) { _log($"Warning: [Plugin preferences] Could not remove temporary settings file: {ex.Message}"); }
+            {
+                if (File.Exists(temporary))
+                    File.Delete(temporary);
+            }
+            catch (Exception ex)
+            {
+                _log($"Warning: [Plugin preferences] Could not remove temporary settings file: {ex.Message}");
+            }
         }
     }
 
@@ -108,8 +116,14 @@ public sealed class PluginPreferences
                 throw new InvalidDataException("Expected schema version 1 and a disabledPluginIds array of nonblank IDs.");
             return new(settings.DisabledPluginIds, StringComparer.Ordinal);
         }
-        catch (FileNotFoundException) { return new(StringComparer.Ordinal); }
-        catch (DirectoryNotFoundException) { return new(StringComparer.Ordinal); }
+        catch (FileNotFoundException)
+        {
+            return new(StringComparer.Ordinal);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return new(StringComparer.Ordinal);
+        }
     }
 
     private sealed class Settings

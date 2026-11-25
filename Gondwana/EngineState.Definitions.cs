@@ -62,12 +62,12 @@ public sealed partial class EngineState
     {
         if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is not null)
             foreach (var entry in snapshot.AudioGroups)
-            if (entry.AssetsFilePath is not null)
-                yield return entry;
+                if (entry.AssetsFilePath is not null)
+                    yield return entry;
         if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.SpriteGroups is not null)
             foreach (var entry in snapshot.SpriteGroups)
-            if (entry.AssetsFilePath is not null)
-                yield return entry;
+                if (entry.AssetsFilePath is not null)
+                    yield return entry;
         if (parts.HasFlag(EngineStateParts.Tilesheets) && snapshot.Tilesheets is not null)
             foreach (var entry in snapshot.Tilesheets.Values)
                 if (entry?.AssetsFilePath is not null)
@@ -95,6 +95,7 @@ public sealed partial class EngineState
             foreach (var entry in snapshot.AudioGroups)
                 (entry ?? throw new InvalidDataException("AudioGroups contains null.")).Validate(entry.GsndPath, entry.Definition);
         }
+
         if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.SpriteGroups is not null)
         {
             if (snapshot.Sprites is not null)
@@ -102,6 +103,7 @@ public sealed partial class EngineState
             foreach (var entry in snapshot.SpriteGroups)
                 (entry ?? throw new InvalidDataException("SpriteGroups contains null.")).Validate(entry.GsprPath, entry.Definition, entry.LegacySprites);
         }
+
         if (parts.HasFlag(EngineStateParts.Tilesheets) && snapshot.Tilesheets is not null)
             foreach (var entry in snapshot.Tilesheets.Values)
                 entry?.Validate(entry.GtsPath, entry.Definition);
@@ -130,11 +132,13 @@ public sealed partial class EngineState
             entry.AssetEntryName = provenance.AssetEntryName;
             return true;
         }
+
         if (provenance.FilePath is { } filePath)
         {
             loosePath = MakeRelativePath(filePath, baseDirectory);
             return true;
         }
+
         return false;
     }
 
@@ -150,7 +154,9 @@ public sealed partial class EngineState
     private static T WithDefinitionContext<T>(DefinitionStateEntry entry, string? baseDirectory, Func<T> materialize)
     {
         try
-        { return materialize(); }
+        {
+            return materialize();
+        }
         catch (Exception ex) when (entry.AssetsFilePath is not null && ex is not OutOfMemoryException)
         {
             throw DefinitionError(entry, baseDirectory, ex);

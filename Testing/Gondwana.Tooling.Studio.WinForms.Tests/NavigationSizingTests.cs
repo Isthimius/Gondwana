@@ -29,6 +29,7 @@ public sealed partial class CompositionTests
             Assert.Equal(studio.FilePath, standalone.FilePath);
             Assert.Equal(size, standalone.Read());
         }
+
         Assert.Empty(Directory.GetFiles(root, "*.tmp"));
     }
 
@@ -269,6 +270,7 @@ public sealed partial class CompositionTests
                     .First(m => m.Name == "NewDocument" && m.GetParameters().All(p => p.IsOptional));
                 create.Invoke(shell, create.GetParameters().Select(p => p.DefaultValue).ToArray());
             }
+
             Application.DoEvents();
             var trees = Descendants(shell).OfType<TreeView>().ToArray();
             Assert.NotEmpty(trees);
@@ -295,6 +297,7 @@ public sealed partial class CompositionTests
                     Assert.Same(selected[tree], tree.SelectedNode);
                     Assert.Equal(ToolingAppearance.Palette.Background, tree.BackColor);
                 }
+
                 foreach (var (control, snapshot) in untouched)
                 {
                     Assert.Same(snapshot.Font, control.Font);
@@ -302,6 +305,7 @@ public sealed partial class CompositionTests
                     Assert.Equal(snapshot.BackColor, control.BackColor);
                 }
             }
+
             using var studio = Host(directory);
             Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
             using var reopened = (Form)Activator.CreateInstance(type, nonPublic: true)!;
@@ -313,6 +317,9 @@ public sealed partial class CompositionTests
             Assert.NotEmpty(reopenedTrees);
             Assert.All(reopenedTrees, tree => Assert.Equal(13f, tree.Font.SizeInPoints));
         }
-        finally { Environment.CurrentDirectory = previousDirectory; }
+        finally
+        {
+            Environment.CurrentDirectory = previousDirectory;
+        }
     });
 }

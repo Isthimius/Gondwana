@@ -25,7 +25,9 @@ public sealed partial class MainForm
         if (_session.IsRestoring && _failedRestoreArchives.Contains(path))
             throw new OperationCanceledException($"Archive opening already failed or was cancelled during restoration: {path}. Open it manually to retry.");
         try
-        { return ReadArchiveCore(path, password); }
+        {
+            return ReadArchiveCore(path, password);
+        }
         catch
         {
             // Suppress repeated authentication only for this startup restoration.
@@ -90,7 +92,10 @@ public sealed partial class MainForm
             model.DependencyArchives.UnionWith(dependencies);
             return model;
         }
-        finally { _loadingDependencies = null; }
+        finally
+        {
+            _loadingDependencies = null;
+        }
     }
 
     private void SaveArchive(StudioDockDocument document, string destination, byte[]? entryBytes)
@@ -131,6 +136,7 @@ public sealed partial class MainForm
                 var changedDestination = new AssetLocation(AssetTypes.Misc, destination);
                 throw new DocumentSourceConflictException(changedDestination, DocumentSourceVersion.Read(changedDestination));
             }
+
             if (editor.AssetsFile.UseEncryption && !savedArchive.Archive.GetAllEntries().Any())
             {
                 // Empty ZIPs cannot encode encryption; retain the editor's explicit policy.
@@ -140,13 +146,18 @@ public sealed partial class MainForm
                     StudioArchiveSnapshot.CheckVersion(destination, hash);
                     editor.AcceptSavedArchive(empty);
                 }
-                catch { empty.Dispose(); throw; }
+                catch
+                {
+                    empty.Dispose();
+                    throw;
+                }
             }
             else
                 editor.AcceptSavedArchive(savedArchive.Detach());
             model.ArchiveHash = hash;
             model.ArchivePassword = editor.AssetsFile.Password;
         }
+
         _archivePasswords[destination] = model.ArchivePassword;
         _packages.Invalidate(destination);
         using var persisted = StudioArchiveSnapshot.Open(destination, model.ArchivePassword);
@@ -171,10 +182,16 @@ public sealed partial class MainForm
                 else if (other != document && candidate.PackedLocation() is { } packed)
                 {
                     try
-                    { candidate.ContentStale = !StudioArchiveSnapshot.Entry(persisted.Archive, packed).AsSpan().SequenceEqual(candidate.OriginalEntry); }
-                    catch (FileNotFoundException) { candidate.ContentStale = true; }
+                    {
+                        candidate.ContentStale = !StudioArchiveSnapshot.Entry(persisted.Archive, packed).AsSpan().SequenceEqual(candidate.OriginalEntry);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        candidate.ContentStale = true;
+                    }
                 }
             }
+
             foreach (var source in candidate.Sources.Values.Where(s => s.Role == DocumentSourceRole.Dependency &&
                 string.Equals(s.Location.Path, destination, StringComparison.OrdinalIgnoreCase)))
             {
@@ -185,8 +202,12 @@ public sealed partial class MainForm
                     if (source.Accepted.ContentHash != contentHash)
                         candidate.PreviewStale = true;
                 }
-                catch (FileNotFoundException) { candidate.PreviewStale = true; }
+                catch (FileNotFoundException)
+                {
+                    candidate.PreviewStale = true;
+                }
             }
+
             other.UpdateCaption();
         }
     }
@@ -235,8 +256,15 @@ public sealed partial class MainForm
             InvalidateDependencies();
             return true;
         }
-        catch (OperationCanceledException) { return false; }
-        catch (Exception ex) { ReportError(ex); return false; }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+            return false;
+        }
         finally
         {
             replacement?.Dispose();
@@ -260,6 +288,7 @@ public sealed partial class MainForm
             result.Add(root.Controls.IndexOf(focused));
             root = focused;
         }
+
         return result.ToArray();
     }
 
@@ -271,6 +300,7 @@ public sealed partial class MainForm
                 break;
             root = root.Controls[index];
         }
+
         if (root.CanFocus)
             root.Focus();
     }
@@ -316,24 +346,35 @@ public sealed partial class MainForm
                 document.Document.PreviewStale = true;
             document.UpdateCaption();
         }
-        catch (Exception ex) { document.Document.PreviewStale = true; document.UpdateCaption(); ReportError(ex); }
-        finally { _loadingDependencies = null; }
+        catch (Exception ex)
+        {
+            document.Document.PreviewStale = true;
+            document.UpdateCaption();
+            ReportError(ex);
+        }
+        finally
+        {
+            _loadingDependencies = null;
+        }
 
         static bool ReloadImage(Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl editor)
         {
             editor.ReloadImage();
             return editor.PreviewLoadSucceeded;
         }
+
         static bool ReloadAnimation(Gondwana.Tooling.Studio.Animations.WinForms.AnimationEditorControl editor)
         {
             editor.ReloadSources();
             return editor.SourcesLoadedSuccessfully;
         }
+
         static bool ReloadScene(Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl editor)
         {
             editor.ReloadSources();
             return editor.SourcesLoadedSuccessfully;
         }
+
         static bool ReloadSprite(Gondwana.Tooling.Studio.Sprites.WinForms.SpriteEditorControl editor)
         {
             editor.ReloadSources();

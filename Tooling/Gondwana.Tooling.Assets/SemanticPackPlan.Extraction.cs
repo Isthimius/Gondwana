@@ -29,6 +29,7 @@ internal sealed partial class SemanticPackPlan
             var destination = destinations.TryGetValue(key, out var target) ? new AssetLocation(key.AssetType, target) : source;
             plan._entries.Add(key, ReadEntry(source, destination, buffer.ToArray()));
         }
+
         foreach (var key in destinations.Keys)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -36,6 +37,7 @@ internal sealed partial class SemanticPackPlan
             entry.Document?.Validate(entry.Location.ToString());
             plan.Analyze(entry);
         }
+
         var targets = new HashSet<string>(destinations.Values, Paths);
         foreach (var dependency in plan._external)
             if (targets.Contains(dependency.Location.Path))
@@ -47,6 +49,7 @@ internal sealed partial class SemanticPackPlan
             var entry = plan._entries[key];
             result.Add(key, entry.Document?.Relocate(entry.Location, entry.Destination, entry.Mappings) ?? entry.Bytes);
         }
+
         return result;
     }
 }

@@ -65,7 +65,10 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(source));
             }
             else
-            { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
+            {
+                tilesetRoot = reference;
+                basename = $"{name}-tileset-{first}";
+            }
             // Every tileset in this map becomes a logical member of one GTS document.
             // Standalone TSX imports continue to use their individual GTS filenames.
             var set = ConvertTileset(tilesetRoot, source, basename, plan, token,
@@ -80,6 +83,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             foreach (var (id, animation) in set.Animations)
                 scene.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(animation.Key, $"{basename}-animations.gani"));
         }
+
         tilesets.Sort((a, b) => a.First.CompareTo(b.First));
         for (int i = 1; i < tilesets.Count; i++)
             if ((ulong)tilesets[i - 1].First + (uint)tilesets[i - 1].Set.Count > tilesets[i].First)
@@ -92,14 +96,22 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 token.ThrowIfCancellationRequested();
                 var kind = element.Name.LocalName;
                 if (kind is "objectgroup" or "imagelayer")
-                { plan.Report(ExternalImportSeverity.Warning, "tiled.layer.unsupported", $"{kind} '{(string?)element.Attribute("name")}' is omitted."); continue; }
+                {
+                    plan.Report(ExternalImportSeverity.Warning, "tiled.layer.unsupported", $"{kind} '{(string?)element.Attribute("name")}' is omitted.");
+                    continue;
+                }
+
                 bool shown = visible && Int(element, "visible", 1) != 0;
                 double x = ox + Number(element, "offsetx", 0), y = oy + Number(element, "offsety", 0);
                 double parallaxX = px * Number(element, "parallaxx", 1), parallaxY = py * Number(element, "parallaxy", 1);
                 if (Number(element, "opacity", 1) != 1 || element.Attribute("tintcolor") is not null || element.Attribute("blendmode") is not null)
                     plan.Report(ExternalImportSeverity.Warning, "tiled.layer.appearance", "Layer opacity, tint, and blend mode are not represented and are omitted.");
                 if (kind == "group")
-                { Layers(element, shown, x, y, parallaxX, parallaxY); continue; }
+                {
+                    Layers(element, shown, x, y, parallaxX, parallaxY);
+                    continue;
+                }
+
                 if (Int(element, "x", 0) != 0 || Int(element, "y", 0) != 0)
                     throw new InvalidDataException("Nonzero legacy layer tile coordinates are unsupported; use pixel offsets.");
                 var data = element.Element("data") ?? throw new InvalidDataException("Missing layer data.");
@@ -130,6 +142,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                             throw new InvalidDataException("Isometric origin padding exceeds 16 million native grid cells.");
                     }
                 }
+
                 if (x != Math.Truncate(x) || y != Math.Truncate(y))
                     throw new InvalidDataException("Fractional pixel layer offsets cannot be represented exactly.");
                 double shiftX = orientation == CoordinateSystemTypes.Orthogonal
@@ -198,6 +211,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                         tile.AdjustCollisionArea = collision.Adjust;
                         tile.CollisionType = collision.Type;
                     }
+
                     layer.Tiles.Add(tile);
                 }
 
@@ -212,9 +226,11 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     for (int i = 0; i < gids.Length; i++)
                         PlaceTile(gids[i], i % columns, i / columns, $"cell {i}");
                 }
+
                 scene.Layers.Add(layer);
             }
         }
+
         if (root.Descendants("properties").Any())
             plan.Report(ExternalImportSeverity.Warning, "tiled.properties", "Custom properties are omitted.");
         Layers(root, true, 0, 0, 1, 1);
@@ -300,6 +316,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     placed.Add((checked(x + i % width), checked(y + i / width), gids[i]));
             }
         }
+
         long cols = maxX - minX, rows = maxY - minY;
         if (cols > int.MaxValue || rows > int.MaxValue || cols * rows > 16_000_000)
             throw new InvalidDataException("Tiled chunk bounds exceed 16 million native grid cells; split the map.");
@@ -346,10 +363,12 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     for (int i = 0; i < expectedCount; i++)
                         result[i] = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(i * 4, 4));
                 }
+
                 break;
             default:
                 throw new InvalidDataException("Unsupported layer encoding.");
         }
+
         if (result.Length != expectedCount)
             throw new InvalidDataException("Layer data length differs from declared dimensions.");
         return result;

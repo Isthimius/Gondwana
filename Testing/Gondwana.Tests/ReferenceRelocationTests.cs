@@ -100,6 +100,7 @@ public sealed class ReferenceRelocationTests : IDisposable
                 member[reference.Collection] = new JArray(item);
             }
         }
+
         return member;
     }
 
@@ -159,6 +160,7 @@ public sealed class ReferenceRelocationTests : IDisposable
                 if (references[i].Collection is not null)
                     Assert.Contains("logical-member", actual.ToString());
             }
+
         if (extension == "gani")
             Assert.Equal("untouched-next", (string?)outputJson["Definitions"]![0]!["NextCycleKey"]);
         var repeated = format.Relocate(output, destination, destination, mappings, true);
@@ -173,6 +175,7 @@ public sealed class ReferenceRelocationTests : IDisposable
             Assert.Equal(mappings[i].Destination.Path, Path.GetFullPath(
                 (string)item[targetPacked ? "AssetsFilePath" : references[i].FileProperty]!, Path.GetDirectoryName(savedPath)!));
         }
+
         Assert.DoesNotContain(".tmp", File.ReadAllText(savedPath));
         Assert.All(loaded["Definitions"]!, member => Assert.Null(member["Source"]));
     }

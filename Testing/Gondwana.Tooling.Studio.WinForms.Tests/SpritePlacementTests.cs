@@ -96,6 +96,7 @@ public sealed partial class CompositionTests
             var offset = (PointF)previewType.GetField("_offset", Private)!.GetValue(preview)!;
             return Point.Round(new PointF(world.X + offset.X, world.Y + offset.Y));
         }
+
         DragEventArgs Drag(SpriteInstanceDrag payload, PointF grid)
         {
             var point = Client(projection.GridToWorldPx(grid));
@@ -104,6 +105,7 @@ public sealed partial class CompositionTests
             return new(new ResourceDragData<SpriteInstanceDrag>(payload), 32, screen.X, screen.Y,
                 DragDropEffects.Move, DragDropEffects.None);
         }
+
         void RaiseDrag(string phase, EventArgs e) => typeof(Control).GetMethod("OnDrag" + phase, Private)!.Invoke(preview, [e]);
         void Mouse(string phase, Point point) => previewType.GetMethod("OnMouse" + phase, Private)!
             .Invoke(preview, [new MouseEventArgs(MouseButtons.Left, 1, point.X, point.Y, 0)]);

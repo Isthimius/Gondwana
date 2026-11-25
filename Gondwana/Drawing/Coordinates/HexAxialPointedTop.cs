@@ -86,8 +86,12 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
             float cy = -sceneLayer.OriginPx.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
             if (d < bestDist)
-            { bestDist = d; best = cand; }
+            {
+                bestDist = d;
+                best = cand;
+            }
         }
+
         return new PointF(best.X, best.Y);
     }
 
@@ -124,6 +128,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
                     result.Add(gp);
             }
         }
+
         return result;
     }
 
@@ -156,6 +161,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
             var r = GetPixelRangeForTile(t, includeOverhang);
             ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
         }
+
         return ret;
     }
 
@@ -270,6 +276,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
                 inside = !inside;
             j = i;
         }
+
         return inside;
     }
 }

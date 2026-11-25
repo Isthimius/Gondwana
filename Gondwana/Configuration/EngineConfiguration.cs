@@ -38,6 +38,7 @@ public partial class EngineConfiguration
                     PresentationTransform.ScaleDimension(adapter.Height, value);
                 }
             }
+
             _renderScale = value;
             foreach (var surface in surfaces)
                 surface.RequestRenderScale(value);
@@ -648,6 +649,7 @@ public partial class EngineConfiguration
                 {
                     values.Remove(key);
                 }
+
                 return;
             }
 

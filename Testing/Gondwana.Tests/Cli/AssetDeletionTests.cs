@@ -27,6 +27,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.TilesheetDefinition, "nested/tiles.gts", bytes);
             archive.Save();
         }
+
         var outside = Path.Combine(Source, "outside.gani");
         AnimationDefinitionSerializer.Save(outside, new AnimationDefinition()
         {
@@ -64,7 +65,12 @@ public sealed partial class SemanticAssetPackTests
             archive.Save();
         }
         else
-        { Content(true, false); Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        {
+            Content(true, false);
+            Assert.Equal(0, Run("pack", Source, Output));
+            Directory.Delete(Source, true);
+        }
+
         var plan = AssetDeletionPlan.Create(Output, [], [Output]);
         Assert.False(plan.ForceRequired);
         Assert.Equal(empty ? 0 : 16, plan.InternalReferences.Count);
@@ -131,6 +137,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.Misc, "nested/item", bytes);
             archive.Save();
         }
+
         var credentials = Path.Combine(_root, "credentials.json");
         File.WriteAllText(credentials, System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, string> { [Output] = "secret" }));
         int Delete(params string[] args)
@@ -139,6 +146,7 @@ public sealed partial class SemanticAssetPackTests
             app.Configure(config => config.AddCommand<AssetsDeleteCommand>("delete"));
             return app.Run(args);
         }
+
         var original = File.ReadAllBytes(Output);
         Assert.Equal(1, Delete("delete", Output, "--scope", _root, "--force", "--commit"));
         Assert.Equal(1, Delete("delete", Output, "--scope", _root, "--source-entry", "nested/item", "--commit"));
@@ -164,6 +172,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.Misc, "item", bytes);
             archive.Save();
         }
+
         var loose = new AssetLocation(AssetTypes.Misc, package);
         var packed = new AssetLocation(AssetTypes.Misc, package, "item");
         Assert.Throws<InvalidDataException>(() => AssetDeletionPlan.Create(Source, [loose, packed]));
@@ -188,7 +197,11 @@ public sealed partial class SemanticAssetPackTests
     {
         Content(explicitSources, legacy);
         if (packed)
-        { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        {
+            Assert.Equal(0, Run("pack", Source, Output));
+            Directory.Delete(Source, true);
+        }
+
         var scope = packed ? Output : Source;
         var scan = DefinitionReferenceDiscovery.Scan(scope);
         Assert.Equal(8, scan.References.Select(r => (r.Document.AssetType, r.Target.AssetType)).Distinct().Count());
@@ -202,6 +215,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.All(plan.BlockingReferences, r => Assert.Contains(r.Member, string.Join("\n", plan.Preview)));
             Assert.Throws<InvalidOperationException>(() => plan.Commit());
         }
+
         foreach (var pair in originals)
             Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
     }
@@ -215,7 +229,11 @@ public sealed partial class SemanticAssetPackTests
     {
         Content(true, false);
         if (packed)
-        { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        {
+            Assert.Equal(0, Run("pack", Source, Output));
+            Directory.Delete(Source, true);
+        }
+
         AssetLocation Target(AssetTypes type, string name) => new(type, packed ? Output : Path.Combine(Source, name), packed ? name : null);
         var scope = packed ? Output : Source;
         var plan = AssetDeletionPlan.Create(scope, [Target(AssetTypes.SpriteDefinition, "actors.gspr")]);
@@ -236,6 +254,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(2, AnimationDefinitionSerializer.LoadAllCycles(Path.Combine(Source, "cycles.gani")).Count);
             Assert.Equal(2, SceneDefinitionSerializer.LoadAllScenes(Path.Combine(Source, "worlds.gscn")).Count);
         }
+
         Clear();
         foreach (var (type, name) in new[] { (AssetTypes.SceneDefinition, "worlds.gscn"), (AssetTypes.AnimationDefinition, "cycles.gani"),
                      (AssetTypes.TilesheetDefinition, "tiles.gts"), (AssetTypes.AudioDefinition, "sounds.gsnd"), (AssetTypes.Image, "art0.png"),
@@ -246,6 +265,7 @@ public sealed partial class SemanticAssetPackTests
             plan.Commit();
             DefinitionReferenceDiscovery.Scan(scope);
         }
+
         if (packed)
         {
             Assert.True(File.Exists(Output));
@@ -277,6 +297,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(new byte[] { 19, 20 }, File.ReadAllBytes(untouched));
             return;
         }
+
         Assert.Equal(0, Run("pack", Source, Output, "--password", "secret", "--encrypt"));
         Directory.Delete(Source, true);
         using (var archive = AssetsFile.LoadOrCreate(Output, "secret", true, register: false))
@@ -285,6 +306,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.Misc, "untouched", bytes);
             archive.Save();
         }
+
         var scan = DefinitionReferenceDiscovery.Scan(Output, _ => "secret");
         var targets = scan.References.Select(r => r.Target).Concat(scan.References.Select(r => r.Document)).Distinct().ToArray();
         var plan = AssetDeletionPlan.Create(Output, targets, credentials: _ => "secret");
@@ -306,7 +328,11 @@ public sealed partial class SemanticAssetPackTests
     {
         Content(true, false);
         if (packed)
-        { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        {
+            Assert.Equal(0, Run("pack", Source, Output));
+            Directory.Delete(Source, true);
+        }
+
         var scope = packed ? Output : Source;
         var target = new AssetLocation(AssetTypes.Image, packed ? Output : Path.Combine(Source, "art0.png"), packed ? "art0.png" : null);
         var plan = AssetDeletionPlan.Create(scope, [target]);
@@ -319,6 +345,7 @@ public sealed partial class SemanticAssetPackTests
             using var original = AssetsFile.LoadOrCreate(Output, null, false, register: false);
             entries = AssetImportPlan.Snapshot(original);
         }
+
         var files = packed ? [] : Directory.GetFiles(Source).Where(p => p != target.Path).ToDictionary(p => p, File.ReadAllBytes);
         plan.Commit(force: true);
         if (packed)
@@ -368,6 +395,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.AnimationDefinition, "nested/external.gani", bytes);
             archive.Save();
         }
+
         var original = File.ReadAllBytes(package);
         var looseBytes = File.ReadAllBytes(loose);
         var otherBytes = File.ReadAllBytes(other);
@@ -421,6 +449,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.Misc, "remove", stream);
             archive.Save();
         }
+
         var first = Path.Combine(Source, "first.bin");
         var second = Path.Combine(Source, "second.bin");
         File.WriteAllBytes(first, [3]);
@@ -438,6 +467,7 @@ public sealed partial class SemanticAssetPackTests
                 Assert.Contains("Prepared", File.ReadAllText(manifest));
                 Assert.Contains("Completed", File.ReadAllText(manifest + ".completed"));
             }
+
             if (cancel)
                 cancellation.Cancel();
             else
@@ -463,6 +493,7 @@ public sealed partial class SemanticAssetPackTests
             app.Configure(config => config.AddCommand<AssetsDeleteCommand>("delete"));
             return app.Run(args);
         }
+
         Assert.Equal(2, Delete("delete", image, "--scope", Source));
         Assert.Equal(2, Delete("delete", image, "--scope", Source, "--commit"));
         Assert.Equal(0, Delete("delete", image, "--scope", Source, "--force"));

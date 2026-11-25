@@ -147,15 +147,23 @@ public sealed class OutputPanelTests
                 double n = v / 255d;
                 return n <= .04045 ? n / 12.92 : Math.Pow((n + .055) / 1.055, 2.4);
             }
+
             return .2126 * F(c.R) + .7152 * F(c.G) + .0722 * F(c.B);
         }
+
         return (Math.Max(L(a), L(b)) + .05) / (Math.Min(L(a), L(b)) + .05);
     }
 
     private static void Sta(Action action)
     {
         Exception? error = null;
-        var thread = new Thread(() => { try { action(); } catch (Exception ex) { error = ex; } });
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action(); } catch (Exception ex) {
+                error = ex; }
+        });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "UI test timed out.");

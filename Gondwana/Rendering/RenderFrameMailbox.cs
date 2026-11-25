@@ -92,11 +92,13 @@ internal sealed class RenderFrameMailbox : IDisposable
                     retired.Ownership = State.Releasing;
                     _droppedCount++;
                 }
+
                 slot.Ownership = State.Published;
                 _published = slot;
                 _publishedCount++;
             }
         }
+
         if (retired is not null)
             Recycle(retired);
     }
@@ -132,6 +134,7 @@ internal sealed class RenderFrameMailbox : IDisposable
             Require(slot, State.Rendering);
             slot.Ownership = State.Releasing;
         }
+
         Recycle(slot);
     }
 
@@ -144,7 +147,9 @@ internal sealed class RenderFrameMailbox : IDisposable
     private void Recycle(Slot slot)
     {
         try
-        { slot.Frame?.Dispose(); }
+        {
+            slot.Frame?.Dispose();
+        }
         finally
         {
             lock (_gate)
@@ -172,6 +177,7 @@ internal sealed class RenderFrameMailbox : IDisposable
                 retired.Ownership = State.Releasing;
             // Building and Rendering belong to their callers until Publish/Abort/Release.
         }
+
         if (retired is not null)
             Recycle(retired);
     }

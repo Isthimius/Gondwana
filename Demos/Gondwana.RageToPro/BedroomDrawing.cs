@@ -77,6 +77,7 @@ internal sealed class BedroomDrawing : DirectDrawingBase
             c.DrawRoundRect(new SKRect(548, 205, 706, 374), 10, 10, _paint);
             _paint.Style = SKPaintStyle.Fill;
         }
+
         Label(c, _game.Playing ? "GG" : "...", 627, 294, 42, new SKColor(18, 24, 29), SKTextAlign.Center);
         _paint.Color = new SKColor(32, 34, 42);
         c.DrawRect(435, 392, 165, 16, _paint);
@@ -160,7 +161,11 @@ internal sealed class BedroomDrawing : DirectDrawingBase
     protected override void Dispose(bool disposing)
     {
         if (disposing)
-        { _paint.Dispose(); _text.Dispose(); }
+        {
+            _paint.Dispose();
+            _text.Dispose();
+        }
+
         base.Dispose(disposing);
     }
 }

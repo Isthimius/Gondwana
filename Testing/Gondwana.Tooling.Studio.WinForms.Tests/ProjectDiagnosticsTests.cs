@@ -50,6 +50,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
             Directory.CreateDirectory(FilePath(directory));
             File.WriteAllText(FilePath(directory + "/ignored.gts"), "bad");
         }
+
         File.WriteAllText(FilePath("ignored.txt"), "bad");
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         Assert.Equal(6, result.Definitions.Count);
@@ -138,6 +139,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
             assets.Add(AssetTypes.TilesheetDefinition, "tiles", stream);
             assets.Save();
         }
+
         AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
         {
             Key = "walk",
@@ -178,6 +180,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
             assets.Add(AssetTypes.TilesheetDefinition, "tiles-2", () => new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}")));
             assets.Save();
         }
+
         AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
         {
             Key = "walk",
@@ -278,13 +281,20 @@ public sealed class ProjectDiagnosticsTests : IDisposable
             Application.DoEvents();
             Thread.Sleep(10);
         }
+
         Assert.True(done(), "UI did not receive scan results before timeout.");
     }
 
     private static void RunSta(Action action)
     {
         Exception? error = null;
-        var thread = new Thread(() => { try { action(); } catch (Exception ex) { error = ex; } });
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action(); } catch (Exception ex) {
+                error = ex; }
+        });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();

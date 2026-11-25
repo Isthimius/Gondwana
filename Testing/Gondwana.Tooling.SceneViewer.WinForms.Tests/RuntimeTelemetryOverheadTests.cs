@@ -33,6 +33,7 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
             dynamic profiler = typeof(Engine).GetProperty("Profiler")!.GetValue(engine)!;
             request = profiler.Start();
         }
+
         try
         {
             for (int i = 0; i < 100000; i++)
@@ -47,7 +48,11 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                 output.WriteLine($"ENGINE mode={mode} run={run} ns_per_cycle={ns:F2} bytes_per_cycle={(GC.GetAllocatedBytesForCurrentThread() - bytes) / 1000000d:F4}");
             }
         }
-        finally { request?.Dispose(); GC.SuppressFinalize(engine); }
+        finally
+        {
+            request?.Dispose();
+            GC.SuppressFinalize(engine);
+        }
     }
 
     private sealed class BenchmarkFactAttribute : FactAttribute
@@ -71,8 +76,14 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
         var thread = new Thread(() =>
         {
             try
-            { Run(); completion.SetResult(); }
-            catch (Exception error) { completion.SetException(error); }
+            {
+                Run();
+                completion.SetResult();
+            }
+            catch (Exception error)
+            {
+                completion.SetException(error);
+            }
         })
         { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);
@@ -122,14 +133,23 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                             object profiler = typeof(Engine).GetProperty("Profiler")!.GetValue(Engine.Instance)!;
                             request = (IDisposable)profiler.GetType().GetMethod("Start")!.Invoke(profiler, null)!;
                         }
+
                         if (mode == "display")
                             typeof(SceneViewerGameHost).GetMethod("ToggleDiagnostics", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
                     }
-                    catch (Exception error) { failure = error; form.BeginInvoke(() => form.Close()); }
+                    catch (Exception error)
+                    {
+                        failure = error;
+                        form.BeginInvoke(() => form.Close());
+                    }
                 });
                 timer.Change(warmupMilliseconds, Timeout.Infinite);
             }
-            catch (Exception error) { failure = error; form.Close(); }
+            catch (Exception error)
+            {
+                failure = error;
+                form.Close();
+            }
         };
         sample = () =>
         {
@@ -154,15 +174,18 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                                 if (source.Metrics.ContainsKey(metric))
                                     output.WriteLine($"LAST_WINDOW source={source.Id} metric={metric} mean_ms={source.Metrics[metric].Mean} count={source.Metrics[metric].Count}");
                     }
+
                     if (warmupMilliseconds >= 30000)
                         output.WriteLine($"RETAINED_FULL_HISTORY run={phase} bytes={GC.GetTotalMemory(true)}");
                 }
+
                 if (++phase == 4)
                 {
                     output.WriteLine($"RETAINED warmup_bytes={retainedAtWarmup} end_bytes={GC.GetTotalMemory(true)}");
                     form.BeginInvoke(() => form.Close());
                     return;
                 }
+
                 ticks = now;
                 allocation = allocated;
                 cpu = currentCpu;
@@ -185,8 +208,15 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
             }
         };
         try
-        { Application.Run(form); }
-        finally { request?.Dispose(); host?.Dispose(); }
+        {
+            Application.Run(form);
+        }
+        finally
+        {
+            request?.Dispose();
+            host?.Dispose();
+        }
+
         if (failure is not null)
             throw failure;
     }

@@ -30,7 +30,11 @@ internal sealed class GameWindow : Window
             VerticalAlignment = VerticalAlignment.Stretch
         };
         Content = _surface;
-        KeyDown += (_, e) => { if (e.Key == Key.Escape) Close(); };
+        KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape)
+                Close();
+        };
     }
 
     protected override void OnOpened(EventArgs e)

@@ -63,6 +63,7 @@ internal static class SafeFilePath
                 throw new IOException($"Refusing symbolic link: {current}");
 
         }
+
         return destination;
     }
 }

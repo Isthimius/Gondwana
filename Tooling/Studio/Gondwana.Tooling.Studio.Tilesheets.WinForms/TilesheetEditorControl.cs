@@ -29,7 +29,12 @@ public sealed class TilesheetEditorControl : UserControl
     public float? PreviewZoom
     {
         get => _viewport.IsFit ? null : _viewport.Zoom;
-        set { if (value is { } zoom) _viewport.SetZoom(zoom); else _viewport.Fit(); }
+        set
+        {
+            if (value is { } zoom)
+                _viewport.SetZoom(zoom); else
+                _viewport.Fit();
+        }
     }
 
     private readonly OverlaySettings _overlaySettings;
@@ -113,7 +118,11 @@ public sealed class TilesheetEditorControl : UserControl
 
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
-        _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
+        _regions.SelectedIndexChanged += (_, _) =>
+        {
+            if (!_refreshing)
+                RefreshView();
+        };
         _paneDefinitions.SelectedIndexChanged += (_, _) =>
         {
             if (!_refreshing && _paneDefinitions.SelectedItem is TilesheetDefinition definition &&
@@ -450,7 +459,12 @@ public sealed class TilesheetEditorControl : UserControl
             return;
 
         _refreshPending = true;
-        BeginInvoke(() => { _refreshPending = false; if (!IsDisposed) RefreshView(); });
+        BeginInvoke(() =>
+        {
+            _refreshPending = false;
+            if (!IsDisposed)
+                RefreshView();
+        });
     }
 
     private void SelectFrame()
@@ -526,6 +540,7 @@ public sealed class TilesheetEditorControl : UserControl
             segments.Push(item.PropertyDescriptor?.Name ?? item.Label);
             item = item.Parent;
         }
+
         return string.Join("/", segments);
     }
 

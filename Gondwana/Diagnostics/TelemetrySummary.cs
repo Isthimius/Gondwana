@@ -74,6 +74,7 @@ public sealed record TelemetrySummary(
             if (value.WindowDelta is { } change)
                 delta = (delta ?? 0) + change;
         }
+
         return new(availability, count, sum, min, max, last)
         {
             Kind = kind ?? TelemetryMetricKind.Sample,

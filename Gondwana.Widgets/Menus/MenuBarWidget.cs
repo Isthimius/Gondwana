@@ -45,6 +45,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             if (_itemsByKey.ContainsKey(key))
                 throw new ArgumentException($"Duplicate menu item key '{key}'.", nameof(key));
         }
+
         if (shortcut is { } gesture)
         {
             if (gesture.Key <= 0)
@@ -234,6 +235,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             header.Dispose();
             throw;
         }
+
         PositionDropDown(headerBounds, dropDown);
 
         var menu = new MenuBarMenu(header, dropDown);
@@ -376,6 +378,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             command.PerformClick();
             return;
         }
+
         if (args.Modifiers == KeyboardModifierState.Alt)
         {
             int index = _menus.FindIndex(menu => MatchesMnemonic(menu.Header.Mnemonic, args.Key));
@@ -387,6 +390,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
                 return;
             }
         }
+
         if (_openMenuIndex < 0 || args.Modifiers != KeyboardModifierState.None)
             return;
         var dropDown = _menus[_openMenuIndex].DropDown.ActiveMenu;
@@ -427,6 +431,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
                 item.PerformClick();
                 break;
         }
+
         args.Handled = true;
     }
 

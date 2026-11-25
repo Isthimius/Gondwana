@@ -33,7 +33,12 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     /// <inheritdoc />
     public bool Loop { get => _loop; set => _loop = value; }
     /// <inheritdoc />
-    public bool IsPlaying { get { lock (_control) return !_disposed && _player.IsPlaying; } }
+    public bool IsPlaying { get
+        {
+            lock (_control)
+                return !_disposed && _player.IsPlaying;
+        }
+    }
     /// <inheritdoc />
     public VideoMetadata Metadata => _metadata.Current;
     /// <inheritdoc />
@@ -43,9 +48,19 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     /// <inheritdoc />
     public TimeSpan Duration => Metadata.Duration;
     /// <inheritdoc />
-    public TimeSpan Position { get { lock (_control) return _disposed ? TimeSpan.Zero : TimeSpan.FromMilliseconds(Math.Max(0, _player.Time)); } }
+    public TimeSpan Position { get
+        {
+            lock (_control)
+                return _disposed ? TimeSpan.Zero : TimeSpan.FromMilliseconds(Math.Max(0, _player.Time));
+        }
+    }
     /// <summary>Decoded source dimensions, or (0,0) before format negotiation. No presentation scaling is requested.</summary>
-    public (int width, int height) NaturalSize { get { lock (_frames) return _naturalSize; } }
+    public (int width, int height) NaturalSize { get
+        {
+            lock (_frames)
+                return _naturalSize;
+        }
+    }
     /// <summary>The most recent native callback or playback failure, if any.</summary>
     public Exception? LastError => Volatile.Read(ref _lastError);
     /// <inheritdoc />
@@ -79,13 +94,20 @@ public sealed class VlcVideoPlayer : IVideoPlayer
             Core.Initialize();
             _vlc = new LibVLC(vlcArgs ?? []);
             try
-            { _player = new MediaPlayer(_vlc); }
-            catch { _vlc.Dispose(); throw; }
+            {
+                _player = new MediaPlayer(_vlc);
+            }
+            catch
+            {
+                _vlc.Dispose();
+                throw;
+            }
         }
         catch (Exception ex) when (ex is DllNotFoundException or BadImageFormatException or TypeInitializationException or VLCException)
         {
             throw new InvalidOperationException("Gondwana.Video could not load native LibVLC 3. Add VideoLAN.LibVLC.Windows to the Windows app, or VideoLAN.LibVLC.Mac to a compatible macOS app; on Linux install libvlc-dev and VLC codec plugins. Match the process architecture and deploy the plugins directory. See Gondwana.Video/README.md. For a custom runtime call LibVLCSharp.Shared.Core.Initialize(path) before creating the player.", ex);
         }
+
         _lockCb = LockFrame;
         _unlockCb = (_, _, _) => { };
         _displayCb = DisplayFrame;
@@ -138,10 +160,15 @@ public sealed class VlcVideoPlayer : IVideoPlayer
                     input.Dispose();
                     return;
                 }
+
                 _input = input;
                 _ownedStream = leaveOpen ? null : source;
             }
-            catch { input.Dispose(); throw; }
+            catch
+            {
+                input.Dispose();
+                throw;
+            }
             // Do not preparse and play against the same stream cursor concurrently.
             // LibVLC discovers stream tracks during playback; Playing publishes metadata.
         }
@@ -164,6 +191,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
             generation = 0;
             return false;
         }
+
         _media = create();
         _player.Media = _media;
         generation = _generation = _metadata.Begin();
@@ -179,9 +207,18 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     {
         MediaParsedStatus status;
         try
-        { status = await parse.ConfigureAwait(false); }
-        catch (OperationCanceledException) { return; }
-        catch (Exception ex) { Volatile.Write(ref _lastError, ex); status = MediaParsedStatus.Failed; }
+        {
+            status = await parse.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception ex)
+        {
+            Volatile.Write(ref _lastError, ex);
+            status = MediaParsedStatus.Failed;
+        }
         // Always queue: even a synchronous Parse completion must not raise user events inside Open.
         QueueForSource(generation, () => PublishMetadata(media, status == MediaParsedStatus.Done));
     }
@@ -203,8 +240,13 @@ public sealed class VlcVideoPlayer : IVideoPlayer
             if (_disposed || generation != _generation)
                 return;
             try
-            { action(); }
-            catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Volatile.Write(ref _lastError, ex);
+            }
         }
     });
 
@@ -261,7 +303,11 @@ public sealed class VlcVideoPlayer : IVideoPlayer
                 _naturalSize = (buffer.Width, buffer.Height);
             return 1;
         }
-        catch (Exception ex) { Volatile.Write(ref _lastError, ex); return 0; }
+        catch (Exception ex)
+        {
+            Volatile.Write(ref _lastError, ex);
+            return 0;
+        }
     }
     private IntPtr LockFrame(IntPtr opaque, IntPtr planes)
     {
@@ -273,6 +319,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
                 return IntPtr.Zero;
             Marshal.WriteIntPtr(planes, buffer.Pixels);
         }
+
         return IntPtr.Zero;
     }
     private void DisplayFrame(IntPtr opaque, IntPtr picture)
@@ -286,7 +333,10 @@ public sealed class VlcVideoPlayer : IVideoPlayer
                 FrameReady?.Invoke(this, new(buffer.Pixels, buffer.Width, buffer.Height, buffer.Stride, 0));
             }
         }
-        catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
+        catch (Exception ex)
+        {
+            Volatile.Write(ref _lastError, ex);
+        }
     }
     private void CleanupFormat(ref IntPtr opaque)
     {
@@ -300,20 +350,53 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         }
     }
     /// <inheritdoc />
-    public void Play() { lock (_control) { ThrowIfDisposed(); ++_playbackRevision; _playRequested = true; _player.Play(); } }
+    public void Play()
+    {
+        lock (_control)
+        {
+            ThrowIfDisposed();
+            ++_playbackRevision;
+            _playRequested = true;
+            _player.Play(); }
+    }
     /// <inheritdoc />
-    public void Pause() { lock (_control) { ThrowIfDisposed(); ++_playbackRevision; _playRequested = false; _player.SetPause(true); } }
+    public void Pause()
+    {
+        lock (_control)
+        {
+            ThrowIfDisposed();
+            ++_playbackRevision;
+            _playRequested = false;
+            _player.SetPause(true); }
+    }
     /// <inheritdoc />
-    public void Stop() { lock (_control) { ThrowIfDisposed(); ++_playbackRevision; _playRequested = false; _player.Stop(); } }
+    public void Stop()
+    {
+        lock (_control)
+        {
+            ThrowIfDisposed();
+            ++_playbackRevision;
+            _playRequested = false;
+            _player.Stop(); }
+    }
     /// <inheritdoc />
-    public void Seek(TimeSpan position) { lock (_control) { ThrowIfDisposed(); _player.Time = Math.Max(0, (long)position.TotalMilliseconds); } }
+    public void Seek(TimeSpan position)
+    {
+        lock (_control)
+        {
+            ThrowIfDisposed();
+            _player.Time = Math.Max(0, (long)position.TotalMilliseconds); }
+    }
     /// <inheritdoc />
     public void SetRate(double rate)
     {
         if (!double.IsFinite(rate) || rate <= 0)
             throw new ArgumentOutOfRangeException(nameof(rate));
         lock (_control)
-        { ThrowIfDisposed(); _player.SetRate((float)rate); }
+        {
+            ThrowIfDisposed();
+            _player.SetRate((float)rate);
+        }
     }
     private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
     private void ReleaseMedia()
@@ -321,15 +404,25 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         _playRequested = false;
         _player.Stop(); // Joins decoder callbacks before media/input/buffer ownership is released.
         lock (_frames)
-        { _decodeBuffer?.Dispose(); _decodeBuffer = null; }
+        {
+            _decodeBuffer?.Dispose();
+            _decodeBuffer = null;
+        }
+
         _parseCancellation?.Cancel();
         if (_parseTask is not null)
         {
             try
-            { _parseTask.GetAwaiter().GetResult(); }
+            {
+                _parseTask.GetAwaiter().GetResult();
+            }
             catch (OperationCanceledException) { }
-            catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
+            catch (Exception ex)
+            {
+                Volatile.Write(ref _lastError, ex);
+            }
         }
+
         _parseTask = null;
         _parseCancellation?.Dispose();
         _parseCancellation = null;

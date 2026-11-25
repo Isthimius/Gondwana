@@ -80,7 +80,11 @@ public sealed partial class PluginPackageTests
             panel.CancelButton.PerformClick();
             WaitForPackageCondition(() => panel.PendingGrid.Rows.Count == 0);
         }
-        finally { SynchronizationContext.SetSynchronizationContext(context); }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(context);
+        }
+
         Assert.Contains("Restart required", panel.StatusLabel.Text);
         preferences.TrySetEnabled("temporarily.missing", true, out _);
         panel.RefreshSnapshot();
@@ -167,7 +171,11 @@ public sealed partial class PluginPackageTests
     {
         var deadline = DateTime.UtcNow.AddSeconds(20);
         while (!completed() && DateTime.UtcNow < deadline)
-        { Application.DoEvents(); Thread.Sleep(10); }
+        {
+            Application.DoEvents();
+            Thread.Sleep(10);
+        }
+
         Assert.True(completed(), "Package operation did not complete.");
     }
 }

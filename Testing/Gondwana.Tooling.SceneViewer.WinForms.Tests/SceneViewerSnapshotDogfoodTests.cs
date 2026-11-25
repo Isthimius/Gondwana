@@ -35,8 +35,14 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         var thread = new Thread(() =>
         {
             try
-            { Run(scene); completion.SetResult(); }
-            catch (Exception exception) { completion.SetException(exception); }
+            {
+                Run(scene);
+                completion.SetResult();
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
         });
         thread.SetApartmentState(ApartmentState.STA);
         thread.IsBackground = true;
@@ -76,6 +82,7 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                 form.Close();
                 return;
             }
+
             Engine.Instance.EngineDispatcher.Post(() =>
             {
                 surface.Host.ViewManager.Views[0].Viewport.Zoom = .125f;
@@ -185,8 +192,14 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
             timer.Change(6000, 6000);
         };
         try
-        { Application.Run(form); }
-        finally { gameHost?.Dispose(); }
+        {
+            Application.Run(form);
+        }
+        finally
+        {
+            gameHost?.Dispose();
+        }
+
         if (failure is not null)
             throw failure;
         output.WriteLine("RUNNING\n" + running);

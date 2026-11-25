@@ -294,7 +294,11 @@ public sealed class EngineInitializationTests
         var cycle = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         SetCycleTask(engine, cycle.Task);
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var stopping = Task.Run(() => { entered.SetResult(); engine.StopAndWait(); });
+        var stopping = Task.Run(() =>
+        {
+            entered.SetResult();
+            engine.StopAndWait();
+        });
         try
         {
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -324,7 +328,10 @@ public sealed class EngineInitializationTests
             SetCycleTask(engine, new TaskCompletionSource().Task);
             Assert.Throws<InvalidOperationException>(() => engine.StopAndWait());
         }
-        finally { GC.SuppressFinalize(engine); }
+        finally
+        {
+            GC.SuppressFinalize(engine);
+        }
     }
 
     private static Engine CreateEngineInstance() =>

@@ -131,6 +131,7 @@ internal sealed class AssetTypeMap
                         throw new InvalidDataException($"Native extension '.{extension}' must map to {native}, not {type}.");
                 }
             }
+
             var map = BuildDefault()._map;
             foreach (var pair in configured)
                 map[pair.Key] = pair.Value;

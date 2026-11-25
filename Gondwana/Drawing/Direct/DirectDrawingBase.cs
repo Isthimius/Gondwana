@@ -815,6 +815,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
                 {
                     sceneLayer.RefreshQueue.AddViewScreenRect(View!, sceneLayer, _screenBounds);
                 }
+
                 break;
 
             default:

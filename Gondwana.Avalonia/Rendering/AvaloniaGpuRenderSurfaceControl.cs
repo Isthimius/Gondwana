@@ -91,6 +91,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
                 Trace.TraceError("Gondwana Avalonia GPU: could not create a GRGlInterface from the current OpenGL context. Check the Windows GPU backend and driver.");
                 return;
             }
+
             _grContext = GRContext.CreateGl(_glInterface);
             if (_grContext == null)
             {
@@ -220,6 +221,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
             if (_grContext is null)
                 _gpuBackbuffer?.Dispose();
         }
+
         GC.SuppressFinalize(this);
     }
 }

@@ -71,6 +71,7 @@ public sealed partial class ViewerTests
             Pack("animations.gaf", AssetTypes.AnimationDefinition, "unrelated-entry", File.ReadAllText(animationPath));
             File.Delete(animationPath);
         }
+
         if (packedSheet)
             PackSheet();
         using var scene = new ViewerSceneLoader().Load(ScenePath);

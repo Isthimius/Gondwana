@@ -11,7 +11,11 @@ public static partial class AudioDefinitionSerializer
     /// <returns>The complete definition document.</returns>
     public static AudioDefinitionDocument FromDocumentJson(string json, string? sourceIdentity = null) => new()
     {
-        Definitions = DefinitionDocumentJson.Read<AudioDefinition>(json, json => ParseDefinition(json, null), definition => definition.Key, definition => { if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred ? inferred : "audio"; })
+        Definitions = DefinitionDocumentJson.Read<AudioDefinition>(json, json => ParseDefinition(json, null), definition => definition.Key, definition =>
+        {
+            if (string.IsNullOrWhiteSpace(definition.Key))
+                definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred ? inferred : "audio";
+        })
     };
 
     /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
@@ -37,6 +41,7 @@ public static partial class AudioDefinitionSerializer
             definition.Source = AudioDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -71,6 +76,7 @@ public static partial class AudioDefinitionSerializer
                 : AudioDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
             definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -82,8 +88,14 @@ public static partial class AudioDefinitionSerializer
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
         try
-        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
                 errors.AddRange(AudioDefinitionValidator.Validate(definition).Select(error => $"Audio '{definition.Key}': {error}"));
@@ -138,6 +150,7 @@ public static partial class AudioDefinitionSerializer
             resource.FilePath = RebasePath(resource.FilePath);
             resource.AssetsFilePath = RebasePath(resource.AssetsFilePath);
         }
+
         clone.Source = AudioDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }

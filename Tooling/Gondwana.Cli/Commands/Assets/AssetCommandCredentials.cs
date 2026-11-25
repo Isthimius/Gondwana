@@ -18,6 +18,7 @@ internal static class AssetCommandCredentials
                     throw new InvalidDataException("Credential keys must be absolute archive paths.");
                 credentials.Add(Path.GetFullPath(pair.Key), pair.Value);
             }
+
         return credentials;
     }
 }

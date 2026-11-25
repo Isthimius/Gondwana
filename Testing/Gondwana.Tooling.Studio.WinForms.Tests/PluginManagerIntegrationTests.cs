@@ -143,6 +143,7 @@ public sealed partial class PluginPackageTests
             Assert.True(pane.IsHidden);
             Assert.False(pane.IsDisposed);
         }
+
         using (var restored = new MainForm(loadPlugins: true, pluginDirectory: missing) { ShowInTaskbar = false })
         {
             restored.Show();
@@ -170,8 +171,13 @@ public sealed partial class PluginPackageTests
         var thread = new Thread(() =>
         {
             try
-            { action(); }
-            catch (Exception ex) { error = ex; }
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();

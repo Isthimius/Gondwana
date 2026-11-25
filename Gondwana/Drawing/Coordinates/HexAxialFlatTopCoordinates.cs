@@ -183,6 +183,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
             var r = GetPixelRangeForTile(t, includeOverhang);
             ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
         }
+
         return ret;
     }
 
@@ -303,6 +304,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
                 inside = !inside;
             j = i;
         }
+
         return inside;
     }
 

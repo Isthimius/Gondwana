@@ -35,6 +35,7 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                 using var frame = RenderFrame(sprite, i, token);
                 canvas.DrawBitmap(frame, (i % columns) * sprite.Width, (i / columns) * sprite.Height);
             }
+
         using var png = atlas.Encode(SKEncodedImageFormat.Png, 100);
         plan.Add(name + ".atlas.png", "PNG", null, png.ToArray());
         var gts = new TilesheetDefinition { Name = name, Image = new() { FilePath = name + ".atlas.png" } };
@@ -59,9 +60,11 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                     var pass = tag.Direction >= 2 && repetition % 2 != 0 ? sequence.AsEnumerable().Reverse() : sequence;
                     expanded.AddRange(tag.Direction >= 2 && repetition > 0 && sequence.Count > 1 ? pass.Skip(1) : pass);
                 }
+
                 sequence = expanded;
                 type = CycleType.Simple;
             }
+
             var gani = new AnimationDefinition
             {
                 Key = name + "." + key,
@@ -96,6 +99,7 @@ public sealed class AsepriteImporter : ExternalAssetImporter
             if (layer.Type == 1)
                 stack.Add(i);
         }
+
         var cels = sprite.Frames[frameIndex].Cels.ToDictionary(c => c.Layer);
         if (cels.Keys.Any(i => i < 0 || i >= sprite.Layers.Count))
             throw new InvalidDataException("Cel references an unknown layer.");
@@ -114,8 +118,10 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                 source = sprite.Frames[current].Cels.SingleOrDefault(c => c.Layer == cel.Layer)
                     ?? throw new InvalidDataException("Linked cel target is missing.");
             }
+
             return cel with { Width = source.Width, Height = source.Height, Pixels = source.Pixels, LinkedFrame = null };
         }
+
         SKBitmap RenderGroup(int parent)
         {
             var bitmap = new SKBitmap(sprite.Width, sprite.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
@@ -140,6 +146,7 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                         canvas.DrawBitmap(group, 0, 0, paint);
                         continue;
                     }
+
                     if (!cels.TryGetValue(i, out var cel))
                         continue;
                     var image = Resolve(cel);
@@ -164,13 +171,20 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                             pixels.SetPixel(x, y, color);
                         }
                     }
+
                     using var celPaint = new SKPaint { Color = SKColors.White.WithAlpha((byte)((cel.Opacity * layer.Opacity + 127) / 255)) };
                     canvas.DrawBitmap(pixels, cel.X, cel.Y, celPaint);
                 }
+
                 return bitmap;
             }
-            catch { bitmap.Dispose(); throw; }
+            catch
+            {
+                bitmap.Dispose();
+                throw;
+            }
         }
+
         return RenderGroup(-1);
     }
 }

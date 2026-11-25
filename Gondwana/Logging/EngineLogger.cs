@@ -162,7 +162,9 @@ public static partial class EngineLogger
 
             // Completing the writer lets the worker drain then exit.
             try
-            { ch.Writer.TryComplete(); }
+            {
+                ch.Writer.TryComplete();
+            }
             catch { /* ignore */ }
 
             // Clear shared references so other threads can't enqueue on this instance.
@@ -172,19 +174,25 @@ public static partial class EngineLogger
         }
 
         try
-        { cts?.Cancel(); }
+        {
+            cts?.Cancel();
+        }
         catch { /* never crash */ }
 
         if (flush)
         {
             var timeout = flushTimeout ?? TimeSpan.FromSeconds(2);
             try
-            { worker!.Wait(timeout); }
+            {
+                worker!.Wait(timeout);
+            }
             catch { /* never crash */ }
         }
 
         try
-        { cts?.Dispose(); }
+        {
+            cts?.Dispose();
+        }
         catch { /* ignore */ }
     }
 
@@ -349,7 +357,9 @@ public static partial class EngineLogger
         {
             // Best-effort stop without flush; caller controls flush via StopAsyncLogging.
             try
-            { _channel.Writer.TryComplete(); }
+            {
+                _channel.Writer.TryComplete();
+            }
             catch { /* ignore */ }
         }
 

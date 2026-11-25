@@ -569,6 +569,7 @@ public sealed partial class EngineState
             if (snapshot.Tilesheets is not null)
                 parts |= EngineStateParts.Tilesheets;
         }
+
         if (parts.HasFlag(EngineStateParts.Scenes) && snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true)
         {
             if (snapshot.Cycles is not null)
@@ -663,6 +664,7 @@ public sealed partial class EngineState
             entry.GsprPath = loosePath;
             return entry;
         }
+
         if (persistence != DefinitionPersistence.Loose)
             return new() { Definition = definition };
         var path = Path.Combine(Path.GetDirectoryName(engineStatePath)!,
@@ -707,10 +709,12 @@ public sealed partial class EngineState
                 resource.AssetsFilePath = null;
                 resource.AssetEntryName = null;
             }
+
             var definitionPath = Path.Combine(directory, "audio.gsnd");
             AudioDefinitionSerializer.Save(definitionPath, currentAudio);
             return new AudioStateEntry { GsndPath = MakeRelativePath(definitionPath, baseDirectory) };
         }
+
         if (persistence == DefinitionPersistence.Loose)
         {
             var gsndDirectory = GetAudioStateDirectory(engineStatePath);
@@ -945,6 +949,7 @@ public sealed partial class EngineState
                             () => SpriteDefinitionSerializer.ToSprites(definition, allowDuplicateNicknames: true));
                         DetachSnapshotSprites(incoming);
                     }
+
                     MergeSprites(incoming, overwriteExisting);
                 }
         }
@@ -1097,6 +1102,7 @@ public sealed partial class EngineState
                         existing.PlaybackSpeed = spec.PlaybackSpeed;
                         existing.IsLooping = spec.IsLooping;
                     }
+
                     continue;
                 }
 

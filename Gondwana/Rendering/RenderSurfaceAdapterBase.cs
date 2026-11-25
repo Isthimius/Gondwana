@@ -137,6 +137,7 @@ public abstract class RenderSurfaceAdapterBase
             var state = _presentation;
             Volatile.Write(ref _presentation, new(state.BufferWidth, state.BufferHeight, destWidth, destHeight));
         }
+
         Resized?.Invoke(new RenderSurfaceAdapterResizedEventArgs(this, oldWidth, oldHeight, Width, Height));
     }
 

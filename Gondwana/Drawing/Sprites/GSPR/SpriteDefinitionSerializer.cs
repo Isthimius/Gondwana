@@ -85,7 +85,10 @@ public static partial class SpriteDefinitionSerializer
                 throw new InvalidDataException("GSPR collections cannot contain null entries.");
             return definition;
         }
-        catch (JsonException ex) { throw new InvalidDataException("Failed to deserialize GSPR JSON.", ex); }
+        catch (JsonException ex)
+        {
+            throw new InvalidDataException("Failed to deserialize GSPR JSON.", ex);
+        }
     }
 
     /// <summary>
@@ -117,16 +120,19 @@ public static partial class SpriteDefinitionSerializer
             source.GtsPath = RebasePath(source.GtsPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.SceneSources)
         {
             source.GscnPath = RebasePath(source.GscnPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.AnimationSources)
         {
             source.GaniPath = RebasePath(source.GaniPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         return clone;
     }
 
@@ -312,6 +318,7 @@ public static partial class SpriteDefinitionSerializer
                         sprite.TileAnimator.StartAnimation();
                 }
             }
+
             SpriteManager.Instance.DefinitionProvenance = definition.Sprites.All(sprite => sprite.Id != Guid.Empty &&
                 !string.IsNullOrWhiteSpace(sprite.Nickname))
                 ? definition.LoadStamp?.Materialized(definition, () => FromSprites(created))
@@ -327,6 +334,7 @@ public static partial class SpriteDefinitionSerializer
                 SpriteManager.Instance._spriteList.Remove(sprite);
                 sprite.DisposeImmediate();
             }
+
             throw;
         }
     }

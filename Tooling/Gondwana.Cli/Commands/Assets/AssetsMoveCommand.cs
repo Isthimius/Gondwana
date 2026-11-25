@@ -73,14 +73,22 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
                 plan = AssetRelocationPlan.Create(settings.Scope, [new(new(type, Path.GetFullPath(settings.Source), settings.SourceEntry),
                     new(type, Path.GetFullPath(settings.Destination), settings.DestinationEntry))], path => credentials.GetValueOrDefault(path), cancellationToken);
             }
+
             foreach (var line in plan.Preview)
                 AnsiConsole.WriteLine(line);
             if (settings.Commit)
-            { plan.Commit(cancellationToken); AnsiConsole.WriteLine("Move committed; original locations retired."); }
+            {
+                plan.Commit(cancellationToken);
+                AnsiConsole.WriteLine("Move committed; original locations retired.");
+            }
             else
                 AnsiConsole.WriteLine("Preview only. Use --commit to execute after saving/closing affected editors.");
             return 0;
         }
-        catch (Exception ex) { AnsiConsole.WriteLine(ex.Message); return 1; }
+        catch (Exception ex)
+        {
+            AnsiConsole.WriteLine(ex.Message);
+            return 1;
+        }
     }
 }

@@ -61,8 +61,13 @@ public class StudioPluginHost
             if (plugin.Instance is not IStudioPluginHostServicesAware aware)
                 continue;
             try
-            { aware.AttachHostServices(services); }
-            catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex}"); }
+            {
+                aware.AttachHostServices(services);
+            }
+            catch (Exception ex)
+            {
+                DisablePlugin(plugin, $"AttachHostServices threw: {ex}");
+            }
         }
     }
 
@@ -89,6 +94,7 @@ public class StudioPluginHost
                 _log($"[Plugin] Directory not found: {pluginDir}");
                 return;
             }
+
             _sharedAssemblies ??= PluginLoadContext.GetSharedAssemblies(_sharedContracts);
             var candidates = new List<string>();
             foreach (var directory in Directory.GetDirectories(pluginDir).Order(StringComparer.Ordinal))
@@ -119,6 +125,7 @@ public class StudioPluginHost
                     LogResult(_discovery[source][0]);
                 }
             }
+
             foreach (var source in candidates)
             {
                 var info = _discovery[source][0];
@@ -127,6 +134,7 @@ public class StudioPluginHost
                 else
                     LogResult(info);
             }
+
             foreach (var dll in Directory.GetFiles(pluginDir).Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).Order(StringComparer.Ordinal))
             {
                 if (_discovery.ContainsKey(dll))
@@ -145,7 +153,10 @@ public class StudioPluginHost
             _discovery[pluginDir + Path.DirectorySeparatorChar] = [info];
             LogResult(info);
         }
-        finally { DiscoveryChanged?.Invoke(this, EventArgs.Empty); }
+        finally
+        {
+            DiscoveryChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private PluginDiscoveryInfo StartupChoice(PluginDiscoveryInfo info, string? id)
@@ -299,6 +310,7 @@ public class StudioPluginHost
                         LogResult(rows[^1]);
                         continue;
                     }
+
                     try
                     {
                         var plugin = (IStudioPlugin)Activator.CreateInstance(type)!;
@@ -316,10 +328,12 @@ public class StudioPluginHost
                         };
                     }
                 }
+
                 rows.Add(row);
                 if (row.Status != PluginLoadStatus.Loaded)
                     LogResult(row);
             }
+
             if (rows.Count == 0 && !info.IsLegacy)
             {
                 rows.Add(info with { Status = PluginLoadStatus.FailedToLoad, Diagnostic = "No concrete IStudioPlugin implementation found in entry assembly." });

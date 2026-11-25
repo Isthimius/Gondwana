@@ -137,6 +137,7 @@ public sealed class Phase2HistoryTests : IDisposable
             archive.Add(type, "typed/member", () => new MemoryStream(bytes));
             archive.Save();
         }
+
         using var packed = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
         dynamic opened = format switch
         {
@@ -227,7 +228,11 @@ public sealed class Phase2HistoryTests : IDisposable
         Assert.Null(first.Frame);
         d.History.Redo();
         Assert.Same(frame, first.Frame);
-        d.Edit(first, "Assign scene layer", () => { first.SceneId = "scene"; first.SceneLayerId = "layer"; });
+        d.Edit(first, "Assign scene layer", () =>
+        {
+            first.SceneId = "scene";
+            first.SceneLayerId = "layer";
+        });
         d.History.Undo();
         Assert.Equal("", first.SceneId);
         Assert.Equal("", first.SceneLayerId);
@@ -236,7 +241,11 @@ public sealed class Phase2HistoryTests : IDisposable
         Assert.Equal("layer", first.SceneLayerId);
         properties.AnimationKey = "walk";
         properties.StartAnimation = true;
-        d.Edit(first, "Clear animation", () => { first.AnimationKey = null; first.StartAnimation = false; });
+        d.Edit(first, "Clear animation", () =>
+        {
+            first.AnimationKey = null;
+            first.StartAnimation = false;
+        });
         d.History.Undo();
         Assert.Equal("walk", first.AnimationKey);
         Assert.True(first.StartAnimation);

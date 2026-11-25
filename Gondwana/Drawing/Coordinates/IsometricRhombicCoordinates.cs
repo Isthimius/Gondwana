@@ -90,6 +90,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
                     result.Add(gp);
             }
         }
+
         return result;
     }
 
@@ -122,6 +123,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
             var r = GetPixelRangeForTile(t, includeOverhang);
             ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
         }
+
         return ret;
     }
 

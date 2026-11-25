@@ -40,6 +40,7 @@ internal sealed class CollisionAdjustConverter : ExpandableObjectConverter
             var insets = parts.Select(p => int.Parse(p.Trim(), CultureInfo.InvariantCulture)).ToArray();
             return new CollisionAdjust(top: insets[0], bottom: insets[2], left: insets[3], right: insets[1]);
         }
+
         return base.ConvertFrom(context, culture, value);
     }
 

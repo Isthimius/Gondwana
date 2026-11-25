@@ -64,8 +64,13 @@ public sealed class DocumentSourceMonitor : IDisposable
                     watcher.EnableRaisingEvents = _enableWatchers;
                     _watchers.Add(directory, watcher);
                 }
-                catch { watcher.Dispose(); throw; }
+                catch
+                {
+                    watcher.Dispose();
+                    throw;
+                }
             }
+
             var registration = new Registration(this, location, accepted, role, changed, password);
             _registrations.Add(registration);
             Schedule(registration); // Covers changes between the opening read and registration.
@@ -133,6 +138,7 @@ public sealed class DocumentSourceMonitor : IDisposable
                     Schedule(registration);
                     continue;
                 }
+
                 if (state is not true && System.Diagnostics.Stopwatch.GetElapsedTime(registration.CandidateAt) < _debounce)
                     continue;
                 registration.Pending = false;
@@ -141,6 +147,7 @@ public sealed class DocumentSourceMonitor : IDisposable
                 if (!registration.Closed && current.Status == DocumentSourceStatus.Inaccessible)
                     Schedule(registration);
             }
+
             if (!_disposed && !_registrations.Any(r => r.Pending))
             {
                 _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
@@ -151,7 +158,12 @@ public sealed class DocumentSourceMonitor : IDisposable
 
     internal void VerifyPending() => Tick(true);
 
-    internal int DirectoryCount { get { lock (_gate) return _watchers.Count; } }
+    internal int DirectoryCount { get
+        {
+            lock (_gate)
+                return _watchers.Count;
+        }
+    }
 
     public void Dispose()
     {
@@ -183,11 +195,23 @@ public sealed class DocumentSourceMonitor : IDisposable
         private DocumentSourceVersion _accepted, _observed;
         public AssetLocation Location { get; }
         public DocumentSourceRole Role { get; }
-        public DocumentSourceVersion Accepted { get { lock (_owner._gate) return _accepted; } }
+        public DocumentSourceVersion Accepted { get
+            {
+                lock (_owner._gate)
+                    return _accepted;
+            }
+        }
 
         internal Registration(DocumentSourceMonitor owner, AssetLocation location, DocumentSourceVersion accepted,
             DocumentSourceRole role, Action<DocumentSourceChange> changed, string? password)
-        { _owner = owner; Location = location; _accepted = _observed = accepted; Role = role; _changed = changed; Password = password; }
+        {
+            _owner = owner;
+            Location = location;
+            _accepted = _observed = accepted;
+            Role = role;
+            _changed = changed;
+            Password = password;
+        }
 
         /// <summary>Accept only the exact version successfully loaded or saved, not a fresh post-save disk read.</summary>
         public void Accept(DocumentSourceVersion version)
@@ -228,6 +252,7 @@ public sealed class DocumentSourceMonitor : IDisposable
                     Candidate = null;
                     _owner.Schedule(this);
                 }
+
                 return Observe(current);
             }
         }
@@ -250,9 +275,15 @@ public sealed class DocumentSourceMonitor : IDisposable
                 _observed = current;
                 // Recovery to accepted content is meaningful after a missing/inaccessible observation.
                 try
-                { _changed(change); }
-                catch (Exception ex) { System.Diagnostics.Trace.TraceError("Document source notification failed: {0}", ex); }
+                {
+                    _changed(change);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError("Document source notification failed: {0}", ex);
+                }
             }
+
             return change;
         }
 

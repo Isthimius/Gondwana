@@ -52,7 +52,11 @@ public sealed class AudioTests : IDisposable
         var completed = 0;
         var asyncCompleted = 0;
         sound.PlaybackCompleted += (_, _) => completed++;
-        sound.PlaybackCompletedAsync = () => { asyncCompleted++; return Task.CompletedTask; };
+        sound.PlaybackCompletedAsync = () =>
+        {
+            asyncCompleted++;
+            return Task.CompletedTask;
+        };
         handle.Complete();
         Assert.Equal(1, completed);
         Assert.Equal(1, asyncCompleted);
@@ -111,7 +115,11 @@ public sealed class AudioTests : IDisposable
             sound.Dispose();
             Assert.Equal(1, notifications);
         }
-        finally { manager.SoundDisposed -= OnDisposed; }
+        finally
+        {
+            manager.SoundDisposed -= OnDisposed;
+        }
+
         manager.ConfigureBackend(new Backend());
     }
 
@@ -133,7 +141,10 @@ public sealed class AudioTests : IDisposable
             JsonConvert.DeserializeObject<AudioResource>(json)!.ReloadIntoManager();
             Assert.Equal(new byte[] { 1, 2, 3 }, manager.Get("copy")!.OriginalBytes);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
@@ -193,7 +204,10 @@ public sealed class AudioTests : IDisposable
             Assert.Equal(2f, sound.PlaybackSpeed);
             Assert.Single(backend.Handles);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
@@ -556,7 +570,12 @@ public sealed class AudioTests : IDisposable
         /// </summary>
         public bool Disposed { get; private set; }
         /// <inheritdoc/>
-        public void Play(bool fromStart = true) { if (fromStart) CurrentTime = TimeSpan.Zero; State = AudioPlaybackState.Playing; }
+        public void Play(bool fromStart = true)
+        {
+            if (fromStart)
+                CurrentTime = TimeSpan.Zero;
+            State = AudioPlaybackState.Playing;
+        }
         /// <inheritdoc/>
         public void Pause() => State = AudioPlaybackState.Paused;
         /// <inheritdoc/>
@@ -568,7 +587,11 @@ public sealed class AudioTests : IDisposable
         /// <summary>
         /// Simulates playback completion for the test.
         /// </summary>
-        public void Complete() { State = AudioPlaybackState.Stopped; PlaybackCompleted?.Invoke(this, EventArgs.Empty); }
+        public void Complete()
+        {
+            State = AudioPlaybackState.Stopped;
+            PlaybackCompleted?.Invoke(this, EventArgs.Empty);
+        }
         /// <summary>
         /// Releases the resources owned by this instance.
         /// </summary>

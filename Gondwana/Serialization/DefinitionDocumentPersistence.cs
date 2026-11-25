@@ -42,6 +42,7 @@ internal static class DefinitionDocumentPersistence
                 File.Move(temporary, path, overwrite: true);
                 return;
             }
+
             var replacing = File.Exists(path);
             beforeInstall(temporary);
             if (replacing)
@@ -49,7 +50,11 @@ internal static class DefinitionDocumentPersistence
             else
                 File.Move(temporary, path);
         }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        finally
+        {
+            if (File.Exists(temporary))
+                File.Delete(temporary);
+        }
     }
 
     private sealed class DocumentResolver : DefaultContractResolver

@@ -23,7 +23,11 @@ internal sealed partial class MainForm
             Invalidate = tab.Editor.SourcePackages.Invalidate,
             Roots = () => [(Owner(), model.SerializePacked())],
             SaveAs = () => SaveDocument(tab, true),
-            RefreshPreviews = () => { tab.Editor.ReloadSources(); return tab.Editor.SourcesLoadedSuccessfully; },
+            RefreshPreviews = () =>
+            {
+                tab.Editor.ReloadSources();
+                return tab.Editor.SourcesLoadedSuccessfully;
+            },
             Reload = () =>
             {
                 if (model.FilePath is null)
@@ -41,7 +45,11 @@ internal sealed partial class MainForm
                         return replacement;
                     }, () => tab.CloseApproved = true);
                 }
-                catch { loaded.Dispose(); throw; }
+                catch
+                {
+                    loaded.Dispose();
+                    throw;
+                }
             }
         });
         model.Changed += tab.Sources.Changed;

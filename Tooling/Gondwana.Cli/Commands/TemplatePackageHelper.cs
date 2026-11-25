@@ -196,6 +196,7 @@ internal static class TemplatePackageHelper
             if (comparison != 0)
                 return comparison;
         }
+
         return aParts.Length.CompareTo(bParts.Length);
     }
 

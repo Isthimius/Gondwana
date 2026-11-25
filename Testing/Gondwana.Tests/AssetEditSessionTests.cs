@@ -230,7 +230,11 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Throws<OperationCanceledException>(() => edits.Import(huge, _ => false));
         Assert.True(edits.History.CanRedo);
         Assert.Single(archive.GetAllEntries());
-        Assert.Equal(1, edits.Import(huge, bytes => { Assert.Equal(5, bytes); return true; }));
+        Assert.Equal(1, edits.Import(huge, bytes =>
+        {
+            Assert.Equal(5, bytes);
+            return true;
+        }));
         Assert.False(edits.History.CanUndo);
         Assert.False(edits.History.CanRedo);
         Assert.True(edits.History.IsDirty);
@@ -376,6 +380,7 @@ public sealed class AssetEditSessionTests : IDisposable
                 new(pair.Key.AssetType, source.SourcePath!, pair.Key.AssetName), new(pair.Key.AssetType, adopted.SourcePath!, pair.Key.AssetName), mappings, false) ?? pair.Value;
             Add(adopted, pair.Key.AssetType, pair.Key.AssetName, bytes);
         }
+
         var saved = Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts");
         edits.AcceptSavedArchive(adopted);
         edits.History.Undo();

@@ -57,6 +57,7 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
                     node.Nodes.Add(new TreeNode($"{(reference.Problem is null ? "→" : "!")} {reference.Property}: {reference.Value}")
                     { ToolTipText = reference.Problem ?? reference.ResolvedPath ?? "External URI; not fetched." });
             }
+
             foreach (var problem in result.Problems)
                 _problems.Items.Add($"{problem.SourcePath} — {problem.Property} — {problem.Reason}");
         }

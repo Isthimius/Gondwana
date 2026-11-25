@@ -39,6 +39,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.TilesheetDefinition, entry, gts);
             archive.Save();
         }
+
         string gani = Path.Combine(root, "idle.gani");
         File.WriteAllText(gani, NativeJson("gani"));
         using var studio = Host(root);

@@ -510,6 +510,7 @@ public sealed class TilesheetRegistry : IDisposable
                 sheet.Dispose();
             throw;
         }
+
         foreach (var sheet in created)
             Register(sheet);
         return created;

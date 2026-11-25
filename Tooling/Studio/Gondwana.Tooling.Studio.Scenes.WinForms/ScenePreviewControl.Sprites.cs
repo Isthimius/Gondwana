@@ -49,6 +49,7 @@ internal sealed partial class ScenePreviewControl
             SelectSprite(null);
             SpriteSelected?.Invoke(null);
         }
+
         UpdateSceneBounds();
         UpdateExtent();
         Invalidate();
@@ -119,6 +120,7 @@ internal sealed partial class ScenePreviewControl
             if (((RectangleF)bounds).Contains(points[0]))
                 return visual;
         }
+
         return null;
     }
 
@@ -144,6 +146,7 @@ internal sealed partial class ScenePreviewControl
             if (!Capture)
                 CancelSpriteGesture();
         }
+
         return true;
     }
 
@@ -225,7 +228,10 @@ internal sealed partial class ScenePreviewControl
                 graphics.DrawRectangle(outline, bounds.X, bounds.Y, bounds.Width, bounds.Height);
             }
         }
-        finally { graphics.Restore(state); }
+        finally
+        {
+            graphics.Restore(state);
+        }
     }
 
     private void IncludeSpriteBounds(IEnumerable<SceneLayerDefinition> layers)

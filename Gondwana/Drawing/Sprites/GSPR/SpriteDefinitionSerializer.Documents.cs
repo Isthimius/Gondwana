@@ -11,7 +11,11 @@ public static partial class SpriteDefinitionSerializer
     /// <returns>The complete definition document.</returns>
     public static SpriteDefinitionDocument FromDocumentJson(string json, string? sourceIdentity = null) => new()
     {
-        Definitions = DefinitionDocumentJson.Read<SpriteDefinition>(json, ParseDefinition, definition => definition.Key, definition => { if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred ? inferred : "sprite"; })
+        Definitions = DefinitionDocumentJson.Read<SpriteDefinition>(json, ParseDefinition, definition => definition.Key, definition =>
+        {
+            if (string.IsNullOrWhiteSpace(definition.Key))
+                definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred ? inferred : "sprite";
+        })
     };
 
     /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
@@ -37,6 +41,7 @@ public static partial class SpriteDefinitionSerializer
             definition.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -71,6 +76,7 @@ public static partial class SpriteDefinitionSerializer
                 : SpriteDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
             definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -82,8 +88,14 @@ public static partial class SpriteDefinitionSerializer
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
         try
-        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
                 errors.AddRange(SpriteDefinitionValidator.Validate(definition).Select(error => $"Sprite '{definition.Key}': {error}"));
@@ -136,16 +148,19 @@ public static partial class SpriteDefinitionSerializer
             source.GtsPath = RebasePath(source.GtsPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.SceneSources)
         {
             source.GscnPath = RebasePath(source.GscnPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         foreach (var source in clone.AnimationSources)
         {
             source.GaniPath = RebasePath(source.GaniPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         clone.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }
@@ -237,6 +252,7 @@ public static partial class SpriteDefinitionSerializer
                 SpriteManager.Instance._spriteList.Remove(sprite);
                 sprite.DisposeImmediate();
             }
+
             SpriteManager.Instance.DefinitionProvenance = previous;
             throw;
         }

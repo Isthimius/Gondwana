@@ -42,6 +42,7 @@ public sealed partial class SceneEditorTests
                     Math.Max(0, client.Y - scroll.Y - preview.ClientSize.Height / 2));
                 client = SpriteClient(preview, world);
             }
+
             Assert.NotEqual(Point.Empty, preview.AutoScrollPosition);
             Assert.True(preview.TryGetSpriteDropPosition(layer, preview.PointToScreen(client), snap: false, out var position));
             Assert.InRange(position.X, fractional.X - .04f, fractional.X + .04f);

@@ -58,10 +58,18 @@ internal sealed class WrappedDrawable(IDrawable owner, SceneLayer layer, PointF 
     {
         private readonly WrappedDrawable? _prior = _current;
         private readonly View? _priorView = _view;
-        internal Scope(WrappedDrawable instance, View view) { _current = instance; _view = view; }
+        internal Scope(WrappedDrawable instance, View view)
+        {
+            _current = instance;
+            _view = view;
+        }
         /// <summary>
         /// Releases the resources owned by this instance.
         /// </summary>
-        public void Dispose() { _current = _prior; _view = _priorView; }
+        public void Dispose()
+        {
+            _current = _prior;
+            _view = _priorView;
+        }
     }
 }

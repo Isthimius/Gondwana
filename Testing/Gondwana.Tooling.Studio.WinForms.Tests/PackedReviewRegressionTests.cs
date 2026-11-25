@@ -34,6 +34,7 @@ public sealed partial class CompositionTests
             editor.AssetsFile.Remove(AssetTypes.Misc, "last");
             editor.MarkChanged();
         }
+
         var destination = saveAs ? Path.Combine(root, "copy.gaf") : path;
         Assert.True(AwaitUi(studio.SaveDocument(document, saveAs, destination)));
         Assert.Empty(editor.AssetsFile.GetAllEntries());
@@ -90,6 +91,7 @@ public sealed partial class CompositionTests
             AddNative(archive, format, "nested/same." + format);
             archive.Save();
         }
+
         var animation = PreviewAnimation("assets.gaf");
         var scene = PreviewScene("assets.gaf");
         var sprite = new SpriteDefinition
@@ -145,6 +147,7 @@ public sealed partial class CompositionTests
                     member.TilesheetSources = scene.TilesheetSources;
                     member.AnimationSources = scene.AnimationSources;
                 }
+
                 break;
             case SpriteEditorControl e:
                 if (import)
@@ -156,6 +159,7 @@ public sealed partial class CompositionTests
                     member.SceneSources = sprite.SceneSources;
                     member.AnimationSources = sprite.AnimationSources;
                 }
+
                 break;
             case AudioEditorControl e:
                 if (import)
@@ -164,6 +168,7 @@ public sealed partial class CompositionTests
                     e.Document.AddDefinition().Resources = audio.Resources;
                 break;
         }
+
         var originalArchive = File.ReadAllBytes(path);
         var destination = Path.Combine(root, "copies", "adopted." + format);
         Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: destination)));
@@ -176,6 +181,7 @@ public sealed partial class CompositionTests
             var loose = json.Descendants().OfType<Newtonsoft.Json.Linq.JProperty>().Single(p => p.Name == "FilePath" && p.Value.Type == Newtonsoft.Json.Linq.JTokenType.String);
             Assert.Equal(Path.Combine(root, "tone.wav"), Path.GetFullPath((string)loose.Value!, Path.GetDirectoryName(destination)!));
         }
+
         Assert.Equal(3, ((Newtonsoft.Json.Linq.JArray)json["Definitions"]!).Count);
         Assert.Equal(originalArchive, File.ReadAllBytes(path));
         Assert.False(document.Document.Dirty());

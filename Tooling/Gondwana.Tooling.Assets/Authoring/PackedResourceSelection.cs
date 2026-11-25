@@ -59,6 +59,7 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
                     if (string.IsNullOrWhiteSpace(Path.GetExtension(extension)))
                         throw new InvalidDataException("Supply an audio source extension including its leading dot (for example .wav).");
                 }
+
                 using (var stream = packages.OpenAsset(Resource.Path, expectedType, Resource.EntryName!))
                     if (stream.ReadByte() < 0)
                         throw new InvalidDataException("The selected media entry is empty.");
@@ -66,6 +67,7 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
             default:
                 throw new InvalidDataException($"Unsupported dependency type: {expectedType}.");
         }
+
         if (errors.Count > 0)
             throw new InvalidDataException($"Invalid definition '{Member}' in '{Resource.EntryName}':{Environment.NewLine}" + string.Join(Environment.NewLine, errors));
     }

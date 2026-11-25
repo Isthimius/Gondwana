@@ -33,6 +33,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 $"Unsupported Godot text resource format '{format ?? "missing"}'. Use a Godot 3.x format=2 or Godot 4.x format=3 text TileSet (.tres).");
             return;
         }
+
         if (sections.Count(s => s.Kind == "resource") != 1 ||
             sections.Where(s => s.Kind is "sub_resource" or "ext_resource")
                 .GroupBy(s => (s.Kind, Id: ResourceId(Get(s.Attributes, "id")))).Any(g => g.Count() != 1))
@@ -117,6 +118,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 else if (!Regex.IsMatch(property, @"^\d+:\d+/") && property is not ("texture" or "margins" or "separation" or "texture_region_size"))
                     plan.Report(ExternalImportSeverity.Info, "godot.metadata", $"Atlas source {id}: metadata '{property}' is omitted.");
             }
+
             foreach (string coord in coords)
             {
                 token.ThrowIfCancellationRequested();
@@ -127,6 +129,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                     plan.Report(ExternalImportSeverity.Error, "godot.multicell", $"Atlas source {id}, tile {coord}: size_in_atlas must have positive dimensions (found {span.X}x{span.Y}).");
                     continue;
                 }
+
                 bool multiCell = span != new Point(1, 1);
                 var durationKeys = p.Keys.Select(k => Regex.Match(k, "^" + Regex.Escape(coord) + @"/animation_frame_(\d+)/duration$")).Where(m => m.Success).ToArray();
                 int count = durationKeys.Length == 0 ? 1 : durationKeys.Max(m => int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture)) + 1;
@@ -172,6 +175,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                             invalidFrame = true;
                             continue;
                         }
+
                         regionName = $"tile-{xy[0]}-{xy[1]}" + (count > 1 ? $"-frame-{frame}" : "");
                         definition.Regions.Add(new TilesheetRegionDefinition
                         {
@@ -182,6 +186,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                         frameX = 0;
                         frameY = 0;
                     }
+
                     if (count > 1)
                         frames.Add(new AnimationFrameDefinition
                         {
@@ -192,6 +197,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                             DurationSeconds = Number(Get(p, $"{coord}/animation_frame_{frame}/duration", "1")) / speed
                         });
                 }
+
                 if (multiCell && !invalidFrame)
                     plan.Report(ExternalImportSeverity.Info, "godot.multicell",
                         $"Atlas source {id}, tile {coord}: {span.X}x{span.Y} atlas cells retained as named GTS region{(count > 1 ? "s" : "")}.");
@@ -203,6 +209,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                         region.TileSize, count > 1 ? $"{name}.tile.{xy[0]}.{xy[1]}" : null,
                         count > 1 ? $"{animationFile}-animations.gani" : null));
                 }
+
                 if (count > 1 && !invalidFrame)
                 {
                     var gani = new AnimationDefinition
@@ -216,6 +223,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 }
             }
         }
+
         return result;
     }
 
@@ -230,6 +238,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 plan.Report(ExternalImportSeverity.Info, "godot.metadata", $"TileSet metadata '{property.Key}' is omitted.");
                 continue;
             }
+
             int id = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
             if (id < 0)
                 throw new InvalidDataException($"Invalid Godot tile ID {id}.");
@@ -237,6 +246,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 tiles.Add(id, properties = new(StringComparer.Ordinal));
             properties.Add(match.Groups[2].Value, property.Value);
         }
+
         if (tiles.Count == 0)
             throw new InvalidDataException("No Godot 3 tiles found.");
         string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
@@ -260,6 +270,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 imageSize = new Size(image.Width, image.Height);
                 imageDimensions.Add(path, imageSize);
             }
+
             var rect = Geometry(Get(p, "region"), "Rect2", 4);
             var area = new Rectangle(rect[0], rect[1], rect[2], rect[3]);
             if (area.X < 0 || area.Y < 0 || area.Width <= 0 || area.Height <= 0 ||
@@ -319,6 +330,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 categories.Add(category, keys = []);
             keys.Add(property);
         }
+
         foreach (var (category, keys) in categories)
             plan.Report(category == "name" ? ExternalImportSeverity.Info : ExternalImportSeverity.Warning, "godot." + category,
                 $"Godot 3 tile {id}: {category} properties ({string.Join(", ", keys)}) are omitted." +

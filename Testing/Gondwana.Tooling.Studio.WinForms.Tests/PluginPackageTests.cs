@@ -168,6 +168,7 @@ public sealed partial class PluginPackageTests
                 File.Delete(entry);
                 break;
         }
+
         File.WriteAllText(path, error is "{}" or "{" or "null" ? error : JsonSerializer.Serialize(data));
         if (error == "missing-manifest")
             File.Delete(path);
@@ -225,6 +226,7 @@ public sealed partial class PluginPackageTests
                 PluginSource("Plugin" + version, "Helper.Value"), dependency);
             DependencyManifest(directory, "Plugin" + version, version);
         }
+
         var host = new Host(_ => { });
         host.DiscoverAndLoad(_root);
         Assert.Equal(new[] { "version1", "version2" }, host.Plugins.Select(plugin => plugin.Name));

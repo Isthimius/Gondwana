@@ -53,6 +53,7 @@ public sealed class TiledImportTests : IDisposable
                 compressor.Write(pixels);
             pixels = stream.ToArray();
         }
+
         const string external = "<image source=\"atlas.png\" width=\"7\" height=\"4\" trans=\"ff00ff\"/>";
         string embedded = $"<image format=\"png\" width=\"7\" height=\"4\" trans=\"ff00ff\"><data encoding=\"base64\"{(compression.Length == 0 ? "" : $" compression=\"{compression}\"")}>{Convert.ToBase64String(pixels)}</data></image>";
         string contents = File.ReadAllText(tsx);
@@ -79,6 +80,7 @@ public sealed class TiledImportTests : IDisposable
                 compressor.Write(bytes);
             bytes = output.ToArray();
         }
+
         return Convert.ToBase64String(bytes);
     }
 
@@ -149,7 +151,11 @@ public sealed class TiledImportTests : IDisposable
             Assert.Equal(new Rectangle(12, -4, 2, 2), loaded[5, 1]!.DrawLocationWorld);
             Assert.DoesNotContain(layer.Tiles, tile => tile.X == 1 && tile.Y == 1);
         }
-        finally { foreach (var cycle in cycles) cycle.Dispose(); }
+        finally
+        {
+            foreach (var cycle in cycles)
+                cycle.Dispose();
+        }
     }
 
     /// <summary>Rhombic layers retain the projected positions of negative chunk coordinates.</summary>
@@ -791,7 +797,11 @@ public sealed class TiledImportTests : IDisposable
             Assert.True(placed.CollisionsEnabled);
             Assert.Equal(new Rectangle(1, 0, 1, 2), placed.CollisionArea);
         }
-        finally { foreach (var cycle in cycles) cycle.Dispose(); }
+        finally
+        {
+            foreach (var cycle in cycles)
+                cycle.Dispose();
+        }
     }
 
     /// <summary>Unrepresentable shapes produce explicit warnings, never partial collision geometry.</summary>
@@ -874,6 +884,7 @@ public sealed class TiledImportTests : IDisposable
             Assert.Equal(4, atlas.Height);
             Assert.Equal(SKColors.Red, atlas.GetPixel(0, 0));
         }
+
         var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"));
         Assert.Equal("terrain-atlas.png", gts.Image.FilePath);
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 7, 4));
@@ -987,6 +998,7 @@ public sealed class TiledImportTests : IDisposable
             for (int bit = 0; bit < 8; bit++)
                 crc = (crc >> 1) ^ ((crc & 1) != 0 ? 0xedb88320u : 0u);
         }
+
         System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(png.AsSpan(29, 4), ~crc);
         data.Value = Convert.ToBase64String(png);
         xml.Save(tsx);
@@ -1093,6 +1105,7 @@ public sealed class TiledImportTests : IDisposable
                 Path.Combine(request.OutputDirectory, animationSource.GaniPath!), animationSource.AnimationKey);
             Assert.Equal("level.gts", Assert.Single(animation.TilesheetSources).GtsPath);
         }
+
         var layer = Assert.Single(scene.Layers);
         Assert.Equal(2, layer.Tiles.Count);
         Assert.False(layer.Visible);
@@ -1183,6 +1196,7 @@ public sealed class TiledImportTests : IDisposable
                 : new System.IO.Compression.GZipStream(memory, System.IO.Compression.CompressionLevel.Optimal, true);
             compressed.Write(raw);
         }
+
         var data = System.Xml.Linq.XElement.Parse($"<data encoding='base64' compression='{compression}'>{Convert.ToBase64String(memory.ToArray())}</data>");
         Assert.Equal(new uint[] { 1, 0, 6 }, TiledMapImporter.DecodeLayer(data, 3));
     }

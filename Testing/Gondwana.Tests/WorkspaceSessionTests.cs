@@ -52,7 +52,15 @@ public sealed class WorkspaceSessionTests : IDisposable
         var opened = new List<string>();
         int failures = 0;
         WorkspaceSessionRestore.Restore(session, ["gts"], _ => Assert.Fail("Missing directory restored"),
-            document => { if (document == failed) { failures++; throw new InvalidDataException("Changed file is corrupt"); } opened.Add(document.Path); },
+            document =>
+            {
+                if (document == failed)
+                {
+                    failures++;
+                    throw new InvalidDataException("Changed file is corrupt"); }
+
+                opened.Add(document.Path);
+            },
             _ => Assert.Fail("Failed active document activated"), _messages.Add);
         Assert.Equal(new[] { good.Path }, opened);
         Assert.Equal(1, failures);

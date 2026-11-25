@@ -170,6 +170,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
             child.Dispose();
             throw;
         }
+
         return this;
     }
 
@@ -205,6 +206,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
             item.ApplyInputState(false);
             item.Hide();
         }
+
         RecalculateLayout();
         SetDropDownZOrder(_zOrder);
         return item;
@@ -265,6 +267,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
             child.OpenAnimated(_bar.DropDownAnimation, Math.Max(0, _bar.DropDownAnimationDurationSec));
             child.Activate();
         }
+
         if (selectFirst)
             child.SelectFirstEnabled();
     }

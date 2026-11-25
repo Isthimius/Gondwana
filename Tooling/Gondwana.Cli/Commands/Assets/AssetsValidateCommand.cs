@@ -19,7 +19,10 @@ internal sealed class AssetsValidateCommand : Command<AssetsListCommand.Settings
                 AnsiConsole.WriteLine("OK: Bundle structure, integrity, paths, and tilesheet definitions validated.");
             return errors.Count == 0 ? 0 : 1;
         }
-        catch (Exception ex) { return ProjectCommand.Fail(ex); }
+        catch (Exception ex)
+        {
+            return ProjectCommand.Fail(ex);
+        }
     }
 }
 

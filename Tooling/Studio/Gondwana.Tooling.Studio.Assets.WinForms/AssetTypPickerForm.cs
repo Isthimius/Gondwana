@@ -34,6 +34,7 @@ internal sealed class AssetTypePickerForm : Form
             row.Tag = file;
             row.Cells[1].ReadOnly = type is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition;
         }
+
         var description = new Label { Dock = DockStyle.Top, Height = 64, Text = "Review types and entry names. Native definition types are fixed.\nImport dependencies copies known referenced files recursively. Keep external preserves their locations.\nThe next step previews all changes. Original files are never moved or changed.", Padding = new Padding(8) };
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 46, FlowDirection = FlowDirection.RightToLeft };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };

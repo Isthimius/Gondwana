@@ -255,12 +255,19 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
             Projectile shot = _projectiles[i];
             shot.Age += _delta;
             if (shot.Age > 2.5f)
-            { RemoveShot(i); continue; }
+            {
+                RemoveShot(i);
+                continue;
+            }
+
             if (shot.Friendly)
             {
                 Enemy? hit = _enemies.FirstOrDefault(e => e.Alive && e.Sprite.CollisionArea.IntersectsWith(shot.Sprite.CollisionArea));
                 if (hit is not null)
-                { Destroy(hit); RemoveShot(i); }
+                {
+                    Destroy(hit);
+                    RemoveShot(i);
+                }
             }
             else if (_player.CollisionArea.IntersectsWith(shot.Sprite.CollisionArea))
             {
@@ -313,7 +320,11 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _playerHealth = Math.Max(0, _playerHealth - damage);
         _healthBar.Value = _playerHealth;
         if (_playerHealth <= 0)
-        { _player.Visible = false; Explode(_player.CollisionArea, 100); End("SHIP DESTROYED\nPress R to redeploy"); }
+        {
+            _player.Visible = false;
+            Explode(_player.CollisionArea, 100);
+            End("SHIP DESTROYED\nPress R to redeploy");
+        }
     }
 
     private void Explode(Rectangle area, int count)
@@ -353,7 +364,13 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _healthBar.Value = PlayerMaxHealth;
         _healthBar.Show();
         foreach (Enemy enemy in _enemies)
-        { enemy.Alive = true; enemy.Age = 0; enemy.Sprite.SetPosition(enemy.Spawn); enemy.Sprite.Visible = true; }
+        {
+            enemy.Alive = true;
+            enemy.Age = 0;
+            enemy.Sprite.SetPosition(enemy.Spawn);
+            enemy.Sprite.Visible = true;
+        }
+
         var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
         camera.ClearFollow();
         camera.SnapTo(PointF.Empty);
@@ -376,7 +393,13 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
     private sealed class Enemy
     {
         internal Enemy(Sprite sprite, float centerY, float frequency, float cooldown)
-        { Sprite = sprite; Spawn = sprite.GetPosition(); CenterY = centerY; Frequency = frequency; FireCooldown = cooldown; }
+        {
+            Sprite = sprite;
+            Spawn = sprite.GetPosition();
+            CenterY = centerY;
+            Frequency = frequency;
+            FireCooldown = cooldown;
+        }
         internal Sprite Sprite { get; }
         internal Vector2 Spawn { get; }
         internal float CenterY { get; }

@@ -1214,6 +1214,7 @@ public sealed class Engine : IDisposable
                 gpuSurfaceCount++;
             }
         }
+
         double? gpuFps = gpuSurfaceCount > 0
             ? totalGpuFrames * HighResTimer.TicksPerSecond / (double)elapsedTicks
             : null;
@@ -1372,7 +1373,9 @@ public sealed class Engine : IDisposable
     private static void SafeInvoke(Action? evnt)
     {
         try
-        { evnt?.Invoke(); }
+        {
+            evnt?.Invoke();
+        }
         catch (Exception ex)
         {
             // Keep disposal robust; log and continue

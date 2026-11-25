@@ -34,7 +34,14 @@ public static class AssetDeleteDialog
             execute(plan, plan.ForceRequired);
             return true;
         }
-        catch (OperationCanceledException) { return false; }
-        catch (Exception ex) { ThemedMessageBox.Show(owner, ex.Message, "Delete not completed", MessageBoxButtons.OK, MessageBoxIcon.Error); return false; }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            ThemedMessageBox.Show(owner, ex.Message, "Delete not completed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
     }
 }

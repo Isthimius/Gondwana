@@ -50,6 +50,7 @@ public sealed partial class SceneEditorTests
                     Math.Max(0, point.Y - scroll.Y - preview.ClientSize.Height / 2));
                 point = PreviewCellPoint(preview, layer, 5, 6);
             }
+
             Assert.True(preview.ClientRectangle.Contains(point));
             Assert.NotEqual(Point.Empty, preview.AutoScrollPosition);
             var args = SceneDragAt(preview, data, point);
@@ -383,7 +384,11 @@ public sealed partial class SceneEditorTests
             var catalog = (AssetPackageCatalog)typeof(SceneEditorControl)
                 .GetField("_packages", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor)!;
             int passwordRequests = 0;
-            catalog.PasswordProvider = _ => { passwordRequests++; return null; };
+            catalog.PasswordProvider = _ =>
+            {
+                passwordRequests++;
+                return null;
+            };
             document.History.ResetSaved();
             var args = SceneDragAt(preview, new ResourceDragData<TilesheetFrameDrag>(frame), PreviewCellPoint(preview, layer, 1, 1));
             RaiseSceneDrag(preview, "Enter", args);
@@ -546,7 +551,10 @@ public sealed partial class SceneEditorTests
             Application.DoEvents();
             test(host.Editor, Descendants(host.Editor).OfType<ScenePreviewControl>().Single(), root);
         }
-        finally { Directory.Delete(root, recursive: true); }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
     });
 
     private static void SelectDropLayer(SceneEditorControl editor, SceneLayerDefinition layer)

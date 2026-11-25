@@ -37,7 +37,11 @@ internal static class BundleHelper
                 SafeFilePath.ValidateRelative(entry.AssetName);
             return bundle;
         }
-        catch { bundle.Dispose(); throw; }
+        catch
+        {
+            bundle.Dispose();
+            throw;
+        }
     }
 
     /// <summary>
@@ -55,6 +59,7 @@ internal static class BundleHelper
             using var stream = bundle[entry.AssetType, entry.AssetName]!;
             errors.AddRange(TilesheetInspection.AllFromStream(stream, Path.GetDirectoryName(Path.GetFullPath(path))!, bundle).SelectMany(result => result.Errors.Select(e => $"{entry.AssetName} :: {result.Definition?.Name}: {e}")));
         }
+
         return errors;
     }
 

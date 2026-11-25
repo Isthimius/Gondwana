@@ -18,6 +18,7 @@ public sealed class ThemeTests
             Assert.True(Contrast(p.SelectionForeground, p.Selection) >= 4.5);
             Assert.True(Contrast(p.DisabledForeground, p.Surface) >= 3);
         }
+
         Assert.True(ToolingPalette.For(ToolingTheme.DarkBlue).Surface.GetBrightness() < .25);
     }
 
@@ -52,6 +53,7 @@ public sealed class ThemeTests
             Assert.Equal(studio.FilePath, standalone.FilePath);
             Assert.Equal(theme, standalone.Read());
         }
+
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(studio.FilePath)!, "*.tmp"));
     }
 
@@ -89,6 +91,7 @@ public sealed class ThemeTests
             Assert.Equal("unsaved content", editor.Text);
             Assert.Equal("Unsaved *", document.Text);
         }
+
         Assert.Contains(notices, n => n.Contains("Restart"));
     });
 
@@ -161,16 +164,27 @@ public sealed class ThemeTests
         static double L(Color c)
         {
             static double F(byte b)
-            { double v = b / 255d; return v <= .04045 ? v / 12.92 : Math.Pow((v + .055) / 1.055, 2.4); }
+            {
+                double v = b / 255d;
+                return v <= .04045 ? v / 12.92 : Math.Pow((v + .055) / 1.055, 2.4);
+            }
+
             return .2126 * F(c.R) + .7152 * F(c.G) + .0722 * F(c.B);
         }
+
         return (Math.Max(L(a), L(b)) + .05) / (Math.Min(L(a), L(b)) + .05);
     }
 
     private static void Sta(Action action)
     {
         Exception? error = null;
-        var thread = new Thread(() => { try { action(); } catch (Exception ex) { error = ex; } });
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action(); } catch (Exception ex) {
+                error = ex; }
+        });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "UI test timed out.");

@@ -76,6 +76,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             _activeTouches[t.Identifier] = point;
             _pendingBegins.Enqueue(point);
         }
+
         RebuildSnapshot();
     }
 
@@ -90,6 +91,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Moved);
             _activeTouches[t.Identifier] = point;
         }
+
         RebuildSnapshot();
     }
 
@@ -105,6 +107,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             _activeTouches.Remove(t.Identifier);
             _pendingEnds.Enqueue(point);
         }
+
         RebuildSnapshot();
     }
 
@@ -120,6 +123,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             _activeTouches.Remove(t.Identifier);
             _pendingEnds.Enqueue(point);
         }
+
         RebuildSnapshot();
     }
 

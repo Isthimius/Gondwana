@@ -312,6 +312,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
                 source.Record(telemetryGeneration, "blit.cpu.ms", HighResTimer.GetDuration(0, blitTicks) * 1000d);
                 source.Record(telemetryGeneration, "flush.cpu.ms", HighResTimer.GetDuration(0, flushTicks) * 1000d);
             }
+
             FrameDiagnosticsCalculated?.Invoke(new WinFormGpuFrameDiagnostics(
                 HighResTimer.GetDuration(callbackStartTick, callbackEndTick) * 1000d,
                 HighResTimer.GetDuration(0, renderAndSnapshotTicks) * 1000d,

@@ -134,8 +134,10 @@ public class Cycle : ICloneable, IDisposable
                     if (Sequence.SequenceCycleType == CycleType.PingPong && i > 0 && i < Sequence.FrameCount - 1)
                         total += duration;
                 }
+
                 return total;
             }
+
             switch (Sequence.SequenceCycleType)
             {
                 case CycleType.Simple:

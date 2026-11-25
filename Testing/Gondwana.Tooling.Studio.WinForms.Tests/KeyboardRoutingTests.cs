@@ -39,7 +39,11 @@ public sealed partial class CompositionTests
             Assert.True(PostMessage(GetFocus(), 0x100, (nint)(keys & Keys.KeyCode), 0));
             Application.DoEvents();
         }
-        finally { Assert.True(SetKeyboardState(saved)); }
+        finally
+        {
+            Assert.True(SetKeyboardState(saved));
+        }
+
         Application.DoEvents();
     }
 
@@ -111,6 +115,7 @@ public sealed partial class CompositionTests
         {
             Model(editor).RenameDefinition(name);
         }
+
         var original = Name();
         var targets = Descendants(editor).Where(c => c.Visible && c.CanFocus &&
             (c is TreeView or ListView or ListBox || c is PropertyGrid { SelectedObject: not null } || c is ComboBox { DropDownStyle: ComboBoxStyle.DropDownList } ||
@@ -176,6 +181,7 @@ public sealed partial class CompositionTests
             Application.DoEvents();
             Descendants(editor).OfType<ListView>().Single().Items[0].Selected = true;
         }
+
         Application.DoEvents();
         string propertyName = format switch { "gts" => "Name", "gscn" => "ID", "gani" => "NextCycleKey", "gspr" => "Nickname", _ => "Key" };
         var grid = Descendants(editor).OfType<PropertyGrid>().First(g => g.SelectedObject is not null &&
@@ -224,6 +230,7 @@ public sealed partial class CompositionTests
                 foreach (var descendant in Walk(child))
                     yield return descendant;
         }
+
         return Walk(root);
     }
 
@@ -245,6 +252,7 @@ public sealed partial class CompositionTests
             target.Focus();
             Assert.True(target.ContainsFocus);
         }
+
         FocusNavigation(second.Document.Editor);
         RouteKey(Keys.Control | Keys.Z);
         Assert.True(first.Document.History!.CanUndo);

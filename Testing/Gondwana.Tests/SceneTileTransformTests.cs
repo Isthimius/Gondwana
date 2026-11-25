@@ -102,8 +102,8 @@ public sealed class SceneTileTransformTests
         SKColor[] colors = [SKColors.Red, SKColors.Green, SKColors.Blue, SKColors.Yellow];
         var bitmap = new SKBitmap(40, 20);
         for (int y = 0; y < 20; y++)
-        for (int x = 0; x < 40; x++)
-            bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+            for (int x = 0; x < 40; x++)
+                bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap($"pixels-{Guid.NewGuid():N}", bitmap);
         sheet.DefaultRegion.TileSize = new(40, 20);
         using var scene = new Scene();
@@ -303,6 +303,9 @@ public sealed class SceneTileTransformTests
             Assert.Equal(new CollisionAdjust(3, 4, 2, 1), tile.EffectiveCollisionAdjust);
             Assert.Equal(TileCollisionType.Trigger, tile.CollisionType);
         }
-        finally { Gondwana.Timers.EngineSimulationClock.UseWallClock(); }
+        finally
+        {
+            Gondwana.Timers.EngineSimulationClock.UseWallClock();
+        }
     }
 }

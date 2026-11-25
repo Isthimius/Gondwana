@@ -66,6 +66,7 @@ public sealed class MenuItemWidget : WidgetBase
                 .SetScaleMode(DirectImage.ScaleMode.Fit);
             Add(IconDrawing);
         }
+
         CanReceiveFocus = true;
         IsKeyboardInputEnabled = true;
         IsPointerInputEnabled = true;
@@ -150,6 +151,7 @@ public sealed class MenuItemWidget : WidgetBase
             _owner.OpenSubMenu(this, selectFirst: true);
             return;
         }
+
         if (IsCheckable)
             SetChecked(RadioGroup is not null || !IsChecked);
         bool checkedState = IsChecked;

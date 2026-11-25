@@ -41,7 +41,11 @@ internal sealed partial class MainForm
                         return replacement;
                     }, () => tab.CloseApproved = true);
                 }
-                catch { loaded.Dispose(); throw; }
+                catch
+                {
+                    loaded.Dispose();
+                    throw;
+                }
             }
         });
         model.Changed += tab.Sources.Changed;

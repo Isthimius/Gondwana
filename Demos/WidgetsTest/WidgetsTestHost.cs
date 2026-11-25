@@ -137,6 +137,7 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
             using var paint = new SKPaint { Color = SKColors.Gold, IsAntialias = true };
             canvas.DrawCircle(9, 9, 7, paint);
         }
+
         _icon = SKImage.FromBitmap(bitmap);
         _menuBar = new MenuBarWidget(RenderSurface.Host, view,
             new Rectangle(0, 0, view.Viewport.TargetRectPx.Width, 32));
@@ -197,23 +198,71 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
         _grid.SetIsVisible(true);
         SetStatus("New (grid reset)");
     }
-    private void OnOpen() { SetDocumentDirty(true); SetStatus("Open (sample document modified)"); }
-    private void OnOpenRecent(string file) { SetDocumentDirty(true); SetStatus($"Opened {file}"); }
-    private void OnSave() { SetDocumentDirty(false); SetStatus("Save"); }
+    private void OnOpen()
+    {
+        SetDocumentDirty(true);
+        SetStatus("Open (sample document modified)");
+    }
+    private void OnOpenRecent(string file)
+    {
+        SetDocumentDirty(true);
+        SetStatus($"Opened {file}");
+    }
+    private void OnSave()
+    {
+        SetDocumentDirty(false);
+        SetStatus("Save");
+    }
     private void OnExit() => RenderSurface.BeginInvoke(() => RenderSurface.FindForm()?.Close());
     private void OnExportPng() => SetStatus("Export PNG");
     private void OnExportJpeg() => SetStatus("Export JPEG");
-    private void OnUndo() { _menuBar["edit.redo"].SetEnabled(true); SetStatus("Menu Undo (Redo enabled)"); }
-    private void OnRedo() { _menuBar["edit.redo"].SetEnabled(false); SetStatus("Menu Redo"); }
-    private void OnToggleGrid(bool isChecked) { _grid.SetIsVisible(isChecked); SetStatus("Show Grid changed"); }
-    private void OnUsePixels() { _units = "Pixels"; SetStatus("Units changed"); }
-    private void OnUseTiles() { _units = "Tiles"; SetStatus("Units changed"); }
+    private void OnUndo()
+    {
+        _menuBar["edit.redo"].SetEnabled(true);
+        SetStatus("Menu Undo (Redo enabled)");
+    }
+    private void OnRedo()
+    {
+        _menuBar["edit.redo"].SetEnabled(false);
+        SetStatus("Menu Redo");
+    }
+    private void OnToggleGrid(bool isChecked)
+    {
+        _grid.SetIsVisible(isChecked);
+        SetStatus("Show Grid changed");
+    }
+    private void OnUsePixels()
+    {
+        _units = "Pixels";
+        SetStatus("Units changed");
+    }
+    private void OnUseTiles()
+    {
+        _units = "Tiles";
+        SetStatus("Units changed");
+    }
     private void OnIconCommand() => SetStatus("Icon command");
     private void OnAbout() => SetStatus("Gondwana menus: callbacks, keys, gestures and nested ownership");
-    private void OnAnimationNone() { _menuBar.DropDownAnimation = MenuDropDownAnimation.None; SetStatus("Animation: None"); }
-    private void OnAnimationFade() { _menuBar.DropDownAnimation = MenuDropDownAnimation.Fade; SetStatus("Animation: Fade"); }
-    private void OnAnimationReveal() { _menuBar.DropDownAnimation = MenuDropDownAnimation.FadeAndReveal; SetStatus("Animation: Fade and Reveal"); }
-    private void OnDocumentChanged(string text) { SetDocumentDirty(true); SetStatus("Document edited"); }
+    private void OnAnimationNone()
+    {
+        _menuBar.DropDownAnimation = MenuDropDownAnimation.None;
+        SetStatus("Animation: None");
+    }
+    private void OnAnimationFade()
+    {
+        _menuBar.DropDownAnimation = MenuDropDownAnimation.Fade;
+        SetStatus("Animation: Fade");
+    }
+    private void OnAnimationReveal()
+    {
+        _menuBar.DropDownAnimation = MenuDropDownAnimation.FadeAndReveal;
+        SetStatus("Animation: Fade and Reveal");
+    }
+    private void OnDocumentChanged(string text)
+    {
+        SetDocumentDirty(true);
+        SetStatus("Document edited");
+    }
 
     private void OnEditorKeyboardInput(WidgetKeyboardEventArgs args)
     {
@@ -229,7 +278,11 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
         MenuItemWidget saveItem = _menuBar.GetItem("file.save");
         saveItem.SetEnabled(_documentIsDirty);
     }
-    private void SetStatus(string command) { _lastCommand = command; UpdateStatus(); }
+    private void SetStatus(string command)
+    {
+        _lastCommand = command;
+        UpdateStatus();
+    }
     private void UpdateStatus() => _status.SetText(
         $"Last command: {_lastCommand}\nShow Grid: {(_menuBar["view.grid"].IsChecked ? "On" : "Off")}\n" +
         $"Units: {_units}    Save: {(_documentIsDirty ? "Enabled" : "Disabled")}    Tab: {_tabControl.SelectedTab?.Title ?? "None"}");

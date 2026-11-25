@@ -237,6 +237,7 @@ internal sealed class AnimationPreviewControl : Control
                     Pause();
                     return false;
                 }
+
                 break;
 
             case CycleType.Repeating:
@@ -263,6 +264,7 @@ internal sealed class AnimationPreviewControl : Control
                         _direction = 1;
                     }
                 }
+
                 break;
 
             default:

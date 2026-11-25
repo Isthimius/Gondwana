@@ -48,6 +48,7 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
                     throw new ArgumentException("Unknown asset type: " + settings.TypeFilter);
                 filter = parsed;
             }
+
             using var bundle = BundleHelper.Open(settings.File, settings.Password, testData: false);
             var entries = bundle.GetAllEntries().OrderBy(e => e.AssetType).ThenBy(e => e.AssetName, StringComparer.Ordinal).ToArray();
             if (summary)
@@ -56,15 +57,20 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
                 AnsiConsole.WriteLine($"Entries: {entries.Length}");
                 AnsiConsole.WriteLine($"Bundle size: {new FileInfo(settings.File).Length} bytes");
             }
+
             var table = new Table().AddColumn("Type").AddColumn("Name").AddColumn("Bytes");
             foreach (var entry in entries.Where(e => filter is null || e.AssetType == filter))
             {
                 using var stream = bundle[entry.AssetType, entry.AssetName]!;
                 table.AddRow(entry.AssetType.ToString(), Markup.Escape(entry.AssetName), stream.Length.ToString(System.Globalization.CultureInfo.InvariantCulture));
             }
+
             AnsiConsole.Write(table);
             return 0;
         }
-        catch (Exception ex) { return ProjectCommand.Fail(ex); }
+        catch (Exception ex)
+        {
+            return ProjectCommand.Fail(ex);
+        }
     }
 }

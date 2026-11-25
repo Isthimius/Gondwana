@@ -53,7 +53,11 @@ public sealed partial class ImportPipelineTests
     public void TypedGroupsRoundTripAndReportAllMembers(string kind)
     {
         string file = "group." + kind.ToLowerInvariant();
-        var provider = new Provider(plan => { Native(plan, file, kind, "one"); Native(plan, file, kind, "two"); });
+        var provider = new Provider(plan =>
+        {
+            Native(plan, file, kind, "one");
+            Native(plan, file, kind, "two");
+        });
         var analysis = provider.Analyze(request);
         Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
         var artifact = Assert.Single(analysis.Artifacts);
@@ -100,7 +104,12 @@ public sealed partial class ImportPipelineTests
             Assert.Contains(result.Analysis.Diagnostics, diagnostic => diagnostic.Code == "key.duplicate" && diagnostic.Message.Contains("two"));
             Assert.False(Directory.Exists(request.OutputDirectory));
         }
-        new Provider(plan => { Native(plan, file, kind, "one"); Native(plan, file, kind, "two"); }).Import(request);
+
+        new Provider(plan =>
+        {
+            Native(plan, file, kind, "one");
+            Native(plan, file, kind, "two");
+        }).Import(request);
         var bytes = File.ReadAllBytes(Path.Combine(request.OutputDirectory, file));
         var conflict = new Provider(plan => Native(plan, "other." + kind.ToLowerInvariant(), kind, "two"))
             .Import(request with { Overwrite = true });
@@ -121,7 +130,12 @@ public sealed partial class ImportPipelineTests
     {
         string file = "group." + kind.ToLowerInvariant();
         using var cancellation = new CancellationTokenSource();
-        var canceled = new Provider(plan => { Native(plan, file, kind, "one"); Native(plan, file, kind, "two"); cancellation.Cancel(); });
+        var canceled = new Provider(plan =>
+        {
+            Native(plan, file, kind, "one");
+            Native(plan, file, kind, "two");
+            cancellation.Cancel();
+        });
         Assert.Throws<OperationCanceledException>(() => canceled.Import(request, cancellation.Token));
         Assert.False(Directory.Exists(request.OutputDirectory));
         if (!OperatingSystem.IsWindows())

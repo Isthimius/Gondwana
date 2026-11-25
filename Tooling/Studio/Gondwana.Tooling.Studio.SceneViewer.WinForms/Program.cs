@@ -57,7 +57,9 @@ internal static class Program
             {
                 // The viewer owns cleanup even if the Studio process exits first.
                 try
-                { File.Delete(options.ScenePath); }
+                {
+                    File.Delete(options.ScenePath);
+                }
                 catch (IOException) { /* Best effort; abnormal exits may leave snapshots. */ }
                 catch (UnauthorizedAccessException) { /* Best effort; abnormal exits may leave snapshots. */ }
             }

@@ -20,6 +20,7 @@ public static class ImportNaming
             else if (result.Length > 0 && result[^1] != '-')
                 result.Append('-');
         }
+
         var value = result.ToString().Trim('.', '-', ' ');
         if (value.Length == 0)
             value = "asset";

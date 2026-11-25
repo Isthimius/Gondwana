@@ -129,6 +129,7 @@ internal sealed class ViewerContentCatalog
                     $"{(selected[i].Document.Source.Packed ? "packed" : "loose")} GSPR sources:\n" +
                     string.Join("\n", conflicts.Select(candidate => candidate.Document.Source)));
         }
+
         return selected;
     }
 

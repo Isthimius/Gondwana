@@ -29,6 +29,7 @@ public class EditHistoryTests
                 history.Execute("Evict", () => { }, () => { });
                 break;
         }
+
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
@@ -131,12 +132,17 @@ public class EditHistoryTests
         {
             h.Insert("One", values, 0, 1);
             using (var child = h.BeginTransaction("Nested"))
-            { h.Insert("Two", values, 1, 2); child.Commit(); }
+            {
+                h.Insert("Two", values, 1, 2);
+                child.Commit();
+            }
+
             Assert.True(h.IsDirty);
             Assert.False(h.CanUndo);
             Assert.Equal(0, notifications);
             group.Commit();
         }
+
         Assert.Equal(1, notifications);
         Assert.Equal("Many edits", h.UndoDescription);
         h.Undo();
@@ -145,7 +151,11 @@ public class EditHistoryTests
         h.Redo();
         Assert.Equal(new[] { 1, 2 }, values);
         using (h.BeginTransaction("Cancelled"))
-        { h.Remove("Remove", values, 1); h.Insert("Three", values, 0, 3); }
+        {
+            h.Remove("Remove", values, 1);
+            h.Insert("Three", values, 0, 3);
+        }
+
         Assert.Equal(new[] { 1, 2 }, values);
     }
 
@@ -169,7 +179,11 @@ public class EditHistoryTests
         int value = 0;
         using var t = h.BeginTransaction("Fails");
         h.Set("First", () => value, v => value = v, 1);
-        Assert.Throws<InvalidOperationException>(() => h.Execute("Fail", () => { value = 2; throw new InvalidOperationException(); }, () => value = 1));
+        Assert.Throws<InvalidOperationException>(() => h.Execute("Fail", () =>
+        {
+            value = 2;
+            throw new InvalidOperationException();
+        }, () => value = 1));
         Assert.Equal(0, value);
         Assert.False(h.InTransaction);
         Assert.False(h.IsDirty);
@@ -185,10 +199,16 @@ public class EditHistoryTests
         using (var t = h.BeginTransaction("Group"))
         {
             h.Execute("First", () => values.Add(1), () => values.RemoveAt(values.Count - 1));
-            h.Execute("Second", () => { values.Add(2); if (fail) throw new InvalidOperationException(); }, () => values.RemoveAt(values.Count - 1));
+            h.Execute("Second", () =>
+            {
+                values.Add(2);
+                if (fail)
+                    throw new InvalidOperationException();
+            }, () => values.RemoveAt(values.Count - 1));
             h.Execute("Third", () => values.Add(3), () => values.RemoveAt(values.Count - 1));
             t.Commit();
         }
+
         h.Undo();
         fail = true;
         Assert.Throws<InvalidOperationException>(() => h.Redo());
@@ -240,6 +260,7 @@ public class EditHistoryTests
             history.Execute(new WeightedCommand(() => value = 2, () => value = 1, 2));
             group.Commit();
         }
+
         Assert.Equal(4, history.RetainedBytes);
         history.MarkSaved();
         history.Undo();

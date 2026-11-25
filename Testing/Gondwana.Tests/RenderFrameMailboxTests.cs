@@ -56,6 +56,7 @@ public sealed class RenderFrameMailboxTests
             Assert.Same(frame, rendering.Frame);
             Assert.Equal(100, rendering.Frame!.Sequence);
         }
+
         Assert.Equal(3, slots.Count);
         Assert.Equal(2, mailbox.Counters.InUse);
         mailbox.Release(rendering);
@@ -124,8 +125,12 @@ public sealed class RenderFrameMailboxTests
                             break;
                     }
                     else
-                    { Thread.Yield(); continue; }
+                    {
+                        Thread.Yield();
+                        continue;
+                    }
                 }
+
                 var frame = slot.Frame!;
                 Assert.True(frame.Sequence > previous);
                 frame.Replay(surface.Canvas);
@@ -136,6 +141,7 @@ public sealed class RenderFrameMailboxTests
                 previous = frame.Sequence;
                 mailbox.Release(slot);
             }
+
             Assert.Equal(count, previous);
         });
         await Task.WhenAll(producer, consumer).WaitAsync(TimeSpan.FromSeconds(30));
@@ -158,6 +164,7 @@ public sealed class RenderFrameMailboxTests
             bitmap.Erase(SKColors.Blue);
             paint.Color = SKColors.Green;
         }
+
         using var frame = new RenderFrameSnapshot(recorder.EndRecording(), 1, 0, 8, 8);
         using var surface = SKSurface.Create(new SKImageInfo(8, 8));
         frame.Replay(surface.Canvas);

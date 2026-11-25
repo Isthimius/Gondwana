@@ -55,6 +55,7 @@ internal sealed class NewAvaloniaCommand : Command<NewAvaloniaCommand.Settings>
             args.Add("-o");
             args.Add(settings.Output);
         }
+
         if (backbuffer is not null)
         {
             args.Add("--Backbuffer");

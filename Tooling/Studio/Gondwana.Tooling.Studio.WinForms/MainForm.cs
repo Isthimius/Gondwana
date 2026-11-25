@@ -121,7 +121,11 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 if (IsDisposed)
                     return;
                 if (IsHandleCreated && InvokeRequired)
-                    BeginInvoke(() => { if (!IsDisposed) _output.Log(message); });
+                    BeginInvoke(() =>
+                    {
+                        if (!IsDisposed)
+                            _output.Log(message);
+                    });
                 else
                     _output.Log(message);
             });
@@ -262,14 +266,30 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         file.DropDownItems.Add(new ToolStripSeparator());
 
-        Add(file, "&Save", Keys.Control | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
+        Add(file, "&Save", Keys.Control | Keys.S, async () =>
+        {
+            if (ActiveDocument is { } doc)
+                await SaveDocument(doc);
+        });
         _saveAllMenuItem = Add(file, "Save A&ll", Keys.Control | Keys.Alt | Keys.S, async () => await SaveAllDocuments());
-        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
+        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () =>
+        {
+            if (ActiveDocument is { } doc)
+                await SaveDocument(doc, saveAs: true);
+        });
 
         file.DropDownItems.Add(new ToolStripSeparator());
 
-        Add(file, "Reload document from disk", Keys.None, () => { if (ActiveDocument is { } doc) ReloadDocument(doc); });
-        Add(file, "Reload dependency previews", Keys.None, () => { if (ActiveDocument is { } doc) ReloadPreviews(doc); });
+        Add(file, "Reload document from disk", Keys.None, () =>
+        {
+            if (ActiveDocument is { } doc)
+                ReloadDocument(doc);
+        });
+        Add(file, "Reload dependency previews", Keys.None, () =>
+        {
+            if (ActiveDocument is { } doc)
+                ReloadPreviews(doc);
+        });
         Add(file, "Find References", Keys.None, () => ShowDependencies(dependents: true));
         Add(file, "Show Dependencies", Keys.None, () => ShowDependencies(dependents: false));
         Add(file, "Show Dependents", Keys.None, () => ShowDependencies(dependents: true));
@@ -299,7 +319,11 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         try
         {
             _session.Restore(["gaf", "gts", "gani", "gsnd", "gscn", "gspr"],
-                path => { if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase)) SetWorkingDirectory(path); },
+                path =>
+                {
+                    if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase))
+                        SetWorkingDirectory(path);
+                },
                 document => OpenDocument(SessionLocation(document)),
                 path => _documents.FirstOrDefault(document => string.Equals(document.Document.Path(), path, StringComparison.OrdinalIgnoreCase))?.Activate(),
                 _output.Log, _output.Log, document => _paths.GetValueOrDefault(SessionLocation(document))?.Activate());
@@ -509,7 +533,11 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
     internal StudioDockDocument OpenDocument(AssetLocation location, string? password = null)
     {
         if (_paths.TryGetValue(location, out var existing))
-        { existing.Activate(); return existing; }
+        {
+            existing.Activate();
+            return existing;
+        }
+
         return ShowDocument(CreateModel(location, password));
     }
 
@@ -933,6 +961,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
             if (!showByDefault)
                 tool.Hide();
         }
+
         _layout.Register(tool, Place);
         Place();
 

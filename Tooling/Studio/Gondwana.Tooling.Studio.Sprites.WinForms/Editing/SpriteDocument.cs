@@ -254,18 +254,22 @@ public sealed partial class SpriteDocument
                 member.TilesheetSources[j].GtsPath = persisted.TilesheetSources[j].GtsPath;
                 member.TilesheetSources[j].AssetsFilePath = persisted.TilesheetSources[j].AssetsFilePath;
             }
+
             for (int j = 0; j < member.SceneSources.Count; j++)
             {
                 member.SceneSources[j].GscnPath = persisted.SceneSources[j].GscnPath;
                 member.SceneSources[j].AssetsFilePath = persisted.SceneSources[j].AssetsFilePath;
             }
+
             for (int j = 0; j < member.AnimationSources.Count; j++)
             {
                 member.AnimationSources[j].GaniPath = persisted.AnimationSources[j].GaniPath;
                 member.AnimationSources[j].AssetsFilePath = persisted.AnimationSources[j].AssetsFilePath;
             }
+
             member.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
         }
+
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
@@ -310,7 +314,12 @@ public sealed partial class SpriteDocument
         definition.Source = Definition.Source;
         definition.Key = UniqueDefinitionIdentity(Definition.Key + "-copy");
         foreach (var sprite in definition.Sprites)
-        { sprite.Id = Guid.NewGuid(); if (!string.IsNullOrWhiteSpace(sprite.Nickname)) sprite.Nickname += "-" + definition.Key; }
+        {
+            sprite.Id = Guid.NewGuid();
+            if (!string.IsNullOrWhiteSpace(sprite.Nickname))
+                sprite.Nickname += "-" + definition.Key;
+        }
+
         AddMembers([definition], "Duplicate sprite definition");
         return definition;
     }
@@ -329,7 +338,11 @@ public sealed partial class SpriteDocument
             _definitions.RemoveAt(index);
             if (ReferenceEquals(Definition, definition))
                 Definition = _definitions[0];
-        }, () => { _definitions.Insert(index, definition); Definition = selected; });
+        }, () =>
+        {
+            _definitions.Insert(index, definition);
+            Definition = selected;
+        });
         return true;
     }
 
@@ -368,16 +381,19 @@ public sealed partial class SpriteDocument
                 source.GtsPath = Rebase(source.GtsPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
+
             foreach (var source in clone.SceneSources ?? [])
             {
                 source.GscnPath = Rebase(source.GscnPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
+
             foreach (var source in clone.AnimationSources ?? [])
             {
                 source.GaniPath = Rebase(source.GaniPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
+
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "sprites");
         if (imported.Count == 0)

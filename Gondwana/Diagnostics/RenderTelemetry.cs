@@ -45,6 +45,7 @@ internal static class RenderTelemetry
                 availability = TelemetryAvailability.Unsupported;
             source.Define(name, availability, GetMetricKind(name));
         }
+
         source.Define("presentation.count", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
         source.Define("layers.omitted", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
         foreach (var layer in Layers)

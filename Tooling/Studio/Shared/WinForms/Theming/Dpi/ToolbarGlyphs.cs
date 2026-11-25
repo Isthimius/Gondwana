@@ -37,6 +37,7 @@ public static partial class ToolbarGlyphs
                     {
                         Lines(new(5, 12), new(22, 12), new(19, 21), new(3, 21), new(5, 12));
                     }
+
                     break;
                 case "save":
                 case "save-all":
@@ -46,6 +47,7 @@ public static partial class ToolbarGlyphs
                         // Leave room for the front sheet stroke and antialiasing at the edge.
                         g.TranslateTransform(1, 1);
                     }
+
                     Lines(new(4, 3), new(16, 3), new(20, 7), new(20, 21), new(4, 21), new(4, 3));
                     Lines(new(8, 3), new(8, 10), new(16, 10), new(16, 3));
                     Lines(new(8, 21), new(8, 14), new(16, 14), new(16, 21));
@@ -63,6 +65,7 @@ public static partial class ToolbarGlyphs
                     break;
             }
         }
+
         return bitmap;
     }
 

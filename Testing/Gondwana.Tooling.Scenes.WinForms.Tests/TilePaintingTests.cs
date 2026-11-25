@@ -27,6 +27,7 @@ public sealed partial class SceneEditorTests
             Assert.Single(new[] { "Select", "Paint", "Erase" }, name => Tool(editor, name).Checked);
             Assert.False(document.IsDirty);
         }
+
         ClickCell(preview, layer, 2, 3);
         Assert.Empty(layer.Tiles);
         Tool(editor, "Paint").PerformClick();
@@ -143,6 +144,7 @@ public sealed partial class SceneEditorTests
             Assert.Empty(layer.Tiles);
             Assert.False(document.IsDirty);
         }
+
         preview.SetSelection(layer, 0, 0);
         typeof(ScenePreviewControl).GetMethod("OnMouseDown", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(preview, [new MouseEventArgs(MouseButtons.Right, 1, 100, 100, 0)]);
@@ -392,6 +394,9 @@ public sealed partial class SceneEditorTests
             var source = Descendants(editor).OfType<TreeView>().Single(tree => tree.Nodes.Count > 0 && tree.Nodes[0].Tag is SceneTilesheetSource);
             test(editor, preview, source, root);
         }
-        finally { Directory.Delete(root, recursive: true); }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
     });
 }

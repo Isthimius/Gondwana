@@ -22,7 +22,11 @@ internal sealed class RefreshQueue
     /// </summary>
     internal bool IsDirty
     {
-        get { lock (_syncRoot) return _worldRects.Count > 0; }
+        get
+        {
+            lock (_syncRoot)
+                return _worldRects.Count > 0;
+        }
     }
 
     /// <summary>

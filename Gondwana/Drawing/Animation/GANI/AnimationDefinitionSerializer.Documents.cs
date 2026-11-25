@@ -41,6 +41,7 @@ public static partial class AnimationDefinitionSerializer
             definition.Source = AnimationDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -75,6 +76,7 @@ public static partial class AnimationDefinitionSerializer
                 : AnimationDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
             definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Key);
         }
+
         return document;
     }
 
@@ -86,8 +88,14 @@ public static partial class AnimationDefinitionSerializer
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
         try
-        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
                 errors.AddRange(AnimationDefinitionValidator.Validate(definition).Select(error => $"Animation '{definition.Key}': {error}"));
@@ -138,6 +146,7 @@ public static partial class AnimationDefinitionSerializer
             source.GtsPath = RebasePath(source.GtsPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+
         clone.Source = AnimationDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }

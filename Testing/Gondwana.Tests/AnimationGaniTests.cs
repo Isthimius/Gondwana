@@ -167,7 +167,10 @@ public sealed class AnimationGaniTests : IDisposable
             Assert.Equal(type != CycleType.Simple, animator.IsCycling);
             animator.StopAnimation();
         }
-        finally { Gondwana.Timers.EngineSimulationClock.UseWallClock(); }
+        finally
+        {
+            Gondwana.Timers.EngineSimulationClock.UseWallClock();
+        }
     }
 
     /// <summary>

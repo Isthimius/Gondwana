@@ -62,7 +62,11 @@ public sealed class BlazorScaffoldPrerequisitesTests
         var checks = 0;
         var result = BlazorScaffoldPrerequisites.Prepare(
             "10.0.401", 0, skipWorkload: false,
-            checkWorkload: () => { checks++; return new(true, manifestVersion, null); },
+            checkWorkload: () =>
+            {
+                checks++;
+                return new(true, manifestVersion, null);
+            },
             confirmInstall: () => throw new InvalidOperationException("Prompt should not run."),
             installWorkload: () => throw new InvalidOperationException("Install should not run."),
             canPrompt: true);
@@ -84,8 +88,16 @@ public sealed class BlazorScaffoldPrerequisitesTests
         var result = BlazorScaffoldPrerequisites.Prepare(
             "10.0.401", 0, skipWorkload: false,
             checkWorkload: () => ++checks == 1 ? new(true, null, null) : new(true, "10.0.300", null),
-            confirmInstall: () => { prompts++; return true; },
-            installWorkload: () => { installs++; return 0; },
+            confirmInstall: () =>
+            {
+                prompts++;
+                return true;
+            },
+            installWorkload: () =>
+            {
+                installs++;
+                return 0;
+            },
             canPrompt: true);
 
         Assert.True(result.CanCreate);

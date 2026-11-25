@@ -838,7 +838,10 @@ public class DirectRectangle : DirectDrawingMovableBase
             float t = PulseT(_timeSec, _pulseFillPeriodSec, _pulseFillWave);
             var c = LerpColor(_pulseFillFrom, _pulseFillTo, t);
             if (_fillPaint.Color != c)
-            { _fillPaint.Color = c; changed = true; }
+            {
+                _fillPaint.Color = c;
+                changed = true;
+            }
         }
 
         if (_pulseBorderEnabled)

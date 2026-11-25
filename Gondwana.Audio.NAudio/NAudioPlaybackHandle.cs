@@ -98,7 +98,11 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     /// <value>The current playback position.</value>
     public TimeSpan CurrentTime
     {
-        get { lock (_controlLock) return _pendingPosition ?? _waveStream.CurrentTime; }
+        get
+        {
+            lock (_controlLock)
+                return _pendingPosition ?? _waveStream.CurrentTime;
+        }
     }
 
     /// <summary>
@@ -274,6 +278,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
                 _pendingPosition = TimeSpan.Zero;
                 return;
             }
+
             if (State != AudioPlaybackState.Stopped)
             {
                 _pendingPosition = TimeSpan.Zero;

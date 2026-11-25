@@ -30,12 +30,14 @@ public sealed partial class CompositionTests
                 var document = studio.NewDocument(format, format == "gaf" ? Path.Combine(directory, "saved.gaf") : null);
                 Assert.True(AwaitUi(studio.SaveDocument(document, destination: Path.Combine(directory, "saved." + format))));
             }
+
             studio.Documents[5].Pane.SetContentIndex(studio.Documents[5], 0);
             studio.Documents[1].Activate();
             Application.DoEvents();
             editors = studio.Documents.Select(document => document.Document.Editor).ToArray();
             studio.Close();
         }
+
         Assert.All(editors, editor => Assert.True(editor.IsDisposed));
         using var reopened = Host(directory);
         Assert.Equal(new[] { "gspr", "gaf", "gts", "gani", "gsnd", "gscn" }, reopened.Documents.Select(document => document.Document.Extension));
@@ -74,6 +76,7 @@ public sealed partial class CompositionTests
             SessionMenu(studio, "Restore workspace on startup").PerformClick();
             studio.Close();
         }
+
         using (var optedOut = Host(directory))
         {
             Assert.Empty(optedOut.Documents);
@@ -82,12 +85,14 @@ public sealed partial class CompositionTests
             SessionMenu(optedOut, "Start empty on next launch").PerformClick();
             optedOut.Close();
         }
+
         using (var empty = Host(directory))
         {
             Assert.Empty(empty.Documents);
             Assert.False(new WorkspaceSessionStore(_ => { }).Read().StartEmptyOnce);
             // Disposing without closing must not overwrite the saved session.
         }
+
         using var restored = Host(directory);
         Assert.Single(restored.Documents);
         restored.Close();
@@ -109,6 +114,7 @@ public sealed partial class CompositionTests
             Assert.True(AwaitUi(studio.SaveDocument(document, destination: path)));
             // No session is committed by Dispose alone.
         }
+
         var store = new WorkspaceSessionStore(_ => { });
         Assert.True(store.Write(new() { WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!], ActiveDocument = path }));
         Type shellType = editorType.Assembly.GetType(editorType.Namespace + ".MainForm", throwOnError: true)!;
@@ -135,6 +141,7 @@ public sealed partial class CompositionTests
             var created = studio.NewDocument("gaf", path);
             Assert.True(AwaitUi(studio.SaveDocument(created, destination: path)));
         }
+
         var store = new WorkspaceSessionStore(_ => { });
         Assert.True(store.Write(new() { Documents = [WorkspaceSessionDocument.FromPath(path)!] }));
         string original = File.ReadAllText(store.FilePath);
@@ -181,16 +188,22 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.Misc, "protected-entry", payload);
             package.Save();
         }
+
         using (var studio = Host(directory))
         {
             var document = studio.NewDocument("gts");
             Assert.True(AwaitUi(studio.SaveDocument(document, destination: tiles)));
         }
+
         var store = new WorkspaceSessionStore(_ => { });
         Assert.True(store.Write(new() { Documents = [WorkspaceSessionDocument.FromPath(archive)!, WorkspaceSessionDocument.FromPath(tiles)!] }));
         using var reopened = new MainForm(loadPlugins: false) { Opacity = 0, ShowInTaskbar = false };
         int prompts = 0;
-        reopened.AssetPassword = _ => { prompts++; return null; };
+        reopened.AssetPassword = _ =>
+        {
+            prompts++;
+            return null;
+        };
         reopened.ReportError = _ => Assert.Fail("Restore errors must be logged, not shown as modal failures.");
         reopened.Show();
         Application.DoEvents();
@@ -211,7 +224,11 @@ public sealed partial class CompositionTests
         var errors = new List<string>();
         bool startupComplete = false;
         controller.Restore(["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(),
-            message => { Assert.False(startupComplete); startup.Add(message); }, errors.Add);
+            message =>
+            {
+                Assert.False(startupComplete);
+                startup.Add(message);
+            }, errors.Add);
         startupComplete = true;
         Assert.Single(startup);
         Assert.Empty(errors);

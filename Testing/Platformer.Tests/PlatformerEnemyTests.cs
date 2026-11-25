@@ -82,9 +82,11 @@ public sealed class PlatformerEnemyTests
                         Assert.Equal(0, pixel.Alpha);
                     alpha += pixel.Alpha;
                 }
+
             Assert.True(alpha < previousAlpha);
             previousAlpha = alpha;
         }
+
         Assert.Equal(0L, previousAlpha);
     }
 }

@@ -355,6 +355,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 Telemetry.Record(telemetryGeneration, "atlas.batches", recorder.AtlasBatchCount);
                 Telemetry.Record(telemetryGeneration, "atlas.tiles", recorder.AtlasBatchedTileCount);
             }
+
             if (_recordingDiagnostics is { } diagnostics)
                 GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics with
                 {
@@ -668,6 +669,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 if (Scene.VisibleSceneLayers.Count > Diagnostics.RenderTelemetry.Layers.Length)
                     Telemetry.MarkTruncated(telemetryGeneration);
             }
+
             if (!legacyDiagnostics)
                 return;
             var diagnostics = new GpuRenderFrameDiagnostics(
@@ -1162,6 +1164,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             _deferredRenderScale = scale;
             return;
         }
+
         _deferredRenderScale = float.NaN;
         Backbuffer.RequestResize(PresentationTransform.ScaleDimension(adapter.Width, scale),
                                  PresentationTransform.ScaleDimension(adapter.Height, scale));
@@ -1181,6 +1184,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 (int)Math.Round(old.Left * scaleX), (int)Math.Round(old.Top * scaleY),
                 (int)Math.Round(old.Right * scaleX), (int)Math.Round(old.Bottom * scaleY));
         }
+
         Scene.FullRefreshNeeded = true;
         Interlocked.Exchange(ref _presentationInvalidated, 1);
     }

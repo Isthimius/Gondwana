@@ -34,7 +34,10 @@ public sealed class VideoFrameMailboxTests
             Assert.Equal(SKColors.White, target.GetPixel(1, 1));
             Assert.False(mailbox.Consume(ref bitmap));
         }
-        finally { bitmap?.Dispose(); }
+        finally
+        {
+            bitmap?.Dispose();
+        }
     }
 
     /// <summary>
@@ -64,7 +67,10 @@ public sealed class VideoFrameMailboxTests
             Assert.True(mailbox.Consume(ref bitmap));
             Assert.Null(bitmap);
         }
-        finally { bitmap?.Dispose(); }
+        finally
+        {
+            bitmap?.Dispose();
+        }
     }
 
     /// <summary>
@@ -98,11 +104,15 @@ public sealed class VideoFrameMailboxTests
                 for (int j = 0; j < data.Length; j++)
                     Assert.Equal(j % 4 == 3 ? (byte)255 : data[0], data[j]);
             }
+
             mailbox.Dispose();
             await producer;
             Assert.False(mailbox.Consume(ref bitmap));
         }
-        finally { bitmap?.Dispose(); }
+        finally
+        {
+            bitmap?.Dispose();
+        }
     }
 
     /// <summary>
@@ -148,7 +158,12 @@ public sealed class VideoFrameMailboxTests
     {
         var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
         try
-        { mailbox.Publish(new(handle.AddrOfPinnedObject(), width, height, stride, 0)); }
-        finally { handle.Free(); }
+        {
+            mailbox.Publish(new(handle.AddrOfPinnedObject(), width, height, stride, 0));
+        }
+        finally
+        {
+            handle.Free();
+        }
     }
 }

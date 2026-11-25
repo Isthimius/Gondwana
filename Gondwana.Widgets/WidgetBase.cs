@@ -240,6 +240,7 @@ public abstract class WidgetBase : DirectComposite
             if (bounds.Contains(world))
                 return offset;
         }
+
         return null;
     }
 

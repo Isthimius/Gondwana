@@ -164,8 +164,12 @@ public sealed partial class SceneEditorControl
                 _neighborFiles = Directory.GetFiles(root);
                 paths = paths.Concat(_neighborFiles);
             }
-            catch (Exception ex) when (IsAuthoringException(ex)) { _spriteDiscoveryWarning = ex.Message; }
+            catch (Exception ex) when (IsAuthoringException(ex))
+            {
+                _spriteDiscoveryWarning = ex.Message;
+            }
         }
+
         foreach (string path in paths.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(path => path, StringComparer.Ordinal))
         {
             bool explicitSource = _explicitSpriteSources.Contains(path);
@@ -184,8 +188,13 @@ public sealed partial class SceneEditorControl
                     if (owners.Any(owner => Owns(owner, address)))
                         continue;
                     try
-                    { _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource)); }
-                    catch (Exception ex) when (IsAuthoringException(ex)) { _spriteDiscoveryWarning = ex.Message; }
+                    {
+                        _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource));
+                    }
+                    catch (Exception ex) when (IsAuthoringException(ex))
+                    {
+                        _spriteDiscoveryWarning = ex.Message;
+                    }
                 }
             }
             catch (Exception ex) when (IsAuthoringException(ex) || ex is OperationCanceledException)
@@ -272,7 +281,10 @@ public sealed partial class SceneEditorControl
             var address = AuthoringResourceResolver.SpriteSceneSource(references[0], Path.GetDirectoryName(sprite.Address.Location.Path)!);
             return address == target ? null : "This sprite references a different scene source with the same ID.";
         }
-        catch (Exception ex) when (IsAuthoringException(ex)) { return ex.Message; }
+        catch (Exception ex) when (IsAuthoringException(ex))
+        {
+            return ex.Message;
+        }
     }
 
     private void RefreshSpriteVisuals()
@@ -345,6 +357,7 @@ public sealed partial class SceneEditorControl
             art = _spriteArtwork.Find(candidate.Address.Location, candidate.Member, candidate.Sprite, packages, FindTilesheet, FindAnimation, FindNeighborArtwork);
         }
         catch (Exception ex) when (IsAuthoringException(ex) || ex is OperationCanceledException or OverflowException) { }
+
         return new(candidate.Address, candidate.Sprite, layer, art, candidate.Owner, restriction);
     }
 
@@ -355,6 +368,7 @@ public sealed partial class SceneEditorControl
             ClearPreviewSpriteSelection();
             return false;
         }
+
         _selectedSprite = _spriteSelection = visual;
         _spriteMove = null;
         bool canMove = false;
@@ -377,6 +391,7 @@ public sealed partial class SceneEditorControl
                 }
             }
         }
+
         UpdateSpriteStatus();
         SpriteHistorySelectionChanged?.Invoke();
         return canMove;
@@ -467,7 +482,10 @@ public sealed partial class SceneEditorControl
             _preview.Focus();
             return changed;
         }
-        catch (OperationCanceledException) { return false; }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
         catch (Exception ex) when (IsAuthoringException(ex))
         {
             UpdateSpriteStatus(ex.Message);
@@ -483,14 +501,23 @@ public sealed partial class SceneEditorControl
         if (_preview.HasGesture || _preview.HasSpriteGesture || (e.AllowedEffect & DragDropEffects.Move) == 0)
             return;
         if (SceneAddress() is not { } target)
-        { UpdateSpriteStatus("Save this scene before placing sprites."); return; }
+        {
+            UpdateSpriteStatus("Save this scene before placing sprites.");
+            return;
+        }
+
         if (!ViewerDiscovers(data.Address.Location, target))
-        { UpdateSpriteStatus(OutsideViewerScope()); return; }
+        {
+            UpdateSpriteStatus(OutsideViewerScope());
+            return;
+        }
+
         if (data.Payload is not { } drag || ResolveLiveSprite(drag) is not { } sprite)
         {
             UpdateSpriteStatus("Open the owning GSPR document and drag a sprite with a unique ID.");
             return;
         }
+
         if (_selectedLayer is not { } layer || !ReferenceEquals(_structure.SelectedNode?.Tag, layer) || !IsLayerVisibleInPreview(layer))
         {
             UpdateSpriteStatus("Select a visible scene layer before placing the sprite.");
@@ -510,7 +537,10 @@ public sealed partial class SceneEditorControl
             UpdateSpriteStatus("Release to place the sprite. Hold Alt for precision.");
             SpriteDragOver(e);
         }
-        catch (Exception ex) when (IsAuthoringException(ex)) { UpdateSpriteStatus(ex.Message); }
+        catch (Exception ex) when (IsAuthoringException(ex))
+        {
+            UpdateSpriteStatus(ex.Message);
+        }
     }
 
     private SceneSpriteVisual? _dropSpriteVisual;

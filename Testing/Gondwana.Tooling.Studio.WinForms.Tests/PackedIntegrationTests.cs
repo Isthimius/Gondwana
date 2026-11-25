@@ -26,8 +26,14 @@ public sealed partial class CompositionTests
         FileStream? blocker = null;
         studio.BeforeArchiveInstall = () => blocker = File.OpenRead(path); // Denies File.Replace, after successful staging.
         try
-        { Assert.False(AwaitUi(studio.SaveDocument(document))); }
-        finally { blocker?.Dispose(); }
+        {
+            Assert.False(AwaitUi(studio.SaveDocument(document)));
+        }
+        finally
+        {
+            blocker?.Dispose();
+        }
+
         Assert.IsType<IOException>(failure);
         Assert.Equal(original, File.ReadAllBytes(path));
         Assert.True(document.Document.Dirty());
@@ -62,6 +68,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.Image, Path.Combine(root, "blue.png"), "blue.png");
             archive.Save();
         }
+
         foreach (var file in Directory.GetFiles(root).Where(file => !file.EndsWith(".gaf")))
             File.Delete(file);
         using var studio = Host(root);
@@ -107,7 +114,11 @@ public sealed partial class CompositionTests
         AnimationDefinitionSerializer.Save(loose, PreviewAnimation("encrypted.gaf"));
         using var studio = Host(root);
         int prompts = 0;
-        studio.AssetPassword = _ => { prompts++; return "secret"; };
+        studio.AssetPassword = _ =>
+        {
+            prompts++;
+            return "secret";
+        };
         var animation = studio.OpenDocument(loose);
         AssertSourceImages(Private(animation.Document.Editor, "_sources"), Color.LimeGreen);
         Assert.Equal(1, prompts);
@@ -126,12 +137,18 @@ public sealed partial class CompositionTests
                 using var bytes = original.Get(entry.AssetType, entry.AssetName)!;
                 replacement.Add(entry.AssetType, entry.AssetName, bytes);
             }
+
             replacement.Save();
         }
+
         WaitForArchives(studio.Browser);
         File.Move(Path.Combine(root, "replacement.gaf"), path, overwrite: true);
         studio.ReloadPreviews(animation); // The formerly verified credential is now rejected.
-        studio.AssetPassword = _ => { prompts++; return "new-secret"; };
+        studio.AssetPassword = _ =>
+        {
+            prompts++;
+            return "new-secret";
+        };
         studio.ReloadPreviews(animation);
         Assert.Equal(2, prompts);
         AssertSourceImages(Private(animation.Document.Editor, "_sources"), Color.LimeGreen);
@@ -153,14 +170,23 @@ public sealed partial class CompositionTests
             first.OpenDocument(loose);
             first.Close();
         }
+
         using var restored = new MainForm(loadPlugins: false) { Opacity = 0, ShowInTaskbar = false };
         int prompts = 0;
-        restored.AssetPassword = _ => { prompts++; return answer; };
+        restored.AssetPassword = _ =>
+        {
+            prompts++;
+            return answer;
+        };
         restored.Show();
         Application.DoEvents();
         Assert.Equal(1, prompts);
         Assert.Equal(loose, Assert.Single(restored.Documents).Document.Path());
-        restored.AssetPassword = _ => { prompts++; return "secret"; };
+        restored.AssetPassword = _ =>
+        {
+            prompts++;
+            return "secret";
+        };
         var retry = restored.OpenDocument(NativeLocation(path, "gts"));
         Assert.Equal(2, prompts);
         Assert.False(retry.Document.Dirty());
@@ -190,13 +216,21 @@ public sealed partial class CompositionTests
 
         using var restored = new MainForm(loadPlugins: false) { Opacity = 0, ShowInTaskbar = false };
         int prompts = 0;
-        restored.AssetPassword = _ => { prompts++; return answer; };
+        restored.AssetPassword = _ =>
+        {
+            prompts++;
+            return answer;
+        };
         restored.Show();
         Application.DoEvents();
         Assert.Equal(1, prompts);
         var animation = Assert.Single(restored.Documents, document => document.Document.Path() == loose);
 
-        restored.AssetPassword = _ => { prompts++; return "secret"; };
+        restored.AssetPassword = _ =>
+        {
+            prompts++;
+            return "secret";
+        };
         restored.ReloadPreviews(animation);
         Assert.Equal(2, prompts);
         AssertSourceImages(Private(animation.Document.Editor, "_sources"), Color.LimeGreen);

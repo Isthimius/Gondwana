@@ -28,7 +28,11 @@ public sealed partial class PluginPackageTests
         using (var service = Operations())
             service.Queue(service.Preview(source), true);
         using (var startup = Operations())
-        { startup.StartSession(); Assert.Empty(startup.Operations); }
+        {
+            startup.StartSession();
+            Assert.Empty(startup.Operations);
+        }
+
         return Path.Combine(InstallRoot, "package-sample.package");
     }
 
@@ -46,6 +50,7 @@ public sealed partial class PluginPackageTests
             input = Path.Combine(_root, "plugin.zip");
             ZipFile.CreateFromDirectory(source, input, CompressionLevel.Fastest, includeBaseDirectory: format == "wrapped");
         }
+
         using (var service = Operations())
         {
             service.StartSession();
@@ -61,6 +66,7 @@ public sealed partial class PluginPackageTests
             Assert.Empty(host.Plugins);
             Assert.False(File.Exists(marker));
         }
+
         using var next = Operations();
         next.StartSession();
         Assert.Empty(next.Operations);
@@ -93,6 +99,7 @@ public sealed partial class PluginPackageTests
             Assert.True(File.Exists(Path.Combine(target, "obsolete.txt")));
             Assert.Equal("1.0.0", PluginManifest.Read(target).Version);
         }
+
         using var next = Operations();
         next.StartSession();
         Assert.Empty(next.Operations);
@@ -127,11 +134,16 @@ public sealed partial class PluginPackageTests
             queue.Queue(queue.Preview(SourcePackage("replacement", version: "2.0.0")), true);
         using (var next = Operations())
         {
-            next.Checkpoint = point => { if (point == checkpoint) throw new IOException("Injected move failure"); };
+            next.Checkpoint = point =>
+            {
+                if (point == checkpoint)
+                    throw new IOException("Injected move failure");
+            };
             next.StartSession();
             Assert.Equal(original, PluginPackageInspection.Fingerprint(target));
             Assert.Equal(PluginPackageOperationState.Failed, Assert.Single(next.Operations).State);
         }
+
         using var restart = Operations();
         restart.StartSession();
         Assert.Equal(original, PluginPackageInspection.Fingerprint(target));
@@ -154,6 +166,7 @@ public sealed partial class PluginPackageTests
             File.WriteAllText(journalPath, json.ToJsonString());
             Directory.Move(target, Path.Combine(queue.WorkRoot, preview.Operation.Token, "backup"));
         }
+
         using var startup = Operations();
         startup.StartSession();
         Assert.Equal("1.0.0", PluginManifest.Read(target).Version);
@@ -175,6 +188,7 @@ public sealed partial class PluginPackageTests
             Assert.True(second.RestartRequired);
             Assert.False(Directory.Exists(InstallRoot));
         }
+
         using var last = Operations();
         last.StartSession();
         Assert.Empty(last.Operations);
@@ -190,6 +204,7 @@ public sealed partial class PluginPackageTests
             queue.Queue(queue.Preview(SourcePackage("replacement", version: "2.0.0")), true);
             queue.Queue(queue.Preview(SourcePackage("other", "sample.other")), true);
         }
+
         File.WriteAllText(Path.Combine(target, "external.txt"), "preserve");
         using var next = Operations();
         next.StartSession();
@@ -209,7 +224,12 @@ public sealed partial class PluginPackageTests
         Directory.CreateDirectory(other);
         File.WriteAllText(Path.Combine(other, "keep.txt"), "keep");
         using (var queue = Operations())
-        { var preview = queue.PreviewRemoval("sample.package"); queue.Queue(preview, true); Assert.True(Directory.Exists(target)); }
+        {
+            var preview = queue.PreviewRemoval("sample.package");
+            queue.Queue(preview, true);
+            Assert.True(Directory.Exists(target));
+        }
+
         using var next = Operations();
         next.StartSession();
         Assert.False(Directory.Exists(target));
@@ -296,18 +316,23 @@ public sealed partial class PluginPackageTests
         if (reason == "corrupt")
             File.WriteAllText(zip, "not a zip");
         else
-        using (var archive = ZipFile.Open(zip, ZipArchiveMode.Create))
-        {
-            if (reason == "duplicate")
-            { archive.CreateEntry("plugin.json"); archive.CreateEntry("PLUGIN.JSON"); }
-            if (reason == "link")
-                archive.CreateEntry("link").ExternalAttributes = unchecked((int)0xA1FF0000);
-            if (reason == "count")
-            for (var i = 0; i <= PluginPackageInspection.MaximumEntries; i++)
-                archive.CreateEntry("file" + i);
-            if (reason == "nested")
-                archive.CreateEntry("one/two/plugin.json");
-        }
+            using (var archive = ZipFile.Open(zip, ZipArchiveMode.Create))
+            {
+                if (reason == "duplicate")
+                {
+                    archive.CreateEntry("plugin.json");
+                    archive.CreateEntry("PLUGIN.JSON");
+                }
+
+                if (reason == "link")
+                    archive.CreateEntry("link").ExternalAttributes = unchecked((int)0xA1FF0000);
+                if (reason == "count")
+                    for (var i = 0; i <= PluginPackageInspection.MaximumEntries; i++)
+                        archive.CreateEntry("file" + i);
+                if (reason == "nested")
+                    archive.CreateEntry("one/two/plugin.json");
+            }
+
         using var service = Operations();
         Assert.ThrowsAny<Exception>(() => service.Preview(zip));
     }
@@ -371,6 +396,7 @@ public sealed partial class PluginPackageTests
             for (var i = 0; i < 257; i++)
                 stream.Write(block);
         }
+
         using var service = Operations();
         Assert.Throws<InvalidDataException>(() => service.Preview(zip));
         Assert.False(Directory.Exists(InstallRoot));
@@ -433,6 +459,7 @@ public sealed partial class PluginPackageTests
             Assert.Equal(PluginPackageOperationState.Failed, Assert.Single(startup.Operations).State);
             startup.Cancel("sample.package");
         }
+
         Directory.Move(Path.Combine(_root, "externallyMoved"), target);
         using (var queue = Operations())
         {
@@ -446,6 +473,7 @@ public sealed partial class PluginPackageTests
             Directory.Move(target, backup);
             File.WriteAllText(Path.Combine(backup, "user-data.txt"), "preserve");
         }
+
         using var recovery = Operations();
         recovery.StartSession();
         var failed = Assert.Single(recovery.Operations);

@@ -59,7 +59,15 @@ public sealed class EditHistory : IDisposable
     public int Limit
     {
         get => _limit;
-        set { RequireIdle(); if (value < 1) throw new ArgumentOutOfRangeException(nameof(value)); _limit = value; Trim(); Notify(); }
+        set
+        {
+            RequireIdle();
+            if (value < 1)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            _limit = value;
+            Trim();
+            Notify();
+        }
     }
 
     /// <summary>Bytes retained by committed undo and redo entries.</summary>
@@ -68,7 +76,15 @@ public sealed class EditHistory : IDisposable
     public long ByteLimit
     {
         get => _byteLimit;
-        set { RequireIdle(); if (value < 0) throw new ArgumentOutOfRangeException(nameof(value)); _byteLimit = value; Trim(); Notify(); }
+        set
+        {
+            RequireIdle();
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            _byteLimit = value;
+            Trim();
+            Notify();
+        }
     }
 
     internal void RequireIdle(bool allowTransaction = false)
@@ -86,12 +102,22 @@ public sealed class EditHistory : IDisposable
         if (!command.HasChanges)
             return;
         try
-        { Run(command, undo: false); }
-        catch { CancelAll(); throw; }
+        {
+            Run(command, undo: false);
+        }
+        catch
+        {
+            CancelAll();
+            throw;
+        }
+
         if (InTransaction)
             _transactions.Peek().Commands.Add(command);
         else
-        { Record(command); Notify(); }
+        {
+            Record(command);
+            Notify();
+        }
     }
 
     /// <summary>Executes a delegate-backed reversible operation. Delegates must capture models, not UI controls.</summary>
@@ -140,19 +166,31 @@ public sealed class EditHistory : IDisposable
         _executing = this;
         bool faulted = false;
         try
-        { Apply(command, undo); }
+        {
+            Apply(command, undo);
+        }
         catch (RecoveryException)
         {
             _entries.Clear();
             _position = 0;
             _saved = null;
             foreach (var transaction in _transactions)
-            { transaction.Finished = true; transaction.Commands.Clear(); }
+            {
+                transaction.Finished = true;
+                transaction.Commands.Clear();
+            }
+
             _transactions.Clear();
             faulted = true;
             throw;
         }
-        finally { _executing = null; _busy = false; if (faulted) Notify(); }
+        finally
+        {
+            _executing = null;
+            _busy = false;
+            if (faulted)
+                Notify();
+        }
     }
 
     private static void Apply(IEditCommand command, bool undo)
@@ -162,23 +200,47 @@ public sealed class EditHistory : IDisposable
             var ordered = undo ? group.Commands.Reverse().ToArray() : group.Commands;
             int completed = 0;
             try
-            { for (; completed < ordered.Length; completed++) Apply(ordered[completed], undo); }
+            {
+                for (; completed < ordered.Length; completed++)
+                    Apply(ordered[completed], undo);
+            }
             catch (Exception failure)
             {
                 try
-                { for (int i = completed - 1; i >= 0; i--) Apply(ordered[i], !undo); }
-                catch (Exception recovery) { throw new RecoveryException(failure, recovery); }
+                {
+                    for (int i = completed - 1; i >= 0; i--)
+                        Apply(ordered[i], !undo);
+                }
+                catch (Exception recovery)
+                {
+                    throw new RecoveryException(failure, recovery);
+                }
+
                 throw;
             }
+
             return;
         }
+
         try
-        { if (undo) command.Undo(); else command.Execute(); }
+        {
+            if (undo)
+                command.Undo(); else
+                command.Execute();
+        }
         catch (Exception failure)
         {
             try
-            { if (undo) command.Execute(); else command.Undo(); }
-            catch (Exception recovery) { throw new RecoveryException(failure, recovery); }
+            {
+                if (undo)
+                    command.Execute(); else
+                    command.Undo();
+            }
+            catch (Exception recovery)
+            {
+                throw new RecoveryException(failure, recovery);
+            }
+
             throw;
         }
     }
@@ -192,8 +254,14 @@ public sealed class EditHistory : IDisposable
         _busy = true;
         _executing = this;
         try
-        { change(); }
-        finally { _executing = null; _busy = false; }
+        {
+            change();
+        }
+        finally
+        {
+            _executing = null;
+            _busy = false;
+        }
     }
 
     private void Record(IEditCommand command)
@@ -217,7 +285,10 @@ public sealed class EditHistory : IDisposable
         while (RetainedBytes > _byteLimit && _entries.Count > 0)
         {
             if (_position > 0)
-            { _entries.RemoveAt(0); _position--; }
+            {
+                _entries.RemoveAt(0);
+                _position--;
+            }
             else
                 _entries.RemoveAt(_entries.Count - 1);
         }
@@ -244,6 +315,7 @@ public sealed class EditHistory : IDisposable
             var group = new GroupCommand(transaction.Description, transaction.Commands.ToArray());
             Run(group, undo: true);
         }
+
         _transactions.Pop();
         transaction.Finished = true;
         if (commit && transaction.Commands.Count > 0)
@@ -254,6 +326,7 @@ public sealed class EditHistory : IDisposable
             else
                 Record(group);
         }
+
         transaction.Commands.Clear();
         if (!InTransaction)
             Notify();
@@ -266,7 +339,12 @@ public sealed class EditHistory : IDisposable
     }
 
     /// <summary>Marks the current state saved after persistence succeeds; retains undo/redo.</summary>
-    public void MarkSaved() { RequireIdle(); _saved = _state; Notify(); }
+    public void MarkSaved()
+    {
+        RequireIdle();
+        _saved = _state;
+        Notify();
+    }
 
     /// <summary>Invalidates history after an untracked legacy mutation, preventing a false clean state.</summary>
     public void MarkUntracked()
@@ -279,10 +357,24 @@ public sealed class EditHistory : IDisposable
     }
 
     /// <summary>Discards obsolete local commands after a committed external refresh and establishes a clean baseline.</summary>
-    public void ResetSaved() { RequireIdle(); _entries.Clear(); _position = 0; _state = ++_nextState; _saved = _state; Notify(); }
+    public void ResetSaved()
+    {
+        RequireIdle();
+        _entries.Clear();
+        _position = 0;
+        _state = ++_nextState;
+        _saved = _state;
+        Notify();
+    }
 
     /// <summary>Releases retained commands without changing dirty-state semantics.</summary>
-    public void Clear() { RequireIdle(); _entries.Clear(); _position = 0; Notify(); }
+    public void Clear()
+    {
+        RequireIdle();
+        _entries.Clear();
+        _position = 0;
+        Notify();
+    }
     private void Notify() => Changed?.Invoke(this, EventArgs.Empty);
 
     /// <summary>Cancels pending transactions, releases command references, and detaches listeners.</summary>
@@ -292,12 +384,22 @@ public sealed class EditHistory : IDisposable
             return;
         RequireIdle(allowTransaction: true);
         try
-        { CancelAll(); }
-        catch { _saved = null; throw; }
+        {
+            CancelAll();
+        }
+        catch
+        {
+            _saved = null;
+            throw;
+        }
         finally
         {
             foreach (var transaction in _transactions)
-            { transaction.Finished = true; transaction.Commands.Clear(); }
+            {
+                transaction.Finished = true;
+                transaction.Commands.Clear();
+            }
+
             _transactions.Clear();
             _entries.Clear();
             Changed = null;
@@ -326,7 +428,11 @@ public sealed class EditTransaction : IDisposable
     internal readonly List<IEditCommand> Commands = [];
     internal bool Finished;
     internal string Description { get; }
-    internal EditTransaction(EditHistory history, string description) { _history = history; Description = description; }
+    internal EditTransaction(EditHistory history, string description)
+    {
+        _history = history;
+        Description = description;
+    }
     /// <summary>Commits the group as one operation.</summary>
     public void Commit() => _history.Finish(this, commit: true);
     /// <summary>Restores all edits in the group.</summary>

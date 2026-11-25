@@ -31,6 +31,7 @@ internal sealed class VideoFrameMailbox : IDisposable
                 for (int x = y * rowBytes + 3; x < (y + 1) * rowBytes; x += 4)
                     _pixels[x] = 255;
             }
+
             _width = frame.Width;
             _height = frame.Height;
             _pending = true;
@@ -40,7 +41,10 @@ internal sealed class VideoFrameMailbox : IDisposable
     internal void Reset()
     {
         lock (_gate)
-        { _pending = false; _clear = true; }
+        {
+            _pending = false;
+            _clear = true;
+        }
     }
 
     // Called only by the engine thread. Holding the gate for the copy bounds storage to
@@ -53,7 +57,12 @@ internal sealed class VideoFrameMailbox : IDisposable
                 return false;
             bool changed = _clear;
             if (_clear)
-            { bitmap?.Dispose(); bitmap = null; _clear = false; }
+            {
+                bitmap?.Dispose();
+                bitmap = null;
+                _clear = false;
+            }
+
             if (!_pending)
                 return changed;
             if (bitmap is null || bitmap.Width != _width || bitmap.Height != _height)
@@ -61,6 +70,7 @@ internal sealed class VideoFrameMailbox : IDisposable
                 bitmap?.Dispose();
                 bitmap = new SKBitmap(new SKImageInfo(_width, _height, SKColorType.Bgra8888, SKAlphaType.Opaque));
             }
+
             int rowBytes = checked(_width * 4);
             for (int y = 0; y < _height; y++)
                 Marshal.Copy(_pixels, y * rowBytes, IntPtr.Add(bitmap.GetPixels(), y * bitmap.RowBytes), rowBytes);
@@ -76,6 +86,10 @@ internal sealed class VideoFrameMailbox : IDisposable
     public void Dispose()
     {
         lock (_gate)
-        { _disposed = true; _pending = false; _pixels = []; }
+        {
+            _disposed = true;
+            _pending = false;
+            _pixels = [];
+        }
     }
 }

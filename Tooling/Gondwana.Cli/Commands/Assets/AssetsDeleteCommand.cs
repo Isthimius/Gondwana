@@ -70,16 +70,24 @@ internal sealed class AssetsDeleteCommand : Command<AssetsDeleteCommand.Settings
                 plan = AssetDeletionPlan.Create(settings.Scope, [new(type, Path.GetFullPath(settings.Source), settings.SourceEntry)],
                     credentials: path => credentials.GetValueOrDefault(path), cancellation: cancellationToken);
             }
+
             foreach (var line in plan.Preview)
                 AnsiConsole.WriteLine(line);
             if (plan.ForceRequired && !settings.Force)
                 return 2;
             if (settings.Commit)
-            { plan.Commit(settings.Force, cancellationToken); AnsiConsole.WriteLine("Deletion committed. Surviving documents were not rewritten."); }
+            {
+                plan.Commit(settings.Force, cancellationToken);
+                AnsiConsole.WriteLine("Deletion committed. Surviving documents were not rewritten.");
+            }
             else
                 AnsiConsole.WriteLine("Preview only; --force alone never deletes content. Use --commit after reviewing.");
             return 0;
         }
-        catch (Exception ex) { AnsiConsole.WriteLine(ex.Message); return 1; }
+        catch (Exception ex)
+        {
+            AnsiConsole.WriteLine(ex.Message);
+            return 1;
+        }
     }
 }

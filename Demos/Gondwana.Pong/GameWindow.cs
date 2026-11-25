@@ -16,7 +16,11 @@ internal sealed class GameWindow : Form
         KeyPreview = true;
         _renderSurface.Dock = DockStyle.Fill;
         Controls.Add(_renderSurface);
-        KeyDown += (_, args) => { if (args.KeyCode == Keys.Escape) Close(); };
+        KeyDown += (_, args) =>
+        {
+            if (args.KeyCode == Keys.Escape)
+                Close();
+        };
     }
     /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)

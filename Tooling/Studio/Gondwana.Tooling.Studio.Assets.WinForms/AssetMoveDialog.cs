@@ -30,6 +30,7 @@ public static class AssetMoveDialog
             if (entry.Length == 0)
                 entry = null;
         }
+
         var selectedScope = InputDialog.Show(owner, "Search scope", "Directory to inspect recursively, or one GAF/ZIP. References outside the inspected scope and game code are UNKNOWN:", scope);
         if (string.IsNullOrWhiteSpace(selectedScope))
             return false;
@@ -44,7 +45,14 @@ public static class AssetMoveDialog
             execute(plan);
             return true;
         }
-        catch (OperationCanceledException) { return false; }
-        catch (Exception ex) { ThemedMessageBox.Show(owner, ex.Message, "Move not completed", MessageBoxButtons.OK, MessageBoxIcon.Error); return false; }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            ThemedMessageBox.Show(owner, ex.Message, "Move not completed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
     }
 }

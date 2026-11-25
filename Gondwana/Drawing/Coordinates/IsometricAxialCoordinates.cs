@@ -106,6 +106,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
                     result.Add(gp);
             }
         }
+
         return result;
     }
 
@@ -141,6 +142,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
             var r = GetPixelRangeForTile(t, includeOverhang);
             ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
         }
+
         return ret;
     }
 

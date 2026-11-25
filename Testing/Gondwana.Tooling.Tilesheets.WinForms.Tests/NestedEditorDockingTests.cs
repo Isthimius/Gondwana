@@ -120,6 +120,7 @@ public sealed class NestedEditorDockingTests
                     Assert.True(source.Visible);
                     source.Show(target.Pane, DockAlignment.Bottom, .3);
                 }
+
                 var first = panes[0];
                 var last = panes[^1];
                 last.Show(first.Pane, first);
@@ -255,6 +256,7 @@ public sealed class NestedEditorDockingTests
                 Assert.Equal(1, changed);
                 Assert.Contains("Saved:", Assert.Single(items.OfType<ToolStripStatusLabel>()).Text);
             }
+
             using var reopened = AssetsFile.LoadOrCreate(path);
             using var reopenedEditor = new AssetEditorControl(reopened);
             Assert.Equal(2, Assert.Single(Descendants(reopenedEditor).OfType<DataGridView>()).Rows.Count);
@@ -308,7 +310,10 @@ public sealed class NestedEditorDockingTests
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
                 test();
             }
-            catch (Exception ex) { error = ex; }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         })
         { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);

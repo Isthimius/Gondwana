@@ -26,10 +26,16 @@ public sealed class ReferenceOrigins
                 if (string.IsNullOrWhiteSpace(path) || string.Equals(directory, origin.Directory, StringComparison.OrdinalIgnoreCase))
                     return path;
                 try
-                { return Path.GetRelativePath(directory, Path.GetFullPath(path, origin.Directory)).Replace('\\', '/'); }
+                {
+                    return Path.GetRelativePath(directory, Path.GetFullPath(path, origin.Directory)).Replace('\\', '/');
+                }
                 // Invalid draft references remain invalid and visible to document validation, but cannot break replay.
-                catch (Exception ex) when (ex is ArgumentException or NotSupportedException) { return path; }
+                catch (Exception ex) when (ex is ArgumentException or NotSupportedException)
+                {
+                    return path;
+                }
             }
+
             setLoose(Rebase(getLoose()));
             var packed = getArchive();
             if (string.IsNullOrWhiteSpace(packed) && !string.IsNullOrWhiteSpace(entry) && origin.Archive is not null &&
@@ -37,6 +43,7 @@ public sealed class ReferenceOrigins
                 packed = origin.Archive;
             setArchive(Rebase(packed));
         }
+
         Remember(reference, directory, archive);
     }
 }

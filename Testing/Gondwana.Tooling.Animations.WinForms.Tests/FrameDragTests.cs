@@ -84,7 +84,10 @@ public sealed partial class AnimationEditorTests
             Assert.Equal(new[] { first, inserted, last }, document.Definition.Frames.Take(3));
             Assert.Equal(1, document.Definition.Frames[3].XTile);
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 
     [Theory]
@@ -160,7 +163,10 @@ public sealed partial class AnimationEditorTests
             Assert.Equal((frame.Tilesheet, frame.RegionName, frame.XTile, frame.YTile, frame.DurationSeconds),
                 (savedFrame.Tilesheet, savedFrame.RegionName, savedFrame.XTile, savedFrame.YTile, savedFrame.DurationSeconds));
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 
     [Fact]
@@ -239,7 +245,10 @@ public sealed partial class AnimationEditorTests
                 Assert.True(document.History.CanRedo);
             }
         }
-        finally { Directory.Delete(directory, recursive: true); }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     });
 
     private static AnimationEditorDocument ShowFrameDragEditor(string directory)

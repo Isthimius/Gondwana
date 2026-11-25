@@ -160,6 +160,7 @@ internal sealed class GameWindow : Form
                 MessageBox.Show(this, ex.Message, "Could not save puzzle",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             _surface.Focus();
         });
     }
@@ -186,6 +187,7 @@ internal sealed class GameWindow : Form
                 MessageBox.Show(this, ex.Message, "Could not load puzzle",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             _surface.Focus();
         });
     }

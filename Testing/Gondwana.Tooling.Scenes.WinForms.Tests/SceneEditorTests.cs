@@ -270,10 +270,11 @@ public sealed partial class SceneEditorTests
             using (var bitmap = new Bitmap(40, 20))
             {
                 for (int y = 0; y < 20; y++)
-                for (int x = 0; x < 40; x++)
-                    bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+                    for (int x = 0; x < 40; x++)
+                        bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
                 bitmap.Save(Path.Combine(root, "atlas.png"));
             }
+
             var gts = new TilesheetDefinition
             {
                 Name = "preview",
@@ -296,9 +297,9 @@ public sealed partial class SceneEditorTests
             var hits = new List<Point>();
             var argb = colors.Select(color => color.ToArgb()).ToHashSet();
             for (int y = 0; y < 240; y++)
-            for (int x = 0; x < 240; x++)
-            if (argb.Contains(output.GetPixel(x, y).ToArgb()))
-                hits.Add(new(x, y));
+                for (int x = 0; x < 240; x++)
+                    if (argb.Contains(output.GetPixel(x, y).ToArgb()))
+                        hits.Add(new(x, y));
             Assert.NotEmpty(hits);
             int minX = hits.Min(p => p.X), maxX = hits.Max(p => p.X), minY = hits.Min(p => p.Y), maxY = hits.Max(p => p.Y);
             int x1 = minX + (maxX - minX) / 4, x2 = minX + 3 * (maxX - minX) / 4;
@@ -310,7 +311,10 @@ public sealed partial class SceneEditorTests
             Assert.Equal(Color.Red.ToArgb(), source.Image!.GetPixel(5, 5).ToArgb());
             Assert.Equal(Color.Yellow.ToArgb(), source.Image.GetPixel(35, 15).ToArgb());
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     });
     /// <summary>
     /// Verifies document save as rebases loose gts and gani references.

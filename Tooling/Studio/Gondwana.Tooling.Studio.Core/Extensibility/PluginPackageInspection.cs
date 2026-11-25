@@ -50,7 +50,10 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 if (names.Count > MaximumEntries)
                     throw new InvalidDataException("Package exceeds the 4096-entry limit.");
                 if (Directory.Exists(path))
-                { directories?.Add(path); Walk(path); }
+                {
+                    directories?.Add(path);
+                    Walk(path);
+                }
                 else
                 {
                     size = checked(size + new FileInfo(path).Length);
@@ -60,6 +63,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 }
             }
         }
+
         Walk(directory);
         return files.Order(StringComparer.Ordinal).ToArray();
     }
@@ -77,6 +81,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             using var stream = File.OpenRead(file);
             hash.AppendData(SHA256.HashData(stream));
         }
+
         return Convert.ToHexString(hash.GetHashAndReset());
     }
 
@@ -108,6 +113,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             }
             catch (BadImageFormatException) { /* Native dependencies are permitted. */ }
         }
+
         var resolver = new AssemblyDependencyResolver(entry);
         foreach (var file in managed)
         {
@@ -126,6 +132,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 PluginPackagePaths.RequireContained(directory, resolved ?? adjacent);
             }
         }
+
         foreach (var file in files.Where(f => f.EndsWith(".deps.json", StringComparison.OrdinalIgnoreCase)))
         {
             using var stream = File.OpenRead(file);
@@ -158,6 +165,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                     }
             }
         }
+
         return manifest;
     }
 
@@ -180,6 +188,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                     _framework.Contains(Path.GetFileNameWithoutExtension(asset.Name))))
                     pending.Enqueue(library);
             }
+
         while (pending.TryDequeue(out var library))
         {
             if (!owned.Add(library.Name) || !library.Value.TryGetProperty("dependencies", out var dependencies))
@@ -189,6 +198,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                     foreach (var match in matches)
                         pending.Enqueue(match);
         }
+
         return owned;
     }
 
@@ -252,6 +262,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                     crc = CrcTable[(crc ^ buffer[i]) & 0xff] ^ (crc >> 8);
             output.Write(buffer, 0, count);
         }
+
         if (expectedCrc is not null && (~crc != expectedCrc || total - before != expectedLength))
             throw new InvalidDataException("Corrupt ZIP entry: CRC or expanded length does not match its directory record.");
     }
@@ -270,11 +281,16 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             var end = -1;
             for (var i = tail.Length - 22; i >= 0; i--)
                 if (BitConverter.ToUInt32(tail, i) == 0x06054b50 && i + 22 + BitConverter.ToUInt16(tail, i + 20) == tail.Length)
-                { end = i; break; }
+                {
+                    end = i;
+                    break;
+                }
+
             if (end < 0 || BitConverter.ToUInt16(tail, end + 4) != 0 || BitConverter.ToUInt16(tail, end + 6) != 0 ||
                 BitConverter.ToUInt16(tail, end + 10) > MaximumEntries || BitConverter.ToUInt32(tail, end + 12) > 4 * 1024 * 1024)
                 throw new InvalidDataException("Malformed, multi-volume, ZIP64, or oversized ZIP directory. Use a normal ZIP with at most 4096 entries.");
         }
+
         using var archive = ZipFile.OpenRead(source);
         if (archive.Entries.Count > MaximumEntries)
             throw new InvalidDataException("ZIP exceeds the 4096-entry limit.");
@@ -295,6 +311,7 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             if (expanded > MaximumBytes)
                 throw new InvalidDataException("ZIP exceeds the 256 MiB expanded-size limit.");
         }
+
         long copied = 0;
         foreach (var entry in archive.Entries)
         {
@@ -303,7 +320,11 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("ZIP entry escapes the staging directory.");
             if (entry.FullName.EndsWith('/'))
-            { Directory.CreateDirectory(target); continue; }
+            {
+                Directory.CreateDirectory(target);
+                continue;
+            }
+
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             using var input = entry.Open();
             using var output = new FileStream(target, FileMode.CreateNew, FileAccess.Write, FileShare.None);

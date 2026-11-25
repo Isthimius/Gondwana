@@ -21,6 +21,7 @@ public sealed partial class CompositionTests
             File.WriteAllText(Path.Combine(directory, "z." + extension), "unchanged");
             File.WriteAllText(Path.Combine(directory, "A." + extension), "unchanged");
         }
+
         foreach (var name in new[] { "b.GAF", "a.gaf" })
         {
             using var archive = AssetsFile.LoadOrCreate(Path.Combine(directory, name), null, false, register: false);
@@ -29,6 +30,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.TilesheetDefinition, "z.gts", new MemoryStream([4]));
             archive.Save();
         }
+
         var before = Directory.GetFiles(directory).ToDictionary(path => path, File.ReadAllBytes);
         var registered = AssetsFile.AllAssetsFiles.ToArray();
         using var panel = new DirectoryPanel(_ => { });
@@ -67,6 +69,7 @@ public sealed partial class CompositionTests
                 Assert.Equal(group < 6, panel.FileMenu.Items[0].Available);
             });
         }
+
         Assert.Equal(4, groups[1].Nodes.Count);
         Assert.Equal(2, groups[1].Nodes[2].Nodes.Count);
         Assert.Equal(4, groups[6].Nodes.Count);
@@ -169,6 +172,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.TilesheetDefinition, "secret.gts", new MemoryStream([1]));
             archive.Save();
         }
+
         File.WriteAllText(Path.Combine(directory, "loose.gts"), "{}");
         var logs = new List<string>();
         using var panel = new DirectoryPanel(logs.Add);
@@ -177,6 +181,7 @@ public sealed partial class CompositionTests
             panel.SetDirectory(directory);
             WaitForArchives(panel);
         }
+
         Assert.Equal(new[] { "loose.gts", "good.gaf" },
             panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>().Select(node => node.Text));
         Assert.Equal("old.gts", panel.Tree.Nodes[0].Nodes[1].Nodes[1].Nodes[0].Text);
@@ -188,6 +193,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.SceneDefinition, "new.gts", new MemoryStream([2]));
             archive.Save();
         }
+
         panel.RefreshDirectory();
         WaitForArchives(panel);
         Assert.Equal("new.gts", Assert.Single(Assert.Single(panel.Tree.Nodes[0].Nodes[3].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>()).Text);
@@ -414,6 +420,7 @@ public sealed partial class CompositionTests
             foreach (var key in panel.Tree.ImageList.Images.Keys.Cast<string>())
                 Assert.Equal(panel.Tree.ImageList.ImageSize, panel.Tree.ImageList.Images[key]!.Size);
         }
+
         archive.Collapse();
         panel.ApplyIconSize(NavigationIconSize.Large);
         Assert.False(archive.IsExpanded);
@@ -455,6 +462,7 @@ public sealed partial class CompositionTests
             menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
             Assert.Equal(size.ToString(), Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Text);
         }
+
         using var restored = Host(directory);
         Assert.Equal(size, restored.Browser.IconSize);
         Assert.Equal(size, new NavigationPreferenceStore().Read());
@@ -618,6 +626,7 @@ public sealed partial class CompositionTests
             Application.DoEvents();
             Thread.Sleep(1);
         }
+
         SynchronizationContext.SetSynchronizationContext(context);
         Assert.True(task.IsCompleted, "UI operation timed out.");
         return task.GetAwaiter().GetResult();
@@ -636,6 +645,7 @@ public sealed partial class CompositionTests
             initial.Add(AssetTypes.Misc, "existing.bin", new MemoryStream([1]));
             initial.Save();
         }
+
         using var studio = Host(directory);
         WaitForArchives(studio.Browser);
         var document = studio.OpenDocument(path);
@@ -689,6 +699,7 @@ public sealed partial class CompositionTests
                 Assert.False(document.Document.Dirty());
                 Assert.Equal(destination, document.Document.Path());
             }
+
             using var saved = AssetsFile.LoadOrCreate(destination, null, false, register: false);
             Assert.Equal(2, saved.GetAllEntries().Count());
             using var changed = saved[AssetTypes.Misc, "changed.bin"];
@@ -715,6 +726,7 @@ public sealed partial class CompositionTests
             Application.DoEvents();
             Thread.Sleep(1);
         }
+
         Assert.True(panel.PendingArchiveLoads.IsCompleted, "Archive enumeration timed out.");
         panel.PendingArchiveLoads.GetAwaiter().GetResult();
     }

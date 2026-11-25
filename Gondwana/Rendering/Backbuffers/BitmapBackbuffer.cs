@@ -65,7 +65,11 @@ public sealed class BitmapBackbuffer : BackbufferBase
     /// </remarks>
     public override SKCanvas Canvas
     {
-        get { lock (_gate) return _surface!.Canvas; }
+        get
+        {
+            lock (_gate)
+                return _surface!.Canvas;
+        }
     }
 
     private readonly SKPaint _bitmapPaint = new SKPaint

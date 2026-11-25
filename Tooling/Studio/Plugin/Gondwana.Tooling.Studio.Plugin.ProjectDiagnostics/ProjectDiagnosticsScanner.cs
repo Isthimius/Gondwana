@@ -118,6 +118,7 @@ public sealed class ProjectDiagnosticsScanner
                                 Reference("Image.AssetsFilePath", image.AssetsFilePath, image.AssetEntryName, AssetTypes.Image);
                         }
                     }
+
                     break;
 
                 case ".gani":
@@ -133,6 +134,7 @@ public sealed class ProjectDiagnosticsScanner
                             Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
                         }
                     }
+
                     break;
 
                 case ".gscn":
@@ -147,12 +149,14 @@ public sealed class ProjectDiagnosticsScanner
                             var source = scene.TilesheetSources[i];
                             Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
                         }
+
                         for (int i = 0; i < scene.AnimationSources.Count; i++)
                         {
                             var source = scene.AnimationSources[i];
                             Source($"AnimationSources[{i}]", (int)source.Kind, source.GaniPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.AnimationDefinition, "GaniPath");
                         }
                     }
+
                     break;
 
                 case ".gspr":
@@ -167,12 +171,14 @@ public sealed class ProjectDiagnosticsScanner
                             var source = sprites.TilesheetSources[i];
                             Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
                         }
+
                         for (int i = 0; i < sprites.SceneSources.Count; i++)
                         {
                             var source = sprites.SceneSources[i];
                             Source($"SceneSources[{i}]", (int)source.Kind, source.GscnPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.SceneDefinition, "GscnPath");
                         }
                     }
+
                     break;
 
                 case ".gsnd":
@@ -210,6 +216,7 @@ public sealed class ProjectDiagnosticsScanner
                             }
                         }
                     }
+
                     break;
             }
         }

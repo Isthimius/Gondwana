@@ -48,14 +48,28 @@ public static class GodotTextResource
                 sections[^1].Properties.Add(line[..equals].Trim(), line[(equals + 1)..].Trim());
             }
         }
+
         foreach (char c in text)
         {
             if (comment)
-            { if (c != '\n') continue; comment = false; }
+            {
+                if (c != '\n')
+                    continue;
+                comment = false;
+            }
+
             if (!quoted && c == ';')
-            { comment = true; continue; }
+            {
+                comment = true;
+                continue;
+            }
+
             if (!quoted && c == '\n' && depth == 0)
-            { Flush(); continue; }
+            {
+                Flush();
+                continue;
+            }
+
             statement.Append(c);
             if (quoted)
             {
@@ -71,8 +85,12 @@ public static class GodotTextResource
             else if (c is '(' or '[' or '{')
                 depth++;
             else if (c is ')' or ']' or '}')
-            { if (--depth < 0) throw new InvalidDataException("Unbalanced Godot value."); }
+            {
+                if (--depth < 0)
+                    throw new InvalidDataException("Unbalanced Godot value.");
+            }
         }
+
         if (quoted || depth != 0)
             throw new InvalidDataException("Unterminated Godot value.");
         Flush();

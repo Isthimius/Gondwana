@@ -42,6 +42,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.AudioDefinition, path, "nested/remote.gsnd");
             archive.Save();
         }
+
         var query = new DefinitionReferenceQuery(DefinitionReferenceDiscovery.Inspect(Source));
         Assert.Single(query.ExternalDependencies(new(new AssetLocation(AssetTypes.Misc, archivePath))));
         var packed = new AssetLocation(AssetTypes.AudioDefinition, archivePath, "nested/remote.gsnd");
@@ -61,6 +62,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.False(scan.IsComplete);
             Assert.Contains(scan.Problems, p => p.Kind == ReferenceProblemKind.Inaccessible);
         }
+
         var json = File.ReadAllText(path);
         File.WriteAllText(path, json.Replace("terrain1", "terrain0"));
         var duplicate = DefinitionReferenceDiscovery.Inspect(Source);
@@ -80,6 +82,7 @@ public sealed partial class SemanticAssetPackTests
             foreach (var member in group.Select(r => r.Member).Distinct())
                 Assert.All(query.Dependencies(new(group.Key, member)), r => Assert.Equal(member, r.Member));
         }
+
         var sheet = new AssetLocation(AssetTypes.TilesheetDefinition, Path.Combine(Source, "tiles.gts"));
         Assert.Equal(6, query.Dependents(new(sheet)).Count);
         Assert.Equal(3, query.Dependents(new(sheet, "terrain1")).Count);
@@ -140,6 +143,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.TilesheetDefinition, "nested/definitions/tiles.gts", bytes);
             archive.Save();
         }
+
         var scan = DefinitionReferenceDiscovery.Inspect(first);
         Assert.True(scan.IsComplete, string.Join("\n", scan.Problems));
         var reference = Assert.Single(scan.References);
@@ -164,6 +168,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.Image, Path.Combine(Source, "art.png"), "art.png");
             archive.Save();
         }
+
         Assert.Contains(DefinitionReferenceDiscovery.Inspect(Source).Problems, p => p.Kind == ReferenceProblemKind.Authentication);
         Assert.Contains(DefinitionReferenceDiscovery.Inspect(Source, _ => "wrong").Problems, p => p.Kind == ReferenceProblemKind.Authentication);
         Assert.True(DefinitionReferenceDiscovery.Inspect(Source, _ => "secret").IsComplete);

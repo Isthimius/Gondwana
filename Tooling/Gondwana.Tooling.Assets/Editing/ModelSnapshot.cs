@@ -24,6 +24,7 @@ public sealed class ModelSnapshot
                     Visit(item);
                 return;
             }
+
             foreach (var property in target.GetType().GetProperties().Where(p => p.CanRead && p.SetMethod?.IsPublic == true && p.GetIndexParameters().Length == 0 && p.Name != "Source"))
             {
                 var current = property.GetValue(target);
@@ -31,6 +32,7 @@ public sealed class ModelSnapshot
                 Visit(current);
             }
         }
+
         Visit(value);
     }
 
@@ -74,8 +76,15 @@ public sealed class ModelSnapshot
     private static void Replace(IList list, object?[] items)
     {
         if (list.IsFixedSize)
-        { for (int i = 0; i < items.Length; i++) list[i] = items[i]; }
+        {
+            for (int i = 0; i < items.Length; i++)
+                list[i] = items[i];
+        }
         else
-        { list.Clear(); foreach (var item in items) list.Add(item); }
+        {
+            list.Clear();
+            foreach (var item in items)
+                list.Add(item);
+        }
     }
 }

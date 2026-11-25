@@ -118,7 +118,11 @@ internal sealed class MeadowDrawing : DirectDrawingBase
             _paint.Color = new SKColor(0, 0, 0, 65);
             c.DrawOval(p.Position.X + 10, p.Position.Y + r * .62f, r * 1.05f, r * .37f, _paint);
             if (p.Radioactive)
-            { _paint.Color = new SKColor(102, 255, 62, 55); c.DrawCircle(p.Position.X, p.Position.Y, r * 1.3f, _paint); }
+            {
+                _paint.Color = new SKColor(102, 255, 62, 55);
+                c.DrawCircle(p.Position.X, p.Position.Y, r * 1.3f, _paint);
+            }
+
             _paint.Color = p.Radioactive ? new SKColor(73, 219, 54) : p.Flaming ? new SKColor(133, 58, 25) : new SKColor(102, 58, 35);
             c.DrawOval(p.Position.X, p.Position.Y, r * stretch, r * (.78f / stretch), _paint);
             _paint.Color = p.Radioactive ? new SKColor(178, 255, 92) : new SKColor(170, 101, 57);
@@ -129,8 +133,10 @@ internal sealed class MeadowDrawing : DirectDrawingBase
                 for (int i = 0; i < 4; i++)
                     c.DrawOval(p.Position.X - r * .5f + i * r * .32f, p.Position.Y - r * .7f, r * .14f, r * .35f, _paint);
             }
+
             Label(c, $"${p.Value:0}", p.Position.X, p.Position.Y + 6, Math.Clamp(r * .24f, 10, 23), SKColors.White, SKTextAlign.Center);
         }
+
         if (_game.Beetle && _game.Plops.Count > 0)
         {
             Plop target = _game.Plops.OrderBy(p => p.Position.X).First();
@@ -201,7 +207,15 @@ internal sealed class MeadowDrawing : DirectDrawingBase
         _paint.Color = new SKColor(117, 109, 97);
         _paint.StrokeWidth = 6;
         for (int x = 525; x < 690; x += 38)
-        { using var spring = new SKPath(); spring.MoveTo(x, 690); spring.LineTo(x + 11, 674); spring.LineTo(x - 3, 659); spring.LineTo(x + 10, 642); c.DrawPath(spring, _paint); }
+        {
+            using var spring = new SKPath();
+            spring.MoveTo(x, 690);
+            spring.LineTo(x + 11, 674);
+            spring.LineTo(x - 3, 659);
+            spring.LineTo(x + 10, 642);
+            c.DrawPath(spring, _paint);
+        }
+
         _paint.Color = new SKColor(48, 32, 26);
         c.DrawRoundRect(new SKRect(490, 626, 715, 706), 28, 28, _paint);
         _paint.Color = hover ? new SKColor(146, 87, 50) : new SKColor(116, 65, 38);
@@ -232,12 +246,14 @@ internal sealed class MeadowDrawing : DirectDrawingBase
             c.DrawRoundRect(new SKRect(x, y, x + 194, y + 31), 7, 7, _paint);
             Label(c, owned[i] ? "✓ " + Upgrades[i] : Upgrades[i], x + 9, y + 21, 12, owned[i] ? new SKColor(175, 255, 190) : new SKColor(224, 211, 191), SKTextAlign.Left);
         }
+
         if (_game.MessageTime > 0)
         {
             _paint.Color = new SKColor(14, 12, 12, 215);
             c.DrawRoundRect(new SKRect(300, 24, 980, 73), 18, 18, _paint);
             Label(c, _game.Message, 640, 57, 20, SKColors.White, SKTextAlign.Center);
         }
+
         if (_game.Stun > 0)
         {
             _paint.Color = new SKColor(235, 238, 232, (byte)(80 + 120 * _game.Stun / 3));
@@ -280,10 +296,41 @@ internal sealed class MeadowDrawing : DirectDrawingBase
 
     private float Daylight => Math.Clamp((MathF.Sin((_game.TimeOfDay - 6) / 24f * MathF.Tau) + .2f) * .72f, 0, 1);
     private static SKColor Lerp(SKColor a, SKColor b, float t) => new((byte)(a.Red + (b.Red - a.Red) * t), (byte)(a.Green + (b.Green - a.Green) * t), (byte)(a.Blue + (b.Blue - a.Blue) * t), (byte)(a.Alpha + (b.Alpha - a.Alpha) * t));
-    private void Label(SKCanvas c, string text, float x, float y, float size, SKColor color, SKTextAlign align) { _text.TextSize = size; _text.Color = color; _text.TextAlign = align; c.DrawText(text, x, y, _text); }
-    private static SKPath RoofPath() { var p = new SKPath(); p.MoveTo(1008, 120); p.LineTo(1147, 52); p.LineTo(1280, 120); p.Close(); return p; }
-    private static SKPath TiePath(Vector2 p, float s) { var path = new SKPath(); path.MoveTo(p.X - 5 * s, p.Y - 3 * s); path.LineTo(p.X + 5 * s, p.Y - 3 * s); path.LineTo(p.X + 2 * s, p.Y + 16 * s); path.LineTo(p.X - 2 * s, p.Y + 16 * s); path.Close(); return path; }
+    private void Label(SKCanvas c, string text, float x, float y, float size, SKColor color, SKTextAlign align)
+    {
+        _text.TextSize = size;
+        _text.Color = color;
+        _text.TextAlign = align;
+        c.DrawText(text, x, y, _text);
+    }
+    private static SKPath RoofPath()
+    {
+        var p = new SKPath();
+        p.MoveTo(1008, 120);
+        p.LineTo(1147, 52);
+        p.LineTo(1280, 120);
+        p.Close();
+        return p;
+    }
+    private static SKPath TiePath(Vector2 p, float s)
+    {
+        var path = new SKPath();
+        path.MoveTo(p.X - 5 * s, p.Y - 3 * s);
+        path.LineTo(p.X + 5 * s, p.Y - 3 * s);
+        path.LineTo(p.X + 2 * s, p.Y + 16 * s);
+        path.LineTo(p.X - 2 * s, p.Y + 16 * s);
+        path.Close();
+        return path;
+    }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing) { if (disposing) { _paint.Dispose(); _text.Dispose(); } base.Dispose(disposing); }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _paint.Dispose();
+            _text.Dispose(); }
+
+        base.Dispose(disposing);
+    }
 }

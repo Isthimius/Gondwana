@@ -57,6 +57,7 @@ public sealed partial class CompositionTests
             archive.Add(StudioDocument.TypeFor(format), entry, bytes);
             archive.Save();
         }
+
         using var studio = Host(root);
         var child = studio.OpenDocument(new AssetLocation(StudioDocument.TypeFor(format), path, entry));
         Assert.False(child.Document.Dirty());
@@ -90,6 +91,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.Image, Path.Combine(root, "blue.png"), "blue.png");
             archive.Save();
         }
+
         foreach (var loose in new[] { "world.gts", "water.gani", "island.gscn", "atlas.png", "blue.png" })
             File.Delete(Path.Combine(root, loose));
         using var studio = Host(root);
@@ -159,7 +161,11 @@ public sealed partial class CompositionTests
         RenameFirst(child.Document, "persisted");
         using var opened = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
-        studio.Browser.ArchiveOpened = _ => { opened.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(15))); };
+        studio.Browser.ArchiveOpened = _ =>
+        {
+            opened.Set();
+            Assert.True(release.Wait(TimeSpan.FromSeconds(15)));
+        };
         studio.Browser.RefreshDirectory();
         Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
         try
@@ -189,7 +195,11 @@ public sealed partial class CompositionTests
             using var saved = StudioArchiveSnapshot.Open(path, null);
             Assert.Contains("persisted", Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gsnd"))));
         }
-        finally { studio.Browser.ArchiveOpened = null; release.Set(); }
+        finally
+        {
+            studio.Browser.ArchiveOpened = null;
+            release.Set();
+        }
     });
 
     [Fact]
@@ -198,7 +208,11 @@ public sealed partial class CompositionTests
         var path = NativeArchive(root, password: "secret");
         using var studio = Host(root);
         int prompts = 0;
-        studio.AssetPassword = _ => { prompts++; return "secret"; };
+        studio.AssetPassword = _ =>
+        {
+            prompts++;
+            return "secret";
+        };
         WaitForArchives(studio.Browser);
         Assert.Equal(0, prompts);
         var parent = studio.OpenDocument(path);
@@ -229,6 +243,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.SceneDefinition, "invalid.gscn", invalid);
             archive.Save();
         }
+
         using var studio = Host(root);
         Assert.Throws<FileNotFoundException>(() => studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "same.gts")));
         Assert.Throws<FileNotFoundException>(() => studio.OpenDocument(new AssetLocation(AssetTypes.AnimationDefinition, path, "nested/same.gts")));
@@ -277,6 +292,7 @@ public sealed partial class CompositionTests
             studio.OpenDocument(NativeLocation(path, "gsnd"));
             studio.Close();
         }
+
         var store = new WorkspaceSessionStore(_ => { });
         Assert.Equal(3, store.Read().Documents.Length);
         Assert.Equal("nested/same.gsnd", store.Read().ActivePackedDocument!.EntryName);
@@ -286,11 +302,13 @@ public sealed partial class CompositionTests
             Assert.Equal("nested/same.gsnd", studio.ActiveDocument!.Document.PackedLocation()!.AssetEntryName);
             studio.Close();
         }
+
         using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
         {
             archive.Remove(AssetTypes.TilesheetDefinition, "nested/same.gts");
             archive.Save();
         }
+
         using var restored = Host(root);
         Assert.Equal(2, restored.Documents.Count);
         Assert.Contains(restored.Documents, doc => doc.Document.Extension == "gsnd");

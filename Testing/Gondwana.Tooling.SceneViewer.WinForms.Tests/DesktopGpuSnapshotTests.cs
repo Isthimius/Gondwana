@@ -35,8 +35,14 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         var thread = new Thread(() =>
         {
             try
-            { Run(); completion.SetResult(); }
-            catch (Exception exception) { completion.SetException(exception); }
+            {
+                Run();
+                completion.SetResult();
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
         });
         thread.SetApartmentState(ApartmentState.STA);
         thread.IsBackground = true;
@@ -121,7 +127,10 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
                 control.Deinitialize();
                 completion.SetResult();
             }
-            catch (Exception exception) { completion.SetException(exception); }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
         });
         thread.SetApartmentState(ApartmentState.STA);
         thread.IsBackground = true;

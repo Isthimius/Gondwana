@@ -62,6 +62,7 @@ public sealed class AssetsFile : IDisposable
             if (!keys.Add(key))
                 throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
         }
+
         if (!archive.TestArchive(testData))
             throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
     }

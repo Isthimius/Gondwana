@@ -150,6 +150,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             ZoomIn();
             _zoomWheelDelta -= WheelNotch;
         }
+
         while (_zoomWheelDelta <= -WheelNotch)
         {
             ZoomOut();

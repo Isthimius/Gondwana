@@ -69,6 +69,7 @@ public sealed partial class SpriteDocument
             else
                 SetLooseSceneSource(member, sceneId, scene.Location.Path);
         }
+
         if (moves)
         {
             Edit(sprite, description, () =>
@@ -78,6 +79,7 @@ public sealed partial class SpriteDocument
                 sprite.Position = position;
             });
         }
+
         edit.Commit();
         return true;
     }

@@ -83,10 +83,21 @@ public sealed partial class SpriteEditorControl : UserControl
             button.Click += (_, _) => action();
             toolbar.Controls.Add(button);
         }
+
         Button("Reload sources", ReloadSources);
         Button("Add", () => SelectSprite(Document.AddSprite()));
-        Button("Duplicate", () => { if (SelectedSprite is { } entry) SelectSprite(Document.DuplicateSprite(entry)); });
-        Button("Remove", () => { if (SelectedSprite is { } entry) { Document.RemoveSprite(entry); RefreshEntries(); } });
+        Button("Duplicate", () =>
+        {
+            if (SelectedSprite is { } entry)
+                SelectSprite(Document.DuplicateSprite(entry));
+        });
+        Button("Remove", () =>
+        {
+            if (SelectedSprite is { } entry)
+            {
+                Document.RemoveSprite(entry);
+                RefreshEntries(); }
+        });
         Button("Add GANI…", () =>
         {
             using var dialog = new OpenFileDialog { Filter = "Gondwana animations|*.gani", Multiselect = true };
@@ -131,12 +142,18 @@ public sealed partial class SpriteEditorControl : UserControl
         _scenes.NodeMouseDoubleClick += (_, e) =>
         {
             if (SelectedSprite is { } entry && e.Node.Tag is ValueTuple<SceneDefinition, SceneLayerDefinition> selected)
-            { Document.AssignSceneLayer(entry, selected.Item1.ID, selected.Item2.ID); RefreshSelection(); }
+            {
+                Document.AssignSceneLayer(entry, selected.Item1.ID, selected.Item2.ID);
+                RefreshSelection();
+            }
         };
         _frames.NodeMouseDoubleClick += (_, e) =>
         {
             if (SelectedSprite is { } entry && e.Node.Tag is SpriteFrameDefinition frame)
-            { Document.AssignFrame(entry, frame); RefreshSelection(); }
+            {
+                Document.AssignFrame(entry, frame);
+                RefreshSelection();
+            }
         };
         WireResourceDragDrop();
         Document.Changed += DocumentChanged;
@@ -247,6 +264,7 @@ public sealed partial class SpriteEditorControl : UserControl
                     AddAnimationDefinition(new AuthoringResourceResolver(_packages).LoadAnimation(resource, source.AnimationKey), resource);
                 }, source);
         }
+
         foreach (var source in Document.Definition.SceneSources)
         {
             if (source.Kind == SpriteSceneSourceKind.LooseDefinitionFile && source.GscnPath is { } path)
@@ -258,6 +276,7 @@ public sealed partial class SpriteEditorControl : UserControl
                     AddSceneDefinition(new AuthoringResourceResolver(_packages).LoadScene(resource, source.SceneId), resource);
                 }, source);
         }
+
         foreach (var source in Document.Definition.TilesheetSources)
         {
             if (source.Kind == SpriteTilesheetSourceKind.LooseDefinitionFile && source.GtsPath is { } path)
@@ -281,8 +300,15 @@ public sealed partial class SpriteEditorControl : UserControl
         var resource = selection.Resource;
         var source = SpriteTilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
         try
-        { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
-        catch { source.Dispose(); throw; }
+        {
+            Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!);
+        }
+        catch
+        {
+            source.Dispose();
+            throw;
+        }
+
         AddTilesheetDefinition(source);
         RefreshSelection();
     }
@@ -312,7 +338,9 @@ public sealed partial class SpriteEditorControl : UserControl
     private void TryLoad(Action action, object? source = null)
     {
         try
-        { action(); }
+        {
+            action();
+        }
         catch (Exception ex) when (IsDropException(ex))
         {
             if (source is null)
@@ -340,10 +368,14 @@ public sealed partial class SpriteEditorControl : UserControl
                     LoadAnimation(path, member.Key);
                     Document.SetLooseAnimationSource(member.Key, path);
                 }
+
             RefreshSelection();
 
         }
-        finally { transaction.Commit(); }
+        finally
+        {
+            transaction.Commit();
+        }
     }
 
     private void LoadAnimation(string path, string key)
@@ -364,6 +396,7 @@ public sealed partial class SpriteEditorControl : UserControl
             _sourceWarnings.Add($"Duplicate GANI source for '{definition.Key}'.");
             return;
         }
+
         _animationDefinitions.Add(definition);
         var sheets = new List<SpriteTilesheetSource>();
         _animationTilesheets[definition.Key] = sheets;
@@ -381,12 +414,19 @@ public sealed partial class SpriteEditorControl : UserControl
         try
         {
             foreach (var path in paths)
-            foreach (var member in SceneDefinitionSerializer.LoadAll(path))
-            { var scene = LoadScene(path, member.ID); Document.SetLooseSceneSource(scene.ID, path); }
+                foreach (var member in SceneDefinitionSerializer.LoadAll(path))
+                {
+                    var scene = LoadScene(path, member.ID);
+                    Document.SetLooseSceneSource(scene.ID, path);
+                }
+
             RefreshSelection();
 
         }
-        finally { transaction.Commit(); }
+        finally
+        {
+            transaction.Commit();
+        }
     }
     private SceneDefinition LoadScene(string path, string? identity = null)
     {
@@ -415,12 +455,19 @@ public sealed partial class SpriteEditorControl : UserControl
         try
         {
             foreach (var path in paths)
-            foreach (var member in TilesheetDefinitionSerializer.LoadAll(path))
-            { var source = LoadTilesheet(path, member.Name); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
+                foreach (var member in TilesheetDefinitionSerializer.LoadAll(path))
+                {
+                    var source = LoadTilesheet(path, member.Name);
+                    Document.SetLooseTilesheetSource(source.Definition.Name, path);
+                }
+
             RefreshSelection();
 
         }
-        finally { transaction.Commit(); }
+        finally
+        {
+            transaction.Commit();
+        }
     }
     private SpriteTilesheetSource LoadTilesheet(string path, string? identity = null)
     {
@@ -448,28 +495,34 @@ public sealed partial class SpriteEditorControl : UserControl
             var node = root.Nodes.Add(region.Name);
             var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
             for (int y = 0; y < rows; y++)
-            for (int x = 0; x < columns; x++)
-            {
-                var frameNode = new TreeNode($"{x}, {y}") { Tag = source.CreateFrame(region, x, y) };
-                if (source.Image is { } image)
+                for (int x = 0; x < columns; x++)
                 {
-                    using var thumbnail = new Bitmap(32, 32);
-                    using var graphics = Graphics.FromImage(thumbnail);
-                    graphics.DrawImage(image, new Rectangle(0, 0, 32, 32), SpriteTilesheetSource.FrameBounds(region, x, y), GraphicsUnit.Pixel);
-                    _ = _thumbnails.Handle;
-                    _thumbnails.Images.Add(thumbnail);
-                    frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
+                    var frameNode = new TreeNode($"{x}, {y}") { Tag = source.CreateFrame(region, x, y) };
+                    if (source.Image is { } image)
+                    {
+                        using var thumbnail = new Bitmap(32, 32);
+                        using var graphics = Graphics.FromImage(thumbnail);
+                        graphics.DrawImage(image, new Rectangle(0, 0, 32, 32), SpriteTilesheetSource.FrameBounds(region, x, y), GraphicsUnit.Pixel);
+                        _ = _thumbnails.Handle;
+                        _thumbnails.Images.Add(thumbnail);
+                        frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
+                    }
+
+                    node.Nodes.Add(frameNode);
                 }
-                node.Nodes.Add(frameNode);
-            }
         }
+
         NavigationSizing.RefreshImages(_frames);
         root.Expand();
     }
 
     /// <summary>Refreshes the sprite list and selects the supplied document instance.</summary>
     /// <param name="sprite">The sprite instance to select in the refreshed list.</param>
-    public void SelectSprite(SpriteInstanceDefinition sprite) { RefreshEntries(); _sprites.SelectedItem = sprite; }
+    public void SelectSprite(SpriteInstanceDefinition sprite)
+    {
+        RefreshEntries();
+        _sprites.SelectedItem = sprite;
+    }
     private void RefreshEntries()
     {
         var selected = SelectedSprite;
@@ -501,9 +554,14 @@ public sealed partial class SpriteEditorControl : UserControl
                 selectedChoice = new AnimationChoice(current);
                 _animationPicker.Items.Add(selectedChoice);
             }
+
             _animationPicker.SelectedItem = selectedChoice;
         }
-        finally { _syncingAnimationPicker = false; }
+        finally
+        {
+            _syncingAnimationPicker = false;
+        }
+
         _properties.SelectedObject = SelectedSprite is { } selected ? new SpriteProperties(selected, Document) : null;
         var entry = SelectedSprite;
         var matches = _sources.Where(source => source.Definition.Name == entry?.Frame?.Tilesheet).ToList();
@@ -521,6 +579,7 @@ public sealed partial class SpriteEditorControl : UserControl
                     : _sources.Where(source => source.Definition.Name == frame.Tilesheet).ToList();
             }
         }
+
         _preview.SetSelection(entry, matches.Count == 1 ? matches[0] : null, layer, previewFrame);
         UpdateValidation();
     }
@@ -605,6 +664,7 @@ public sealed partial class SpriteEditorControl : UserControl
                     lines.Add($"WARNING: Sprite '{entry.Nickname}': GTS frame missing or ambiguous.");
             }
         }
+
         lines.Add("INFO: Runtime references are logical; source metadata is authoring-only.");
         _validation.Lines = lines.ToArray();
         return errors;
@@ -630,7 +690,14 @@ public sealed partial class SpriteEditorControl : UserControl
     protected override void Dispose(bool disposing)
     {
         if (disposing)
-        { _resourceHover = null; Document.Changed -= DocumentChanged; foreach (var source in _sources) source.Dispose(); _thumbnails.Dispose(); }
+        {
+            _resourceHover = null;
+            Document.Changed -= DocumentChanged;
+            foreach (var source in _sources)
+                source.Dispose();
+            _thumbnails.Dispose();
+        }
+
         if (disposing)
             ClearAnimationTilesheets();
         if (disposing && _ownsPackages)

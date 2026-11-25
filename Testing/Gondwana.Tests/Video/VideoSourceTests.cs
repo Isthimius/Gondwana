@@ -25,6 +25,7 @@ public sealed class VideoSourceTests
                 assets.Add(AssetTypes.Video, "intro.mp4", new MemoryStream([1, 2, 3, 4]));
                 assets.Save();
             }
+
             using var loaded = AssetsFile.LoadOrCreate(path, null, false, register: false);
             using var host = new TestRenderSurfaceHost();
             host.ViewManager.AddView(new Rectangle(0, 0, 8, 8), zOrder: 0);
@@ -40,7 +41,10 @@ public sealed class VideoSourceTests
             video.Dispose();
             Assert.False(player.Stream.CanRead);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
@@ -77,6 +81,9 @@ public sealed class VideoSourceTests
             Assert.Equal(0, player.FrameSubscribers);
             Assert.Equal(1, player.DisposeCount);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 }

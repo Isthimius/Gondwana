@@ -236,8 +236,10 @@ public sealed partial class AnimationDocument
                 member.TilesheetSources[j].GtsPath = persisted.TilesheetSources[j].GtsPath;
                 member.TilesheetSources[j].AssetsFilePath = persisted.TilesheetSources[j].AssetsFilePath;
             }
+
             member.Source = AnimationDefinitionSource.LooseDefinitionFile(path);
         }
+
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
@@ -322,7 +324,11 @@ public sealed partial class AnimationDocument
             _definitions.RemoveAt(index);
             if (ReferenceEquals(Definition, definition))
                 Definition = _definitions[0];
-        }, () => { _definitions.Insert(index, definition); Definition = selected; });
+        }, () =>
+        {
+            _definitions.Insert(index, definition);
+            Definition = selected;
+        });
         return true;
     }
 
@@ -361,6 +367,7 @@ public sealed partial class AnimationDocument
                 source.GtsPath = Rebase(source.GtsPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
+
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "animation");
         if (imported.Count == 0)

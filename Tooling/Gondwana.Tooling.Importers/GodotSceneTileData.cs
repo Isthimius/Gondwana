@@ -30,6 +30,7 @@ internal static class GodotSceneTileData
                 else
                     bytes[i] = byte.Parse(parts[i], CultureInfo.InvariantCulture);
         }
+
         var cells = new List<Cell>();
         if (bytes.Length == 0)
             return cells;
@@ -49,6 +50,7 @@ internal static class GodotSceneTileData
                 new(BinaryPrimitives.ReadUInt16LittleEndian(data[6..]), BinaryPrimitives.ReadUInt16LittleEndian(data[8..])),
                 BinaryPrimitives.ReadUInt16LittleEndian(data[10..])));
         }
+
         return cells;
     }
 

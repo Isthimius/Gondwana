@@ -72,7 +72,10 @@ public sealed partial class ViewerTests : IDisposable
                 "--scene", temporary, "--temporary-scene"
             ], _directory));
         }
-        finally { File.Delete(temporary); }
+        finally
+        {
+            File.Delete(temporary);
+        }
     }
 
     /// <summary>
@@ -233,6 +236,7 @@ public sealed partial class ViewerTests : IDisposable
             archive.Add(AssetTypes.AnimationDefinition, "walk", animationStream);
             archive.Save();
         }
+
         var definition = SceneDefinitionSerializer.Load(ScenePath);
         definition.TilesheetSources = [SceneTilesheetSourceDefinition.Packed("sheet", "content.gaf", "sheet")];
         definition.AnimationSources = [SceneAnimationSourceDefinition.Packed("walk", "content.gaf", "walk")];

@@ -100,8 +100,14 @@ public sealed class PluginPackageOperations : IDisposable
                 PluginPackagePaths.EnsureNoLinks(lease);
             FileStream? exclusive = null;
             try
-            { exclusive = new FileStream(lease, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None); }
-            catch (IOException) { Diagnostic = "Package changes deferred: another Studio instance is using this installation. Close all Studio instances, then launch Studio again."; }
+            {
+                exclusive = new FileStream(lease, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                Diagnostic = "Package changes deferred: another Studio instance is using this installation. Close all Studio instances, then launch Studio again.";
+            }
+
             using (exclusive)
             {
                 try
@@ -119,9 +125,14 @@ public sealed class PluginPackageOperations : IDisposable
                                 CleanupCommitted(journal, operation);
                         }
                     }
+
                     Operations = journal.Operations.ToArray();
                 }
-                catch (Exception ex) { _journalHealthy = false; Report($"Package journal '{JournalPath}' processing stopped; inspect retained transaction files and diagnostics. {ex.Message}"); }
+                catch (Exception ex)
+                {
+                    _journalHealthy = false;
+                    Report($"Package journal '{JournalPath}' processing stopped; inspect retained transaction files and diagnostics. {ex.Message}");
+                }
             }
             // Gate is still held: no other process can obtain a writer lease between these opens.
             _session = new FileStream(lease, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -147,10 +158,18 @@ public sealed class PluginPackageOperations : IDisposable
                 Diagnostic?.StartsWith("Cannot read pending", StringComparison.Ordinal) == true)
                 Diagnostic = null;
         }
-        catch (Exception ex) { _journalHealthy = false; Report($"Cannot read pending plugin operations: {ex.Message}"); }
+        catch (Exception ex)
+        {
+            _journalHealthy = false;
+            Report($"Cannot read pending plugin operations: {ex.Message}");
+        }
     }
 
-    private void Report(string message) { Diagnostic = message; _log("Error: [Plugin packages] " + message); }
+    private void Report(string message)
+    {
+        Diagnostic = message;
+        _log("Error: [Plugin packages] " + message);
+    }
     private string Transaction(PluginPackageOperation operation) => Path.Combine(WorkRoot, operation.Token);
     private string Payload(PluginPackageOperation operation) => Path.Combine(Transaction(operation), "payload");
     private string Backup(PluginPackageOperation operation) => Path.Combine(Transaction(operation), "backup");
@@ -184,6 +203,7 @@ public sealed class PluginPackageOperations : IDisposable
                 if (Directory.Exists(extracted))
                     Directory.Delete(extracted);
             }
+
             var manifest = _inspection.Value.Validate(payload);
             if (IsBundled(manifest.Id))
                 throw new InvalidDataException("Studio-distributed plugins cannot be installed or updated here. Use Studio's distribution/update process; disabling remains available.");
@@ -217,7 +237,11 @@ public sealed class PluginPackageOperations : IDisposable
                 _ => "Same-version replacement"
             }, PluginPackageInspection.Files(payload).Select(Path.GetFileName).Where(n => n != "plugin.json" && n != manifest.EntryAssembly).Select(n => n!).ToArray());
         }
-        catch { DeleteOwned(transaction); throw; }
+        catch
+        {
+            DeleteOwned(transaction);
+            throw;
+        }
     }
 
     public PluginPackagePreview PreviewRemoval(string id)
@@ -311,9 +335,13 @@ public sealed class PluginPackageOperations : IDisposable
                 continue;
             PluginPackagePaths.EnsureNoLinks(path);
             try
-            { if (PluginManifest.Read(directory).Id == id) matches.Add(directory); }
+            {
+                if (PluginManifest.Read(directory).Id == id)
+                    matches.Add(directory);
+            }
             catch (Exception ex) when (ex is JsonException or InvalidDataException) { /* Invalid unrelated packages remain the discovery host's responsibility. */ }
         }
+
         if (matches.Count > 1)
             throw new InvalidDataException($"Conflicting installations of '{id}'. Remove the ambiguity before managing this ID.");
         return matches.SingleOrDefault();
@@ -401,6 +429,7 @@ public sealed class PluginPackageOperations : IDisposable
                         throw new IOException("Destination contains unexpected content; neither it nor the backup will be deleted.");
                     Directory.Move(target, Path.Combine(Transaction(operation), "rejected"));
                 }
+
                 Directory.Move(backup, target);
             }
             else if (operation.Kind == PluginPackageOperationKind.Install)
@@ -421,6 +450,7 @@ public sealed class PluginPackageOperations : IDisposable
             Replace(journal, operation, PluginPackageOperationState.RecoveryRequired,
                 $"{reason} Recovery stopped: {ex.Message} Close all Studio instances. Inspect '{Transaction(operation)}' and '{Destination(operation)}'; restore the verified backup manually. Do not delete recovery data. Automatic retries are disabled.");
         }
+
         Save(journal);
     }
 
@@ -479,8 +509,14 @@ public sealed class PluginPackageOperations : IDisposable
     private void TryDeleteTransaction(PluginPackageOperation operation)
     {
         try
-        { VerifyTransactionContents(operation); DeleteOwned(Transaction(operation)); }
-        catch (Exception ex) { _log($"Warning: [Plugin packages] Staging retained at '{Transaction(operation)}': {ex.Message}"); }
+        {
+            VerifyTransactionContents(operation);
+            DeleteOwned(Transaction(operation));
+        }
+        catch (Exception ex)
+        {
+            _log($"Warning: [Plugin packages] Staging retained at '{Transaction(operation)}': {ex.Message}");
+        }
     }
 
     private sealed class Journal
@@ -510,7 +546,11 @@ public sealed class PluginPackageOperations : IDisposable
             PluginPackagePaths.EnsureNoLinks(JournalPath);
             input = File.OpenRead(JournalPath);
         }
-        catch (FileNotFoundException) { return new(); }
+        catch (FileNotFoundException)
+        {
+            return new();
+        }
+
         using var stream = input;
         if (stream.Length > 1024 * 1024)
             throw new InvalidDataException("Package journal exceeds 1 MiB.");
@@ -538,9 +578,14 @@ public sealed class PluginPackageOperations : IDisposable
                 stream.Write(bytes);
                 stream.Flush(true);
             }
+
             File.Move(temporary, JournalPath, true);
         }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        finally
+        {
+            if (File.Exists(temporary))
+                File.Delete(temporary);
+        }
     }
 
     /// <summary>SemVer precedence; build metadata does not change precedence.</summary>
@@ -551,7 +596,12 @@ public sealed class PluginPackageOperations : IDisposable
         var ac = a[0].Split('.');
         var bc = b[0].Split('.');
         for (var i = 0; i < 3; i++)
-        { var c = BigInteger.Parse(ac[i]).CompareTo(BigInteger.Parse(bc[i])); if (c != 0) return c; }
+        {
+            var c = BigInteger.Parse(ac[i]).CompareTo(BigInteger.Parse(bc[i]));
+            if (c != 0)
+                return c;
+        }
+
         if (a.Length != b.Length)
             return a.Length == 1 ? 1 : -1;
         if (a.Length == 1)
@@ -566,8 +616,13 @@ public sealed class PluginPackageOperations : IDisposable
             if (c != 0)
                 return c;
         }
+
         return ap.Length.CompareTo(bp.Length);
     }
 
-    public void Dispose() { _session?.Dispose(); _session = null; }
+    public void Dispose()
+    {
+        _session?.Dispose();
+        _session = null;
+    }
 }

@@ -90,6 +90,7 @@ internal sealed class ProjectPackages
             if (found is not null)
                 Load(found);
         }
+
         Central = documents.FirstOrDefault(d => System.IO.Path.GetFileName(d.Key).Equals("Directory.Packages.props", StringComparison.OrdinalIgnoreCase)).Value;
         var management = Elements("ManagePackageVersionsCentrally").ToArray();
         CentrallyManaged = management.Length == 1 && !Conditional(management[0]) && management[0].Value.Equals("true", StringComparison.OrdinalIgnoreCase);
@@ -110,9 +111,11 @@ internal sealed class ProjectPackages
                 if (matches.Length == 1 && !Conditional(matches[0]))
                     node = VersionNode(matches[0], "Version");
             }
+
             node = ResolveProperty(node);
             Packages.Add(new(Name(reference), reference, node, Value(node)));
         }
+
         References = Project.Descendants().Where(e => e.Name.LocalName == "ProjectReference")
             .Select(e => System.IO.Path.GetFileNameWithoutExtension(Name(e).Replace('\\', '/'))).Where(IsGondwana).ToList();
         var names = Packages.Select(p => p.Name).Concat(References).ToArray();
@@ -142,6 +145,7 @@ internal sealed class ProjectPackages
             if (File.Exists(candidate))
                 return candidate;
         }
+
         return null;
     }
 
@@ -220,6 +224,7 @@ internal sealed class ProjectPackages
             else
                 ((XElement)package.VersionNode!).Value = version;
         }
+
         return changes;
     }
 
@@ -293,6 +298,7 @@ internal sealed class ProjectPackages
             group = new XElement(root.Name.Namespace + "ItemGroup", new XText(newline + "    "));
             root.Add(new XText(newline + "    "), group, new XText(newline));
         }
+
         var indent = group.Elements().LastOrDefault()?.PreviousNode as XText;
         var whitespace = indent?.Value ?? newline + "        ";
         if (group.LastNode is XText last && string.IsNullOrWhiteSpace(last.Value))
@@ -327,7 +333,11 @@ internal sealed class ProjectPackages
                     document.Save(writer);
                 File.Move(temporary, path, overwrite: true);
             }
-            finally { if (File.Exists(temporary)) File.Delete(temporary); }
+            finally
+            {
+                if (File.Exists(temporary))
+                    File.Delete(temporary);
+            }
         }
     }
 }

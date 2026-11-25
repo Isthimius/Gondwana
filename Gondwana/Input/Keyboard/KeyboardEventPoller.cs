@@ -104,6 +104,7 @@ public sealed class KeyboardEventPoller
                     config._lastEventTick = tick;
                     KeyDown?.Invoke(new KeyDownEventArgs(config, mods, KeyAction.Repeated));
                 }
+
                 continue;
             }
 

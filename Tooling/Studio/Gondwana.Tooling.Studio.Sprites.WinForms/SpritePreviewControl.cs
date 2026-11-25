@@ -77,7 +77,11 @@ internal sealed class SpritePreviewControl : UserControl
             DoubleBuffered = true;
             AutoScroll = true;
             BackColor = Color.FromArgb(24, 24, 24);
-            Resize += (_, _) => { if (_fit) Fit(); };
+            Resize += (_, _) =>
+            {
+                if (_fit)
+                    Fit();
+            };
         }
         /// <summary>Updates the sprite preview and its projection without modifying the sprite definition.</summary>
         /// <param name="entry">Sprite to preview, or null to clear the selection.</param>
@@ -99,6 +103,7 @@ internal sealed class SpritePreviewControl : UserControl
                 SetZoom(Zoom);
                 return;
             }
+
             _anchor = entry is null || _projection is null ? Point.Empty : Point.Round(_projection.GridToWorldPx(entry.Position));
             _origin = _projection?.GridToWorldPx(PointF.Empty) ?? PointF.Empty;
             Size frameSize = Size.Empty;
@@ -118,6 +123,7 @@ internal sealed class SpritePreviewControl : UserControl
                 x += entry.HorizAlign switch { Gondwana.Drawing.Sprites.HorizontalAlignment.Center => (_projection.TileWidth - size.Width) / 2, Gondwana.Drawing.Sprites.HorizontalAlignment.Right => _projection.TileWidth - size.Width, _ => 0 };
                 y += entry.VertAlign switch { VerticalAlignment.Middle => (_projection.TileHeight - size.Height) / 2, VerticalAlignment.Bottom => _projection.TileHeight - size.Height, _ => 0 };
             }
+
             _bounds = new Rectangle(x, y, size.Width, size.Height);
             // Include the layer origin and rotated corners so position changes stay
             // visible relative to the layer, and rotation cannot clip the preview.
@@ -201,13 +207,19 @@ internal sealed class SpritePreviewControl : UserControl
                     adjust = region.Frames.FirstOrDefault(frame => frame.XTile == collisionFrame.XTile && frame.YTile == collisionFrame.YTile)?.CollisionAdjust
                         ?? region.CollisionAdjust;
                 }
+
                 var collision = adjust.ApplyTo(_bounds);
                 if (collision.Width > 0 && collision.Height > 0)
                     g.DrawRectangle(Pens.LimeGreen, collision);
             }
         }
         /// <inheritdoc/>
-        protected override void Dispose(bool disposing) { if (disposing) _projection?.Dispose(); base.Dispose(disposing); }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                _projection?.Dispose();
+            base.Dispose(disposing);
+        }
     }
     private sealed class ProjectionLayer : SceneLayer
     {

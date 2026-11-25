@@ -28,6 +28,7 @@ internal readonly record struct LayerPeriod(PointF Columns, PointF Rows, bool Wr
                             throw new InvalidOperationException($"{layer.CoordinateSystemType} cannot repeat cleanly with these dimensions. Flat-top hex column wrapping requires even columns; pointed-top hex row wrapping requires even rows. Pixel-rounded projections also require an integral world-space period.");
                     }
             }
+
             return delta;
         }
 
@@ -74,8 +75,12 @@ internal readonly record struct LayerPeriod(PointF Columns, PointF Rows, bool Wr
             var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
             double next = Distance(candidate);
             if (next < distance)
-            { best = candidate; distance = next; }
+            {
+                best = candidate;
+                distance = next;
+            }
         }
+
         return best;
     }
 

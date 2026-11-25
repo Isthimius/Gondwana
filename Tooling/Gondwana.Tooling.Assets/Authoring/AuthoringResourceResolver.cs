@@ -260,6 +260,7 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
             using var stream = Open(new AuthoringResource(archive, AssetTypes.Image, image.AssetEntryName), AssetTypes.Image);
             return SKBitmap.Decode(stream) ?? throw new InvalidDataException($"Packed image '{image.AssetEntryName}' in '{archive}' is unsupported or corrupt.");
         }
+
         if (!string.IsNullOrWhiteSpace(image.AssetsFilePath))
             throw new InvalidDataException("Packed image has no exact entry name.");
         var path = ResolvePath(image.FilePath!, baseDirectory);

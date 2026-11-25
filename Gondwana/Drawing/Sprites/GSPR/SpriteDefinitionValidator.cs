@@ -21,7 +21,11 @@ public static class SpriteDefinitionValidator
         foreach (var sprite in definition.Sprites ?? [])
         {
             if (sprite is null)
-            { errors.Add("Sprites cannot contain null entries."); continue; }
+            {
+                errors.Add("Sprites cannot contain null entries.");
+                continue;
+            }
+
             var label = $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}'";
             if (sprite.Id != Guid.Empty && !ids.Add(sprite.Id))
                 errors.Add($"{label}: duplicate Id.");
@@ -41,6 +45,7 @@ public static class SpriteDefinitionValidator
                 if (frame.XTile < 0 || frame.YTile < 0)
                     errors.Add($"{label}: Frame coordinates must be nonnegative.");
             }
+
             if (sprite.AnimationKey is not null && string.IsNullOrWhiteSpace(sprite.AnimationKey))
                 errors.Add($"{label}: AnimationKey cannot be empty or whitespace.");
             if (sprite.StartAnimation && string.IsNullOrWhiteSpace(sprite.AnimationKey))
@@ -58,35 +63,51 @@ public static class SpriteDefinitionValidator
             if (!Enum.IsDefined(sprite.CollisionType))
                 errors.Add($"{label}: invalid CollisionType.");
         }
+
         var sheets = new HashSet<string>(StringComparer.Ordinal);
         foreach (var source in definition.TilesheetSources ?? [])
         {
             if (source is null)
-            { errors.Add("Null TilesheetSources entry."); continue; }
+            {
+                errors.Add("Null TilesheetSources entry.");
+                continue;
+            }
+
             if (string.IsNullOrWhiteSpace(source.Tilesheet) || !sheets.Add(source.Tilesheet))
                 errors.Add("Invalid or duplicate TilesheetSources identity.");
             ValidateSource(source.Kind == SpriteTilesheetSourceKind.LooseDefinitionFile, Enum.IsDefined(source.Kind), source.GtsPath, source.AssetsFilePath, source.AssetEntryName, "TilesheetSources", errors);
         }
+
         var scenes = new HashSet<string>(StringComparer.Ordinal);
         foreach (var source in definition.SceneSources ?? [])
         {
             if (source is null)
-            { errors.Add("Null SceneSources entry."); continue; }
+            {
+                errors.Add("Null SceneSources entry.");
+                continue;
+            }
+
             if (string.IsNullOrWhiteSpace(source.SceneId) || !scenes.Add(source.SceneId))
                 errors.Add("Invalid or duplicate SceneSources identity.");
             ValidateSource(source.Kind == SpriteSceneSourceKind.LooseDefinitionFile, Enum.IsDefined(source.Kind), source.GscnPath, source.AssetsFilePath, source.AssetEntryName, "SceneSources", errors);
         }
+
         var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var source in definition.AnimationSources ?? [])
         {
             if (source is null)
-            { errors.Add("Null AnimationSources entry."); continue; }
+            {
+                errors.Add("Null AnimationSources entry.");
+                continue;
+            }
+
             if (string.IsNullOrWhiteSpace(source.AnimationKey) || !animations.Add(source.AnimationKey))
                 errors.Add("Invalid or duplicate AnimationSources identity.");
             ValidateSource(source.Kind == SpriteAnimationSourceKind.LooseDefinitionFile,
                 Enum.IsDefined(source.Kind), source.GaniPath, source.AssetsFilePath, source.AssetEntryName,
                 "AnimationSources", errors);
         }
+
         return errors;
     }
 

@@ -106,6 +106,7 @@ public sealed class ViewportScalingTests : IDisposable
             Assert.Equal(camera, view.Camera.PositionPx);
             Assert.Equal(2, view.Viewport.Zoom);
         }
+
         Assert.Equal(0, sizeChanges);
         Assert.Equal(5f / 6, host.PresentationScale, 5);
         Assert.Equal(new SKRect(0, 50, 1600, 950), adapter.Presentation.DestinationRect);
@@ -526,6 +527,7 @@ public sealed class ViewportScalingTests : IDisposable
                 mouse.PressedButtons.Add(MouseButton.Left);
             MouseEventPoller.Instance!.PollForEvents(tick++);
         }
+
         Poll(15, 15, false);
         Poll(15, 15, true);
         Poll(15, 15, false);
@@ -622,6 +624,7 @@ public sealed class ViewportScalingTests : IDisposable
             touch.Set(new PointF(t.DestinationRect.Left + x * t.Scale, t.DestinationRect.Top + y * t.Scale), phase);
             TouchEventPoller.Instance!.PollForEvents(tick++);
         }
+
         Poll(15, 15, TouchPhase.Began);
         Poll(15, 15, TouchPhase.Ended);
         Assert.Equal(1, clicks);
@@ -675,9 +678,19 @@ public sealed class ViewportScalingTests : IDisposable
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active;
         /// <inheritdoc/>
-        public IReadOnlyList<TouchPoint> ConsumeBeganTouches() { var result = _began; _began = []; return result; }
+        public IReadOnlyList<TouchPoint> ConsumeBeganTouches()
+        {
+            var result = _began;
+            _began = [];
+            return result;
+        }
         /// <inheritdoc/>
-        public IReadOnlyList<TouchPoint> ConsumeEndedTouches() { var result = _ended; _ended = []; return result; }
+        public IReadOnlyList<TouchPoint> ConsumeEndedTouches()
+        {
+            var result = _ended;
+            _ended = [];
+            return result;
+        }
         internal void Set(PointF physical, TouchPhase phase)
         {
             var point = new TouchPoint(1, adapter.AdapterPxToScreenPx(physical), phase);

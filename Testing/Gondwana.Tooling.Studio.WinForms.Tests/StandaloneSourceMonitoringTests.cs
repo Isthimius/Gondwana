@@ -51,7 +51,11 @@ public sealed partial class CompositionTests
     private static EditorSourceMonitorController.Document StandaloneSources(DockContent tab) =>
         (EditorSourceMonitorController.Document)tab.GetType().GetField("Sources", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(tab)!;
     private static void VerifyStandalone(EditorSourceMonitorController monitor)
-    { Application.DoEvents(); monitor.Verify(); Application.DoEvents(); }
+    {
+        Application.DoEvents();
+        monitor.Verify();
+        Application.DoEvents();
+    }
     private static string MemberName(dynamic model, string format) => format == "gts" ? model.Definition.Name : format == "gscn" ? model.Definition.ID : model.Definition.Key;
     private static void SaveStandaloneModel(dynamic model, string path, string format)
     {
@@ -101,13 +105,18 @@ public sealed partial class CompositionTests
         Assert.Contains("[conflict]", tab.Text);
         Assert.Equal("local", MemberName(model, format));
         int prompts = 0;
-        monitor.ChooseConflict = () => { prompts++; return DialogResult.Cancel; };
+        monitor.ChooseConflict = () =>
+        {
+            prompts++;
+            return DialogResult.Cancel;
+        };
         for (int i = 0; i < 2; i++)
         {
             var error = Assert.Throws<DocumentSourceConflictException>(() => { SaveStandaloneModel(model, path, format); });
             Assert.True(sources.SaveFailed(error));
             Application.DoEvents();
         }
+
         Assert.Equal(1, prompts);
         var otherDestination = new AssetLocation(AssetTypes.Misc, Path.Combine(root, "occupied." + format));
         Assert.False(sources.SaveFailed(new DocumentSourceConflictException(otherDestination, new(DocumentSourceStatus.Available, "other", "other"))));
@@ -197,7 +206,12 @@ public sealed partial class CompositionTests
         var password = encrypted ? "test password" : null;
         var path = Path.Combine(root, "archive.gaf");
         using (var initial = AssetsFile.LoadOrCreate(path, password, encrypted, register: false))
-        { using var bytes = new MemoryStream([1, 2, 3]); initial.Add(AssetTypes.Misc, "initial.bin", bytes); initial.Save(); }
+        {
+            using var bytes = new MemoryStream([1, 2, 3]);
+            initial.Add(AssetTypes.Misc, "initial.bin", bytes);
+            initial.Save();
+        }
+
         using var host = new Gondwana.Tooling.Studio.Assets.WinForms.MainForm();
         host.Show();
         Application.DoEvents();
@@ -216,6 +230,7 @@ public sealed partial class CompositionTests
             disk.Add(AssetTypes.Misc, "external.bin", bytes);
             AssetArchivePersistence.Commit(disk, path, Convert.FromHexString(DocumentSourceVersion.Read(new(AssetTypes.Misc, path)).PhysicalHash!));
         }
+
         External(1);
         VerifyStandalone(monitor);
         Assert.Contains("[reload]", tab.Text);
@@ -313,6 +328,7 @@ public sealed partial class CompositionTests
                 VerifyStandalone(monitor);
                 Assert.Equal(3, monitor.RegistrationCount); // Do not lose the transitive image watcher.
             }
+
             VerifyStandalone(monitor);
             Assert.Equal(3, monitor.RegistrationCount);
         }
@@ -385,6 +401,7 @@ public sealed partial class CompositionTests
             disk.Add(AssetTypes.Misc, "images/atlas.png", bytes);
             disk.Save();
         }
+
         VerifyStandalone(monitor);
         Assert.False(sources.ContentStale);
         Assert.False(sources.PreviewStale);

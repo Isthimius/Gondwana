@@ -36,6 +36,7 @@ public sealed class ColliderRegistry
                     results.Add(new(collider, bounds));
                 continue;
             }
+
             foreach (var offset in period.Offsets(new(bounds.MinX, bounds.MinY, bounds.Width, bounds.Height), query))
                 results.Add(new(collider, new(bounds.MinX + offset.X, bounds.MinY + offset.Y, bounds.MaxX + offset.X, bounds.MaxY + offset.Y)));
         }

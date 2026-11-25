@@ -62,7 +62,10 @@ public sealed class SpriteGsprPersistenceTests
             SpriteManager.Instance._spriteList.Remove(original);
             original.DisposeImmediate();
             if (restored is not null)
-            { SpriteManager.Instance._spriteList.Remove(restored); restored.DisposeImmediate(); }
+            {
+                SpriteManager.Instance._spriteList.Remove(restored);
+                restored.DisposeImmediate();
+            }
         }
     }
 
@@ -95,7 +98,10 @@ public sealed class SpriteGsprPersistenceTests
         {
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = original;
             if (sprite is not null)
-            { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+            {
+                SpriteManager.Instance._spriteList.Remove(sprite);
+                sprite.DisposeImmediate();
+            }
         }
     }
 
@@ -140,6 +146,7 @@ public sealed class SpriteGsprPersistenceTests
                 entry.CollisionProfileName = "missing";
                 break;
         }
+
         var before = SpriteManager.Instance.AllSprites.ToArray();
         Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.ToSprite(entry));
         Assert.Equal(before, SpriteManager.Instance.AllSprites);
@@ -213,6 +220,7 @@ public sealed class SpriteGsprPersistenceTests
                 definition.AnimationSources.Add(new());
                 break;
         }
+
         var before = SpriteDefinitionSerializer.ToJson(definition);
         Assert.NotEmpty(SpriteDefinitionValidator.Validate(definition));
         Assert.Equal(before, SpriteDefinitionSerializer.ToJson(definition));
@@ -242,18 +250,29 @@ public sealed class SpriteGsprPersistenceTests
         var layer = scene.AddLayer(1, 1, 16, 16);
         var definition = new SpriteDefinition { Sprites = [Valid(), Valid()] };
         foreach (var entry in definition.Sprites)
-        { entry.SceneId = scene.ID; entry.SceneLayerId = layer.ID; }
+        {
+            entry.SceneId = scene.ID;
+            entry.SceneLayerId = layer.ID;
+        }
+
         var before = SpriteManager.Instance.AllSprites.ToArray();
         int calls = 0;
         void FailSecond(Sprite sprite)
-        { if (++calls == 2) throw new InvalidOperationException("Creation failed"); }
+        {
+            if (++calls == 2)
+                throw new InvalidOperationException("Creation failed");
+        }
+
         SpriteManager.Instance.SpriteCreated += FailSecond;
         try
         {
             Assert.Throws<InvalidOperationException>(() => SpriteDefinitionSerializer.ToSprites(definition));
             Assert.Equal(before, SpriteManager.Instance.AllSprites);
         }
-        finally { SpriteManager.Instance.SpriteCreated -= FailSecond; }
+        finally
+        {
+            SpriteManager.Instance.SpriteCreated -= FailSecond;
+        }
     }
 
     /// <summary>
@@ -297,7 +316,10 @@ public sealed class SpriteGsprPersistenceTests
             Assert.Equal(11, (int)AssetTypes.SpriteDefinition);
             Assert.Equal(Enumerable.Range(0, 12), Enum.GetValues<AssetTypes>().Select(value => (int)value));
         }
-        finally { Directory.Delete(directory, true); }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
     }
 
     private static SpriteInstanceDefinition Valid() => new() { Id = Guid.NewGuid(), Nickname = Guid.NewGuid().ToString(), SceneId = "level", SceneLayerId = "actors" };

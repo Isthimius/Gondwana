@@ -50,6 +50,7 @@ internal sealed class SemanticUnpackPlan
             cancellation.ThrowIfCancellationRequested();
             plan.CheckDestination(pair.Key.AssetName);
         }
+
         if (selected.Length == 0)
             return plan;
         var contents = SemanticPackPlan.PrepareExtraction(archive, plan._source, destinations, password, cancellation);
@@ -85,6 +86,7 @@ internal sealed class SemanticUnpackPlan
             plan._files.Add((name, destination, bytes.ToArray()));
             return plan;
         }
+
         var destinations = new Dictionary<AssetsFileEntry, string> { [entry] = destination };
         var contents = SemanticPackPlan.PrepareExtraction(archive, source, destinations, archive.Password, cancellation);
         plan._files.Add((name, destination, contents[entry]));
@@ -125,6 +127,7 @@ internal sealed class SemanticUnpackPlan
                     throw new IOException($"Case-insensitive destination collision: {current}.");
             }
         }
+
         return target;
     }
 
@@ -157,6 +160,7 @@ internal sealed class SemanticUnpackPlan
                 using var stream = new FileStream(stageFile, FileMode.CreateNew, FileAccess.Write, FileShare.None);
                 stream.Write(_files[i].Bytes);
             }
+
             for (int i = 0; i < _files.Count; i++)
             {
                 _cancellation.ThrowIfCancellationRequested();
@@ -170,10 +174,12 @@ internal sealed class SemanticUnpackPlan
                     backup = SafeFilePath.Resolve(_output, stagingName + "/" + i + ".old");
                     File.Move(target, backup);
                 }
+
                 journal.Add((file.Name, target, backup, false));
                 File.Move(SafeFilePath.Resolve(_output, stagingName + "/" + i + ".new"), target);
                 journal[^1] = (file.Name, target, backup, true);
             }
+
             _cancellation.ThrowIfCancellationRequested();
             committed = true;
         }
@@ -191,13 +197,18 @@ internal sealed class SemanticUnpackPlan
                     if (item.Backup is not null)
                         File.Move(item.Backup, item.Target);
                 }
-                catch (Exception rollback) { errors.Add(rollback); }
+                catch (Exception rollback)
+                {
+                    errors.Add(rollback);
+                }
             }
+
             if (errors.Count > 1)
             {
                 retainRecovery = true;
                 throw new AggregateException($"Export failed and rollback was incomplete. Recovery files remain at {staging}.", errors);
             }
+
             throw;
         }
         finally
@@ -214,6 +225,7 @@ internal sealed class SemanticUnpackPlan
                                 File.Delete(SafeFilePath.Resolve(_output, stagingName + "/" + i + suffix));
                         Directory.Delete(staging);
                     }
+
                     foreach (var directory in createdDirectories.AsEnumerable().Reverse())
                     {
                         SafeFilePath.Resolve(directory, ".path-check");
@@ -228,6 +240,7 @@ internal sealed class SemanticUnpackPlan
                 }
             }
         }
+
         return _files.Count;
     }
 

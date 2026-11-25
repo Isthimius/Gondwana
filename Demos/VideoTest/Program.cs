@@ -20,6 +20,7 @@ internal static class Program
             Console.WriteLine("VideoTest <media path> [--headless | --stream | --gaf <asset name>]");
             return 1;
         }
+
         try
         {
             if (args.Contains("--headless"))
@@ -35,7 +36,11 @@ internal static class Program
             Application.Run(new VideoWindow(source));
             return 0;
         }
-        catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            return 1;
+        }
     }
 }
 
@@ -124,11 +129,16 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
             int index = _controls.Count - 1;
             var button = new ButtonWidget(host, view,
                 new Rectangle(20 + index % 7 * 138, 465 + index / 7 * 48, 130, 40), text);
-            button.Clicked += () => { if (Video is { } video) action(video); };
+            button.Clicked += () =>
+            {
+                if (Video is { } video)
+                    action(video);
+            };
             button.SetZOrder(100);
             button.Show();
             _controls.Add(button);
         }
+
         Add("Play", v => v.Play());
         Add("Pause", v => v.Pause());
         Add("Stop", v => v.Stop());
@@ -148,7 +158,12 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
             v.Bounds.Width == 640 ? new Size(400, 300) : new Size(640, 360))));
         Add("Dispose", _ => DisposeVideo());
     }
-    internal void DisposeVideo() { Video?.Dispose(); Video = null; Player = null; }
+    internal void DisposeVideo()
+    {
+        Video?.Dispose();
+        Video = null;
+        Player = null;
+    }
     /// <inheritdoc/>
     protected override void OnDisposing()
     {

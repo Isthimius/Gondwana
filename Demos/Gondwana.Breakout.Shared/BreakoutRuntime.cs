@@ -139,6 +139,7 @@ internal sealed class BreakoutRuntime
             _pressed.Remove(key);
             return;
         }
+
         if (args.KeyAction != KeyAction.Pressed)
             return;
         _pressed.Add(key);

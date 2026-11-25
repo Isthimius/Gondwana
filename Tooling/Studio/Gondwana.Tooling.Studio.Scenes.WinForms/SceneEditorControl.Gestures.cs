@@ -73,7 +73,11 @@ public sealed partial class SceneEditorControl
         bool painting = ActiveTool is SceneEditorTool.Paint or SceneEditorTool.RectanglePaint or SceneEditorTool.Fill;
         var assignment = painting ? CapturePaintAssignment() : null;
         if (painting && assignment is null)
-        { UpdatePaintSourceLabel(); return false; }
+        {
+            UpdatePaintSourceLabel();
+            return false;
+        }
+
         _preview.SampleStroke = ActiveTool is SceneEditorTool.Paint or SceneEditorTool.Erase;
         _preview.SingleCellGesture = ActiveTool == SceneEditorTool.Fill;
         _gestureTool = ActiveTool;
@@ -88,7 +92,11 @@ public sealed partial class SceneEditorControl
                 _stroke = Document.History.BeginTransaction(_gestureTool == SceneEditorTool.Paint ? "Paint stroke" : "Erase stroke");
             return true;
         }
-        catch { EndPreviewGesture(cancel: true); throw; }
+        catch
+        {
+            EndPreviewGesture(cancel: true);
+            throw;
+        }
     }
 
     private bool GestureTargetIsValid() => ReferenceEquals(Definition, _gestureDefinition) &&
@@ -98,7 +106,11 @@ public sealed partial class SceneEditorControl
     private void PreviewCellClicked(SceneLayerDefinition layer, int x, int y)
     {
         if (!GestureTargetIsValid())
-        { _preview.CancelGesture(); return; }
+        {
+            _preview.CancelGesture();
+            return;
+        }
+
         if (!ReferenceEquals(layer, _gestureLayer) || x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
             return;
         if (_gestureTool == SceneEditorTool.Fill)
@@ -193,7 +205,11 @@ public sealed partial class SceneEditorControl
             return;
         var assignment = erase ? null : CapturePaintAssignment();
         if (!erase && assignment is null)
-        { UpdatePaintSourceLabel(); return; }
+        {
+            UpdatePaintSourceLabel();
+            return;
+        }
+
         ApplyCells(layer, RectangleCells(cells), (long)cells.Width * cells.Height, erase, assignment, erase ? "Erase selection" : "Paint selection");
         RefreshTileProperties();
         RefreshPreview();

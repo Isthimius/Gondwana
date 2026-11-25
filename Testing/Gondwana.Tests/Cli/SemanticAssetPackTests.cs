@@ -40,6 +40,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             SpriteManager.Instance._spriteList.Remove(sprite);
             sprite.DisposeImmediate();
         }
+
         Scene.ClearAllScenes();
         Cycle.ClearAllAnimationCycles();
         TilesheetRegistry.Instance.Clear();
@@ -118,6 +119,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
                 sprites[i].SceneSources.Add(SpriteSceneSourceDefinition.Loose($"world{i}", "worlds.gscn"));
             }
         }
+
         File.WriteAllText(Path.Combine(Source, "tiles.gts"), legacy ? TilesheetDefinitionSerializer.ToJson(sheets[0]) : TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets }));
         File.WriteAllText(Path.Combine(Source, "cycles.gani"), legacy ? AnimationDefinitionSerializer.ToJson(animations[0]) : AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = animations }));
         File.WriteAllText(Path.Combine(Source, "worlds.gscn"), legacy ? SceneDefinitionSerializer.ToJson(scenes[0]) : SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = scenes }));
@@ -162,6 +164,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             var animation = AnimationDefinitionSerializer.Load(archive, animationSource.AssetEntryName!, animationSource.AnimationKey);
             Assert.Equal(AnimationTilesheetSourceKind.PackedDefinitionFile, Assert.Single(animation.TilesheetSources).Kind);
         }
+
         Assert.Equal(count, TilesheetRegistry.Instance.LoadAllFromDefinitionAsset(archive, "tiles.gts").Count);
         Assert.Equal(count, AnimationDefinitionSerializer.LoadAllCycles(archive, "cycles.gani").Count);
         Assert.Equal(count, SceneDefinitionSerializer.LoadAllScenes(archive, "worlds.gscn").Count);
@@ -203,6 +206,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             Assert.Equal(AssetTypes.Cursor, map.Infer("cursor.cur", AssetTypes.Misc));
             Assert.Equal(AssetTypes.Audio, map.Infer("unknown.xyz", AssetTypes.Audio));
         }
+
         Assert.Equal(AssetTypes.Misc, custom.Infer("image.png", AssetTypes.Image));
         Assert.Equal(AssetTypes.Image, custom.Infer("image.custom", AssetTypes.Misc));
     }
@@ -242,6 +246,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             Assert.Equal("unchanged", reader.ReadToEnd());
             Assert.Equal("art.png", TilesheetDefinitionSerializer.Load(archive, "tiles.gts").Image.AssetEntryName);
         }
+
         using var zip = new ZipFile(File.OpenRead(Output));
         Assert.Contains(zip.Cast<ZipEntry>(), entry => entry.AESKeySize > 0);
     }
@@ -286,6 +291,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             Assert.Equal("game.gaf", source.AssetsFilePath);
             Assert.Equal("tiles.gts", source.AssetEntryName);
         }
+
         var moved = Path.Combine(Directory.CreateDirectory(Path.Combine(_root, "moved")).FullName, "game.gaf");
         File.Move(Output, moved);
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "second append");
@@ -416,6 +422,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             Assert.Equal(external, Path.GetFullPath(packed.Image.AssetsFilePath!, Path.GetDirectoryName(Output)!));
             Assert.Equal("https://example.invalid/radio", Assert.Single(AudioDefinitionSerializer.Load(archive, "sounds.gsnd").Resources).SourceUri);
         }
+
         sheet.Image.AssetEntryName = "missing.png";
         File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(sheet));
         var before = File.ReadAllBytes(Output);
@@ -440,8 +447,10 @@ public sealed partial class SemanticAssetPackTests : IDisposable
                 using var stream = new MemoryStream([(byte)type, 2, 3]);
                 archive.Add(type, name, stream);
             }
+
             archive.Save();
         }
+
         var sheets = new[] { Sheet("first", "unused"), Sheet("second", "unused") };
         for (int i = 0; i < sheets.Length; i++)
         {
@@ -449,6 +458,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             sheets[i].Image.AssetsFilePath = i == 0 ? "../external.gaf" : "../source/../external.gaf";
             sheets[i].Image.AssetEntryName = i == 0 ? "FIRST.PNG" : "second.png";
         }
+
         File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets.ToList() }));
         File.WriteAllText(Path.Combine(Source, "sounds.gsnd"), AudioDefinitionSerializer.ToJson(new AudioDefinition
         {
@@ -502,7 +512,12 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         /// <inheritdoc/>
         public IAudioPlaybackHandle CreateFromUri(string key, string uri, float volume, float pan, float playbackSpeed) => new Handle();
         /// <inheritdoc/>
-        public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed) { Loaded.Add(data); Formats.Add(fileNameOrExtension); return new Handle(); }
+        public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed)
+        {
+            Loaded.Add(data);
+            Formats.Add(fileNameOrExtension);
+            return new Handle();
+        }
     }
 
     private sealed class Handle : IAudioPlaybackHandle

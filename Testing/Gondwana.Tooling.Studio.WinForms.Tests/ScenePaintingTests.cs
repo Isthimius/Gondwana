@@ -50,6 +50,7 @@ public sealed partial class CompositionTests
                     [new MouseEventArgs(MouseButtons.Left, 1, (int)(offset.X + layer.TileWidth * 1.5f * zoom),
                         (int)(offset.Y + layer.TileHeight * 1.5f * zoom), 0)]);
         }
+
         Click();
         Application.DoEvents();
         var tile = Assert.Single(layer.Tiles);

@@ -24,6 +24,7 @@ internal sealed class SceneLayerTileArrayConverter : JsonConverter<SceneLayerTil
             for (int y = 0; y < height; y++)
                 result[x, y] = column[y].ToObject<SceneLayerTile>(serializer)!;
         }
+
         return result;
     }
 

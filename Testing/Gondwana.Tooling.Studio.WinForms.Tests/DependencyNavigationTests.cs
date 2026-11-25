@@ -42,6 +42,7 @@ public sealed partial class CompositionTests
             using var image = new Bitmap(16, 16);
             image.Save(Path.Combine(root, imageName), System.Drawing.Imaging.ImageFormat.Png);
         }
+
         File.WriteAllText(file, TilesheetDefinitionSerializer.ToDocumentJson(new()
         {
             Definitions =
@@ -136,10 +137,15 @@ public sealed partial class CompositionTests
             Assert.Equal("sibling", studio.ActiveDocument!.Document.SelectedMember);
             Assert.False(studio.ActiveDocument.Document.Dirty());
         }
+
         Assert.Equal(2, studio.Documents.Count);
     });
 
-    private static async Task<bool> CompleteDependencyTask(Task task) { await task; return true; }
+    private static async Task<bool> CompleteDependencyTask(Task task)
+    {
+        await task;
+        return true;
+    }
 
     [Fact]
     public void DependencyExplorerDiscardsObsoleteScansAndPresentsOnUiThread() => RunSta(root =>
@@ -155,7 +161,11 @@ public sealed partial class CompositionTests
         studio.InspectDependencies = (_, _, token) =>
         {
             if (++calls == 1)
-            { oldToken = token; return first.Task; }
+            {
+                oldToken = token;
+                return first.Task;
+            }
+
             return second.Task;
         };
         int uiThread = Environment.CurrentManagedThreadId;
@@ -218,7 +228,10 @@ public sealed partial class CompositionTests
             Assert.Null(studio.DependencyScan);
             Assert.False(document.Document.Dirty());
         }
-        finally { release.TrySetResult(true); }
+        finally
+        {
+            release.TrySetResult(true);
+        }
     });
 
     [Theory]
@@ -283,6 +296,7 @@ public sealed partial class CompositionTests
             var list = (ListBox)Private(sprites, "_sprites");
             Assert.Same(sprites.Document.Definition.Sprites[0], Assert.Single(list.Items.Cast<object>()));
         }
+
         Assert.True(doc.Document.Dirty());
         Assert.Equal(before, doc.Document.SerializePacked!());
     });
@@ -306,7 +320,12 @@ public sealed partial class CompositionTests
         var pending = new TaskCompletionSource<DefinitionReferenceDiscovery>(TaskCreationOptions.RunContinuationsAsynchronously);
         var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         CancellationToken captured = default;
-        studio.InspectDependencies = (_, _, token) => { captured = token; started.SetResult(true); return pending.Task; };
+        studio.InspectDependencies = (_, _, token) =>
+        {
+            captured = token;
+            started.SetResult(true);
+            return pending.Task;
+        };
         studio.ShowDependencies();
         var task = studio.DependencyRefresh;
         Assert.True(AwaitUi(started.Task));

@@ -30,6 +30,7 @@ internal sealed partial class SemanticPackPlan
             var location = new AssetLocation(pair.Key.AssetType, plan._output, pair.Key.AssetName);
             plan._entries.Add(pair.Key, ReadEntry(location, location, pair.Value));
         }
+
         foreach (var source in sources)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -45,6 +46,7 @@ internal sealed partial class SemanticPackPlan
             var entry = ReadEntry(location, new(source.AssetType, plan._output, source.EntryName), File.ReadAllBytes(location.Path));
             plan.AddImport(entry);
         }
+
         while (plan._importQueue.Count > 0 || plan._reuseQueue.Count > 0)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -56,6 +58,7 @@ internal sealed partial class SemanticPackPlan
             plan._validateReusedTargets = !incoming;
             plan.Analyze(entry);
         }
+
         plan._importDependencies = dependencies;
         var additions = new Dictionary<AssetsFileEntry, byte[]>();
         foreach (var entry in plan._incoming.OrderBy(entry => entry.Destination.AssetType).ThenBy(entry => entry.Destination.AssetEntryName, StringComparer.Ordinal))
@@ -68,6 +71,7 @@ internal sealed partial class SemanticPackPlan
             var bytes = entry.Document?.Relocate(entry.Location, entry.Destination, entry.Mappings) ?? entry.Bytes;
             additions.Add(new() { AssetType = entry.Destination.AssetType, AssetName = entry.Destination.AssetEntryName! }, bytes);
         }
+
         plan._importPreview.Add("Conflicts: none. Replacements: none (existing entries are never replaced).");
         return (additions, Array.AsReadOnly(plan._importPreview.ToArray()));
     }
@@ -94,8 +98,10 @@ internal sealed partial class SemanticPackPlan
                 _importAliases.Add((entry.Location, existing));
                 return existing;
             }
+
             throw new InvalidDataException($"Destination conflict: {entry.Destination}. Existing content will not be replaced. Choose another entry name or explicitly reference the existing packed definition.");
         }
+
         _entries.Add(key, entry);
         _incoming.Add(entry);
         _importQueue.Enqueue(entry);
@@ -122,6 +128,7 @@ internal sealed partial class SemanticPackPlan
             if (name.StartsWith("../", StringComparison.Ordinal) || Path.IsPathRooted(name))
                 name = "dependencies/" + source.Location.AssetType + "/" + Path.GetFileName(source.Location.Path);
         }
+
         return AddImport(ReadEntry(source.Location, new(source.Location.AssetType, _output, name), source.Bytes));
     }
 }

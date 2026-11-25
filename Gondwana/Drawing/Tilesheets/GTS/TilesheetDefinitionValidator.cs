@@ -18,7 +18,11 @@ public static class TilesheetDefinitionValidator
         foreach (var region in definition.Regions ?? [])
         {
             if (region is null)
-            { errors.Add("Regions contains a null entry."); continue; }
+            {
+                errors.Add("Regions contains a null entry.");
+                continue;
+            }
+
             var label = $"Region '{region.Name}'";
             if (string.IsNullOrWhiteSpace(region.Name))
                 errors.Add($"{label}: name is empty.");
@@ -29,6 +33,7 @@ public static class TilesheetDefinitionValidator
                 errors.Add($"{label}: area and tile dimensions must be positive.");
                 continue;
             }
+
             if (region.Area.X < 0 || region.Area.Y < 0 ||
                 (imageWidth.HasValue && (long)region.Area.X + region.Area.Width > imageWidth) ||
                 (imageHeight.HasValue && (long)region.Area.Y + region.Area.Height > imageHeight))
@@ -51,7 +56,11 @@ public static class TilesheetDefinitionValidator
             foreach (var frame in region.Frames ?? [])
             {
                 if (frame is null)
-                { errors.Add($"{label}: null frame metadata."); continue; }
+                {
+                    errors.Add($"{label}: null frame metadata.");
+                    continue;
+                }
+
                 var frameLabel = $"{label}, frame ({frame.XTile}, {frame.YTile})";
                 if (!coordinates.Add((frame.XTile, frame.YTile)))
                     errors.Add($"{frameLabel}: duplicate frame metadata.");
@@ -63,6 +72,7 @@ public static class TilesheetDefinitionValidator
                     errors.Add($"{frameLabel}: unknown collision type.");
             }
         }
+
         return errors;
     }
 

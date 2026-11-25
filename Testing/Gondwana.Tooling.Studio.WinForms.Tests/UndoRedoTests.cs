@@ -21,13 +21,18 @@ public sealed partial class CompositionTests
         {
             AuthoringModel(child.Document.Editor).RenameDefinition(name);
         }
+
         Rename("state to save");
         Rename("redo state");
         child.Document.History!.Undo();
         var expected = child.Document.SerializePacked!();
         using var opened = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
-        studio.Browser.ArchiveOpened = _ => { opened.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(15))); };
+        studio.Browser.ArchiveOpened = _ =>
+        {
+            opened.Set();
+            Assert.True(release.Wait(TimeSpan.FromSeconds(15)));
+        };
         studio.Browser.RefreshDirectory();
         Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
         Task<bool>? save = null;
@@ -44,6 +49,7 @@ public sealed partial class CompositionTests
                 item.PerformClick();
                 Assert.Equal("state to save", child.Document.SelectedMember);
             }
+
             foreach (var target in new Control[] { studio, child.Document.Editor })
                 foreach (var key in new[] { Keys.Control | Keys.Z, Keys.Control | Keys.Y, Keys.Control | Keys.Shift | Keys.Z })
                 {
@@ -51,9 +57,16 @@ public sealed partial class CompositionTests
                         .Invoke(target, [new Message(), key]);
                     Assert.Equal("state to save", child.Document.SelectedMember);
                 }
+
             Assert.True(child.Document.Dirty());
         }
-        finally { release.Set(); if (save is not null) Assert.True(AwaitUi(save)); }
+        finally
+        {
+            release.Set();
+            if (save is not null)
+                Assert.True(AwaitUi(save));
+        }
+
         Assert.True(AwaitUi(save!));
         Assert.False(child.Document.Dirty());
         Assert.Equal(expected, child.Document.SerializePacked!());

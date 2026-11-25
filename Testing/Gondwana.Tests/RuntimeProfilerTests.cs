@@ -20,6 +20,7 @@ public sealed class RuntimeProfilerTests
             now += .25;
             profiler.GetLatestSnapshot();
         }
+
         var history = profiler.GetHistory();
         Assert.Equal(120, history.Count);
         Assert.Equal(2280, history[0].Sources[0].Metrics["work.cpu.ms"].Last);
@@ -242,9 +243,21 @@ public sealed class RuntimeProfilerTests
         using var request = profiler.Start();
         long generation = engine.BeginSample();
         await Task.WhenAll(
-            Task.Run(() => { for (int i = 0; i < 10000; i++) engine.Record(generation, "cycle.cpu.ms", 2); }),
-            Task.Run(() => { for (int i = 0; i < 3000; i++) gl.Record(generation, "presentation.count", 1); }),
-            Task.Run(() => { for (int i = 0; i < 1000; i++) profiler.GetHistory(); }));
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 10000; i++)
+                    engine.Record(generation, "cycle.cpu.ms", 2);
+            }),
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 3000; i++)
+                    gl.Record(generation, "presentation.count", 1);
+            }),
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 1000; i++)
+                    profiler.GetHistory();
+            }));
         Volatile.Write(ref clock, 1);
         var snapshot = profiler.GetLatestSnapshot()!;
         Assert.Equal(10000, snapshot.Sources.Single(s => s.Id == engine.Id).Metrics["cycle.cpu.ms"].Count);

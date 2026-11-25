@@ -68,6 +68,7 @@ public sealed partial class SceneEditorTests
                     (tile.Frame!.Tilesheet, tile.Frame.RegionName, tile.Frame.XTile, tile.Frame.YTile)));
                 Assert.NotSame(layer.Tiles[0].Frame, layer.Tiles[1].Frame);
             }
+
             string after = SceneDefinitionSerializer.ToJson(document.Definition);
             document.History.Undo();
             Application.DoEvents();
@@ -155,6 +156,7 @@ public sealed partial class SceneEditorTests
                     Assert.True(editor.CommitEdits());
                     break;
             }
+
             Assert.Empty(layer.Tiles);
             Assert.Empty(second.Tiles);
             Assert.False(document.History.InTransaction);
@@ -178,6 +180,7 @@ public sealed partial class SceneEditorTests
             Pointer(preview, "OnMouseDown", PreviewCellPoint(preview, layer, 1, 1));
             Pointer(preview, "OnMouseUp", PreviewCellPoint(preview, layer, 5, 1));
         }
+
         SaveGestureBaseline(editor, root);
         Tool(editor, erase ? "Erase" : "Paint").PerformClick();
         Pointer(preview, "OnMouseDown", PreviewCellPoint(preview, layer, 1, 1));
@@ -312,6 +315,7 @@ public sealed partial class SceneEditorTests
                 if (cell.X >= 0 && cell.Y >= 0 && cell.X < layer.Columns && cell.Y < layer.Rows)
                     expected.Add(cell);
             }
+
             var rapid = layer.Tiles.Select(tile => new Point(tile.X, tile.Y)).ToHashSet();
             Assert.True(rapid.SetEquals(expected), $"Rapid: {string.Join(';', rapid)} Expected: {string.Join(';', expected)}");
             document.History.Undo();
@@ -342,7 +346,11 @@ public sealed partial class SceneEditorTests
         {
             var document = editor.Document;
             var layer = editor.Definition.Layers[0];
-            document.EditTile(layer, 2, 2, "Seed tile", tile => { tile.Nickname = "keep"; tile.Transform = TileTransform.FlipHorizontal; });
+            document.EditTile(layer, 2, 2, "Seed tile", tile =>
+            {
+                tile.Nickname = "keep";
+                tile.Transform = TileTransform.FlipHorizontal;
+            });
             var original = Assert.Single(layer.Tiles);
             string before = JsonConvert.SerializeObject(original);
             SelectPaintFrame(source);
@@ -356,7 +364,11 @@ public sealed partial class SceneEditorTests
             if (erase)
                 Assert.Empty(layer.Tiles);
             else
-            { Assert.Equal(6, layer.Tiles.Count); Assert.Equal(TileTransform.FlipHorizontal, original.Transform); }
+            {
+                Assert.Equal(6, layer.Tiles.Count);
+                Assert.Equal(TileTransform.FlipHorizontal, original.Transform);
+            }
+
             document.History.Undo();
             Application.DoEvents();
             Assert.Same(original, Assert.Single(layer.Tiles));
@@ -382,7 +394,11 @@ public sealed partial class SceneEditorTests
             SaveGestureBaseline(editor, root);
             Tool(editor, "Paint").PerformClick();
             void Fail(SceneLayerDefinition target, int x, int y)
-            { if (x == 3) throw new InvalidOperationException("Injected gesture failure"); }
+            {
+                if (x == 3)
+                    throw new InvalidOperationException("Injected gesture failure");
+            }
+
             preview.TileSelected += Fail;
             Pointer(preview, "OnMouseDown", PreviewCellPoint(preview, layer, 1, 1));
             var error = Assert.Throws<TargetInvocationException>(() => Pointer(preview, "OnMouseMove", PreviewCellPoint(preview, layer, 5, 1)));
@@ -443,6 +459,7 @@ public sealed partial class SceneEditorTests
                     editor.ReloadSources();
                     break;
             }
+
             Application.DoEvents();
             Assert.True(editor.SelectedCells.Width * editor.SelectedCells.Height <= 1);
             Assert.All(document.Definitions.SelectMany(d => d.Layers), candidate => Assert.Empty(candidate.Tiles));
@@ -471,24 +488,26 @@ public sealed partial class SceneEditorTests
                 .GetMethod("GetProjection", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(preview, [layer])!;
             var offset = (PointF)typeof(ScenePreviewControl).GetField("_offset", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(preview)!;
             for (int y = 2; y <= 3; y++)
-            for (int x = 2; x <= 3; x++)
-            {
-                var points = projection[x, y]!.OutlinePointsWorld;
-                bool highlighted = false;
-                for (int edge = 0; edge < points.Length; edge++)
+                for (int x = 2; x <= 3; x++)
                 {
-                    var first = points[edge];
-                    var second = points[(edge + 1) % points.Length];
-                    int sx = (int)Math.Round((first.X + second.X) / 2f * preview.Zoom + offset.X);
-                    int sy = (int)Math.Round((first.Y + second.Y) / 2f * preview.Zoom + offset.Y);
-                    for (int dy = -2; dy <= 2; dy++)
-                    for (int dx = -2; dx <= 2; dx++)
-                        if (sx + dx >= 0 && sx + dx < image.Width && sy + dy >= 35 && sy + dy < image.Height &&
-                            image.GetPixel(sx + dx, sy + dy).ToArgb() == Color.Gold.ToArgb())
-                            highlighted = true;
+                    var points = projection[x, y]!.OutlinePointsWorld;
+                    bool highlighted = false;
+                    for (int edge = 0; edge < points.Length; edge++)
+                    {
+                        var first = points[edge];
+                        var second = points[(edge + 1) % points.Length];
+                        int sx = (int)Math.Round((first.X + second.X) / 2f * preview.Zoom + offset.X);
+                        int sy = (int)Math.Round((first.Y + second.Y) / 2f * preview.Zoom + offset.Y);
+                        for (int dy = -2; dy <= 2; dy++)
+                            for (int dx = -2; dx <= 2; dx++)
+                                if (sx + dx >= 0 && sx + dx < image.Width && sy + dy >= 35 && sy + dy < image.Height &&
+                                    image.GetPixel(sx + dx, sy + dy).ToArgb() == Color.Gold.ToArgb())
+                                    highlighted = true;
+                    }
+
+                    Assert.True(highlighted, $"Missing projected selection outline for {coordinateSystem} ({x},{y})");
                 }
-                Assert.True(highlighted, $"Missing projected selection outline for {coordinateSystem} ({x},{y})");
-            }
+
             Assert.Empty(layer.Tiles);
         });
 
@@ -499,24 +518,37 @@ public sealed partial class SceneEditorTests
     {
         using var document = SceneDocument.Create(Path.GetTempPath());
         var layer = document.AddLayer();
-        document.EditTile(layer, 1, 1, "Original", tile => { tile.Nickname = "original"; tile.EnableFog = true; tile.Transform = TileTransform.Rotate270; });
+        document.EditTile(layer, 1, 1, "Original", tile =>
+        {
+            tile.Nickname = "original";
+            tile.EnableFog = true;
+            tile.Transform = TileTransform.Rotate270;
+        });
         var original = Assert.Single(layer.Tiles);
         string before = JsonConvert.SerializeObject(layer.Tiles);
         using (var transaction = document.History.BeginTransaction("Grouped cells"))
         {
             document.EditTile(layer, 0, 0, "Assign frame", tile => tile.Frame = new() { Tilesheet = "terrain", RegionName = "detail" });
             document.RemoveTile(layer, 1, 1);
-            document.EditTile(layer, 2, 2, "Assign animation", tile => { tile.AnimationKey = "flow"; tile.EnableAnimator = true; });
+            document.EditTile(layer, 2, 2, "Assign animation", tile =>
+            {
+                tile.AnimationKey = "flow";
+                tile.EnableAnimator = true;
+            });
             if (!cancel)
                 transaction.Commit();
         }
+
         Assert.False(document.History.InTransaction);
         if (!cancel)
             document.History.Undo();
         Assert.Equal(before, JsonConvert.SerializeObject(layer.Tiles));
         Assert.Same(original, Assert.Single(layer.Tiles));
         if (!cancel)
-        { document.History.Redo(); Assert.Equal(2, layer.Tiles.Count); }
+        {
+            document.History.Redo();
+            Assert.Equal(2, layer.Tiles.Count);
+        }
     }
 
     [Fact]
@@ -556,7 +588,12 @@ public sealed partial class SceneEditorTests
             var end = PreviewCellPoint(preview, layer, columns ? 9 : 3, columns ? 3 : 9);
             Pointer(preview, "OnMouseDown", start);
             Pointer(preview, "OnMouseUp", end);
-            document.Edit(layer, "Resize layer", () => { if (columns) layer.Columns = 8; else layer.Rows = 8; });
+            document.Edit(layer, "Resize layer", () =>
+            {
+                if (columns)
+                    layer.Columns = 8; else
+                    layer.Rows = 8;
+            });
             Application.DoEvents();
             int x = columns ? 7 : 3, y = columns ? 3 : 7;
             Assert.Equal(new Rectangle(x, y, 1, 1), editor.SelectedCells);
@@ -642,6 +679,7 @@ public sealed partial class SceneEditorTests
                     if (cell.X >= 0 && cell.Y >= 0 && cell.X < layer.Columns && cell.Y < layer.Rows)
                         expected.Add(cell);
                 }
+
                 Pointer(preview, "OnMouseDown", start);
                 Pointer(preview, "OnMouseUp", end);
                 var actual = layer.Tiles.Select(tile => new Point(tile.X, tile.Y)).ToHashSet();
@@ -686,6 +724,7 @@ public sealed partial class SceneEditorTests
             var grid = projection.WorldPxToGrid(world);
             return new((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
         }
+
         for (int i = 0; i <= 10000; i++)
         {
             var world = new PointF(start.X + (end.X - start.X) * i / 10000f, start.Y + (end.Y - start.Y) * i / 10000f);

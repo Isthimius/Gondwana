@@ -33,10 +33,13 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
                 if (shared.ContainsKey(reference.Name!))
                     continue;
                 try
-                { pending.Enqueue(Default.LoadFromAssemblyName(reference)); }
+                {
+                    pending.Enqueue(Default.LoadFromAssemblyName(reference));
+                }
                 catch (FileNotFoundException) { /* Optional host dependency; never substitute a private Gondwana assembly. */ }
             }
         }
+
         return shared;
     }
 
@@ -80,6 +83,7 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
             if (File.Exists(adjacent))
                 path = adjacent;
         }
+
         if (path is not null)
             return LoadFromAssemblyPath(_legacy ? path : PluginPackagePaths.RequireContained(_directory, path));
         if (_legacy)

@@ -76,16 +76,19 @@ internal sealed partial class SemanticPackPlan
             plan._entries[key] = entry; // Append replaces this complete typed entry, never its members individually.
             plan._incoming.Add(entry);
         }
+
         foreach (var entry in plan._entries.Values)
         {
             cancellation.ThrowIfCancellationRequested();
             entry.Document?.Validate(entry.Location.ToString());
         }
+
         foreach (var entry in plan._entries.Values)
         {
             cancellation.ThrowIfCancellationRequested();
             plan.Analyze(entry);
         }
+
         foreach (var entry in plan._entries.Values.Where(entry => plan._incoming.Contains(entry) || entry.NeedsRewrite))
         {
             cancellation.ThrowIfCancellationRequested();
@@ -95,15 +98,20 @@ internal sealed partial class SemanticPackPlan
                 entry.Bytes = entry.Document.Relocate(entry.Location, entry.Destination, entry.Mappings);
             }
         }
+
         return plan;
     }
 
     private static Entry ReadEntry(AssetLocation location, AssetLocation destination, byte[] bytes)
     {
         try
-        { return new(location, destination, bytes, PackDefinitionDocument.Read(location.AssetType, bytes, location.AssetEntryName ?? location.Path)); }
+        {
+            return new(location, destination, bytes, PackDefinitionDocument.Read(location.AssetType, bytes, location.AssetEntryName ?? location.Path));
+        }
         catch (Exception ex) when (ex is InvalidDataException or ArgumentException)
-        { throw new InvalidDataException($"{location}: {ex.Message}", ex); }
+        {
+            throw new InvalidDataException($"{location}: {ex.Message}", ex);
+        }
     }
 
     private void ReadExisting()
@@ -143,14 +151,20 @@ internal sealed partial class SemanticPackPlan
                     using var stream = new MemoryStream(pair.Value.Bytes, writable: false);
                     archive.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
                 }
+
                 archive.Save();
             }
+
             AssetsFile.Validate(staging, _password);
             _cancellation.ThrowIfCancellationRequested();
             File.Move(staging, _output, overwrite: true);
             return _incoming.Count;
         }
-        finally { if (File.Exists(staging)) File.Delete(staging); }
+        finally
+        {
+            if (File.Exists(staging))
+                File.Delete(staging);
+        }
     }
 
     private static bool Same(AssetLocation left, AssetLocation right) => left.AssetType == right.AssetType &&
@@ -200,6 +214,7 @@ internal sealed partial class SemanticPackPlan
             if (relative != ".." && !relative.StartsWith("../", StringComparison.Ordinal) && !Path.IsPathRooted(relative))
                 found = _entries.GetValueOrDefault(new AssetsFileEntry { AssetType = location.AssetType, AssetName = relative });
         }
+
         if (found is null)
         {
             if (location.AssetEntryName is not null && Paths.Equals(location.Path, _output))
@@ -228,17 +243,21 @@ internal sealed partial class SemanticPackPlan
                             stream.CopyTo(buffer);
                             contents.Add(key, buffer.ToArray());
                         }
+
                         _externalArchives.Add(location.Path, contents);
                     }
+
                     if (!contents.TryGetValue(new AssetsFileEntry { AssetType = location.AssetType, AssetName = location.AssetEntryName }, out var data))
                         throw new InvalidDataException($"{label}: missing external typed entry {location}.");
                     bytes = data;
                 }
+
                 found = ReadEntry(location, location, bytes);
                 found.Document?.Validate(label);
                 _external.Add(found);
             }
         }
+
         if (identity is not null && !Contains(found, identity))
             throw new InvalidDataException($"{label}: {location} does not contain logical member '{identity}'.");
         if (_importDependencies && _external.Contains(found))
@@ -258,6 +277,7 @@ internal sealed partial class SemanticPackPlan
                 throw new InvalidDataException($"Conflicting dependency mapping: {source}.");
             return;
         }
+
         owner.Mappings.Add(new(source, destination));
         owner.NeedsRewrite = true;
     }

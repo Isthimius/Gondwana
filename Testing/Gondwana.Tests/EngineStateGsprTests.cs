@@ -19,7 +19,11 @@ public sealed class EngineStateGsprTests : IDisposable
     /// <summary>
     /// Initializes a new instance of the <c>EngineStateGsprTests</c> class.
     /// </summary>
-    public EngineStateGsprTests() { Directory.CreateDirectory(_directory); Cleanup(); }
+    public EngineStateGsprTests()
+    {
+        Directory.CreateDirectory(_directory);
+        Cleanup();
+    }
 
     /// <summary>
     /// Verifies collection state round trip.
@@ -49,6 +53,7 @@ public sealed class EngineStateGsprTests : IDisposable
             if (!compressed)
                 Assert.Equal("world.sprites.gspr", JObject.Parse(File.ReadAllText(path))["Sprites"]!["GsprPath"]!.Value<string>());
         }
+
         EngineState.LoadFromFile(path, compressed, EngineStateParts.Scenes | EngineStateParts.Sprites);
         Assert.Equal(ids, SpriteManager.Instance.AllSprites.Select(sprite => sprite.Id));
         var restored = Assert.Single(Scene.GetAllScenes()).SceneLayers.Single();
@@ -95,7 +100,11 @@ public sealed class EngineStateGsprTests : IDisposable
                 Assert.Equal(i % 2, sprite.CurrentFrame.XTile);
             }
         }
-        finally { Cleanup(); TilesheetRegistry.Instance.Clear(); }
+        finally
+        {
+            Cleanup();
+            TilesheetRegistry.Instance.Clear();
+        }
     }
 
     /// <summary>
@@ -191,9 +200,17 @@ public sealed class EngineStateGsprTests : IDisposable
     private static void Cleanup()
     {
         foreach (var sprite in SpriteManager.Instance.AllSprites)
-        { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+        {
+            SpriteManager.Instance._spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+        }
+
         Scene.ClearAllScenes();
     }
     /// <inheritdoc/>
-    public void Dispose() { Cleanup(); Directory.Delete(_directory, true); }
+    public void Dispose()
+    {
+        Cleanup();
+        Directory.Delete(_directory, true);
+    }
 }

@@ -50,6 +50,9 @@ public sealed class ExternalImportPlugin : IStudioPlugin, IStudioPluginHostServi
     {
         directory = null;
         if (panel is not null && !panel.IsDisposed)
-        { panel.Cancel(); panel.OutputDirectory = string.Empty; }
+        {
+            panel.Cancel();
+            panel.OutputDirectory = string.Empty;
+        }
     }
 }

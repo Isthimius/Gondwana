@@ -363,6 +363,7 @@ public sealed class ToastWidget : WidgetBase
                 {
                     Dismiss();
                 }
+
                 break;
 
             case ToastState.Exiting:

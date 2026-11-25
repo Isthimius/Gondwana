@@ -260,6 +260,7 @@ public sealed partial class SpriteEditorControl
                     InstallAnimationPreview(animation, address.Resource, animationSheets);
                     animationSheets = [];
                 }
+
                 if (scene is not null)
                     InstallScenePreview(scene, address.Resource);
                 RememberDisplayedSources();
@@ -389,6 +390,7 @@ public sealed partial class SpriteEditorControl
             _sources.Remove(source);
             source.Dispose();
         }
+
         _sources.Add(sheet);
         _frames.BeginUpdate();
         try
@@ -403,7 +405,10 @@ public sealed partial class SpriteEditorControl
                     .SelectMany(region => region.Nodes.Cast<TreeNode>())
                     .FirstOrDefault(node => node.Tag is SpriteFrameDefinition frame && SpriteDocument.FramesMatch(frame, selected));
         }
-        finally { _frames.EndUpdate(); }
+        finally
+        {
+            _frames.EndUpdate();
+        }
     }
 
     private void InstallAnimationPreview(AnimationDefinition animation, AuthoringResource resource, List<SpriteTilesheetSource> sheets)
@@ -418,6 +423,7 @@ public sealed partial class SpriteEditorControl
             _sourceLoadWarnings.Remove(cached);
             _animationDefinitions.Remove(cached);
         }
+
         if (_animationTilesheets.Remove(animation.Key, out var previous))
             foreach (var sheet in previous)
                 sheet.Dispose();

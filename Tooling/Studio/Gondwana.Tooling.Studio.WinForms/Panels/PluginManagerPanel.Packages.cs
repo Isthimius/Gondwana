@@ -47,7 +47,12 @@ internal sealed partial class PluginManagerPanel
                 return;
             await RunBusy(() => Task.Run(() => _operations!.Cancel(operation.PluginId)));
         };
-        PendingGrid.CurrentCellChanged += (_, _) => { UpdateActions(); if (PendingGrid.Focused) ShowPendingDetails(); };
+        PendingGrid.CurrentCellChanged += (_, _) =>
+        {
+            UpdateActions();
+            if (PendingGrid.Focused)
+                ShowPendingDetails();
+        };
         PendingGrid.Enter += (_, _) => ShowPendingDetails();
         Grid.Enter += (_, _) => ShowSelection();
         // Keep the menu alive through WinForms' close/click handling and any file picker.
@@ -88,7 +93,11 @@ internal sealed partial class PluginManagerPanel
                 preview = await Task.Run(() => remove ? _operations!.PreviewRemoval(id!) : _operations!.Preview(source!, id));
                 if (!await OnUi(() => ConfirmPackage(preview)))
                     return;
-                await OnUi(() => { StatusLabel.Text = "Saving reviewed package operation…"; return true; });
+                await OnUi(() =>
+                {
+                    StatusLabel.Text = "Saving reviewed package operation…";
+                    return true;
+                });
                 await Task.Run(() => _operations!.Queue(preview, confirmed: true, replacementConfirmed: true));
             }
             finally
@@ -112,11 +121,20 @@ internal sealed partial class PluginManagerPanel
             BeginInvoke(() =>
             {
                 try
-                { completion.SetResult(IsDisposed || Disposing ? default! : action()); }
-                catch (Exception ex) { completion.SetException(ex); }
+                {
+                    completion.SetResult(IsDisposed || Disposing ? default! : action());
+                }
+                catch (Exception ex)
+                {
+                    completion.SetException(ex);
+                }
             });
         }
-        catch (InvalidOperationException) when (IsDisposed || Disposing || !IsHandleCreated) { completion.SetResult(default!); }
+        catch (InvalidOperationException) when (IsDisposed || Disposing || !IsHandleCreated)
+        {
+            completion.SetResult(default!);
+        }
+
         return completion.Task;
     }
 
@@ -137,8 +155,14 @@ internal sealed partial class PluginManagerPanel
             return;
         string? failure = null;
         try
-        { await operation(); }
-        catch (Exception ex) { failure = "Package operation failed: " + ex.Message; _operations!.ReportFailure(ex.ToString()); }
+        {
+            await operation();
+        }
+        catch (Exception ex)
+        {
+            failure = "Package operation failed: " + ex.Message;
+            _operations!.ReportFailure(ex.ToString());
+        }
         finally
         {
             await OnUi(() =>
@@ -167,6 +191,7 @@ internal sealed partial class PluginManagerPanel
             if (operation.PluginId == selected)
                 restore = PendingGrid.Rows[index];
         }
+
         if (PendingGrid.Rows.Count > 0)
             PendingGrid.CurrentCell = (restore ?? PendingGrid.Rows[0]).Cells[0];
         UpdateActions();

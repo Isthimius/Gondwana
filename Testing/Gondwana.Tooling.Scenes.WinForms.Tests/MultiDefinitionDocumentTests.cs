@@ -37,7 +37,10 @@ public sealed class MultiDefinitionDocumentTests
             Assert.Equal(3, SceneDefinitionSerializer.LoadAll(destination).Count);
             Assert.Equal("second", document.Definitions[1].ID);
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
     /// <summary>Atomic Save As never persists staging names and preserves every member's dependency base.</summary>
     [Fact]
@@ -55,6 +58,7 @@ public sealed class MultiDefinitionDocumentTests
                 member.Source = SceneDefinitionSource.LooseDefinitionFile(Path.Combine(root, "original.gscn"));
                 member.TilesheetSources.Add(new() { Tilesheet = "terrain", GtsPath = "terrain.gts" });
             }
+
             var destination = Path.Combine(root, "nested", "members.gscn");
             document.Save(destination, allowInvalid: true);
             document.Save(destination, allowInvalid: true);
@@ -69,8 +73,12 @@ public sealed class MultiDefinitionDocumentTests
                 Assert.Equal(Path.Combine(root, "terrain.gts"), Path.GetFullPath(member.TilesheetSources[0].GtsPath!, reloaded.BaseDirectory));
                 Assert.Equal(destination, member.Source.GscnFilePath);
             }
+
             Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(destination)!, "*.tmp"));
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
 }

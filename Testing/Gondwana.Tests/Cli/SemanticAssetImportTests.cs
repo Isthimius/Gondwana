@@ -40,6 +40,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(original.Count(pair => roots.Contains(Path.GetFileName(pair.Key))) + (dependencies ? (legacy ? 5 : 7) : 0), plan.AdditionCount);
             destination.Save();
         }
+
         foreach (var pair in original)
             Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
         if (dependencies)
@@ -62,6 +63,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(count, AnimationDefinitionSerializer.LoadAllCycles(Resolve(group.AnimationSources[0].GaniPath!)).Count);
             Assert.Equal(count, SceneDefinitionSerializer.LoadAllScenes(Resolve(group.SceneSources[0].GscnPath!)).Count);
         }
+
         Assert.Equal(count, SpriteDefinitionSerializer.LoadAllSprites(archive, "actors.gspr").Count);
         var backend = new Backend();
         AudioResourceManager.Instance.ConfigureBackend(backend);
@@ -275,6 +277,7 @@ public sealed partial class SemanticAssetPackTests
             external.Add(AssetTypes.Image, "images/art.png", stream);
             external.Save();
         }
+
         var definition = Sheet("terrain", "unused");
         definition.Image = new() { AssetsFilePath = externalPath, AssetEntryName = "images/art.png" };
         var path = Path.Combine(Source, "sheet.gts");
@@ -303,6 +306,7 @@ public sealed partial class SemanticAssetPackTests
             using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "unused.png"))));
             destination.Add(AssetTypes.TilesheetDefinition, name, stream);
         }
+
         var path = Path.Combine(Source, "walk.gani");
         AnimationDefinitionSerializer.Save(path, new AnimationDefinition { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] });
         var error = Assert.Throws<InvalidDataException>(() => AssetImportPlan.Create(destination, [new(path, AssetTypes.AnimationDefinition, "walk.gani")], true));

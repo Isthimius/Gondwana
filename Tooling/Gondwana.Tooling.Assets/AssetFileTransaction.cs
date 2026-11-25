@@ -64,7 +64,11 @@ internal sealed class AssetFileTransaction
                 for (var current = parent; !Directory.Exists(current); current = Path.GetDirectoryName(current)!)
                     missing.Push(current);
                 while (missing.TryPop(out var folder))
-                { Directory.CreateDirectory(folder); created.Add(folder); }
+                {
+                    Directory.CreateDirectory(folder);
+                    created.Add(folder);
+                }
+
                 var item = new RecoveryFile(path, Path.Combine(parent, $".gondwana-relocate-{id}-{recovery.Count}.old"),
                     Path.Combine(parent, $".gondwana-relocate-{id}-{recovery.Count}.new"), File.Exists(path));
                 recovery.Add(item);
@@ -82,9 +86,11 @@ internal sealed class AssetFileTransaction
                             using var stream = new MemoryStream(pair.Value, writable: false);
                             output.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
                         }
+
                         output.Save();
                         AssetsFile.Validate(stagePath, archive.Password);
                     }
+
                     var retained = RetainedEntries(path);
                     if (retained.Count != 0)
                     {
@@ -97,8 +103,10 @@ internal sealed class AssetFileTransaction
                     else
                         StageArchive(item.Staged, archive.Entries);
                 }
+
                 checkpoint?.Invoke("stage", recovery.Count);
             }
+
             File.WriteAllText(manifest, JsonSerializer.Serialize(new { State = "Prepared", Files = recovery }, new JsonSerializerOptions { WriteIndented = true }));
             _scan.Recheck();
             cancellation.ThrowIfCancellationRequested();
@@ -114,6 +122,7 @@ internal sealed class AssetFileTransaction
                 touched.Add(item.Target);
                 checkpoint?.Invoke("install", ++index);
             }
+
             VerifyWrites(retainSources: true);
             foreach (var path in _scan.Files.Keys.Except(AffectedFiles, DefinitionReferenceDiscovery.Paths))
                 CheckUnchanged(path);
@@ -125,6 +134,7 @@ internal sealed class AssetFileTransaction
                 File.Move(item.Staged + ".final", item.Target, overwrite: true);
                 checkpoint?.Invoke("retire", ++index);
             }
+
             foreach (var path in _removals)
             {
                 cancellation.ThrowIfCancellationRequested();
@@ -134,6 +144,7 @@ internal sealed class AssetFileTransaction
                 touched.Add(path);
                 checkpoint?.Invoke("retire", ++index);
             }
+
             cancellation.ThrowIfCancellationRequested();
             VerifyWrites();
             File.WriteAllText(completedManifest, JsonSerializer.Serialize(new { State = "Completed", Files = recovery }, new JsonSerializerOptions { WriteIndented = true }));
@@ -155,13 +166,18 @@ internal sealed class AssetFileTransaction
                         else
                             File.Delete(item.Target);
                     }
-                    catch (Exception rollback) { failures.Add(rollback); }
+                    catch (Exception rollback)
+                    {
+                        failures.Add(rollback);
+                    }
                 }
+
             if (failures.Count > 1)
             {
                 retain = true;
                 throw new AggregateException($"Rollback incomplete. Keep recovery manifest and sibling backups: {manifest}", failures);
             }
+
             throw;
         }
         finally
@@ -176,14 +192,21 @@ internal sealed class AssetFileTransaction
                         File.Delete(item.Staged + ".final");
                         File.Delete(item.Backup);
                     }
+
                     File.Delete(completedManifest);
                     File.Delete(manifest);
                     foreach (var folder in created.AsEnumerable().Reverse())
                         if (Directory.Exists(folder) && !Directory.EnumerateFileSystemEntries(folder).Any())
                             Directory.Delete(folder);
                 }
-                catch (IOException) when (completed) { _preview.Add($"Operation completed; remove leftover recovery files listed in {manifest} after inspection."); }
-                catch (UnauthorizedAccessException) when (completed) { _preview.Add($"Operation completed; remove leftover recovery files listed in {manifest} after inspection."); }
+                catch (IOException) when (completed)
+                {
+                    _preview.Add($"Operation completed; remove leftover recovery files listed in {manifest} after inspection.");
+                }
+                catch (UnauthorizedAccessException) when (completed)
+                {
+                    _preview.Add($"Operation completed; remove leftover recovery files listed in {manifest} after inspection.");
+                }
             }
         }
     }
@@ -205,6 +228,7 @@ internal sealed class AssetFileTransaction
             if (!_archiveWrites[path].Entries.ContainsKey(key))
                 result.Add(key, _scan.Archives[path].Entries[key]);
         }
+
         return result;
     }
 
@@ -219,8 +243,8 @@ internal sealed class AssetFileTransaction
             var actual = AssetImportPlan.Snapshot(archive);
             var expected = new Dictionary<AssetsFileEntry, byte[]>(pair.Value.Entries);
             if (retainSources)
-            foreach (var retained in RetainedEntries(pair.Key))
-                expected.Add(retained.Key, retained.Value);
+                foreach (var retained in RetainedEntries(pair.Key))
+                    expected.Add(retained.Key, retained.Value);
             if (actual.Count != expected.Count || expected.Any(p => !actual.TryGetValue(p.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(p.Value)))
                 throw new IOException($"Committed archive differs: {pair.Key}.");
         }

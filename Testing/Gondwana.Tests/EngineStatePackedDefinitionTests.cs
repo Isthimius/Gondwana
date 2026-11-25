@@ -51,6 +51,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             SpriteManager.Instance._spriteList.Remove(sprite);
             sprite.DisposeImmediate();
         }
+
         Scene.ClearAllScenes();
         Cycle.ClearAllAnimationCycles();
         TilesheetRegistry.Instance.Clear();
@@ -211,6 +212,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             Assert.NotNull(entry["AssetEntryName"]);
             Assert.True(entry["Definition"] is null || entry["Definition"]!.Type == JTokenType.Null);
         }
+
         Assert.DoesNotContain("terrain.png", root.ToString());
         Clear();
         Assert.Empty(TilesheetRegistry.Instance.GetAll());
@@ -422,6 +424,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             Assert.StartsWith("saves", entries[i].Value<string>(names[i]));
             Assert.Null(entries[i]["AssetsFilePath"]);
         }
+
         Clear();
         EngineState.LoadFromFile(otherState);
         Assert.Single(SpriteManager.Instance.AllSprites);
@@ -545,6 +548,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             Assert.Equal(mode == DefinitionPersistence.Inline, entry["Definition"]?.Type == JTokenType.Object);
             Assert.Equal(mode == DefinitionPersistence.PreserveSource, entry["AssetEntryName"] is not null);
         }
+
         Clear();
         EngineState.LoadFromFile(StatePath);
         Assert.Single(SpriteManager.Instance.AllSprites);
@@ -628,6 +632,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             Add(archive, type, entry, json);
             File.WriteAllText(Path.Combine(_root, "assets", entry), json);
         }
+
         archive.Save();
         Clear();
         archive = AssetsFile.LoadOrCreate(ArchivePath);
@@ -716,6 +721,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             SpriteManager.Instance._spriteList.Remove(sprite);
             sprite.DisposeImmediate();
         }
+
         Assert.Equal(2, SpriteDefinitionSerializer.LoadAllSprites(path).Count);
         new EngineState().SaveToFile(StatePath, Preserve());
         Assert.Equal(2, Read(StatePath)["SpriteGroups"]!["$values"]!.Count());

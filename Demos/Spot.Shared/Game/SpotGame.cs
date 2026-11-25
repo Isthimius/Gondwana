@@ -78,6 +78,7 @@ internal class SpotGame : IDisposable
         {
             scores[player] = GetPlayerScore(player);
         }
+
         return scores;
     }
 

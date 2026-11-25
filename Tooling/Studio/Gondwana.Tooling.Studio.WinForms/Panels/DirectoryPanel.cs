@@ -467,8 +467,13 @@ public sealed class DirectoryPanel : UserControl
     {
         await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
-        { return await read().ConfigureAwait(false); }
-        finally { _archiveGate.Release(); }
+        {
+            return await read().ConfigureAwait(false);
+        }
+        finally
+        {
+            _archiveGate.Release();
+        }
     }
 
     internal async Task RunWithoutArchiveReadsAsync(Action action)
@@ -484,8 +489,13 @@ public sealed class DirectoryPanel : UserControl
             await OnUiAsync(() =>
             {
                 try
-                { action(); }
-                finally { RefreshDirectory(); }
+                {
+                    action();
+                }
+                finally
+                {
+                    RefreshDirectory();
+                }
             }, cancellationToken).ConfigureAwait(false);
         }
         finally
@@ -607,7 +617,11 @@ public sealed class DirectoryPanel : UserControl
 
             return images;
         }
-        catch { images.Dispose(); throw; }
+        catch
+        {
+            images.Dispose();
+            throw;
+        }
     }
 
     private static void AddEmbeddedIcon(ImageList images, string key, string fileName)

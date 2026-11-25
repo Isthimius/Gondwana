@@ -15,7 +15,11 @@ internal sealed class GameWindow : Form
         StartPosition = FormStartPosition.CenterScreen;
         KeyPreview = true;
         Controls.Add(_renderSurface);
-        KeyDown += (_, e) => { if (e.KeyCode == Keys.Escape) Close(); };
+        KeyDown += (_, e) =>
+        {
+            if (e.KeyCode == Keys.Escape)
+                Close();
+        };
     }
 
     /// <inheritdoc/>

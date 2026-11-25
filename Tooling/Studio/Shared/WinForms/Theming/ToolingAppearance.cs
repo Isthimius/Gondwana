@@ -457,7 +457,11 @@ public static class ToolingAppearance
             tooltip.SetToolTip(control, text);
         };
 
-        control.MouseLeave += (_, _) => { previous = null; tooltip.SetToolTip(control, null); };
+        control.MouseLeave += (_, _) =>
+        {
+            previous = null;
+            tooltip.SetToolTip(control, null);
+        };
         control.Disposed += (_, _) => tooltip.Dispose();
     }
 

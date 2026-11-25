@@ -285,6 +285,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             _alive = 0;
             _particlesLastTick = 0;
         }
+
         base.Dispose(disposing);
     }
 
@@ -319,7 +320,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
 
             int toEmit = (int)em._accumulator;
             if (toEmit > 0)
-            { em._accumulator -= toEmit; EmitFrom(em, toEmit); }
+            {
+                em._accumulator -= toEmit;
+                EmitFrom(em, toEmit);
+            }
         }
 
         // (C) integrate & compact
@@ -369,6 +373,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             if (p.Life > 0 && isInView)
                 _particles[write++] = p;
         }
+
         _alive = write;
 
         ForceRefresh();

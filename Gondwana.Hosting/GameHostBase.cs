@@ -370,6 +370,7 @@ public abstract class GameHostBase : IDisposable
                 configurationStore,
                 autoSaveConfig: autoSaveConfig);
         }
+
         _engineInitialized = true;
 
         OnEngineInitialized();

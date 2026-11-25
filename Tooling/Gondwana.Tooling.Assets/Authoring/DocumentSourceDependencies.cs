@@ -40,7 +40,10 @@ public static class DocumentSourceDependencies
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
                 NullReferenceException or Newtonsoft.Json.JsonException)
-            { incomplete = ex; }
+            {
+                incomplete = ex;
+            }
+
             foreach (var reference in references)
             {
                 if (!visited.Add(reference))
@@ -50,6 +53,7 @@ public static class DocumentSourceDependencies
                     observed.Add(reference);
                     yield return reference;
                 }
+
                 if (!PackDefinitionDocument.IsNative(reference.AssetType))
                     continue;
                 byte[] bytes;
@@ -71,6 +75,7 @@ public static class DocumentSourceDependencies
                         entry.CopyTo(content);
                         bytes = content.ToArray();
                     }
+
                     versions[reference] = new(DocumentSourceStatus.Available, hash, DocumentSourceVersion.Hash(bytes));
                 }
                 catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or
@@ -81,9 +86,11 @@ public static class DocumentSourceDependencies
                     incomplete = ex;
                     continue;
                 }
+
                 pending.Enqueue((reference, bytes));
             }
         }
+
         if (incomplete is not null)
             throw new IOException("Some dependency references could not be read; retain the previous inventory.", incomplete);
     }

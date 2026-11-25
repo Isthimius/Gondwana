@@ -107,6 +107,7 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
             point.ClientX -= offset.Left;
             point.ClientY -= offset.Top;
         }
+
         handler(args);
     }
 

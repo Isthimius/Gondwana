@@ -95,6 +95,7 @@ internal sealed class PongGameHost : WinFormsGameHost
                 new Rectangle(WorldColumns * TileSize / 2 - 2, y, 4, 22), $"center-line-{y}").SetFilled(true);
             dash.ZOrder = 1;
         }
+
         _scoreText = new TextBlock(RenderSurface.Host, view, new Rectangle(330, 20, 300, 92), "pong-score")
             .SetFont(SKTypeface.Default, 56f)
             .SetColors(SKColors.White, SKColors.Transparent)
@@ -160,6 +161,7 @@ internal sealed class PongGameHost : WinFormsGameHost
             _keysDown.Remove(key);
             return;
         }
+
         _keysDown.Add(key);
         if (key == Keys.Space && _state == GameState.Ready)
             Serve();
@@ -228,6 +230,7 @@ internal sealed class PongGameHost : WinFormsGameHost
             next.Y = WorldRows - BallRadius;
             _ballVelocity.Y *= -1f;
         }
+
         BounceFromPaddle(_leftPaddle, previous, ref next, true);
         BounceFromPaddle(_rightPaddle, previous, ref next, false);
         _ball.SetPosition(next);
@@ -271,6 +274,7 @@ internal sealed class PongGameHost : WinFormsGameHost
             RefreshHud();
             return;
         }
+
         _serveDirection = leftPlayerScored ? 1 : -1;
         _state = GameState.Ready;
         CenterBall();

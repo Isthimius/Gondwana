@@ -68,11 +68,13 @@ internal static class SceneViewerLauncher
             start.ArgumentList.Add("--scene-id");
             start.ArgumentList.Add(sceneId);
         }
+
         if (contentRoot is not null)
         {
             start.ArgumentList.Add("--content-root");
             start.ArgumentList.Add(Path.GetFullPath(contentRoot));
         }
+
         if (temporaryScene)
             start.ArgumentList.Add("--temporary-scene");
         return start;
@@ -121,6 +123,7 @@ internal static class SceneViewerLauncher
             if (!confirmSave() || !save())
                 return false;
         }
+
         if (document.IsDirty || document.FilePath is null)
             return false;
         launch(document.FilePath);

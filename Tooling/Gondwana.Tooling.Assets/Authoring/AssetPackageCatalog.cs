@@ -193,6 +193,7 @@ public sealed class AssetPackageCatalog : IDisposable
                 _failures[fullPath] = ex;
                 throw new InvalidDataException($"Could not open asset package '{fullPath}' with the supplied password: {ex.Message}", ex);
             }
+
             PasswordAccepted?.Invoke(fullPath, password);
         }
 

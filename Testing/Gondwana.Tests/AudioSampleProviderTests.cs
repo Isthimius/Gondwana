@@ -29,6 +29,7 @@ public sealed class AudioSampleProviderTests
             Assert.Equal(Math.Min(frame * speed, 7), buffer[2 + frame * 2]);
             Assert.Equal(buffer[2 + frame * 2] + 10, buffer[3 + frame * 2]);
         }
+
         Assert.Equal(0, provider.Read(buffer, 0, buffer.Length));
         provider.Reset(() => source.Position = 0);
         Assert.Equal(read, provider.Read(buffer, 2, 96));

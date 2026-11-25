@@ -29,6 +29,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.Audio, "audio/chime.wav", audio);
             package.Save();
         }
+
         var aniPath = Path.Combine(root, "empty.gani");
         AnimationDocument.Create(root).Save(aniPath, allowInvalid: true);
         var scenePath = Path.Combine(root, "empty.gscn");
@@ -39,7 +40,11 @@ public sealed partial class CompositionTests
         AudioDocument.Create(root).Save(audioPath, allowInvalid: true);
         using var studio = Host(root);
         int prompts = 0;
-        studio.AssetPassword = _ => { prompts++; return "secret"; };
+        studio.AssetPassword = _ =>
+        {
+            prompts++;
+            return "secret";
+        };
         var animation = (AnimationEditorControl)studio.OpenDocument(aniPath).Document.Editor;
         var scene = (SceneEditorControl)studio.OpenDocument(scenePath).Document.Editor;
         var sprite = (SpriteEditorControl)studio.OpenDocument(spritePath).Document.Editor;
@@ -96,8 +101,10 @@ public sealed partial class CompositionTests
                 using var stream = original.Get(entry.AssetType, entry.AssetName)!;
                 replacement.Add(entry.AssetType, entry.AssetName, stream);
             }
+
             replacement.Save();
         }
+
         File.Copy(Path.Combine(root, "new.gaf"), archive, true);
         packages.Clear();
         Assert.Throws<InvalidDataException>(() => packages.GetResources(archive, AssetTypes.TilesheetDefinition));
@@ -177,6 +184,7 @@ public sealed partial class CompositionTests
             Assert.Equal("definitions/island.gscn", spriteRef.AssetEntryName);
             Assert.Equal(archive, Path.GetFullPath(spriteRef.AssetsFilePath!, directory));
         }
+
         Assert.Equal(original, File.ReadAllBytes(archive));
         animations.Document.Definition.Key = "unsaved";
         animations.Document.MarkChanged();
@@ -206,6 +214,7 @@ public sealed partial class CompositionTests
             Assert.Throws<InvalidDataException>(() => editor.AddPackedTilesheetSource(invalid));
             Assert.Empty(editor.Document.Definition.TilesheetSources);
         }
+
         var invalidFile = Path.Combine(root, "invalid.gts");
         File.WriteAllText(invalidFile, "not JSON");
         using (var package = AssetsFile.LoadOrCreate(archive, null, false, register: false))
@@ -213,6 +222,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.TilesheetDefinition, invalidFile, "invalid.gts");
             package.Save();
         }
+
         packages.Invalidate(archive);
         Assert.Throws<InvalidDataException>(() => editor.AddPackedTilesheetSource(selection with { Resource = selection.Resource with { EntryName = "invalid.gts" } }));
         File.WriteAllText(invalidFile, "{\"Definitions\":[]}");
@@ -221,6 +231,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.TilesheetDefinition, invalidFile, "empty.gts");
             package.Save();
         }
+
         packages.Invalidate(archive);
         Assert.Contains("no logical definitions", Assert.Throws<InvalidDataException>(() =>
             PackedResourceSelection.GetMembers(packages, selection.Resource with { EntryName = "empty.gts" })).Message);
@@ -258,6 +269,7 @@ public sealed partial class CompositionTests
             writer.Write(2);
             writer.Write((short)0);
         }
+
         var entry = extensionless ? "sounds/alert" : "sounds/alert.wav";
         using (var package = AssetsFile.LoadOrCreate(archive, null, false, register: false))
         {
@@ -265,6 +277,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.Misc, wave, "wrong.wav");
             package.Save();
         }
+
         File.Delete(wave);
         using var packages = new AssetPackageCatalog();
         var resource = Assert.Single(packages.GetResources(archive, AssetTypes.Audio));
@@ -286,6 +299,7 @@ public sealed partial class CompositionTests
             Assert.Equal(".wav", audio.SourceExtension);
             Assert.Equal(archive, Path.GetFullPath(audio.AssetsFilePath!, directory));
         }
+
         using var exclusive = File.Open(archive, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
     });
 
@@ -300,6 +314,7 @@ public sealed partial class CompositionTests
             package.Add(AssetTypes.Misc, Path.Combine(root, "world.gts"), "wrong.gts");
             package.Save();
         }
+
         using var packages = new AssetPackageCatalog();
         var prompts = 0;
         var accepted = 0;

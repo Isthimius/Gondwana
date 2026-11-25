@@ -59,6 +59,7 @@ public sealed class WrappedRenderingTests
                         bitmap.GetPixel(x * 32 + 5, y * 32 + 5));
             Assert.Equal(SKColors.Black, bitmap.GetPixel(33, 33));
         }
+
         host.Backbuffer.BeginFrame();
         drawing.Visible = false;
         host.RenderToBackbuffer(1);
@@ -71,6 +72,7 @@ public sealed class WrappedRenderingTests
                 for (int y = 0; y < 4; y++)
                     Assert.Equal(SKColors.Black, bitmap.GetPixel(x * 32 + 5, y * 32 + 5));
         }
+
         host.Backbuffer.BeginFrame();
     }
 
@@ -114,7 +116,11 @@ public sealed class WrappedRenderingTests
         var hit = Call("HitTest", new Point(69, 101));
         PointF captured = PointF.Empty;
         int clicks = 0;
-        widget.PointerMove += args => { Assert.Same(widget, args.Widget); captured = args.WrappedOffsetWorldPx; };
+        widget.PointerMove += args =>
+        {
+            Assert.Same(widget, args.Widget);
+            captured = args.WrappedOffsetWorldPx;
+        };
         widget.PointerClick += _ => clicks++;
         Call("ProcessMouseDown", hit, new Point(69, 101), Gondwana.Input.Mouse.MouseButton.Left, 0L);
         Call("ProcessMouseMove", new Point(69, 101), new Point(5, 5), 1L);

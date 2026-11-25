@@ -38,6 +38,7 @@ public static partial class TilesheetDefinitionSerializer
                 definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Name);
         }
+
         return document;
     }
 
@@ -72,6 +73,7 @@ public static partial class TilesheetDefinitionSerializer
                 : TilesheetDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
             definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Name);
         }
+
         return document;
     }
 
@@ -83,8 +85,14 @@ public static partial class TilesheetDefinitionSerializer
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
         try
-        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Name); }
-        catch (InvalidDataException ex) { errors.Add(ex.Message); }
+        {
+            DefinitionDocumentJson.Check(document.Definitions, definition => definition.Name);
+        }
+        catch (InvalidDataException ex)
+        {
+            errors.Add(ex.Message);
+        }
+
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
                 errors.AddRange(TilesheetDefinitionValidator.Validate(definition).Select(error => $"Tilesheet '{definition.Name}': {error}"));
@@ -138,6 +146,7 @@ public static partial class TilesheetDefinitionSerializer
             image.FilePath = RebasePath(image.FilePath);
             image.AssetsFilePath = RebasePath(image.AssetsFilePath);
         }
+
         ApplyDefaultSource(clone, TilesheetDefinitionSource.LooseDefinitionFile(path));
         return clone;
     }

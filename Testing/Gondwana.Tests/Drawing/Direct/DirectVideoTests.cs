@@ -208,7 +208,13 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
     /// <inheritdoc/>
     public event EventHandler<VideoFrameReadyEventArgs>? FrameReady;
     /// <inheritdoc/>
-    public void Open(Uri source) { _ownedStream?.Dispose(); _ownedStream = null; OpenCount++; StateChanged?.Invoke(this, new("MediaOpened")); }
+    public void Open(Uri source)
+    {
+        _ownedStream?.Dispose();
+        _ownedStream = null;
+        OpenCount++;
+        StateChanged?.Invoke(this, new("MediaOpened"));
+    }
     /// <inheritdoc/>
     public void Open(Stream source, bool leaveOpen = false)
     {
@@ -219,11 +225,23 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
         StateChanged?.Invoke(this, new("MediaOpened"));
     }
     /// <inheritdoc/>
-    public void Play() { IsPlaying = true; Started?.Invoke(this, EventArgs.Empty); }
+    public void Play()
+    {
+        IsPlaying = true;
+        Started?.Invoke(this, EventArgs.Empty);
+    }
     /// <inheritdoc/>
-    public void Pause() { IsPlaying = false; Paused?.Invoke(this, EventArgs.Empty); }
+    public void Pause()
+    {
+        IsPlaying = false;
+        Paused?.Invoke(this, EventArgs.Empty);
+    }
     /// <inheritdoc/>
-    public void Stop() { IsPlaying = false; Stopped?.Invoke(this, EventArgs.Empty); }
+    public void Stop()
+    {
+        IsPlaying = false;
+        Stopped?.Invoke(this, EventArgs.Empty);
+    }
     /// <inheritdoc/>
     public void Seek(TimeSpan position) => Position = position;
     /// <inheritdoc/>
@@ -240,7 +258,11 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
     /// <summary>
     /// Releases the resources owned by this instance.
     /// </summary>
-    public void Dispose() { DisposeCount++; _ownedStream?.Dispose(); }
+    public void Dispose()
+    {
+        DisposeCount++;
+        _ownedStream?.Dispose();
+    }
     /// <summary>
     /// Publishes a simulated video frame.
     /// </summary>
@@ -253,7 +275,12 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
         NaturalSize = (width, height);
         var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
         try
-        { FrameReady?.Invoke(this, new(handle.AddrOfPinnedObject(), width, height, stride, 0)); }
-        finally { handle.Free(); }
+        {
+            FrameReady?.Invoke(this, new(handle.AddrOfPinnedObject(), width, height, stride, 0));
+        }
+        finally
+        {
+            handle.Free();
+        }
     }
 }

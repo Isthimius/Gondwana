@@ -21,10 +21,21 @@ internal sealed class SliderFileStorage : ISliderScoreStore
             return [];
 
         try
-        { return SliderPersistence.DeserializeScores(File.ReadAllText(ScorePath)); }
-        catch (IOException) { return []; }
-        catch (JsonException) { return []; }
-        catch (UnauthorizedAccessException) { return []; }
+        {
+            return SliderPersistence.DeserializeScores(File.ReadAllText(ScorePath));
+        }
+        catch (IOException)
+        {
+            return [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return [];
+        }
     }
 
     public void SaveScores(IReadOnlyList<SliderScore> scores)

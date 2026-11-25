@@ -191,8 +191,10 @@ public sealed partial class AudioDocument
                 member.Resources[j].FilePath = persisted.Resources[j].FilePath;
                 member.Resources[j].AssetsFilePath = persisted.Resources[j].AssetsFilePath;
             }
+
             member.Source = AudioDefinitionSource.LooseDefinitionFile(path);
         }
+
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
@@ -310,7 +312,11 @@ public sealed partial class AudioDocument
             _definitions.RemoveAt(index);
             if (ReferenceEquals(Definition, definition))
                 Definition = _definitions[0];
-        }, () => { _definitions.Insert(index, definition); Definition = selected; });
+        }, () =>
+        {
+            _definitions.Insert(index, definition);
+            Definition = selected;
+        });
         return true;
     }
 
@@ -349,6 +355,7 @@ public sealed partial class AudioDocument
                 resource.FilePath = Rebase(resource.FilePath);
                 resource.AssetsFilePath = Rebase(resource.AssetsFilePath);
             }
+
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "audio");
         if (imported.Count == 0)

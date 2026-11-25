@@ -31,7 +31,12 @@ public sealed class RuntimeProfiler : IDisposable
     public bool IsCollecting => Volatile.Read(ref _requests) != 0;
 
     /// <summary>Current immutable settings.</summary>
-    public TelemetryOptions Options { get { lock (_sync) return _options; } }
+    public TelemetryOptions Options { get
+        {
+            lock (_sync)
+                return _options;
+        }
+    }
 
     /// <summary>Changes shared settings while inactive, clearing previous measurements.</summary>
     /// <param name="options">Validated bounded settings.</param>
@@ -68,6 +73,7 @@ public sealed class RuntimeProfiler : IDisposable
                     foreach (var accumulator in source.Metrics.Values)
                         accumulator.Rebase();
             }
+
             _requests++;
             return new Request(this);
         }
@@ -85,7 +91,11 @@ public sealed class RuntimeProfiler : IDisposable
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
             if (_sources.Count >= _options.SourceCapacity)
-            { _truncated = true; return null; }
+            {
+                _truncated = true;
+                return null;
+            }
+
             var source = new TelemetrySource(this, ++_nextId, name, backend);
             _sources.Add(source.Id, source);
             return source;
@@ -125,7 +135,13 @@ public sealed class RuntimeProfiler : IDisposable
     }
 
     /// <summary>Clears telemetry history and rebases observations without changing renderer counters or leases.</summary>
-    public void Reset() { lock (_sync) { ObjectDisposedException.ThrowIf(_disposed, this); ResetCore(); } }
+    public void Reset()
+    {
+        lock (_sync)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            ResetCore(); }
+    }
 
     /// <summary>Stops collection, invalidates in-flight samples, and retires all source handles.</summary>
     public void Dispose()
@@ -166,8 +182,13 @@ public sealed class RuntimeProfiler : IDisposable
                     existing.Availability = availability;
                 return true;
             }
+
             if (source.Metrics.Count >= _options.MetricCapacity)
-            { _truncated = true; return false; }
+            {
+                _truncated = true;
+                return false;
+            }
+
             source.Metrics.Add(name, new Accumulator { Availability = availability, Kind = kind });
             return true;
         }
@@ -197,14 +218,21 @@ public sealed class RuntimeProfiler : IDisposable
 
     /// <summary>Retires a source; previously detached history stays readable.</summary>
     /// <param name="source">Source whose subsequent observations must be ignored.</param>
-    internal void Retire(TelemetrySource source) { lock (_sync) _sources.Remove(source.Id); }
+    internal void Retire(TelemetrySource source)
+    {
+        lock (_sync)
+            _sources.Remove(source.Id);
+    }
 
     /// <summary>Marks omitted detail for the current collection generation.</summary>
     /// <param name="generation">Epoch of the omitted observations.</param>
     internal void MarkTruncated(long generation)
     {
         lock (_sync)
-        { if (generation == _generation && _requests != 0) _truncated = true; }
+        {
+            if (generation == _generation && _requests != 0)
+                _truncated = true;
+        }
     }
 
     private static void ValidateName(string name)
@@ -266,6 +294,7 @@ public sealed class RuntimeProfiler : IDisposable
                     Publish(now);
                 _generation++;
             }
+
             _requests--;
         }
     }
@@ -302,7 +331,13 @@ public sealed class RuntimeProfiler : IDisposable
             _observed = observed;
         }
         /// <summary>Starts a new window, preserving the cumulative-counter baseline.</summary>
-        internal void Clear() { if (_count > 0) _baseline = _last; _count = 0; _sum = 0; }
+        internal void Clear()
+        {
+            if (_count > 0)
+                _baseline = _last;
+            _count = 0;
+            _sum = 0;
+        }
         /// <summary>Discards the counter baseline after reset or a collection gap.</summary>
         internal void Rebase() => _baseline = null;
         /// <summary>Copies sufficient statistics into an immutable value.</summary>

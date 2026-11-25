@@ -224,8 +224,13 @@ public abstract class RenderSurfaceHostBase : IDisposable
         finally
         {
             try
-            { Backbuffer.BeginFrame(); }
-            finally { FrameMailbox.Release(slot); }
+            {
+                Backbuffer.BeginFrame();
+            }
+            finally
+            {
+                FrameMailbox.Release(slot);
+            }
 
             if (collectDiagnostics)
             {
@@ -249,6 +254,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
                     Telemetry.Record(telemetryGeneration, "mailbox.slots", counters.InUse);
                     Telemetry.Record(telemetryGeneration, "snapshot.commands.approximate", commands);
                 }
+
                 diagnostics?.Invoke(new(0, 0)
                 {
                     ReplayMilliseconds = replayMs,
@@ -364,7 +370,10 @@ public abstract class RenderSurfaceHostBase : IDisposable
                 canvas.DrawSurface(Backbuffer.Canvas.Surface, 0, 0);
             }
         }
-        finally { canvas.Restore(); }
+        finally
+        {
+            canvas.Restore();
+        }
     }
 
     /// <summary>

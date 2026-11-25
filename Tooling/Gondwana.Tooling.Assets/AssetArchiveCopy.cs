@@ -36,8 +36,10 @@ public static class AssetArchiveCopy
                     using var stream = new MemoryStream(pair.Value, writable: false);
                     copy.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
                 }
+
                 copy.Save();
             }
+
             AssetsFile.Validate(temporary, password);
             byte[] hash;
             using (var staged = File.OpenRead(temporary))
@@ -45,6 +47,9 @@ public static class AssetArchiveCopy
             File.Move(temporary, destination, overwrite: false);
             return hash;
         }
-        finally { File.Delete(temporary); }
+        finally
+        {
+            File.Delete(temporary);
+        }
     }
 }

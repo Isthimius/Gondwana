@@ -120,13 +120,24 @@ public sealed class DefinitionReferenceDiscovery
                 cancellation.ThrowIfCancellationRequested();
                 paths.Add(path);
                 try
-                { Include(path, archive: File.Exists(Scope)); }
+                {
+                    Include(path, archive: File.Exists(Scope));
+                }
                 catch (Exception ex) when (diagnostic && ex is not OperationCanceledException)
-                { _problems.Add(new(path, ex.Message, Kind: Classify(ex))); }
+                {
+                    _problems.Add(new(path, ex.Message, Kind: Classify(ex)));
+                }
             }
         }
-        catch (OperationCanceledException) when (diagnostic) { IsCancelled = true; }
-        catch (Exception ex) when (diagnostic) { _problems.Add(new(Scope, ex.Message, Kind: Classify(ex))); }
+        catch (OperationCanceledException) when (diagnostic)
+        {
+            IsCancelled = true;
+        }
+        catch (Exception ex) when (diagnostic)
+        {
+            _problems.Add(new(Scope, ex.Message, Kind: Classify(ex)));
+        }
+
         _scopeFiles = paths.ToArray();
     }
 
@@ -160,8 +171,15 @@ public sealed class DefinitionReferenceDiscovery
                     result._problems.Add(new(content.Location.ToString(), error.Message, reference, Classify(error))),
                     (member, uri, field) => result._externalReferences.Add((new(content.Location, member, field), uri)));
             }
-            catch (OperationCanceledException) { result.IsCancelled = true; break; }
-            catch (Exception ex) { result._problems.Add(new(content.Location.ToString(), ex.Message, Kind: Classify(ex))); }
+            catch (OperationCanceledException)
+            {
+                result.IsCancelled = true;
+                break;
+            }
+            catch (Exception ex)
+            {
+                result._problems.Add(new(content.Location.ToString(), ex.Message, Kind: Classify(ex)));
+            }
         }
         // Exploration needs identities and diagnostics, not retained media bytes or passwords.
         result._inspectedFiles = result.Files.Keys.ToArray();
@@ -231,6 +249,7 @@ public sealed class DefinitionReferenceDiscovery
             yield return scope;
             yield break;
         }
+
         if (!Directory.Exists(scope))
             throw new DirectoryNotFoundException(scope);
         var pending = new Stack<string>();
@@ -294,9 +313,14 @@ public sealed class DefinitionReferenceDiscovery
             using var zip = new ZipFile(new MemoryStream(bytes));
             bool encrypt = zip.Cast<ZipEntry>().Any(entry => entry.AESKeySize > 0);
             try
-            { AssetsFile.Validate(path, password); }
+            {
+                AssetsFile.Validate(path, password);
+            }
             catch (Exception ex) when (zip.Cast<ZipEntry>().Any(entry => entry.IsCrypted))
-            { throw new ReferenceInspectionException(ReferenceProblemKind.Authentication, $"Authentication required or failed for '{path}'. Open the archive with its correct password and rescan.", ex); }
+            {
+                throw new ReferenceInspectionException(ReferenceProblemKind.Authentication, $"Authentication required or failed for '{path}'. Open the archive with its correct password and rescan.", ex);
+            }
+
             using var archive = AssetsFile.LoadOrCreate(path, password, encrypt, register: false);
             result = new(password, encrypt, AssetImportPlan.Snapshot(archive));
             Archives.Add(path, result);
@@ -307,12 +331,15 @@ public sealed class DefinitionReferenceDiscovery
                 var location = new AssetLocation(pair.Key.AssetType, path, pair.Key.AssetName);
                 Contents.Add(Key(location), new(location, pair.Value));
             }
+
             if (!File.ReadAllBytes(path).AsSpan().SequenceEqual(bytes))
                 throw new IOException($"Archive changed while scanning: {path}.");
             return result;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
-        { throw new InvalidDataException($"Cannot inspect archive '{path}'; verify its contents and credential. {ex.Message}", ex); }
+        {
+            throw new InvalidDataException($"Cannot inspect archive '{path}'; verify its contents and credential. {ex.Message}", ex);
+        }
     }
 
     /// <summary>Resolves an exact physical reference or an unambiguous logical member.</summary>
@@ -333,6 +360,7 @@ public sealed class DefinitionReferenceDiscovery
                 $"Logical {type} '{selector}' has {matches.Length} matching documents in scope; author an explicit physical source.");
             return matches[0];
         }
+
         if (Contents.TryGetValue(Key(location), out var found))
             return found;
         if (location.AssetEntryName is not null)
@@ -340,6 +368,7 @@ public sealed class DefinitionReferenceDiscovery
             ReadArchive(location.Path);
             return Contents.GetValueOrDefault(Key(location)) ?? throw new ReferenceInspectionException(ReferenceProblemKind.Missing, $"Missing typed entry {location}.");
         }
+
         var inferred = AssetImportPlan.InferType(location.Path);
         if (Native(inferred) && inferred != type)
             throw new InvalidDataException($"Incompatible dependency type: {location}.");

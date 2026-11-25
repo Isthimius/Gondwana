@@ -38,6 +38,7 @@ internal static class SceneViewerArguments
                 throw new ArgumentException(Usage);
             sceneId = args[index++];
         }
+
         if (index < args.Length && args[index] == "--content-root")
         {
             if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index]))
@@ -46,11 +47,13 @@ internal static class SceneViewerArguments
             if (!Directory.Exists(contentRoot))
                 throw new DirectoryNotFoundException($"Scene content directory not found: {contentRoot}");
         }
+
         if (index < args.Length && args[index] == "--temporary-scene")
         {
             temporary = true;
             index++;
         }
+
         if (index != args.Length || (temporary && contentRoot is null))
             throw new ArgumentException(Usage);
         var path = Normalize(args[1], baseDirectory);

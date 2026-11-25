@@ -115,7 +115,10 @@ public sealed class ExternalImportTests
             panel.Analyze();
             panel.Dispose();
         }
-        finally { Directory.Delete(directory, true); }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
     });
 
 
@@ -168,7 +171,10 @@ public sealed class ExternalImportTests
             Wait(panel);
             Assert.True(File.Exists(Path.Combine(panel.OutputDirectory, "tiles.gts")));
         }
-        finally { Directory.Delete(directory, true); }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
     });
 
     /// <summary>Godot scene auto-detection uses the same panel workflow and opens the generated GSCN.</summary>
@@ -197,14 +203,21 @@ public sealed class ExternalImportTests
             Assert.Equal(Path.Combine(panel.OutputDirectory, "layers.gscn"), Assert.Single(services.Opened));
             Assert.Equal(1, services.Refreshes);
         }
-        finally { Directory.Delete(directory, true); }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
     });
 
     private static void Wait(ExternalImportPanel panel)
     {
         var clock = System.Diagnostics.Stopwatch.StartNew();
         while (panel.IsBusy && clock.Elapsed < TimeSpan.FromSeconds(15))
-        { panel.Poll(); Thread.Sleep(10); }
+        {
+            panel.Poll();
+            Thread.Sleep(10);
+        }
+
         Assert.False(panel.IsBusy);
     }
 
@@ -240,7 +253,12 @@ public sealed class ExternalImportTests
         /// <inheritdoc/>
         public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         /// <inheritdoc/>
-        public void Dispose() { Started.Dispose(); Release.Dispose(); Finished.Dispose(); }
+        public void Dispose()
+        {
+            Started.Dispose();
+            Release.Dispose();
+            Finished.Dispose();
+        }
     }
 
     /// <summary>
@@ -288,7 +306,13 @@ public sealed class ExternalImportTests
     private static void RunSta(Action action)
     {
         Exception? error = null;
-        var thread = new Thread(() => { try { action(); } catch (Exception ex) { error = ex; } });
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action(); } catch (Exception ex) {
+                error = ex; }
+        });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();

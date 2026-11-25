@@ -328,6 +328,7 @@ public sealed class ListBoxScrollingTests
                 .SetValue(args, instanceOffset);
             typeof(WidgetBase).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(list, [args]);
         }
+
         Pointer("DispatchPointerDown", grab);
         Pointer("DispatchPointerMove", new PointF(grab.X, screenTrack.Bottom + 10), id: 8);
         Assert.Equal(0, list.TopIndex); // A second touch cannot move the captured thumb.

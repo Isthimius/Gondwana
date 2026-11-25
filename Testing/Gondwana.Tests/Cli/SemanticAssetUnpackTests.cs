@@ -71,6 +71,7 @@ public sealed partial class SemanticAssetPackTests
                 using var stream = archive.CreateEntry(name).Open();
                 stream.WriteByte(1);
             }
+
         var error = Assert.Throws<InvalidDataException>(() => SemanticUnpackPlan.Create(Output, Export, null, null, null, false, default));
         Assert.Contains("directory prefix", error.Message);
         Assert.False(Directory.Exists(Export));
@@ -96,10 +97,15 @@ public sealed partial class SemanticAssetPackTests
             File.WriteAllText(Path.Combine(nested, Path.GetFileName(path)), json);
             File.Delete(path);
         }
+
         var pack = new List<string> { "pack", Source, Output };
         var unpack = new List<string> { "unpack", Output, Export };
         if (protection > 0)
-        { pack.AddRange(["--password", "secret"]); unpack.AddRange(["--password", "secret"]); }
+        {
+            pack.AddRange(["--password", "secret"]);
+            unpack.AddRange(["--password", "secret"]);
+        }
+
         if (protection == 2)
             pack.Add("--encrypt");
         Assert.Equal(0, Run(pack.ToArray()));
@@ -117,6 +123,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Null(sheet.Image.AssetEntryName);
             Assert.False(Path.IsPathRooted(sheet.Image.FilePath));
         }
+
         Assert.All(AnimationDefinitionSerializer.LoadAll(PathFor("cycles.gani")), animation =>
         {
             Assert.Equal(AnimationTilesheetSourceKind.LooseDefinitionFile, Assert.Single(animation.TilesheetSources).Kind);
@@ -137,6 +144,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.DoesNotContain(".gondwana-unpack-", json);
             Assert.DoesNotContain(_root.Replace("\\", "\\\\"), json);
         }
+
         Assert.Equal(0, Run("pack", Export, Output));
         using var repacked = AssetsFile.LoadOrCreate(Output, null, false, register: false);
         Assert.Equal(count, SpriteDefinitionSerializer.LoadAll(repacked, "native/actors.gspr").Count);
@@ -200,6 +208,7 @@ public sealed partial class SemanticAssetPackTests
                 Assert.Equal(2, backend.Loaded.Count);
                 break;
         }
+
         Assert.Equal(before, File.ReadAllBytes(Output));
     }
 
@@ -212,6 +221,7 @@ public sealed partial class SemanticAssetPackTests
             using var stream = new MemoryStream(entry.Bytes);
             archive.Add(entry.Type, entry.Name, stream);
         }
+
         archive.Save();
     }
 
@@ -335,6 +345,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.Image, "art.png", stream);
             archive.Save();
         }
+
         var looseSheet = Sheet("loose", "../art.png");
         var packedSheet = Sheet("packed", "unused");
         packedSheet.Image = new() { AssetsFilePath = "../external.gaf", AssetEntryName = "art.png" };
@@ -403,7 +414,10 @@ public sealed partial class SemanticAssetPackTests
             Assert.ThrowsAny<IOException>(() => SemanticUnpackPlan.Create(Output, Path.Combine(link, "child"), null, AssetTypes.Misc, "folder", false, default));
             Assert.Empty(Directory.GetFileSystemEntries(elsewhere));
         }
-        finally { Directory.Delete(link); }
+        finally
+        {
+            Directory.Delete(link);
+        }
     }
 
     /// <summary>Physical source ambiguity cannot be silently resolved from one of several matching logical members.</summary>
@@ -436,6 +450,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.AnimationDefinition, "walk.gani", stream);
             archive.Save();
         }
+
         var externalBytes = File.ReadAllBytes(external);
         var sheet = Sheet("terrain", "unused");
         sheet.Image = new() { AssetEntryName = "art.png" };

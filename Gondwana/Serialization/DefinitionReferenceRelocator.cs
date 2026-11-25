@@ -42,6 +42,7 @@ public static class DefinitionReferenceRelocator
                 ? TilesheetDefinitionSource.LooseDefinitionFile(destinationDocument.Path)
                 : TilesheetDefinitionSource.PackedDefinitionFile(destinationDocument.Path, destinationDocument.AssetEntryName);
         }
+
         context.Complete(requireAllMappings);
         return result;
     }
@@ -74,10 +75,12 @@ public static class DefinitionReferenceRelocator
                         source.Kind = packed ? AnimationTilesheetSourceKind.PackedDefinitionFile : AnimationTilesheetSourceKind.LooseDefinitionFile;
                     });
             }
+
             member.Source = destinationDocument.AssetEntryName is null
                 ? AnimationDefinitionSource.LooseDefinitionFile(destinationDocument.Path)
                 : AnimationDefinitionSource.PackedDefinitionFile(destinationDocument.Path, destinationDocument.AssetEntryName);
         }
+
         context.Complete(requireAllMappings);
         return result;
     }
@@ -110,6 +113,7 @@ public static class DefinitionReferenceRelocator
                         source.Kind = packed ? SceneTilesheetSourceKind.PackedDefinitionFile : SceneTilesheetSourceKind.LooseDefinitionFile;
                     });
             }
+
             for (int i = 0; i < member.AnimationSources.Count; i++)
             {
                 var source = member.AnimationSources[i] ?? throw new InvalidDataException($"Member contains null AnimationSources[{i}].");
@@ -122,10 +126,12 @@ public static class DefinitionReferenceRelocator
                         source.Kind = packed ? SceneAnimationSourceKind.PackedDefinitionFile : SceneAnimationSourceKind.LooseDefinitionFile;
                     });
             }
+
             member.Source = destinationDocument.AssetEntryName is null
                 ? SceneDefinitionSource.LooseDefinitionFile(destinationDocument.Path)
                 : SceneDefinitionSource.PackedDefinitionFile(destinationDocument.Path, destinationDocument.AssetEntryName);
         }
+
         context.Complete(requireAllMappings);
         return result;
     }
@@ -158,6 +164,7 @@ public static class DefinitionReferenceRelocator
                         source.Kind = packed ? SpriteTilesheetSourceKind.PackedDefinitionFile : SpriteTilesheetSourceKind.LooseDefinitionFile;
                     });
             }
+
             for (int i = 0; i < member.SceneSources.Count; i++)
             {
                 var source = member.SceneSources[i] ?? throw new InvalidDataException($"Member contains null SceneSources[{i}].");
@@ -170,6 +177,7 @@ public static class DefinitionReferenceRelocator
                         source.Kind = packed ? SpriteSceneSourceKind.PackedDefinitionFile : SpriteSceneSourceKind.LooseDefinitionFile;
                     });
             }
+
             for (int i = 0; i < member.AnimationSources.Count; i++)
             {
                 var source = member.AnimationSources[i] ?? throw new InvalidDataException($"Member contains null AnimationSources[{i}].");
@@ -182,10 +190,12 @@ public static class DefinitionReferenceRelocator
                         source.Kind = packed ? SpriteAnimationSourceKind.PackedDefinitionFile : SpriteAnimationSourceKind.LooseDefinitionFile;
                     });
             }
+
             member.Source = destinationDocument.AssetEntryName is null
                 ? SpriteDefinitionSource.LooseDefinitionFile(destinationDocument.Path)
                 : SpriteDefinitionSource.PackedDefinitionFile(destinationDocument.Path, destinationDocument.AssetEntryName);
         }
+
         context.Complete(requireAllMappings);
         return result;
     }
@@ -222,16 +232,19 @@ public static class DefinitionReferenceRelocator
                             if (string.IsNullOrWhiteSpace(resource.SourceExtension) && string.IsNullOrWhiteSpace(Path.GetExtension(entry)))
                                 throw new InvalidDataException($"Audio '{member.Key}' :: Resource '{resource.Key}': cannot infer packed audio format; specify SourceExtension.");
                         }
+
                         resource.FilePath = file;
                         resource.AssetsFilePath = archive;
                         resource.AssetEntryName = entry;
                         resource.SourceKind = packed ? AudioResourceSourceKind.PackedAsset : AudioResourceSourceKind.LooseFile;
                     });
             }
+
             member.Source = destinationDocument.AssetEntryName is null
                 ? AudioDefinitionSource.LooseDefinitionFile(destinationDocument.Path)
                 : AudioDefinitionSource.PackedDefinitionFile(destinationDocument.Path, destinationDocument.AssetEntryName);
         }
+
         context.Complete(requireAllMappings);
         return result;
     }
@@ -297,11 +310,14 @@ public static class DefinitionReferenceRelocator
             var directory = Path.GetDirectoryName(_source.Path)!;
             AssetLocation location;
             try
-            { location = new AssetLocation(type, Path.GetFullPath(loose ? file! : archive!, directory), packed ? entry : null); }
+            {
+                location = new AssetLocation(type, Path.GetFullPath(loose ? file! : archive!, directory), packed ? entry : null);
+            }
             catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
             {
                 throw new InvalidDataException($"{label}: invalid physical reference path.", ex);
             }
+
             var target = location;
             for (int i = 0; i < _mappings.Length; i++)
             {
@@ -312,6 +328,7 @@ public static class DefinitionReferenceRelocator
                 _used[i] = true;
                 target = _mappings[i].Destination;
             }
+
             if (target.Matches(location) && _source.Matches(_destination))
                 return;
             var relative = Path.GetRelativePath(Path.GetDirectoryName(_destination.Path)!, target.Path);

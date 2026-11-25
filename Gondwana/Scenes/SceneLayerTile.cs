@@ -115,6 +115,7 @@ public class SceneLayerTile : Tile
                 else
                     SceneLayer.TransformedTiles.Add(this);
             }
+
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
@@ -168,7 +169,10 @@ public class SceneLayerTile : Tile
             canvas.Concat(ref matrix);
             base.Draw(backbuffer, new RectangleF(0, 0, 1, 1));
         }
-        finally { canvas.Restore(); }
+        finally
+        {
+            canvas.Restore();
+        }
     }
 
     /// <inheritdoc/>

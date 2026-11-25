@@ -172,8 +172,15 @@ public sealed class VideoWidget : DraggableWidgetBase
     private void InitializeVideo()
     {
         try
-        { Add(Video, keepCurrentOffset: false, explicitLocalOffsetPx: Vector2.Zero); }
-        catch { Video.Dispose(); throw; }
+        {
+            Add(Video, keepCurrentOffset: false, explicitLocalOffsetPx: Vector2.Zero);
+        }
+        catch
+        {
+            Video.Dispose();
+            throw;
+        }
+
         IsDragEnabled = false;
         CanReceiveFocus = true;
         IsKeyboardInputEnabled = true;

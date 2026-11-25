@@ -67,6 +67,7 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
             backbuffer.Canvas.DrawCircle(x + size / 2, y + size / 2, size / 4, paint);
             return;
         }
+
         using var path = new SKPath();
         if (_shape == Shape.Check)
         {
@@ -80,6 +81,7 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
             path.LineTo(x + size * .65f, y + size * .5f);
             path.LineTo(x + size * .35f, y + size * .8f);
         }
+
         backbuffer.Canvas.DrawPath(path, paint);
     }
 }

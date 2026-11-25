@@ -90,8 +90,10 @@ public sealed class GodotSceneImportTests : IDisposable
                     Assert.Equal(new double?[] { 0.25, 0.75 }, animation.Frames.Select(f => f.DurationSeconds));
                     Assert.Contains(scene.AnimationSources, s => s.AnimationKey == animation.Key);
                 }
+
                 cycles.AddRange(AnimationDefinitionSerializer.LoadAllCycles(gani));
             }
+
             using var runtime = SceneDefinitionSerializer.LoadScene(scenePath);
             var layer = runtime.SceneLayers[1];
             Assert.Equal(ground.OriginPx, layer.OriginPx);
@@ -110,6 +112,7 @@ public sealed class GodotSceneImportTests : IDisposable
             foreach (var sheet in runtimeSheets)
                 sheet.Dispose();
         }
+
         var before = result.WrittenFiles.ToDictionary(f => f, File.ReadAllBytes);
         Assert.Empty(importer.Import(request).WrittenFiles);
         var overwritten = importer.Import(request with { Overwrite = true });
@@ -355,6 +358,7 @@ public sealed class GodotSceneImportTests : IDisposable
             var animation = AnimationDefinitionSerializer.Load(Path.Combine(Request().OutputDirectory, source.GaniPath!), source.AnimationKey);
             Assert.Equal("legacy.gts", Assert.Single(animation.TilesheetSources).GtsPath);
         }
+
         Assert.All(scene.Layers.SelectMany(l => l.Tiles), t => Assert.NotNull(t.AnimationKey));
     }
 }

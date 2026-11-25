@@ -69,6 +69,7 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     return cached;
                 root = FindResource(sections, "sub_resource", id, "TileSet");
             }
+
             var cell = Vector(Get(root.Properties, "tile_size", "Vector2i(16, 16)"));
             if (cell.X <= 0 || cell.Y <= 0)
                 throw new InvalidDataException("TileSet cell dimensions must be positive.");
@@ -86,6 +87,7 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 foreach (var tile in atlas.Tiles.Values.Where(t => t.AnimationKey is not null))
                     scene.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(tile.AnimationKey!, tile.AnimationFile!));
             }
+
             return set;
         }
 
@@ -115,6 +117,7 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     throw new InvalidDataException($"Tile node '{nodePath}' has an unsupported ancestor; use a Node or Node2D root followed by Node2D parents.");
                 continue;
             }
+
             var p = node.Properties;
             if (isTile && (p.ContainsKey("tile_data") || (type == "TileMap" && p.ContainsKey("tile_map_data")) ||
                 (type == "TileMapLayer" && p.Keys.Any(k => k.StartsWith("layer_", StringComparison.Ordinal)))))
@@ -197,6 +200,7 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                         if (atlas.Resource.Properties.ContainsKey(prefix + field))
                             throw new InvalidDataException($"{context}: TileData '{field}' is unsupported for scene placement; bake it into the artwork or remove it.");
                     }
+
                     layer.Tiles.Add(new()
                     {
                         X = cell.Position.X - minX,
@@ -207,9 +211,11 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                         StartAnimation = tile.AnimationKey is not null
                     });
                 }
+
                 scene.Layers.Add(layer);
             }
         }
+
         if (scene.Layers.Count == 0)
             throw new InvalidDataException("No supported TileMap or TileMapLayer nodes found.");
         // Stable source order breaks equal-z ties; assign unique native orders.
@@ -272,8 +278,13 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
     private static Gondwana.Drawing.TileTransform CellTransform(int alternative, string context)
     {
         try
-        { return GodotSceneTileData.Transform(alternative); }
-        catch (InvalidDataException ex) { throw new InvalidDataException($"{context}: {ex.Message}", ex); }
+        {
+            return GodotSceneTileData.Transform(alternative);
+        }
+        catch (InvalidDataException ex)
+        {
+            throw new InvalidDataException($"{context}: {ex.Message}", ex);
+        }
     }
     private static bool Boolean(string value) => value switch
     {
@@ -293,6 +304,7 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 throw new InvalidDataException($"Fractional/nonfinite translation or scale '{value}' cannot be represented.");
             return checked((int)number);
         }
+
         return new(Pixel(match.Groups[1].Value), Pixel(match.Groups[2].Value));
     }
 }

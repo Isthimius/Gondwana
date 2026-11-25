@@ -24,8 +24,15 @@ public sealed partial class AnimationEditorControl : UserControl
         var resource = selection.Resource;
         var source = TilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
         try
-        { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
-        catch { source.Dispose(); throw; }
+        {
+            Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!);
+        }
+        catch
+        {
+            source.Dispose();
+            throw;
+        }
+
         _sources.Add(source);
         RefreshAfterSourceChange();
     }
@@ -290,7 +297,10 @@ public sealed partial class AnimationEditorControl : UserControl
                 RefreshAfterSourceChange();
 
         }
-        finally { transaction.Commit(); }
+        finally
+        {
+            transaction.Commit();
+        }
     }
 
     private bool AddTilesheetSourceCore(
@@ -410,7 +420,11 @@ public sealed partial class AnimationEditorControl : UserControl
                         _sources.Add(TilesheetSource.LoadPacked(Document.ResolveReferencePath(sourceReference.AssetsFilePath!),
                             sourceReference.AssetEntryName!, sourceReference.Tilesheet, _packages));
                     }
-                    catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
+                    catch (Exception ex)
+                    {
+                        _sourceDiagnostics.Add(ex.Message);
+                    }
+
                     break;
             }
         }
@@ -1329,6 +1343,7 @@ public sealed partial class AnimationEditorControl : UserControl
                     _historyDefinition = Definition;
                     _historySources = sources;
                 }
+
                 var frames = Definition.Frames.ToArray();
                 if (!_historyFrames.SequenceEqual(frames))
                     _preview.ClearSourceFrame();
@@ -1341,6 +1356,7 @@ public sealed partial class AnimationEditorControl : UserControl
                     _preview.Pause();
                     _playButton.Text = "Play";
                 }
+
                 UpdateValidation();
             }
         });

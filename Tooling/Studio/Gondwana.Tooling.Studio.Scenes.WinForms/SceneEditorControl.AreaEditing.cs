@@ -38,6 +38,7 @@ public sealed partial class SceneEditorControl
             else
                 Document.EditTile(layer, cell.X, cell.Y, description, assignment!);
         }
+
         transaction.Commit();
     }
 
@@ -98,6 +99,7 @@ public sealed partial class SceneEditorControl
             replacement.EnableAnimator = original.EnableAnimator;
             replacement.StartAnimation = original.StartAnimation;
         }
+
         assignment(replacement);
         if (identity == PaintIdentity.Of(replacement))
             return;
@@ -115,6 +117,7 @@ public sealed partial class SceneEditorControl
             foreach (var neighbor in FillNeighbors(layer.CoordinateSystemType, cell))
                 pending.Enqueue(neighbor);
         }
+
         ApplyCells(layer, region, region.Count, false, assignment, "Fill region");
     }
 
@@ -123,7 +126,11 @@ public sealed partial class SceneEditorControl
         if (_preview.HasGesture)
             return false;
         if (key == Keys.Escape)
-        { ClearMultiSelection(); return true; }
+        {
+            ClearMultiSelection();
+            return true;
+        }
+
         bool extend = (key & Keys.Modifiers) == Keys.Shift;
         if ((key & Keys.Modifiers) != Keys.None && !extend)
             return false;
@@ -192,8 +199,10 @@ public sealed partial class SceneEditorControl
                 foreach (var (name, value) in changes)
                     BulkTilePropertiesDialog.EditableProperties.Single(p => p.Name == name).SetValue(adapter, value);
             }
+
             transaction.Commit();
         }
+
         RefreshTileProperties();
         RefreshPreview();
         UpdateValidation();

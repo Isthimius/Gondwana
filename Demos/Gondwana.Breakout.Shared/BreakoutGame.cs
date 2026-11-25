@@ -80,6 +80,7 @@ internal sealed class BreakoutGame
             Ball = new Vector2(PaddleX, PaddleY - PaddleHeight / 2f - BallRadius - 5f);
             return;
         }
+
         if (Phase != GamePhase.Playing)
             return;
 
@@ -151,12 +152,14 @@ internal sealed class BreakoutGame
                 _velocity.X = previous.X <= brick.X + brick.Width / 2f
                     ? -MathF.Abs(_velocity.X) : MathF.Abs(_velocity.X);
             }
+
             _velocity *= Math.Min(1.012f, MaximumBallSpeed / _velocity.Length());
             if (_bricks.TrueForAll(b => !b.Alive))
             {
                 Phase = GamePhase.Victory;
                 _velocity = Vector2.Zero;
             }
+
             break; // One brick per simulation substep.
         }
 

@@ -73,6 +73,7 @@ public sealed partial class AnimationDocument : IDisposable
                     () => source.GtsPath, value => source.GtsPath = value,
                     () => source.AssetsFilePath, value => source.AssetsFilePath = value);
             }
+
             if (FilePath is not null && !string.Equals(member.Source.GaniFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
                 member.Source = AnimationDefinitionSource.LooseDefinitionFile(FilePath);
         }
@@ -95,8 +96,16 @@ public sealed partial class AnimationDocument : IDisposable
         if (index < 0 || index >= frames.Count || target < 0 || target >= frames.Count || index == target)
             return false;
         var frame = frames[index];
-        History.Execute("Move animation frame", () => { frames.RemoveAt(index); frames.Insert(target, frame); },
-            () => { frames.RemoveAt(target); frames.Insert(index, frame); });
+        History.Execute("Move animation frame", () =>
+        {
+            frames.RemoveAt(index);
+            frames.Insert(target, frame);
+        },
+            () =>
+            {
+                frames.RemoveAt(target);
+                frames.Insert(index, frame);
+            });
         return true;
     }
 }

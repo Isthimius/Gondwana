@@ -34,7 +34,10 @@ public sealed partial class SemanticAssetPackTests
             var copy = AssetsFile.LoadOrCreate(Output);
             Assert.Equal("terrain", TilesheetRegistry.Instance.LoadFromDefinitionAsset(copy, "tiles.gts").Name);
         }
-        finally { File.Delete(relative); }
+        finally
+        {
+            File.Delete(relative);
+        }
     }
 
     /// <summary>Completion staging leaves the prepared recovery record intact until atomic publication.</summary>
@@ -136,6 +139,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.AnimationDefinition, "walk.gani", bytes);
             archive.Save();
         }
+
         var target = Path.Combine(Source, "renamed.gts");
         var plan = AssetRelocationPlan.Create(Output, [new(new(AssetTypes.TilesheetDefinition, source), new(AssetTypes.TilesheetDefinition, target))]);
         plan.Commit();
@@ -182,6 +186,7 @@ public sealed partial class SemanticAssetPackTests
             app.Configure(config => config.AddCommand<AssetsMoveCommand>("move"));
             return app.Run(args);
         }
+
         Assert.Equal(0, Move("move", source, target, "--scope", Source));
         Assert.True(File.Exists(source));
         Assert.False(File.Exists(target));
@@ -208,6 +213,7 @@ public sealed partial class SemanticAssetPackTests
                 using var image = archive.Get(AssetTypes.Image, "art0.png");
                 Assert.NotNull(image);
             }
+
             if (phase == "retire")
                 throw new IOException("Injected archive retirement failure");
         }, default));
@@ -247,6 +253,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
             archive.Save();
         }
+
         var outside = Path.Combine(Source, "outside.gts");
         TilesheetDefinitionSerializer.Save(outside, Sheet("outside", "art.png"));
         var original = File.ReadAllBytes(outside);
@@ -320,6 +327,7 @@ public sealed partial class SemanticAssetPackTests
             archive.Add(AssetTypes.AudioDefinition, "sounds.gsnd", json);
             archive.Save();
         }
+
         var target = Path.Combine(_root, "renamed.gaf");
         AssetRelocationPlan.MoveArchive(Output, target, Output).Commit();
         using var moved = AssetsFile.LoadOrCreate(target, null, false, register: false);
@@ -350,6 +358,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(0, Run("pack", Source, Output));
             Directory.Delete(Source, true);
         }
+
         var finalDirectory = Path.Combine(_root, "moved");
         var finalArchive = Path.Combine(finalDirectory, "final.gaf");
         var mappings = originalFiles.Select(path => new ReferenceRelocation(
@@ -364,6 +373,7 @@ public sealed partial class SemanticAssetPackTests
             using var old = AssetsFile.LoadOrCreate(Output, null, false, register: false);
             Assert.Empty(old.GetAllEntries());
         }
+
         var backend = new Backend();
         AudioResourceManager.Instance.ConfigureBackend(backend);
         if (packedDestination)
@@ -385,6 +395,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(count, SpriteDefinitionSerializer.LoadAllSprites(Path.Combine(finalDirectory, "actors.gspr")).Count);
             Assert.Equal(count, AudioDefinitionSerializer.LoadAllIntoManager(Path.Combine(finalDirectory, "sounds.gsnd")).Count);
         }
+
         Assert.Equal(count, backend.Loaded.Count);
     }
 
@@ -465,6 +476,7 @@ public sealed partial class SemanticAssetPackTests
             Assert.True(File.Exists(source));
             Assert.False(File.Exists(target));
         }
+
         File.AppendAllText(Path.Combine(Source, "cycles.gani"), " ");
         Assert.Throws<IOException>(() => plan.Commit());
         Assert.True(File.Exists(source));

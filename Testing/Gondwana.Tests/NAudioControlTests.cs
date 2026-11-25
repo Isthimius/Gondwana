@@ -123,7 +123,11 @@ public sealed class NAudioControlTests
         /// <summary>
         /// Starts playback.
         /// </summary>
-        public void Play() { PlaybackState = PlaybackState.Playing; PlayCalls++; }
+        public void Play()
+        {
+            PlaybackState = PlaybackState.Playing;
+            PlayCalls++;
+        }
         /// <summary>
         /// Pauses playback at the current position.
         /// </summary>

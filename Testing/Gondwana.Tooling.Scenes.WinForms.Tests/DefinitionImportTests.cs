@@ -65,7 +65,10 @@ public sealed class DefinitionImportTests
             Assert.Equal(Path.Combine(sourceDirectory, "packs", "other.gaf"), Path.GetFullPath(member.AnimationSources[0].AssetsFilePath!, reopened.BaseDirectory));
             Assert.Equal(originalBytes, File.ReadAllBytes(sourcePath));
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
 
     /// <summary>Reserves incoming names before generating suffixes for conflicts.</summary>
@@ -84,7 +87,10 @@ public sealed class DefinitionImportTests
             Assert.Equal(2, document.ImportDefinitions(path));
             Assert.Equal(new[] { "shared", "shared-3", "shared-2" }, document.Definitions.Select(member => member.ID));
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
 
     /// <summary>Cancel, no selection, and malformed inputs never mutate the destination.</summary>
@@ -108,6 +114,9 @@ public sealed class DefinitionImportTests
             Assert.Same(original, document.SelectedDefinition);
             Assert.Single(document.Definitions);
         }
-        finally { Directory.Delete(root, true); }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
 }

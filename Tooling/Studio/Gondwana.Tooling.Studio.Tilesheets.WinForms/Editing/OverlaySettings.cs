@@ -62,6 +62,7 @@ internal sealed class OverlaySettings
         {
             settings.Warning = "Could not load overlay settings; using defaults. " + ex.Message;
         }
+
         return settings;
     }
 
@@ -107,6 +108,7 @@ internal sealed class OverlaySettings
             if (File.Exists(temporary))
                 File.Delete(temporary);
         }
+
         _colors[kind] = Color.FromArgb(color.R, color.G, color.B);
         Warning = null;
         Changed?.Invoke(this, EventArgs.Empty);

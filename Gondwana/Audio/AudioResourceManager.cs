@@ -428,7 +428,9 @@ public sealed class AudioResourceManager : IDisposable
             _retainedDefinitionResources = previous.Values.ToHashSet();
             T result;
             try
-            { result = load(); }
+            {
+                result = load();
+            }
             catch
             {
                 foreach (var resource in _soundResources.Values.ToArray())
@@ -444,10 +446,15 @@ public sealed class AudioResourceManager : IDisposable
                     pair.Key.PlaybackSpeed = pair.Value.PlaybackSpeed;
                     pair.Key.IsLooping = pair.Value.IsLooping;
                 }
+
                 DefinitionProvenance = provenance;
                 throw;
             }
-            finally { _retainedDefinitionResources = null; }
+            finally
+            {
+                _retainedDefinitionResources = null;
+            }
+
             foreach (var pair in previous)
                 if (!_soundResources.TryGetValue(pair.Key, out var current) || !ReferenceEquals(current, pair.Value))
                     pair.Value.Dispose();

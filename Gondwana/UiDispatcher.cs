@@ -110,7 +110,11 @@ public sealed class UiDispatcher : IUiDispatcher
     public void Send(Action action)
     {
         if (IsOnUIThread)
-        { action(); return; }
+        {
+            action();
+            return;
+        }
+
         _uiContext.Send(_ => action(), null);
     }
 }

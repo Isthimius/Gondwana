@@ -40,10 +40,12 @@ internal sealed partial class SemanticPackPlan
                                 _externalReference?.Invoke(identity, resource.SourceUri?.ToString() ?? "", $"Resources[{resourceIndex}].SourceUri");
                                 continue;
                             }
+
                             var resourceLabel = label + $" :: Resources[{resourceIndex}] audio '{resource.Key}'";
                             var source = Physical(owner, AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName, (int)resource.SourceKind, resourceLabel);
                             Map(owner, source, Resolve(source, null, resourceLabel).Destination);
                         }
+
                         break;
                     case AnimationDefinition animation:
                         Sources(owner, label, AssetTypes.TilesheetDefinition, animation.Frames.Select(frame => frame.Tilesheet),
@@ -95,12 +97,15 @@ internal sealed partial class SemanticPackPlan
                                 if (!sceneDefinition.Layers.Any(layer => layer.ID == sprite.SceneLayerId))
                                     throw new InvalidDataException($"{label}: sprite '{sprite.Nickname ?? sprite.Id.ToString()}' references missing layer '{sprite.SceneLayerId}' in scene '{sprite.SceneId}'.");
                             }
+
                             break;
                         }
                 }
             }
             catch (Exception ex) when (_discoveryProblem is not null && ex is not OperationCanceledException)
-            { _discoveryProblem(new InvalidDataException($"{label}: {ex.Message}. Remaining references in this member may not have been inspected.", ex)); }
+            {
+                _discoveryProblem(new InvalidDataException($"{label}: {ex.Message}. Remaining references in this member may not have been inspected.", ex));
+            }
         }
     }
 
@@ -121,6 +126,7 @@ internal sealed partial class SemanticPackPlan
             resolved.Add(key, target);
             Map(owner, location, target.Destination);
         }
+
         foreach (var key in required.Where(key => !string.IsNullOrWhiteSpace(key)).Select(key => key!).Distinct(comparer))
         {
             if (resolved.ContainsKey(key))
@@ -131,6 +137,7 @@ internal sealed partial class SemanticPackPlan
             resolved.Add(key, target);
             Map(owner, target.Location, target.Destination);
         }
+
         return resolved;
     }
 }

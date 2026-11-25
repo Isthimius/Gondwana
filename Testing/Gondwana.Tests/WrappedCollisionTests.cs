@@ -41,6 +41,7 @@ public sealed class WrappedCollisionTests
             Assert.False(bounds.IsEmpty);
             events++;
         }
+
         layer.CollisionResolver.TriggerOverlap += OnOverlap;
         layer.CollisionResolver.SolidOverlap += OnOverlap;
         var before = mover.CollisionArea;

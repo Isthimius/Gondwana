@@ -48,6 +48,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
             using var writer = new StreamWriter(zip.CreateEntry(name).Open());
             writer.Write("content");
         }
+
         return file;
     }
 
@@ -230,6 +231,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
             bundle.Add(AssetTypes.TilesheetDefinition, gts, "packed.gts");
             bundle.Save();
         }
+
         Assert.Equal(0, Run("validate", file));
         Assert.Equal(1, Run("validate", Bundle("TilesheetDefinition_bad.gts")));
     }
@@ -260,6 +262,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
                 bundle.Add(AssetTypes.TilesheetDefinition, path, "untrusted.gts");
                 bundle.Save();
             }
+
             Assert.Contains(BundleHelper.ValidateContents(packed, null), e => e.Contains("Unsafe asset path"));
         }
     }

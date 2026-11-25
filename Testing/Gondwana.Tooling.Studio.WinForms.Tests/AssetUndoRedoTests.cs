@@ -100,6 +100,7 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.Misc, "seed", seed);
             archive.Save();
         }
+
         using var studio = Host(root);
         studio.AssetPassword = _ => "secret";
         var document = studio.OpenDocument(path);
@@ -224,7 +225,11 @@ public sealed partial class CompositionTests
         editor.ApplyImport(HistoryImport(editor, root));
         using var opened = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
-        studio.Browser.ArchiveOpened = _ => { opened.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(15))); };
+        studio.Browser.ArchiveOpened = _ =>
+        {
+            opened.Set();
+            Assert.True(release.Wait(TimeSpan.FromSeconds(15)));
+        };
         studio.Browser.RefreshDirectory();
         Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
         Task<bool>? save = null;
@@ -242,7 +247,13 @@ public sealed partial class CompositionTests
             Assert.Contains(editor.AssetsFile.GetAllEntries(), e => e.AssetName == "nested/new.bin");
             Assert.True(editor.IsDirty);
         }
-        finally { release.Set(); if (save is not null) Assert.True(AwaitUi(save)); }
+        finally
+        {
+            release.Set();
+            if (save is not null)
+                Assert.True(AwaitUi(save));
+        }
+
         Assert.False(editor.IsDirty);
         editor.History.Undo();
         Assert.True(editor.IsDirty);

@@ -57,6 +57,7 @@ public sealed partial class CompositionTests
                 entry.SceneLayerId = "actors";
             }
         }
+
         Assert.True(AwaitUi(studio.SaveDocument(document, destination: firstPath)));
         Assert.False(model.Dirty());
         Assert.Equal("first." + format, document.Text);
@@ -81,6 +82,7 @@ public sealed partial class CompositionTests
                 editor.MarkChanged();
                 break;
         }
+
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
         Assert.Same(document, studio.OpenDocument(Path.Combine(directory, ".", "FIRST." + format)));
@@ -168,7 +170,11 @@ public sealed partial class CompositionTests
         Assert.True(documents[0].IsDisposed);
         Assert.True(File.Exists(Path.Combine(directory, "saved.gts")));
         prompts = 0;
-        studio.AskSave = _ => { prompts++; return DialogResult.No; };
+        studio.AskSave = _ =>
+        {
+            prompts++;
+            return DialogResult.No;
+        };
         studio.Close();
         Assert.Equal(5, prompts);
         Assert.All(documents, doc => Assert.True(doc.IsDisposed));
@@ -189,6 +195,7 @@ public sealed partial class CompositionTests
             assets.Add(AssetTypes.Misc, "example", bytes);
             assets.Save();
         }
+
         using var studio = Host(directory);
         studio.AssetPassword = _ => "secret";
         var document = studio.OpenDocument(source);
@@ -208,6 +215,7 @@ public sealed partial class CompositionTests
             Assert.NotNull(stream);
             Assert.Equal(1, stream.ReadByte());
         }
+
         Assert.ThrowsAny<Exception>(() => AssetsFile.LoadOrCreate(destination));
         Assert.Equal(registry, AssetsFile.AllAssetsFiles);
         document.Close();
@@ -263,6 +271,7 @@ public sealed partial class CompositionTests
             var items = view.DropDownItems.OfType<ToolStripMenuItem>().ToArray();
             Assert.Equal(document.Document.PaneNames, items.Where(item => document.Document.PaneNames.Contains(item.Text)).Select(item => item.Text));
         }
+
         var output = studio.Workspace.Contents.Cast<DockContent>().Single(content => content.Text == "Output");
         output.Hide();
         studio.RebuildViewMenu();
@@ -367,6 +376,7 @@ public sealed partial class CompositionTests
                 Assert.Equal(!file.Text.EndsWith(".gaf", StringComparison.OrdinalIgnoreCase), browser.FileMenu.Items[1].Available);
             }
         }
+
         string? externalPath = null;
         browser.OpenExternal = path => externalPath = path;
         var misc = root.Nodes[6].Nodes[0];
@@ -424,8 +434,14 @@ public sealed partial class CompositionTests
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
                 action(directory);
             }
-            catch (Exception ex) { error = ex; }
-            finally { Directory.Delete(directory, recursive: true); }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
         })
         { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);

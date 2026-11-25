@@ -17,7 +17,11 @@ internal sealed class GameWindow : Form
         MaximizeBox = false;
         KeyPreview = true;
         Controls.Add(_surface);
-        KeyDown += (_, args) => { if (args.KeyCode == Keys.Escape) Close(); };
+        KeyDown += (_, args) =>
+        {
+            if (args.KeyCode == Keys.Escape)
+                Close();
+        };
     }
 
     /// <inheritdoc/>

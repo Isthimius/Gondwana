@@ -15,7 +15,12 @@ public sealed class EditorSourceMonitorController : IDisposable
     public bool Enabled
     {
         get => _enabled;
-        set { _enabled = value; foreach (var document in _documents.ToArray()) document.Reconcile(); }
+        set
+        {
+            _enabled = value;
+            foreach (var document in _documents.ToArray())
+                document.Reconcile();
+        }
     }
     public int RegistrationCount => _documents.Sum(d => d._sources.Count);
     public Func<bool> ConfirmDiscard { get; set; } = () => ThemedMessageBox.Show(
@@ -38,6 +43,7 @@ public sealed class EditorSourceMonitorController : IDisposable
             focusPath.Add(focused.Controls.IndexOf(child));
             focused = child;
         }
+
         DockContent? replacement = null;
         try
         {
@@ -58,11 +64,16 @@ public sealed class EditorSourceMonitorController : IDisposable
                         break;
                     target = target.Controls[index];
                 }
+
                 if (target.CanFocus)
                     target.Focus();
             }
         }
-        catch { replacement?.Dispose(); throw; }
+        catch
+        {
+            replacement?.Dispose();
+            throw;
+        }
     }
 
     /// <summary>Format callbacks retain ownership of their existing models, serializers, previews, and save workflows.</summary>
@@ -155,7 +166,12 @@ public sealed class EditorSourceMonitorController : IDisposable
             if (_queued || _disposed)
                 return;
             _queued = true;
-            _owner._ui.Post(_ => { _queued = false; if (!_disposed) Reconcile(); }, null);
+            _owner._ui.Post(_ =>
+            {
+                _queued = false;
+                if (!_disposed)
+                    Reconcile();
+            }, null);
         }
 
         public void Saved()
@@ -205,7 +221,10 @@ public sealed class EditorSourceMonitorController : IDisposable
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
                 NullReferenceException or Newtonsoft.Json.JsonException)
-            { found.UnionWith(_dependencies.Keys); }
+            {
+                found.UnionWith(_dependencies.Keys);
+            }
+
             foreach (var obsolete in _dependencies.Keys.Except(found, DocumentSourceDependencies.Comparer).ToArray())
                 _dependencies.Remove(obsolete);
             foreach (var source in found)
@@ -245,7 +264,10 @@ public sealed class EditorSourceMonitorController : IDisposable
                         }, null), Password(location.Path)));
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
-                { Problem = "Automatic monitoring unavailable: " + ex.Message; UpdateCaption(); }
+                {
+                    Problem = "Automatic monitoring unavailable: " + ex.Message;
+                    UpdateCaption();
+                }
             }
         }
 
@@ -305,8 +327,13 @@ public sealed class EditorSourceMonitorController : IDisposable
             if (_disposed || !_adapter.Commit() || (_adapter.Dirty() && !_owner.ConfirmDiscard()))
                 return;
             try
-            { _adapter.Reload(); }
-            catch (Exception ex) { _owner.ReportError(ex); }
+            {
+                _adapter.Reload();
+            }
+            catch (Exception ex)
+            {
+                _owner.ReportError(ex);
+            }
         }
 
         public void RefreshPreviews()
@@ -328,9 +355,15 @@ public sealed class EditorSourceMonitorController : IDisposable
                         _dependencies[pair.Key] = pair.Value;
                     Reconcile();
                 }
+
                 UpdateCaption();
             }
-            catch (Exception ex) { PreviewStale = true; UpdateCaption(); _owner.ReportError(ex); }
+            catch (Exception ex)
+            {
+                PreviewStale = true;
+                UpdateCaption();
+                _owner.ReportError(ex);
+            }
         }
 
         private void CaptionChanged(object? sender, EventArgs e) => UpdateCaption();
@@ -346,7 +379,10 @@ public sealed class EditorSourceMonitorController : IDisposable
                 _tab.TabText = _tab.Text;
                 _tab.ToolTipText = (_adapter.Location()?.ToString() ?? "Unsaved document") + (Problem is null ? "" : "\n" + Problem);
             }
-            finally { _caption = false; }
+            finally
+            {
+                _caption = false;
+            }
         }
         private void Closed(object? sender, EventArgs e) => Dispose();
         public void Dispose()

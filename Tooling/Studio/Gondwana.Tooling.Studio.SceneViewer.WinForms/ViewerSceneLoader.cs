@@ -75,6 +75,7 @@ internal sealed class ViewerSceneLoader
                     throw new InvalidDataException($"GSPR source '{document.Source}', sprite '{candidate.Sprite.Nickname}' / {candidate.Sprite.Id}: {ex.Message}", ex);
                 }
             }
+
             foreach (var candidate in selected)
                 if (!string.IsNullOrWhiteSpace(candidate.Sprite.AnimationKey))
                     LoadSpriteAnimation(candidate.Document, candidate.Sprite.AnimationKey);
@@ -90,6 +91,7 @@ internal sealed class ViewerSceneLoader
                 throw new InvalidDataException($"GSPR materialization failed for sources:\n" +
                     string.Join("\n", selected.Select(candidate => candidate.Document.Source).Distinct()) + $"\n{ex.Message}", ex);
             }
+
             return scene;
         }
         catch (Exception ex)
@@ -116,6 +118,7 @@ internal sealed class ViewerSceneLoader
                 selected = new(Resolve(packed ? authored.AssetsFilePath : authored.GaniPath,
                     Path.GetDirectoryName(document.Source.Path)!), packed ? authored.AssetEntryName : null);
             }
+
             if (selected is null && _animations.TryGetValue(current, out var loaded))
                 selected = loaded.Source;
             if (selected is null)
@@ -172,6 +175,7 @@ internal sealed class ViewerSceneLoader
             if (!string.IsNullOrWhiteSpace(definition.NextCycleKey) && !_animations.ContainsKey(definition.NextCycleKey))
                 throw new InvalidDataException($"Animation '{definition.Key}' references '{definition.NextCycleKey}', which has no explicit GANI source in the scene.");
         }
+
         foreach (var cycle in AnimationDefinitionSerializer.ToAllCycles(
             new AnimationDefinitionDocument { Definitions = definitions }))
             _cycles.Add(cycle.CycleKey, cycle);
@@ -195,6 +199,7 @@ internal sealed class ViewerSceneLoader
                 entry = selected.Entry;
                 description = selected.ToString();
             }
+
             if (selected is null && string.IsNullOrWhiteSpace(packed ? archivePath : loosePath))
                 throw new InvalidDataException($"No local GTS or explicit authored source exists for tilesheet '{name}'.");
             var location = selected?.Path ?? Resolve(packed ? archivePath : loosePath, directory);
@@ -206,6 +211,7 @@ internal sealed class ViewerSceneLoader
                         $"{new ViewerContentCatalog.Source(previous.Path, previous.Entry)}\n{new ViewerContentCatalog.Source(location, identity.Item2)}");
                 return;
             }
+
             TilesheetDefinition definition;
             if (packed)
             {
@@ -217,6 +223,7 @@ internal sealed class ViewerSceneLoader
             {
                 definition = TilesheetDefinitionSerializer.Load(location, name);
             }
+
             Validate(TilesheetDefinitionValidator.Validate(definition), "GTS");
             if (!string.Equals(definition.Name, name, StringComparison.Ordinal))
                 throw new InvalidDataException($"Expected tilesheet '{name}', found '{definition.Name}'.");

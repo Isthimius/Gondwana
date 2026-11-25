@@ -31,7 +31,11 @@ public sealed partial class EditorInteractionTests
             Assert.True(PostMessage(GetFocus(), 0x100, (nint)(keys & Keys.KeyCode), 0));
             Application.DoEvents();
         }
-        finally { Assert.True(SetKeyboardState(saved)); }
+        finally
+        {
+            Assert.True(SetKeyboardState(saved));
+        }
+
         Application.DoEvents();
     }
 
@@ -66,6 +70,7 @@ public sealed partial class EditorInteractionTests
                 Field<ImageViewport>(host.Editor, "_viewport").Focus();
                 break;
         }
+
         RouteKey(Keys.Control | Keys.Z);
         Assert.Equal("Untitled", document.Definition.Name);
         RouteKey(Keys.Control | Keys.Y);

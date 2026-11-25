@@ -105,6 +105,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                     throw new InvalidDataException("Invalid Aseprite chunk boundary.");
                 payloads.Add((kind, ReadBytes(reader, checked((int)chunkSize - 6))));
             }
+
             bool modernPalette = payloads.Any(p => p.Kind == 0x2019);
             foreach (var (kind, bytes) in payloads)
             {
@@ -128,7 +129,10 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                             report(ExternalImportSeverity.Warning, "aseprite.layer.reference",
                                 $"Reference layer '{layerName}' is omitted from the rendered atlas.");
                         if (type == 1 && (flags & 2) == 0)
-                        { blend = 0; opacity = 255; }
+                        {
+                            blend = 0;
+                            opacity = 255;
+                        }
                         else if (type == 0 && (flags & 1) == 0)
                             opacity = 255;
                         if (blend != 0 && (layerFlags & 64) == 0)
@@ -183,6 +187,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                             if ((entryFlags & 1) != 0)
                                 ReadString(r);
                         }
+
                         paletteDefined = true;
                         break;
                     case 0x0004:
@@ -204,6 +209,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                                 palette[index++] = kind == 4 ? new(red, green, blue) : new((byte)(red * 255 / 63), (byte)(green * 255 / 63), (byte)(blue * 255 / 63));
                             }
                         }
+
                         paletteDefined = true;
                         break;
                     case 0x2018:
@@ -218,6 +224,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                                 throw new InvalidDataException("Invalid animation tag.");
                             tags.Add(new(tagName, from, to, direction, repeat));
                         }
+
                         break;
                     case 0x2006:
                         if ((r.ReadUInt32() & 1) != 0)
@@ -237,6 +244,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                         break;
                 }
             }
+
             if (depth == 8 && !paletteDefined)
                 throw new InvalidDataException("Indexed sprite has no palette; default application palettes are not guessed.");
             if (duration == 0)
@@ -246,6 +254,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
             frames.Add(new(duration, cels, (SKColor[])palette.Clone()));
             stream.Position = start + size;
         }
+
         if (stream.Position != stream.Length)
             throw new InvalidDataException("Unexpected trailing Aseprite frame data.");
         return new(width, height, depth, flags, transparent, layers, frames, tags);

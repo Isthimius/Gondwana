@@ -16,6 +16,7 @@ public sealed class PropertyHelpTests
                 Assert.False(string.IsNullOrWhiteSpace(property.Description),
                     $"SpriteProperties.{property.Name} must explain its effect.");
         }
+
         Assert.Contains("pixels", TypeDescriptor.GetProperties(model)[nameof(SpriteProperties.NudgeX)]!.Description);
     }
 

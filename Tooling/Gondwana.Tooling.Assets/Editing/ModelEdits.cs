@@ -11,16 +11,32 @@ public static class ModelEdits
         var before = properties.Select(p => p.GetValue(target)).ToArray();
         object?[] after;
         try
-        { history.Capture(change); after = properties.Select(p => p.GetValue(target)).ToArray(); }
-        finally { for (int i = 0; i < properties.Length; i++) properties[i].SetValue(target, before[i]); }
+        {
+            history.Capture(change);
+            after = properties.Select(p => p.GetValue(target)).ToArray();
+        }
+        finally
+        {
+            for (int i = 0; i < properties.Length; i++)
+                properties[i].SetValue(target, before[i]);
+        }
+
         var changed = Enumerable.Range(0, properties.Length).Where(i => !Equals(before[i], after[i])).ToArray();
         if (changed.Length == 0)
             return false;
         // Retain only modified properties. In particular, replay must not restore old save provenance.
         var edits = changed.Select(i => (Property: properties[i], Before: before[i], After: after[i])).ToArray();
         history.Execute(description,
-            () => { foreach (var edit in edits) edit.Property.SetValue(target, edit.After); },
-            () => { foreach (var edit in edits) edit.Property.SetValue(target, edit.Before); });
+            () =>
+            {
+                foreach (var edit in edits)
+                    edit.Property.SetValue(target, edit.After);
+            },
+            () =>
+            {
+                foreach (var edit in edits)
+                    edit.Property.SetValue(target, edit.Before);
+            });
         return true;
     }
 
@@ -29,8 +45,20 @@ public static class ModelEdits
     {
         bool inserted = false;
         history.Execute(description,
-            () => { if (!inserted) { list.Insert(index, item); inserted = true; } },
-            () => { if (inserted) { list.RemoveAt(index); inserted = false; } });
+            () =>
+            {
+                if (!inserted)
+                {
+                    list.Insert(index, item);
+                    inserted = true; }
+            },
+            () =>
+            {
+                if (inserted)
+                {
+                    list.RemoveAt(index);
+                    inserted = false; }
+            });
     }
 
     /// <summary>Removes an instance and restores its original position on undo.</summary>
@@ -41,8 +69,20 @@ public static class ModelEdits
             return false;
         bool removed = false;
         history.Execute(description,
-            () => { if (!removed) { list.RemoveAt(index); removed = true; } },
-            () => { if (removed) { list.Insert(index, item); removed = false; } });
+            () =>
+            {
+                if (!removed)
+                {
+                    list.RemoveAt(index);
+                    removed = true; }
+            },
+            () =>
+            {
+                if (removed)
+                {
+                    list.Insert(index, item);
+                    removed = false; }
+            });
         return true;
     }
 

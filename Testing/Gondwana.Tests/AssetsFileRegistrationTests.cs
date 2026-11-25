@@ -20,6 +20,7 @@ public sealed class AssetsFileRegistrationTests
                 source.Add(AssetTypes.Misc, "payload", bytes);
                 source.Save();
             }
+
             using var stream = File.OpenRead(path);
             using var loaded = AssetsFile.Load(stream, "secret", register: false, sourcePath: path);
             Assert.True(loaded.UseEncryption);
@@ -27,7 +28,10 @@ public sealed class AssetsFileRegistrationTests
             using var explicitPolicy = AssetsFile.LoadOrCreate(path, "secret", false, register: false);
             Assert.False(explicitPolicy.UseEncryption);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
     /// <summary>
     /// Verifies detached authoring packages do not change runtime registry.
@@ -47,7 +51,10 @@ public sealed class AssetsFileRegistrationTests
             runtime.Dispose();
             Assert.DoesNotContain(runtime, AssetsFile.AllAssetsFiles);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
@@ -63,7 +70,10 @@ public sealed class AssetsFileRegistrationTests
             Assert.ThrowsAny<Exception>(() => AssetsFile.LoadOrCreate(path));
             Assert.DoesNotContain(AssetsFile.AllAssetsFiles, package => package.FilePath == path);
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
     /// <summary>
     /// Verifies stream load buffers archive and does not require source lifetime.
@@ -93,7 +103,10 @@ public sealed class AssetsFileRegistrationTests
                 Assert.Equal([1, 2, 3, 4], ((MemoryStream)entry).ToArray());
             }
         }
-        finally { File.Delete(path); }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>
