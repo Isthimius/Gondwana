@@ -21,9 +21,9 @@ internal sealed class TilesheetValidateCommand : Command<TilesheetSettings>
         var results = TilesheetInspection.AllFromFile(settings.File);
 
         foreach (var result in results)
-        foreach (var error in result.Errors)
-            AnsiConsole.MarkupLine(
-                $"[red]Fail:[/] {Markup.Escape(result.Definition?.Name ?? "document")} :: {Markup.Escape(error)}");
+            foreach (var error in result.Errors)
+                AnsiConsole.MarkupLine(
+                    $"[red]Fail:[/] {Markup.Escape(result.Definition?.Name ?? "document")} :: {Markup.Escape(error)}");
 
         bool valid = results.All(result => result.Errors.Count == 0);
 

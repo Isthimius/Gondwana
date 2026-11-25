@@ -42,7 +42,7 @@ internal sealed class BedroomDrawing : DirectDrawingBase
     private readonly SKPaint _paint = new() { IsAntialias = true };
 
     private readonly SKPaint _text = new()
-        { IsAntialias = true, Typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold) };
+    { IsAntialias = true, Typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold) };
 
     internal BedroomDrawing(
         RenderSurfaceHostBase host,

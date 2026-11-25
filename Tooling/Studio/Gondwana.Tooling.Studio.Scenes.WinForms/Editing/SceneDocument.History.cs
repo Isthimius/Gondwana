@@ -73,9 +73,9 @@ public sealed partial class SceneDocument : IDisposable
                     _origins.Remember(target, BaseDirectory, PackedLocation?.Path);
 
                 bool packed = target is SceneTilesheetSourceDefinition
-                    {
-                        Kind: SceneTilesheetSourceKind.PackedDefinitionFile
-                    } or
+                {
+                    Kind: SceneTilesheetSourceKind.PackedDefinitionFile
+                } or
                     SceneAnimationSourceDefinition { Kind: SceneAnimationSourceKind.PackedDefinitionFile };
 
                 if (property == "AssetsFilePath" && packed && value is null or "" && archive is not null &&

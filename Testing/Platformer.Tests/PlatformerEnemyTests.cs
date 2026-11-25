@@ -156,17 +156,17 @@ public sealed class PlatformerEnemyTests
             long alpha = 0;
 
             for (var y = 0; y < PlatformerArt.TileSize; y++)
-            for (var x = 0; x < PlatformerArt.TileSize; x++)
-            {
-                var pixel = bitmap.GetPixel(
-                    (PlatformerArt.EnemyFlattenedFrame + frame) * PlatformerArt.TileSize + x,
-                    y);
+                for (var x = 0; x < PlatformerArt.TileSize; x++)
+                {
+                    var pixel = bitmap.GetPixel(
+                        (PlatformerArt.EnemyFlattenedFrame + frame) * PlatformerArt.TileSize + x,
+                        y);
 
-                if (y < 24)
-                    Assert.Equal(0, pixel.Alpha);
+                    if (y < 24)
+                        Assert.Equal(0, pixel.Alpha);
 
-                alpha += pixel.Alpha;
-            }
+                    alpha += pixel.Alpha;
+                }
 
             Assert.True(alpha < previousAlpha);
             previousAlpha = alpha;

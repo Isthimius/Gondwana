@@ -412,7 +412,9 @@ public sealed partial class CompositionTests
 
             string entry = format switch
             {
-                "gts" => "definitions/world.gts", "gani" => "definitions/water.gani", _ => "definitions/island.gscn"
+                "gts" => "definitions/world.gts",
+                "gani" => "definitions/water.gani",
+                _ => "definitions/island.gscn"
             };
 
             var address = new ResourceAddress(new AssetLocation(StudioDocument.TypeFor(format), path, entry), member);

@@ -173,7 +173,7 @@ public sealed partial class MainForm
     private static Button AddPickerButtons(Form dialog)
     {
         var bar = new FlowLayoutPanel
-            { Dock = DockStyle.Bottom, Height = 40, FlowDirection = FlowDirection.RightToLeft };
+        { Dock = DockStyle.Bottom, Height = 40, FlowDirection = FlowDirection.RightToLeft };
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var accept = new Button { Text = "Assign", DialogResult = DialogResult.OK, AutoSize = true };

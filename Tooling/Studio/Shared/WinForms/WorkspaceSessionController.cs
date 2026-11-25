@@ -47,7 +47,7 @@ public sealed class WorkspaceSessionController
         file.DropDownItems.Add(new ToolStripSeparator());
 
         var restore = new ToolStripMenuItem("Restore workspace on startup")
-            { Checked = _session.RestoreOnStartup, CheckOnClick = true };
+        { Checked = _session.RestoreOnStartup, CheckOnClick = true };
 
         restore.Click += (_, _) =>
         {

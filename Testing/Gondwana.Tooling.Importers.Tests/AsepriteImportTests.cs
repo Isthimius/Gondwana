@@ -160,7 +160,9 @@ public sealed class AsepriteImportTests
 
                         byte[] pixels = depth switch
                         {
-                            32 => [255, 0, 0, 255, 0, 0, 0, 0], 16 => [128, 255, 0, 0], _ => [1, 0]
+                            32 => [255, 0, 0, 255, 0, 0, 0, 0],
+                            16 => [128, 255, 0, 0],
+                            _ => [1, 0]
                         };
 
                         if (frame == 0)

@@ -482,8 +482,11 @@ internal sealed class ProjectPackages
                            temporary,
                            new XmlWriterSettings
                            {
-                               Encoding = encoding, Indent = false, OmitXmlDeclaration = document.Declaration is null,
-                               NewLineHandling = NewLineHandling.Replace, NewLineChars = newline
+                               Encoding = encoding,
+                               Indent = false,
+                               OmitXmlDeclaration = document.Declaration is null,
+                               NewLineHandling = NewLineHandling.Replace,
+                               NewLineChars = newline
                            }))
                     document.Save(writer);
 

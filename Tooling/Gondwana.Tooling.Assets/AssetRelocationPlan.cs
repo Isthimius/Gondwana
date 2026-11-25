@@ -289,7 +289,7 @@ public sealed partial class AssetRelocationPlan
             _looseWrites.Add(location.Path, bytes);
         else
             WritableArchive(location.Path).Entries[new()
-                { AssetType = location.AssetType, AssetName = location.AssetEntryName }] = bytes;
+            { AssetType = location.AssetType, AssetName = location.AssetEntryName }] = bytes;
     }
 
     private void Retire(AssetLocation location)

@@ -260,8 +260,8 @@ public sealed class SceneTileTransformTests
         var bitmap = new SKBitmap(40, 20);
 
         for (int y = 0; y < 20; y++)
-        for (int x = 0; x < 40; x++)
-            bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+            for (int x = 0; x < 40; x++)
+                bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
 
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap($"pixels-{Guid.NewGuid():N}", bitmap);
         sheet.DefaultRegion.TileSize = new(40, 20);

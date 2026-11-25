@@ -28,7 +28,7 @@ internal sealed class UriPrompt : Form
         var ok = new Button { Text = "Add", DialogResult = DialogResult.OK, Dock = DockStyle.Right, Width = 90 };
 
         var cancel = new Button
-            { Text = "Cancel", DialogResult = DialogResult.Cancel, Dock = DockStyle.Right, Width = 90 };
+        { Text = "Cancel", DialogResult = DialogResult.Cancel, Dock = DockStyle.Right, Width = 90 };
 
         var buttons = new Panel { Dock = DockStyle.Bottom, Height = 40, Padding = new Padding(6) };
         buttons.Controls.Add(cancel);

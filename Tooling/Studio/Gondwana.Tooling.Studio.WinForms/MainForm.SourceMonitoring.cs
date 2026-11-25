@@ -242,8 +242,8 @@ public sealed partial class MainForm
             registration.Verify();
 
         foreach (var tab in _documents.ToArray())
-        foreach (var registration in tab.Document.Sources.Values.ToArray())
-            registration.Verify();
+            foreach (var registration in tab.Document.Sources.Values.ToArray())
+                registration.Verify();
     }
 
     internal enum SourceConflictChoice { KeepEdits, Reload, SaveAs }

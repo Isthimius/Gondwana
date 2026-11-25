@@ -51,11 +51,13 @@ internal static class InputDialog
         };
 
         var ok = new Button
-            { Text = "OK", DialogResult = DialogResult.OK, Location = new System.Drawing.Point(240, 100), Width = 80 };
+        { Text = "OK", DialogResult = DialogResult.OK, Location = new System.Drawing.Point(240, 100), Width = 80 };
 
         var cancel = new Button
         {
-            Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new System.Drawing.Point(330, 100),
+            Text = "Cancel",
+            DialogResult = DialogResult.Cancel,
+            Location = new System.Drawing.Point(330, 100),
             Width = 80
         };
 

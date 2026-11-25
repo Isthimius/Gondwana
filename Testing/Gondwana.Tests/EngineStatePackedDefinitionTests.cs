@@ -69,15 +69,15 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
     private static EngineStateSaveOptions Preserve(
         bool compress = false,
         EngineStateParts parts = EngineStateParts.All) => new()
-    {
-        Compress = compress,
-        Parts = parts,
-        Tilesheets = DefinitionPersistence.PreserveSource,
-        Cycles = DefinitionPersistence.PreserveSource,
-        Scenes = DefinitionPersistence.PreserveSource,
-        Audio = DefinitionPersistence.PreserveSource,
-        Sprites = DefinitionPersistence.PreserveSource
-    };
+        {
+            Compress = compress,
+            Parts = parts,
+            Tilesheets = DefinitionPersistence.PreserveSource,
+            Cycles = DefinitionPersistence.PreserveSource,
+            Scenes = DefinitionPersistence.PreserveSource,
+            Audio = DefinitionPersistence.PreserveSource,
+            Sprites = DefinitionPersistence.PreserveSource
+        };
 
     private static void Add(
         AssetsFile archive,
@@ -410,7 +410,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
                 new
                 {
                     Cycles = new Dictionary<string, object>
-                        { ["walk"] = new { AssetsFilePath = ArchivePath, AssetEntryName = entry } }
+                    { ["walk"] = new { AssetsFilePath = ArchivePath, AssetEntryName = entry } }
                 }));
 
         var ex = Assert.Throws<InvalidDataException>(() => EngineState.LoadFromFile(

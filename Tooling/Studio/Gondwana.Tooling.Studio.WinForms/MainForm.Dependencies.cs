@@ -24,7 +24,8 @@ public sealed partial class MainForm : IResourceNavigator
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<string, Func<string, string?>, CancellationToken, Task<DefinitionReferenceDiscovery>>
-        InspectDependencies { get; set; } =
+        InspectDependencies
+    { get; set; } =
         (scope, credentials, token) => Task.Run(() => DefinitionReferenceDiscovery.Inspect(scope, credentials, token));
 
     /// <summary>Uses the existing document registry and editor factory without reloading an open document.</summary>

@@ -106,13 +106,13 @@ internal sealed class PuzzleRenderer : IDisposable
             };
 
             for (int y = 0; y < board.Rows; y++)
-            for (int x = 0; x < board.Columns; x++)
-                canvas.DrawRect(
-                    x * cellWidth + 1,
-                    y * cellHeight + 1,
-                    cellWidth - 2,
-                    cellHeight - 2,
-                    border);
+                for (int x = 0; x < board.Columns; x++)
+                    canvas.DrawRect(
+                        x * cellWidth + 1,
+                        y * cellHeight + 1,
+                        cellWidth - 2,
+                        cellHeight - 2,
+                        border);
 
             canvas.Flush();
         }
@@ -197,13 +197,13 @@ internal sealed class PuzzleRenderer : IDisposable
     internal void SnapToBoard(SlidingPuzzle board)
     {
         for (int row = 0; row < board.Rows; row++)
-        for (int col = 0; col < board.Columns; col++)
-        {
-            int piece = board.PieceAt(col, row);
+            for (int col = 0; col < board.Columns; col++)
+            {
+                int piece = board.PieceAt(col, row);
 
-            if (piece >= 0)
-                _pieces[piece].SetPosition(PositionAt(col, row));
-        }
+                if (piece >= 0)
+                    _pieces[piece].SetPosition(PositionAt(col, row));
+            }
     }
 
     internal Vector2 PositionForIndex(int index)

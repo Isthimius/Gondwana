@@ -28,7 +28,7 @@ public static class PackedResourcePicker
             };
 
             var label = new Label
-                { Text = $"Password for {Path.GetFileName(path)}", Dock = DockStyle.Top, AutoSize = true };
+            { Text = $"Password for {Path.GetFileName(path)}", Dock = DockStyle.Top, AutoSize = true };
 
             var input = new TextBox { Dock = DockStyle.Top, UseSystemPasswordChar = true };
             var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, Dock = DockStyle.Bottom };
@@ -86,16 +86,22 @@ public static class PackedResourcePicker
 
         var entries = new ListBox
         {
-            Name = "entries", Dock = DockStyle.Fill, HorizontalScrollbar = true,
+            Name = "entries",
+            Dock = DockStyle.Fill,
+            HorizontalScrollbar = true,
             DisplayMember = nameof(AuthoringResource.EntryName)
         };
 
         var members = new ListBox
-            { Name = "members", Dock = DockStyle.Bottom, Height = 130, HorizontalScrollbar = true };
+        { Name = "members", Dock = DockStyle.Bottom, Height = 130, HorizontalScrollbar = true };
 
         var status = new TextBox
         {
-            Name = "status", Dock = DockStyle.Bottom, Height = 65, Multiline = true, ReadOnly = true,
+            Name = "status",
+            Dock = DockStyle.Bottom,
+            Height = 65,
+            Multiline = true,
+            ReadOnly = true,
             ScrollBars = ScrollBars.Vertical
         };
 
@@ -107,7 +113,7 @@ public static class PackedResourcePicker
         };
 
         var buttons = new FlowLayoutPanel
-            { Dock = DockStyle.Bottom, Height = 40, FlowDirection = FlowDirection.RightToLeft };
+        { Dock = DockStyle.Bottom, Height = 40, FlowDirection = FlowDirection.RightToLeft };
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var ok = new Button { Name = "add", Text = "Add", AutoSize = true, Enabled = false };

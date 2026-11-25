@@ -1118,29 +1118,29 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             int count = 0;
 
             for (int y = 0; y < layer.Rows && count < maxCells; y++)
-            for (int x = 0; x < layer.Columns && count < maxCells; x++, count++)
-            {
-                var points = TileOutline(
-                        projection,
-                        layer,
-                        x,
-                        y)
-                    .Select(ToScreen)
-                    .ToArray();
+                for (int x = 0; x < layer.Columns && count < maxCells; x++, count++)
+                {
+                    var points = TileOutline(
+                            projection,
+                            layer,
+                            x,
+                            y)
+                        .Select(ToScreen)
+                        .ToArray();
 
-                if (points.Length >= 3)
-                    graphics.DrawPolygon(gridPen, points);
-                else
-                    graphics.DrawRectangle(
-                        gridPen,
-                        Rectangle.Round(
-                            ToScreen(
-                                TileBounds(
-                                    projection,
-                                    layer,
-                                    x,
-                                    y))));
-            }
+                    if (points.Length >= 3)
+                        graphics.DrawPolygon(gridPen, points);
+                    else
+                        graphics.DrawRectangle(
+                            gridPen,
+                            Rectangle.Round(
+                                ToScreen(
+                                    TileBounds(
+                                        projection,
+                                        layer,
+                                        x,
+                                        y))));
+                }
         }
 
         if (ReferenceEquals(layer, _selectedLayer))
@@ -1178,19 +1178,19 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             using var selectedPen = new Pen(Color.Gold, 2f);
 
             for (int y = cells.Top; y < cells.Bottom; y++)
-            for (int x = cells.Left; x < cells.Right; x++)
-            {
-                var points = TileOutline(
-                    projection,
-                    layer,
-                    x,
-                    y).Select(ToScreen).ToArray();
-
-                if (points.Length >= 3)
+                for (int x = cells.Left; x < cells.Right; x++)
                 {
-                    graphics.DrawPolygon(selectedPen, points);
+                    var points = TileOutline(
+                        projection,
+                        layer,
+                        x,
+                        y).Select(ToScreen).ToArray();
+
+                    if (points.Length >= 3)
+                    {
+                        graphics.DrawPolygon(selectedPen, points);
+                    }
                 }
-            }
         }
     }
 

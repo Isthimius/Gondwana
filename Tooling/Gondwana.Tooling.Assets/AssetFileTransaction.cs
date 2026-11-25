@@ -286,7 +286,7 @@ internal sealed class AssetFileTransaction
                      DefinitionReferenceDiscovery.Paths.Equals(m.Source.Path, path)))
         {
             var key = new AssetsFileEntry
-                { AssetType = mapping.Source.AssetType, AssetName = mapping.Source.AssetEntryName! };
+            { AssetType = mapping.Source.AssetType, AssetName = mapping.Source.AssetEntryName! };
 
             if (!_archiveWrites[path].Entries.ContainsKey(key))
                 result.Add(key, _scan.Archives[path].Entries[key]);

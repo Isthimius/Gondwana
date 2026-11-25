@@ -25,10 +25,10 @@ public sealed partial class AnimationEditorTests
             var source = Assert.Single(document.Definition.TilesheetSources);
 
             var first = new AnimationFrameDefinition
-                { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .2 };
+            { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .2 };
 
             var last = new AnimationFrameDefinition
-                { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .4 };
+            { Tilesheet = "test-sheet", RegionName = "walk", DurationSeconds = .4 };
 
             document.AddFrame(first);
             document.AddFrame(last);

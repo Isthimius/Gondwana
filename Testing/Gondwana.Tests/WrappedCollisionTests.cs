@@ -71,7 +71,8 @@ public sealed class WrappedCollisionTests
                 0,
                 32,
                 32),
-            isStatic) { ResponseType = trigger ? CollisionResponseType.Trigger : CollisionResponseType.Solid };
+            isStatic)
+        { ResponseType = trigger ? CollisionResponseType.Trigger : CollisionResponseType.Solid };
 
         layer.ColliderRegistry.Register(mover);
         layer.ColliderRegistry.Register(other);

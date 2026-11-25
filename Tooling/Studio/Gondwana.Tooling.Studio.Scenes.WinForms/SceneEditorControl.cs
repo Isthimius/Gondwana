@@ -362,23 +362,23 @@ public sealed partial class SceneEditorControl : UserControl
         SceneTilesheetSource? last = null;
 
         foreach (var path in paths)
-        foreach (var source in SceneTilesheetSource.LoadAll(path, _packages))
-        {
-            var existing = FindTilesheet(source.Definition.Name);
-
-            if (existing is not null)
+            foreach (var source in SceneTilesheetSource.LoadAll(path, _packages))
             {
-                _tilesheetSources.Remove(existing);
-                existing.Dispose();
+                var existing = FindTilesheet(source.Definition.Name);
+
+                if (existing is not null)
+                {
+                    _tilesheetSources.Remove(existing);
+                    existing.Dispose();
+                }
+
+                Document.SetLooseTilesheetSource(
+                    source.Definition.Name,
+                    source.FilePath);
+
+                _tilesheetSources.Add(source);
+                last = source;
             }
-
-            Document.SetLooseTilesheetSource(
-                source.Definition.Name,
-                source.FilePath);
-
-            _tilesheetSources.Add(source);
-            last = source;
-        }
 
         RefreshSourceTree();
         RefreshPreview();
@@ -405,23 +405,23 @@ public sealed partial class SceneEditorControl : UserControl
         SceneAnimationSource? last = null;
 
         foreach (var path in paths)
-        foreach (var source in SceneAnimationSource.LoadAll(path, _packages))
-        {
-            var existing = FindAnimation(source.Definition.Key);
-
-            if (existing is not null)
+            foreach (var source in SceneAnimationSource.LoadAll(path, _packages))
             {
-                _animationSources.Remove(existing);
-                existing.Dispose();
+                var existing = FindAnimation(source.Definition.Key);
+
+                if (existing is not null)
+                {
+                    _animationSources.Remove(existing);
+                    existing.Dispose();
+                }
+
+                Document.SetLooseAnimationSource(
+                    source.Definition.Key,
+                    source.FilePath);
+
+                _animationSources.Add(source);
+                last = source;
             }
-
-            Document.SetLooseAnimationSource(
-                source.Definition.Key,
-                source.FilePath);
-
-            _animationSources.Add(source);
-            last = source;
-        }
 
         RefreshAnimationList();
         RefreshPreview();
@@ -2186,12 +2186,12 @@ public sealed partial class SceneEditorControl : UserControl
                         RefreshAnimationList();
 
                         if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is
-                                { } selectedTilesheetSource)
+                            { } selectedTilesheetSource)
                             SelectTilesheetRoot(selectedTilesheetSource);
 
                         if (selectedAnimation is not null &&
                             _animationSources.FirstOrDefault(source => source.Definition.Key == selectedAnimation) is
-                                { } selectedSource)
+                            { } selectedSource)
                             SelectAnimation(selectedSource);
 
                         _displayedDefinition = Definition;

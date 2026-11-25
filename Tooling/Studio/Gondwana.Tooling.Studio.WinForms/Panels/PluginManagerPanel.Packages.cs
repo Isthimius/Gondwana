@@ -42,7 +42,7 @@ internal sealed partial class PluginManagerPanel
         foreach (var title in new[] { "Pending plugin", "Operation", "State", "Diagnostics" })
             PendingGrid.Columns.Add(
                 new DataGridViewTextBoxColumn
-                    { HeaderText = title, SortMode = DataGridViewColumnSortMode.NotSortable });
+                { HeaderText = title, SortMode = DataGridViewColumnSortMode.NotSortable });
 
         InstallButton.Click += (_, _) => ChooseSource(InstallButton, null);
         UpdateButton.Click += (_, _) => ChooseSource(UpdateButton, SelectedPackageId);
@@ -77,7 +77,7 @@ internal sealed partial class PluginManagerPanel
                 var updateId = _sourceUpdateId;
 
                 using var dialog = new OpenFileDialog
-                    { Filter = "Plugin ZIP archives (*.zip)|*.zip", Title = "Select local plugin package" };
+                { Filter = "Plugin ZIP archives (*.zip)|*.zip", Title = "Select local plugin package" };
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                     await RunPackageChange(dialog.FileName, updateId);
@@ -92,7 +92,8 @@ internal sealed partial class PluginManagerPanel
 
                 using var dialog = new FolderBrowserDialog
                 {
-                    Description = "Select the package directory containing plugin.json", UseDescriptionForTitle = true
+                    Description = "Select the package directory containing plugin.json",
+                    UseDescriptionForTitle = true
                 };
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
@@ -258,7 +259,7 @@ internal sealed partial class PluginManagerPanel
                       !PluginPackageOperations.IsBundled(id, records[0].SourceDirectory);
 
         UpdateButton.Enabled = managed && (pending is null || pending is
-            { Kind: PluginPackageOperationKind.Update, State: PluginPackageOperationState.Pending });
+        { Kind: PluginPackageOperationKind.Update, State: PluginPackageOperationState.Pending });
 
         RemoveButton.Enabled = managed && pending is null;
 
@@ -303,30 +304,38 @@ internal sealed partial class PluginManagerPanel
     {
         using var dialog = new Form
         {
-            Text = "Review plugin package operation", Size = new Size(720, 540), MinimumSize = new Size(480, 340),
-            StartPosition = FormStartPosition.CenterParent, AutoScaleMode = AutoScaleMode.Dpi, MinimizeBox = false,
+            Text = "Review plugin package operation",
+            Size = new Size(720, 540),
+            MinimumSize = new Size(480, 340),
+            StartPosition = FormStartPosition.CenterParent,
+            AutoScaleMode = AutoScaleMode.Dpi,
+            MinimizeBox = false,
             MaximizeBox = false
         };
 
         var details = new TextBox
         {
-            Multiline = true, ReadOnly = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Both,
+            Multiline = true,
+            ReadOnly = true,
+            Dock = DockStyle.Fill,
+            ScrollBars = ScrollBars.Both,
             Text = PreviewText(preview)
         };
 
         var consent = new CheckBox
         {
-            Text = "I confirm this " + preview.VersionChange.ToLowerInvariant() + ".", AutoSize = true,
+            Text = "I confirm this " + preview.VersionChange.ToLowerInvariant() + ".",
+            AutoSize = true,
             Dock = DockStyle.Bottom
         };
 
         var buttons = new FlowLayoutPanel
-            { AutoSize = true, Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft };
+        { AutoSize = true, Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft };
 
         var cancel = new Button { Text = "Cancel", AutoSize = true, DialogResult = DialogResult.Cancel };
 
         var accept = new Button
-            { Text = "Confirm for next startup", AutoSize = true, Enabled = false, DialogResult = DialogResult.OK };
+        { Text = "Confirm for next startup", AutoSize = true, Enabled = false, DialogResult = DialogResult.OK };
 
         consent.CheckedChanged += (_, _) => accept.Enabled = consent.Checked;
         buttons.Controls.AddRange([cancel, accept]);

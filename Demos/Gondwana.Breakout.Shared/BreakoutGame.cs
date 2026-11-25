@@ -42,14 +42,14 @@ internal sealed class BreakoutGame
         float left = (Width - (columns * width + (columns - 1) * gapX)) / 2f;
 
         for (int row = 0; row < rows; row++)
-        for (int col = 0; col < columns; col++)
-            _bricks.Add(
-                new Brick(
-                    left + col * (width + gapX),
-                    166f + row * (height + gapY),
-                    width,
-                    height,
-                    row));
+            for (int col = 0; col < columns; col++)
+                _bricks.Add(
+                    new Brick(
+                        left + col * (width + gapX),
+                        166f + row * (height + gapY),
+                        width,
+                        height,
+                        row));
 
         Score = 0;
         Lives = 3;

@@ -29,21 +29,21 @@ internal sealed partial class SemanticPackPlan
                 switch (member)
                 {
                     case TilesheetDefinition sheet:
-                    {
-                        var image = sheet.Image ?? throw new InvalidDataException($"{label}: missing Image.");
+                        {
+                            var image = sheet.Image ?? throw new InvalidDataException($"{label}: missing Image.");
 
-                        var source = Physical(
-                            owner,
-                            AssetTypes.Image,
-                            image.FilePath,
-                            image.AssetsFilePath,
-                            image.AssetEntryName,
-                            null,
-                            label + " :: Image");
+                            var source = Physical(
+                                owner,
+                                AssetTypes.Image,
+                                image.FilePath,
+                                image.AssetsFilePath,
+                                image.AssetEntryName,
+                                null,
+                                label + " :: Image");
 
-                        Map(owner, source, Resolve(source, null, label + " :: Image").Destination);
-                        break;
-                    }
+                            Map(owner, source, Resolve(source, null, label + " :: Image").Destination);
+                            break;
+                        }
                     case AudioDefinition audio:
                         for (int resourceIndex = 0; resourceIndex < audio.Resources.Count; resourceIndex++)
                         {
@@ -105,139 +105,139 @@ internal sealed partial class SemanticPackPlan
 
                         break;
                     case SceneDefinition scene:
-                    {
-                        var tiles = scene.Layers.SelectMany(layer => layer.Tiles).ToArray();
-
-                        Sources(
-                            owner,
-                            label,
-                            AssetTypes.TilesheetDefinition,
-                            tiles.Where(tile => tile.Frame is not null).Select(tile => tile.Frame!.Tilesheet),
-                            scene.TilesheetSources,
-                            source => source.Tilesheet,
-                            source => Physical(
-                                owner,
-                                AssetTypes.TilesheetDefinition,
-                                source.GtsPath,
-                                source.AssetsFilePath,
-                                source.AssetEntryName,
-                                (int)source.Kind,
-                                label + " :: Tilesheet '" + source.Tilesheet + "'"),
-                            (key, location) => location.AssetEntryName is null
-                                ? SceneTilesheetSourceDefinition.Loose(key, location.Path)
-                                : SceneTilesheetSourceDefinition.Packed(
-                                    key,
-                                    PackedPath(location),
-                                    location.AssetEntryName));
-
-                        Sources(
-                            owner,
-                            label,
-                            AssetTypes.AnimationDefinition,
-                            tiles.Select(tile => tile.AnimationKey),
-                            scene.AnimationSources,
-                            source => source.AnimationKey,
-                            source => Physical(
-                                owner,
-                                AssetTypes.AnimationDefinition,
-                                source.GaniPath,
-                                source.AssetsFilePath,
-                                source.AssetEntryName,
-                                (int)source.Kind,
-                                label + " :: Animation '" + source.AnimationKey + "'"),
-                            (key, location) => location.AssetEntryName is null
-                                ? SceneAnimationSourceDefinition.Loose(key, location.Path)
-                                : SceneAnimationSourceDefinition.Packed(
-                                    key,
-                                    PackedPath(location),
-                                    location.AssetEntryName));
-
-                        break;
-                    }
-                    case SpriteDefinition sprites:
-                    {
-                        Sources(
-                            owner,
-                            label,
-                            AssetTypes.TilesheetDefinition,
-                            sprites.Sprites.Where(sprite => sprite.Frame is not null)
-                                .Select(sprite => sprite.Frame!.Tilesheet),
-                            sprites.TilesheetSources,
-                            source => source.Tilesheet,
-                            source => Physical(
-                                owner,
-                                AssetTypes.TilesheetDefinition,
-                                source.GtsPath,
-                                source.AssetsFilePath,
-                                source.AssetEntryName,
-                                (int)source.Kind,
-                                label + " :: Tilesheet '" + source.Tilesheet + "'"),
-                            (key, location) => location.AssetEntryName is null
-                                ? SpriteTilesheetSourceDefinition.Loose(key, location.Path)
-                                : SpriteTilesheetSourceDefinition.Packed(
-                                    key,
-                                    PackedPath(location),
-                                    location.AssetEntryName));
-
-                        Sources(
-                            owner,
-                            label,
-                            AssetTypes.AnimationDefinition,
-                            sprites.Sprites.Select(sprite => sprite.AnimationKey),
-                            sprites.AnimationSources,
-                            source => source.AnimationKey,
-                            source => Physical(
-                                owner,
-                                AssetTypes.AnimationDefinition,
-                                source.GaniPath,
-                                source.AssetsFilePath,
-                                source.AssetEntryName,
-                                (int)source.Kind,
-                                label + " :: Animation '" + source.AnimationKey + "'"),
-                            (key, location) => location.AssetEntryName is null
-                                ? SpriteAnimationSourceDefinition.Loose(key, location.Path)
-                                : SpriteAnimationSourceDefinition.Packed(
-                                    key,
-                                    PackedPath(location),
-                                    location.AssetEntryName));
-
-                        var scenes = Sources(
-                            owner,
-                            label,
-                            AssetTypes.SceneDefinition,
-                            sprites.Sprites.Select(sprite => sprite.SceneId),
-                            sprites.SceneSources,
-                            source => source.SceneId,
-                            source => Physical(
-                                owner,
-                                AssetTypes.SceneDefinition,
-                                source.GscnPath,
-                                source.AssetsFilePath,
-                                source.AssetEntryName,
-                                (int)source.Kind,
-                                label + " :: Scene '" + source.SceneId + "'"),
-                            (key, location) => location.AssetEntryName is null
-                                ? SpriteSceneSourceDefinition.Loose(key, location.Path)
-                                : SpriteSceneSourceDefinition.Packed(
-                                    key,
-                                    PackedPath(location),
-                                    location.AssetEntryName));
-
-                        foreach (var sprite in sprites.Sprites)
                         {
-                            if (string.IsNullOrWhiteSpace(sprite.SceneId))
-                                continue;
+                            var tiles = scene.Layers.SelectMany(layer => layer.Tiles).ToArray();
 
-                            var sceneDefinition = (SceneDefinition)scenes[sprite.SceneId].Document!.Members()
-                                .Single(item => item.Identity == sprite.SceneId).Member;
+                            Sources(
+                                owner,
+                                label,
+                                AssetTypes.TilesheetDefinition,
+                                tiles.Where(tile => tile.Frame is not null).Select(tile => tile.Frame!.Tilesheet),
+                                scene.TilesheetSources,
+                                source => source.Tilesheet,
+                                source => Physical(
+                                    owner,
+                                    AssetTypes.TilesheetDefinition,
+                                    source.GtsPath,
+                                    source.AssetsFilePath,
+                                    source.AssetEntryName,
+                                    (int)source.Kind,
+                                    label + " :: Tilesheet '" + source.Tilesheet + "'"),
+                                (key, location) => location.AssetEntryName is null
+                                    ? SceneTilesheetSourceDefinition.Loose(key, location.Path)
+                                    : SceneTilesheetSourceDefinition.Packed(
+                                        key,
+                                        PackedPath(location),
+                                        location.AssetEntryName));
 
-                            if (!sceneDefinition.Layers.Any(layer => layer.ID == sprite.SceneLayerId))
-                                throw new InvalidDataException(
-                                    $"{label}: sprite '{sprite.Nickname ?? sprite.Id.ToString()}' references missing layer '{sprite.SceneLayerId}' in scene '{sprite.SceneId}'.");
+                            Sources(
+                                owner,
+                                label,
+                                AssetTypes.AnimationDefinition,
+                                tiles.Select(tile => tile.AnimationKey),
+                                scene.AnimationSources,
+                                source => source.AnimationKey,
+                                source => Physical(
+                                    owner,
+                                    AssetTypes.AnimationDefinition,
+                                    source.GaniPath,
+                                    source.AssetsFilePath,
+                                    source.AssetEntryName,
+                                    (int)source.Kind,
+                                    label + " :: Animation '" + source.AnimationKey + "'"),
+                                (key, location) => location.AssetEntryName is null
+                                    ? SceneAnimationSourceDefinition.Loose(key, location.Path)
+                                    : SceneAnimationSourceDefinition.Packed(
+                                        key,
+                                        PackedPath(location),
+                                        location.AssetEntryName));
+
+                            break;
                         }
+                    case SpriteDefinition sprites:
+                        {
+                            Sources(
+                                owner,
+                                label,
+                                AssetTypes.TilesheetDefinition,
+                                sprites.Sprites.Where(sprite => sprite.Frame is not null)
+                                    .Select(sprite => sprite.Frame!.Tilesheet),
+                                sprites.TilesheetSources,
+                                source => source.Tilesheet,
+                                source => Physical(
+                                    owner,
+                                    AssetTypes.TilesheetDefinition,
+                                    source.GtsPath,
+                                    source.AssetsFilePath,
+                                    source.AssetEntryName,
+                                    (int)source.Kind,
+                                    label + " :: Tilesheet '" + source.Tilesheet + "'"),
+                                (key, location) => location.AssetEntryName is null
+                                    ? SpriteTilesheetSourceDefinition.Loose(key, location.Path)
+                                    : SpriteTilesheetSourceDefinition.Packed(
+                                        key,
+                                        PackedPath(location),
+                                        location.AssetEntryName));
 
-                        break;
-                    }
+                            Sources(
+                                owner,
+                                label,
+                                AssetTypes.AnimationDefinition,
+                                sprites.Sprites.Select(sprite => sprite.AnimationKey),
+                                sprites.AnimationSources,
+                                source => source.AnimationKey,
+                                source => Physical(
+                                    owner,
+                                    AssetTypes.AnimationDefinition,
+                                    source.GaniPath,
+                                    source.AssetsFilePath,
+                                    source.AssetEntryName,
+                                    (int)source.Kind,
+                                    label + " :: Animation '" + source.AnimationKey + "'"),
+                                (key, location) => location.AssetEntryName is null
+                                    ? SpriteAnimationSourceDefinition.Loose(key, location.Path)
+                                    : SpriteAnimationSourceDefinition.Packed(
+                                        key,
+                                        PackedPath(location),
+                                        location.AssetEntryName));
+
+                            var scenes = Sources(
+                                owner,
+                                label,
+                                AssetTypes.SceneDefinition,
+                                sprites.Sprites.Select(sprite => sprite.SceneId),
+                                sprites.SceneSources,
+                                source => source.SceneId,
+                                source => Physical(
+                                    owner,
+                                    AssetTypes.SceneDefinition,
+                                    source.GscnPath,
+                                    source.AssetsFilePath,
+                                    source.AssetEntryName,
+                                    (int)source.Kind,
+                                    label + " :: Scene '" + source.SceneId + "'"),
+                                (key, location) => location.AssetEntryName is null
+                                    ? SpriteSceneSourceDefinition.Loose(key, location.Path)
+                                    : SpriteSceneSourceDefinition.Packed(
+                                        key,
+                                        PackedPath(location),
+                                        location.AssetEntryName));
+
+                            foreach (var sprite in sprites.Sprites)
+                            {
+                                if (string.IsNullOrWhiteSpace(sprite.SceneId))
+                                    continue;
+
+                                var sceneDefinition = (SceneDefinition)scenes[sprite.SceneId].Document!.Members()
+                                    .Single(item => item.Identity == sprite.SceneId).Member;
+
+                                if (!sceneDefinition.Layers.Any(layer => layer.ID == sprite.SceneLayerId))
+                                    throw new InvalidDataException(
+                                        $"{label}: sprite '{sprite.Nickname ?? sprite.Id.ToString()}' references missing layer '{sprite.SceneLayerId}' in scene '{sprite.SceneId}'.");
+                            }
+
+                            break;
+                        }
                 }
             }
             catch (Exception ex) when (_discoveryProblem is not null && ex is not OperationCanceledException)

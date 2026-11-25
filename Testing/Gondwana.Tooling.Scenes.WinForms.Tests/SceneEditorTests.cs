@@ -409,8 +409,8 @@ public sealed partial class SceneEditorTests
             using (var bitmap = new Bitmap(40, 20))
             {
                 for (int y = 0; y < 20; y++)
-                for (int x = 0; x < 40; x++)
-                    bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+                    for (int x = 0; x < 40; x++)
+                        bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
 
                 bitmap.Save(Path.Combine(root, "atlas.png"));
             }
@@ -472,9 +472,9 @@ public sealed partial class SceneEditorTests
             var argb = colors.Select(color => color.ToArgb()).ToHashSet();
 
             for (int y = 0; y < 240; y++)
-            for (int x = 0; x < 240; x++)
-                if (argb.Contains(output.GetPixel(x, y).ToArgb()))
-                    hits.Add(new(x, y));
+                for (int x = 0; x < 240; x++)
+                    if (argb.Contains(output.GetPixel(x, y).ToArgb()))
+                        hits.Add(new(x, y));
 
             Assert.NotEmpty(hits);
 

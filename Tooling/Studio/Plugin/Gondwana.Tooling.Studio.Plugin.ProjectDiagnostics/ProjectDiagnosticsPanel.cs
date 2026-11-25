@@ -4,10 +4,10 @@ namespace Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics;
 internal sealed class ProjectDiagnosticsPanel : UserControl
 {
     private readonly TreeView _definitions = new()
-        { Dock = DockStyle.Fill, ShowNodeToolTips = true, HideSelection = false };
+    { Dock = DockStyle.Fill, ShowNodeToolTips = true, HideSelection = false };
 
     private readonly ListBox _problems = new()
-        { Dock = DockStyle.Fill, HorizontalScrollbar = true, IntegralHeight = false };
+    { Dock = DockStyle.Fill, HorizontalScrollbar = true, IntegralHeight = false };
 
     private readonly Label _status = new() { Dock = DockStyle.Bottom, Height = 42, AutoEllipsis = true };
     private readonly System.Windows.Forms.Timer _timer = new() { Interval = 100 };

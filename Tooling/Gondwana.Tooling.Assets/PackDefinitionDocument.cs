@@ -131,66 +131,66 @@ internal sealed class PackDefinitionDocument
                     break;
                 case AnimationDefinition animation:
                     foreach (var source in animation.TilesheetSources)
-                    foreach (var reference in Resolve(
-                                 AssetTypes.TilesheetDefinition,
-                                 source.GtsPath,
-                                 source.AssetsFilePath,
-                                 source.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.TilesheetDefinition,
+                                     source.GtsPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
 
                     break;
                 case SceneDefinition scene:
                     foreach (var source in scene.TilesheetSources)
-                    foreach (var reference in Resolve(
-                                 AssetTypes.TilesheetDefinition,
-                                 source.GtsPath,
-                                 source.AssetsFilePath,
-                                 source.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.TilesheetDefinition,
+                                     source.GtsPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
 
                     foreach (var source in scene.AnimationSources)
-                    foreach (var reference in Resolve(
-                                 AssetTypes.AnimationDefinition,
-                                 source.GaniPath,
-                                 source.AssetsFilePath,
-                                 source.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.AnimationDefinition,
+                                     source.GaniPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
 
                     break;
                 case SpriteDefinition sprites:
                     foreach (var source in sprites.TilesheetSources)
-                    foreach (var reference in Resolve(
-                                 AssetTypes.TilesheetDefinition,
-                                 source.GtsPath,
-                                 source.AssetsFilePath,
-                                 source.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.TilesheetDefinition,
+                                     source.GtsPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
 
                     foreach (var source in sprites.AnimationSources)
-                    foreach (var reference in Resolve(
-                                 AssetTypes.AnimationDefinition,
-                                 source.GaniPath,
-                                 source.AssetsFilePath,
-                                 source.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.AnimationDefinition,
+                                     source.GaniPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
 
                     foreach (var source in sprites.SceneSources)
-                    foreach (var reference in Resolve(
-                                 AssetTypes.SceneDefinition,
-                                 source.GscnPath,
-                                 source.AssetsFilePath,
-                                 source.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.SceneDefinition,
+                                     source.GscnPath,
+                                     source.AssetsFilePath,
+                                     source.AssetEntryName))
+                            yield return reference;
 
                     break;
                 case AudioDefinition audio:
                     foreach (var resource in audio.Resources.Where(r => r.SourceKind != AudioResourceSourceKind.Uri))
-                    foreach (var reference in Resolve(
-                                 AssetTypes.Audio,
-                                 resource.FilePath,
-                                 resource.AssetsFilePath,
-                                 resource.AssetEntryName))
-                        yield return reference;
+                        foreach (var reference in Resolve(
+                                     AssetTypes.Audio,
+                                     resource.FilePath,
+                                     resource.AssetsFilePath,
+                                     resource.AssetEntryName))
+                            yield return reference;
 
                     break;
             }

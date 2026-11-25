@@ -57,7 +57,8 @@ public sealed class AuthoringHistoryTests : IDisposable
 
         var region = new TilesheetRegionDefinition
         {
-            Name = "region", Area = new(
+            Name = "region",
+            Area = new(
                 3,
                 4,
                 32,
@@ -134,7 +135,8 @@ public sealed class AuthoringHistoryTests : IDisposable
 
         var region = new TilesheetRegionDefinition
         {
-            Name = "region", Area = new(
+            Name = "region",
+            Area = new(
                 0,
                 0,
                 16,
@@ -206,18 +208,18 @@ public sealed class AuthoringHistoryTests : IDisposable
         using (var group = d.History.BeginTransaction("Many tiles"))
         {
             for (int x = 0; x < 30; x++)
-            for (int y = 0; y < 10; y++)
-                d.EditTile(
-                    layer,
-                    x,
-                    y,
-                    "Assign",
-                    tile =>
-                    {
-                        tile.AnimationKey = "walk";
-                        tile.EnableAnimator = true;
-                        tile.Transform = TileTransform.Rotate90;
-                    });
+                for (int y = 0; y < 10; y++)
+                    d.EditTile(
+                        layer,
+                        x,
+                        y,
+                        "Assign",
+                        tile =>
+                        {
+                            tile.AnimationKey = "walk";
+                            tile.EnableAnimator = true;
+                            tile.Transform = TileTransform.Rotate90;
+                        });
 
             group.Commit();
         }

@@ -478,7 +478,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             Path.Combine(Source, "walk.gani"),
             AnimationDefinitionSerializer.ToJson(
                 new AnimationDefinition()
-                    { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] }));
+                { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] }));
 
         var settings = new AssetsPackCommand.Settings { Source = Source, Output = Output };
 
@@ -753,7 +753,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
 
         var plan = SemanticPackPlan.Create(
             new AssetsPackCommand.Settings()
-                { Source = Source, Output = Output, Password = password, AllowExternal = true },
+            { Source = Source, Output = Output, Password = password, AllowExternal = true },
             AssetTypeMap.BuildDefault(),
             AssetTypes.Misc,
             default);

@@ -308,7 +308,8 @@ public sealed partial class SceneEditorTests
                 tiles,
                 new Dictionary<string, object?>
                 {
-                    ["Visible"] = true, ["AdjustCollisionArea"] = new CollisionAdjust(
+                    ["Visible"] = true,
+                    ["AdjustCollisionArea"] = new CollisionAdjust(
                         1,
                         2,
                         3,
@@ -717,7 +718,7 @@ public sealed partial class SceneEditorTests
             using var preview = new ScenePreviewControl();
 
             var layer = new Gondwana.Scenes.GSCN.SceneLayerDefinition
-                { Columns = 8, Rows = 8, TileWidth = 32, TileHeight = 32, CoordinateSystemType = coordinates };
+            { Columns = 8, Rows = 8, TileWidth = 32, TileHeight = 32, CoordinateSystemType = coordinates };
 
             var projection =
                 typeof(ScenePreviewControl).GetMethod("GetProjection", BindingFlags.NonPublic | BindingFlags.Instance)!

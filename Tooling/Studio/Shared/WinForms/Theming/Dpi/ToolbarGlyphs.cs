@@ -13,11 +13,11 @@ public static partial class ToolbarGlyphs
 
         using (var g = Graphics.FromImage(bitmap))
         using (var pen = new Pen(palette.Foreground, 2f)
-               {
-                   StartCap = LineCap.Round,
-                   EndCap = LineCap.Round,
-                   LineJoin = LineJoin.Round
-               })
+        {
+            StartCap = LineCap.Round,
+            EndCap = LineCap.Round,
+            LineJoin = LineJoin.Round
+        })
         {
             ToolbarGlyphs.Prepare(g, pixels, 24);
             void Lines(params PointF[] points) => g.DrawLines(pen, points);
@@ -159,17 +159,17 @@ public static partial class ToolbarGlyphs
 
         using (var graphics = Graphics.FromImage(image))
         using (var pen = new Pen(palette.Foreground, 3f)
-               {
-                   StartCap = LineCap.Round,
-                   EndCap = LineCap.Round,
-                   LineJoin = LineJoin.Round
-               })
+        {
+            StartCap = LineCap.Round,
+            EndCap = LineCap.Round,
+            LineJoin = LineJoin.Round
+        })
         using (var accent = new Pen(palette.Accent, 3.5f)
-               {
-                   StartCap = LineCap.Round,
-                   EndCap = LineCap.Round,
-                   LineJoin = LineJoin.Round
-               })
+        {
+            StartCap = LineCap.Round,
+            EndCap = LineCap.Round,
+            LineJoin = LineJoin.Round
+        })
         {
             ToolbarGlyphs.Prepare(graphics, pixels, 48);
 

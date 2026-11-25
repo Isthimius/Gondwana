@@ -29,7 +29,7 @@ internal sealed class AssetImportPreviewForm : Form
         };
 
         var buttons = new FlowLayoutPanel
-            { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
+        { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var apply = new Button { Text = "Import", DialogResult = DialogResult.OK, AutoSize = true };

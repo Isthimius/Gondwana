@@ -197,24 +197,24 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         int? fixedZOrder = null;
 
         for (int x = 0; x < GridColumnCount; x++)
-        for (int y = 0; y < GridRowCount; y++)
-        {
-            var tile = _sceneLayerTileArray[x, y] ??= new SceneLayerTile(this);
-            tile.parentSceneLayer = this;
+            for (int y = 0; y < GridRowCount; y++)
+            {
+                var tile = _sceneLayerTileArray[x, y] ??= new SceneLayerTile(this);
+                tile.parentSceneLayer = this;
 
-            if (tile.Transform != TileTransform.Identity)
-                TransformedTiles.Add(tile);
+                if (tile.Transform != TileTransform.Identity)
+                    TransformedTiles.Add(tile);
 
-            tile.sceneLayerCoordinates = new Point(x, y);
+                tile.sceneLayerCoordinates = new Point(x, y);
 
-            if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
-                fastPathEligible = false;
+                if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
+                    fastPathEligible = false;
 
-            if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
-                fastPathEligible = false;
-            else
-                fixedZOrder ??= tile.ZOrder;
-        }
+                if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
+                    fastPathEligible = false;
+                else
+                    fixedZOrder ??= tile.ZOrder;
+            }
 
         _fixedGridRenderEligible = fastPathEligible;
         _fixedGridRenderEligibilityDirty = false;
@@ -480,7 +480,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     [JsonIgnore] internal HashSet<SceneLayerTile> TransformedTiles { get; } = new();
 
-    [JsonProperty("SceneLayerTileArray")] [JsonConverter(typeof(SceneLayerTileArrayConverter))]
+    [JsonProperty("SceneLayerTileArray")]
+    [JsonConverter(typeof(SceneLayerTileArrayConverter))]
     private SceneLayerTile[,] _sceneLayerTileArray; // array of points; 2 dimensions (X, Y)
 
     /// <summary>

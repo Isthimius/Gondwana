@@ -337,7 +337,7 @@ public sealed class NestedEditorDockingTests
                     error = ex;
                 }
             })
-            { IsBackground = true };
+        { IsBackground = true };
 
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();

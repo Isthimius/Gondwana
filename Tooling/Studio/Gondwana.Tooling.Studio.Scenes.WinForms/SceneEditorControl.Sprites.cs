@@ -274,8 +274,8 @@ public sealed partial class SceneEditorControl
                     };
 
                     foreach (var resource in resources)
-                    foreach (string identity in resolver.GetMembers(resource))
-                        available.Add(new(resource, identity));
+                        foreach (string identity in resolver.GetMembers(resource))
+                            available.Add(new(resource, identity));
                 }
                 catch (Exception ex) when (IsAuthoringException(ex))
                 {

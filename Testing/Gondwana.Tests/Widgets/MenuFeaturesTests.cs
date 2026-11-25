@@ -945,8 +945,8 @@ public sealed class MenuFeaturesTests
         bool hasMarkerInk = false;
 
         for (int y = marker.Top; y < marker.Bottom; y++)
-        for (int x = marker.Left; x < marker.Right; x++)
-            hasMarkerInk |= rendered.GetPixel(x, y).Red > 180;
+            for (int x = marker.Left; x < marker.Right; x++)
+                hasMarkerInk |= rendered.GetPixel(x, y).Red > 180;
 
         Assert.True(hasMarkerInk);
     }
@@ -1051,7 +1051,7 @@ public sealed class MenuFeaturesTests
                         0,
                         640,
                         30))
-                { DropDownAnimation = MenuDropDownAnimation.None };
+            { DropDownAnimation = MenuDropDownAnimation.None };
 
             Bar.Show();
         }

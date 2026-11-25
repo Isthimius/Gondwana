@@ -24,7 +24,7 @@ internal sealed class MeadowDrawing : DirectDrawingBase
     private readonly SKPaint _paint = new() { IsAntialias = true };
 
     private readonly SKPaint _text = new()
-        { IsAntialias = true, Typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold) };
+    { IsAntialias = true, Typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold) };
 
     internal MeadowDrawing(
         RenderSurfaceHostBase host,
@@ -153,13 +153,13 @@ internal sealed class MeadowDrawing : DirectDrawingBase
             (byte)(80 + Daylight * 100));
 
         for (int y = 250; y < 555; y += 17)
-        for (int x = (y % 34); x < 1280; x += 23)
-            c.DrawLine(
-                x,
-                y,
-                x + wind * 5 + MathF.Sin(x) * 2,
-                y - 10 - x % 7,
-                _paint);
+            for (int x = (y % 34); x < 1280; x += 23)
+                c.DrawLine(
+                    x,
+                    y,
+                    x + wind * 5 + MathF.Sin(x) * 2,
+                    y - 10 - x % 7,
+                    _paint);
 
         for (int i = 0; i < 74; i++)
         {

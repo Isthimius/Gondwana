@@ -24,7 +24,8 @@ internal static class BreakoutArt
 
         using var shine = new SKPaint
         {
-            IsAntialias = true, Color = new SKColor(
+            IsAntialias = true,
+            Color = new SKColor(
                 255,
                 255,
                 255,

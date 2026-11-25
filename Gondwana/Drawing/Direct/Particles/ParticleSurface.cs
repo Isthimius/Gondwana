@@ -565,48 +565,48 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
                 return (NextRange(-jx, jx), NextRange(-jy, jy));
 
             case ParticleSpawnDistribution.Ellipse:
-            {
-                // Uniform over area of ellipse
-                float a = NextRange(0f, MathF.Tau);
-                float r = MathF.Sqrt(NextRange(0f, 1f)); // sqrt => uniform area
-                return (MathF.Cos(a) * r * jx, MathF.Sin(a) * r * jy);
-            }
-
-            case ParticleSpawnDistribution.Ring:
-            {
-                // Uniform over area of annulus (ellipse-scaled)
-                float inner = Math.Clamp(em.RingInnerRadius01, 0f, 1f);
-                float a = NextRange(0f, MathF.Tau);
-
-                // area-uniform annulus: r = sqrt(inner^2 + u*(1-inner^2))
-                float u = NextRange(0f, 1f);
-                float r = MathF.Sqrt(inner * inner + u * (1f - inner * inner));
-
-                return (MathF.Cos(a) * r * jx, MathF.Sin(a) * r * jy);
-            }
-
-            case ParticleSpawnDistribution.Gaussian:
-            {
-                // Center-weighted, then clamped to ellipse boundary
-                float sd = Math.Clamp(em.GaussianStdDev01, 1e-4f, 10f);
-
-                float dx = NextGaussian() * (jx * sd);
-                float dy = NextGaussian() * (jy * sd);
-
-                // Clamp to ellipse: (dx/jx)^2 + (dy/jy)^2 <= 1
-                float nx = dx / jx;
-                float ny = dy / jy;
-                float q = nx * nx + ny * ny;
-
-                if (q > 1f)
                 {
-                    float s = 1f / MathF.Sqrt(q);
-                    dx *= s;
-                    dy *= s;
+                    // Uniform over area of ellipse
+                    float a = NextRange(0f, MathF.Tau);
+                    float r = MathF.Sqrt(NextRange(0f, 1f)); // sqrt => uniform area
+                    return (MathF.Cos(a) * r * jx, MathF.Sin(a) * r * jy);
                 }
 
-                return (dx, dy);
-            }
+            case ParticleSpawnDistribution.Ring:
+                {
+                    // Uniform over area of annulus (ellipse-scaled)
+                    float inner = Math.Clamp(em.RingInnerRadius01, 0f, 1f);
+                    float a = NextRange(0f, MathF.Tau);
+
+                    // area-uniform annulus: r = sqrt(inner^2 + u*(1-inner^2))
+                    float u = NextRange(0f, 1f);
+                    float r = MathF.Sqrt(inner * inner + u * (1f - inner * inner));
+
+                    return (MathF.Cos(a) * r * jx, MathF.Sin(a) * r * jy);
+                }
+
+            case ParticleSpawnDistribution.Gaussian:
+                {
+                    // Center-weighted, then clamped to ellipse boundary
+                    float sd = Math.Clamp(em.GaussianStdDev01, 1e-4f, 10f);
+
+                    float dx = NextGaussian() * (jx * sd);
+                    float dy = NextGaussian() * (jy * sd);
+
+                    // Clamp to ellipse: (dx/jx)^2 + (dy/jy)^2 <= 1
+                    float nx = dx / jx;
+                    float ny = dy / jy;
+                    float q = nx * nx + ny * ny;
+
+                    if (q > 1f)
+                    {
+                        float s = 1f / MathF.Sqrt(q);
+                        dx *= s;
+                        dy *= s;
+                    }
+
+                    return (dx, dy);
+                }
         }
     }
 

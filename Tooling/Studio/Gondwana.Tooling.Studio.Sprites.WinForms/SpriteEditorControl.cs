@@ -44,10 +44,10 @@ public sealed partial class SpriteEditorControl : UserControl
     private readonly TreeView _frames = new() { Dock = DockStyle.Fill, HideSelection = false };
 
     private readonly PropertyGrid _properties = new()
-        { Dock = DockStyle.Fill, PropertySort = PropertySort.Categorized };
+    { Dock = DockStyle.Fill, PropertySort = PropertySort.Categorized };
 
     private readonly TextBox _validation = new()
-        { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical };
+    { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical };
 
     private readonly SpritePreviewControl _preview = new();
     private readonly List<SpriteTilesheetSource> _sources = [];
@@ -151,7 +151,9 @@ public sealed partial class SpriteEditorControl : UserControl
         toolbar.Controls.Add(
             new Label
             {
-                Text = "Animation:", AutoSize = true, Margin = new Padding(
+                Text = "Animation:",
+                AutoSize = true,
+                Margin = new Padding(
                     8,
                     8,
                     4,
@@ -505,11 +507,11 @@ public sealed partial class SpriteEditorControl : UserControl
         try
         {
             foreach (var path in paths)
-            foreach (var member in AnimationDefinitionSerializer.LoadAll(path))
-            {
-                LoadAnimation(path, member.Key);
-                Document.SetLooseAnimationSource(member.Key, path);
-            }
+                foreach (var member in AnimationDefinitionSerializer.LoadAll(path))
+                {
+                    LoadAnimation(path, member.Key);
+                    Document.SetLooseAnimationSource(member.Key, path);
+                }
 
             RefreshSelection();
         }
@@ -567,11 +569,11 @@ public sealed partial class SpriteEditorControl : UserControl
         try
         {
             foreach (var path in paths)
-            foreach (var member in SceneDefinitionSerializer.LoadAll(path))
-            {
-                var scene = LoadScene(path, member.ID);
-                Document.SetLooseSceneSource(scene.ID, path);
-            }
+                foreach (var member in SceneDefinitionSerializer.LoadAll(path))
+                {
+                    var scene = LoadScene(path, member.ID);
+                    Document.SetLooseSceneSource(scene.ID, path);
+                }
 
             RefreshSelection();
         }
@@ -614,11 +616,11 @@ public sealed partial class SpriteEditorControl : UserControl
         try
         {
             foreach (var path in paths)
-            foreach (var member in TilesheetDefinitionSerializer.LoadAll(path))
-            {
-                var source = LoadTilesheet(path, member.Name);
-                Document.SetLooseTilesheetSource(source.Definition.Name, path);
-            }
+                foreach (var member in TilesheetDefinitionSerializer.LoadAll(path))
+                {
+                    var source = LoadTilesheet(path, member.Name);
+                    Document.SetLooseTilesheetSource(source.Definition.Name, path);
+                }
 
             RefreshSelection();
         }
@@ -661,32 +663,32 @@ public sealed partial class SpriteEditorControl : UserControl
             var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
 
             for (int y = 0; y < rows; y++)
-            for (int x = 0; x < columns; x++)
-            {
-                var frameNode = new TreeNode($"{x}, {y}") { Tag = source.CreateFrame(region, x, y) };
-
-                if (source.Image is { } image)
+                for (int x = 0; x < columns; x++)
                 {
-                    using var thumbnail = new Bitmap(32, 32);
-                    using var graphics = Graphics.FromImage(thumbnail);
+                    var frameNode = new TreeNode($"{x}, {y}") { Tag = source.CreateFrame(region, x, y) };
 
-                    graphics.DrawImage(
-                        image,
-                        new Rectangle(
-                            0,
-                            0,
-                            32,
-                            32),
-                        SpriteTilesheetSource.FrameBounds(region, x, y),
-                        GraphicsUnit.Pixel);
+                    if (source.Image is { } image)
+                    {
+                        using var thumbnail = new Bitmap(32, 32);
+                        using var graphics = Graphics.FromImage(thumbnail);
 
-                    _ = _thumbnails.Handle;
-                    _thumbnails.Images.Add(thumbnail);
-                    frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
+                        graphics.DrawImage(
+                            image,
+                            new Rectangle(
+                                0,
+                                0,
+                                32,
+                                32),
+                            SpriteTilesheetSource.FrameBounds(region, x, y),
+                            GraphicsUnit.Pixel);
+
+                        _ = _thumbnails.Handle;
+                        _thumbnails.Images.Add(thumbnail);
+                        frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
+                    }
+
+                    node.Nodes.Add(frameNode);
                 }
-
-                node.Nodes.Add(frameNode);
-            }
         }
 
         NavigationSizing.RefreshImages(_frames);
@@ -771,7 +773,10 @@ public sealed partial class SpriteEditorControl : UserControl
             {
                 previewFrame = new()
                 {
-                    Tilesheet = frame.Tilesheet, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile
+                    Tilesheet = frame.Tilesheet,
+                    RegionName = frame.RegionName,
+                    XTile = frame.XTile,
+                    YTile = frame.YTile
                 };
 
                 matches = animation.TilesheetSources.Any(source => source.Tilesheet == frame.Tilesheet)

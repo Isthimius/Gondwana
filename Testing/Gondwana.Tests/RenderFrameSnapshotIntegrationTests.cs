@@ -405,8 +405,8 @@ public sealed class RenderFrameSnapshotIntegrationTests
             16);
 
         for (int y = 0; y < 4; y++)
-        for (int x = 0; x < 6; x++)
-            layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
+            for (int x = 0; x < 6; x++)
+                layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
 
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var backbuffer = host.Backbuffer;
@@ -553,8 +553,8 @@ public sealed class RenderFrameSnapshotIntegrationTests
         ];
 
         for (int y = 0; y < layer.GridRowCount; y++)
-        for (int x = 0; x < layer.GridColumnCount; x++)
-            layer[x, y]!.CurrentFrame = frames[(x + y) & 3];
+            for (int x = 0; x < layer.GridColumnCount; x++)
+                layer[x, y]!.CurrentFrame = frames[(x + y) & 3];
     }
 
     private static void AssertGridInteriorContainsNoBlackPixels(
@@ -585,8 +585,8 @@ public sealed class RenderFrameSnapshotIntegrationTests
             (int)MathF.Round(last.Bottom, MidpointRounding.AwayFromZero) - 1);
 
         for (int y = top; y <= bottom; y++)
-        for (int x = left; x <= right; x++)
-            Assert.NotEqual(SKColors.Black, bitmap.GetPixel(x, y));
+            for (int x = left; x <= right; x++)
+                Assert.NotEqual(SKColors.Black, bitmap.GetPixel(x, y));
     }
 
     /// <summary>

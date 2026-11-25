@@ -93,7 +93,7 @@ public sealed class AnimationGaniTests : IDisposable
         var sheet = CreateTilesheet();
 
         var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)])
-            { SequenceCycleType = type };
+        { SequenceCycleType = type };
 
         sequence.SetDurationSeconds(0, 0.1);
         sequence.SetDurationSeconds(2, 0.3);
@@ -132,7 +132,7 @@ public sealed class AnimationGaniTests : IDisposable
     public void InvalidFrameDurationsAreRejected(double duration)
     {
         var definition = new AnimationDefinition
-            { Key = "invalid", Frames = [new() { Tilesheet = "test", DurationSeconds = duration }] };
+        { Key = "invalid", Frames = [new() { Tilesheet = "test", DurationSeconds = duration }] };
 
         Assert.Contains(AnimationDefinitionValidator.Validate(definition), e => e.Contains("DurationSeconds"));
     }
@@ -154,7 +154,7 @@ public sealed class AnimationGaniTests : IDisposable
             var sheet = CreateTilesheet();
 
             var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)])
-                { SequenceCycleType = type };
+            { SequenceCycleType = type };
 
             sequence.SetDurationSeconds(0, 0.1);
             sequence.SetDurationSeconds(2, 0.3);

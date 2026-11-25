@@ -289,7 +289,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                         Y = tileY,
                         Frame = new()
                         {
-                            Tilesheet = match.Set.Name, XTile = local % match.Set.Columns,
+                            Tilesheet = match.Set.Name,
+                            XTile = local % match.Set.Columns,
                             YTile = local / match.Set.Columns
                         }
                     };
@@ -503,13 +504,13 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             case "base64":
                 using (var input = new MemoryStream(Convert.FromBase64String(payload.Value)))
                 using (Stream stream = (string?)attributes.Attribute("compression") switch
-                       {
-                           null or "" => input,
-                           "zlib" => new ZLibStream(input, CompressionMode.Decompress),
-                           "gzip" => new GZipStream(input, CompressionMode.Decompress),
-                           var compression => throw new InvalidDataException(
-                               $"Unsupported layer compression: {compression}.")
-                       })
+                {
+                    null or "" => input,
+                    "zlib" => new ZLibStream(input, CompressionMode.Decompress),
+                    "gzip" => new GZipStream(input, CompressionMode.Decompress),
+                    var compression => throw new InvalidDataException(
+                        $"Unsupported layer compression: {compression}.")
+                })
                 {
                     var bytes = new byte[checked(expectedCount * 4)];
                     stream.ReadExactly(bytes);

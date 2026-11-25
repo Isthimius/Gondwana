@@ -159,7 +159,7 @@ internal static class ProjectHealth
                         // Packed definitions can validly omit AssetsFilePath and receive
                         // their containing bundle at runtime. Loose project scans lack it.
                         var packedOnly = inspection.Definition?.Image is
-                            { FilePath: null, AssetsFilePath: null, AssetEntryName: not null };
+                        { FilePath: null, AssetsFilePath: null, AssetEntryName: not null };
 
                         foreach (var error in inspection.Errors)
                             Report(

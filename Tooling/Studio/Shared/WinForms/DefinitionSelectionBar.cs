@@ -244,7 +244,7 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
             list.Items.Add(_name(member), true);
 
         var buttons = new FlowLayoutPanel
-            { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.LeftToRight };
+        { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.LeftToRight };
 
         var all = new Button { Text = "Select all", AutoSize = true };
         var none = new Button { Text = "Select none", AutoSize = true };

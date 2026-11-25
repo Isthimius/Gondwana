@@ -55,18 +55,24 @@ internal static class AssetOperationDialog
     {
         using var preview = new Form
         {
-            Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon(), Text = title,
-            Size = new Size(950, 550), StartPosition = FormStartPosition.CenterParent
+            Icon = Gondwana.Tooling.Studio.Shared.WinForms.ToolingBranding.CreateIcon(),
+            Text = title,
+            Size = new Size(950, 550),
+            StartPosition = FormStartPosition.CenterParent
         };
 
         var text = new TextBox
         {
-            Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false,
+            Dock = DockStyle.Fill,
+            Multiline = true,
+            ReadOnly = true,
+            ScrollBars = ScrollBars.Both,
+            WordWrap = false,
             Text = string.Join(Environment.NewLine, lines)
         };
 
         var buttons = new FlowLayoutPanel
-            { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
+        { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };
         var commit = new Button { Text = action, AutoSize = true, DialogResult = DialogResult.OK };

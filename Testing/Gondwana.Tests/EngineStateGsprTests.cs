@@ -256,7 +256,11 @@ public sealed class EngineStateGsprTests : IDisposable
             definition.Sprites.Add(
                 new()
                 {
-                    Id = Guid.NewGuid(), Nickname = name, NudgeX = x, SceneId = scene.ID, SceneLayerId = layer.ID
+                    Id = Guid.NewGuid(),
+                    Nickname = name,
+                    NudgeX = x,
+                    SceneId = scene.ID,
+                    SceneLayerId = layer.ID
                 });
 
         var path = Path.Combine(_directory, "merge.state");

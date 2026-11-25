@@ -309,7 +309,7 @@ internal sealed partial class ScenePreviewControl
             if (ghost || _selectedSprite?.SameInstance(sprite) == true)
             {
                 using var outline = new Pen(Color.MediumSpringGreen, 2f)
-                    { DashStyle = ghost ? DashStyle.Dash : DashStyle.Solid };
+                { DashStyle = ghost ? DashStyle.Dash : DashStyle.Solid };
 
                 graphics.DrawRectangle(
                     outline,

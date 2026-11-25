@@ -24,7 +24,7 @@ public sealed class WorkspaceSessionTests : IDisposable
         var second = FileDocument("second.gscn");
 
         var session = new WorkspaceSession
-            { WorkingDirectory = _directory, Documents = [second, first], ActiveDocument = first.Path };
+        { WorkingDirectory = _directory, Documents = [second, first], ActiveDocument = first.Path };
 
         Assert.True(Store().Write(session));
         File.WriteAllText(first.Path, "changed after shutdown");
@@ -98,7 +98,7 @@ public sealed class WorkspaceSessionTests : IDisposable
     public void OptOutAndEmptyStartupDoNotTouchWorkspace(bool restore, bool empty)
     {
         var session = new WorkspaceSession
-            { RestoreOnStartup = restore, WorkingDirectory = _directory, Documents = [FileDocument("file.gts")] };
+        { RestoreOnStartup = restore, WorkingDirectory = _directory, Documents = [FileDocument("file.gts")] };
 
         Assert.True(Store().Write(session));
 

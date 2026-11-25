@@ -352,7 +352,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             TileSize = new Size(width, height),
             TilePadding = new Spacing { Right = spacing, Bottom = spacing },
             RegionMargin = new Spacing
-                { Left = margin, Top = margin, Right = margin - spacing, Bottom = margin - spacing }
+            { Left = margin, Top = margin, Right = margin - spacing, Bottom = margin - spacing }
         };
 
         // Tiled tile-layer images are bottom-left aligned to the map cell for
@@ -417,7 +417,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             throw new InvalidDataException("Tileset columns/tilecount do not fit the atlas geometry.");
 
         var definition = new TilesheetDefinition
-            { Name = name, Image = new() { FilePath = imageReference }, Regions = [region] };
+        { Name = name, Image = new() { FilePath = imageReference }, Regions = [region] };
 
         if (image.Attribute("trans") is { } transparent)
         {
@@ -429,7 +429,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             uint rgb = uint.Parse(color, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
             definition.Mask = new()
-                { Red = (byte)(rgb >> 16), Green = (byte)(rgb >> 8), Blue = (byte)rgb, Alpha = 255, Tolerance = 0 };
+            { Red = (byte)(rgb >> 16), Green = (byte)(rgb >> 8), Blue = (byte)rgb, Alpha = 255, Tolerance = 0 };
         }
 
         foreach (var feature in root.Descendants().Where(e =>
@@ -512,7 +512,9 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
                 gani.Frames.Add(
                     new()
                     {
-                        Tilesheet = name, XTile = frameId % columns, YTile = frameId / columns,
+                        Tilesheet = name,
+                        XTile = frameId % columns,
+                        YTile = frameId / columns,
                         DurationSeconds = duration / 1000.0
                     });
             }

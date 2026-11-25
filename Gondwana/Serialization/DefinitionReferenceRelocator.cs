@@ -451,19 +451,19 @@ public static class DefinitionReferenceRelocator
                 throw new ArgumentException("Relocations must not contain null.", nameof(mappings));
 
             for (int i = 0; i < _mappings.Length; i++)
-            for (int j = 0; j < _mappings.Length; j++)
-            {
-                if (i == j)
-                    continue;
+                for (int j = 0; j < _mappings.Length; j++)
+                {
+                    if (i == j)
+                        continue;
 
-                if (_mappings[i].Source.Matches(_mappings[j].Source))
-                    throw new InvalidDataException($"Ambiguous duplicate relocation source: {_mappings[i].Source}.");
+                    if (_mappings[i].Source.Matches(_mappings[j].Source))
+                        throw new InvalidDataException($"Ambiguous duplicate relocation source: {_mappings[i].Source}.");
 
-                if (_mappings[i].Destination.Matches(_mappings[j].Source) &&
-                    !_mappings[j].Source.Matches(_mappings[j].Destination))
-                    throw new InvalidDataException(
-                        $"Relocation chains/cycles are ambiguous on repeated application: {_mappings[j].Source}.");
-            }
+                    if (_mappings[i].Destination.Matches(_mappings[j].Source) &&
+                        !_mappings[j].Source.Matches(_mappings[j].Destination))
+                        throw new InvalidDataException(
+                            $"Relocation chains/cycles are ambiguous on repeated application: {_mappings[j].Source}.");
+                }
         }
 
         /// <summary>Rewrites one existing format-specific reference, preserving its logical fields.</summary>

@@ -159,13 +159,15 @@ internal sealed class SpritePreviewControl : UserControl
                 x += entry.HorizAlign switch
                 {
                     Gondwana.Drawing.Sprites.HorizontalAlignment.Center => (_projection.TileWidth - size.Width) / 2,
-                    Gondwana.Drawing.Sprites.HorizontalAlignment.Right => _projection.TileWidth - size.Width, _ => 0
+                    Gondwana.Drawing.Sprites.HorizontalAlignment.Right => _projection.TileWidth - size.Width,
+                    _ => 0
                 };
 
                 y += entry.VertAlign switch
                 {
                     VerticalAlignment.Middle => (_projection.TileHeight - size.Height) / 2,
-                    VerticalAlignment.Bottom => _projection.TileHeight - size.Height, _ => 0
+                    VerticalAlignment.Bottom => _projection.TileHeight - size.Height,
+                    _ => 0
                 };
             }
 

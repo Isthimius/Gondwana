@@ -893,8 +893,8 @@ public sealed partial class EditorInteractionTests
             yield return item;
 
             foreach (GridItem child in item.GridItems)
-            foreach (var descendant in Walk(child))
-                yield return descendant;
+                foreach (var descendant in Walk(child))
+                    yield return descendant;
         }
     }
 
@@ -928,7 +928,7 @@ public sealed partial class EditorInteractionTests
                     error = ex;
                 }
             })
-            { IsBackground = true };
+        { IsBackground = true };
 
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();

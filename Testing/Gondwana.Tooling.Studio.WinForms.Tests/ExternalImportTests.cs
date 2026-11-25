@@ -181,7 +181,7 @@ public sealed class ExternalImportTests
             Assert.IsType<GodotTilesetImporter>(Assert.Single(providers, p => p.CanImport(source)));
 
             using var panel = new ExternalImportPanel(providers)
-                { SourcePath = source, OutputDirectory = Path.Combine(directory, "output") };
+            { SourcePath = source, OutputDirectory = Path.Combine(directory, "output") };
 
             Assert.Equal("Auto-detect", panel.Formats[0]);
             Assert.Equal(2, panel.Formats.Count(f => f.StartsWith("Godot", StringComparison.Ordinal)));
@@ -318,7 +318,7 @@ public sealed class ExternalImportTests
         using var provider = new DelayedProvider();
 
         using var panel = new ExternalImportPanel([provider])
-            { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+        { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
 
         panel.Analyze();
         Assert.True(provider.Started.Wait(TimeSpan.FromSeconds(5)));
@@ -345,7 +345,7 @@ public sealed class ExternalImportTests
         provider.Release.Set();
 
         using var panel = new ExternalImportPanel([provider])
-            { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+        { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
 
         panel.Analyze();
         Wait(panel);

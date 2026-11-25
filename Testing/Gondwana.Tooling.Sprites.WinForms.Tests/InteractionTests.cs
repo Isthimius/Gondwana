@@ -137,13 +137,13 @@ public sealed partial class InteractionTests
         Point? FirstRedPixel(Bitmap bitmap)
         {
             for (int y = 0; y < bitmap.Height; y++)
-            for (int x = 0; x < bitmap.Width; x++)
-            {
-                var pixel = bitmap.GetPixel(x, y);
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    var pixel = bitmap.GetPixel(x, y);
 
-                if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30)
-                    return new Point(x, y);
-            }
+                    if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30)
+                        return new Point(x, y);
+                }
 
             return null;
         }
@@ -287,7 +287,8 @@ public sealed partial class InteractionTests
             sourcePath,
             new SceneDefinition
             {
-                ID = "level", Layers = [new() { ID = "actors", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }]
+                ID = "level",
+                Layers = [new() { ID = "actors", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }]
             });
 
         editor.AddSceneSources([sourcePath]);

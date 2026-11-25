@@ -175,7 +175,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
                     (int)bounds.Bottom),
                 "azure-strike-particles",
                 1000)
-            { ZOrder = 80 };
+        { ZOrder = 80 };
 
         var view = RenderSurface.Host.ViewManager.Views[0];
 

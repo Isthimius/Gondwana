@@ -101,7 +101,8 @@ internal static class SideScrollerArt
     {
         using var p = new SKPaint
         {
-            IsAntialias = true, Color = new SKColor(
+            IsAntialias = true,
+            Color = new SKColor(
                 75,
                 38,
                 145,

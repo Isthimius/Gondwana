@@ -79,8 +79,8 @@ public sealed class RuntimeProfiler : IDisposable
                 ClearAccumulators();
 
                 foreach (var source in _sources.Values)
-                foreach (var accumulator in source.Metrics.Values)
-                    accumulator.Rebase();
+                    foreach (var accumulator in source.Metrics.Values)
+                        accumulator.Rebase();
             }
 
             _requests++;
@@ -285,15 +285,15 @@ public sealed class RuntimeProfiler : IDisposable
         ClearAccumulators();
 
         foreach (var source in _sources.Values)
-        foreach (var accumulator in source.Metrics.Values)
-            accumulator.Rebase();
+            foreach (var accumulator in source.Metrics.Values)
+                accumulator.Rebase();
     }
 
     private void ClearAccumulators()
     {
         foreach (var source in _sources.Values)
-        foreach (var accumulator in source.Metrics.Values)
-            accumulator.Clear();
+            foreach (var accumulator in source.Metrics.Values)
+                accumulator.Clear();
     }
 
     private void Advance()

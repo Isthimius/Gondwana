@@ -500,7 +500,7 @@ public sealed partial class CompositionTests
                     Directory.Delete(directory, recursive: true);
                 }
             })
-            { IsBackground = true };
+        { IsBackground = true };
 
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();

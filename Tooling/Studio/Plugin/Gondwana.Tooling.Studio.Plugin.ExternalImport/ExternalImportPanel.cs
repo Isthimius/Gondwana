@@ -19,7 +19,7 @@ public sealed class ExternalImportPanel : UserControl
     private readonly ListView artifacts = new() { View = View.Details, Dock = DockStyle.Fill, FullRowSelect = true };
 
     private readonly TextBox diagnostics = new()
-        { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, Dock = DockStyle.Fill };
+    { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, Dock = DockStyle.Fill };
 
     private readonly TableLayoutPanel inputs = new() { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 3 };
     private readonly System.Windows.Forms.Timer timer = new() { Interval = 100 };

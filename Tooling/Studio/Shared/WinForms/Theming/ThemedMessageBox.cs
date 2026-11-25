@@ -107,7 +107,10 @@ public static class ThemedMessageBox
 
         var bar = new FlowLayoutPanel
         {
-            Dock = DockStyle.Bottom, Height = 48, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(8)
+            Dock = DockStyle.Bottom,
+            Height = 48,
+            FlowDirection = FlowDirection.RightToLeft,
+            Padding = new Padding(8)
         };
 
         var choices = results.Select(result => new Button

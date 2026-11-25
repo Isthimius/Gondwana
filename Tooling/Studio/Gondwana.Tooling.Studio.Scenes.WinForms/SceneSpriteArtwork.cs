@@ -33,7 +33,7 @@ internal sealed class SceneSpriteArtworkCache : IDisposable
                 .SingleOrDefault();
 
             if (sceneAnimation(key) is { } authored && SceneAnimationSource.FirstPreviewFrame(authored.Definition) is
-                    { } sceneFrame)
+                { } sceneFrame)
                 return Artwork(
                            authored.FindTilesheet(sceneFrame.Tilesheet) ?? sceneSheet(sceneFrame.Tilesheet),
                            sceneFrame)

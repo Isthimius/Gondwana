@@ -239,10 +239,10 @@ public sealed class ReferenceRelocationTests : IDisposable
     public static IEnumerable<object[]> Transitions()
     {
         foreach (var extension in new[] { "gts", "gani", "gscn", "gspr", "gsnd" })
-        foreach (var sourcePacked in new[] { false, true })
-        foreach (var targetPacked in new[] { false, true })
-        foreach (var documentPacked in new[] { false, true })
-            yield return [extension, sourcePacked, targetPacked, documentPacked];
+            foreach (var sourcePacked in new[] { false, true })
+                foreach (var targetPacked in new[] { false, true })
+                    foreach (var documentPacked in new[] { false, true })
+                        yield return [extension, sourcePacked, targetPacked, documentPacked];
     }
 
     /// <summary>Rewrites all physical forms, keeps siblings and logical fields, and round-trips Save As.</summary>
@@ -314,24 +314,24 @@ public sealed class ReferenceRelocationTests : IDisposable
         Assert.Equal("sibling", (string?)outputJson["Definitions"]![1]![format.Identity]);
 
         for (int memberIndex = 0; memberIndex < 2; memberIndex++)
-        for (int i = 0; i < references.Length; i++)
-        {
-            var expected = memberIndex == 0
-                ? mappings[i].Destination
-                : Dependency(references[i], "unrelated", sourcePacked);
+            for (int i = 0; i < references.Length; i++)
+            {
+                var expected = memberIndex == 0
+                    ? mappings[i].Destination
+                    : Dependency(references[i], "unrelated", sourcePacked);
 
-            var actual = ReferenceObject(outputJson["Definitions"]![memberIndex]!, references[i]);
+                var actual = ReferenceObject(outputJson["Definitions"]![memberIndex]!, references[i]);
 
-            var storedPath =
-                (string?)actual[expected.AssetEntryName is null ? references[i].FileProperty : "AssetsFilePath"];
+                var storedPath =
+                    (string?)actual[expected.AssetEntryName is null ? references[i].FileProperty : "AssetsFilePath"];
 
-            Assert.Equal(expected.Path, Path.GetFullPath(storedPath!, Path.GetDirectoryName(destination.Path)!));
-            Assert.Equal(expected.AssetEntryName, (string?)actual["AssetEntryName"]);
-            Assert.Null(actual[expected.AssetEntryName is null ? "AssetsFilePath" : references[i].FileProperty]);
+                Assert.Equal(expected.Path, Path.GetFullPath(storedPath!, Path.GetDirectoryName(destination.Path)!));
+                Assert.Equal(expected.AssetEntryName, (string?)actual["AssetEntryName"]);
+                Assert.Null(actual[expected.AssetEntryName is null ? "AssetsFilePath" : references[i].FileProperty]);
 
-            if (references[i].Collection is not null)
-                Assert.Contains("logical-member", actual.ToString());
-        }
+                if (references[i].Collection is not null)
+                    Assert.Contains("logical-member", actual.ToString());
+            }
 
         if (extension == "gani")
             Assert.Equal("untouched-next", (string?)outputJson["Definitions"]![0]!["NextCycleKey"]);
@@ -626,7 +626,7 @@ public sealed class ReferenceRelocationTests : IDisposable
         var destination = new AssetLocation(AssetTypes.TilesheetDefinition, @"D:\project\sheet.gts");
 
         var input = new TilesheetDefinitionDocument
-            { Definitions = [new() { Name = "terrain", Image = new() { FilePath = "art.png" } }] };
+        { Definitions = [new() { Name = "terrain", Image = new() { FilePath = "art.png" } }] };
 
         var output = DefinitionReferenceRelocator.Relocate(
             input,

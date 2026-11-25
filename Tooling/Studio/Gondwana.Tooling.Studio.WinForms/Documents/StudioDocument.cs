@@ -189,220 +189,220 @@ internal sealed class StudioDocument : IDisposable
         switch (format)
         {
             case "gts":
-            {
-                var model = archive is not null ? TilesheetDocument.Open(archive, entryName!) :
-                    path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
-
-                var editor = packages is null
-                    ? new TilesheetEditorControl(model)
-                    : new TilesheetEditorControl(model, packages);
-
-                if (packages is not null)
-                    editor.PackedImagePicker = owner => PackedImagePicker.Pick(owner, packages, directory);
-
-                result = new()
                 {
-                    Kind = "tilesheet",
-                    Extension = "gts",
-                    Editor = editor,
-                    Path = () => model.FilePath,
-                    PackedLocation = () => model.PackedLocation,
-                    SerializePacked = model.SerializePacked,
-                    AcceptPackedSave = model.AcceptPackedSave,
-                    Dirty = () => model.IsDirty,
-                    CommitEdits = editor.CommitEdits,
-                    Validate = editor.UpdateValidation,
-                    Save = (destination, invalid) => model.Save(destination, editor.ImageSize, invalid),
-                    PaneNames = TilesheetEditorControl.PaneNames,
-                    ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible,
-                    ShowAllPanes = editor.ShowAllPanes,
-                    ResetLayout = editor.ResetLayout
-                };
+                    var model = archive is not null ? TilesheetDocument.Open(archive, entryName!) :
+                        path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
 
-                model.Changed += result.OnChanged;
-                result._detach = () => model.Changed -= result.OnChanged;
+                    var editor = packages is null
+                        ? new TilesheetEditorControl(model)
+                        : new TilesheetEditorControl(model, packages);
 
-                return result;
-            }
-
-            case "gani":
-            {
-                var model = archive is not null ? AnimationDocument.Open(archive, entryName!) :
-                    path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
-
-                var editor = new AnimationEditorControl(model, packages);
-
-                result = new()
-                {
-                    Kind = "animation",
-                    Extension = "gani",
-                    Editor = editor,
-                    Path = () => model.FilePath,
-                    PackedLocation = () => model.PackedLocation,
-                    SerializePacked = model.SerializePacked,
-                    AcceptPackedSave = model.AcceptPackedSave,
-                    Dirty = () => model.IsDirty,
-                    CommitEdits = editor.CommitEdits,
-                    Validate = editor.UpdateValidation,
-                    Save = model.Save,
-                    PaneNames = AnimationEditorControl.PaneNames,
-                    ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible,
-                    ShowAllPanes = editor.ShowAllPanes,
-                    ResetLayout = editor.ResetLayout
-                };
-
-                model.Changed += result.OnChanged;
-                result._detach = () => model.Changed -= result.OnChanged;
-
-                return result;
-            }
-
-            case "gsnd":
-            {
-                var model = archive is not null ? AudioDocument.Open(archive, entryName!) :
-                    path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
-
-                var editor = new AudioEditorControl(model, packages);
-
-                result = new()
-                {
-                    Kind = "sound",
-                    Extension = "gsnd",
-                    Editor = editor,
-                    Path = () => model.FilePath,
-                    PackedLocation = () => model.PackedLocation,
-                    SerializePacked = model.SerializePacked,
-                    AcceptPackedSave = model.AcceptPackedSave,
-                    Dirty = () => model.IsDirty,
-                    CommitEdits = editor.CommitEdits,
-                    Validate = editor.UpdateValidation,
-                    Save = model.Save,
-                    PaneNames = AudioEditorControl.PaneNames,
-                    ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible,
-                    ShowAllPanes = editor.ShowAllPanes,
-                    ResetLayout = editor.ResetLayout
-                };
-
-                model.Changed += result.OnChanged;
-                result._detach = () => model.Changed -= result.OnChanged;
-
-                return result;
-            }
-
-            case "gscn":
-            {
-                var model = archive is not null ? SceneDocument.Open(archive, entryName!) :
-                    path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
-
-                var editor = new SceneEditorControl(model, packages);
-
-                result = new()
-                {
-                    Kind = "scene",
-                    Extension = "gscn",
-                    Editor = editor,
-                    Path = () => model.FilePath,
-                    PackedLocation = () => model.PackedLocation,
-                    SerializePacked = model.SerializePacked,
-                    AcceptPackedSave = model.AcceptPackedSave,
-                    Dirty = () => model.IsDirty,
-                    CommitEdits = editor.CommitEdits,
-                    Validate = editor.UpdateValidation,
-                    Save = model.Save,
-                    PaneNames = SceneEditorControl.PaneNames,
-                    ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible,
-                    ShowAllPanes = editor.ShowAllPanes,
-                    ResetLayout = editor.ResetLayout
-                };
-
-                model.Changed += result.OnChanged;
-                result._detach = () => model.Changed -= result.OnChanged;
-
-                return result;
-            }
-
-            case "gspr":
-            {
-                var model = archive is not null ? SpriteDocument.Open(archive, entryName!) :
-                    path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
-
-                var editor = new SpriteEditorControl(model, packages);
-
-                result = new()
-                {
-                    Kind = "sprite",
-                    Extension = "gspr",
-                    Editor = editor,
-                    Path = () => model.FilePath,
-                    PackedLocation = () => model.PackedLocation,
-                    SerializePacked = model.SerializePacked,
-                    AcceptPackedSave = model.AcceptPackedSave,
-                    Dirty = () => model.IsDirty,
-                    CommitEdits = editor.CommitEdits,
-                    Validate = editor.UpdateValidation,
-                    Save = model.Save,
-                    PaneNames = SpriteEditorControl.PaneNames,
-                    ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible,
-                    ShowAllPanes = editor.ShowAllPanes,
-                    ResetLayout = editor.ResetLayout
-                };
-
-                model.Changed += result.OnChanged;
-                result._detach = () => model.Changed -= result.OnChanged;
-
-                return result;
-            }
-
-            case "gaf":
-            {
-                if (path is null)
-                    throw new ArgumentException("Choose an asset file path first.");
-
-                var assets = archive ?? AssetsFile.LoadOrCreate(
-                    path,
-                    password,
-                    encrypt || !string.IsNullOrEmpty(password),
-                    register: false);
-
-                try
-                {
-                    var editor = new AssetEditorControl(assets);
+                    if (packages is not null)
+                        editor.PackedImagePicker = owner => PackedImagePicker.Pick(owner, packages, directory);
 
                     result = new()
                     {
-                        Kind = "asset",
-                        Extension = System.IO.Path.GetExtension(path).TrimStart('.'),
+                        Kind = "tilesheet",
+                        Extension = "gts",
                         Editor = editor,
-                        Path = () => editor.FilePath,
-                        Dirty = () => editor.IsDirty || !File.Exists(editor.FilePath),
+                        Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
+                        Dirty = () => model.IsDirty,
                         CommitEdits = editor.CommitEdits,
-                        CanSave = () => editor.CanSave,
-                        Validate = () => [],
-                        Save = (destination, _) => editor.SaveTo(destination),
-                        PaneNames = AssetEditorControl.PaneNames,
+                        Validate = editor.UpdateValidation,
+                        Save = (destination, invalid) => model.Save(destination, editor.ImageSize, invalid),
+                        PaneNames = TilesheetEditorControl.PaneNames,
                         ShowPane = editor.ShowPane,
                         IsPaneVisible = editor.IsPaneVisible,
                         ShowAllPanes = editor.ShowAllPanes,
-                        ResetLayout = editor.ResetLayout,
-                        _release = assets.Dispose
+                        ResetLayout = editor.ResetLayout
                     };
 
-                    editor.Changed += result.OnChanged;
-                    result._detach = () => editor.Changed -= result.OnChanged;
+                    model.Changed += result.OnChanged;
+                    result._detach = () => model.Changed -= result.OnChanged;
 
                     return result;
                 }
-                catch
+
+            case "gani":
                 {
-                    assets.Dispose();
-                    throw;
+                    var model = archive is not null ? AnimationDocument.Open(archive, entryName!) :
+                        path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
+
+                    var editor = new AnimationEditorControl(model, packages);
+
+                    result = new()
+                    {
+                        Kind = "animation",
+                        Extension = "gani",
+                        Editor = editor,
+                        Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
+                        Dirty = () => model.IsDirty,
+                        CommitEdits = editor.CommitEdits,
+                        Validate = editor.UpdateValidation,
+                        Save = model.Save,
+                        PaneNames = AnimationEditorControl.PaneNames,
+                        ShowPane = editor.ShowPane,
+                        IsPaneVisible = editor.IsPaneVisible,
+                        ShowAllPanes = editor.ShowAllPanes,
+                        ResetLayout = editor.ResetLayout
+                    };
+
+                    model.Changed += result.OnChanged;
+                    result._detach = () => model.Changed -= result.OnChanged;
+
+                    return result;
                 }
-            }
+
+            case "gsnd":
+                {
+                    var model = archive is not null ? AudioDocument.Open(archive, entryName!) :
+                        path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
+
+                    var editor = new AudioEditorControl(model, packages);
+
+                    result = new()
+                    {
+                        Kind = "sound",
+                        Extension = "gsnd",
+                        Editor = editor,
+                        Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
+                        Dirty = () => model.IsDirty,
+                        CommitEdits = editor.CommitEdits,
+                        Validate = editor.UpdateValidation,
+                        Save = model.Save,
+                        PaneNames = AudioEditorControl.PaneNames,
+                        ShowPane = editor.ShowPane,
+                        IsPaneVisible = editor.IsPaneVisible,
+                        ShowAllPanes = editor.ShowAllPanes,
+                        ResetLayout = editor.ResetLayout
+                    };
+
+                    model.Changed += result.OnChanged;
+                    result._detach = () => model.Changed -= result.OnChanged;
+
+                    return result;
+                }
+
+            case "gscn":
+                {
+                    var model = archive is not null ? SceneDocument.Open(archive, entryName!) :
+                        path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
+
+                    var editor = new SceneEditorControl(model, packages);
+
+                    result = new()
+                    {
+                        Kind = "scene",
+                        Extension = "gscn",
+                        Editor = editor,
+                        Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
+                        Dirty = () => model.IsDirty,
+                        CommitEdits = editor.CommitEdits,
+                        Validate = editor.UpdateValidation,
+                        Save = model.Save,
+                        PaneNames = SceneEditorControl.PaneNames,
+                        ShowPane = editor.ShowPane,
+                        IsPaneVisible = editor.IsPaneVisible,
+                        ShowAllPanes = editor.ShowAllPanes,
+                        ResetLayout = editor.ResetLayout
+                    };
+
+                    model.Changed += result.OnChanged;
+                    result._detach = () => model.Changed -= result.OnChanged;
+
+                    return result;
+                }
+
+            case "gspr":
+                {
+                    var model = archive is not null ? SpriteDocument.Open(archive, entryName!) :
+                        path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
+
+                    var editor = new SpriteEditorControl(model, packages);
+
+                    result = new()
+                    {
+                        Kind = "sprite",
+                        Extension = "gspr",
+                        Editor = editor,
+                        Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
+                        Dirty = () => model.IsDirty,
+                        CommitEdits = editor.CommitEdits,
+                        Validate = editor.UpdateValidation,
+                        Save = model.Save,
+                        PaneNames = SpriteEditorControl.PaneNames,
+                        ShowPane = editor.ShowPane,
+                        IsPaneVisible = editor.IsPaneVisible,
+                        ShowAllPanes = editor.ShowAllPanes,
+                        ResetLayout = editor.ResetLayout
+                    };
+
+                    model.Changed += result.OnChanged;
+                    result._detach = () => model.Changed -= result.OnChanged;
+
+                    return result;
+                }
+
+            case "gaf":
+                {
+                    if (path is null)
+                        throw new ArgumentException("Choose an asset file path first.");
+
+                    var assets = archive ?? AssetsFile.LoadOrCreate(
+                        path,
+                        password,
+                        encrypt || !string.IsNullOrEmpty(password),
+                        register: false);
+
+                    try
+                    {
+                        var editor = new AssetEditorControl(assets);
+
+                        result = new()
+                        {
+                            Kind = "asset",
+                            Extension = System.IO.Path.GetExtension(path).TrimStart('.'),
+                            Editor = editor,
+                            Path = () => editor.FilePath,
+                            Dirty = () => editor.IsDirty || !File.Exists(editor.FilePath),
+                            CommitEdits = editor.CommitEdits,
+                            CanSave = () => editor.CanSave,
+                            Validate = () => [],
+                            Save = (destination, _) => editor.SaveTo(destination),
+                            PaneNames = AssetEditorControl.PaneNames,
+                            ShowPane = editor.ShowPane,
+                            IsPaneVisible = editor.IsPaneVisible,
+                            ShowAllPanes = editor.ShowAllPanes,
+                            ResetLayout = editor.ResetLayout,
+                            _release = assets.Dispose
+                        };
+
+                        editor.Changed += result.OnChanged;
+                        result._detach = () => editor.Changed -= result.OnChanged;
+
+                        return result;
+                    }
+                    catch
+                    {
+                        assets.Dispose();
+                        throw;
+                    }
+                }
 
             default:
                 throw new NotSupportedException($"Unsupported authoring format: {format}");

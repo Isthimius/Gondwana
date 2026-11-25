@@ -131,7 +131,8 @@ public sealed partial class CompositionTests
                 store.Write(
                     new()
                     {
-                        WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!],
+                        WorkingDirectory = directory,
+                        Documents = [WorkspaceSessionDocument.FromPath(path)!],
                         ActiveDocument = path
                     }));
 

@@ -38,7 +38,7 @@ internal sealed partial class SemanticPackPlan
                 archive.UseEncryption,
                 true,
                 cancellation)
-            { _resolveLooseFromInventory = false, _importDependencies = dependencies, _importPreview = [] };
+        { _resolveLooseFromInventory = false, _importDependencies = dependencies, _importPreview = [] };
 
         foreach (var pair in snapshot)
         {
@@ -129,7 +129,7 @@ internal sealed partial class SemanticPackPlan
         SafeFilePath.ValidateRelative(entry.Destination.AssetEntryName!);
 
         var key = new AssetsFileEntry
-            { AssetType = entry.Destination.AssetType, AssetName = entry.Destination.AssetEntryName! };
+        { AssetType = entry.Destination.AssetType, AssetName = entry.Destination.AssetEntryName! };
 
         if (_entries.TryGetValue(key, out var existing))
         {

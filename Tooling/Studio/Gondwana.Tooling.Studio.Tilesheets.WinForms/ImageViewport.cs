@@ -391,8 +391,8 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             .ToDictionary(f => f.Key, f => f.First());
 
         for (long y = firstY; y <= lastY; y += step)
-        for (long x = firstX; x <= lastX; x += step)
-            DrawFrame((int)x, (int)y, false);
+            for (long x = firstX; x <= lastX; x += step)
+                DrawFrame((int)x, (int)y, false);
 
         if (SelectedFrame is { } selected && selected.X < columns && selected.Y < rows)
             DrawFrame(selected.X, selected.Y, true);

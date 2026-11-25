@@ -740,7 +740,8 @@ public sealed partial class SceneEditorTests
             saved.Regions.Add(
                 new()
                 {
-                    Name = "extra", Area = new(
+                    Name = "extra",
+                    Area = new(
                         0,
                         0,
                         16,

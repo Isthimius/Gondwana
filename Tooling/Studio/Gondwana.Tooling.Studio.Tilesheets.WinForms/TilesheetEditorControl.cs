@@ -47,13 +47,13 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly PropertyGrid _frameProperties = CreatePropertyGrid();
 
     private readonly ComboBox _paneDefinitions = new()
-        { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
+    { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 200 };
 
     private readonly ComboBox _regions = new()
-        { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
+    { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", Width = 180 };
 
     private readonly ToolStripComboBox _toolbarRegions = new()
-        { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
+    { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
 
     private ToolStripButton? _renameRegionButton;
     private readonly NumericUpDown _column = new() { Width = 80 };
@@ -61,7 +61,7 @@ public sealed class TilesheetEditorControl : UserControl
     private readonly Label _gridSize = new() { AutoSize = true };
 
     private readonly TextBox _validation = new()
-        { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false };
+    { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false };
 
     private string? _previewKey;
     private string? _previewError;
@@ -385,7 +385,7 @@ public sealed class TilesheetEditorControl : UserControl
 
             overlays.DropDownItems.Add(
                 new ToolStripControlHost(row)
-                    { AutoSize = false, Size = row.Size, Margin = Padding.Empty, Padding = Padding.Empty });
+                { AutoSize = false, Size = row.Size, Margin = Padding.Empty, Padding = Padding.Empty });
         }
 
         bar.Items.Add(overlays);

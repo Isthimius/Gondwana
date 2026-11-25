@@ -31,10 +31,10 @@ public sealed partial class AnimationEditorTests
             document.History.Clear();
 
             var first = new AnimationFrameDefinition
-                { Tilesheet = "test-sheet", RegionName = "walk", XTile = 0, YTile = 0 };
+            { Tilesheet = "test-sheet", RegionName = "walk", XTile = 0, YTile = 0 };
 
             var second = new AnimationFrameDefinition
-                { Tilesheet = "test-sheet", RegionName = "walk", XTile = 1, YTile = 0, DurationSeconds = .25 };
+            { Tilesheet = "test-sheet", RegionName = "walk", XTile = 1, YTile = 0, DurationSeconds = .25 };
 
             document.AddFrame(first);
             document.AddFrame(second);

@@ -238,7 +238,9 @@ public static partial class SpriteDefinitionSerializer
                 ? null
                 : new()
                 {
-                    Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile,
+                    Tilesheet = frame.Tilesheet.Name,
+                    RegionName = frame.RegionName,
+                    XTile = frame.XTile,
                     YTile = frame.YTile
                 },
             AnimationKey = sprite.TileAnimator.CurrentCycle?.CycleKey,

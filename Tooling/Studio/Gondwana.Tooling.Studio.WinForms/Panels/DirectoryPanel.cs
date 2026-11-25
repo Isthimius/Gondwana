@@ -340,7 +340,7 @@ public sealed class DirectoryPanel : UserControl
                     continue;
 
                 var node = new TreeNode(directory.Name)
-                    { Tag = directory, ImageKey = "directory", SelectedImageKey = "directory" };
+                { Tag = directory, ImageKey = "directory", SelectedImageKey = "directory" };
 
                 node.Nodes.Add("Expand to load…");
                 parent.Nodes.Add(node);

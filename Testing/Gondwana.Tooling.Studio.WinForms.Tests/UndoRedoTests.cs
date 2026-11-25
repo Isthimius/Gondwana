@@ -56,16 +56,16 @@ public sealed partial class CompositionTests
             }
 
             foreach (var target in new Control[] { studio, child.Document.Editor })
-            foreach (var key in new[]
-                         { Keys.Control | Keys.Z, Keys.Control | Keys.Y, Keys.Control | Keys.Shift | Keys.Z })
-            {
-                target.GetType().GetMethod(
-                        "ProcessCmdKey",
-                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-                    .Invoke(target, [new Message(), key]);
+                foreach (var key in new[]
+                             { Keys.Control | Keys.Z, Keys.Control | Keys.Y, Keys.Control | Keys.Shift | Keys.Z })
+                {
+                    target.GetType().GetMethod(
+                            "ProcessCmdKey",
+                            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                        .Invoke(target, [new Message(), key]);
 
-                Assert.Equal("state to save", child.Document.SelectedMember);
-            }
+                    Assert.Equal("state to save", child.Document.SelectedMember);
+                }
 
             Assert.True(child.Document.Dirty());
         }

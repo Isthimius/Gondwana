@@ -249,7 +249,11 @@ public sealed partial class CompositionTests
 
         string propertyName = format switch
         {
-            "gts" => "Name", "gscn" => "ID", "gani" => "NextCycleKey", "gspr" => "Nickname", _ => "Key"
+            "gts" => "Name",
+            "gscn" => "ID",
+            "gani" => "NextCycleKey",
+            "gspr" => "Nickname",
+            _ => "Key"
         };
 
         var grid = Descendants(editor).OfType<PropertyGrid>().First(g => g.SelectedObject is not null &&
@@ -313,8 +317,8 @@ public sealed partial class CompositionTests
             yield return item;
 
             foreach (GridItem child in item.GridItems)
-            foreach (var descendant in Walk(child))
-                yield return descendant;
+                foreach (var descendant in Walk(child))
+                    yield return descendant;
         }
 
         return Walk(root);

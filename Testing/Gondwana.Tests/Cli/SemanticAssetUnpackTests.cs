@@ -255,11 +255,11 @@ public sealed partial class SemanticAssetPackTests
                 break;
             case AssetTypes.AnimationDefinition:
                 foreach (var animation in AnimationDefinitionSerializer.LoadAll(path))
-                foreach (var source in animation.TilesheetSources)
-                    TilesheetRegistry.Instance.LoadFromDefinitionAsset(
-                        Open(source.AssetsFilePath),
-                        source.AssetEntryName!,
-                        source.Tilesheet);
+                    foreach (var source in animation.TilesheetSources)
+                        TilesheetRegistry.Instance.LoadFromDefinitionAsset(
+                            Open(source.AssetsFilePath),
+                            source.AssetEntryName!,
+                            source.Tilesheet);
 
                 Assert.Equal(2, AnimationDefinitionSerializer.LoadAllCycles(path).Count);
                 break;
@@ -638,7 +638,9 @@ public sealed partial class SemanticAssetPackTests
             using var process = Process.Start(
                 new ProcessStartInfo("cmd.exe", $"/c mklink /J \"{link}\" \"{elsewhere}\"")
                 {
-                    UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
                     RedirectStandardError = true
                 })!;
 
@@ -676,7 +678,7 @@ public sealed partial class SemanticAssetPackTests
         var bytes = Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet));
 
         var animation = new AnimationDefinition
-            { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] };
+        { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] };
 
         Archive(
             (AssetTypes.TilesheetDefinition, "one.gts", bytes),
@@ -713,7 +715,7 @@ public sealed partial class SemanticAssetPackTests
                    register: false))
         {
             var animation = new AnimationDefinition
-                { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] };
+            { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] };
 
             using var stream =
                 new MemoryStream(Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(animation)));

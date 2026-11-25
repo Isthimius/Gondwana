@@ -258,7 +258,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
             var identities = Array.AsReadOnly(output.Identities.ToArray());
 
             var artifact = new ExternalImportArtifact(output.Kind, output.Path, identities.FirstOrDefault())
-                { LogicalKeys = identities };
+            { LogicalKeys = identities };
 
             byte[] content = [];
 

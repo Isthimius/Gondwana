@@ -404,7 +404,7 @@ public sealed partial class PluginPackageTests
             ["runtimepack.Microsoft.NETCore.App.Runtime.win-x64/8.0.0"] = new
             {
                 runtime = new Dictionary<string, object>
-                    { ["System.Runtime.dll"] = new { }, ["Microsoft.Win32.Registry.dll"] = new { } }
+                { ["System.Runtime.dll"] = new { }, ["Microsoft.Win32.Registry.dll"] = new { } }
             },
             ["runtimepack.Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.0"] = new
             {
@@ -629,7 +629,7 @@ public sealed partial class PluginPackageTests
                             [library] = new
                             {
                                 runtime = new Dictionary<string, object>
-                                    { ["PrivateHelper.dll"] = new { assemblyVersion = $"{version}.0.0.0" } }
+                                { ["PrivateHelper.dll"] = new { assemblyVersion = $"{version}.0.0.0" } }
                             }
                         }
                     },

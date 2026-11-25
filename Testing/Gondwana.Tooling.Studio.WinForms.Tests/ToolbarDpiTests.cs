@@ -49,7 +49,7 @@ public sealed partial class CompositionTests
             using var strip = new TestDpiToolStrip(logicalButton, logicalImage) { Dock = DockStyle.Top };
 
             var button = new ToolStripButton
-                { DisplayStyle = ToolStripItemDisplayStyle.Image, ToolTipText = "Keep command" };
+            { DisplayStyle = ToolStripItemDisplayStyle.Image, ToolTipText = "Keep command" };
 
             var selector = new ToolStripComboBox { Width = 230 };
             strip.Items.AddRange([button, selector]);
@@ -175,17 +175,17 @@ public sealed partial class CompositionTests
         bool hasForeground = false;
 
         for (int y = 0; y < image.Height; y++)
-        for (int x = 0; x < image.Width; x++)
-        {
-            var pixel = image.GetPixel(x, y);
+            for (int x = 0; x < image.Width; x++)
+            {
+                var pixel = image.GetPixel(x, y);
 
-            hasForeground |= pixel.A > 200 && Math.Abs(pixel.R - foreground.R) < 3
-                                           && Math.Abs(pixel.G - foreground.G) < 3 &&
-                                           Math.Abs(pixel.B - foreground.B) < 3;
+                hasForeground |= pixel.A > 200 && Math.Abs(pixel.R - foreground.R) < 3
+                                               && Math.Abs(pixel.G - foreground.G) < 3 &&
+                                               Math.Abs(pixel.B - foreground.B) < 3;
 
-            if (x == 0 || y == 0 || x == image.Width - 1 || y == image.Height - 1)
-                Assert.True(pixel.A < 250, "A solid glyph stroke reaches the bitmap edge.");
-        }
+                if (x == 0 || y == 0 || x == image.Width - 1 || y == image.Height - 1)
+                    Assert.True(pixel.A < 250, "A solid glyph stroke reaches the bitmap edge.");
+            }
 
         Assert.True(hasForeground);
     }

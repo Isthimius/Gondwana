@@ -184,7 +184,7 @@ public sealed class EditorSourceMonitorController : IDisposable
             _menu.Items.Add("Check sources now", null, (_, _) => _owner.Verify());
 
             var automatic = new ToolStripMenuItem("Monitor external changes")
-                { Checked = owner.Enabled, CheckOnClick = true };
+            { Checked = owner.Enabled, CheckOnClick = true };
 
             automatic.CheckedChanged += (_, _) => owner.Enabled = automatic.Checked;
             _menu.Items.Add(automatic);

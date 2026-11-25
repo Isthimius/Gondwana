@@ -697,7 +697,7 @@ public sealed partial class PluginPackageTests
             ["Host/1.0.0"] = new
             {
                 runtime = new Dictionary<string, object>
-                    { [typeof(IStudioPlugin).Assembly.GetName().Name + ".dll"] = new { } },
+                { [typeof(IStudioPlugin).Assembly.GetName().Name + ".dll"] = new { } },
                 dependencies = new { HostNative = "1.0.0" }
             },
             ["HostNative/1.0.0"] = new { native = new Dictionary<string, object> { ["host-native.dll"] = new { } } },

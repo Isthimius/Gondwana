@@ -25,7 +25,7 @@ internal static class DefinitionDocumentJson
             var root = JToken.Parse(
                            json,
                            new JsonLoadSettings
-                               { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error }) as JObject
+                           { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error }) as JObject
                        ?? throw new InvalidDataException("Definition document must be a JSON object.");
 
             var properties = root.Properties()

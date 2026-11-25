@@ -352,7 +352,9 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                         new(
                             new()
                             {
-                                Tilesheet = name, RegionName = region.Name, XTile = multiCell ? 0 : xy[0],
+                                Tilesheet = name,
+                                RegionName = region.Name,
+                                XTile = multiCell ? 0 : xy[0],
                                 YTile = multiCell ? 0 : xy[1]
                             },
                             region.TileSize,

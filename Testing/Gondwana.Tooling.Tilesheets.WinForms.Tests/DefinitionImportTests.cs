@@ -28,7 +28,7 @@ public sealed class DefinitionImportTests
             {
                 Name = "shared",
                 Image = new()
-                    { FilePath = "images/atlas.png", AssetsFilePath = "packs/media.gaf", AssetEntryName = "image" }
+                { FilePath = "images/atlas.png", AssetsFilePath = "packs/media.gaf", AssetEntryName = "image" }
             };
 
             var second = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(first));

@@ -37,7 +37,7 @@ internal static class StudioFileTypeIcons
                 GraphicsUnit.Pixel);
 
             using var alignment = new StringFormat
-                { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
 

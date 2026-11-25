@@ -179,7 +179,7 @@ public sealed class Phase2HistoryTests : IDisposable
         using var d = AnimationDocument.Create(_root);
 
         var first = new AnimationFrameDefinition
-            { Tilesheet = "tiles", RegionName = "body", XTile = 2, YTile = 3, DurationSeconds = .2 };
+        { Tilesheet = "tiles", RegionName = "body", XTile = 2, YTile = 3, DurationSeconds = .2 };
 
         var second = new AnimationFrameDefinition { Tilesheet = "tiles", RegionName = "other", XTile = 4, YTile = 5 };
         d.AddFrame(first);

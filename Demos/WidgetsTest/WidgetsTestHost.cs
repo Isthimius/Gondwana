@@ -131,11 +131,11 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
                     320,
                     370,
                     264))
-            {
-                AutoExpandRows = true,
-                PreferredTabWidth = 120,
-                IsTabReorderingEnabled = true
-            }
+        {
+            AutoExpandRows = true,
+            PreferredTabWidth = 120,
+            IsTabReorderingEnabled = true
+        }
             .SetTabControlZOrder(500);
 
         TabPageWidget general = _tabControl.AddTab("General", mnemonic: 'G');

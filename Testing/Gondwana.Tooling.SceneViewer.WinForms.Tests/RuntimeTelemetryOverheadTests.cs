@@ -108,7 +108,7 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                     completion.SetException(error);
                 }
             })
-            { IsBackground = true };
+        { IsBackground = true };
 
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
@@ -216,11 +216,11 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                         Assert.NotNull((object?)snapshot);
 
                         foreach (dynamic source in snapshot.Sources)
-                        foreach (string metric in new[]
-                                     { "cycle.cpu.ms", "background.cpu.ms", "build.cpu.ms", "replay.cpu.ms" })
-                            if (source.Metrics.ContainsKey(metric))
-                                output.WriteLine(
-                                    $"LAST_WINDOW source={source.Id} metric={metric} mean_ms={source.Metrics[metric].Mean} count={source.Metrics[metric].Count}");
+                            foreach (string metric in new[]
+                                         { "cycle.cpu.ms", "background.cpu.ms", "build.cpu.ms", "replay.cpu.ms" })
+                                if (source.Metrics.ContainsKey(metric))
+                                    output.WriteLine(
+                                        $"LAST_WINDOW source={source.Id} metric={metric} mean_ms={source.Metrics[metric].Mean} count={source.Metrics[metric].Count}");
                     }
 
                     if (warmupMilliseconds >= 30000)

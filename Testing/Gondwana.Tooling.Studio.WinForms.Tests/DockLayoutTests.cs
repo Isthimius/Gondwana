@@ -427,7 +427,7 @@ public sealed class DockLayoutTests
                     error = ex;
                 }
             })
-            { IsBackground = true };
+        { IsBackground = true };
 
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();

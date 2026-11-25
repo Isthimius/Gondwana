@@ -21,8 +21,8 @@ public sealed partial class SceneEditorControl
     private static IEnumerable<Point> RectangleCells(Rectangle rectangle)
     {
         for (int y = rectangle.Top; y < rectangle.Bottom; y++)
-        for (int x = rectangle.Left; x < rectangle.Right; x++)
-            yield return new(x, y);
+            for (int x = rectangle.Left; x < rectangle.Right; x++)
+                yield return new(x, y);
     }
 
     private void ApplyCells(

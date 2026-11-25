@@ -181,7 +181,7 @@ public sealed partial class SemanticAssetPackTests
                    register: false))
         {
             var animation = new AnimationDefinition
-                { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] };
+            { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] };
 
             using var bytes = new MemoryStream(
                 System.Text.Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(animation)));

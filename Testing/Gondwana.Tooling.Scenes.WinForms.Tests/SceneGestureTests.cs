@@ -868,27 +868,27 @@ public sealed partial class SceneEditorTests
                 BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(preview)!;
 
             for (int y = 2; y <= 3; y++)
-            for (int x = 2; x <= 3; x++)
-            {
-                var points = projection[x, y]!.OutlinePointsWorld;
-                bool highlighted = false;
-
-                for (int edge = 0; edge < points.Length; edge++)
+                for (int x = 2; x <= 3; x++)
                 {
-                    var first = points[edge];
-                    var second = points[(edge + 1) % points.Length];
-                    int sx = (int)Math.Round((first.X + second.X) / 2f * preview.Zoom + offset.X);
-                    int sy = (int)Math.Round((first.Y + second.Y) / 2f * preview.Zoom + offset.Y);
+                    var points = projection[x, y]!.OutlinePointsWorld;
+                    bool highlighted = false;
 
-                    for (int dy = -2; dy <= 2; dy++)
-                    for (int dx = -2; dx <= 2; dx++)
-                        if (sx + dx >= 0 && sx + dx < image.Width && sy + dy >= 35 && sy + dy < image.Height &&
-                            image.GetPixel(sx + dx, sy + dy).ToArgb() == Color.Gold.ToArgb())
-                            highlighted = true;
+                    for (int edge = 0; edge < points.Length; edge++)
+                    {
+                        var first = points[edge];
+                        var second = points[(edge + 1) % points.Length];
+                        int sx = (int)Math.Round((first.X + second.X) / 2f * preview.Zoom + offset.X);
+                        int sy = (int)Math.Round((first.Y + second.Y) / 2f * preview.Zoom + offset.Y);
+
+                        for (int dy = -2; dy <= 2; dy++)
+                            for (int dx = -2; dx <= 2; dx++)
+                                if (sx + dx >= 0 && sx + dx < image.Width && sy + dy >= 35 && sy + dy < image.Height &&
+                                    image.GetPixel(sx + dx, sy + dy).ToArgb() == Color.Gold.ToArgb())
+                                    highlighted = true;
+                    }
+
+                    Assert.True(highlighted, $"Missing projected selection outline for {coordinateSystem} ({x},{y})");
                 }
-
-                Assert.True(highlighted, $"Missing projected selection outline for {coordinateSystem} ({x},{y})");
-            }
 
             Assert.Empty(layer.Tiles);
         });

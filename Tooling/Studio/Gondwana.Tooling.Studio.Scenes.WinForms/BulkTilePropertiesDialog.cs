@@ -39,7 +39,7 @@ internal sealed class BulkTilePropertiesDialog : Form
         };
 
         var buttons = new FlowLayoutPanel
-            { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.RightToLeft };
+        { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.RightToLeft };
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };
         var ok = new Button { Text = "Apply" };

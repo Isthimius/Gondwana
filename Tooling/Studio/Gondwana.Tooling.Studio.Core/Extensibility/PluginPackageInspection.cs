@@ -190,31 +190,31 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 var targetRelevant = !target.Name.Contains('/') || RelevantRid(target.Name.Split('/').Last());
 
                 foreach (var library in target.Value.EnumerateObject())
-                foreach (var groupName in new[] { "runtime", "native", "runtimeTargets" })
-                {
-                    if (!library.Value.TryGetProperty(groupName, out var group))
-                        continue;
-
-                    foreach (var asset in group.EnumerateObject())
+                    foreach (var groupName in new[] { "runtime", "native", "runtimeTargets" })
                     {
-                        SafeRelative(asset.Name);
-
-                        if (!targetRelevant || hostLibraries.Contains(library.Name) ||
-                            (asset.Value.TryGetProperty("rid", out var rid) && !RelevantRid(rid.GetString()!)))
+                        if (!library.Value.TryGetProperty(groupName, out var group))
                             continue;
 
-                        var name = asset.Name.Split('/').Last();
+                        foreach (var asset in group.EnumerateObject())
+                        {
+                            SafeRelative(asset.Name);
 
-                        if (name == "_._" || PluginLoadContext.IsReserved(
-                                Path.GetFileNameWithoutExtension(name),
-                                _shared))
-                            continue;
+                            if (!targetRelevant || hostLibraries.Contains(library.Name) ||
+                                (asset.Value.TryGetProperty("rid", out var rid) && !RelevantRid(rid.GetString()!)))
+                                continue;
 
-                        if (!files.Any(f => Path.GetFileName(f).Equals(name, StringComparison.OrdinalIgnoreCase)))
-                            throw new InvalidDataException(
-                                $"Missing dependency asset '{asset.Name}' declared by '{Path.GetFileName(file)}'.");
+                            var name = asset.Name.Split('/').Last();
+
+                            if (name == "_._" || PluginLoadContext.IsReserved(
+                                    Path.GetFileNameWithoutExtension(name),
+                                    _shared))
+                                continue;
+
+                            if (!files.Any(f => Path.GetFileName(f).Equals(name, StringComparison.OrdinalIgnoreCase)))
+                                throw new InvalidDataException(
+                                    $"Missing dependency asset '{asset.Name}' declared by '{Path.GetFileName(file)}'.");
+                        }
                     }
-                }
             }
         }
 
@@ -234,16 +234,16 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         var pending = new Queue<JsonProperty>();
 
         foreach (var library in libraries)
-        foreach (var groupName in new[] { "runtime", "runtimeTargets" })
-        {
-            if (!library.Value.TryGetProperty(groupName, out var group))
-                continue;
+            foreach (var groupName in new[] { "runtime", "runtimeTargets" })
+            {
+                if (!library.Value.TryGetProperty(groupName, out var group))
+                    continue;
 
-            if (group.EnumerateObject().Any(asset =>
-                    _shared.ContainsKey(Path.GetFileNameWithoutExtension(asset.Name)) ||
-                    _framework.Contains(Path.GetFileNameWithoutExtension(asset.Name))))
-                pending.Enqueue(library);
-        }
+                if (group.EnumerateObject().Any(asset =>
+                        _shared.ContainsKey(Path.GetFileNameWithoutExtension(asset.Name)) ||
+                        _framework.Contains(Path.GetFileNameWithoutExtension(asset.Name))))
+                    pending.Enqueue(library);
+            }
 
         while (pending.TryDequeue(out var library))
         {

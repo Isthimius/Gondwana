@@ -121,7 +121,10 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                 gani.Frames.Add(
                     new()
                     {
-                        Tilesheet = name, RegionName = $"row-{index / columns}", XTile = index % columns, YTile = 0,
+                        Tilesheet = name,
+                        RegionName = $"row-{index / columns}",
+                        XTile = index % columns,
+                        YTile = 0,
                         DurationSeconds = sprite.Frames[index].DurationMilliseconds / 1000.0
                     });
 
@@ -184,7 +187,10 @@ public sealed class AsepriteImporter : ExternalAssetImporter
 
             return cel with
             {
-                Width = source.Width, Height = source.Height, Pixels = source.Pixels, LinkedFrame = null
+                Width = source.Width,
+                Height = source.Height,
+                Pixels = source.Pixels,
+                LinkedFrame = null
             };
         }
 
@@ -275,7 +281,7 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                     }
 
                     using var celPaint = new SKPaint
-                        { Color = SKColors.White.WithAlpha((byte)((cel.Opacity * layer.Opacity + 127) / 255)) };
+                    { Color = SKColors.White.WithAlpha((byte)((cel.Opacity * layer.Opacity + 127) / 255)) };
 
                     canvas.DrawBitmap(
                         pixels,

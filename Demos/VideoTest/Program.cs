@@ -140,7 +140,7 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
                     360),
                 source,
                 Player)
-            { Stretch = StretchMode.Uniform };
+        { Stretch = StretchMode.Uniform };
 
         Video.IsDragEnabled = true; // Explicit demo choice; the package default is false.
 

@@ -263,7 +263,7 @@ public sealed partial class SpriteEditorControl
                     validatedSheets.Add((address, sheet));
 
                     frame = new SpriteFrameDefinition
-                        { Tilesheet = sheet.Name, RegionName = region.Name, XTile = drag.X, YTile = drag.Y };
+                    { Tilesheet = sheet.Name, RegionName = region.Name, XTile = drag.X, YTile = drag.Y };
 
                     changes = !SpriteDocument.FramesMatch(sprite.Frame, frame);
                     break;
