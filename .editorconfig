@@ -45,6 +45,11 @@ resharper_csharp_place_simple_embedded_block_on_same_line = false
 resharper_csharp_place_abstract_accessorholder_on_single_line = true
 resharper_csharp_place_simple_accessorholder_on_single_line = false
 
+# Separate multiline statements, including unbraced control flow, from siblings.
+# JetBrains applies these preferences to other multiline statements as well.
+resharper_csharp_blank_lines_before_multiline_statements = 1
+resharper_csharp_blank_lines_after_multiline_statements = 1
+
 # Up to three parameters/arguments may stay on one line. Four or more are
 # chopped so each parameter/argument is placed on its own line.
 resharper_csharp_wrap_parameters_style = chop_if_long
