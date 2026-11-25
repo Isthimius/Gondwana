@@ -83,12 +83,18 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (!Enum.TryParse(args.KeyConfig.Key, true, out Keys key)) return;
-        if (args.KeyAction == KeyAction.Released) _keys.Remove(key); else _keys.Add(key);
+        if (!Enum.TryParse(args.KeyConfig.Key, true, out Keys key))
+            return;
+        if (args.KeyAction == KeyAction.Released)
+            _keys.Remove(key);
+        else
+            _keys.Add(key);
         if (args.KeyAction == KeyAction.Pressed)
         {
-            if (key is >= Keys.D1 and <= Keys.D6) _game.TryBuy((int)key - (int)Keys.D1);
-            if (key == Keys.R) _game.Reset();
+            if (key is >= Keys.D1 and <= Keys.D6)
+                _game.TryBuy((int)key - (int)Keys.D1);
+            if (key == Keys.R)
+                _game.Reset();
         }
     }
 
@@ -96,8 +102,10 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
     {
         _game.Mouse = args.CurrentPosition;
         bool overButton = MeadowDrawing.PlopButton.Contains(args.CurrentPosition);
-        if (args.LeftButtonJustPressed && overButton) _game.StartCharge();
-        if (args.LeftButtonJustReleased && _game.Charging) _game.ReleaseCharge();
+        if (args.LeftButtonJustPressed && overButton)
+            _game.StartCharge();
+        if (args.LeftButtonJustReleased && _game.Charging)
+            _game.ReleaseCharge();
     }
 
     private void Update()
@@ -105,14 +113,17 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0f, 0.05f);
         _lastTick = tick;
-        if (dt <= 0f) return;
+        if (dt <= 0f)
+            return;
 
         Vector2 direction = new(
             Axis(Keys.A, Keys.Left, Keys.D, Keys.Right),
             Axis(Keys.W, Keys.Up, Keys.S, Keys.Down));
         bool charging = _game.Charging || _keys.Contains(Keys.Space);
-        if (_keys.Contains(Keys.Space) && !_game.Charging) _game.StartCharge();
-        if (!_keys.Contains(Keys.Space) && _game.KeyboardCharging) _game.ReleaseCharge();
+        if (_keys.Contains(Keys.Space) && !_game.Charging)
+            _game.StartCharge();
+        if (!_keys.Contains(Keys.Space) && _game.KeyboardCharging)
+            _game.ReleaseCharge();
         _game.KeyboardCharging = _keys.Contains(Keys.Space);
         _game.Update(dt, direction, charging);
         _drawing.Invalidate();
@@ -153,21 +164,29 @@ internal sealed class PlopState
 
     internal void Reset()
     {
-        Plops.Clear(); Cow = new(510, 270); Pressure = 0; Money = 18; Stun = 0; Shake = 0;
+        Plops.Clear();
+        Cow = new(510, 270);
+        Pressure = 0;
+        Money = 18;
+        Stun = 0;
+        Shake = 0;
         Alfalfa = Chili = Plutonium = DualCore = Compressor = Beetle = false;
-        Message = "Pasture reset. The cow remembers nothing."; MessageTime = 3;
+        Message = "Pasture reset. The cow remembers nothing.";
+        MessageTime = 3;
     }
 
     internal void StartCharge()
     {
-        if (Stun > 0 || Charging) return;
+        if (Stun > 0 || Charging)
+            return;
         Charging = true;
         Pressure = Math.Max(Pressure, .02f);
     }
 
     internal void ReleaseCharge()
     {
-        if (!Charging) return;
+        if (!Charging)
+            return;
         Charging = false;
         Drop(Math.Max(.06f, Pressure));
         Pressure = 0;
@@ -185,8 +204,12 @@ internal sealed class PlopState
             Pressure += dt * (Alfalfa ? .34f : .24f);
             if (Pressure > 1.13f)
             {
-                Charging = false; Pressure = 0; Stun = 3; Shake = 1;
-                Message = "CATASTROPHIC BLOWOUT — dignity rebooting..."; MessageTime = 3;
+                Charging = false;
+                Pressure = 0;
+                Stun = 3;
+                Shake = 1;
+                Message = "CATASTROPHIC BLOWOUT — dignity rebooting...";
+                MessageTime = 3;
             }
         }
 
@@ -217,7 +240,8 @@ internal sealed class PlopState
             {
                 _automationTimer = 0;
                 Plop? target = Plops.OrderBy(p => Vector2.DistanceSquared(p.Position, new(110, 175))).FirstOrDefault();
-                if (target is not null) target.Velocity += Vector2.Normalize(new Vector2(110, 175) - target.Position) * 120f;
+                if (target is not null)
+                    target.Velocity += Vector2.Normalize(new Vector2(110, 175) - target.Position) * 120f;
             }
         }
 
@@ -227,7 +251,8 @@ internal sealed class PlopState
             float combo = 1f + Math.Max(0, sold.Count - 1) * .75f;
             float earned = sold.Sum(p => p.Value) * combo;
             Money += earned;
-            foreach (Plop p in sold) Plops.Remove(p);
+            foreach (Plop p in sold)
+                Plops.Remove(p);
             Message = sold.Count > 1 ? $"BEETLE COMBO x{combo:0.00}!  +${earned:0}" : $"SOLD!  +${earned:0}";
             MessageTime = 2.2f;
         }
@@ -240,7 +265,8 @@ internal sealed class PlopState
         {
             bool flaming = Chili && _random.NextDouble() < .25;
             float radius = 14 + pressure * pressure * 118;
-            if (Compressor) radius *= .65f;
+            if (Compressor)
+                radius *= .65f;
             float value = MathF.Round(1 + pressure * pressure * 235) * (flaming ? 2 : 1) * (Plutonium ? 3 : 1);
             Plops.Add(new Plop
             {
@@ -268,11 +294,34 @@ internal sealed class PlopState
             4 => (350, Compressor, "Compressor"),
             _ => (600, Beetle, "Beetle Assistant")
         };
-        if (item.owned) { Message = $"{item.name} already installed."; MessageTime = 1.5f; return; }
-        if (Money < item.cost) { Message = $"Need ${item.cost:0} for {item.name}."; MessageTime = 1.5f; return; }
+        if (item.owned)
+        { Message = $"{item.name} already installed."; MessageTime = 1.5f; return; }
+        if (Money < item.cost)
+        { Message = $"Need ${item.cost:0} for {item.name}."; MessageTime = 1.5f; return; }
         Money -= item.cost;
-        switch (slot) { case 0: Alfalfa = true; break; case 1: Chili = true; break; case 2: Plutonium = true; break; case 3: DualCore = true; break; case 4: Compressor = true; break; case 5: Beetle = true; break; }
-        Message = $"UPGRADE ACQUIRED: {item.name}!"; MessageTime = 2;
+        switch (slot)
+        {
+            case 0:
+                Alfalfa = true;
+                break;
+            case 1:
+                Chili = true;
+                break;
+            case 2:
+                Plutonium = true;
+                break;
+            case 3:
+                DualCore = true;
+                break;
+            case 4:
+                Compressor = true;
+                break;
+            case 5:
+                Beetle = true;
+                break;
+        }
+        Message = $"UPGRADE ACQUIRED: {item.name}!";
+        MessageTime = 2;
     }
 }
 

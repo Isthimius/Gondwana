@@ -95,9 +95,12 @@ public sealed class BlazorMouseAdapter : IMouseAdapter, IDisposable
         _currentPosition = new PointF((float)e.OffsetX, (float)e.OffsetY);
 
         _modifiers = KeyboardModifierState.None;
-        if (e.ShiftKey) _modifiers |= KeyboardModifierState.Shift;
-        if (e.CtrlKey) _modifiers |= KeyboardModifierState.Ctrl;
-        if (e.AltKey) _modifiers |= KeyboardModifierState.Alt;
+        if (e.ShiftKey)
+            _modifiers |= KeyboardModifierState.Shift;
+        if (e.CtrlKey)
+            _modifiers |= KeyboardModifierState.Ctrl;
+        if (e.AltKey)
+            _modifiers |= KeyboardModifierState.Alt;
     }
 
     private static GondwanaMouseButton MapButton(long button) => button switch

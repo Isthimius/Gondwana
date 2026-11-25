@@ -38,13 +38,18 @@ public sealed class AssetEditSession : IDisposable
             var updates = new List<(Payload Payload, ReferenceRelocation[] References)>();
             _payloads.RemoveAll(w => !w.TryGetTarget(out _));
             foreach (var weak in _payloads)
-                if (weak.TryGetTarget(out var payload)) updates.Add((payload, payload.PrepareAdoption(previousPath, destinationPath, entries)));
-            foreach (var update in updates) update.Payload.AcceptAdoption(update.References);
+                if (weak.TryGetTarget(out var payload))
+                    updates.Add((payload, payload.PrepareAdoption(previousPath, destinationPath, entries)));
+            foreach (var update in updates)
+                update.Payload.AcceptAdoption(update.References);
         }
-        if (externalRefresh) _payloads.Clear();
+        if (externalRefresh)
+            _payloads.Clear();
         _archive = archive;
-        if (externalRefresh) History.ResetSaved();
-        else History.MarkSaved();
+        if (externalRefresh)
+            History.ResetSaved();
+        else
+            History.MarkSaved();
     }
 
     /// <summary>Records the exact approved additions as one step; redo never reopens sources or discovers dependencies.</summary>
@@ -61,15 +66,18 @@ public sealed class AssetEditSession : IDisposable
         ArgumentNullException.ThrowIfNull(plan);
         History.RequireIdle();
         cancellation.ThrowIfCancellationRequested();
-        if (!plan.Targets(Archive)) throw new InvalidOperationException("The import plan belongs to another archive.");
+        if (!plan.Targets(Archive))
+            throw new InvalidOperationException("The import plan belongs to another archive.");
         plan.ValidateCurrent();
-        if (plan.AdditionCount == 0) return 0;
+        if (plan.AdditionCount == 0)
+            return 0;
         var command = new EntryCommand(this, $"Import {plan.AdditionCount} asset(s)",
             plan.Additions.Select(p => new Delta(p.Key.AssetType, p.Key.AssetName, null, Capture(p.Key.AssetType, p.Key.AssetName, p.Value, raw: false))).ToArray());
         Execute(command, confirmNonUndoable, () =>
         {
             cancellation.ThrowIfCancellationRequested();
-            if (!plan.Targets(Archive)) throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
+            if (!plan.Targets(Archive))
+                throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
             plan.ValidateCurrent();
         }, write, cancellation);
         return plan.AdditionCount;
@@ -90,7 +98,8 @@ public sealed class AssetEditSession : IDisposable
         using var buffer = new MemoryStream();
         original.CopyTo(buffer);
         var before = buffer.ToArray();
-        if (before.AsSpan().SequenceEqual(replacement)) return false;
+        if (before.AsSpan().SequenceEqual(replacement))
+            return false;
         var command = new EntryCommand(this, $"Replace {entry.AssetName}",
             [new(type, entry.AssetName, Capture(type, entry.AssetName, before, raw: true), Capture(type, entry.AssetName, replacement.ToArray(), raw: true))]);
         var capturedArchive = Archive;
@@ -115,8 +124,10 @@ public sealed class AssetEditSession : IDisposable
         bool oversized = command.RetainedBytes > History.ByteLimit;
         if (oversized)
         {
-            if (confirm is null) throw new InvalidOperationException("This edit exceeds the binary history budget. Explicit approval is required to proceed without Undo and clear existing Undo/Redo.");
-            if (!confirm(command.RetainedBytes)) throw new OperationCanceledException("Oversized edit cancelled; archive and history unchanged.");
+            if (confirm is null)
+                throw new InvalidOperationException("This edit exceeds the binary history budget. Explicit approval is required to proceed without Undo and clear existing Undo/Redo.");
+            if (!confirm(command.RetainedBytes))
+                throw new OperationCanceledException("Oversized edit cancelled; archive and history unchanged.");
         }
         // The confirmation dialog can pump messages: recheck stale plans before committing.
         History.RequireIdle();
@@ -125,13 +136,16 @@ public sealed class AssetEditSession : IDisposable
         command.InitialWriter = write;
         try
         {
-            if (!oversized) History.Execute(command);
+            if (!oversized)
+                History.Execute(command);
             else
             {
-                try { History.Capture(command.Execute); }
+                try
+                { History.Capture(command.Execute); }
                 catch
                 {
-                    try { History.Capture(command.Undo); }
+                    try
+                    { History.Capture(command.Undo); }
                     catch { History.MarkUntracked(); throw; }
                     throw;
                 }
@@ -166,7 +180,8 @@ public sealed class AssetEditSession : IDisposable
             Bytes = bytes;
             _origin = new(type, origin, name);
             _raw = raw;
-            if (!PackDefinitionDocument.IsNative(type)) return;
+            if (!PackDefinitionDocument.IsNative(type))
+                return;
             try
             {
                 var definition = PackDefinitionDocument.Read(type, bytes, name)!;
@@ -193,7 +208,8 @@ public sealed class AssetEditSession : IDisposable
         {
             // Opaque binaries/raw unsupported definitions never enter the relocation pipeline.
             if (_references is null || DefinitionReferenceDiscovery.Paths.Equals(path, _origin.Path) &&
-                _references.All(m => DefinitionReferenceDiscovery.Same(m.Source, m.Destination))) return Bytes;
+                _references.All(m => DefinitionReferenceDiscovery.Same(m.Source, m.Destination)))
+                return Bytes;
             try
             {
                 return PackDefinitionDocument.Read(_origin.AssetType, Bytes, _origin.AssetEntryName!)!.Relocate(
@@ -223,17 +239,21 @@ public sealed class AssetEditSession : IDisposable
             var prepared = deltas.Select(d => (Delta: d, Bytes: (undo ? d.Before : d.After)?.Materialize(path))).ToArray();
             foreach (var item in prepared)
             {
-                if (!undo) InitialCancellation.ThrowIfCancellationRequested();
+                if (!undo)
+                    InitialCancellation.ThrowIfCancellationRequested();
                 var d = item.Delta;
-                if (item.Bytes is null) archive.Remove(d.Type, d.Name);
-                else if (!undo && InitialWriter is { } writer) writer(new() { AssetType = d.Type, AssetName = d.Name }, item.Bytes);
+                if (item.Bytes is null)
+                    archive.Remove(d.Type, d.Name);
+                else if (!undo && InitialWriter is { } writer)
+                    writer(new() { AssetType = d.Type, AssetName = d.Name }, item.Bytes);
                 else
                 {
                     using var stream = new MemoryStream(item.Bytes, writable: false);
                     archive.Add(d.Type, d.Name, stream);
                 }
             }
-            if (!undo) InitialCancellation.ThrowIfCancellationRequested();
+            if (!undo)
+                InitialCancellation.ThrowIfCancellationRequested();
         }
     }
 

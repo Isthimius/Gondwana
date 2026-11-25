@@ -28,13 +28,15 @@ public sealed partial class MainForm : IResourceNavigator
     /// <summary>Uses the existing document registry and editor factory without reloading an open document.</summary>
     public ResourceNavigationResult Navigate(ResourceAddress address)
     {
-        if (InvokeRequired) throw new InvalidOperationException("Studio navigation must run on its UI thread.");
+        if (InvokeRequired)
+            throw new InvalidOperationException("Studio navigation must run on its UI thread.");
         try
         {
             var format = StudioDocument.FormatFor(address.Location.AssetType) ??
                 (address.Location.AssetType == Gondwana.Assets.AssetTypes.Misc && address.Location.AssetEntryName is null &&
                 AssetArchiveFormat.IsArchive(address.Location.Path) ? "gaf" : null);
-            if (format is null) return new(false, false, $"No Studio definition editor supports {address.Location}.");
+            if (format is null)
+                return new(false, false, $"No Studio definition editor supports {address.Location}.");
             if (address.Location.AssetEntryName is null && StudioDocument.FormatFor(address.Location.Path) != format)
                 return new(false, false, $"Expected {format} document: {address.Location}.");
             var document = OpenDocument(address.Location);
@@ -55,7 +57,8 @@ public sealed partial class MainForm : IResourceNavigator
         _dependencies.RefreshRequested += () => { InvalidateDependencies(); _ = RefreshDependenciesAsync(); };
         _dependencies.ScopeRequested += wholeDocument =>
         {
-            if (_dependencyTarget is null || (!wholeDocument && _dependencyTarget.Member is null)) return;
+            if (_dependencyTarget is null || (!wholeDocument && _dependencyTarget.Member is null))
+                return;
             _dependencyWholeDocument = wholeDocument;
             UpdateDependencyScopeControls();
             _ = RefreshDependenciesAsync(); // Requery the existing scan, never rescan just to switch scope.
@@ -64,7 +67,8 @@ public sealed partial class MainForm : IResourceNavigator
         {
             var result = Navigate(address);
             _output.Log(result.Message);
-            if (!result.Exact) _dependencies.SetStatus(result.Message);
+            if (!result.Exact)
+                _dependencies.SetStatus(result.Message);
         };
         Browser.Tree.ItemDrag += (_, e) =>
         {
@@ -96,7 +100,8 @@ public sealed partial class MainForm : IResourceNavigator
 
     private void DependencySelectionChanged(object? sender = null, EventArgs? e = null)
     {
-        if (!_followDependencySelection || _disposed) return;
+        if (!_followDependencySelection || _disposed)
+            return;
         _dependencyTarget = ActiveAddress();
         UpdateDependencyScopeControls();
         _ = RefreshDependenciesAsync();
@@ -105,18 +110,21 @@ public sealed partial class MainForm : IResourceNavigator
     private void InvalidateDependencies()
     {
         _dependencyGeneration++;
-        foreach (var source in _dependencySources) source.Dispose();
+        foreach (var source in _dependencySources)
+            source.Dispose();
         _dependencySources.Clear();
         _dependencyCancellation?.Cancel();
         _dependencyCancellation?.Dispose();
         _dependencyCancellation = null;
         _dependencyScan = null;
-        if (!_disposed) _dependencies.SetStatus("Saved content changed. Refresh / Rescan to update dependencies.");
+        if (!_disposed)
+            _dependencies.SetStatus("Saved content changed. Refresh / Rescan to update dependencies.");
     }
 
     internal async Task RefreshDependenciesAsync()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         if (_dependencyTarget is null)
         {
             UpdateDependencyScopeControls();
@@ -125,7 +133,8 @@ public sealed partial class MainForm : IResourceNavigator
         }
         if (_dependencyScan is null)
         {
-            if (_dependencyCancellation is not null) return;
+            if (_dependencyCancellation is not null)
+                return;
             var cancellation = _dependencyCancellation = new CancellationTokenSource();
             var token = cancellation.Token;
             var generation = _dependencyGeneration;
@@ -147,7 +156,8 @@ public sealed partial class MainForm : IResourceNavigator
                 }, token).ConfigureAwait(false);
                 await OnDependencyUiAsync(() =>
                 {
-                    if (_disposed || generation != _dependencyGeneration || token.IsCancellationRequested) return;
+                    if (_disposed || generation != _dependencyGeneration || token.IsCancellationRequested)
+                        return;
                     _dependencyScan = scan;
                     RegisterDependencyScanSources(scan, generation);
                     _dependencyCancellation = null;
@@ -189,11 +199,13 @@ public sealed partial class MainForm : IResourceNavigator
         // additions outside this inventory still require explicit Refresh / Rescan.
         foreach (var (path, version) in scan.SourceVersions)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(path))) continue;
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                continue;
             _dependencySources.Add(_sourceMonitor.Register(new(Gondwana.Assets.AssetTypes.Misc, path), version,
                 DocumentSourceRole.Dependency, change => _dependencyUi.Post(_ =>
                 {
-                    if (_disposed || generation != _dependencyGeneration) return;
+                    if (_disposed || generation != _dependencyGeneration)
+                        return;
                     InvalidateDependencies();
                     _packages.Invalidate(change.Location.Path);
                     QueueSourceBrowserRefresh();
@@ -208,8 +220,10 @@ public sealed partial class MainForm : IResourceNavigator
         using var registration = token.Register(() => completion.TrySetCanceled(token));
         _dependencyUi.Post(_ =>
         {
-            if (token.IsCancellationRequested) return;
-            try { action(); completion.TrySetResult(); }
+            if (token.IsCancellationRequested)
+                return;
+            try
+            { action(); completion.TrySetResult(); }
             catch (Exception ex) { completion.TrySetException(ex); }
         }, null);
         await completion.Task.ConfigureAwait(false);

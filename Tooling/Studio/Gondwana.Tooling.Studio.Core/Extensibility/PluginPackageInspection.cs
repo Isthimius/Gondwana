@@ -45,13 +45,17 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 PluginPackagePaths.EnsureNoLinks(path);
                 var relative = Path.GetRelativePath(directory, path).Replace(Path.DirectorySeparatorChar, '/');
                 SafeRelative(relative);
-                if (!names.Add(relative)) throw new InvalidDataException($"Case-colliding package path: {relative}");
-                if (names.Count > MaximumEntries) throw new InvalidDataException("Package exceeds the 4096-entry limit.");
-                if (Directory.Exists(path)) { directories?.Add(path); Walk(path); }
+                if (!names.Add(relative))
+                    throw new InvalidDataException($"Case-colliding package path: {relative}");
+                if (names.Count > MaximumEntries)
+                    throw new InvalidDataException("Package exceeds the 4096-entry limit.");
+                if (Directory.Exists(path))
+                { directories?.Add(path); Walk(path); }
                 else
                 {
                     size = checked(size + new FileInfo(path).Length);
-                    if (size > MaximumBytes) throw new InvalidDataException("Package exceeds the 256 MiB expanded-size limit.");
+                    if (size > MaximumBytes)
+                        throw new InvalidDataException("Package exceeds the 256 MiB expanded-size limit.");
                     files.Add(path);
                 }
             }
@@ -80,7 +84,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
     {
         var files = Files(directory);
         var manifestPath = Path.Combine(directory, "plugin.json");
-        if (new FileInfo(manifestPath).Length > 65536) throw new InvalidDataException("Manifest exceeds 64 KiB.");
+        if (new FileInfo(manifestPath).Length > 65536)
+            throw new InvalidDataException("Manifest exceeds 64 KiB.");
         if (files.Any(f => Path.GetFileName(f).Equals("plugin.json", StringComparison.OrdinalIgnoreCase) && f != manifestPath))
             throw new InvalidDataException("Nested or ambiguously cased plugin manifests are not supported.");
         var manifest = PluginManifest.Read(directory);
@@ -88,7 +93,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         if (manifest.ContractVersion != PluginManifest.SupportedContractVersion)
             throw new InvalidDataException($"Unsupported contract {manifest.ContractVersion}; Studio supports {PluginManifest.SupportedContractVersion}.");
         var entry = Path.Combine(directory, manifest.EntryAssembly!);
-        if (!File.Exists(entry)) throw new InvalidDataException($"Missing entry assembly: {manifest.EntryAssembly}");
+        if (!File.Exists(entry))
+            throw new InvalidDataException($"Missing entry assembly: {manifest.EntryAssembly}");
         _ = AssemblyName.GetAssemblyName(entry);
         PluginLoadContext.ValidateAssemblies(directory, _shared);
         var available = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -111,7 +117,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             foreach (var handle in metadata.AssemblyReferences)
             {
                 var name = metadata.GetString(metadata.GetAssemblyReference(handle).Name);
-                if (_shared.ContainsKey(name) || _framework.Contains(name)) continue;
+                if (_shared.ContainsKey(name) || _framework.Contains(name))
+                    continue;
                 var resolved = resolver.ResolveAssemblyToPath(new AssemblyName(name));
                 var adjacent = Path.Combine(directory, name + ".dll");
                 if (!available.Contains(name) || (resolved is null && !File.Exists(adjacent)))
@@ -122,9 +129,11 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         foreach (var file in files.Where(f => f.EndsWith(".deps.json", StringComparison.OrdinalIgnoreCase)))
         {
             using var stream = File.OpenRead(file);
-            if (stream.Length > 4 * 1024 * 1024) throw new InvalidDataException("Dependency metadata exceeds 4 MiB.");
+            if (stream.Length > 4 * 1024 * 1024)
+                throw new InvalidDataException("Dependency metadata exceeds 4 MiB.");
             using var document = JsonDocument.Parse(stream);
-            if (!document.RootElement.TryGetProperty("targets", out var targets)) continue;
+            if (!document.RootElement.TryGetProperty("targets", out var targets))
+                continue;
             foreach (var target in targets.EnumerateObject())
             {
                 var hostLibraries = HostLibraries(target.Value);
@@ -132,14 +141,17 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
                 foreach (var library in target.Value.EnumerateObject())
                     foreach (var groupName in new[] { "runtime", "native", "runtimeTargets" })
                     {
-                        if (!library.Value.TryGetProperty(groupName, out var group)) continue;
+                        if (!library.Value.TryGetProperty(groupName, out var group))
+                            continue;
                         foreach (var asset in group.EnumerateObject())
                         {
                             SafeRelative(asset.Name);
                             if (!targetRelevant || hostLibraries.Contains(library.Name) ||
-                                (asset.Value.TryGetProperty("rid", out var rid) && !RelevantRid(rid.GetString()!))) continue;
+                                (asset.Value.TryGetProperty("rid", out var rid) && !RelevantRid(rid.GetString()!)))
+                                continue;
                             var name = asset.Name.Split('/').Last();
-                            if (name == "_._" || PluginLoadContext.IsReserved(Path.GetFileNameWithoutExtension(name), _shared)) continue;
+                            if (name == "_._" || PluginLoadContext.IsReserved(Path.GetFileNameWithoutExtension(name), _shared))
+                                continue;
                             if (!files.Any(f => Path.GetFileName(f).Equals(name, StringComparison.OrdinalIgnoreCase)))
                                 throw new InvalidDataException($"Missing dependency asset '{asset.Name}' declared by '{Path.GetFileName(file)}'.");
                         }
@@ -161,17 +173,21 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         foreach (var library in libraries)
             foreach (var groupName in new[] { "runtime", "runtimeTargets" })
             {
-                if (!library.Value.TryGetProperty(groupName, out var group)) continue;
+                if (!library.Value.TryGetProperty(groupName, out var group))
+                    continue;
                 if (group.EnumerateObject().Any(asset =>
                     _shared.ContainsKey(Path.GetFileNameWithoutExtension(asset.Name)) ||
-                    _framework.Contains(Path.GetFileNameWithoutExtension(asset.Name)))) pending.Enqueue(library);
+                    _framework.Contains(Path.GetFileNameWithoutExtension(asset.Name))))
+                    pending.Enqueue(library);
             }
         while (pending.TryDequeue(out var library))
         {
-            if (!owned.Add(library.Name) || !library.Value.TryGetProperty("dependencies", out var dependencies)) continue;
+            if (!owned.Add(library.Name) || !library.Value.TryGetProperty("dependencies", out var dependencies))
+                continue;
             foreach (var dependency in dependencies.EnumerateObject())
                 if (byName.TryGetValue(dependency.Name, out var matches))
-                    foreach (var match in matches) pending.Enqueue(match);
+                    foreach (var match in matches)
+                        pending.Enqueue(match);
         }
         return owned;
     }
@@ -179,9 +195,11 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
     private static bool RelevantRid(string rid)
     {
         var current = RuntimeInformation.RuntimeIdentifier;
-        if (rid == current || rid == "any") return true;
+        if (rid == current || rid == "any")
+            return true;
         var platform = OperatingSystem.IsWindows() ? "win" : OperatingSystem.IsMacOS() ? "osx" : "linux";
-        if (rid == platform || (platform != "win" && rid == "unix")) return true;
+        if (rid == platform || (platform != "win" && rid == "unix"))
+            return true;
         return rid.StartsWith(platform, StringComparison.Ordinal) &&
             rid.EndsWith("-" + RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant(), StringComparison.Ordinal);
     }
@@ -213,7 +231,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
     private static readonly uint[] CrcTable = Enumerable.Range(0, 256).Select(value =>
     {
         var crc = (uint)value;
-        for (var bit = 0; bit < 8; bit++) crc = (crc & 1) != 0 ? 0xedb88320U ^ (crc >> 1) : crc >> 1;
+        for (var bit = 0; bit < 8; bit++)
+            crc = (crc & 1) != 0 ? 0xedb88320U ^ (crc >> 1) : crc >> 1;
         return crc;
     }).ToArray();
 
@@ -226,9 +245,11 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
         while ((count = input.Read(buffer)) != 0)
         {
             total = checked(total + count);
-            if (total > MaximumBytes) throw new InvalidDataException("Package exceeds the 256 MiB expanded-size limit.");
+            if (total > MaximumBytes)
+                throw new InvalidDataException("Package exceeds the 256 MiB expanded-size limit.");
             if (expectedCrc is not null)
-                for (var i = 0; i < count; i++) crc = CrcTable[(crc ^ buffer[i]) & 0xff] ^ (crc >> 8);
+                for (var i = 0; i < count; i++)
+                    crc = CrcTable[(crc ^ buffer[i]) & 0xff] ^ (crc >> 8);
             output.Write(buffer, 0, count);
         }
         if (expectedCrc is not null && (~crc != expectedCrc || total - before != expectedLength))
@@ -238,7 +259,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
     internal static void Extract(string source, string destination)
     {
         PluginPackagePaths.EnsureNoLinks(source);
-        if (new FileInfo(source).Length > MaximumBytes) throw new InvalidDataException("ZIP exceeds the 256 MiB archive-size limit.");
+        if (new FileInfo(source).Length > MaximumBytes)
+            throw new InvalidDataException("ZIP exceeds the 256 MiB archive-size limit.");
         // Bound central-directory allocation before ZipArchive materializes its entry collection.
         using (var input = File.OpenRead(source))
         {
@@ -247,13 +269,15 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             input.ReadExactly(tail);
             var end = -1;
             for (var i = tail.Length - 22; i >= 0; i--)
-                if (BitConverter.ToUInt32(tail, i) == 0x06054b50 && i + 22 + BitConverter.ToUInt16(tail, i + 20) == tail.Length) { end = i; break; }
+                if (BitConverter.ToUInt32(tail, i) == 0x06054b50 && i + 22 + BitConverter.ToUInt16(tail, i + 20) == tail.Length)
+                { end = i; break; }
             if (end < 0 || BitConverter.ToUInt16(tail, end + 4) != 0 || BitConverter.ToUInt16(tail, end + 6) != 0 ||
                 BitConverter.ToUInt16(tail, end + 10) > MaximumEntries || BitConverter.ToUInt32(tail, end + 12) > 4 * 1024 * 1024)
                 throw new InvalidDataException("Malformed, multi-volume, ZIP64, or oversized ZIP directory. Use a normal ZIP with at most 4096 entries.");
         }
         using var archive = ZipFile.OpenRead(source);
-        if (archive.Entries.Count > MaximumEntries) throw new InvalidDataException("ZIP exceeds the 4096-entry limit.");
+        if (archive.Entries.Count > MaximumEntries)
+            throw new InvalidDataException("ZIP exceeds the 4096-entry limit.");
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         long expanded = 0;
         foreach (var entry in archive.Entries)
@@ -262,12 +286,14 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             SafeRelative(name);
             if (entry.FullName.EndsWith('/') && (entry.Length != 0 || entry.Crc32 != 0))
                 throw new InvalidDataException("ZIP directories must not contain file data.");
-            if (!names.Add(name)) throw new InvalidDataException($"Duplicate ZIP entry: {name}");
+            if (!names.Add(name))
+                throw new InvalidDataException($"Duplicate ZIP entry: {name}");
             var kind = (entry.ExternalAttributes >> 16) & 0xf000;
             if (kind is not (0 or 0x8000 or 0x4000) || (entry.ExternalAttributes & (int)FileAttributes.ReparsePoint) != 0)
                 throw new InvalidDataException($"Links and special ZIP entries are forbidden: {name}");
             expanded = checked(expanded + entry.Length);
-            if (expanded > MaximumBytes) throw new InvalidDataException("ZIP exceeds the 256 MiB expanded-size limit.");
+            if (expanded > MaximumBytes)
+                throw new InvalidDataException("ZIP exceeds the 256 MiB expanded-size limit.");
         }
         long copied = 0;
         foreach (var entry in archive.Entries)
@@ -276,7 +302,8 @@ internal sealed class PluginPackageInspection(IEnumerable<Assembly> contracts)
             var target = Path.GetFullPath(Path.Combine(root, entry.FullName.Replace('/', Path.DirectorySeparatorChar)));
             if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("ZIP entry escapes the staging directory.");
-            if (entry.FullName.EndsWith('/')) { Directory.CreateDirectory(target); continue; }
+            if (entry.FullName.EndsWith('/'))
+            { Directory.CreateDirectory(target); continue; }
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             using var input = entry.Open();
             using var output = new FileStream(target, FileMode.CreateNew, FileAccess.Write, FileShare.None);

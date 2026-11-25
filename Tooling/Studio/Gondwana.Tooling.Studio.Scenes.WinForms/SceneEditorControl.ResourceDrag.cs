@@ -277,7 +277,8 @@ public sealed partial class SceneEditorControl
     private static ResourceAddress? DeclaredAddress<T>(IEnumerable<T> matches, string member, Func<T, AssetLocation> location)
     {
         using var sources = matches.GetEnumerator();
-        if (!sources.MoveNext()) return null;
+        if (!sources.MoveNext())
+            return null;
         var first = sources.Current;
         if (sources.MoveNext())
             throw new InvalidDataException($"Multiple sources are registered for '{member}'.");
@@ -288,8 +289,10 @@ public sealed partial class SceneEditorControl
     {
         if (assignment.Animation is { } animation)
         {
-            if (resource.EntryName is { } entry) Document.AddPackedAnimationSource(animation.Key, resource.Path, entry);
-            else Document.SetLooseAnimationSource(animation.Key, resource.Path);
+            if (resource.EntryName is { } entry)
+                Document.AddPackedAnimationSource(animation.Key, resource.Path, entry);
+            else
+                Document.SetLooseAnimationSource(animation.Key, resource.Path);
         }
         else if (resource.EntryName is { } entry)
             Document.AddPackedTilesheetSource(assignment.Frame.Tilesheet, resource.Path, entry);

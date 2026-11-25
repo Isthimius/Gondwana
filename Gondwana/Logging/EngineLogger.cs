@@ -161,7 +161,9 @@ public static partial class EngineLogger
                 return;
 
             // Completing the writer lets the worker drain then exit.
-            try { ch.Writer.TryComplete(); } catch { /* ignore */ }
+            try
+            { ch.Writer.TryComplete(); }
+            catch { /* ignore */ }
 
             // Clear shared references so other threads can't enqueue on this instance.
             _channel = null;
@@ -169,15 +171,21 @@ public static partial class EngineLogger
             _cts = null;
         }
 
-        try { cts?.Cancel(); } catch { /* never crash */ }
+        try
+        { cts?.Cancel(); }
+        catch { /* never crash */ }
 
         if (flush)
         {
             var timeout = flushTimeout ?? TimeSpan.FromSeconds(2);
-            try { worker!.Wait(timeout); } catch { /* never crash */ }
+            try
+            { worker!.Wait(timeout); }
+            catch { /* never crash */ }
         }
 
-        try { cts?.Dispose(); } catch { /* ignore */ }
+        try
+        { cts?.Dispose(); }
+        catch { /* ignore */ }
     }
 
     /// <summary>
@@ -340,7 +348,9 @@ public static partial class EngineLogger
         if (forceRestart && _channel != null)
         {
             // Best-effort stop without flush; caller controls flush via StopAsyncLogging.
-            try { _channel.Writer.TryComplete(); } catch { /* ignore */ }
+            try
+            { _channel.Writer.TryComplete(); }
+            catch { /* ignore */ }
         }
 
         int capacityLocal = _capacity;

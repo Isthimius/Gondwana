@@ -28,11 +28,13 @@ internal static class RenderTelemetry
     {
         var source = Engine.Instance.Profiler.TryRegisterSource("Render surface",
             gpu ? (OperatingSystem.IsBrowser() ? "WebGL" : "Desktop GPU") : "Bitmap");
-        if (source is null) return null;
+        if (source is null)
+            return null;
         foreach (var name in Metrics)
         {
             var availability = TelemetryAvailability.NotYetSampled;
-            if (!gpu) availability = TelemetryAvailability.Unsupported;
+            if (!gpu)
+                availability = TelemetryAvailability.Unsupported;
             else if (name.StartsWith("gate.", StringComparison.Ordinal))
                 availability = OperatingSystem.IsBrowser() ? TelemetryAvailability.Unsupported : TelemetryAvailability.NotApplicable;
             else if (OperatingSystem.IsBrowser() && Array.IndexOf(Metrics, name) is >= 9 and <= 17)

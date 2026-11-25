@@ -43,11 +43,16 @@ public sealed partial class PluginPackageTests
     public void ManagerReviewsPackagesAndCancellationPreservesActivationRestartNotice() => OnSta(() =>
     {
         var source = SourcePackage();
-        using var operations = Operations(); operations.StartSession();
+        using var operations = Operations();
+        operations.StartSession();
         var preferences = new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { });
-        var host = new Host(_ => { }); host.DiscoverAndLoad(InstallRoot);
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(InstallRoot);
         using var panel = new PluginManagerPanel(host, preferences, operations);
-        using var form = new Form(); form.Controls.Add(panel); panel.Dock = DockStyle.Fill; form.Show();
+        using var form = new Form();
+        form.Controls.Add(panel);
+        panel.Dock = DockStyle.Fill;
+        form.Show();
         Assert.True(panel.InstallButton.Enabled);
         Assert.False(panel.UpdateButton.Enabled);
         Assert.False(panel.RemoveButton.Enabled);
@@ -88,13 +93,24 @@ public sealed partial class PluginPackageTests
         InstallFixture();
         PluginPackageInspection.CopyDirectory(SourcePackage("bundled", "gondwana.project-diagnostics"), Path.Combine(InstallRoot, "ProjectDiagnostics"));
         Compile(Path.Combine(InstallRoot, "Legacy.dll"), PluginSource("Legacy"));
-        using var operations = Operations(); operations.StartSession();
-        var host = new Host(_ => { }); host.DiscoverAndLoad(InstallRoot);
+        using var operations = Operations();
+        operations.StartSession();
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(InstallRoot);
         using var panel = new PluginManagerPanel(host, new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { }), operations);
-        using var form = new Form(); form.Controls.Add(panel); form.Show();
-        Select(panel, "sample.package"); Assert.True(panel.UpdateButton.Enabled); Assert.True(panel.RemoveButton.Enabled);
-        Select(panel, "gondwana.project-diagnostics"); Assert.False(panel.UpdateButton.Enabled); Assert.False(panel.RemoveButton.Enabled); Assert.True(panel.EnabledChoice.Enabled);
-        Select(panel, host.Discovery.Single(r => r.IsLegacy).PreferenceId!); Assert.False(panel.UpdateButton.Enabled); Assert.False(panel.RemoveButton.Enabled);
+        using var form = new Form();
+        form.Controls.Add(panel);
+        form.Show();
+        Select(panel, "sample.package");
+        Assert.True(panel.UpdateButton.Enabled);
+        Assert.True(panel.RemoveButton.Enabled);
+        Select(panel, "gondwana.project-diagnostics");
+        Assert.False(panel.UpdateButton.Enabled);
+        Assert.False(panel.RemoveButton.Enabled);
+        Assert.True(panel.EnabledChoice.Enabled);
+        Select(panel, host.Discovery.Single(r => r.IsLegacy).PreferenceId!);
+        Assert.False(panel.UpdateButton.Enabled);
+        Assert.False(panel.RemoveButton.Enabled);
         Assert.Contains("legacy flat DLLs", panel.DetailsBox.Text);
     });
 
@@ -104,7 +120,8 @@ public sealed partial class PluginPackageTests
         using var operations = Operations();
         operations.Queue(operations.Preview(SourcePackage()), true);
         using var studio = new MainForm(loadPlugins: true, packageOperations: operations) { ShowInTaskbar = false };
-        studio.Show(); Application.DoEvents();
+        studio.Show();
+        Application.DoEvents();
         Assert.Empty(operations.Operations);
         Assert.Single(studio.PluginHost.Plugins);
         Assert.Equal("sample.package", Assert.Single(studio.PluginHost.Discovery).Id);
@@ -115,12 +132,17 @@ public sealed partial class PluginPackageTests
     public void ManagerDisplaysFailedOperationDiagnostics() => OnSta(() =>
     {
         var target = InstallFixture();
-        using (var queue = Operations()) queue.Queue(queue.PreviewRemoval("sample.package"), true);
+        using (var queue = Operations())
+            queue.Queue(queue.PreviewRemoval("sample.package"), true);
         File.WriteAllText(Path.Combine(target, "external.txt"), "changed");
-        using var operations = Operations(); operations.StartSession();
-        var host = new Host(_ => { }); host.DiscoverAndLoad(InstallRoot);
+        using var operations = Operations();
+        operations.StartSession();
+        var host = new Host(_ => { });
+        host.DiscoverAndLoad(InstallRoot);
         using var panel = new PluginManagerPanel(host, new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { }), operations);
-        using var form = new Form(); form.Controls.Add(panel); form.Show();
+        using var form = new Form();
+        form.Controls.Add(panel);
+        form.Show();
         Assert.Equal(PluginPackageOperationState.Failed, panel.PendingGrid.Rows[0].Cells[2].Value);
         Assert.Contains("changed or disappeared", panel.PendingGrid.Rows[0].Cells[3].Value.ToString());
         Assert.Contains("operation failed", panel.StatusLabel.Text);
@@ -144,7 +166,8 @@ public sealed partial class PluginPackageTests
     private static void WaitForPackageCondition(Func<bool> completed)
     {
         var deadline = DateTime.UtcNow.AddSeconds(20);
-        while (!completed() && DateTime.UtcNow < deadline) { Application.DoEvents(); Thread.Sleep(10); }
+        while (!completed() && DateTime.UtcNow < deadline)
+        { Application.DoEvents(); Thread.Sleep(10); }
         Assert.True(completed(), "Package operation did not complete.");
     }
 }

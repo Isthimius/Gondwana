@@ -26,14 +26,16 @@ internal sealed partial class MainForm
             RefreshPreviews = () => { tab.Editor.ReloadSources(); return tab.Editor.SourcesLoadedSuccessfully; },
             Reload = () =>
             {
-                if (model.FilePath is null) return;
+                if (model.FilePath is null)
+                    return;
                 var selected = model.Definition.ID;
                 var zoom = tab.Editor.PreviewZoom;
                 var loaded = SceneDocument.Open(model.FilePath);
                 try
                 {
                     var member = loaded.Definitions.FirstOrDefault(d => DefinitionReferenceQuery.MembersEqual(AssetTypes.SceneDefinition, d.ID, selected));
-                    if (member is not null) loaded.SelectDefinition(member);
+                    if (member is not null)
+                        loaded.SelectDefinition(member);
                     EditorSourceMonitorController.Replace(tab, () =>
                     {
                         var replacement = ShowDocument(loaded);

@@ -30,7 +30,8 @@ public sealed class ThemePreferenceStore
 
             using var json = JsonDocument.Parse(File.ReadAllText(FilePath));
             if (json.RootElement.TryGetProperty("Theme", out var value) && value.ValueKind == JsonValueKind.String &&
-                Enum.TryParse<ToolingTheme>(value.GetString(), out var theme) && Enum.IsDefined(theme)) return theme;
+                Enum.TryParse<ToolingTheme>(value.GetString(), out var theme) && Enum.IsDefined(theme))
+                return theme;
 
             throw new InvalidDataException("Unknown theme preference.");
         }

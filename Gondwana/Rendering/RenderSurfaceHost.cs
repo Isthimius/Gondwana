@@ -329,9 +329,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// <param name="tick">Foreground simulation tick; CPU durations use the real monotonic clock.</param>
     internal override void ProduceRenderFrameSnapshot(long tick)
     {
-        if (!UsesRenderFrameSnapshots || _disposed) return;
+        if (!UsesRenderFrameSnapshots || _disposed)
+            return;
         var slot = FrameMailbox.TryBeginBuild();
-        if (slot is null) return;
+        if (slot is null)
+            return;
         var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
         bool transferred = false;
         long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
@@ -365,7 +367,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         catch
         {
             recorder.Cancel();
-            if (!transferred) FrameMailbox.AbortBuild(slot);
+            if (!transferred)
+                FrameMailbox.AbortBuild(slot);
             throw;
         }
     }
@@ -665,7 +668,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 if (Scene.VisibleSceneLayers.Count > Diagnostics.RenderTelemetry.Layers.Length)
                     Telemetry.MarkTruncated(telemetryGeneration);
             }
-            if (!legacyDiagnostics) return;
+            if (!legacyDiagnostics)
+                return;
             var diagnostics = new GpuRenderFrameDiagnostics(
                 HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d,
                 HighResTimer.GetDuration(0, queryAndSortTicks) * 1000d,
@@ -678,8 +682,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 QueryMilliseconds = HighResTimer.GetDuration(0, queryTicks) * 1000d,
                 SortMilliseconds = HighResTimer.GetDuration(0, sortTicks) * 1000d
             };
-            if (destination is RecordingBackbuffer) _recordingDiagnostics = diagnostics;
-            else GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics);
+            if (destination is RecordingBackbuffer)
+                _recordingDiagnostics = diagnostics;
+            else
+                GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics);
         }
     }
 
@@ -1147,7 +1153,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void RequestRenderScale(float scale)
     {
-        if (!_resolutionEstablished || _disposed) return;
+        if (!_resolutionEstablished || _disposed)
+            return;
         var adapter = RenderSurfaceAdapter;
         // Zero-size requests are deferred until a valid presentation size exists.
         if (adapter.Width <= 0 || adapter.Height <= 0)

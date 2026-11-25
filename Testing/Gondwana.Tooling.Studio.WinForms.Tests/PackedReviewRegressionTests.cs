@@ -53,7 +53,8 @@ public sealed partial class CompositionTests
     public void DependencyReloadCanCorrectAnUnverifiedPassword() => RunSta(root =>
     {
         var path = CreatePreviewArchive(root, "encrypted.gaf", Color.LimeGreen);
-        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) encrypted.Save();
+        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+            encrypted.Save();
         var loose = Path.Combine(root, "preview.gani");
         AnimationDefinitionSerializer.Save(loose, PreviewAnimation("encrypted.gaf"));
         using var studio = Host(root);
@@ -130,11 +131,14 @@ public sealed partial class CompositionTests
         switch (document.Document.Editor)
         {
             case AnimationEditorControl e:
-                if (import) e.Document.ImportDefinitions(source);
-                else e.Document.AddDefinition().TilesheetSources = animation.TilesheetSources;
+                if (import)
+                    e.Document.ImportDefinitions(source);
+                else
+                    e.Document.AddDefinition().TilesheetSources = animation.TilesheetSources;
                 break;
             case SceneEditorControl e:
-                if (import) e.Document.ImportDefinitions(source);
+                if (import)
+                    e.Document.ImportDefinitions(source);
                 else
                 {
                     var member = e.Document.AddDefinition();
@@ -143,7 +147,8 @@ public sealed partial class CompositionTests
                 }
                 break;
             case SpriteEditorControl e:
-                if (import) e.Document.ImportDefinitions(source);
+                if (import)
+                    e.Document.ImportDefinitions(source);
                 else
                 {
                     var member = e.Document.AddDefinition();
@@ -153,8 +158,10 @@ public sealed partial class CompositionTests
                 }
                 break;
             case AudioEditorControl e:
-                if (import) e.Document.ImportDefinitions(source);
-                else e.Document.AddDefinition().Resources = audio.Resources;
+                if (import)
+                    e.Document.ImportDefinitions(source);
+                else
+                    e.Document.AddDefinition().Resources = audio.Resources;
                 break;
         }
         var originalArchive = File.ReadAllBytes(path);

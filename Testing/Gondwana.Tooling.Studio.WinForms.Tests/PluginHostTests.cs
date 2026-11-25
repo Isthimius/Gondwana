@@ -44,7 +44,8 @@ public sealed class PluginHostTests
         Assert.Contains(messages, message => message.Contains("CreatePanel threw"));
         Assert.Contains(messages, message => message.Contains("CreateMenuItem threw"));
         host.NotifyProjectOpened(failOnClose ? "throw-on-close" : "throw");
-        if (failOnClose) host.NotifyProjectClosed();
+        if (failOnClose)
+            host.NotifyProjectClosed();
         Assert.Empty(host.Plugins);
         Assert.Contains(messages, message => message.Contains("Disabled 'Contract fixture'"));
         Assert.Contains(messages, message => message.Contains("Failed loading corrupt.dll"));
@@ -84,7 +85,8 @@ public sealed class ContractFixturePlugin : WinPlugin
     /// <param name="projectPath">The project path value for this test case.</param>
     public void OnProjectOpened(string projectPath)
     {
-        if (projectPath == "throw") throw new InvalidOperationException("Expected fixture failure");
+        if (projectPath == "throw")
+            throw new InvalidOperationException("Expected fixture failure");
         ProjectPath = projectPath;
     }
     /// <summary>
@@ -92,7 +94,8 @@ public sealed class ContractFixturePlugin : WinPlugin
     /// </summary>
     public void OnProjectClosed()
     {
-        if (ProjectPath == "throw-on-close") throw new InvalidOperationException("Expected close failure");
+        if (ProjectPath == "throw-on-close")
+            throw new InvalidOperationException("Expected close failure");
         ProjectPath = null;
     }
     /// <summary>

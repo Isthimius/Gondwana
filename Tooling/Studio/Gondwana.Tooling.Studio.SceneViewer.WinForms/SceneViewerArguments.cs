@@ -23,7 +23,8 @@ internal static class SceneViewerArguments
     /// <summary>Parses a scene launch and its optional original content root and temporary ownership.</summary>
     internal static SceneViewerSceneOptions? ParseScene(string[] args, string baseDirectory)
     {
-        if (args.Length == 0) return null;
+        if (args.Length == 0)
+            return null;
         if (args.Length < 2 || args[0] != "--scene" || string.IsNullOrWhiteSpace(args[1]))
             throw new ArgumentException(Usage);
 
@@ -33,21 +34,25 @@ internal static class SceneViewerArguments
         int index = 2;
         if (index < args.Length && args[index] == "--scene-id")
         {
-            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index])) throw new ArgumentException(Usage);
+            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index]))
+                throw new ArgumentException(Usage);
             sceneId = args[index++];
         }
         if (index < args.Length && args[index] == "--content-root")
         {
-            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index])) throw new ArgumentException(Usage);
+            if (++index >= args.Length || string.IsNullOrWhiteSpace(args[index]))
+                throw new ArgumentException(Usage);
             contentRoot = Path.GetFullPath(args[index++], baseDirectory);
-            if (!Directory.Exists(contentRoot)) throw new DirectoryNotFoundException($"Scene content directory not found: {contentRoot}");
+            if (!Directory.Exists(contentRoot))
+                throw new DirectoryNotFoundException($"Scene content directory not found: {contentRoot}");
         }
         if (index < args.Length && args[index] == "--temporary-scene")
         {
             temporary = true;
             index++;
         }
-        if (index != args.Length || (temporary && contentRoot is null)) throw new ArgumentException(Usage);
+        if (index != args.Length || (temporary && contentRoot is null))
+            throw new ArgumentException(Usage);
         var path = Normalize(args[1], baseDirectory);
         if (temporary && !IsOwnedTemporaryPath(path))
             throw new ArgumentException("Temporary scene cleanup is only supported for Gondwana Scene Viewer snapshots.");

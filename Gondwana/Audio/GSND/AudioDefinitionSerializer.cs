@@ -237,7 +237,8 @@ public static partial class AudioDefinitionSerializer
         var groupProvenance = !skippedExisting
             ? definition.LoadStamp?.Materialized(definition, () => FromResources(loaded)) : null;
         if (!skippedExisting)
-            foreach (var resource in loaded) resource.DefinitionProvenance = groupProvenance;
+            foreach (var resource in loaded)
+                resource.DefinitionProvenance = groupProvenance;
         manager.DefinitionProvenance = !skippedExisting && manager.GetAll().Count == loaded.Count
             ? definition.LoadStamp?.Materialized(definition,
                 () => FromManager(manager))

@@ -19,7 +19,8 @@ internal static class FrameworkAssemblyCatalog
             using var document = JsonDocument.Parse(stream);
             var frameworkManifest = Frameworks.Any(framework =>
                 Path.GetFileName(file).Equals(framework + ".deps.json", StringComparison.OrdinalIgnoreCase));
-            if (!document.RootElement.TryGetProperty("targets", out var targets)) continue;
+            if (!document.RootElement.TryGetProperty("targets", out var targets))
+                continue;
             foreach (var target in targets.EnumerateObject())
             {
                 foreach (var library in target.Value.EnumerateObject())
@@ -27,8 +28,10 @@ internal static class FrameworkAssemblyCatalog
                     // A self-contained application's deps file also contains private app libraries.
                     // Only SDK-generated framework runtime-pack sections authorize shared fallback.
                     if (!frameworkManifest && !Frameworks.Any(framework =>
-                        library.Name.StartsWith("runtimepack." + framework + ".Runtime.", StringComparison.OrdinalIgnoreCase))) continue;
-                    if (!library.Value.TryGetProperty("runtime", out var runtime)) continue;
+                        library.Name.StartsWith("runtimepack." + framework + ".Runtime.", StringComparison.OrdinalIgnoreCase)))
+                        continue;
+                    if (!library.Value.TryGetProperty("runtime", out var runtime))
+                        continue;
                     foreach (var asset in runtime.EnumerateObject())
                         if (asset.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                             names.Add(Path.GetFileNameWithoutExtension(asset.Name));

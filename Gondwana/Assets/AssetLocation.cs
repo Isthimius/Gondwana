@@ -21,11 +21,13 @@ public sealed class AssetLocation
     /// <param name="assetEntryName">The GAF entry name, or null for a loose file.</param>
     public AssetLocation(AssetTypes assetType, string path, string? assetEntryName = null)
     {
-        if (!Enum.IsDefined(assetType)) throw new ArgumentOutOfRangeException(nameof(assetType));
+        if (!Enum.IsDefined(assetType))
+            throw new ArgumentOutOfRangeException(nameof(assetType));
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         if (!System.IO.Path.IsPathFullyQualified(path))
             throw new ArgumentException("A physical location requires an absolute path.", nameof(path));
-        if (assetEntryName is not null) ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
+        if (assetEntryName is not null)
+            ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
         AssetType = assetType;
         Path = System.IO.Path.GetFullPath(path);
         if (string.IsNullOrEmpty(System.IO.Path.GetFileName(Path)))

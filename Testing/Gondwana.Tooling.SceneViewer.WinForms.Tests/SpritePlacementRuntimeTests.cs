@@ -84,8 +84,10 @@ public sealed partial class ViewerTests
             var source = packed
                 ? SpriteAnimationSourceDefinition.Packed("walk", "external/walk.gaf", entry)
                 : SpriteAnimationSourceDefinition.Loose("walk", loose);
-            if (packed) Pack("external/walk.gaf", AssetTypes.AnimationDefinition, entry, json);
-            else File.WriteAllText(Path.Combine(_directory, loose), json);
+            if (packed)
+                Pack("external/walk.gaf", AssetTypes.AnimationDefinition, entry, json);
+            else
+                File.WriteAllText(Path.Combine(_directory, loose), json);
 
             var sprite = Sprite(actor);
             sprite.AnimationKey = "walk";

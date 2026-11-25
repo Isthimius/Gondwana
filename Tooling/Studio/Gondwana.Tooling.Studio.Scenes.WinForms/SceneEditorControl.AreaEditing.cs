@@ -16,7 +16,8 @@ public sealed partial class SceneEditorControl
     private static IEnumerable<Point> RectangleCells(Rectangle rectangle)
     {
         for (int y = rectangle.Top; y < rectangle.Bottom; y++)
-            for (int x = rectangle.Left; x < rectangle.Right; x++) yield return new(x, y);
+            for (int x = rectangle.Left; x < rectangle.Right; x++)
+                yield return new(x, y);
     }
 
     private void ApplyCells(SceneLayerDefinition layer, IEnumerable<Point> cells, long count, bool erase,
@@ -25,13 +26,17 @@ public sealed partial class SceneEditorControl
         var definition = Definition;
         if (count <= 0 || !ConfirmArea(count) || IsDisposed ||
             !ReferenceEquals(Definition, definition) || !ReferenceEquals(layer, _selectedLayer) ||
-            !definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return;
+            !definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer))
+            return;
         using var transaction = Document.History.BeginTransaction(description);
         foreach (var cell in cells)
         {
-            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows) continue;
-            if (erase) Document.RemoveTile(layer, cell.X, cell.Y);
-            else Document.EditTile(layer, cell.X, cell.Y, description, assignment!);
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows)
+                continue;
+            if (erase)
+                Document.RemoveTile(layer, cell.X, cell.Y);
+            else
+                Document.EditTile(layer, cell.X, cell.Y, description, assignment!);
         }
         transaction.Commit();
     }
@@ -51,23 +56,31 @@ public sealed partial class SceneEditorControl
         if (projection == CoordinateSystemTypes.HexAxialFlatTop)
         {
             // Columns stagger down on odd indices: two vertical and four side neighbors.
-            yield return new(x, y - 1); yield return new(x, y + 1);
+            yield return new(x, y - 1);
+            yield return new(x, y + 1);
             int top = y - ((x & 1) == 0 ? 1 : 0);
-            yield return new(x - 1, top); yield return new(x - 1, top + 1);
-            yield return new(x + 1, top); yield return new(x + 1, top + 1);
+            yield return new(x - 1, top);
+            yield return new(x - 1, top + 1);
+            yield return new(x + 1, top);
+            yield return new(x + 1, top + 1);
         }
         else if (projection == CoordinateSystemTypes.HexAxialPointedTop)
         {
             // Rows stagger right on odd indices.
-            yield return new(x - 1, y); yield return new(x + 1, y);
+            yield return new(x - 1, y);
+            yield return new(x + 1, y);
             int left = x - ((y & 1) == 0 ? 1 : 0);
-            yield return new(left, y - 1); yield return new(left + 1, y - 1);
-            yield return new(left, y + 1); yield return new(left + 1, y + 1);
+            yield return new(left, y - 1);
+            yield return new(left + 1, y - 1);
+            yield return new(left, y + 1);
+            yield return new(left + 1, y + 1);
         }
         else
         {
-            yield return new(x - 1, y); yield return new(x + 1, y);
-            yield return new(x, y - 1); yield return new(x, y + 1);
+            yield return new(x - 1, y);
+            yield return new(x + 1, y);
+            yield return new(x, y - 1);
+            yield return new(x, y + 1);
         }
     }
 
@@ -86,27 +99,34 @@ public sealed partial class SceneEditorControl
             replacement.StartAnimation = original.StartAnimation;
         }
         assignment(replacement);
-        if (identity == PaintIdentity.Of(replacement)) return;
+        if (identity == PaintIdentity.Of(replacement))
+            return;
         var visited = new HashSet<Point>();
         var pending = new Queue<Point>();
         var region = new List<Point>();
         pending.Enqueue(start);
         while (pending.TryDequeue(out var cell))
         {
-            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || !visited.Add(cell)) continue;
-            if (PaintIdentity.Of(tiles.GetValueOrDefault(cell)) != identity) continue;
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || !visited.Add(cell))
+                continue;
+            if (PaintIdentity.Of(tiles.GetValueOrDefault(cell)) != identity)
+                continue;
             region.Add(cell);
-            foreach (var neighbor in FillNeighbors(layer.CoordinateSystemType, cell)) pending.Enqueue(neighbor);
+            foreach (var neighbor in FillNeighbors(layer.CoordinateSystemType, cell))
+                pending.Enqueue(neighbor);
         }
         ApplyCells(layer, region, region.Count, false, assignment, "Fill region");
     }
 
     private bool NavigateSelection(Keys key)
     {
-        if (_preview.HasGesture) return false;
-        if (key == Keys.Escape) { ClearMultiSelection(); return true; }
+        if (_preview.HasGesture)
+            return false;
+        if (key == Keys.Escape)
+        { ClearMultiSelection(); return true; }
         bool extend = (key & Keys.Modifiers) == Keys.Shift;
-        if ((key & Keys.Modifiers) != Keys.None && !extend) return false;
+        if ((key & Keys.Modifiers) != Keys.None && !extend)
+            return false;
         var direction = (key & Keys.KeyCode) switch
         {
             Keys.Left => new Point(-1, 0),
@@ -116,7 +136,8 @@ public sealed partial class SceneEditorControl
             _ => Point.Empty
         };
         if (direction == Point.Empty || _selectedLayer is not { Columns: > 0, Rows: > 0 } layer ||
-            !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return false;
+            !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer))
+            return false;
         var current = new Point((int)_tileX.Value, (int)_tileY.Value);
         _selectionAnchor = !extend || _selectedCells.Width * (long)_selectedCells.Height <= 1
             ? current
@@ -136,13 +157,16 @@ public sealed partial class SceneEditorControl
     private void EditSelectedProperties()
     {
         _preview.CancelGesture();
-        if (_selectedLayer is not { } layer || !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return;
+        if (_selectedLayer is not { } layer || !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer))
+            return;
         var tiles = layer.Tiles.Where(t => _selectedCells.Contains(t.X, t.Y)).ToArray();
-        if (tiles.Length == 0 || (long)_selectedCells.Width * _selectedCells.Height < 2) return;
+        if (tiles.Length == 0 || (long)_selectedCells.Width * _selectedCells.Height < 2)
+            return;
         var definition = Definition;
         using var dialog = new BulkTilePropertiesDialog(tiles);
         if (dialog.ShowDialog(this) != DialogResult.OK || !ReferenceEquals(definition, Definition) ||
-            !ReferenceEquals(layer, _selectedLayer) || !Definition.Layers.Contains(layer)) return;
+            !ReferenceEquals(layer, _selectedLayer) || !Definition.Layers.Contains(layer))
+            return;
         ApplyBulkProperties(layer, tiles, dialog.Changes);
     }
 
@@ -151,22 +175,27 @@ public sealed partial class SceneEditorControl
     {
         _preview.CancelGesture();
         if (changes.Count == 0 || !ReferenceEquals(layer, _selectedLayer) || !Definition.Layers.Contains(layer) ||
-            !IsLayerVisibleInPreview(layer)) return;
+            !IsLayerVisibleInPreview(layer))
+            return;
         var definition = Definition;
         var selection = _selectedCells;
         if (!ConfirmArea(tiles.Count) || _selectedCells != selection || IsDisposed || !ReferenceEquals(Definition, definition) ||
-            !ReferenceEquals(layer, _selectedLayer) || !definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return;
+            !ReferenceEquals(layer, _selectedLayer) || !definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer))
+            return;
         using (var transaction = Document.History.BeginTransaction("Edit selected properties"))
         {
             foreach (var tile in tiles)
             {
-                if (!layer.Tiles.Contains(tile) || !_selectedCells.Contains(tile.X, tile.Y)) continue;
+                if (!layer.Tiles.Contains(tile) || !_selectedCells.Contains(tile.X, tile.Y))
+                    continue;
                 var adapter = new TilePropertyAdapter(Document, layer, tile.X, tile.Y, () => { });
                 foreach (var (name, value) in changes)
                     BulkTilePropertiesDialog.EditableProperties.Single(p => p.Name == name).SetValue(adapter, value);
             }
             transaction.Commit();
         }
-        RefreshTileProperties(); RefreshPreview(); UpdateValidation();
+        RefreshTileProperties();
+        RefreshPreview();
+        UpdateValidation();
     }
 }

@@ -78,7 +78,8 @@ internal sealed class DependencyExplorerPanel : UserControl
 
     private void OpenSelection()
     {
-        if (_tree.SelectedNode?.Tag is ResourceAddress address) NavigateRequested?.Invoke(address);
+        if (_tree.SelectedNode?.Tag is ResourceAddress address)
+            NavigateRequested?.Invoke(address);
     }
 
     internal void SetStatus(string text)
@@ -90,11 +91,13 @@ internal sealed class DependencyExplorerPanel : UserControl
 
     private void UpdateStatusHeight()
     {
-        if (_status.ClientSize.Width <= 0) return;
+        if (_status.ClientSize.Width <= 0)
+            return;
 
         // Measure at the actual docked width so wrapped lines stay above the results tree.
         var height = _status.GetPreferredSize(new Size(_status.ClientSize.Width, 0)).Height + 2;
-        if (_status.Height != height) _status.Height = height;
+        if (_status.Height != height)
+            _status.Height = height;
     }
 
     internal void ShowResults(ResourceAddress target, DefinitionReferenceDiscovery scan, bool dirty)
@@ -109,10 +112,13 @@ internal sealed class DependencyExplorerPanel : UserControl
             Add("Referenced By / Dependents", query.Dependents(target), outbound: false);
             var unresolvedDependencies = query.UnresolvedDependencies(target);
             var unresolvedDependents = query.UnresolvedDependents(target);
-            if (unresolvedDependencies.Count > 0) Add("Unresolved dependencies — see scan diagnostics", unresolvedDependencies, outbound: true);
-            if (unresolvedDependents.Count > 0) Add("Unresolved inbound references — see scan diagnostics", unresolvedDependents, outbound: false);
+            if (unresolvedDependencies.Count > 0)
+                Add("Unresolved dependencies — see scan diagnostics", unresolvedDependencies, outbound: true);
+            if (unresolvedDependents.Count > 0)
+                Add("Unresolved inbound references — see scan diagnostics", unresolvedDependents, outbound: false);
             var unknown = query.UnspecifiedDependents(target);
-            if (unknown.Count > 0) Add("Physical references — logical member unspecified", unknown, outbound: false);
+            if (unknown.Count > 0)
+                Add("Physical references — logical member unspecified", unknown, outbound: false);
             var remote = _tree.Nodes.Add("External URI references (not fetched or navigable)");
             foreach (var item in query.ExternalDependencies(target))
                 remote.Nodes.Add($"{item.Uri} — {item.Source}");
@@ -156,7 +162,8 @@ internal sealed class DependencyExplorerPanel : UserControl
                     var node = parent.Nodes.Add(text);
                     node.Tag = address;
                     node.ToolTipText = text;
-                    if (address == selected) _tree.SelectedNode = node;
+                    if (address == selected)
+                        _tree.SelectedNode = node;
                 }
             }
         }
@@ -164,7 +171,8 @@ internal sealed class DependencyExplorerPanel : UserControl
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing) { _menu.Dispose(); _tips.Dispose(); }
+        if (disposing)
+        { _menu.Dispose(); _tips.Dispose(); }
         base.Dispose(disposing);
     }
 }

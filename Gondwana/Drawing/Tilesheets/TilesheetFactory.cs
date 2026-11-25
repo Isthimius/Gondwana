@@ -242,7 +242,8 @@ internal static class TilesheetFactory
         var loaded = AssetsFile.AllAssetsFiles.FirstOrDefault(file =>
             !string.IsNullOrWhiteSpace(file.SourcePath) && string.Equals(Path.GetFullPath(file.SourcePath), fullPath,
                 OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
-        if (loaded is not null) return loaded;
+        if (loaded is not null)
+            return loaded;
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"Assets file not found: {fullPath}", fullPath);
 

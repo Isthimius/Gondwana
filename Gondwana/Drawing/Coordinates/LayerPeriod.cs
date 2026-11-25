@@ -62,7 +62,8 @@ internal readonly record struct LayerPeriod(PointF Columns, PointF Rows, bool Wr
             r = Math.Round(((double)delta.X * Rows.X + (double)delta.Y * Rows.Y) / ((double)Rows.X * Rows.X + (double)Rows.Y * Rows.Y));
         var initial = Offset(c, r);
         var best = new PointF(point.X + initial.X, point.Y + initial.Y);
-        if (!WrapColumns || !WrapRows) return best;
+        if (!WrapColumns || !WrapRows)
+            return best;
         double Distance(PointF p) => Math.Pow(p.X - reference.X, 2) + Math.Pow(p.Y - reference.Y, 2);
         double distance = Distance(best);
         float radius = (float)Math.Sqrt(distance) + 1;
@@ -72,7 +73,8 @@ internal readonly record struct LayerPeriod(PointF Columns, PointF Rows, bool Wr
         {
             var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
             double next = Distance(candidate);
-            if (next < distance) { best = candidate; distance = next; }
+            if (next < distance)
+            { best = candidate; distance = next; }
         }
         return best;
     }

@@ -14,14 +14,17 @@ public sealed partial class MainForm
 
     private void SourcesChanged(object? sender, EventArgs e)
     {
-        if (sender is not StudioDocument model || model.SourcesQueued || _disposed) return;
+        if (sender is not StudioDocument model || model.SourcesQueued || _disposed)
+            return;
         model.SourcesQueued = true;
         _dependencyUi.Post(_ =>
         {
             model.SourcesQueued = false;
-            if (_disposed) return;
+            if (_disposed)
+                return;
             var tab = _documents.FirstOrDefault(d => d.Document == model);
-            if (tab is not null && !tab.IsDisposed) RefreshSourceRegistrations(tab);
+            if (tab is not null && !tab.IsDisposed)
+                RefreshSourceRegistrations(tab);
         }, null);
     }
 
@@ -44,13 +47,15 @@ public sealed partial class MainForm
     private void RefreshSourceRegistrations(StudioDockDocument tab,
         IReadOnlyDictionary<AssetLocation, DocumentSourceVersion>? refreshedPreviews = null)
     {
-        if (_disposed || tab.IsDisposed) return;
+        if (_disposed || tab.IsDisposed)
+            return;
         var model = tab.Document;
         var previous = model.Sources.ToDictionary(p => p.Key, p => p.Value.Accepted, DocumentLocationComparer.Instance);
         var discovered = new Dictionary<AssetLocation, DocumentSourceVersion>(DocumentLocationComparer.Instance);
         var observed = new HashSet<AssetLocation>(DocumentLocationComparer.Instance);
         AssetLocation[] dependencies;
-        try { dependencies = DocumentDependencies(model, discovered, observed).ToArray(); }
+        try
+        { dependencies = DocumentDependencies(model, discovered, observed).ToArray(); }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
             NullReferenceException or Newtonsoft.Json.JsonException)
         {
@@ -60,7 +65,8 @@ public sealed partial class MainForm
             dependencies = observed.ToArray();
         }
         var generation = ++model.SourceGeneration;
-        foreach (var registration in model.Sources.Values) registration.Dispose();
+        foreach (var registration in model.Sources.Values)
+            registration.Dispose();
         model.Sources.Clear();
         var primary = model.Location;
         if (primary is not null && model.AcceptedSource is { } accepted)
@@ -68,8 +74,10 @@ public sealed partial class MainForm
         model.DependencyArchives.Clear();
         foreach (var dependency in dependencies)
         {
-            if (model.Sources.ContainsKey(dependency)) continue;
-            if (dependency.AssetEntryName is not null) model.DependencyArchives.Add(dependency.Path);
+            if (model.Sources.ContainsKey(dependency))
+                continue;
+            if (dependency.AssetEntryName is not null)
+                model.DependencyArchives.Add(dependency.Path);
             var version = refreshedPreviews?.GetValueOrDefault(dependency) ?? previous.GetValueOrDefault(dependency)
                 ?? discovered.GetValueOrDefault(dependency) ?? DocumentSourceVersion.Read(dependency, _archivePasswords.GetValueOrDefault(dependency.Path));
             Register(dependency, version, DocumentSourceRole.Dependency);
@@ -90,14 +98,16 @@ public sealed partial class MainForm
         void Register(AssetLocation location, DocumentSourceVersion version, DocumentSourceRole role)
         {
             // Missing parent directories cannot be watched by FileSystemWatcher. Retry on edits/Refresh.
-            if (!Directory.Exists(Path.GetDirectoryName(location.Path))) return;
+            if (!Directory.Exists(Path.GetDirectoryName(location.Path)))
+                return;
             var password = role == DocumentSourceRole.Primary ? model.ArchivePassword : _archivePasswords.GetValueOrDefault(location.Path);
             model.Sources.Add(location, _sourceMonitor.Register(location, version, role, change =>
             {
                 // Under the shared monitor lock: only enqueue. Never Invoke, inspect controls, or reload here.
                 _dependencyUi.Post(_ =>
                 {
-                    if (_disposed || tab.IsDisposed || !_documents.Contains(tab) || model.SourceGeneration != generation) return;
+                    if (_disposed || tab.IsDisposed || !_documents.Contains(tab) || model.SourceGeneration != generation)
+                        return;
                     ApplySourceChange(tab, change);
                 }, null);
             }, password));
@@ -110,7 +120,8 @@ public sealed partial class MainForm
         if (change.Role == DocumentSourceRole.Primary)
         {
             var accepted = model.AcceptedSource;
-            if (change.Current == accepted) { model.ContentStale = false; model.SourceProblem = null; }
+            if (change.Current == accepted)
+            { model.ContentStale = false; model.SourceProblem = null; }
             else if (change.Kind == DocumentSourceChangeKind.ContainerChanged && model.PackedLocation() is not null &&
                 change.Current.ContentHash == accepted?.ContentHash)
             {
@@ -144,21 +155,25 @@ public sealed partial class MainForm
 
     private void QueueSourceBrowserRefresh()
     {
-        if (_sourceBrowserRefreshQueued) return;
+        if (_sourceBrowserRefreshQueued)
+            return;
         _sourceBrowserRefreshQueued = true;
         _dependencyUi.Post(_ =>
         {
             _sourceBrowserRefreshQueued = false;
-            if (!_disposed) { Browser.RefreshDirectory(); SyncActiveDocumentSelection(); }
+            if (!_disposed)
+            { Browser.RefreshDirectory(); SyncActiveDocumentSelection(); }
         }, null);
     }
 
     /// <summary>Uses real verification but deterministic UI dispatch in integration tests and explicit refresh.</summary>
     internal void VerifyDocumentSources()
     {
-        foreach (var registration in _dependencySources.ToArray()) registration.Verify();
+        foreach (var registration in _dependencySources.ToArray())
+            registration.Verify();
         foreach (var tab in _documents.ToArray())
-            foreach (var registration in tab.Document.Sources.Values.ToArray()) registration.Verify();
+            foreach (var registration in tab.Document.Sources.Values.ToArray())
+                registration.Verify();
     }
 
     internal enum SourceConflictChoice { KeepEdits, Reload, SaveAs }
@@ -175,7 +190,8 @@ public sealed partial class MainForm
 
     internal async Task<bool> ResolveSourceConflict(StudioDockDocument tab)
     {
-        if (tab.IsDisposed || !tab.Document.ContentStale) return false;
+        if (tab.IsDisposed || !tab.Document.ContentStale)
+            return false;
         return AskSourceConflict(tab.Document) switch
         {
             SourceConflictChoice.Reload => ReloadDocument(tab),
@@ -187,9 +203,11 @@ public sealed partial class MainForm
     private bool HandleSourceSaveFailure(StudioDockDocument tab)
     {
         var model = tab.Document;
-        if (model.Location is not { } location || model.AcceptedSource is not { } accepted) return false;
+        if (model.Location is not { } location || model.AcceptedSource is not { } accepted)
+            return false;
         var current = DocumentSourceVersion.Read(location, model.ArchivePassword);
-        if (current == accepted) return false;
+        if (current == accepted)
+            return false;
         ApplySourceChange(tab, new(location, DocumentSourceRole.Primary,
             current.Status == DocumentSourceStatus.Inaccessible ? DocumentSourceChangeKind.Inaccessible :
             current.Status == DocumentSourceStatus.Missing ? DocumentSourceChangeKind.Deleted : DocumentSourceChangeKind.ContentChanged,

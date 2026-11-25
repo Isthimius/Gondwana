@@ -37,7 +37,8 @@ public sealed class VideoWidgetTests
         var view = AddView(host);
         var player = new FakeVideoPlayer();
         int created = 0;
-        IVideoPlayer Factory() { created++; return player; }
+        IVideoPlayer Factory()
+        { created++; return player; }
         using var widget = world
             ? new VideoWidget(host, host.Scene.AddLayer(20, 20, 16, 16), InitialBounds, Source, Factory)
             : new VideoWidget(host, view, InitialBounds, Source, Factory);
@@ -122,7 +123,8 @@ public sealed class VideoWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         var view = AddView(host);
-        if (world) view.Viewport.Zoom = 2;
+        if (world)
+            view.Viewport.Zoom = 2;
         var player = new FakeVideoPlayer();
         using var widget = world
             ? new VideoWidget(host, host.Scene.AddLayer(20, 20, 16, 16), InitialBounds, Source, player)
@@ -211,13 +213,19 @@ public sealed class VideoWidgetTests
         widget.Stopped += (_, _) => events.Add("stop");
         widget.Ended += (_, _) => events.Add("end");
         widget.StateChanged += (_, e) => events.Add(e.State);
-        widget.Pause(); Assert.False(widget.IsPlaying);
-        widget.Play(); Assert.True(widget.IsPlaying);
-        widget.Seek(TimeSpan.FromSeconds(5)); Assert.Equal(player.Position, widget.Position);
-        widget.PlaybackRate = 1.5; Assert.Equal(1.5, player.Rate);
+        widget.Pause();
+        Assert.False(widget.IsPlaying);
+        widget.Play();
+        Assert.True(widget.IsPlaying);
+        widget.Seek(TimeSpan.FromSeconds(5));
+        Assert.Equal(player.Position, widget.Position);
+        widget.PlaybackRate = 1.5;
+        Assert.Equal(1.5, player.Rate);
         Assert.Equal(widget.Video.PlaybackRate, widget.PlaybackRate);
-        widget.Loop = true; Assert.True(player.Loop);
-        widget.Stretch = StretchMode.Uniform; Assert.Equal(StretchMode.Uniform, widget.Video.Stretch);
+        widget.Loop = true;
+        Assert.True(player.Loop);
+        widget.Stretch = StretchMode.Uniform;
+        Assert.Equal(StretchMode.Uniform, widget.Video.Stretch);
         Assert.False(widget.IsMetadataReady);
         player.Metadata = new(VideoMetadataStatus.Ready, true, TimeSpan.FromSeconds(20));
         player.EmitState("MetadataReady");
@@ -227,7 +235,8 @@ public sealed class VideoWidgetTests
         player.Emit([0, 0, 255, 255], 1, 1, 4);
         Assert.Equal((1, 1), widget.NaturalSize);
         player.EmitEnded();
-        widget.Stop(); Assert.False(widget.IsPlaying);
+        widget.Stop();
+        Assert.False(widget.IsPlaying);
         Assert.Equal(new[] { "pause", "start", "MetadataReady", "end", "stop" }, events);
         EventHandler removed = (_, _) => throw new Exception("Unsubscribed handler called");
         widget.Started += removed;

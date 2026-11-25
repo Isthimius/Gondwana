@@ -130,7 +130,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         bool sourceSizeIsDrawnSize, ImportPlan plan)
     {
         var groups = tile.Elements("objectgroup").ToArray();
-        if (groups.Length == 0) return null;
+        if (groups.Length == 0)
+            return null;
 
         void Omit(string reason) =>
             plan.Report(ExternalImportSeverity.Warning, "tiled.collision.unsupported",
@@ -224,7 +225,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
     internal static Tileset ConvertTileset(XElement root, string source, string filename, ImportPlan plan, CancellationToken token, string? sharedGtsFilename = null, Size? mapCellSize = null)
     {
         token.ThrowIfCancellationRequested();
-        if (root.Name != "tileset") throw new InvalidDataException("Expected a Tiled tileset XML root.");
+        if (root.Name != "tileset")
+            throw new InvalidDataException("Expected a Tiled tileset XML root.");
         if (root.Elements("image").Count() != 1 || root.Elements("tile").Any(t => t.Element("image") is not null))
             throw new InvalidDataException("Collection-of-images tilesets are unsupported; use a single atlas image.");
         var image = root.Element("image")!;
@@ -294,7 +296,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         if (image.Attribute("trans") is { } transparent)
         {
             var color = transparent.Value.TrimStart('#');
-            if (color.Length != 6) throw new InvalidDataException("Transparent color must contain exactly six hexadecimal digits.");
+            if (color.Length != 6)
+                throw new InvalidDataException("Transparent color must contain exactly six hexadecimal digits.");
             uint rgb = uint.Parse(color, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
             definition.Mask = new() { Red = (byte)(rgb >> 16), Green = (byte)(rgb >> 8), Blue = (byte)rgb, Alpha = 255, Tolerance = 0 };
         }
@@ -316,8 +319,10 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         {
             token.ThrowIfCancellationRequested();
             int id = Int(tile, "id");
-            if (id < 0 || id >= count) throw new InvalidDataException($"Tile ID {id} is outside tilecount.");
-            if (!tileIds.Add(id)) throw new InvalidDataException($"Duplicate tile ID {id}.");
+            if (id < 0 || id >= count)
+                throw new InvalidDataException($"Tile ID {id} is outside tilecount.");
+            if (!tileIds.Add(id))
+                throw new InvalidDataException($"Duplicate tile ID {id}.");
             if (ReadTileCollision(tile, name, id, new Size(width, height),
                 collisionDrawsAtSourceSize, plan) is { } collision)
             {
@@ -330,7 +335,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
                 });
                 collisions.Add(id, collision);
             }
-            if (tile.Element("animation") is not { } animation) continue;
+            if (tile.Element("animation") is not { } animation)
+                continue;
             var gani = new AnimationDefinition
             {
                 Key = $"{name}.tile.{id}",
@@ -341,11 +347,14 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             {
                 token.ThrowIfCancellationRequested();
                 int frameId = Int(frame, "tileid"), duration = Int(frame, "duration");
-                if (frameId < 0 || frameId >= count || duration <= 0) throw new InvalidDataException("Animation frame ID or duration is invalid.");
+                if (frameId < 0 || frameId >= count || duration <= 0)
+                    throw new InvalidDataException("Animation frame ID or duration is invalid.");
                 gani.Frames.Add(new() { Tilesheet = name, XTile = frameId % columns, YTile = frameId / columns, DurationSeconds = duration / 1000.0 });
             }
-            if (gani.Frames.Count == 0) throw new InvalidDataException($"Animation for tile {id} has no frames.");
-            if (!animations.TryAdd(id, gani)) throw new InvalidDataException($"Duplicate animated tile ID {id}.");
+            if (gani.Frames.Count == 0)
+                throw new InvalidDataException($"Animation for tile {id} has no frames.");
+            if (!animations.TryAdd(id, gani))
+                throw new InvalidDataException($"Duplicate animated tile ID {id}.");
             plan.Add($"{filename}-animations.gani", gani);
         }
         return new(name, gts, columns, count, new(width, height), region.Overhang, animations, collisions);

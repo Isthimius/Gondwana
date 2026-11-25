@@ -45,7 +45,8 @@ internal static class SceneViewerLauncher
         }
         catch
         {
-            if (File.Exists(path)) File.Delete(path);
+            if (File.Exists(path))
+                File.Delete(path);
             throw;
         }
     }

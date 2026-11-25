@@ -64,12 +64,18 @@ public sealed class DirectVideoTests
         video.FadeIn(1);
         video.Update(tick + System.Diagnostics.Stopwatch.Frequency);
         Assert.Equal(1, video.Opacity);
-        video.Pause(); Assert.False(player.IsPlaying);
-        video.Play(); Assert.True(player.IsPlaying);
-        video.Seek(TimeSpan.FromSeconds(4)); Assert.Equal(TimeSpan.FromSeconds(4), player.Position);
-        video.PlaybackRate = 0.5; Assert.Equal(0.5, player.Rate);
-        video.Loop = true; Assert.True(player.Loop);
-        video.Stop(); Assert.False(player.IsPlaying);
+        video.Pause();
+        Assert.False(player.IsPlaying);
+        video.Play();
+        Assert.True(player.IsPlaying);
+        video.Seek(TimeSpan.FromSeconds(4));
+        Assert.Equal(TimeSpan.FromSeconds(4), player.Position);
+        video.PlaybackRate = 0.5;
+        Assert.Equal(0.5, player.Rate);
+        video.Loop = true;
+        Assert.True(player.Loop);
+        video.Stop();
+        Assert.False(player.IsPlaying);
     }
 
     /// <summary>
@@ -246,7 +252,8 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
     {
         NaturalSize = (width, height);
         var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
-        try { FrameReady?.Invoke(this, new(handle.AddrOfPinnedObject(), width, height, stride, 0)); }
+        try
+        { FrameReady?.Invoke(this, new(handle.AddrOfPinnedObject(), width, height, stride, 0)); }
         finally { handle.Free(); }
     }
 }

@@ -33,7 +33,8 @@ internal sealed partial class SemanticPackPlan
         foreach (var source in sources)
         {
             cancellation.ThrowIfCancellationRequested();
-            if (!Enum.IsDefined(source.AssetType)) throw new InvalidDataException("Unknown asset type.");
+            if (!Enum.IsDefined(source.AssetType))
+                throw new InvalidDataException("Unknown asset type.");
             var inferred = AssetImportPlan.InferType(source.FilePath);
             if (PackDefinitionDocument.IsNative(inferred) && inferred != source.AssetType)
                 throw new InvalidDataException($"Native file '{source.FilePath}' requires type {inferred}.");
@@ -73,10 +74,12 @@ internal sealed partial class SemanticPackPlan
 
     private void TrackReuse(Entry entry)
     {
-        if (_importPreview is null || _incoming.Contains(entry)) return;
+        if (_importPreview is null || _incoming.Contains(entry))
+            return;
         bool external = _external.Contains(entry);
         _importPreview.Add($"{(external ? "External" : "Reuse")}: {entry.Destination}");
-        if (!external && entry.Document is not null && _reuseChecked.Add(entry)) _reuseQueue.Enqueue(entry);
+        if (!external && entry.Document is not null && _reuseChecked.Add(entry))
+            _reuseQueue.Enqueue(entry);
     }
 
     private Entry AddImport(Entry entry)

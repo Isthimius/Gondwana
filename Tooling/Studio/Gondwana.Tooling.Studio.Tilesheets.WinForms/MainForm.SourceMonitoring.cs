@@ -26,14 +26,16 @@ internal sealed partial class MainForm
             RefreshPreviews = () => { tab.Editor.ReloadImage(); return tab.Editor.PreviewLoadSucceeded; },
             Reload = () =>
             {
-                if (model.FilePath is null) return;
+                if (model.FilePath is null)
+                    return;
                 var selected = model.Definition.Name;
                 var zoom = tab.Editor.PreviewZoom;
                 var loaded = TilesheetDocument.Open(model.FilePath);
                 try
                 {
                     var member = loaded.Definitions.FirstOrDefault(d => DefinitionReferenceQuery.MembersEqual(AssetTypes.TilesheetDefinition, d.Name, selected));
-                    if (member is not null) loaded.SelectDefinition(member);
+                    if (member is not null)
+                        loaded.SelectDefinition(member);
                     EditorSourceMonitorController.Replace(tab, () =>
                     {
                         var replacement = ShowDocument(loaded);

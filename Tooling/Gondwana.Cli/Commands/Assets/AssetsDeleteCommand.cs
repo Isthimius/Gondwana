@@ -50,26 +50,34 @@ internal sealed class AssetsDeleteCommand : Command<AssetsDeleteCommand.Settings
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(settings.Scope)) throw new ArgumentException("An explicit --scope directory or archive is required.");
+            if (string.IsNullOrWhiteSpace(settings.Scope))
+                throw new ArgumentException("An explicit --scope directory or archive is required.");
             var credentials = AssetCommandCredentials.Load(settings.Credentials);
             AssetDeletionPlan plan;
             if (settings.Archive)
             {
-                if (settings.SourceEntry is not null || settings.Type is not null) throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
+                if (settings.SourceEntry is not null || settings.Type is not null)
+                    throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
                 plan = AssetDeletionPlan.Create(settings.Scope, [], [settings.Source], path => credentials.GetValueOrDefault(path), cancellationToken);
             }
             else
             {
-                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source)) throw new ArgumentException("Archive files require --archive or a typed --source-entry.");
-                if (settings.SourceEntry is not null && settings.Type is null) throw new ArgumentException("Packed targets require --type.");
+                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source))
+                    throw new ArgumentException("Archive files require --archive or a typed --source-entry.");
+                if (settings.SourceEntry is not null && settings.Type is null)
+                    throw new ArgumentException("Packed targets require --type.");
                 var type = settings.Type is null ? AssetImportPlan.InferType(settings.Source) : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
                 plan = AssetDeletionPlan.Create(settings.Scope, [new(type, Path.GetFullPath(settings.Source), settings.SourceEntry)],
                     credentials: path => credentials.GetValueOrDefault(path), cancellation: cancellationToken);
             }
-            foreach (var line in plan.Preview) AnsiConsole.WriteLine(line);
-            if (plan.ForceRequired && !settings.Force) return 2;
-            if (settings.Commit) { plan.Commit(settings.Force, cancellationToken); AnsiConsole.WriteLine("Deletion committed. Surviving documents were not rewritten."); }
-            else AnsiConsole.WriteLine("Preview only; --force alone never deletes content. Use --commit after reviewing.");
+            foreach (var line in plan.Preview)
+                AnsiConsole.WriteLine(line);
+            if (plan.ForceRequired && !settings.Force)
+                return 2;
+            if (settings.Commit)
+            { plan.Commit(settings.Force, cancellationToken); AnsiConsole.WriteLine("Deletion committed. Surviving documents were not rewritten."); }
+            else
+                AnsiConsole.WriteLine("Preview only; --force alone never deletes content. Use --commit after reviewing.");
             return 0;
         }
         catch (Exception ex) { AnsiConsole.WriteLine(ex.Message); return 1; }

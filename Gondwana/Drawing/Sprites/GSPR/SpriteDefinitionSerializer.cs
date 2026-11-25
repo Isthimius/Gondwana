@@ -107,7 +107,8 @@ public static partial class SpriteDefinitionSerializer
     {
         var clone = FromJson(ToJson(definition));
         var origin = definition.Source.GsprFilePath ?? definition.Source.AssetsFilePath;
-        if (string.IsNullOrWhiteSpace(origin)) return clone;
+        if (string.IsNullOrWhiteSpace(origin))
+            return clone;
         var oldDirectory = Path.GetDirectoryName(Path.GetFullPath(origin))!;
         string? RebasePath(string? path) => string.IsNullOrWhiteSpace(path) ? path :
             Path.GetRelativePath(Path.GetFullPath(directory), Path.GetFullPath(path, oldDirectory));
@@ -262,7 +263,8 @@ public static partial class SpriteDefinitionSerializer
     internal static List<Sprite> ToSprites(SpriteDefinition definition, bool allowDuplicateNicknames)
     {
         var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);
-        if (errors.Count != 0) throw new InvalidDataException("Invalid GSPR definition:\n" + string.Join("\n", errors));
+        if (errors.Count != 0)
+            throw new InvalidDataException("Invalid GSPR definition:\n" + string.Join("\n", errors));
         var created = new List<Sprite>();
         try
         {
@@ -281,7 +283,8 @@ public static partial class SpriteDefinitionSerializer
                     throw new InvalidDataException($"Sprite '{entry.Nickname}': collision profile '{entry.CollisionProfileName}' does not exist.");
                 var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);
                 created.Add(sprite);
-                if (entry.Id != Guid.Empty) sprite.Id = entry.Id;
+                if (entry.Id != Guid.Empty)
+                    sprite.Id = entry.Id;
                 sprite.SetPosition(new Vector2(entry.Position.X, entry.Position.Y));
                 sprite.Visible = entry.Visible;
                 sprite.ZOrder = entry.ZOrder;
@@ -290,7 +293,8 @@ public static partial class SpriteDefinitionSerializer
                 sprite.VertAlign = entry.VertAlign;
                 sprite.NudgeX = entry.NudgeX;
                 sprite.NudgeY = entry.NudgeY;
-                if (!entry.RenderSize.IsEmpty) sprite.RenderSize = entry.RenderSize;
+                if (!entry.RenderSize.IsEmpty)
+                    sprite.RenderSize = entry.RenderSize;
                 sprite.EnableFog = entry.EnableFog;
                 sprite.AdjustCollisionArea = entry.AdjustCollisionArea;
                 sprite.CollisionType = entry.CollisionType;
@@ -304,14 +308,16 @@ public static partial class SpriteDefinitionSerializer
                         ?? throw new InvalidDataException(
                             $"Sprite '{entry.Nickname}': animation '{entry.AnimationKey}' is not registered.");
                     sprite.TileAnimator.CurrentCycle = cycle;
-                    if (entry.StartAnimation) sprite.TileAnimator.StartAnimation();
+                    if (entry.StartAnimation)
+                        sprite.TileAnimator.StartAnimation();
                 }
             }
             SpriteManager.Instance.DefinitionProvenance = definition.Sprites.All(sprite => sprite.Id != Guid.Empty &&
                 !string.IsNullOrWhiteSpace(sprite.Nickname))
                 ? definition.LoadStamp?.Materialized(definition, () => FromSprites(created))
                 : null;
-            foreach (var sprite in created) sprite.DefinitionProvenance = SpriteManager.Instance.DefinitionProvenance;
+            foreach (var sprite in created)
+                sprite.DefinitionProvenance = SpriteManager.Instance.DefinitionProvenance;
             return created;
         }
         catch

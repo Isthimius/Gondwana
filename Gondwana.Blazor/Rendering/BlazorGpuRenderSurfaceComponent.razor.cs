@@ -181,7 +181,8 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         // Count successful WebGL paint/presentation callbacks. This intentionally measures the
         // browser GPU presentation cadence, which may differ from the engine's TargetFPS.
         backbuffer.RecordFrame();
-        if (telemetryGeneration != 0) Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
+        if (telemetryGeneration != 0)
+            Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
         FramePresented?.Invoke(renderScene);
     }
 

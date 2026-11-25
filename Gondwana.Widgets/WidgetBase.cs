@@ -237,7 +237,8 @@ public abstract class WidgetBase : DirectComposite
         {
             RectangleF bounds = WorldBounds;
             bounds.Offset(offset);
-            if (bounds.Contains(world)) return offset;
+            if (bounds.Contains(world))
+                return offset;
         }
         return null;
     }

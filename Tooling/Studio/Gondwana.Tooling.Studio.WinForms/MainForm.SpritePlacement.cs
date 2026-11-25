@@ -24,8 +24,10 @@ public sealed partial class MainForm
 
         public void Select(string member, Guid id)
         {
-            if (editor.Document.FindInstance(member, id) is not { } sprite) return;
-            if (editor.Document.Definition.Key != member && !tab.Document.SelectMember(member)) return;
+            if (editor.Document.FindInstance(member, id) is not { } sprite)
+                return;
+            if (editor.Document.Definition.Key != member && !tab.Document.SelectMember(member))
+                return;
             editor.SelectSprite(sprite);
         }
 
@@ -43,18 +45,21 @@ public sealed partial class MainForm
 
     private void SpriteDocumentChanged(object? sender, EventArgs e)
     {
-        foreach (var scene in SceneEditors()) scene.InvalidateSpriteOwners();
+        foreach (var scene in SceneEditors())
+            scene.InvalidateSpriteOwners();
     }
 
     private void SpriteRegistryChanged()
     {
-        foreach (var scene in SceneEditors()) scene.InvalidateSpriteOwners(reloadSaved: true);
+        foreach (var scene in SceneEditors())
+            scene.InvalidateSpriteOwners(reloadSaved: true);
     }
 
     private void CancelInactiveSpritePlacements()
     {
         foreach (var scene in SceneEditors())
-            if (!ReferenceEquals(scene, ActiveDocument?.Document.Editor)) scene.CancelSpritePlacement();
+            if (!ReferenceEquals(scene, ActiveDocument?.Document.Editor))
+                scene.CancelSpritePlacement();
     }
 
     private bool CommitActiveHistoryEdits() =>

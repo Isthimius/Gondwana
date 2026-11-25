@@ -45,7 +45,8 @@ internal sealed class ViewerSceneLoader
             try
             {
                 var selected = _catalog.Animation(source.AnimationKey);
-                if (selected is not null) description = selected.ToString();
+                if (selected is not null)
+                    description = selected.ToString();
                 bool packed = source.Kind == SceneAnimationSourceKind.PackedDefinitionFile;
                 LoadAnimation(source.AnimationKey, selected ??
                     new(Resolve(packed ? source.AssetsFilePath : source.GaniPath, directory), packed ? source.AssetEntryName : null));
@@ -62,7 +63,8 @@ internal sealed class ViewerSceneLoader
             var selected = _catalog.Sprites(definition.ID);
             foreach (var candidate in selected)
             {
-                if (candidate.Sprite.Frame is not { } frame) continue;
+                if (candidate.Sprite.Frame is not { } frame)
+                    continue;
                 var document = candidate.Document;
                 try
                 {
@@ -155,7 +157,8 @@ internal sealed class ViewerSceneLoader
     private void LoadSpriteTilesheet(ViewerContentCatalog.SpriteDocument document, string name)
     {
         var source = document.Definition.TilesheetSources.SingleOrDefault(source => source.Tilesheet == name);
-        if (source is null && _tilesheets.ContainsKey(name)) return;
+        if (source is null && _tilesheets.ContainsKey(name))
+            return;
         LoadTilesheet(name, Path.GetDirectoryName(document.Source.Path)!,
             source?.Kind == SpriteTilesheetSourceKind.PackedDefinitionFile,
             source?.GtsPath, source?.AssetsFilePath, source?.AssetEntryName);

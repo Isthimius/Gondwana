@@ -24,12 +24,14 @@ public sealed partial class MainForm
         path = Path.GetFullPath(path);
         if (_session.IsRestoring && _failedRestoreArchives.Contains(path))
             throw new OperationCanceledException($"Archive opening already failed or was cancelled during restoration: {path}. Open it manually to retry.");
-        try { return ReadArchiveCore(path, password); }
+        try
+        { return ReadArchiveCore(path, password); }
         catch
         {
             // Suppress repeated authentication only for this startup restoration.
             // A missing/invalid definition entry must not suppress its valid siblings.
-            if (_session.IsRestoring) _failedRestoreArchives.Add(path);
+            if (_session.IsRestoring)
+                _failedRestoreArchives.Add(path);
             throw;
         }
     }
@@ -37,8 +39,10 @@ public sealed partial class MainForm
     private StudioArchiveSnapshot ReadArchiveCore(string path, string? password)
     {
         path = Path.GetFullPath(path);
-        if (!File.Exists(path)) throw new FileNotFoundException("Archive not found.", path);
-        if (password is null) _archivePasswords.TryGetValue(path, out password);
+        if (!File.Exists(path))
+            throw new FileNotFoundException("Archive not found.", path);
+        if (password is null)
+            _archivePasswords.TryGetValue(path, out password);
         try
         {
             var snapshot = StudioArchiveSnapshot.Open(path, password);
@@ -49,7 +53,8 @@ public sealed partial class MainForm
         {
             _archivePasswords.Remove(path);
             password = AssetPassword(path);
-            if (password is null) throw new OperationCanceledException("Archive opening cancelled.");
+            if (password is null)
+                throw new OperationCanceledException("Archive opening cancelled.");
             var snapshot = StudioArchiveSnapshot.Open(path, password);
             _archivePasswords[path] = password;
             return snapshot;
@@ -58,7 +63,8 @@ public sealed partial class MainForm
 
     private StudioDocument CreateModel(AssetLocation location, string? password)
     {
-        if (!File.Exists(location.Path)) throw new FileNotFoundException("Authoring file does not exist.", location.Path);
+        if (!File.Exists(location.Path))
+            throw new FileNotFoundException("Authoring file does not exist.", location.Path);
         string format = (location.AssetEntryName is null ? StudioDocument.FormatFor(location.Path) : StudioDocument.FormatFor(location.AssetType))
             ?? throw new NotSupportedException($"Unsupported document: {location}");
         var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -72,13 +78,15 @@ public sealed partial class MainForm
                 var original = location.AssetEntryName is null ? null : StudioArchiveSnapshot.Entry(snapshot.Archive, location);
                 model = StudioDocument.Create(format, Path.GetDirectoryName(location.Path)!, location.Path,
                     _packages, archive: snapshot.Archive, entryName: location.AssetEntryName);
-                if (format == "gaf") snapshot.Detach(); // the GAF editor owns this buffered snapshot
+                if (format == "gaf")
+                    snapshot.Detach(); // the GAF editor owns this buffered snapshot
                 model.ArchiveHash = snapshot.Hash;
                 model.OriginalEntry = original;
                 model.ArchivePassword = snapshot.Archive.Password;
                 _archivePasswords[location.Path] = snapshot.Archive.Password;
             }
-            else model = StudioDocument.Create(format, Browser.WorkingDirectory, location.Path, _packages);
+            else
+                model = StudioDocument.Create(format, Browser.WorkingDirectory, location.Path, _packages);
             model.DependencyArchives.UnionWith(dependencies);
             return model;
         }
@@ -134,7 +142,8 @@ public sealed partial class MainForm
                 }
                 catch { empty.Dispose(); throw; }
             }
-            else editor.AcceptSavedArchive(savedArchive.Detach());
+            else
+                editor.AcceptSavedArchive(savedArchive.Detach());
             model.ArchiveHash = hash;
             model.ArchivePassword = editor.AssetsFile.Password;
         }
@@ -161,7 +170,8 @@ public sealed partial class MainForm
                 }
                 else if (other != document && candidate.PackedLocation() is { } packed)
                 {
-                    try { candidate.ContentStale = !StudioArchiveSnapshot.Entry(persisted.Archive, packed).AsSpan().SequenceEqual(candidate.OriginalEntry); }
+                    try
+                    { candidate.ContentStale = !StudioArchiveSnapshot.Entry(persisted.Archive, packed).AsSpan().SequenceEqual(candidate.OriginalEntry); }
                     catch (FileNotFoundException) { candidate.ContentStale = true; }
                 }
             }
@@ -172,7 +182,8 @@ public sealed partial class MainForm
                 {
                     var contentHash = source.Location.AssetEntryName is null ? Convert.ToHexString(hash) :
                         DocumentSourceVersion.Hash(StudioArchiveSnapshot.Entry(persisted.Archive, source.Location));
-                    if (source.Accepted.ContentHash != contentHash) candidate.PreviewStale = true;
+                    if (source.Accepted.ContentHash != contentHash)
+                        candidate.PreviewStale = true;
                 }
                 catch (FileNotFoundException) { candidate.PreviewStale = true; }
             }
@@ -182,10 +193,14 @@ public sealed partial class MainForm
 
     internal bool ReloadDocument(StudioDockDocument document)
     {
-        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted) return false;
-        if (document.Document.Location is not { } location) return false;
-        if (!document.Document.CommitEdits()) return false;
-        if (document.Document.Dirty() && !ConfirmReload(document.Document)) return false;
+        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted)
+            return false;
+        if (document.Document.Location is not { } location)
+            return false;
+        if (!document.Document.CommitEdits())
+            return false;
+        if (document.Document.Dirty() && !ConfirmReload(document.Document))
+            return false;
         StudioDocument? replacement = null;
         StudioDockDocument? opened = null;
         var active = ActiveDocument;
@@ -199,18 +214,24 @@ public sealed partial class MainForm
         };
         try
         {
-            foreach (var source in document.Document.Sources.Keys) _packages.Invalidate(source.Path);
+            foreach (var source in document.Document.Sources.Keys)
+                _packages.Invalidate(source.Path);
             _packages.Invalidate(location.Path);
             replacement = CreateModel(location, document.Document.ArchivePassword);
-            if (selected is not null) replacement.SelectMember(selected);
+            if (selected is not null)
+                replacement.SelectMember(selected);
             opened = ShowDocument(replacement, document);
             replacement = null; // The new dock owns it now.
-            if (opened.Document.Editor is Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl sheet) sheet.PreviewZoom = zoom;
-            if (opened.Document.Editor is Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl scene) scene.PreviewZoom = zoom;
+            if (opened.Document.Editor is Gondwana.Tooling.Studio.Tilesheets.WinForms.TilesheetEditorControl sheet)
+                sheet.PreviewZoom = zoom;
+            if (opened.Document.Editor is Gondwana.Tooling.Studio.Scenes.WinForms.SceneEditorControl scene)
+                scene.PreviewZoom = zoom;
             document.CloseApproved = true;
             document.Close();
-            if (active is not null && active != document && !active.IsDisposed) active.Activate();
-            else RestoreFocusedControl(opened.Document.Editor, focused);
+            if (active is not null && active != document && !active.IsDisposed)
+                active.Activate();
+            else
+                RestoreFocusedControl(opened.Document.Editor, focused);
             InvalidateDependencies();
             return true;
         }
@@ -222,9 +243,11 @@ public sealed partial class MainForm
             if (!document.IsDisposed)
             {
                 // Replacement construction/show failed: restore the original registry and editor.
-                if (opened is not null) opened.Dispose();
+                if (opened is not null)
+                    opened.Dispose();
                 _paths[location] = document;
-                if (active == document) document.Activate();
+                if (active == document)
+                    document.Activate();
             }
         }
     }
@@ -244,19 +267,23 @@ public sealed partial class MainForm
     {
         foreach (var index in path)
         {
-            if (index >= root.Controls.Count) break;
+            if (index >= root.Controls.Count)
+                break;
             root = root.Controls[index];
         }
-        if (root.CanFocus) root.Focus();
+        if (root.CanFocus)
+            root.Focus();
     }
 
     internal void ReloadPreviews(StudioDockDocument document)
     {
-        if (document.IsDisposed) return;
+        if (document.IsDisposed)
+            return;
         RefreshSourceRegistrations(document);
         var versions = document.Document.Sources.Where(p => p.Value.Role == DocumentSourceRole.Dependency)
             .ToDictionary(p => p.Key, p => DocumentSourceVersion.Read(p.Key, _archivePasswords.GetValueOrDefault(p.Key.Path)), DocumentLocationComparer.Instance);
-        foreach (var source in versions.Keys) _packages.Invalidate(source.Path);
+        foreach (var source in versions.Keys)
+            _packages.Invalidate(source.Path);
         _loadingDependencies = document.Document.DependencyArchives;
         try
         {
@@ -285,7 +312,8 @@ public sealed partial class MainForm
                 RefreshSourceRegistrations(document, acceptedVersions);
                 document.Document.PreviewStale = false;
             }
-            else document.Document.PreviewStale = true;
+            else
+                document.Document.PreviewStale = true;
             document.UpdateCaption();
         }
         catch (Exception ex) { document.Document.PreviewStale = true; document.UpdateCaption(); ReportError(ex); }

@@ -672,7 +672,8 @@ public class TextBlock : DirectDrawingMovableBase
 
     private float PauseFor(char c)
     {
-        if (!_pauseEnabled) return 0f;
+        if (!_pauseEnabled)
+            return 0f;
 
         return c switch
         {
@@ -734,8 +735,10 @@ public class TextBlock : DirectDrawingMovableBase
             _revealLastTick = tick;
 
             // Clamp to avoid first-frame "time warp" completing the whole text
-            if (dtReveal > 0.1f) dtReveal = 0.1f;   // ~100ms/frame cap
-            if (dtReveal < 0f) dtReveal = 0f;
+            if (dtReveal > 0.1f)
+                dtReveal = 0.1f;   // ~100ms/frame cap
+            if (dtReveal < 0f)
+                dtReveal = 0f;
         }
 
         // --- Typewriter / word reveal ---

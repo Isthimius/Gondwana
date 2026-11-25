@@ -14,9 +14,15 @@ public sealed partial class CompositionTests
     {
         switch (format)
         {
-            case "gts": TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = identity }]); break;
-            case "gani": AnimationDefinitionSerializer.SaveAll(path, [new() { Key = identity }]); break;
-            case "gscn": SceneDefinitionSerializer.SaveAll(path, [new() { ID = identity }]); break;
+            case "gts":
+                TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = identity }]);
+                break;
+            case "gani":
+                AnimationDefinitionSerializer.SaveAll(path, [new() { Key = identity }]);
+                break;
+            case "gscn":
+                SceneDefinitionSerializer.SaveAll(path, [new() { ID = identity }]);
+                break;
         }
     }
 
@@ -157,7 +163,8 @@ public sealed partial class CompositionTests
         Assert.True(AwaitUi(CompleteDependencyTask(studio.DependencyRefresh)));
         Assert.NotNull(studio.DependencyScan);
         tab.Document.History!.MarkUntracked();
-        using (var bitmap = new Bitmap(9, 9)) bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        using (var bitmap = new Bitmap(9, 9))
+            bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
         VerifySources(studio);
         Assert.Null(studio.DependencyScan);
         Assert.True(tab.Document.PreviewStale);
@@ -180,7 +187,8 @@ public sealed partial class CompositionTests
     public void SourceMonitoringMalformedReferenceKeepsLastValidDependencyWatchers() => RunSta(root =>
     {
         var image = Path.Combine(root, "image.png");
-        using (var bitmap = new Bitmap(8, 8)) bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        using (var bitmap = new Bitmap(8, 8))
+            bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
         var path = Path.Combine(root, "sheet.gts");
         TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "sheet", Image = new() { FilePath = image } }]);
         using var studio = Host(root);
@@ -191,7 +199,8 @@ public sealed partial class CompositionTests
         editor.Document.MarkChanged();
         Application.DoEvents();
         Assert.Contains(tab.Document.Sources.Keys, source => source.Path == image);
-        using (var bitmap = new Bitmap(9, 9)) bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        using (var bitmap = new Bitmap(9, 9))
+            bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
         VerifySources(studio);
         Assert.True(tab.Document.PreviewStale);
         Assert.Contains("[preview]", tab.Text);
@@ -232,8 +241,10 @@ public sealed partial class CompositionTests
         var tab = studio.OpenDocument(animation);
         var dependency = Assert.Single(tab.Document.Sources, pair => pair.Key.Path == sheet);
         var accepted = dependency.Value.Accepted;
-        if (missing) File.Delete(sheet);
-        else File.WriteAllText(sheet, "invalid {");
+        if (missing)
+            File.Delete(sheet);
+        else
+            File.WriteAllText(sheet, "invalid {");
         VerifySources(studio);
         Assert.True(tab.Document.PreviewStale);
         studio.ReloadPreviews(tab);
@@ -347,7 +358,8 @@ public sealed partial class CompositionTests
         bool written = false;
         tab.Document.Changed += (_, _) =>
         {
-            if (!written && !tab.Document.Dirty()) { written = true; WriteMonitored(path, "gts", "external"); }
+            if (!written && !tab.Document.Dirty())
+            { written = true; WriteMonitored(path, "gts", "external"); }
         };
         Assert.True(AwaitUi(studio.SaveDocument(tab)));
         Assert.True(written);

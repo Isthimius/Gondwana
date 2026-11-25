@@ -19,7 +19,8 @@ internal static class NativeSmoke
         string? colorError = null;
         player.Ended += (_, _) =>
         {
-            if (Interlocked.Exchange(ref stopAtEnd, 0) != 0) player.Stop();
+            if (Interlocked.Exchange(ref stopAtEnd, 0) != 0)
+                player.Stop();
             Interlocked.Increment(ref ends);
         };
         player.FrameReady += (_, frame) =>
@@ -66,7 +67,8 @@ internal static class NativeSmoke
             Volatile.Write(ref stopAtEnd, 1);
             player.Seek(player.Duration - TimeSpan.FromMilliseconds(400));
             Wait(() => Volatile.Read(ref ends) > priorEnds, "stop from Ended handler");
-            if (player.IsPlaying) throw new Exception("Loop restarted despite an explicit Stop in Ended.");
+            if (player.IsPlaying)
+                throw new Exception("Loop restarted despite an explicit Stop in Ended.");
         }
         player.Stop();
         string gafPath = Path.Combine(Path.GetTempPath(), $"gondwana-video-smoke-{Guid.NewGuid():N}.gaf");
@@ -84,10 +86,12 @@ internal static class NativeSmoke
             player.Play();
             Wait(() => Volatile.Read(ref frames) > before + 2 && player.IsMetadataReady, "GAF decode");
             player.Open(uri);
-            if (assetStream.CanRead) throw new Exception("Owned GAF stream was not closed on replacement.");
+            if (assetStream.CanRead)
+                throw new Exception("Owned GAF stream was not closed on replacement.");
         }
         finally { File.Delete(gafPath); }
-        for (int i = 0; i < 10; i++) player.Open(uri); // Cancel/replace pending parse repeatedly.
+        for (int i = 0; i < 10; i++)
+            player.Open(uri); // Cancel/replace pending parse repeatedly.
         before = Volatile.Read(ref frames);
         player.Play();
         Wait(() => Volatile.Read(ref frames) > before + 2 && player.IsMetadataReady, "repeated open");
@@ -116,8 +120,10 @@ internal static class NativeSmoke
                 player.Play();
                 Wait(() => Volatile.Read(ref frames) > before, "native color fixture");
                 player.Stop();
-                if (player.NaturalSize != size) throw new Exception($"Wrong source dimensions: {player.NaturalSize}, expected {size}");
-                if (colorError is not null) throw new Exception(colorError);
+                if (player.NaturalSize != size)
+                    throw new Exception($"Wrong source dimensions: {player.NaturalSize}, expected {size}");
+                if (colorError is not null)
+                    throw new Exception(colorError);
                 Volatile.Write(ref checkColors, 0);
                 Console.WriteLine($"Verified native red/blue pixels and {size.Item1}x{size.Item2} dimensions.");
             }
@@ -125,8 +131,10 @@ internal static class NativeSmoke
         }
         player.Dispose();
         player.Dispose();
-        if (!stream.CanRead) throw new Exception("Borrowed stream was closed.");
-        if (player.LastError is { } error) throw error;
+        if (!stream.CanRead)
+            throw new Exception("Borrowed stream was closed.");
+        if (player.LastError is { } error)
+            throw error;
         Console.WriteLine($"PASS: {frames} frames, URI/stream/GAF, metadata, controls, cleanup. Use the GPU window to check presentation and audio.");
         return 0;
     }
@@ -135,7 +143,8 @@ internal static class NativeSmoke
         var timer = Stopwatch.StartNew();
         while (!condition())
         {
-            if (timer.Elapsed > TimeSpan.FromSeconds(15)) throw new TimeoutException(operation);
+            if (timer.Elapsed > TimeSpan.FromSeconds(15))
+                throw new TimeoutException(operation);
             Thread.Sleep(20);
         }
     }

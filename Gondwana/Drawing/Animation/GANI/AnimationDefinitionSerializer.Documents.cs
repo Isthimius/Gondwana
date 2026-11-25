@@ -50,7 +50,8 @@ public static partial class AnimationDefinitionSerializer
     public static AnimationDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -84,7 +85,8 @@ public static partial class AnimationDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase); }
+        try
+        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase); }
         catch (InvalidDataException ex) { errors.Add(ex.Message); }
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
@@ -208,19 +210,24 @@ public static partial class AnimationDefinitionSerializer
     public static IReadOnlyList<Cycle> ToAllCycles(AnimationDefinitionDocument document)
     {
         var errors = ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         var created = new List<Cycle>();
         var previous = new Dictionary<string, Cycle>(Cycle._cycles, StringComparer.OrdinalIgnoreCase);
         try
         {
-            foreach (var definition in document.Definitions) created.Add(MaterializeCycle(definition));
-            for (int i = 0; i < created.Count; i++) ApplyNextCycle(created[i], document.Definitions[i]);
+            foreach (var definition in document.Definitions)
+                created.Add(MaterializeCycle(definition));
+            for (int i = 0; i < created.Count; i++)
+                ApplyNextCycle(created[i], document.Definitions[i]);
             return created;
         }
         catch
         {
-            foreach (var item in created) item.Dispose();
-            foreach (var pair in previous) Cycle._cycles[pair.Key] = pair.Value;
+            foreach (var item in created)
+                item.Dispose();
+            foreach (var pair in previous)
+                Cycle._cycles[pair.Key] = pair.Value;
             throw;
         }
     }

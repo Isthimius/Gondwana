@@ -105,7 +105,8 @@ public sealed class SceneViewerLauncherTests : IDisposable
         bool launched = false;
         bool result = SceneViewerLauncher.ViewSavedScene(document, () => confirm, () =>
         {
-            if (save) document.Save(document.FilePath!);
+            if (save)
+                document.Save(document.FilePath!);
             return save;
         }, _ => launched = true);
         Assert.Equal(confirm && save, result);
@@ -150,7 +151,8 @@ public sealed class SceneViewerLauncherTests : IDisposable
     public void ResolvesMatchingRepositoryBuildAndPublishedSubfolder(bool relocated)
     {
         string toolingDirectory = Path.Combine(_directory, "Tooling");
-        if (relocated) toolingDirectory = Path.Combine(toolingDirectory, "Studio");
+        if (relocated)
+            toolingDirectory = Path.Combine(toolingDirectory, "Studio");
         string editor = Path.Combine(toolingDirectory, "Gondwana.Tooling.Studio.Scenes.WinForms", "bin", "Release", "net10.0-windows");
         Directory.CreateDirectory(editor);
         string viewer = Path.Combine(toolingDirectory, SceneViewerLauncher.Component, "bin", "Release", "net10.0-windows", SceneViewerLauncher.Component + ".exe");

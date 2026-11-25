@@ -67,7 +67,8 @@ public sealed partial class AnimationDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = AnimationDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
         var document = new AnimationDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
         document.SourceVersion = version;
@@ -202,7 +203,8 @@ public sealed partial class AnimationDocument
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = AnimationDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
-        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Key)) ||
             _definitions.Select(member => member.Key).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
@@ -279,7 +281,8 @@ public sealed partial class AnimationDocument
     /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(AnimationDefinition definition)
     {
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -311,12 +314,14 @@ public sealed partial class AnimationDocument
     public bool RemoveDefinition(AnimationDefinition definition)
     {
         int index = _definitions.IndexOf(definition);
-        if (_definitions.Count == 1 || index < 0) return false;
+        if (_definitions.Count == 1 || index < 0)
+            return false;
         var selected = Definition;
         History.Execute("Remove definition", () =>
         {
             _definitions.RemoveAt(index);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+            if (ReferenceEquals(Definition, definition))
+                Definition = _definitions[0];
         }, () => { _definitions.Insert(index, definition); Definition = selected; });
         return true;
     }
@@ -358,7 +363,8 @@ public sealed partial class AnimationDocument
             }
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "animation");
-        if (imported.Count == 0) return 0;
+        if (imported.Count == 0)
+            return 0;
         AddMembers(imported, "Import animation definitions");
         return imported.Count;
     }
@@ -366,7 +372,8 @@ public sealed partial class AnimationDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++) candidate = basis + "-" + i;
+        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++)
+            candidate = basis + "-" + i;
         return candidate;
     }
 }

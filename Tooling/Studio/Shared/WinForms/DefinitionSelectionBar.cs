@@ -230,7 +230,8 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
     {
         try
         {
-            action(); _refresh();
+            action();
+            _refresh();
             RefreshMembers(this, EventArgs.Empty);
         }
         catch (Exception ex)

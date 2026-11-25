@@ -18,7 +18,8 @@ public static class AssetArchiveCopy
     {
         destination = Path.GetFullPath(destination);
         DefinitionReferenceDiscovery.CheckPath(destination);
-        if (File.Exists(destination) || Directory.Exists(destination)) throw new IOException($"Copy destination exists: {destination}.");
+        if (File.Exists(destination) || Directory.Exists(destination))
+            throw new IOException($"Copy destination exists: {destination}.");
         var sourcePath = Path.GetFullPath(source.SourcePath!);
         var contents = AssetImportPlan.Snapshot(source);
         var mappings = contents.Keys.Select(key => new ReferenceRelocation(new(key.AssetType, sourcePath, key.AssetName), new(key.AssetType, destination, key.AssetName))).ToArray();
@@ -39,7 +40,8 @@ public static class AssetArchiveCopy
             }
             AssetsFile.Validate(temporary, password);
             byte[] hash;
-            using (var staged = File.OpenRead(temporary)) hash = System.Security.Cryptography.SHA256.HashData(staged);
+            using (var staged = File.OpenRead(temporary))
+                hash = System.Security.Cryptography.SHA256.HashData(staged);
             File.Move(temporary, destination, overwrite: false);
             return hash;
         }

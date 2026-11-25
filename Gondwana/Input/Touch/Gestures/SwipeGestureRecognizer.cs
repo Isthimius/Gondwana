@@ -125,7 +125,8 @@ public sealed class SwipeGestureRecognizer : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
         _isDisposed = true;
 
         _touchInput.TouchBegan -= OnTouchBegan;

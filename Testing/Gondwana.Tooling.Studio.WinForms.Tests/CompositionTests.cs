@@ -62,12 +62,24 @@ public sealed partial class CompositionTests
         Assert.Equal("first." + format, document.Text);
         switch (model.Editor)
         {
-            case TilesheetEditorControl editor: editor.Document.MarkChanged(); break;
-            case AnimationEditorControl editor: editor.Document.MarkChanged(); break;
-            case AudioEditorControl editor: editor.Document.MarkChanged(); break;
-            case SceneEditorControl editor: editor.Document.MarkChanged(); break;
-            case SpriteEditorControl editor: editor.Document.MarkChanged(); break;
-            case AssetEditorControl editor: editor.MarkChanged(); break;
+            case TilesheetEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case AnimationEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case AudioEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case SceneEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case SpriteEditorControl editor:
+                editor.Document.MarkChanged();
+                break;
+            case AssetEditorControl editor:
+                editor.MarkChanged();
+                break;
         }
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
@@ -395,7 +407,8 @@ public sealed partial class CompositionTests
         foreach (Control child in parent.Controls)
         {
             yield return child;
-            foreach (var descendant in Descendants(child)) yield return descendant;
+            foreach (var descendant in Descendants(child))
+                yield return descendant;
         }
     }
 
@@ -418,6 +431,7 @@ public sealed partial class CompositionTests
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Studio interaction timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

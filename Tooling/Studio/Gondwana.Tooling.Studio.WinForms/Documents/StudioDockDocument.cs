@@ -34,7 +34,8 @@ internal sealed class StudioDockDocument : DockContent
         ToolTipText = Document.Tooltip
                     + (Document.ContentStale ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately." : "")
                     + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
-        if (Document.SourceProblem is { } problem) ToolTipText += "\n" + problem;
+        if (Document.SourceProblem is { } problem)
+            ToolTipText += "\n" + problem;
     }
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();

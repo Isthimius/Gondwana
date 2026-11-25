@@ -43,7 +43,8 @@ public sealed class SpriteGsprPersistenceTests
             original.RenderSize = new Size(19, 47);
             original.Rotation = 32;
             original.EnableFog = true;
-            original.NudgeX = -3; original.NudgeY = 9;
+            original.NudgeX = -3;
+            original.NudgeY = 9;
             original.AdjustCollisionArea = new CollisionAdjust(1, 2, -3, 4);
             original.CollisionType = TileCollisionType.Trigger;
             original.AdjustCollisionAreaByFrame = byFrame;
@@ -58,8 +59,10 @@ public sealed class SpriteGsprPersistenceTests
         finally
         {
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = oldDefault;
-            SpriteManager.Instance._spriteList.Remove(original); original.DisposeImmediate();
-            if (restored is not null) { SpriteManager.Instance._spriteList.Remove(restored); restored.DisposeImmediate(); }
+            SpriteManager.Instance._spriteList.Remove(original);
+            original.DisposeImmediate();
+            if (restored is not null)
+            { SpriteManager.Instance._spriteList.Remove(restored); restored.DisposeImmediate(); }
         }
     }
 
@@ -91,7 +94,8 @@ public sealed class SpriteGsprPersistenceTests
         finally
         {
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = original;
-            if (sprite is not null) { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+            if (sprite is not null)
+            { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
         }
     }
 
@@ -111,16 +115,30 @@ public sealed class SpriteGsprPersistenceTests
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap("missing-" + Guid.NewGuid(), new SKBitmap(16, 16));
         using var scene = new Scene();
         var layer = scene.AddLayer(1, 1, 16, 16);
-        var entry = Valid(); entry.SceneId = scene.ID; entry.SceneLayerId = layer.ID;
+        var entry = Valid();
+        entry.SceneId = scene.ID;
+        entry.SceneLayerId = layer.ID;
         entry.Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name };
         switch (missing)
         {
-            case "scene": entry.SceneId = "missing"; break;
-            case "layer": entry.SceneLayerId = "missing"; break;
-            case "tilesheet": entry.Frame.Tilesheet = "missing"; break;
-            case "region": entry.Frame.RegionName = "missing"; break;
-            case "coordinate": entry.Frame.XTile = int.MaxValue; break;
-            case "profile": entry.CollisionProfileName = "missing"; break;
+            case "scene":
+                entry.SceneId = "missing";
+                break;
+            case "layer":
+                entry.SceneLayerId = "missing";
+                break;
+            case "tilesheet":
+                entry.Frame.Tilesheet = "missing";
+                break;
+            case "region":
+                entry.Frame.RegionName = "missing";
+                break;
+            case "coordinate":
+                entry.Frame.XTile = int.MaxValue;
+                break;
+            case "profile":
+                entry.CollisionProfileName = "missing";
+                break;
         }
         var before = SpriteManager.Instance.AllSprites.ToArray();
         Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.ToSprite(entry));
@@ -151,19 +169,49 @@ public sealed class SpriteGsprPersistenceTests
         var definition = new SpriteDefinition { Sprites = [entry] };
         switch (invalid)
         {
-            case "scene": entry.SceneId = ""; break;
-            case "layer": entry.SceneLayerId = ""; break;
-            case "position": entry.Position = new(float.NaN, 0); break;
-            case "rotation": entry.Rotation = float.PositiveInfinity; break;
-            case "size": entry.RenderSize = new(-1, 1); break;
-            case "z": entry.ZOrder = 0; break;
-            case "enum": entry.CollisionType = (TileCollisionType)999; break;
-            case "guid": var duplicate = Valid(); duplicate.Id = entry.Id; definition.Sprites.Add(duplicate); break;
-            case "nickname": var sameName = Valid(); sameName.Nickname = entry.Nickname; definition.Sprites.Add(sameName); break;
-            case "null": definition.Sprites.Add(null!); break;
-            case "sources": definition.SceneSources.Add(new()); break;
-            case "animation": entry.StartAnimation = true; break;
-            case "animationSource": definition.AnimationSources.Add(new()); break;
+            case "scene":
+                entry.SceneId = "";
+                break;
+            case "layer":
+                entry.SceneLayerId = "";
+                break;
+            case "position":
+                entry.Position = new(float.NaN, 0);
+                break;
+            case "rotation":
+                entry.Rotation = float.PositiveInfinity;
+                break;
+            case "size":
+                entry.RenderSize = new(-1, 1);
+                break;
+            case "z":
+                entry.ZOrder = 0;
+                break;
+            case "enum":
+                entry.CollisionType = (TileCollisionType)999;
+                break;
+            case "guid":
+                var duplicate = Valid();
+                duplicate.Id = entry.Id;
+                definition.Sprites.Add(duplicate);
+                break;
+            case "nickname":
+                var sameName = Valid();
+                sameName.Nickname = entry.Nickname;
+                definition.Sprites.Add(sameName);
+                break;
+            case "null":
+                definition.Sprites.Add(null!);
+                break;
+            case "sources":
+                definition.SceneSources.Add(new());
+                break;
+            case "animation":
+                entry.StartAnimation = true;
+                break;
+            case "animationSource":
+                definition.AnimationSources.Add(new());
+                break;
         }
         var before = SpriteDefinitionSerializer.ToJson(definition);
         Assert.NotEmpty(SpriteDefinitionValidator.Validate(definition));
@@ -193,10 +241,12 @@ public sealed class SpriteGsprPersistenceTests
         using var scene = new Scene();
         var layer = scene.AddLayer(1, 1, 16, 16);
         var definition = new SpriteDefinition { Sprites = [Valid(), Valid()] };
-        foreach (var entry in definition.Sprites) { entry.SceneId = scene.ID; entry.SceneLayerId = layer.ID; }
+        foreach (var entry in definition.Sprites)
+        { entry.SceneId = scene.ID; entry.SceneLayerId = layer.ID; }
         var before = SpriteManager.Instance.AllSprites.ToArray();
         int calls = 0;
-        void FailSecond(Sprite sprite) { if (++calls == 2) throw new InvalidOperationException("Creation failed"); }
+        void FailSecond(Sprite sprite)
+        { if (++calls == 2) throw new InvalidOperationException("Creation failed"); }
         SpriteManager.Instance.SpriteCreated += FailSecond;
         try
         {

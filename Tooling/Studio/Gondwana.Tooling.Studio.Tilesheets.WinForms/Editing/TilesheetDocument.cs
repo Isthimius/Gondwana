@@ -160,7 +160,8 @@ public sealed partial class TilesheetDocument
                 errors.Add("Image source is ambiguous: loose and packed sources are both specified.");
             try
             {
-                if (!File.Exists(ResolveImagePath())) errors.Add("Image file does not exist: " + image.FilePath);
+                if (!File.Exists(ResolveImagePath()))
+                    errors.Add("Image file does not exist: " + image.FilePath);
             }
             catch (Exception ex) when (ex is ArgumentException or NotSupportedException or IOException)
             {
@@ -360,7 +361,8 @@ public sealed partial class TilesheetDocument
         History.Execute("Remove definition", () =>
         {
             _definitions.Remove(definition);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+            if (ReferenceEquals(Definition, definition))
+                Definition = _definitions[0];
         }, () =>
         {
             if (!_definitions.Contains(definition))

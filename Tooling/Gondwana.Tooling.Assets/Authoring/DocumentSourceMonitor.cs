@@ -30,7 +30,8 @@ public sealed class DocumentSourceMonitor : IDisposable
     {
         _enableWatchers = enableWatchers;
         _debounce = debounce ?? TimeSpan.FromMilliseconds(150);
-        if (_debounce <= TimeSpan.Zero || _debounce.TotalMilliseconds > int.MaxValue) throw new ArgumentOutOfRangeException(nameof(debounce));
+        if (_debounce <= TimeSpan.Zero || _debounce.TotalMilliseconds > int.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(debounce));
         _timer = new Timer(Tick, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
     }
 
@@ -84,13 +85,15 @@ public sealed class DocumentSourceMonitor : IDisposable
     private void OnError(object sender, ErrorEventArgs args)
     {
         lock (_gate)
-            foreach (var registration in _registrations) Schedule(registration);
+            foreach (var registration in _registrations)
+                Schedule(registration);
     }
     internal void Signal(string path, string? renamedTo = null)
     {
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             foreach (var registration in _registrations.Where(r => SamePath(r.Location.Path, path)))
             {
                 registration.RenamedTo = renamedTo ?? registration.RenamedTo;
@@ -114,11 +117,13 @@ public sealed class DocumentSourceMonitor : IDisposable
     {
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             using var reads = new DocumentSourceVersion.ReadBatch();
             foreach (var registration in _registrations.ToArray())
             {
-                if (!registration.Pending || registration.Closed) continue;
+                if (!registration.Pending || registration.Closed)
+                    continue;
                 var current = reads.Read(registration.Location, registration.Password);
                 // Require two equal observations separated by the debounce interval, including missing files.
                 if (registration.Candidate != current)
@@ -133,7 +138,8 @@ public sealed class DocumentSourceMonitor : IDisposable
                 registration.Pending = false;
                 registration.Observe(current);
                 // No new filesystem event is guaranteed when a sharing lock is released.
-                if (!registration.Closed && current.Status == DocumentSourceStatus.Inaccessible) Schedule(registration);
+                if (!registration.Closed && current.Status == DocumentSourceStatus.Inaccessible)
+                    Schedule(registration);
             }
             if (!_disposed && !_registrations.Any(r => r.Pending))
             {
@@ -151,12 +157,15 @@ public sealed class DocumentSourceMonitor : IDisposable
     {
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             _disposed = true;
             _timer.Dispose();
-            foreach (var watcher in _watchers.Values) watcher.Dispose();
+            foreach (var watcher in _watchers.Values)
+                watcher.Dispose();
             _watchers.Clear();
-            foreach (var registration in _registrations) registration.Closed = true;
+            foreach (var registration in _registrations)
+                registration.Closed = true;
             _registrations.Clear();
         }
     }
@@ -184,7 +193,8 @@ public sealed class DocumentSourceMonitor : IDisposable
         public void Accept(DocumentSourceVersion version)
         {
             ArgumentNullException.ThrowIfNull(version);
-            if (version.Status != DocumentSourceStatus.Available) throw new ArgumentException("Only readable content can be accepted.", nameof(version));
+            if (version.Status != DocumentSourceStatus.Available)
+                throw new ArgumentException("Only readable content can be accepted.", nameof(version));
             lock (_owner._gate)
             {
                 ObjectDisposedException.ThrowIf(Closed, this);
@@ -239,7 +249,8 @@ public sealed class DocumentSourceMonitor : IDisposable
             {
                 _observed = current;
                 // Recovery to accepted content is meaningful after a missing/inaccessible observation.
-                try { _changed(change); }
+                try
+                { _changed(change); }
                 catch (Exception ex) { System.Diagnostics.Trace.TraceError("Document source notification failed: {0}", ex); }
             }
             return change;
@@ -249,12 +260,14 @@ public sealed class DocumentSourceMonitor : IDisposable
         {
             lock (_owner._gate)
             {
-                if (Closed) return;
+                if (Closed)
+                    return;
                 Closed = true;
                 _owner._registrations.Remove(this);
                 var directory = Path.GetDirectoryName(Location.Path)!;
                 if (!_owner._registrations.Any(r => SamePath(Path.GetDirectoryName(r.Location.Path)!, directory)) &&
-                    _owner._watchers.Remove(directory, out var watcher)) watcher.Dispose();
+                    _owner._watchers.Remove(directory, out var watcher))
+                    watcher.Dispose();
             }
         }
     }

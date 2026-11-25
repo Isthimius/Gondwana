@@ -522,7 +522,8 @@ public sealed class ViewportScalingTests : IDisposable
             var t = adapter.Presentation;
             mouse.Position = new PointF(t.DestinationRect.Left + x * t.Scale, t.DestinationRect.Top + y * t.Scale);
             mouse.PressedButtons.Clear();
-            if (down) mouse.PressedButtons.Add(MouseButton.Left);
+            if (down)
+                mouse.PressedButtons.Add(MouseButton.Left);
             MouseEventPoller.Instance!.PollForEvents(tick++);
         }
         Poll(15, 15, false);
@@ -681,8 +682,10 @@ public sealed class ViewportScalingTests : IDisposable
         {
             var point = new TouchPoint(1, adapter.AdapterPxToScreenPx(physical), phase);
             _active = phase == TouchPhase.Ended ? [] : [point];
-            if (phase == TouchPhase.Began) _began = [point];
-            if (phase == TouchPhase.Ended) _ended = [point];
+            if (phase == TouchPhase.Began)
+                _began = [point];
+            if (phase == TouchPhase.Ended)
+                _ended = [point];
         }
     }
 

@@ -33,7 +33,8 @@ internal static class BundleHelper
         var bundle = AssetsFile.LoadOrCreate(path, password);
         try
         {
-            foreach (var entry in bundle.GetAllEntries()) SafeFilePath.ValidateRelative(entry.AssetName);
+            foreach (var entry in bundle.GetAllEntries())
+                SafeFilePath.ValidateRelative(entry.AssetName);
             return bundle;
         }
         catch { bundle.Dispose(); throw; }

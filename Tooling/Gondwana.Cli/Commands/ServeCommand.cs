@@ -56,13 +56,17 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
     {
         if (settings.Root is not null)
         {
-            if (settings.Project is not null) throw new ArgumentException("Choose --root or --project, not both.");
+            if (settings.Project is not null)
+                throw new ArgumentException("Choose --root or --project, not both.");
             var root = Path.GetFullPath(settings.Root);
-            if (!File.Exists(Path.Combine(root, "index.html"))) throw new InvalidOperationException("--root must contain a published index.html.");
+            if (!File.Exists(Path.Combine(root, "index.html")))
+                throw new InvalidOperationException("--root must contain a published index.html.");
             return root;
         }
-        if (!ProjectHelper.TryResolveProject(settings.Project, out var project, out var error)) throw new InvalidOperationException(error);
-        if (!ProjectHelper.TryResolveBrowserFramework(project!, settings.Framework, out var framework, out error)) throw new InvalidOperationException(error);
+        if (!ProjectHelper.TryResolveProject(settings.Project, out var project, out var error))
+            throw new InvalidOperationException(error);
+        if (!ProjectHelper.TryResolveBrowserFramework(project!, settings.Framework, out var framework, out error))
+            throw new InvalidOperationException(error);
         return ProjectHelper.TryLocateBlazorPublishRoot(project!, settings.Configuration, framework)
             ?? throw new InvalidOperationException("No published browser wwwroot found. Run 'gondwana publish blazor' first, or specify --root for custom output.");
     }
@@ -72,7 +76,8 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
     {
         try
         {
-            if (settings.Port is < 1 or > 65535) throw new ArgumentException("Port must be between 1 and 65535.");
+            if (settings.Port is < 1 or > 65535)
+                throw new ArgumentException("Port must be between 1 and 65535.");
             var root = ResolveRoot(settings);
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             ConsoleCancelEventHandler handler = (_, e) => { e.Cancel = true; stop.Cancel(); };
@@ -82,7 +87,8 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
                 await PublishedServer.Run(root, settings.Port, url =>
                 {
                     AnsiConsole.WriteLine($"Serving {root} at {url} (Ctrl+C to stop)");
-                    if (!settings.NoOpen) ProcessHelper.OpenBrowser(url);
+                    if (!settings.NoOpen)
+                        ProcessHelper.OpenBrowser(url);
                 }, stop.Token);
             }
             finally { Console.CancelKeyPress -= handler; }
@@ -119,7 +125,8 @@ internal static class PublishedServer
         var html = File.ReadAllText(Path.Combine(root, "index.html"));
         var match = Regex.Match(html, "<base\\b[^>]*\\bhref\\s*=\\s*[\"']([^\"']*)[\"']", RegexOptions.IgnoreCase);
         var value = match.Success ? WebUtility.HtmlDecode(match.Groups[1].Value) : "/";
-        if (value is "" or "." or "./" or "/") return "/";
+        if (value is "" or "." or "./" or "/")
+            return "/";
         if (!value.StartsWith('/') || value.StartsWith("//") || value.Contains('?') || value.Contains('#'))
             throw new InvalidOperationException("Published base href must be '/' or a local absolute path. Republish with --base-href / for local serving.");
         SafeFilePath.ValidateRelative(Uri.UnescapeDataString(value.Trim('/')));
@@ -170,25 +177,33 @@ internal static class PublishedServer
             response.Headers["Cross-Origin-Embedder-Policy"] = "require-corp";
             response.Headers["X-Content-Type-Options"] = "nosniff";
             response.Headers["Cache-Control"] = "no-cache";
-            if (context.Request.RemoteEndPoint is not { } remote || !IPAddress.IsLoopback(remote.Address)) { response.StatusCode = 403; return; }
-            if (context.Request.HttpMethod is not ("GET" or "HEAD")) { response.StatusCode = 405; return; }
+            if (context.Request.RemoteEndPoint is not { } remote || !IPAddress.IsLoopback(remote.Address))
+            { response.StatusCode = 403; return; }
+            if (context.Request.HttpMethod is not ("GET" or "HEAD"))
+            { response.StatusCode = 405; return; }
             var urlPath = context.Request.Url!.AbsolutePath;
-            if (urlPath == "/" && basePath != "/") { response.Redirect(basePath); return; }
-            if (!urlPath.StartsWith(basePath, StringComparison.Ordinal)) { response.StatusCode = 404; return; }
+            if (urlPath == "/" && basePath != "/")
+            { response.Redirect(basePath); return; }
+            if (!urlPath.StartsWith(basePath, StringComparison.Ordinal))
+            { response.StatusCode = 404; return; }
             var name = Uri.UnescapeDataString(urlPath[basePath.Length..]);
-            if (name.Length == 0) name = "index.html";
+            if (name.Length == 0)
+                name = "index.html";
             SafeFilePath.ValidateRelative(name);
             // Only filesystem-discovered values reach file APIs. Request data is
             // a lookup key, never a component of a filesystem path.
-            if (!files.TryGetValue(name, out var file)) { response.StatusCode = 404; return; }
+            if (!files.TryGetValue(name, out var file))
+            { response.StatusCode = 404; return; }
             // Recheck link ancestry in case the published tree changed after indexing.
             SafeFilePath.Resolve(root, file.RelativePath);
             var path = file.FullPath;
-            if (!File.Exists(path)) { response.StatusCode = 404; return; }
+            if (!File.Exists(path))
+            { response.StatusCode = 404; return; }
             response.ContentType = ContentType(path);
             using var stream = File.OpenRead(path);
             response.ContentLength64 = stream.Length;
-            if (context.Request.HttpMethod == "GET") await stream.CopyToAsync(response.OutputStream, cancellationToken);
+            if (context.Request.HttpMethod == "GET")
+                await stream.CopyToAsync(response.OutputStream, cancellationToken);
         }
         catch (InvalidDataException) { response.StatusCode = 400; }
         catch (UnauthorizedAccessException) { response.StatusCode = 403; }

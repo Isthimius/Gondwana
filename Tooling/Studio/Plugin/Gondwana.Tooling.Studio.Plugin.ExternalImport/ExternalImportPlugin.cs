@@ -39,14 +39,17 @@ public sealed class ExternalImportPlugin : IStudioPlugin, IStudioPluginHostServi
     /// <param name="projectPath">The authoring directory to retain and show as the output directory.</param>
     public void OnProjectOpened(string projectPath)
     {
-        OnProjectClosed(); directory = projectPath;
-        if (panel is not null && !panel.IsDisposed) panel.OutputDirectory = projectPath;
+        OnProjectClosed();
+        directory = projectPath;
+        if (panel is not null && !panel.IsDisposed)
+            panel.OutputDirectory = projectPath;
     }
 
     /// <summary>Forgets the working directory, cancels tracked import work, and clears the live panel's output directory.</summary>
     public void OnProjectClosed()
     {
         directory = null;
-        if (panel is not null && !panel.IsDisposed) { panel.Cancel(); panel.OutputDirectory = string.Empty; }
+        if (panel is not null && !panel.IsDisposed)
+        { panel.Cancel(); panel.OutputDirectory = string.Empty; }
     }
 }

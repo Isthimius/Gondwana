@@ -28,8 +28,10 @@ public sealed class VideoWidgetRenderingTests
     [InlineData(true, true)]
     public void RegisteredVideoRendersMovesAndHidesThroughNormalPipeline(bool gpu, bool world)
     {
-        if (gpu) Render<GpuBackbuffer>(world);
-        else Render<BitmapBackbuffer>(world);
+        if (gpu)
+            Render<GpuBackbuffer>(world);
+        else
+            Render<BitmapBackbuffer>(world);
     }
 
     private static void Render<T>(bool world) where T : BackbufferBase

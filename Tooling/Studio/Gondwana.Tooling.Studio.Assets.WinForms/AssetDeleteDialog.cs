@@ -19,12 +19,14 @@ public static class AssetDeleteDialog
         string scope, Action<AssetDeletionPlan, bool> execute, IReadOnlyDictionary<string, string?>? knownPasswords = null)
     {
         var selectedScope = InputDialog.Show(owner, "Delete search scope", "Directory to inspect recursively, or one GAF/ZIP. References outside the inspected scope and game code are UNKNOWN:", scope);
-        if (string.IsNullOrWhiteSpace(selectedScope)) return false;
+        if (string.IsNullOrWhiteSpace(selectedScope))
+            return false;
         var credential = AssetOperationDialog.Credentials(owner, knownPasswords);
         try
         {
             var plan = AssetDeletionPlan.Create(selectedScope, targets, archives, credential);
-            if (!AssetOperationDialog.Review(owner, "Delete preview — changes will be saved to disk", plan.Preview, plan.ForceRequired ? "Delete anyway…" : "Delete")) return false;
+            if (!AssetOperationDialog.Review(owner, "Delete preview — changes will be saved to disk", plan.Preview, plan.ForceRequired ? "Delete anyway…" : "Delete"))
+                return false;
             if (plan.ForceRequired && ThemedMessageBox.Show(owner,
                     $"Explicitly break all {plan.BlockingReferences.Count} surviving relationships listed in the preview? Referencing documents remain unchanged. Dependents will NOT be deleted.",
                     "Authorize broken references", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)

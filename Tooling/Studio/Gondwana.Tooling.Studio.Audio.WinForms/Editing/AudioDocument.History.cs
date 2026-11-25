@@ -12,11 +12,13 @@ public sealed partial class AudioDocument : IDisposable
         var selected = Definition;
         History.Execute(description, () =>
         {
-            foreach (var member in members) _definitions.Add(member);
+            foreach (var member in members)
+                _definitions.Add(member);
             Definition = members[0];
         }, () =>
         {
-            foreach (var member in members) _definitions.Remove(member);
+            foreach (var member in members)
+                _definitions.Remove(member);
             Definition = selected;
         });
     }
@@ -38,19 +40,23 @@ public sealed partial class AudioDocument : IDisposable
     /// <summary>Captures an audio resource edit, preserving path interpretation across later Save As operations.</summary>
     public void EditResource(AudioResourceDefinition resource, string description, Action change)
     {
-        if (!_definitions.Any(member => member.Resources.Contains(resource))) throw new ArgumentException("Resource does not belong to this document.", nameof(resource));
+        if (!_definitions.Any(member => member.Resources.Contains(resource)))
+            throw new ArgumentException("Resource does not belong to this document.", nameof(resource));
         using var transaction = History.BeginTransaction(description);
         string directory = BaseDirectory;
         string? archive = PackedLocation?.Path;
         var before = new ModelSnapshot(resource);
-        try { change(); }
+        try
+        { change(); }
         catch { before.Restore(); throw; }
         before.Record(History, description, (target, property, value) =>
         {
             _origins.Remember(target, BaseDirectory, PackedLocation?.Path);
-            if (resource.SourceKind == AudioResourceSourceKind.Uri) return value;
+            if (resource.SourceKind == AudioResourceSourceKind.Uri)
+                return value;
             if (property == nameof(resource.AssetsFilePath) && resource.SourceKind == AudioResourceSourceKind.PackedAsset &&
-                value is null or "" && archive is not null && PackedLocation?.Path != archive) value = archive;
+                value is null or "" && archive is not null && PackedLocation?.Path != archive)
+                value = archive;
             if (property is nameof(resource.FilePath) or nameof(resource.AssetsFilePath) && value is string path &&
                 !string.IsNullOrWhiteSpace(path) && !string.Equals(directory, BaseDirectory, StringComparison.OrdinalIgnoreCase))
                 return Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path, directory));
@@ -71,7 +77,8 @@ public sealed partial class AudioDocument : IDisposable
     {
         foreach (var member in _definitions)
         {
-            foreach (var source in member.Resources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.Resources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
         }
     }
 
@@ -81,7 +88,8 @@ public sealed partial class AudioDocument : IDisposable
         {
             foreach (var source in member.Resources)
             {
-                if (source.SourceKind == AudioResourceSourceKind.Uri) continue;
+                if (source.SourceKind == AudioResourceSourceKind.Uri)
+                    continue;
                 _origins.Restore(source, BaseDirectory, PackedLocation?.Path, source.AssetEntryName,
                     () => source.FilePath, value => source.FilePath = value,
                     () => source.AssetsFilePath, value => source.AssetsFilePath = value);

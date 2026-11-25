@@ -24,7 +24,8 @@ public sealed class NAudioControlTests
         handle.PlaybackCompleted += (_, _) => completions++;
         handle.Play();
         handle.Seek(TimeSpan.FromSeconds(1));
-        if (paused) handle.Pause();
+        if (paused)
+            handle.Pause();
         handle.Stop();
         Assert.Equal(TimeSpan.Zero, handle.CurrentTime);
         Assert.Equal(TimeSpan.FromSeconds(1), stream.CurrentTime); // Worker still owns stream.

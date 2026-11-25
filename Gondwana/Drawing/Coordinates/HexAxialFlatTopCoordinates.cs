@@ -143,7 +143,8 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
             for (int row = minRow; row <= maxRow; row++)
             {
                 var gp = sceneLayer[col, row];
-                if (gp == null) continue;
+                if (gp == null)
+                    continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
                 if (r.IntersectsWith(worldPixelRange))
                     result.Add(gp);
@@ -162,7 +163,8 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
-        int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
+        int W = tile.SceneLayer.TileWidth;
+        int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H); // hex image fits W x H box
         return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
@@ -193,7 +195,8 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     /// <returns>The adjacent tile in the specified direction, or null if none exists or direction is invalid.</returns>
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
-        int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
+        int x = gp.GridCoordinatesAbs.X;
+        int y = gp.GridCoordinatesAbs.Y;
         bool even = (x & 1) == 0;
         var m = gp.SceneLayer;
         return dir switch
@@ -233,8 +236,10 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         // wrap like square; hex maps are usually finite with wrap disabled, but keep parity sane
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);
-        if (modX < 0) modX += xUpperBound + 1;
-        if (modY < 0) modY += yUpperBound + 1;
+        if (modX < 0)
+            modX += xUpperBound + 1;
+        if (modY < 0)
+            modY += yUpperBound + 1;
         return new PointF(modX, modY);
     }
 
@@ -242,7 +247,8 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
 
     private static IEnumerable<Point> NeighborsFlatTop(int col, int row, bool includeSelf)
     {
-        if (includeSelf) yield return new Point(col, row);
+        if (includeSelf)
+            yield return new Point(col, row);
         bool even = (col & 1) == 0;
         yield return new Point(col + 1, row);
         yield return new Point(col - 1, row);
@@ -287,12 +293,15 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
 
     private static bool PointInPolygon(Point[] poly, Point p)
     {
-        bool inside = false; int j = poly.Length - 1;
+        bool inside = false;
+        int j = poly.Length - 1;
         for (int i = 0; i < poly.Length; i++)
         {
             bool intersect = ((poly[i].Y > p.Y) != (poly[j].Y > p.Y)) &&
                 (p.X < (poly[j].X - poly[i].X) * (p.Y - poly[i].Y) / (float)(poly[j].Y - poly[i].Y) + poly[i].X);
-            if (intersect) inside = !inside; j = i;
+            if (intersect)
+                inside = !inside;
+            j = i;
         }
         return inside;
     }

@@ -9,7 +9,8 @@ internal static class PluginPackageStore
     // Non-collectible plugin assemblies outlive forms. Retain the reader lease until process exit.
     internal static PluginPackageOperations Open(Action<string> log)
     {
-        if (_session is not null) return _session;
+        if (_session is not null)
+            return _session;
         _session = new PluginPackageOperations(Path.Combine(AppContext.BaseDirectory, "plugins"), log,
             typeof(Extensibility.IStudioPlugin).Assembly);
         _session.StartSession();

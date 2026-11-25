@@ -316,7 +316,8 @@ public sealed class Camera
     /// </param>
     public void PanToGridOverDuration(SceneLayer layer, int col, int row, float durationSeconds)
     {
-        if (layer is null) throw new ArgumentNullException(nameof(layer));
+        if (layer is null)
+            throw new ArgumentNullException(nameof(layer));
 
         // Same pattern as AnimateCenterOnGrid: get the tile's world-space anchor
         // (top-left), then offset by half the tile size to get its visual center.

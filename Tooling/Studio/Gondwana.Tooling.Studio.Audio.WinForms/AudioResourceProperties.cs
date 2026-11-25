@@ -25,7 +25,8 @@ internal sealed class AudioResourceProperties(AudioDocument document, AudioResou
         public override void ResetValue(object component) => document.EditResource(resource, "Reset audio " + DisplayName, () => inner.ResetValue(resource));
         public override void SetValue(object? component, object? value)
         {
-            if (IsReadOnly) return;
+            if (IsReadOnly)
+                return;
             document.EditResource(resource, "Change audio " + DisplayName, () => inner.SetValue(resource, value));
             OnValueChanged(component, EventArgs.Empty);
         }

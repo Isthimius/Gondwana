@@ -137,14 +137,21 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             File.WriteAllText(replacement, "external");
             File.Replace(replacement, location.Path, destinationBackupFileName: null);
         }
-        IEnumerable<T> Prepare<T>(T member) { Replace(); yield return member; }
+        IEnumerable<T> Prepare<T>(T member)
+        { Replace(); yield return member; }
         Assert.Throws<DocumentSourceConflictException>(() => DocumentSourceSave.Save(location, version, check =>
         {
             switch (format)
             {
-                case "gts": TilesheetDefinitionSerializer.SaveAll(location.Path, Prepare(new TilesheetDefinition { Name = "new" }), check); break;
-                case "gani": AnimationDefinitionSerializer.SaveAll(location.Path, Prepare(new AnimationDefinition { Key = "new" }), check); break;
-                case "gscn": SceneDefinitionSerializer.SaveAll(location.Path, Prepare(new SceneDefinition { ID = "new" }), check); break;
+                case "gts":
+                    TilesheetDefinitionSerializer.SaveAll(location.Path, Prepare(new TilesheetDefinition { Name = "new" }), check);
+                    break;
+                case "gani":
+                    AnimationDefinitionSerializer.SaveAll(location.Path, Prepare(new AnimationDefinition { Key = "new" }), check);
+                    break;
+                case "gscn":
+                    SceneDefinitionSerializer.SaveAll(location.Path, Prepare(new SceneDefinition { ID = "new" }), check);
+                    break;
             }
         }));
         Assert.Equal("external", File.ReadAllText(location.Path));
@@ -177,7 +184,8 @@ public sealed class DocumentSourceMonitorTests : IDisposable
         Assert.Equal(DocumentSourceChangeKind.ContainerChanged, first.Verify().Kind);
         Assert.Equal(DocumentSourceChangeKind.ContentChanged, second.Verify().Kind);
         Assert.Equal(DocumentSourceStatus.Missing, DocumentSourceVersion.Read(new(AssetTypes.Image, path, "absent"), password).Status);
-        if (encrypted) Assert.Equal(DocumentSourceStatus.Inaccessible, DocumentSourceVersion.Read(a, "wrong").Status);
+        if (encrypted)
+            Assert.Equal(DocumentSourceStatus.Inaccessible, DocumentSourceVersion.Read(a, "wrong").Status);
         Write(new(AssetTypes.Misc, path), "partial zip");
         Assert.Equal(DocumentSourceChangeKind.Inaccessible, first.Verify().Kind);
     }
@@ -252,11 +260,16 @@ public sealed class DocumentSourceMonitorTests : IDisposable
             "gspr" => OpenSprite(),
             _ => OpenAudio()
         };
-        Action OpenTilesheet() { var d = Tooling.Studio.Tilesheets.WinForms.Editing.TilesheetDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
-        Action OpenAnimation() { var d = Tooling.Animations.Editing.AnimationDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
-        Action OpenScene() { var d = Tooling.Scenes.Editing.SceneDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
-        Action OpenSprite() { var d = Tooling.Sprites.Editing.SpriteDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
-        Action OpenAudio() { var d = Tooling.Audio.Editing.AudioDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        Action OpenTilesheet()
+        { var d = Tooling.Studio.Tilesheets.WinForms.Editing.TilesheetDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        Action OpenAnimation()
+        { var d = Tooling.Animations.Editing.AnimationDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        Action OpenScene()
+        { var d = Tooling.Scenes.Editing.SceneDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        Action OpenSprite()
+        { var d = Tooling.Sprites.Editing.SpriteDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
+        Action OpenAudio()
+        { var d = Tooling.Audio.Editing.AudioDocument.Open(location.Path); return () => d.Save(location.Path, allowInvalid: true); }
         save(); // Successful save updates the accepted version, so another save is valid.
         save();
         Write(location, "external");

@@ -153,15 +153,18 @@ internal sealed class PongGameHost : WinFormsGameHost
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (!Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key)) return;
+        if (!Enum.TryParse(args.KeyConfig.Key, ignoreCase: true, out Keys key))
+            return;
         if (args.KeyAction == KeyAction.Released)
         {
             _keysDown.Remove(key);
             return;
         }
         _keysDown.Add(key);
-        if (key == Keys.Space && _state == GameState.Ready) Serve();
-        else if (key == Keys.R) ResetMatch();
+        if (key == Keys.Space && _state == GameState.Ready)
+            Serve();
+        else if (key == Keys.R)
+            ResetMatch();
         else if (key == Keys.Tab)
         {
             _rightPaddleAi = !_rightPaddleAi;
@@ -176,9 +179,11 @@ internal sealed class PongGameHost : WinFormsGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastUpdateTick, tick), 0f, 0.05f);
         _lastUpdateTick = tick;
-        if (dt <= 0f) return;
+        if (dt <= 0f)
+            return;
         MovePaddles(dt);
-        if (_state == GameState.Playing) MoveBall(dt);
+        if (_state == GameState.Playing)
+            MoveBall(dt);
     }
 
     private void MovePaddles(float dt)
@@ -190,7 +195,8 @@ internal sealed class PongGameHost : WinFormsGameHost
             float delta = _ball.GetPosition().Y - _rightPaddle.GetPosition().Y;
             rightDirection = MathF.Abs(delta) < 0.12f ? 0f : MathF.Sign(delta);
         }
-        else rightDirection = GetDirection(Keys.Up, Keys.Down);
+        else
+            rightDirection = GetDirection(Keys.Up, Keys.Down);
         MovePaddle(_rightPaddle, rightDirection * (_rightPaddleAi ? AiSpeed : PaddleSpeed) * dt);
     }
 
@@ -225,8 +231,10 @@ internal sealed class PongGameHost : WinFormsGameHost
         BounceFromPaddle(_leftPaddle, previous, ref next, true);
         BounceFromPaddle(_rightPaddle, previous, ref next, false);
         _ball.SetPosition(next);
-        if (next.X + BallRadius < 0f) AwardPoint(false);
-        else if (next.X - BallRadius > WorldColumns) AwardPoint(true);
+        if (next.X + BallRadius < 0f)
+            AwardPoint(false);
+        else if (next.X - BallRadius > WorldColumns)
+            AwardPoint(true);
     }
 
     private void BounceFromPaddle(Sprite paddle, Vector2 previous, ref Vector2 next, bool isLeft)
@@ -236,9 +244,11 @@ internal sealed class PongGameHost : WinFormsGameHost
         bool crossedFace = isLeft
             ? previous.X - BallRadius >= paddleFace && next.X - BallRadius <= paddleFace
             : previous.X + BallRadius <= paddleFace && next.X + BallRadius >= paddleFace;
-        if (!crossedFace || isLeft != (_ballVelocity.X < 0f)) return;
+        if (!crossedFace || isLeft != (_ballVelocity.X < 0f))
+            return;
         float offset = (next.Y - paddlePosition.Y) / PaddleHalfHeight;
-        if (MathF.Abs(offset) > 1f + BallRadius) return;
+        if (MathF.Abs(offset) > 1f + BallRadius)
+            return;
         offset = Math.Clamp(offset, -1f, 1f);
         float speed = Math.Min(_ballVelocity.Length() * 1.055f, MaximumBallSpeed);
         float horizontal = MathF.Cos(offset * 0.95f) * speed;
@@ -250,7 +260,10 @@ internal sealed class PongGameHost : WinFormsGameHost
 
     private void AwardPoint(bool leftPlayerScored)
     {
-        if (leftPlayerScored) _leftScore++; else _rightScore++;
+        if (leftPlayerScored)
+            _leftScore++;
+        else
+            _rightScore++;
         if (_leftScore >= WinningScore || _rightScore >= WinningScore)
         {
             _state = GameState.MatchOver;
@@ -295,7 +308,8 @@ internal sealed class PongGameHost : WinFormsGameHost
     private void RefreshHud()
     {
         _scoreText?.SetText($"{_leftScore}  :  {_rightScore}");
-        if (_statusText is null) return;
+        if (_statusText is null)
+            return;
         string opponent = _rightPaddleAi ? "CPU" : "PLAYER 2";
         string prompt = _state switch
         {

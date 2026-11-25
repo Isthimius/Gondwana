@@ -100,7 +100,8 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
     /// <summary>Releases all resources used by the adapter.</summary>
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         _disposed = true;
         _pixelBuffer = null;
     }

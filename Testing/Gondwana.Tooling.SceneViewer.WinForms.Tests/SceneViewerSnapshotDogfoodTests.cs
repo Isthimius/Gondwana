@@ -34,7 +34,8 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var thread = new Thread(() =>
         {
-            try { Run(scene); completion.SetResult(); }
+            try
+            { Run(scene); completion.SetResult(); }
             catch (Exception exception) { completion.SetException(exception); }
         });
         thread.SetApartmentState(ApartmentState.STA);
@@ -135,7 +136,8 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
             });
             surface.Adapter.FrameDiagnosticsCalculated += _ =>
             {
-                if (Volatile.Read(ref phase) == 2) Thread.Sleep(100); // deliberate slow consumer
+                if (Volatile.Read(ref phase) == 2)
+                    Thread.Sleep(100); // deliberate slow consumer
                 var capturePath = Environment.GetEnvironmentVariable("GONDWANA_GPU_CAPTURE");
                 if (!captured && Volatile.Read(ref phase) == 1 && capturePath is not null)
                 {
@@ -182,9 +184,11 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
             };
             timer.Change(6000, 6000);
         };
-        try { Application.Run(form); }
+        try
+        { Application.Run(form); }
         finally { gameHost?.Dispose(); }
-        if (failure is not null) throw failure;
+        if (failure is not null)
+            throw failure;
         output.WriteLine("RUNNING\n" + running);
         output.WriteLine("PAUSED\n" + paused);
         output.WriteLine("STALLED GL (100 ms/callback)\n" + stalled);

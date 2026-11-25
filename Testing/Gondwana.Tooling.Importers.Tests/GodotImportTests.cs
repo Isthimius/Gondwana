@@ -48,9 +48,11 @@ public sealed class GodotImportTests : IDisposable
             """;
         string text = "[gd_resource type=\"TileSet\" format=3]\n[ext_resource type=\"Texture2D\" path=\"res://atlas.png\" id=\"1\"]\n" +
             "[sub_resource type=\"TileSetAtlasSource\" id=\"a\"]\n" + atlas + "\n";
-        if (multiple) text += "[sub_resource type=\"TileSetAtlasSource\" id=\"b\"]\n" + atlas + "\n";
+        if (multiple)
+            text += "[sub_resource type=\"TileSetAtlasSource\" id=\"b\"]\n" + atlas + "\n";
         text += "[resource]\ntile_size = Vector2i(2, 2)\nsources/0 = SubResource(\"a\")\n";
-        if (multiple) text += "sources/2 = SubResource(\"b\")\n";
+        if (multiple)
+            text += "sources/2 = SubResource(\"b\")\n";
         string source = Path.Combine(directory, "terrain.tres");
         File.WriteAllText(source, text);
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
@@ -345,7 +347,8 @@ public sealed class GodotImportTests : IDisposable
     public void GodotMissingOrUndecodableTexturesFail(bool exists)
     {
         var request = Godot3Fixture(SingleTile, "bad.png");
-        if (exists) File.WriteAllText(Path.Combine(directory, "bad.png"), "not an image");
+        if (exists)
+            File.WriteAllText(Path.Combine(directory, "bad.png"), "not an image");
         var analysis = new GodotTilesetImporter().Analyze(request);
         Assert.False(analysis.CanImport);
         Assert.Contains(analysis.Diagnostics, d => d.Message.Contains(exists ? "decode" : "Missing"));

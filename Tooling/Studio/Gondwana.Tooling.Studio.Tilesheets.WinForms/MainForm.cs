@@ -176,7 +176,8 @@ internal sealed partial class MainForm : Form
 
         FormClosing += (_, e) =>
         {
-            if (e.Cancel) return;
+            if (e.Cancel)
+                return;
             foreach (var document in _documents.ToArray())
             {
                 if (!document.ConfirmClose())
@@ -402,7 +403,8 @@ internal sealed partial class MainForm : Form
             InvalidOperationException or
             NotSupportedException)
         {
-            if (editor.Sources?.SaveFailed(ex) != true) ShowError(ex);
+            if (editor.Sources?.SaveFailed(ex) != true)
+                ShowError(ex);
             return false;
         }
     }

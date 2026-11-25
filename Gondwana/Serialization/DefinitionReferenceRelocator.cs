@@ -208,8 +208,10 @@ public static class DefinitionReferenceRelocator
         {
             foreach (var resource in member.Resources)
             {
-                if (resource is null) throw new InvalidDataException($"Audio '{member.Key}': null resource.");
-                if (resource.SourceKind == AudioResourceSourceKind.Uri) continue;
+                if (resource is null)
+                    throw new InvalidDataException($"Audio '{member.Key}': null resource.");
+                if (resource.SourceKind == AudioResourceSourceKind.Uri)
+                    continue;
                 context.Rewrite(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName,
                     (int)resource.SourceKind, $"Audio '{member.Key}' :: Resource '{resource.Key}'", (file, archive, entry, packed) =>
                     {
@@ -257,11 +259,13 @@ public static class DefinitionReferenceRelocator
             _destination = destination;
             _mappings = mappings.ToArray();
             _used = new bool[_mappings.Length];
-            if (_mappings.Any(mapping => mapping is null)) throw new ArgumentException("Relocations must not contain null.", nameof(mappings));
+            if (_mappings.Any(mapping => mapping is null))
+                throw new ArgumentException("Relocations must not contain null.", nameof(mappings));
             for (int i = 0; i < _mappings.Length; i++)
                 for (int j = 0; j < _mappings.Length; j++)
                 {
-                    if (i == j) continue;
+                    if (i == j)
+                        continue;
                     if (_mappings[i].Source.Matches(_mappings[j].Source))
                         throw new InvalidDataException($"Ambiguous duplicate relocation source: {_mappings[i].Source}.");
                     if (_mappings[i].Destination.Matches(_mappings[j].Source) &&
@@ -292,7 +296,8 @@ public static class DefinitionReferenceRelocator
                 throw new InvalidDataException($"{label}: reference must identify exactly one loose file or typed GAF entry consistent with its source kind.");
             var directory = Path.GetDirectoryName(_source.Path)!;
             AssetLocation location;
-            try { location = new AssetLocation(type, Path.GetFullPath(loose ? file! : archive!, directory), packed ? entry : null); }
+            try
+            { location = new AssetLocation(type, Path.GetFullPath(loose ? file! : archive!, directory), packed ? entry : null); }
             catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
             {
                 throw new InvalidDataException($"{label}: invalid physical reference path.", ex);
@@ -300,12 +305,15 @@ public static class DefinitionReferenceRelocator
             var target = location;
             for (int i = 0; i < _mappings.Length; i++)
             {
-                if (location.Matches(_mappings[i].Destination)) _used[i] = true;
-                if (!location.Matches(_mappings[i].Source)) continue;
+                if (location.Matches(_mappings[i].Destination))
+                    _used[i] = true;
+                if (!location.Matches(_mappings[i].Source))
+                    continue;
                 _used[i] = true;
                 target = _mappings[i].Destination;
             }
-            if (target.Matches(location) && _source.Matches(_destination)) return;
+            if (target.Matches(location) && _source.Matches(_destination))
+                return;
             var relative = Path.GetRelativePath(Path.GetDirectoryName(_destination.Path)!, target.Path);
             apply(target.AssetEntryName is null ? relative : null,
                 target.AssetEntryName is null ? null : relative, target.AssetEntryName, target.AssetEntryName is not null);
@@ -315,7 +323,8 @@ public static class DefinitionReferenceRelocator
         /// <param name="requireAll">Whether every mapping must match an original or already-relocated reference.</param>
         internal void Complete(bool requireAll)
         {
-            if (!requireAll) return;
+            if (!requireAll)
+                return;
             var missing = _mappings.Where((mapping, index) => !_used[index]).Select(mapping => mapping.Source.ToString()).ToArray();
             if (missing.Length != 0)
                 throw new InvalidDataException("Relocation sources not found in document references: " + string.Join("; ", missing));

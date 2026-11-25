@@ -43,7 +43,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     {
         foreach (var extension in new[] { "gts", "GANI", "gsnd", "gscn", "gspr" })
             File.WriteAllText(FilePath("definition." + extension), "{}");
-        using (var assets = AssetsFile.LoadOrCreate(FilePath("assets.gaf"), null, false, register: false)) assets.Save();
+        using (var assets = AssetsFile.LoadOrCreate(FilePath("assets.gaf"), null, false, register: false))
+            assets.Save();
         foreach (var directory in new[] { "bin", "OBJ", ".git", "nested/bin" })
         {
             Directory.CreateDirectory(FilePath(directory));
@@ -287,7 +288,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 
     private sealed class EngineLoggerCaptureScope : IDisposable

@@ -169,12 +169,14 @@ public sealed partial class PluginPackageTests
         Exception? error = null;
         var thread = new Thread(() =>
         {
-            try { action(); }
+            try
+            { action(); }
             catch (Exception ex) { error = ex; }
         });
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

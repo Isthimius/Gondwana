@@ -49,7 +49,8 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
                 break;
             case AssetTypes.Audio:
             case AssetTypes.Image:
-                if (Member is not null) throw new InvalidDataException("Media entries have no logical definition member.");
+                if (Member is not null)
+                    throw new InvalidDataException("Media entries have no logical definition member.");
                 if (expectedType == AssetTypes.Audio)
                 {
                     var extension = string.IsNullOrWhiteSpace(SourceExtension)
@@ -59,7 +60,8 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
                         throw new InvalidDataException("Supply an audio source extension including its leading dot (for example .wav).");
                 }
                 using (var stream = packages.OpenAsset(Resource.Path, expectedType, Resource.EntryName!))
-                    if (stream.ReadByte() < 0) throw new InvalidDataException("The selected media entry is empty.");
+                    if (stream.ReadByte() < 0)
+                        throw new InvalidDataException("The selected media entry is empty.");
                 return;
             default:
                 throw new InvalidDataException($"Unsupported dependency type: {expectedType}.");
@@ -70,11 +72,13 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
 
     private void RequireMember()
     {
-        if (string.IsNullOrWhiteSpace(Member)) throw new InvalidDataException("Select a logical definition member.");
+        if (string.IsNullOrWhiteSpace(Member))
+            throw new InvalidDataException("Select a logical definition member.");
     }
 
     private static void RequirePacked(AuthoringResource resource)
     {
-        if (string.IsNullOrWhiteSpace(resource.EntryName)) throw new InvalidDataException("Select an exact packed entry name.");
+        if (string.IsNullOrWhiteSpace(resource.EntryName))
+            throw new InvalidDataException("Select an exact packed entry name.");
     }
 }

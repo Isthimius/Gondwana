@@ -217,7 +217,8 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
 
     private void OnEditorKeyboardInput(WidgetKeyboardEventArgs args)
     {
-        if (args.KeyAction != KeyAction.Pressed || args.Key != 'Z' || args.Modifiers != KeyboardModifierState.Ctrl) return;
+        if (args.KeyAction != KeyAction.Pressed || args.Key != 'Z' || args.Modifiers != KeyboardModifierState.Ctrl)
+            return;
         args.Handled = true;
         SetStatus("Editor consumed Ctrl+Z; menu Undo did not execute");
     }
@@ -248,7 +249,8 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
     /// <inheritdoc/>
     protected override void UnhookEvents()
     {
-        if (_editor is null) return;
+        if (_editor is null)
+            return;
         _editor.TextChanged -= OnDocumentChanged;
         _editor.KeyboardInput -= OnEditorKeyboardInput;
     }

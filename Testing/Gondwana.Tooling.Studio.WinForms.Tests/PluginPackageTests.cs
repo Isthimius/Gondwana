@@ -143,17 +143,34 @@ public sealed partial class PluginPackageTests
         var data = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(path))!;
         switch (error)
         {
-            case "schema": data["schemaVersion"] = 2; break;
-            case "contract": data["contractVersion"] = 1; break;
-            case "version": data["version"] = "1.0"; break;
-            case "prerelease": data["version"] = "1.0.0-01"; break;
-            case "missing-contract": data.Remove("contractVersion"); break;
-            case "missing-name": data.Remove("name"); break;
-            case "missing-id": data.Remove("id"); break;
-            case "missing-entry": File.Delete(entry); break;
+            case "schema":
+                data["schemaVersion"] = 2;
+                break;
+            case "contract":
+                data["contractVersion"] = 1;
+                break;
+            case "version":
+                data["version"] = "1.0";
+                break;
+            case "prerelease":
+                data["version"] = "1.0.0-01";
+                break;
+            case "missing-contract":
+                data.Remove("contractVersion");
+                break;
+            case "missing-name":
+                data.Remove("name");
+                break;
+            case "missing-id":
+                data.Remove("id");
+                break;
+            case "missing-entry":
+                File.Delete(entry);
+                break;
         }
         File.WriteAllText(path, error is "{}" or "{" or "null" ? error : JsonSerializer.Serialize(data));
-        if (error == "missing-manifest") File.Delete(path);
+        if (error == "missing-manifest")
+            File.Delete(path);
         Package("good", "sample.good");
         var host = new Host(_ => { });
         host.DiscoverAndLoad(_root);
@@ -323,8 +340,10 @@ public sealed partial class PluginPackageTests
         var frameworkFile = Path.Combine(_root, "Microsoft.WindowsDesktop.App.deps.json");
         var applicationFile = Path.Combine(_root, "Application.deps.json");
         if (selfContained)
-            foreach (var library in frameworkLibraries) applicationLibraries.Add(library.Key, library.Value);
-        else WriteDeps(frameworkFile, frameworkLibraries);
+            foreach (var library in frameworkLibraries)
+                applicationLibraries.Add(library.Key, library.Value);
+        else
+            WriteDeps(frameworkFile, frameworkLibraries);
         WriteDeps(applicationFile, applicationLibraries);
         var catalog = FrameworkAssemblyCatalog.Read(selfContained ? [applicationFile] : [frameworkFile, applicationFile]);
         Assert.Contains("WindowsFormsIntegration", catalog);
@@ -340,13 +359,15 @@ public sealed partial class PluginPackageTests
         Assert.Contains("System.Runtime", catalog);
         // This test project enables Windows Desktop; it must authorize framework
         // assemblies beyond those already referenced by the Studio host itself.
-        if (OperatingSystem.IsWindows()) Assert.Contains("WindowsFormsIntegration", catalog);
+        if (OperatingSystem.IsWindows())
+            Assert.Contains("WindowsFormsIntegration", catalog);
     }
 
     [Fact]
     public void PackagedPluginCanReferenceUnsharedWindowsDesktopAssembly()
     {
-        if (!OperatingSystem.IsWindows()) return;
+        if (!OperatingSystem.IsWindows())
+            return;
         var windowsForms = System.Reflection.Assembly.Load("System.Windows.Forms").Location;
         var integration = Path.Combine(Path.GetDirectoryName(windowsForms)!, "WindowsFormsIntegration.dll");
         Package("desktop", "sample.desktop", source: PluginSource("Desktop", "typeof(System.Windows.Forms.Integration.ElementHost).FullName!"), dependency: integration);
@@ -428,7 +449,8 @@ public sealed partial class PluginPackageTests
             process.WaitForExit();
             Assert.Equal(0, process.ExitCode);
         }
-        else Directory.CreateSymbolicLink(link, target);
+        else
+            Directory.CreateSymbolicLink(link, target);
     }
 
     private string Package(string folder, string id, string? assembly = null, string? source = null, string? dependency = null)

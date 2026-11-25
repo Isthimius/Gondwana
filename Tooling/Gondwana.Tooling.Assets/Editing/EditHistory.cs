@@ -33,7 +33,8 @@ public sealed class EditHistory : IDisposable
     /// <summary>Creates a history retaining at most the specified number of committed operations.</summary>
     public EditHistory(bool initiallySaved = true, int limit = 200)
     {
-        if (limit < 1) throw new ArgumentOutOfRangeException(nameof(limit));
+        if (limit < 1)
+            throw new ArgumentOutOfRangeException(nameof(limit));
         _limit = limit;
         _saved = initiallySaved ? 0 : null;
     }
@@ -73,7 +74,8 @@ public sealed class EditHistory : IDisposable
     internal void RequireIdle(bool allowTransaction = false)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        if (_executing is not null || _busy || !allowTransaction && InTransaction) throw new InvalidOperationException("History is executing or has an open transaction. Commands cannot record edits in another document.");
+        if (_executing is not null || _busy || !allowTransaction && InTransaction)
+            throw new InvalidOperationException("History is executing or has an open transaction. Commands cannot record edits in another document.");
     }
 
     /// <summary>Executes and records an operation; failures restore the command and cancel open transactions.</summary>
@@ -81,11 +83,15 @@ public sealed class EditHistory : IDisposable
     {
         ArgumentNullException.ThrowIfNull(command);
         RequireIdle(allowTransaction: true);
-        if (!command.HasChanges) return;
-        try { Run(command, undo: false); }
+        if (!command.HasChanges)
+            return;
+        try
+        { Run(command, undo: false); }
         catch { CancelAll(); throw; }
-        if (InTransaction) _transactions.Peek().Commands.Add(command);
-        else { Record(command); Notify(); }
+        if (InTransaction)
+            _transactions.Peek().Commands.Add(command);
+        else
+        { Record(command); Notify(); }
     }
 
     /// <summary>Executes a delegate-backed reversible operation. Delegates must capture models, not UI controls.</summary>
@@ -96,7 +102,8 @@ public sealed class EditHistory : IDisposable
     {
         RequireIdle(allowTransaction: true);
         var before = get();
-        if (EqualityComparer<T>.Default.Equals(before, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(before, value))
+            return false;
         Execute(description, () => set(value), () => set(before));
         return true;
     }
@@ -105,20 +112,26 @@ public sealed class EditHistory : IDisposable
     public void Undo()
     {
         RequireIdle();
-        if (!CanUndo) return;
+        if (!CanUndo)
+            return;
         var entry = _entries[_position - 1];
         Run(entry.Command, undo: true);
-        _position--; _state = entry.Before; Notify();
+        _position--;
+        _state = entry.Before;
+        Notify();
     }
 
     /// <summary>Reapplies the next committed operation.</summary>
     public void Redo()
     {
         RequireIdle();
-        if (!CanRedo) return;
+        if (!CanRedo)
+            return;
         var entry = _entries[_position];
         Run(entry.Command, undo: false);
-        _position++; _state = entry.After; Notify();
+        _position++;
+        _state = entry.After;
+        Notify();
     }
 
     private void Run(IEditCommand command, bool undo)
@@ -126,11 +139,15 @@ public sealed class EditHistory : IDisposable
         _busy = true;
         _executing = this;
         bool faulted = false;
-        try { Apply(command, undo); }
+        try
+        { Apply(command, undo); }
         catch (RecoveryException)
         {
-            _entries.Clear(); _position = 0; _saved = null;
-            foreach (var transaction in _transactions) { transaction.Finished = true; transaction.Commands.Clear(); }
+            _entries.Clear();
+            _position = 0;
+            _saved = null;
+            foreach (var transaction in _transactions)
+            { transaction.Finished = true; transaction.Commands.Clear(); }
             _transactions.Clear();
             faulted = true;
             throw;
@@ -144,19 +161,23 @@ public sealed class EditHistory : IDisposable
         {
             var ordered = undo ? group.Commands.Reverse().ToArray() : group.Commands;
             int completed = 0;
-            try { for (; completed < ordered.Length; completed++) Apply(ordered[completed], undo); }
+            try
+            { for (; completed < ordered.Length; completed++) Apply(ordered[completed], undo); }
             catch (Exception failure)
             {
-                try { for (int i = completed - 1; i >= 0; i--) Apply(ordered[i], !undo); }
+                try
+                { for (int i = completed - 1; i >= 0; i--) Apply(ordered[i], !undo); }
                 catch (Exception recovery) { throw new RecoveryException(failure, recovery); }
                 throw;
             }
             return;
         }
-        try { if (undo) command.Undo(); else command.Execute(); }
+        try
+        { if (undo) command.Undo(); else command.Execute(); }
         catch (Exception failure)
         {
-            try { if (undo) command.Execute(); else command.Undo(); }
+            try
+            { if (undo) command.Execute(); else command.Undo(); }
             catch (Exception recovery) { throw new RecoveryException(failure, recovery); }
             throw;
         }
@@ -170,7 +191,8 @@ public sealed class EditHistory : IDisposable
         RequireIdle(allowTransaction: true);
         _busy = true;
         _executing = this;
-        try { change(); }
+        try
+        { change(); }
         finally { _executing = null; _busy = false; }
     }
 
@@ -179,19 +201,25 @@ public sealed class EditHistory : IDisposable
         _entries.RemoveRange(_position, _entries.Count - _position);
         var next = ++_nextState;
         _entries.Add(new(command, _state, next));
-        _state = next; _position++; Trim();
+        _state = next;
+        _position++;
+        Trim();
     }
 
     private void Trim()
     {
         // Discard oldest applied operations first, then furthest redo entries.
         int remove = Math.Min(_position, Math.Max(0, _entries.Count - _limit));
-        _entries.RemoveRange(0, remove); _position -= remove;
-        if (_entries.Count > _limit) _entries.RemoveRange(_limit, _entries.Count - _limit);
+        _entries.RemoveRange(0, remove);
+        _position -= remove;
+        if (_entries.Count > _limit)
+            _entries.RemoveRange(_limit, _entries.Count - _limit);
         while (RetainedBytes > _byteLimit && _entries.Count > 0)
         {
-            if (_position > 0) { _entries.RemoveAt(0); _position--; }
-            else _entries.RemoveAt(_entries.Count - 1);
+            if (_position > 0)
+            { _entries.RemoveAt(0); _position--; }
+            else
+                _entries.RemoveAt(_entries.Count - 1);
         }
     }
 
@@ -206,28 +234,35 @@ public sealed class EditHistory : IDisposable
 
     internal void Finish(EditTransaction transaction, bool commit)
     {
-        if (transaction.Finished) return;
+        if (transaction.Finished)
+            return;
         RequireIdle(allowTransaction: true);
-        if (!ReferenceEquals(_transactions.Peek(), transaction)) throw new InvalidOperationException("Close transactions in reverse order.");
+        if (!ReferenceEquals(_transactions.Peek(), transaction))
+            throw new InvalidOperationException("Close transactions in reverse order.");
         if (!commit && transaction.Commands.Count > 0)
         {
             var group = new GroupCommand(transaction.Description, transaction.Commands.ToArray());
             Run(group, undo: true);
         }
-        _transactions.Pop(); transaction.Finished = true;
+        _transactions.Pop();
+        transaction.Finished = true;
         if (commit && transaction.Commands.Count > 0)
         {
             var group = new GroupCommand(transaction.Description, transaction.Commands.ToArray());
-            if (InTransaction) _transactions.Peek().Commands.Add(group);
-            else Record(group);
+            if (InTransaction)
+                _transactions.Peek().Commands.Add(group);
+            else
+                Record(group);
         }
         transaction.Commands.Clear();
-        if (!InTransaction) Notify();
+        if (!InTransaction)
+            Notify();
     }
 
     private void CancelAll()
     {
-        while (InTransaction) Finish(_transactions.Peek(), commit: false);
+        while (InTransaction)
+            Finish(_transactions.Peek(), commit: false);
     }
 
     /// <summary>Marks the current state saved after persistence succeeds; retains undo/redo.</summary>
@@ -236,7 +271,11 @@ public sealed class EditHistory : IDisposable
     /// <summary>Invalidates history after an untracked legacy mutation, preventing a false clean state.</summary>
     public void MarkUntracked()
     {
-        RequireIdle(); _entries.Clear(); _position = 0; _state = ++_nextState; Notify();
+        RequireIdle();
+        _entries.Clear();
+        _position = 0;
+        _state = ++_nextState;
+        Notify();
     }
 
     /// <summary>Discards obsolete local commands after a committed external refresh and establishes a clean baseline.</summary>
@@ -249,14 +288,20 @@ public sealed class EditHistory : IDisposable
     /// <summary>Cancels pending transactions, releases command references, and detaches listeners.</summary>
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         RequireIdle(allowTransaction: true);
-        try { CancelAll(); }
+        try
+        { CancelAll(); }
         catch { _saved = null; throw; }
         finally
         {
-            foreach (var transaction in _transactions) { transaction.Finished = true; transaction.Commands.Clear(); }
-            _transactions.Clear(); _entries.Clear(); Changed = null; _disposed = true;
+            foreach (var transaction in _transactions)
+            { transaction.Finished = true; transaction.Commands.Clear(); }
+            _transactions.Clear();
+            _entries.Clear();
+            Changed = null;
+            _disposed = true;
         }
     }
 

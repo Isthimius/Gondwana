@@ -14,7 +14,8 @@ public static class PackedResourcePicker
         catalog.PasswordAccepted += (path, password) => credentials[path] = password;
         catalog.PasswordProvider = path =>
         {
-            if (credentials.Remove(path, out var password)) return password;
+            if (credentials.Remove(path, out var password))
+                return password;
             using var dialog = new Form
             {
                 Text = "Asset password",
@@ -45,7 +46,8 @@ public static class PackedResourcePicker
             Filter = "Gondwana asset packages|*.gaf;*.zip|All files|*.*",
             InitialDirectory = directory
         };
-        if (open.ShowDialog(owner) != DialogResult.OK) return;
+        if (open.ShowDialog(owner) != DialogResult.OK)
+            return;
         using var dialog = CreateDialog(catalog, open.FileName, type, apply);
         dialog.ShowDialog(owner);
     }
@@ -89,14 +91,16 @@ public static class PackedResourcePicker
         {
             members.Items.Clear();
             ok.Enabled = false;
-            if (entries.SelectedItem is not AuthoringResource resource) return;
+            if (entries.SelectedItem is not AuthoringResource resource)
+                return;
             try
             {
                 members.Items.AddRange(PackedResourceSelection.GetMembers(catalog, resource).Cast<object>().ToArray());
                 bool media = type is AssetTypes.Audio or AssetTypes.Image;
                 members.Visible = !media;
                 ok.Enabled = media;
-                if (members.Items.Count == 1) members.SelectedIndex = 0;
+                if (members.Items.Count == 1)
+                    members.SelectedIndex = 0;
                 status.Text = media ? resource.EntryName : "Select the logical definition to add.";
             }
             catch (Exception ex) { status.Text = ex.Message; }
@@ -105,7 +109,8 @@ public static class PackedResourcePicker
         reload.Click += (_, _) => { catalog.Invalidate(archivePath); LoadEntries(); };
         ok.Click += (_, _) =>
         {
-            if (entries.SelectedItem is not AuthoringResource resource) return;
+            if (entries.SelectedItem is not AuthoringResource resource)
+                return;
             try
             {
                 var selection = new PackedResourceSelection(resource, members.SelectedItem as string,

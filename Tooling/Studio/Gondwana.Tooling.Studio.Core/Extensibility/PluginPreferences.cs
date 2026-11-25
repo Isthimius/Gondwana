@@ -40,9 +40,13 @@ public sealed class PluginPreferences
             _log($"Error: [Plugin preferences] {error}");
             return false;
         }
-        if (IsEnabled(id) == enabled) return true;
+        if (IsEnabled(id) == enabled)
+            return true;
         var next = new HashSet<string>(_disabled, StringComparer.Ordinal);
-        if (enabled) next.Remove(id); else next.Add(id);
+        if (enabled)
+            next.Remove(id);
+        else
+            next.Add(id);
         var temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
@@ -74,7 +78,8 @@ public sealed class PluginPreferences
         }
         finally
         {
-            try { if (File.Exists(temporary)) File.Delete(temporary); }
+            try
+            { if (File.Exists(temporary)) File.Delete(temporary); }
             catch (Exception ex) { _log($"Warning: [Plugin preferences] Could not remove temporary settings file: {ex.Message}"); }
         }
     }

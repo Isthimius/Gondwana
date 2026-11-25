@@ -161,11 +161,14 @@ public sealed partial class MainForm : Form
 
         FormClosing += (_, e) =>
         {
-            if (e.Cancel) return;
+            if (e.Cancel)
+                return;
             foreach (var document in _documents.ToArray())
-                if (!document.ConfirmClose()) { e.Cancel = true; return; }
+                if (!document.ConfirmClose())
+                { e.Cancel = true; return; }
             SaveSession();
-            foreach (var document in _documents) document.CloseApproved = true;
+            foreach (var document in _documents)
+                document.CloseApproved = true;
         };
     }
 
@@ -220,7 +223,8 @@ public sealed partial class MainForm : Form
     private void OpenDocument(string path)
     {
         path = Path.GetFullPath(path);
-        if (_session.IsRestoring && !File.Exists(path)) throw new FileNotFoundException("Asset file was removed.", path);
+        if (_session.IsRestoring && !File.Exists(path))
+            throw new FileNotFoundException("Asset file was removed.", path);
 
         var existing = _documents.FirstOrDefault(document =>
             string.Equals(
@@ -256,7 +260,8 @@ public sealed partial class MainForm : Form
 
                 if (password is null)
                 {
-                    if (_session.IsRestoring) throw new OperationCanceledException("Password entry cancelled.");
+                    if (_session.IsRestoring)
+                        throw new OperationCanceledException("Password entry cancelled.");
                     return;
                 }
 
@@ -274,7 +279,8 @@ public sealed partial class MainForm : Form
         }
         catch (Exception ex)
         {
-            if (_session.IsRestoring) throw;
+            if (_session.IsRestoring)
+                throw;
             ShowError("Failed to open asset file.", ex);
         }
         finally
@@ -414,10 +420,12 @@ public sealed partial class MainForm : Form
             _sources.Dispose();
             _undoRedo.Dispose();
             _layout.Dispose();
-            foreach (var document in _documents.ToArray()) document.Dispose();
+            foreach (var document in _documents.ToArray())
+                document.Dispose();
             _workspace.Dispose();
         }
         base.Dispose(disposing);
-        if (disposing) _theme.Dispose();
+        if (disposing)
+            _theme.Dispose();
     }
 }

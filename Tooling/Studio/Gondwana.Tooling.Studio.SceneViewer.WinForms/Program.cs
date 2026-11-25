@@ -56,7 +56,8 @@ internal static class Program
             if (options?.TemporaryScene == true)
             {
                 // The viewer owns cleanup even if the Studio process exits first.
-                try { File.Delete(options.ScenePath); }
+                try
+                { File.Delete(options.ScenePath); }
                 catch (IOException) { /* Best effort; abnormal exits may leave snapshots. */ }
                 catch (UnauthorizedAccessException) { /* Best effort; abnormal exits may leave snapshots. */ }
             }

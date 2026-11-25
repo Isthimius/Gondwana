@@ -30,7 +30,8 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
     /// <returns>The resulting tilesheet inspection.</returns>
     public static TilesheetInspection FromStream(Stream stream, string baseDirectory, AssetsFile defaultBundle)
     {
-        try { return Inspect(TilesheetDefinitionSerializer.Load(stream), baseDirectory, defaultBundle); }
+        try
+        { return Inspect(TilesheetDefinitionSerializer.Load(stream), baseDirectory, defaultBundle); }
         catch (Exception ex) { return new(null, null, null, [ex.Message]); }
     }
 
@@ -39,7 +40,8 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
     /// <returns>One inspection per member, or a document-level load error.</returns>
     public static IReadOnlyList<TilesheetInspection> AllFromFile(string path)
     {
-        try { return TilesheetDefinitionSerializer.LoadAll(path).Select(definition => Inspect(definition, Path.GetDirectoryName(Path.GetFullPath(path))!, null)).ToList(); }
+        try
+        { return TilesheetDefinitionSerializer.LoadAll(path).Select(definition => Inspect(definition, Path.GetDirectoryName(Path.GetFullPath(path))!, null)).ToList(); }
         catch (Exception ex) { return [new(null, null, null, [ex.Message])]; }
     }
 
@@ -50,7 +52,8 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
     /// <returns>One inspection per member, or a document-level load error.</returns>
     public static IReadOnlyList<TilesheetInspection> AllFromStream(Stream stream, string baseDirectory, AssetsFile defaultBundle)
     {
-        try { return TilesheetDefinitionSerializer.LoadAll(stream).Select(definition => Inspect(definition, baseDirectory, defaultBundle)).ToList(); }
+        try
+        { return TilesheetDefinitionSerializer.LoadAll(stream).Select(definition => Inspect(definition, baseDirectory, defaultBundle)).ToList(); }
         catch (Exception ex) { return [new(null, null, null, [ex.Message])]; }
     }
 
@@ -65,17 +68,21 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
             var hasFile = !string.IsNullOrWhiteSpace(image.FilePath);
             var hasBundle = !string.IsNullOrWhiteSpace(image.AssetsFilePath);
             var hasEntry = !string.IsNullOrWhiteSpace(image.AssetEntryName);
-            if (hasFile && (hasBundle || hasEntry)) throw new InvalidDataException("Image.FilePath cannot be combined with an asset source.");
+            if (hasFile && (hasBundle || hasEntry))
+                throw new InvalidDataException("Image.FilePath cannot be combined with an asset source.");
             Stream stream;
-            if (hasFile) stream = File.OpenRead(Resolve(baseDirectory, image.FilePath!));
+            if (hasFile)
+                stream = File.OpenRead(Resolve(baseDirectory, image.FilePath!));
             else
             {
-                if (!hasEntry || (!hasBundle && defaultBundle is null)) throw new InvalidDataException("Image requires FilePath or AssetsFilePath and AssetEntryName (or a containing bundle).");
+                if (!hasEntry || (!hasBundle && defaultBundle is null))
+                    throw new InvalidDataException("Image requires FilePath or AssetsFilePath and AssetEntryName (or a containing bundle).");
                 var bundle = defaultBundle;
                 if (hasBundle)
                 {
                     var path = Resolve(baseDirectory, image.AssetsFilePath!);
-                    if (!File.Exists(path)) throw new FileNotFoundException("Image bundle not found: " + path);
+                    if (!File.Exists(path))
+                        throw new FileNotFoundException("Image bundle not found: " + path);
                     if (defaultBundle is null || !Path.GetFullPath(defaultBundle.FilePath).Equals(path, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                         bundle = ownedBundle = AssetsFile.LoadOrCreate(path);
                 }
@@ -84,7 +91,8 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
             using (stream)
             using (var codec = SKCodec.Create(stream))
             {
-                if (codec is null) throw new InvalidDataException("Source image is unreadable or has an unsupported format.");
+                if (codec is null)
+                    throw new InvalidDataException("Source image is unreadable or has an unsupported format.");
                 width = codec.Info.Width;
                 height = codec.Info.Height;
             }

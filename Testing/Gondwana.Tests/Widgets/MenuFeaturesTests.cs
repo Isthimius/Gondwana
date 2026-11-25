@@ -122,10 +122,14 @@ public sealed class MenuFeaturesTests
         context.Bar.ItemInvoked += _ => observations.Add("bar");
         item.Invoked += _ => observations.Add("item");
         context.Bar.OpenMenuAt(0);
-        if (path == 0) item.PerformClick();
-        if (path == 1) context.Key(13);
-        if (path == 2) context.Key('G', KeyboardModifierState.Ctrl);
-        if (path == 3) Pointer(item, context.View, "DispatchPointerClick");
+        if (path == 0)
+            item.PerformClick();
+        if (path == 1)
+            context.Key(13);
+        if (path == 2)
+            context.Key('G', KeyboardModifierState.Ctrl);
+        if (path == 3)
+            Pointer(item, context.View, "DispatchPointerClick");
         Assert.Equal(new[] { "bar", "item", "callback" }, observations);
         Assert.True(item.IsChecked);
     }
@@ -387,7 +391,8 @@ public sealed class MenuFeaturesTests
             context.Key(27);
             Assert.Same(textBox, context.Router.FocusedWidget);
         }
-        else Assert.Equal(new[] { "focused", "focused", "command" }, sequence);
+        else
+            Assert.Equal(new[] { "focused", "focused", "command" }, sequence);
     }
 
     /// <summary>
@@ -722,9 +727,11 @@ public sealed class MenuFeaturesTests
     {
         foreach (var child in container.Children)
         {
-            if (child is DirectDrawingBase drawing) yield return drawing;
+            if (child is DirectDrawingBase drawing)
+                yield return drawing;
             if (child is IDirectCompositeContainer nested)
-                foreach (var visual in Visuals(nested)) yield return visual;
+                foreach (var visual in Visuals(nested))
+                    yield return visual;
         }
     }
 

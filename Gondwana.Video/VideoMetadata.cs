@@ -49,13 +49,15 @@ internal sealed class VideoMetadataState
     {
         lock (_gate)
         {
-            if (generation != _generation) return false;
+            if (generation != _generation)
+                return false;
             _current = metadata;
             return true;
         }
     }
     internal void Reset()
     {
-        lock (_gate) { ++_generation; _current = VideoMetadata.Unavailable; }
+        lock (_gate)
+        { ++_generation; _current = VideoMetadata.Unavailable; }
     }
 }

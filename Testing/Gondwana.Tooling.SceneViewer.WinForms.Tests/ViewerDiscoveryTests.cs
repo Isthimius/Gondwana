@@ -41,7 +41,8 @@ public sealed partial class ViewerTests
     {
         var path = Path.Combine(_directory, "sheet.gts");
         Pack(archive, AssetTypes.TilesheetDefinition, "arbitrary-sheet-entry", File.ReadAllText(path));
-        if (removeLoose) File.Delete(path);
+        if (removeLoose)
+            File.Delete(path);
     }
 
     /// <summary>
@@ -70,7 +71,8 @@ public sealed partial class ViewerTests
             Pack("animations.gaf", AssetTypes.AnimationDefinition, "unrelated-entry", File.ReadAllText(animationPath));
             File.Delete(animationPath);
         }
-        if (packedSheet) PackSheet();
+        if (packedSheet)
+            PackSheet();
         using var scene = new ViewerSceneLoader().Load(ScenePath);
         Assert.True(scene[0]![0, 0]!.TileAnimator.IsCycling);
         Assert.Equal(32, TilesheetRegistry.Instance.GetOrNull("sheet")!.SkBitmap.Width);
@@ -89,8 +91,10 @@ public sealed partial class ViewerTests
         var definition = SceneDefinitionSerializer.Load(ScenePath);
         definition.TilesheetSources[0].GtsPath = "missing.gts";
         SceneDefinitionSerializer.Save(ScenePath, definition);
-        if (packed) PackSheet();
-        else File.Move(Path.Combine(_directory, "sheet.gts"), Path.Combine(_directory, "unrelated.gts"));
+        if (packed)
+            PackSheet();
+        else
+            File.Move(Path.Combine(_directory, "sheet.gts"), Path.Combine(_directory, "unrelated.gts"));
         using var scene = new ViewerSceneLoader().Load(ScenePath);
         Assert.NotNull(TilesheetRegistry.Instance.GetOrNull("sheet"));
     }
@@ -142,7 +146,8 @@ public sealed partial class ViewerTests
             Pack("a.gaf", type, "a-entry", File.ReadAllText(path));
             File.Delete(path);
         }
-        else File.Copy(path, Path.Combine(_directory, "duplicate" + extension));
+        else
+            File.Copy(path, Path.Combine(_directory, "duplicate" + extension));
         var error = Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath));
         Assert.Contains($"Multiple {(packed ? "packed" : "loose")} {(animation ? "GANI" : "GTS")}", error.Message);
         Assert.Contains(packed ? "a.gaf :: a-entry" : "duplicate" + extension, error.Message);
@@ -185,8 +190,10 @@ public sealed partial class ViewerTests
             Sprites = sprites.ToList(),
             TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("sheet", "missing.gts")]
         };
-        if (packed) Pack(file, AssetTypes.SpriteDefinition, "sprites", SpriteDefinitionSerializer.ToJson(definition));
-        else SpriteDefinitionSerializer.Save(Path.Combine(_directory, file), definition);
+        if (packed)
+            Pack(file, AssetTypes.SpriteDefinition, "sprites", SpriteDefinitionSerializer.ToJson(definition));
+        else
+            SpriteDefinitionSerializer.Save(Path.Combine(_directory, file), definition);
     }
 
     /// <summary>
@@ -205,9 +212,11 @@ public sealed partial class ViewerTests
         var definition = SceneDefinitionSerializer.Load(ScenePath);
         definition.TilesheetSources.Clear();
         definition.AnimationSources.Clear();
-        foreach (var layer in definition.Layers) layer.Tiles.Clear();
+        foreach (var layer in definition.Layers)
+            layer.Tiles.Clear();
         SceneDefinitionSerializer.Save(ScenePath, definition);
-        if (packedSheet) PackSheet();
+        if (packedSheet)
+            PackSheet();
         var current = Sprite("Player");
         var other = Sprite("Other", "other-scene");
         other.Frame!.Tilesheet = "unavailable-other-scene-sheet";
@@ -232,7 +241,8 @@ public sealed partial class ViewerTests
         WriteContent();
         var loose = Sprite("Player");
         var packed = Sprite(byNickname ? "Player" : "PackedName");
-        if (!byNickname) packed.Id = loose.Id;
+        if (!byNickname)
+            packed.Id = loose.Id;
         packed.Position = new(99, 99);
         WriteSprites("z.gspr", false, loose);
         WriteSprites("a.gaf", true, packed);
@@ -256,7 +266,8 @@ public sealed partial class ViewerTests
         WriteContent();
         var first = Sprite("Player");
         var second = Sprite(byNickname ? "Player" : "Different");
-        if (!byNickname) second.Id = first.Id;
+        if (!byNickname)
+            second.Id = first.Id;
         var extension = packed ? ".gaf" : ".gspr";
         WriteSprites("z" + extension, packed, first);
         WriteSprites("a" + extension, packed, second);
@@ -357,14 +368,16 @@ public sealed partial class ViewerTests
             PackSheet();
             File.Move(Path.Combine(_directory, "sheets.gaf"), Path.Combine(child, "sheets.gaf"));
         }
-        else File.Move(Path.Combine(_directory, "sheet.gts"), Path.Combine(child, "sheet.gts"));
+        else
+            File.Move(Path.Combine(_directory, "sheet.gts"), Path.Combine(child, "sheet.gts"));
         File.Move(Path.Combine(_directory, "image.png"), Path.Combine(child, "image.png"));
         var definition = SceneDefinitionSerializer.Load(ScenePath);
         definition.TilesheetSources = [packed
             ? SceneTilesheetSourceDefinition.Packed("sheet", "external/sheets.gaf", "arbitrary-sheet-entry")
             : SceneTilesheetSourceDefinition.Loose("sheet", "external/sheet.gts")];
         definition.AnimationSources.Clear();
-        foreach (var layer in definition.Layers) layer.Tiles.Clear();
+        foreach (var layer in definition.Layers)
+            layer.Tiles.Clear();
         SceneDefinitionSerializer.Save(ScenePath, definition);
         using var scene = new ViewerSceneLoader().Load(ScenePath);
         Assert.NotNull(TilesheetRegistry.Instance.GetOrNull("sheet"));
@@ -384,7 +397,8 @@ public sealed partial class ViewerTests
         var definition = SceneDefinitionSerializer.Load(ScenePath);
         definition.TilesheetSources.Clear();
         definition.AnimationSources.Clear();
-        foreach (var layer in definition.Layers) layer.Tiles.Clear();
+        foreach (var layer in definition.Layers)
+            layer.Tiles.Clear();
         SceneDefinitionSerializer.Save(ScenePath, definition);
         var sprites = new SpriteDefinition
         {
@@ -479,7 +493,8 @@ public sealed partial class ViewerTests
         var definition = SceneDefinitionSerializer.Load(ScenePath);
         definition.TilesheetSources.Clear();
         definition.AnimationSources.Clear();
-        foreach (var layer in definition.Layers) layer.Tiles.Clear();
+        foreach (var layer in definition.Layers)
+            layer.Tiles.Clear();
         SceneDefinitionSerializer.Save(ScenePath, definition);
         var sheet = TilesheetDefinitionSerializer.Load(Path.Combine(_directory, "sheet.gts"));
         sheet.Image.FilePath = "missing-packed-image.png";

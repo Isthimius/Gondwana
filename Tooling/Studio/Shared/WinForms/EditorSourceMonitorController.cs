@@ -42,20 +42,24 @@ public sealed class EditorSourceMonitorController : IDisposable
         try
         {
             replacement = create();
-            if (original.Pane is { } pane) replacement.Show(pane, original);
+            if (original.Pane is { } pane)
+                replacement.Show(pane, original);
             approveClose();
             original.Close();
-            if (active is not null && active != original && !active.IsDisposed) active.Activate();
+            if (active is not null && active != original && !active.IsDisposed)
+                active.Activate();
             else
             {
                 replacement.Activate();
                 Control target = replacement;
                 foreach (var index in focusPath)
                 {
-                    if (index >= target.Controls.Count) break;
+                    if (index >= target.Controls.Count)
+                        break;
                     target = target.Controls[index];
                 }
-                if (target.CanFocus) target.Focus();
+                if (target.CanFocus)
+                    target.Focus();
             }
         }
         catch { replacement?.Dispose(); throw; }
@@ -95,9 +99,11 @@ public sealed class EditorSourceMonitorController : IDisposable
 
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         _disposed = true;
-        foreach (var document in _documents.ToArray()) document.Dispose();
+        foreach (var document in _documents.ToArray())
+            document.Dispose();
         _monitor.Dispose();
     }
 
@@ -119,13 +125,16 @@ public sealed class EditorSourceMonitorController : IDisposable
         public string? Problem { get; private set; }
         private string? Password(string path)
         {
-            if (_adapter.Password(path) is { } password) _passwords[path] = password;
+            if (_adapter.Password(path) is { } password)
+                _passwords[path] = password;
             return _passwords.GetValueOrDefault(path);
         }
 
         internal Document(EditorSourceMonitorController owner, DockContent tab, Adapter adapter)
         {
-            _owner = owner; _tab = tab; _adapter = adapter;
+            _owner = owner;
+            _tab = tab;
+            _adapter = adapter;
             _menu.Items.Add("Reload from Disk", null, (_, _) => Reload());
             _menu.Items.Add("Keep My Edits", null, (_, _) => UpdateCaption());
             _menu.Items.Add("Save As...", null, (_, _) => _adapter.SaveAs());
@@ -143,14 +152,17 @@ public sealed class EditorSourceMonitorController : IDisposable
         public void Changed(object? sender, EventArgs e)
         {
             UpdateCaption();
-            if (_queued || _disposed) return;
+            if (_queued || _disposed)
+                return;
             _queued = true;
             _owner._ui.Post(_ => { _queued = false; if (!_disposed) Reconcile(); }, null);
         }
 
         public void Saved()
         {
-            ContentStale = false; Problem = null; _prompted = null;
+            ContentStale = false;
+            Problem = null;
+            _prompted = null;
             Reconcile(); // The adapter supplies the serializer's exact installed version, never a fresh disk read.
             UpdateCaption();
         }
@@ -160,13 +172,15 @@ public sealed class EditorSourceMonitorController : IDisposable
             Reconcile();
             if (_owner.Enabled)
             {
-                foreach (var source in _sources.Values.ToArray()) source.Verify();
+                foreach (var source in _sources.Values.ToArray())
+                    source.Verify();
                 return;
             }
             // Opt-out releases watchers; an explicit check remains available and never accepts disk versions.
             if (_adapter.Location() is { } primary && _adapter.Accepted() is { } accepted)
                 Check(primary, accepted, DocumentSourceRole.Primary);
-            foreach (var (location, baseline) in _dependencies) Check(location, baseline, DocumentSourceRole.Dependency);
+            foreach (var (location, baseline) in _dependencies)
+                Check(location, baseline, DocumentSourceRole.Dependency);
             void Check(AssetLocation location, DocumentSourceVersion baseline, DocumentSourceRole role)
             {
                 var current = DocumentSourceVersion.Read(location, Password(location.Path));
@@ -180,7 +194,8 @@ public sealed class EditorSourceMonitorController : IDisposable
 
         internal void Reconcile()
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             var found = new HashSet<AssetLocation>(DocumentSourceDependencies.Comparer);
             var versions = new Dictionary<AssetLocation, DocumentSourceVersion>(DocumentSourceDependencies.Comparer);
             try
@@ -191,32 +206,42 @@ public sealed class EditorSourceMonitorController : IDisposable
             catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or
                 NullReferenceException or Newtonsoft.Json.JsonException)
             { found.UnionWith(_dependencies.Keys); }
-            foreach (var obsolete in _dependencies.Keys.Except(found, DocumentSourceDependencies.Comparer).ToArray()) _dependencies.Remove(obsolete);
+            foreach (var obsolete in _dependencies.Keys.Except(found, DocumentSourceDependencies.Comparer).ToArray())
+                _dependencies.Remove(obsolete);
             foreach (var source in found)
                 if (!_dependencies.ContainsKey(source))
                     _dependencies.Add(source, versions.GetValueOrDefault(source) ?? DocumentSourceVersion.Read(source, Password(source.Path)));
             var generation = ++_generation;
-            foreach (var source in _sources.Values) source.Dispose();
+            foreach (var source in _sources.Values)
+                source.Dispose();
             _sources.Clear();
-            if (!_owner.Enabled) return;
-            if (_adapter.Location() is { } primary && _adapter.Accepted() is { } accepted) Register(primary, accepted, DocumentSourceRole.Primary);
+            if (!_owner.Enabled)
+                return;
+            if (_adapter.Location() is { } primary && _adapter.Accepted() is { } accepted)
+                Register(primary, accepted, DocumentSourceRole.Primary);
             foreach (var (location, version) in _dependencies)
-                if (!_sources.ContainsKey(location)) Register(location, version, DocumentSourceRole.Dependency);
+                if (!_sources.ContainsKey(location))
+                    Register(location, version, DocumentSourceRole.Dependency);
             if (ContentStale && _adapter.Location() is { } currentLocation && _adapter.Accepted() is { } baseline &&
                 DocumentSourceVersion.Read(currentLocation, Password(currentLocation.Path)) == baseline)
             {
-                ContentStale = false; Problem = null; _prompted = null; UpdateCaption();
+                ContentStale = false;
+                Problem = null;
+                _prompted = null;
+                UpdateCaption();
             }
 
             void Register(AssetLocation location, DocumentSourceVersion version, DocumentSourceRole role)
             {
                 try
                 {
-                    if (!Directory.Exists(Path.GetDirectoryName(location.Path))) return;
+                    if (!Directory.Exists(Path.GetDirectoryName(location.Path)))
+                        return;
                     _sources.Add(location, _owner._monitor.Register(location, version, role, change =>
                         _owner._ui.Post(_ =>
                         {
-                            if (!_disposed && !_tab.IsDisposed && generation == _generation) Observe(change);
+                            if (!_disposed && !_tab.IsDisposed && generation == _generation)
+                                Observe(change);
                         }, null), Password(location.Path)));
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
@@ -236,7 +261,8 @@ public sealed class EditorSourceMonitorController : IDisposable
                     DocumentSourceChangeKind.Inaccessible => "Source is temporarily inaccessible. Edits are retained.",
                     _ => "Source changed externally. Keep edits, Reload from Disk, or Save As."
                 } : null;
-                if (!ContentStale) _prompted = null;
+                if (!ContentStale)
+                    _prompted = null;
             }
             else if (change.Kind != DocumentSourceChangeKind.ContainerChanged && change.Current != change.Accepted)
                 PreviewStale = true;
@@ -247,47 +273,59 @@ public sealed class EditorSourceMonitorController : IDisposable
         /// <summary>Shows conflict actions once per external version after an explicit failed save, never from a watcher.</summary>
         public bool SaveFailed(Exception exception)
         {
-            if (exception is not IOException || _adapter.Location() is not { } location || _adapter.Accepted() is not { } accepted) return false;
-            if (exception is DocumentSourceConflictException conflict && !DocumentSourceDependencies.Comparer.Equals(conflict.Location, location)) return false;
+            if (exception is not IOException || _adapter.Location() is not { } location || _adapter.Accepted() is not { } accepted)
+                return false;
+            if (exception is DocumentSourceConflictException conflict && !DocumentSourceDependencies.Comparer.Equals(conflict.Location, location))
+                return false;
             var current = DocumentSourceVersion.Read(location, Password(location.Path));
-            if (current == accepted) return false;
+            if (current == accepted)
+                return false;
             Observe(new(location, DocumentSourceRole.Primary, current.Status == DocumentSourceStatus.Available ?
                 DocumentSourceChangeKind.ContentChanged : current.Status == DocumentSourceStatus.Missing ?
                 DocumentSourceChangeKind.Deleted : DocumentSourceChangeKind.Inaccessible, accepted, current));
-            if (_prompted == current) return true;
+            if (_prompted == current)
+                return true;
             _prompted = current;
             _owner._ui.Post(_ =>
             {
                 if (_disposed || !ContentStale || !DocumentSourceDependencies.Comparer.Equals(location, _adapter.Location()) ||
-                    _adapter.Accepted() != accepted) return;
+                    _adapter.Accepted() != accepted)
+                    return;
                 var choice = _owner.ChooseConflict();
-                if (choice == DialogResult.Yes) Reload();
-                else if (choice == DialogResult.No) _adapter.SaveAs();
+                if (choice == DialogResult.Yes)
+                    Reload();
+                else if (choice == DialogResult.No)
+                    _adapter.SaveAs();
             }, null);
             return true;
         }
 
         public void Reload()
         {
-            if (_disposed || !_adapter.Commit() || (_adapter.Dirty() && !_owner.ConfirmDiscard())) return;
-            try { _adapter.Reload(); }
+            if (_disposed || !_adapter.Commit() || (_adapter.Dirty() && !_owner.ConfirmDiscard()))
+                return;
+            try
+            { _adapter.Reload(); }
             catch (Exception ex) { _owner.ReportError(ex); }
         }
 
         public void RefreshPreviews()
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             Reconcile();
             var versions = _dependencies.Keys.ToDictionary(p => p, p => DocumentSourceVersion.Read(p, Password(p.Path)), DocumentSourceDependencies.Comparer);
             try
             {
-                foreach (var path in versions.Keys) _adapter.Invalidate(path.Path);
+                foreach (var path in versions.Keys)
+                    _adapter.Invalidate(path.Path);
                 bool loaded = _adapter.RefreshPreviews();
                 var newlyUnavailable = versions.Any(p => p.Value.Status != DocumentSourceStatus.Available && p.Value != _dependencies[p.Key]);
                 PreviewStale = !loaded || newlyUnavailable;
                 if (!PreviewStale)
                 {
-                    foreach (var pair in versions.Where(p => p.Value.Status == DocumentSourceStatus.Available)) _dependencies[pair.Key] = pair.Value;
+                    foreach (var pair in versions.Where(p => p.Value.Status == DocumentSourceStatus.Available))
+                        _dependencies[pair.Key] = pair.Value;
                     Reconcile();
                 }
                 UpdateCaption();
@@ -298,7 +336,8 @@ public sealed class EditorSourceMonitorController : IDisposable
         private void CaptionChanged(object? sender, EventArgs e) => UpdateCaption();
         private void UpdateCaption()
         {
-            if (_disposed || _caption) return;
+            if (_disposed || _caption)
+                return;
             _caption = true;
             try
             {
@@ -312,11 +351,18 @@ public sealed class EditorSourceMonitorController : IDisposable
         private void Closed(object? sender, EventArgs e) => Dispose();
         public void Dispose()
         {
-            if (_disposed) return;
-            _disposed = true; _generation++;
-            _tab.TextChanged -= CaptionChanged; _tab.Disposed -= Closed;
-            foreach (var source in _sources.Values) source.Dispose();
-            _sources.Clear(); _dependencies.Clear(); _passwords.Clear(); _menu.Dispose();
+            if (_disposed)
+                return;
+            _disposed = true;
+            _generation++;
+            _tab.TextChanged -= CaptionChanged;
+            _tab.Disposed -= Closed;
+            foreach (var source in _sources.Values)
+                source.Dispose();
+            _sources.Clear();
+            _dependencies.Clear();
+            _passwords.Clear();
+            _menu.Dispose();
             _owner._documents.Remove(this);
         }
     }

@@ -32,7 +32,8 @@ public sealed class ThemeTests
     public void MissingInvalidAndCorruptPreferencesFallBackToDark(string? json)
     {
         var store = new ThemePreferenceStore();
-        if (json is not null) File.WriteAllText(store.FilePath, json);
+        if (json is not null)
+            File.WriteAllText(store.FilePath, json);
         Assert.Equal(ToolingTheme.Dark, store.Read());
     }
 
@@ -159,7 +160,8 @@ public sealed class ThemeTests
     {
         static double L(Color c)
         {
-            static double F(byte b) { double v = b / 255d; return v <= .04045 ? v / 12.92 : Math.Pow((v + .055) / 1.055, 2.4); }
+            static double F(byte b)
+            { double v = b / 255d; return v <= .04045 ? v / 12.92 : Math.Pow((v + .055) / 1.055, 2.4); }
             return .2126 * F(c.R) + .7152 * F(c.G) + .0722 * F(c.B);
         }
         return (Math.Max(L(a), L(b)) + .05) / (Math.Min(L(a), L(b)) + .05);
@@ -172,6 +174,7 @@ public sealed class ThemeTests
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "UI test timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

@@ -104,7 +104,8 @@ public static class ThemedMessageBox
 
         form.FormClosing += (_, _) =>
         {
-            if (buttons == MessageBoxButtons.OK) form.DialogResult = DialogResult.OK;
+            if (buttons == MessageBoxButtons.OK)
+                form.DialogResult = DialogResult.OK;
         };
 
         form.Shown += (_, _) => selected.Focus();

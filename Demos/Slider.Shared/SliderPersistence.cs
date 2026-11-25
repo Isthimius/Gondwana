@@ -50,7 +50,8 @@ internal static class SliderPersistence
         SlidingPuzzle.Restore(save.Columns, save.Rows, save.Cells, save.MoveCount);
         if (!string.IsNullOrEmpty(save.ImagePngBase64))
         {
-            try { _ = Convert.FromBase64String(save.ImagePngBase64); }
+            try
+            { _ = Convert.FromBase64String(save.ImagePngBase64); }
             catch (FormatException ex) { throw new InvalidDataException("Invalid embedded puzzle image.", ex); }
         }
     }

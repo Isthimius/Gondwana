@@ -47,7 +47,8 @@ public sealed partial class SemanticAssetPackTests
         var plan = AssetRelocationPlan.Create(Source, [new(new(AssetTypes.Misc, source), new(AssetTypes.Misc, target))]);
         Assert.Throws<IOException>(() => plan.CommitCore((phase, _) =>
         {
-            if (phase != "complete-manifest") return;
+            if (phase != "complete-manifest")
+                return;
             var manifest = Assert.Single(Directory.GetFiles(Source, ".gondwana-relocate-*.json"));
             using var prepared = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifest));
             using var completed = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifest + ".completed"));
@@ -68,7 +69,8 @@ public sealed partial class SemanticAssetPackTests
     public void RelocationArchivesRequireWholeArchivePath(string extension)
     {
         var source = Path.Combine(Source, "package" + extension);
-        using (var archive = AssetsFile.LoadOrCreate(source, null, false, register: false)) archive.Save();
+        using (var archive = AssetsFile.LoadOrCreate(source, null, false, register: false))
+            archive.Save();
         Assert.True(AssetArchiveFormat.IsArchive(source));
         var target = Path.Combine(Source, "moved" + extension);
         Assert.Throws<InvalidDataException>(() => AssetRelocationPlan.Create(Source,
@@ -157,7 +159,8 @@ public sealed partial class SemanticAssetPackTests
         var plan = AssetRelocationPlan.Create(Source, [new(new(AssetTypes.Misc, one), new(AssetTypes.Misc, first)), new(new(AssetTypes.Misc, two), new(AssetTypes.Misc, second))]);
         Assert.Throws<IOException>(() => plan.CommitCore((phase, index) =>
         {
-            if (phase == "install" && index == 1) File.WriteAllBytes(second, [99]);
+            if (phase == "install" && index == 1)
+                File.WriteAllBytes(second, [99]);
         }, default));
         Assert.Equal(new byte[] { 99 }, File.ReadAllBytes(second));
         Assert.False(File.Exists(first));
@@ -205,7 +208,8 @@ public sealed partial class SemanticAssetPackTests
                 using var image = archive.Get(AssetTypes.Image, "art0.png");
                 Assert.NotNull(image);
             }
-            if (phase == "retire") throw new IOException("Injected archive retirement failure");
+            if (phase == "retire")
+                throw new IOException("Injected archive retirement failure");
         }, default));
         Assert.Equal(original, File.ReadAllBytes(Output));
         Assert.False(File.Exists(target));
@@ -266,7 +270,8 @@ public sealed partial class SemanticAssetPackTests
         Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
         using var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false);
         var sheet = Sheet("terrain", Path.Combine(Source, "art.png"));
-        using (var bytes = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)))) archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
+        using (var bytes = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet))))
+            archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
         archive.Save();
         var original = File.ReadAllBytes(Output);
         var target = Path.Combine(Source, "copy.gaf");
@@ -431,11 +436,15 @@ public sealed partial class SemanticAssetPackTests
         using var cancellation = new CancellationTokenSource();
         Assert.ThrowsAny<Exception>(() => plan.CommitCore((checkpoint, index) =>
         {
-            if (checkpoint != phase || phase == "install" && index != 2) return;
-            if (cancel) cancellation.Cancel();
-            else throw new IOException("Injected transaction failure");
+            if (checkpoint != phase || phase == "install" && index != 2)
+                return;
+            if (cancel)
+                cancellation.Cancel();
+            else
+                throw new IOException("Injected transaction failure");
         }, cancellation.Token));
-        foreach (var pair in originals) Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
+        foreach (var pair in originals)
+            Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
         Assert.False(File.Exists(target));
         Assert.Empty(Directory.GetFiles(_root, ".gondwana-relocate-*", SearchOption.AllDirectories));
     }

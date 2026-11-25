@@ -496,7 +496,8 @@ public sealed class TilesheetRegistry : IDisposable
     private IReadOnlyList<Tilesheet> LoadAllDefinitions(TilesheetDefinitionDocument document, string? directory, AssetsFile? archive)
     {
         var errors = TilesheetDefinitionSerializer.ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         var created = new List<Tilesheet>();
         try
         {
@@ -505,10 +506,12 @@ public sealed class TilesheetRegistry : IDisposable
         }
         catch
         {
-            foreach (var sheet in created) sheet.Dispose();
+            foreach (var sheet in created)
+                sheet.Dispose();
             throw;
         }
-        foreach (var sheet in created) Register(sheet);
+        foreach (var sheet in created)
+            Register(sheet);
         return created;
     }
 }

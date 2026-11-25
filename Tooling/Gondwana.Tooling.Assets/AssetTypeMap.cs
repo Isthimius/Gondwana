@@ -61,7 +61,8 @@ internal sealed class AssetTypeMap
         foreach (var ext in new[] { "svg" })
             map[ext] = AssetTypes.Svg;
 
-        foreach (var pair in NativeTypes) map[pair.Key] = pair.Value;
+        foreach (var pair in NativeTypes)
+            map[pair.Key] = pair.Value;
         return new AssetTypeMap(map);
     }
 
@@ -119,7 +120,8 @@ internal sealed class AssetTypeMap
                     throw new InvalidDataException($"Asset type '{property.Name}' requires an extension array.");
                 foreach (var token in property.Value.EnumerateArray())
                 {
-                    if (token.ValueKind != JsonValueKind.String) throw new InvalidDataException("Extensions must be strings.");
+                    if (token.ValueKind != JsonValueKind.String)
+                        throw new InvalidDataException("Extensions must be strings.");
                     var extension = token.GetString()!.Trim().TrimStart('.');
                     if (extension.Length == 0 || extension.Any(character => !char.IsAsciiLetterOrDigit(character)))
                         throw new InvalidDataException($"Invalid extension '{token.GetString()}'.");
@@ -130,7 +132,8 @@ internal sealed class AssetTypeMap
                 }
             }
             var map = BuildDefault()._map;
-            foreach (var pair in configured) map[pair.Key] = pair.Value;
+            foreach (var pair in configured)
+                map[pair.Key] = pair.Value;
 
             error = null;
             return new AssetTypeMap(map);

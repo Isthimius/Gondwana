@@ -47,7 +47,8 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
 
         public void Dispose()
         {
-            foreach (var snapshot in _archives.Values) snapshot.Dispose();
+            foreach (var snapshot in _archives.Values)
+                snapshot.Dispose();
             _archives.Clear();
         }
     }
@@ -103,9 +104,11 @@ public sealed record DocumentSourceVersion(DocumentSourceStatus Status, string? 
 
         internal DocumentSourceVersion Read(AssetTypes type, string name)
         {
-            if (_status != DocumentSourceStatus.Available) return new(_status, null, null);
+            if (_status != DocumentSourceStatus.Available)
+                return new(_status, null, null);
             var key = new AssetsFileEntry { AssetType = type, AssetName = name };
-            if (_versions.TryGetValue(key, out var version)) return version;
+            if (_versions.TryGetValue(key, out var version))
+                return version;
 
             // Get() allows basename fallback for regular consumers; source verification must not.
             if (!_entries!.Contains(key))
@@ -158,13 +161,15 @@ public static class DocumentSourceSave
     /// Atomic replacement is not a filesystem compare-and-swap: unrelated processes can still replace the path after the final check.</remarks>
     public static DocumentSourceVersion Save(AssetLocation location, DocumentSourceVersion accepted, Action<Action<string>> serialize)
     {
-        lock (SaveGate) return SaveCore(location, accepted, serialize);
+        lock (SaveGate)
+            return SaveCore(location, accepted, serialize);
     }
 
     private static DocumentSourceVersion SaveCore(AssetLocation location, DocumentSourceVersion accepted, Action<Action<string>> serialize)
     {
         ArgumentNullException.ThrowIfNull(serialize);
-        if (location.AssetEntryName is not null) throw new ArgumentException("Use archive persistence for packed entries.", nameof(location));
+        if (location.AssetEntryName is not null)
+            throw new ArgumentException("Use archive persistence for packed entries.", nameof(location));
         void Check() => Verify(location, accepted);
         Check();
         using var guard = accepted.Status == DocumentSourceStatus.Available

@@ -99,7 +99,8 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
 
     private async Task ForwardTouch(TouchEventArgs args, Action<TouchEventArgs>? handler)
     {
-        if (handler is null) return;
+        if (handler is null)
+            return;
         var offset = await GetCanvasOffsetAsync();
         foreach (var point in args.ChangedTouches)
         {

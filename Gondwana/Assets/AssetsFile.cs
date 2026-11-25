@@ -54,13 +54,16 @@ public sealed class AssetsFile : IDisposable
         var keys = new HashSet<AssetsFileEntry>();
         foreach (ZipEntry entry in archive)
         {
-            if (!entry.IsFile) continue;
+            if (!entry.IsFile)
+                continue;
             var key = AssetsFileEntry.FromString(entry.Name);
             if (key is null || !Enum.IsDefined(key.AssetType) || string.IsNullOrWhiteSpace(key.AssetName))
                 throw new InvalidDataException($"Invalid bundle entry key: {entry.Name}");
-            if (!keys.Add(key)) throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
+            if (!keys.Add(key))
+                throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
         }
-        if (!archive.TestArchive(testData)) throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
+        if (!archive.TestArchive(testData))
+            throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
     }
 
     [JsonConstructor]
@@ -70,7 +73,8 @@ public sealed class AssetsFile : IDisposable
 
     private AssetsFile(bool register)
     {
-        if (register) _allAssetsFiles.Add(this);
+        if (register)
+            _allAssetsFiles.Add(this);
     }
 
     /// <summary>
@@ -254,7 +258,8 @@ public sealed class AssetsFile : IDisposable
                     continue;
 
                 // Preserve the loaded archive's encryption policy when tooling stages a replacement.
-                if (string.IsNullOrEmpty(FilePath)) UseEncryption |= entry.IsCrypted;
+                if (string.IsNullOrEmpty(FilePath))
+                    UseEncryption |= entry.IsCrypted;
 
                 var key = AssetsFileEntry.FromString(entry.Name);
                 if (key == null)

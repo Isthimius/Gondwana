@@ -117,7 +117,8 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _healthBar = new HealthBarWidget(RenderSurface.Host, _player, PlayerMaxHealth,
             new Size(86, 9), nickname: "player-health");
         _healthBar.SetFillColor(Color.FromArgb(245, 50, 220, 250));
-        _healthBar.SetZOrder(200); _healthBar.Show();
+        _healthBar.SetZOrder(200);
+        _healthBar.Show();
 
         RectangleF bounds = Scene!.GetWorldBoundsPx();
         _particles = new ParticleSurface(RenderSurface.Host, _gameplayLayer,
@@ -129,12 +130,14 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _hud = new TextBlock(RenderSurface.Host, view, new Rectangle(18, 16, 720, 58), "hud")
             .SetFont(SKTypeface.Default, 18f).SetColors(SKColors.White, new SKColor(4, 12, 34, 210))
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center).EnableWrapping(false).UseShadow();
-        _hud.HorizontalPadding = 14; _hud.ZOrder = 1000;
+        _hud.HorizontalPadding = 14;
+        _hud.ZOrder = 1000;
 
         _message = new TextBlock(RenderSurface.Host, view, new Rectangle(260, 235, 760, 170), "message")
             .SetFont(SKTypeface.Default, 38f, 24f).SetColors(SKColors.White, new SKColor(7, 16, 42, 230))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center).SetMaxLines(3).UseShadow().UseOutline();
-        _message.ZOrder = 1100; _message.Visible = false;
+        _message.ZOrder = 1100;
+        _message.Visible = false;
     }
 
     /// <inheritdoc/>
@@ -142,7 +145,8 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
         keyboard.KeyDown += OnKeyDown;
-        foreach (Keys key in MonitoredKeys) keyboard.StartMonitoringKey((int)key, key.ToString());
+        foreach (Keys key in MonitoredKeys)
+            keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
     /// <inheritdoc/>
@@ -156,7 +160,8 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
     /// <inheritdoc/>
     protected override void UnhookEvents()
     {
-        if (Engine.Input.KeyboardEventPoller is not null) Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+        if (Engine.Input.KeyboardEventPoller is not null)
+            Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
         Engine.BeforeBackgroundTasksExecute -= BeforeUpdate;
         Engine.AfterBackgroundTasksExecute -= AfterUpdate;
     }
@@ -174,36 +179,45 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         while (occupied.Count < count)
         {
             var p = (random.Next(WorldColumns), random.Next(WorldRows));
-            if (occupied.Add(p)) layer[p.Item1, p.Item2]!.CurrentFrame = _tilesheet[frame, 0];
+            if (occupied.Add(p))
+                layer[p.Item1, p.Item2]!.CurrentFrame = _tilesheet[frame, 0];
         }
     }
 
     private Sprite CreateSprite(string name, int frame, Vector2 position, Size renderSize)
     {
         Sprite sprite = Engine.Managers.Sprites.CreateSprite(_gameplayLayer, _tilesheet[frame, 0], name);
-        sprite.RenderSize = renderSize; sprite.HorizAlign = SpriteHorizontalAlignment.Center;
-        sprite.VertAlign = SpriteVerticalAlignment.Middle; sprite.SetPosition(position);
-        sprite.Visible = true; sprite.ZOrder = 30;
+        sprite.RenderSize = renderSize;
+        sprite.HorizAlign = SpriteHorizontalAlignment.Center;
+        sprite.VertAlign = SpriteVerticalAlignment.Middle;
+        sprite.SetPosition(position);
+        sprite.Visible = true;
+        sprite.ZOrder = 30;
         sprite.AdjustCollisionArea = new CollisionAdjust(8, 8, 8, 8);
         return sprite;
     }
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (!Enum.TryParse(args.KeyConfig.Key, true, out Keys key)) return;
+        if (!Enum.TryParse(args.KeyConfig.Key, true, out Keys key))
+            return;
         if (args.KeyAction == KeyAction.Pressed)
         {
             _keysDown.Add(key);
-            if (key == Keys.R && !_playing) Restart();
+            if (key == Keys.R && !_playing)
+                Restart();
         }
-        else if (args.KeyAction == KeyAction.Released) _keysDown.Remove(key);
+        else if (args.KeyAction == KeyAction.Released)
+            _keysDown.Remove(key);
     }
 
     private void BeforeUpdate()
     {
         long tick = HighResTimer.GetCurrentTick();
-        _delta = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0, .05f); _lastTick = tick;
-        if (!_playing || _delta <= 0) return;
+        _delta = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0, .05f);
+        _lastTick = tick;
+        if (!_playing || _delta <= 0)
+            return;
         _fireCooldown = Math.Max(0, _fireCooldown - _delta);
 
         float vertical = Axis(Keys.W, Keys.Up, Keys.S, Keys.Down);
@@ -214,41 +228,52 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
 
         if (_keysDown.Contains(Keys.Space) && _fireCooldown <= 0)
         {
-            Fire(_player, true); _fireCooldown = PlayerFireDelay;
+            Fire(_player, true);
+            _fireCooldown = PlayerFireDelay;
         }
 
         foreach (Enemy enemy in _enemies.Where(e => e.Alive))
         {
-            enemy.Age += _delta; enemy.FireCooldown -= _delta;
+            enemy.Age += _delta;
+            enemy.FireCooldown -= _delta;
             float yVelocity = MathF.Cos(enemy.Age * enemy.Frequency) * 2.2f;
             enemy.Sprite.Movement.SetVelocity(new Vector2(-1.1f, yVelocity));
             if (enemy.FireCooldown <= 0 && MathF.Abs(enemy.Sprite.GetPosition().X - _player.GetPosition().X) < 13f)
             {
-                Fire(enemy.Sprite, false); enemy.FireCooldown = 1.3f + enemy.Frequency * .5f;
+                Fire(enemy.Sprite, false);
+                enemy.FireCooldown = 1.3f + enemy.Frequency * .5f;
             }
         }
     }
 
     private void AfterUpdate()
     {
-        if (!_playing) return;
+        if (!_playing)
+            return;
         for (int i = _projectiles.Count - 1; i >= 0; i--)
         {
-            Projectile shot = _projectiles[i]; shot.Age += _delta;
-            if (shot.Age > 2.5f) { RemoveShot(i); continue; }
+            Projectile shot = _projectiles[i];
+            shot.Age += _delta;
+            if (shot.Age > 2.5f)
+            { RemoveShot(i); continue; }
             if (shot.Friendly)
             {
                 Enemy? hit = _enemies.FirstOrDefault(e => e.Alive && e.Sprite.CollisionArea.IntersectsWith(shot.Sprite.CollisionArea));
-                if (hit is not null) { Destroy(hit); RemoveShot(i); }
+                if (hit is not null)
+                { Destroy(hit); RemoveShot(i); }
             }
             else if (_player.CollisionArea.IntersectsWith(shot.Sprite.CollisionArea))
             {
-                Explode(shot.Sprite.CollisionArea, 20); RemoveShot(i); DamagePlayer(12);
+                Explode(shot.Sprite.CollisionArea, 20);
+                RemoveShot(i);
+                DamagePlayer(12);
             }
         }
 
-        if (_enemies.All(e => !e.Alive)) End("SECTOR CLEARED\nPress R to fly again");
-        else if (_player.GetPosition().X >= WorldColumns - 5) End("MISSION COMPLETE\nPress R to fly again");
+        if (_enemies.All(e => !e.Alive))
+            End("SECTOR CLEARED\nPress R to fly again");
+        else if (_player.GetPosition().X >= WorldColumns - 5)
+            End("MISSION COMPLETE\nPress R to fly again");
         UpdateHud();
     }
 
@@ -268,21 +293,27 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         Vector2 p = owner.GetPosition() + new Vector2(friendly ? .75f : -.75f, 0);
         Sprite shot = CreateSprite($"shot-{Guid.NewGuid():N}", friendly ? SideScrollerArt.PlayerShot : SideScrollerArt.EnemyShot,
             p, new Size(42, 12));
-        shot.ZOrder = 50; shot.AdjustCollisionArea = new CollisionAdjust(2, 2, 4, 4);
+        shot.ZOrder = 50;
+        shot.AdjustCollisionArea = new CollisionAdjust(2, 2, 4, 4);
         shot.Movement.SetVelocity(new Vector2(friendly ? ShotSpeed : -EnemyShotSpeed, 0));
         _projectiles.Add(new Projectile(shot, friendly));
     }
 
     private void Destroy(Enemy enemy)
     {
-        enemy.Alive = false; Explode(enemy.Sprite.CollisionArea, 55);
-        enemy.Sprite.Movement.StopAllMovement(); enemy.Sprite.Visible = false; _score += 100;
+        enemy.Alive = false;
+        Explode(enemy.Sprite.CollisionArea, 55);
+        enemy.Sprite.Movement.StopAllMovement();
+        enemy.Sprite.Visible = false;
+        _score += 100;
     }
 
     private void DamagePlayer(float damage)
     {
-        _playerHealth = Math.Max(0, _playerHealth - damage); _healthBar.Value = _playerHealth;
-        if (_playerHealth <= 0) { _player.Visible = false; Explode(_player.CollisionArea, 100); End("SHIP DESTROYED\nPress R to redeploy"); }
+        _playerHealth = Math.Max(0, _playerHealth - damage);
+        _healthBar.Value = _playerHealth;
+        if (_playerHealth <= 0)
+        { _player.Visible = false; Explode(_player.CollisionArea, 100); End("SHIP DESTROYED\nPress R to redeploy"); }
     }
 
     private void Explode(Rectangle area, int count)
@@ -303,23 +334,41 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
 
     private void End(string text)
     {
-        _playing = false; _keysDown.Clear(); _player.Movement.StopAllMovement();
-        _message.SetText(text); _message.Visible = true;
+        _playing = false;
+        _keysDown.Clear();
+        _player.Movement.StopAllMovement();
+        _message.SetText(text);
+        _message.Visible = true;
     }
 
     private void Restart()
     {
-        for (int i = _projectiles.Count - 1; i >= 0; i--) RemoveShot(i);
-        _playerHealth = PlayerMaxHealth; _score = 0; _fireCooldown = 0;
-        _player.SetPosition(new Vector2(5, 9)); _player.Visible = true; _healthBar.Value = PlayerMaxHealth; _healthBar.Show();
-        foreach (Enemy enemy in _enemies) { enemy.Alive = true; enemy.Age = 0; enemy.Sprite.SetPosition(enemy.Spawn); enemy.Sprite.Visible = true; }
-        var camera = RenderSurface.Host.ViewManager.Views[0].Camera; camera.ClearFollow(); camera.SnapTo(PointF.Empty); camera.FollowAtX(_player, PlayerCameraHorizontalAnchor, 10f);
-        _message.Visible = false; _playing = true; _lastTick = HighResTimer.GetCurrentTick(); UpdateHud();
+        for (int i = _projectiles.Count - 1; i >= 0; i--)
+            RemoveShot(i);
+        _playerHealth = PlayerMaxHealth;
+        _score = 0;
+        _fireCooldown = 0;
+        _player.SetPosition(new Vector2(5, 9));
+        _player.Visible = true;
+        _healthBar.Value = PlayerMaxHealth;
+        _healthBar.Show();
+        foreach (Enemy enemy in _enemies)
+        { enemy.Alive = true; enemy.Age = 0; enemy.Sprite.SetPosition(enemy.Spawn); enemy.Sprite.Visible = true; }
+        var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
+        camera.ClearFollow();
+        camera.SnapTo(PointF.Empty);
+        camera.FollowAtX(_player, PlayerCameraHorizontalAnchor, 10f);
+        _message.Visible = false;
+        _playing = true;
+        _lastTick = HighResTimer.GetCurrentTick();
+        UpdateHud();
     }
 
     private void RemoveShot(int index)
     {
-        _projectiles[index].Sprite.Visible = false; _projectiles[index].Sprite.Dispose(); _projectiles.RemoveAt(index);
+        _projectiles[index].Sprite.Visible = false;
+        _projectiles[index].Sprite.Dispose();
+        _projectiles.RemoveAt(index);
     }
 
     private void UpdateHud() => _hud.SetText($"AZURE STRIKE   Hull {_playerHealth:0}%   Score {_score:00000}   Raiders {_enemies.Count(e => e.Alive)}\nMove WASD/arrows   Fire Space   Restart R   Quit Esc");

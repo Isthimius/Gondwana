@@ -177,7 +177,8 @@ public sealed class TouchEventPoller : ITouchInput, IDisposable
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (_isDisposed || Adapter is null) return;
+        if (_isDisposed || Adapter is null)
+            return;
 
         var began = Adapter.ConsumeBeganTouches();
         var ended = Adapter.ConsumeEndedTouches();

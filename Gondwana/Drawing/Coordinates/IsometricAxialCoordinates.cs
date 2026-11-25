@@ -90,17 +90,20 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         int xEnd = System.Math.Min(maxX, cols - 1);
         int yStart = System.Math.Max(minY, 0);
         int yEnd = System.Math.Min(maxY, rows - 1);
-        if (xStart > xEnd || yStart > yEnd) return result;
+        if (xStart > xEnd || yStart > yEnd)
+            return result;
 
         for (int y = yStart; y <= yEnd; y++)
         {
             for (int x = xStart; x <= xEnd; x++)
             {
                 var gp = sceneLayer[x, y];
-                if (gp == null) continue;
+                if (gp == null)
+                    continue;
 
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
+                if (r.IntersectsWith(worldPixelRange))
+                    result.Add(gp);
             }
         }
         return result;
@@ -149,7 +152,9 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The adjacent tile in the specified direction, or null if no tile exists there.</returns>
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
-        var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
+        var m = gp.SceneLayer;
+        int x = gp.GridCoordinatesAbs.X;
+        int y = gp.GridCoordinatesAbs.Y;
         // Square-like adjacency over the rectangular index space
         return dir switch
         {
@@ -199,8 +204,10 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         // For now, keep the simple torus mapping; if you prefer no wrap, clamp upstream.
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);
-        if (modX < 0) modX += xUpperBound + 1;
-        if (modY < 0) modY += yUpperBound + 1;
+        if (modX < 0)
+            modX += xUpperBound + 1;
+        if (modY < 0)
+            modY += yUpperBound + 1;
         return new PointF(modX, modY);
     }
 }

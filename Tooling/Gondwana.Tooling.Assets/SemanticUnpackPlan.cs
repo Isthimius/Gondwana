@@ -36,7 +36,8 @@ internal sealed class SemanticUnpackPlan
         RejectLinkedSourceAncestry(plan._source);
         AssetsFile.Validate(plan._source, password, true);
         using var archive = AssetsFile.LoadOrCreate(plan._source, password, encrypt: false, register: false);
-        foreach (var item in archive.GetAllEntries()) SafeFilePath.ValidateRelative(item.AssetName);
+        foreach (var item in archive.GetAllEntries())
+            SafeFilePath.ValidateRelative(item.AssetName);
         var selected = archive.GetAllEntries().Where(key => (type is null || key.AssetType == type) &&
             (entryName is null || StringComparer.OrdinalIgnoreCase.Equals(key.AssetName, entryName)))
             .OrderBy(key => key.AssetName, StringComparer.Ordinal).ThenBy(key => key.AssetType).ToArray();
@@ -49,9 +50,11 @@ internal sealed class SemanticUnpackPlan
             cancellation.ThrowIfCancellationRequested();
             plan.CheckDestination(pair.Key.AssetName);
         }
-        if (selected.Length == 0) return plan;
+        if (selected.Length == 0)
+            return plan;
         var contents = SemanticPackPlan.PrepareExtraction(archive, plan._source, destinations, password, cancellation);
-        foreach (var key in selected) plan._files.Add((key.AssetName, destinations[key], contents[key]));
+        foreach (var key in selected)
+            plan._files.Add((key.AssetName, destinations[key], contents[key]));
         return plan;
     }
 
@@ -72,7 +75,8 @@ internal sealed class SemanticUnpackPlan
         var plan = new SemanticUnpackPlan(source, Path.GetDirectoryName(destination)!, overwrite, cancellation);
         var name = Path.GetFileName(destination);
         plan.CheckDestination(name);
-        if (!archive.GetAllEntries().Contains(entry)) throw new InvalidDataException($"Entry not found: {entry}.");
+        if (!archive.GetAllEntries().Contains(entry))
+            throw new InvalidDataException($"Entry not found: {entry}.");
         if (!PackDefinitionDocument.IsNative(entry.AssetType))
         {
             using var stream = archive[entry.AssetType, entry.AssetName] ?? throw new InvalidDataException($"Entry not readable: {entry}.");
@@ -103,11 +107,14 @@ internal sealed class SemanticUnpackPlan
         var target = SafeFilePath.Resolve(_output, name);
         if (StringComparer.OrdinalIgnoreCase.Equals(target, _source))
             throw new IOException($"Export cannot overwrite its source GAF: {target}.");
-        if (Directory.Exists(target)) throw new IOException($"Destination is a directory: {target}.");
-        if (File.Exists(target) && !_overwrite) throw new IOException($"File exists: {target}. Use --overwrite to replace it.");
+        if (Directory.Exists(target))
+            throw new IOException($"Destination is a directory: {target}.");
+        if (File.Exists(target) && !_overwrite)
+            throw new IOException($"File exists: {target}. Use --overwrite to replace it.");
         for (var current = target; current is not null; current = Path.GetDirectoryName(current))
         {
-            if (current != target && File.Exists(current)) throw new IOException($"Destination parent is a file: {current}.");
+            if (current != target && File.Exists(current))
+                throw new IOException($"Destination parent is a file: {current}.");
             var parent = Path.GetDirectoryName(current);
             // Reject differently cased existing names even on case-sensitive filesystems.
             if (parent is not null && Directory.Exists(parent))
@@ -127,8 +134,10 @@ internal sealed class SemanticUnpackPlan
     internal int Commit()
     {
         _cancellation.ThrowIfCancellationRequested();
-        if (_files.Count == 0) return 0;
-        foreach (var file in _files) CheckDestination(file.Name);
+        if (_files.Count == 0)
+            return 0;
+        foreach (var file in _files)
+            CheckDestination(file.Name);
         var createdDirectories = new List<string>();
         var journal = new List<(string Name, string Target, string? Backup, bool Installed)>();
         var stagingName = ".gondwana-unpack-" + Guid.NewGuid().ToString("N");
@@ -177,8 +186,10 @@ internal sealed class SemanticUnpackPlan
                 try
                 {
                     SafeFilePath.Resolve(_output, item.Name);
-                    if (item.Installed) File.Delete(item.Target);
-                    if (item.Backup is not null) File.Move(item.Backup, item.Target);
+                    if (item.Installed)
+                        File.Delete(item.Target);
+                    if (item.Backup is not null)
+                        File.Move(item.Backup, item.Target);
                 }
                 catch (Exception rollback) { errors.Add(rollback); }
             }
@@ -206,7 +217,8 @@ internal sealed class SemanticUnpackPlan
                     foreach (var directory in createdDirectories.AsEnumerable().Reverse())
                     {
                         SafeFilePath.Resolve(directory, ".path-check");
-                        if (Directory.Exists(directory) && !Directory.EnumerateFileSystemEntries(directory).Any()) Directory.Delete(directory);
+                        if (Directory.Exists(directory) && !Directory.EnumerateFileSystemEntries(directory).Any())
+                            Directory.Delete(directory);
                     }
                 }
                 catch (Exception cleanup)
@@ -222,7 +234,8 @@ internal sealed class SemanticUnpackPlan
     private static void CreateDirectories(string directory, List<string> created)
     {
         var missing = new Stack<string>();
-        for (var current = directory; current is not null && !Directory.Exists(current); current = Path.GetDirectoryName(current)) missing.Push(current);
+        for (var current = directory; current is not null && !Directory.Exists(current); current = Path.GetDirectoryName(current))
+            missing.Push(current);
         while (missing.TryPop(out var next))
         {
             SafeFilePath.Resolve(next, ".path-check");

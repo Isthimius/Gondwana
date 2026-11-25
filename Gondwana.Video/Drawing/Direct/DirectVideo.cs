@@ -242,7 +242,8 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var bmp = _frame;
-        if (bmp is null) return;
+        if (bmp is null)
+            return;
 
         var canvas = backbuffer.Canvas;
         var dest = ComputeDestRect(destRectScreen, bmp.Width, bmp.Height, Stretch);
@@ -266,7 +267,8 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     {
         var b = bounds;
         var dst = new SKRect(b.Left, b.Top, b.Right, b.Bottom);
-        if (mode == StretchMode.Fill || srcW <= 0 || srcH <= 0) return dst;
+        if (mode == StretchMode.Fill || srcW <= 0 || srcH <= 0)
+            return dst;
 
         float bw = b.Width, bh = b.Height;
         float arSrc = (float)srcW / srcH;
@@ -307,15 +309,18 @@ public sealed class DirectVideo : DirectDrawingMovableBase
 
     private void OnPlayerStateChanged(object? sender, VideoStateChangedEventArgs e)
     {
-        if (e.State is "MediaOpening" or "MediaOpened") _mailbox.Reset();
+        if (e.State is "MediaOpening" or "MediaOpened")
+            _mailbox.Reset();
     }
 
     /// <summary>Consumes the latest decoded frame on the engine thread, then advances fades.</summary>
     /// <param name="tick">The current engine tick.</param>
     public override void Update(long tick)
     {
-        if (_videoDisposed) return;
-        if (_mailbox.Consume(ref _frame)) ForceRefresh();
+        if (_videoDisposed)
+            return;
+        if (_mailbox.Consume(ref _frame))
+            ForceRefresh();
         base.Update(tick);
     }
     // --- control surface (thin passthrough to player) ---
@@ -383,13 +388,16 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
-        if (!disposing) { base.Dispose(false); return; }
-        if (_videoDisposed) return;
+        if (!disposing)
+        { base.Dispose(false); return; }
+        if (_videoDisposed)
+            return;
         _videoDisposed = true;
         _mailbox.Dispose();
         _player.FrameReady -= OnFrameReady;
         _player.StateChanged -= OnPlayerStateChanged;
-        try { _player.Dispose(); }
+        try
+        { _player.Dispose(); }
         finally
         {
             _frame?.Dispose();

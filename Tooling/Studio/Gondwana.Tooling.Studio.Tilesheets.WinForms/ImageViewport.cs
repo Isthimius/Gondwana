@@ -359,7 +359,8 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
                 Outline(g, RectangleF.FromLTRB((float)bounds.X - r.Overhang.Left, (float)bounds.Y - r.Overhang.Top,
                     (float)bounds.X + bounds.Width + r.Overhang.Right, (float)bounds.Y + bounds.Height + r.Overhang.Bottom), Colors[OverlayKind.Overhang], 1, DashStyle.Dash);
 
-            if (Overlays.Contains("Frames")) Outline(g, bounds, Colors[OverlayKind.Frames]);
+            if (Overlays.Contains("Frames"))
+                Outline(g, bounds, Colors[OverlayKind.Frames]);
 
             if (Overlays.Contains("Collision"))
             {
@@ -367,7 +368,8 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
                 Outline(g, (frame?.CollisionAdjust ?? r.CollisionAdjust).ApplyTo(bounds), Colors[OverlayKind.Collision], 1, DashStyle.DashDot);
             }
 
-            if (selected && Overlays.Contains("SelectedFrame")) Outline(g, bounds, Colors[OverlayKind.SelectedFrame], 3);
+            if (selected && Overlays.Contains("SelectedFrame"))
+                Outline(g, bounds, Colors[OverlayKind.SelectedFrame], 3);
         }
     }
 

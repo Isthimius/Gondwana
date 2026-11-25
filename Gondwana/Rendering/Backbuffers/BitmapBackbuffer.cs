@@ -112,7 +112,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
             {
                 lock (_gate)
                 {
-                    if (_disposed) return;
+                    if (_disposed)
+                        return;
                     DisposeSurface_NoLock();
                     CreateSurface(w, h);
                     UpdateSize(w, h); // tell base about new logical size
@@ -123,7 +124,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
         // Prepare for drawing.
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             var c = _surface!.Canvas;
             c.RestoreToCount(1);
             c.Save();
@@ -142,7 +144,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         lock (_gate)
         {
-            if (_disposed || _surface is null) return;
+            if (_disposed || _surface is null)
+                return;
             _surface.Flush();
         }
     }
@@ -200,8 +203,10 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     private void DisposeSurface_NoLock()
     {
-        _surface?.Dispose(); _surface = null;
-        _buffer?.Dispose(); _buffer = null;
+        _surface?.Dispose();
+        _surface = null;
+        _buffer?.Dispose();
+        _buffer = null;
     }
 
     /// <summary>
@@ -215,7 +220,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
 
             _disposed = true;
             base.Dispose();

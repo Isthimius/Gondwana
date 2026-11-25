@@ -12,11 +12,14 @@ public sealed partial class TilesheetDocument : IDisposable
         var selected = Definition;
         History.Execute(description, () =>
         {
-            foreach (var member in members) if (!_definitions.Contains(member)) _definitions.Add(member);
+            foreach (var member in members)
+            if (!_definitions.Contains(member))
+                _definitions.Add(member);
             Definition = members[0];
         }, () =>
         {
-            foreach (var member in members) _definitions.Remove(member);
+            foreach (var member in members)
+                _definitions.Remove(member);
             Definition = selected;
         });
     }
@@ -30,7 +33,8 @@ public sealed partial class TilesheetDocument : IDisposable
     /// <summary>Edits the properties of one owned model object; child objects and collections must use their own operations.</summary>
     public bool Edit(object target, string description, Action change)
     {
-        if (!Owns(target)) throw new ArgumentException("The object does not belong to this document.", nameof(target));
+        if (!Owns(target))
+            throw new ArgumentException("The object does not belong to this document.", nameof(target));
         return History.Edit(description, target, change);
     }
 

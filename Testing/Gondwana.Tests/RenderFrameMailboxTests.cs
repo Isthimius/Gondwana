@@ -103,7 +103,8 @@ public sealed class RenderFrameMailboxTests
         var producer = Task.Run(() =>
         {
             start.SignalAndWait();
-            for (int i = 1; i <= count; i++) Publish(mailbox, i);
+            for (int i = 1; i <= count; i++)
+                Publish(mailbox, i);
             Volatile.Write(ref done, 1);
         });
         var consumer = Task.Run(() =>
@@ -119,9 +120,11 @@ public sealed class RenderFrameMailboxTests
                     if (Volatile.Read(ref done) == 1)
                     {
                         slot = mailbox.TryAcquire();
-                        if (slot is null) break;
+                        if (slot is null)
+                            break;
                     }
-                    else { Thread.Yield(); continue; }
+                    else
+                    { Thread.Yield(); continue; }
                 }
                 var frame = slot.Frame!;
                 Assert.True(frame.Sequence > previous);

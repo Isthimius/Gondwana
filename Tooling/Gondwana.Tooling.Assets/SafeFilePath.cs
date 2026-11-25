@@ -29,7 +29,8 @@ internal static class SafeFilePath
     public static void ValidateRelative(string name)
     {
         var normalized = name.Replace('\\', '/');
-        if (string.IsNullOrWhiteSpace(normalized) || normalized.StartsWith('/') || normalized.Contains(':')) throw new InvalidDataException($"Unsafe asset path: {name}");
+        if (string.IsNullOrWhiteSpace(normalized) || normalized.StartsWith('/') || normalized.Contains(':'))
+            throw new InvalidDataException($"Unsafe asset path: {name}");
         foreach (var part in normalized.Split('/'))
         {
             var stem = part.Split('.')[0];
@@ -58,7 +59,8 @@ internal static class SafeFilePath
         {
             if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
                 throw new IOException($"Refusing to follow symbolic link or junction: {current}");
-            if (new FileInfo(current).LinkTarget is not null) throw new IOException($"Refusing symbolic link: {current}");
+            if (new FileInfo(current).LinkTarget is not null)
+                throw new IOException($"Refusing symbolic link: {current}");
 
         }
         return destination;

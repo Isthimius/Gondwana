@@ -318,7 +318,8 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             em._accumulator += rate * dt;
 
             int toEmit = (int)em._accumulator;
-            if (toEmit > 0) { em._accumulator -= toEmit; EmitFrom(em, toEmit); }
+            if (toEmit > 0)
+            { em._accumulator -= toEmit; EmitFrom(em, toEmit); }
         }
 
         // (C) integrate & compact

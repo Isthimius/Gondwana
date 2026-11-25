@@ -39,9 +39,11 @@ internal sealed class SceneSpacingConverter : ExpandableObjectConverter
 
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        if (value is not string text) return base.ConvertFrom(context, culture, value);
+        if (value is not string text)
+            return base.ConvertFrom(context, culture, value);
         var values = text.Split(',', StringSplitOptions.TrimEntries);
-        if (values.Length != 4) throw new FormatException("Specify Top, Right, Bottom, Left.");
+        if (values.Length != 4)
+            throw new FormatException("Specify Top, Right, Bottom, Left.");
         var edges = values.Select(v => int.Parse(v, NumberStyles.Integer, culture ?? CultureInfo.CurrentCulture)).ToArray();
         return new Spacing(edges[3], edges[0], edges[1], edges[2]);
     }

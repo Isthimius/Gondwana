@@ -21,8 +21,10 @@ public sealed partial class EditorInteractionTests
         var saved = new byte[256];
         Assert.True(GetKeyboardState(saved));
         var state = new byte[256];
-        if (keys.HasFlag(Keys.Control)) state[(int)Keys.ControlKey] = 0x80;
-        if (keys.HasFlag(Keys.Shift)) state[(int)Keys.ShiftKey] = 0x80;
+        if (keys.HasFlag(Keys.Control))
+            state[(int)Keys.ControlKey] = 0x80;
+        if (keys.HasFlag(Keys.Shift))
+            state[(int)Keys.ShiftKey] = 0x80;
         Assert.True(SetKeyboardState(state));
         try
         {
@@ -54,9 +56,15 @@ public sealed partial class EditorInteractionTests
                 if (location == "propertyValue")
                     Assert.True(Descendants(grid).OfType<TextBox>().Single(t => t.Visible).Focus());
                 break;
-            case "validation": Field<TextBox>(host.Editor, "_validation").Focus(); break;
-            case "region": Field<ComboBox>(host.Editor, "_regions").Focus(); break;
-            default: Field<ImageViewport>(host.Editor, "_viewport").Focus(); break;
+            case "validation":
+                Field<TextBox>(host.Editor, "_validation").Focus();
+                break;
+            case "region":
+                Field<ComboBox>(host.Editor, "_regions").Focus();
+                break;
+            default:
+                Field<ImageViewport>(host.Editor, "_viewport").Focus();
+                break;
         }
         RouteKey(Keys.Control | Keys.Z);
         Assert.Equal("Untitled", document.Definition.Name);

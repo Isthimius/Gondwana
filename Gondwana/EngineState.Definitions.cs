@@ -61,18 +61,25 @@ public sealed partial class EngineState
     private static IEnumerable<DefinitionStateEntry> PackedEntries(EngineStateSnapshot snapshot, EngineStateParts parts)
     {
         if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is not null)
-            foreach (var entry in snapshot.AudioGroups) if (entry.AssetsFilePath is not null) yield return entry;
+            foreach (var entry in snapshot.AudioGroups)
+            if (entry.AssetsFilePath is not null)
+                yield return entry;
         if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.SpriteGroups is not null)
-            foreach (var entry in snapshot.SpriteGroups) if (entry.AssetsFilePath is not null) yield return entry;
+            foreach (var entry in snapshot.SpriteGroups)
+            if (entry.AssetsFilePath is not null)
+                yield return entry;
         if (parts.HasFlag(EngineStateParts.Tilesheets) && snapshot.Tilesheets is not null)
             foreach (var entry in snapshot.Tilesheets.Values)
-                if (entry?.AssetsFilePath is not null) yield return entry;
+                if (entry?.AssetsFilePath is not null)
+                    yield return entry;
         if (parts.HasFlag(EngineStateParts.Cycles) && snapshot.Cycles is not null)
             foreach (var entry in snapshot.Cycles.Values)
-                if (entry?.AssetsFilePath is not null) yield return entry;
+                if (entry?.AssetsFilePath is not null)
+                    yield return entry;
         if (parts.HasFlag(EngineStateParts.Scenes) && snapshot.Scenes is not null)
             foreach (var entry in snapshot.Scenes)
-                if (entry?.AssetsFilePath is not null) yield return entry;
+                if (entry?.AssetsFilePath is not null)
+                    yield return entry;
         if (parts.HasFlag(EngineStateParts.Audio) && snapshot.Audio?.AssetsFilePath is not null)
             yield return snapshot.Audio;
         if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.Sprites?.AssetsFilePath is not null)
@@ -83,13 +90,15 @@ public sealed partial class EngineState
     {
         if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is not null)
         {
-            if (snapshot.Audio is not null) throw new InvalidDataException("Audio and AudioGroups cannot both be present.");
+            if (snapshot.Audio is not null)
+                throw new InvalidDataException("Audio and AudioGroups cannot both be present.");
             foreach (var entry in snapshot.AudioGroups)
                 (entry ?? throw new InvalidDataException("AudioGroups contains null.")).Validate(entry.GsndPath, entry.Definition);
         }
         if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.SpriteGroups is not null)
         {
-            if (snapshot.Sprites is not null) throw new InvalidDataException("Sprites and SpriteGroups cannot both be present.");
+            if (snapshot.Sprites is not null)
+                throw new InvalidDataException("Sprites and SpriteGroups cannot both be present.");
             foreach (var entry in snapshot.SpriteGroups)
                 (entry ?? throw new InvalidDataException("SpriteGroups contains null.")).Validate(entry.GsprPath, entry.Definition, entry.LegacySprites);
         }
@@ -140,7 +149,8 @@ public sealed partial class EngineState
 
     private static T WithDefinitionContext<T>(DefinitionStateEntry entry, string? baseDirectory, Func<T> materialize)
     {
-        try { return materialize(); }
+        try
+        { return materialize(); }
         catch (Exception ex) when (entry.AssetsFilePath is not null && ex is not OutOfMemoryException)
         {
             throw DefinitionError(entry, baseDirectory, ex);
@@ -155,7 +165,8 @@ public sealed partial class EngineState
             var archive = FindAssetsFile(path);
             if (archive is null)
             {
-                if (!File.Exists(path)) throw new FileNotFoundException("Archive not found.", path);
+                if (!File.Exists(path))
+                    throw new FileNotFoundException("Archive not found.", path);
                 archive = AssetsFile.LoadOrCreate(path);
             }
             // EngineState references are exact identities, not the convenience basename
@@ -174,13 +185,16 @@ public sealed partial class EngineState
     private static List<AudioStateEntry>? CaptureAudioGroups(string? baseDirectory)
     {
         var groups = AudioResourceManager.Instance.GetAll().Values.GroupBy(resource => resource.DefinitionProvenance).ToList();
-        if (groups.Count <= 1) return null;
+        if (groups.Count <= 1)
+            return null;
         return groups.Select(group =>
         {
             var definition = AudioDefinitionSerializer.FromResources(group);
             var entry = new AudioStateEntry();
-            if (TryPreserve(entry, group.Key, definition, DefinitionPersistence.PreserveSource, baseDirectory, out var path)) entry.GsndPath = path;
-            else entry.Definition = definition;
+            if (TryPreserve(entry, group.Key, definition, DefinitionPersistence.PreserveSource, baseDirectory, out var path))
+                entry.GsndPath = path;
+            else
+                entry.Definition = definition;
             return entry;
         }).ToList();
     }
@@ -188,13 +202,16 @@ public sealed partial class EngineState
     private static List<SpriteStateEntry>? CaptureSpriteGroups(string? baseDirectory)
     {
         var groups = SpriteManager.Instance.AllSprites.GroupBy(sprite => sprite.DefinitionProvenance).ToList();
-        if (groups.Count <= 1) return null;
+        if (groups.Count <= 1)
+            return null;
         return groups.Select(group =>
         {
             var definition = SpriteDefinitionSerializer.FromSprites(group);
             var entry = new SpriteStateEntry();
-            if (TryPreserve(entry, group.Key, definition, DefinitionPersistence.PreserveSource, baseDirectory, out var path)) entry.GsprPath = path;
-            else entry.Definition = definition;
+            if (TryPreserve(entry, group.Key, definition, DefinitionPersistence.PreserveSource, baseDirectory, out var path))
+                entry.GsprPath = path;
+            else
+                entry.Definition = definition;
             return entry;
         }).ToList();
     }

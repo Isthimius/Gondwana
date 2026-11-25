@@ -12,13 +12,16 @@ internal static class AssetOperationDialog
     {
         var passwords = new Dictionary<string, string?>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
         if (knownPasswords is not null)
-            foreach (var pair in knownPasswords) passwords.Add(Path.GetFullPath(pair.Key), pair.Value);
+            foreach (var pair in knownPasswords)
+                passwords.Add(Path.GetFullPath(pair.Key), pair.Value);
         return path =>
         {
             path = Path.GetFullPath(path);
-            if (passwords.TryGetValue(path, out var password)) return password;
+            if (passwords.TryGetValue(path, out var password))
+                return password;
             password = InputDialog.Show(owner, "Archive credential", $"Password for {path} (empty for none):", password: true);
-            if (password is null) throw new OperationCanceledException();
+            if (password is null)
+                throw new OperationCanceledException();
             passwords[path] = string.IsNullOrEmpty(password) ? null : password;
             return passwords[path];
         };

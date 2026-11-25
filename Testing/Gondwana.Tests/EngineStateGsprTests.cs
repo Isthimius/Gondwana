@@ -35,7 +35,8 @@ public sealed class EngineStateGsprTests : IDisposable
     {
         using var scene = new Scene();
         var layer = scene.AddLayer(1, 1, 16, 16);
-        foreach (var name in new[] { "player", "guard-1", "guard-2" }) SpriteManager.Instance.CreateSprite(layer, default, name);
+        foreach (var name in new[] { "player", "guard-1", "guard-2" })
+            SpriteManager.Instance.CreateSprite(layer, default, name);
         var ids = SpriteManager.Instance.AllSprites.Select(sprite => sprite.Id).ToArray();
         var path = Path.Combine(_directory, "world.state");
         new EngineState().SaveToFile(path, compress: compressed, parts: EngineStateParts.Scenes | EngineStateParts.Sprites, separateGsprFile: external);
@@ -45,7 +46,8 @@ public sealed class EngineStateGsprTests : IDisposable
             Assert.Equal(3, SpriteDefinitionSerializer.Load(gspr).Sprites.Count);
             Assert.DoesNotContain("$id", File.ReadAllText(gspr));
             Assert.DoesNotContain("$ref", File.ReadAllText(gspr));
-            if (!compressed) Assert.Equal("world.sprites.gspr", JObject.Parse(File.ReadAllText(path))["Sprites"]!["GsprPath"]!.Value<string>());
+            if (!compressed)
+                Assert.Equal("world.sprites.gspr", JObject.Parse(File.ReadAllText(path))["Sprites"]!["GsprPath"]!.Value<string>());
         }
         EngineState.LoadFromFile(path, compressed, EngineStateParts.Scenes | EngineStateParts.Sprites);
         Assert.Equal(ids, SpriteManager.Instance.AllSprites.Select(sprite => sprite.Id));
@@ -188,7 +190,8 @@ public sealed class EngineStateGsprTests : IDisposable
 
     private static void Cleanup()
     {
-        foreach (var sprite in SpriteManager.Instance.AllSprites) { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+        foreach (var sprite in SpriteManager.Instance.AllSprites)
+        { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
         Scene.ClearAllScenes();
     }
     /// <inheritdoc/>

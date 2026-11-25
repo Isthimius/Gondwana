@@ -111,8 +111,10 @@ public sealed class VideoWidget : DraggableWidgetBase
         ValidateBounds(bounds);
         SetPosition(bounds.X, bounds.Y);
         SetLocalOffset(Video, Vector2.Zero);
-        if (Mode == DirectDrawingMode.View) Video.ScreenBounds = bounds;
-        else Video.WorldBounds = bounds;
+        if (Mode == DirectDrawingMode.View)
+            Video.ScreenBounds = bounds;
+        else
+            Video.WorldBounds = bounds;
         return this;
     }
 
@@ -169,7 +171,8 @@ public sealed class VideoWidget : DraggableWidgetBase
 
     private void InitializeVideo()
     {
-        try { Add(Video, keepCurrentOffset: false, explicitLocalOffsetPx: Vector2.Zero); }
+        try
+        { Add(Video, keepCurrentOffset: false, explicitLocalOffsetPx: Vector2.Zero); }
         catch { Video.Dispose(); throw; }
         IsDragEnabled = false;
         CanReceiveFocus = true;

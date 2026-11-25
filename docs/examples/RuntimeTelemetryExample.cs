@@ -38,7 +38,8 @@ public static class RuntimeTelemetryExample
     public static void PrintLatest(RuntimeProfiler profiler, TextWriter output)
     {
         var snapshot = profiler.GetLatestSnapshot();
-        if (snapshot is null) return;
+        if (snapshot is null)
+            return;
         foreach (var source in snapshot.Sources)
         {
             if (source.Metrics.TryGetValue("cycle.cpu.ms", out var cycle) &&

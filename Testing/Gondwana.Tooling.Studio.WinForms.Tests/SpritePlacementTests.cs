@@ -26,7 +26,8 @@ public sealed partial class CompositionTests
         string gscn = Path.Combine(root, "city.gscn");
         string archivePath = Path.Combine(root, "world.gaf");
 
-        using (var bitmap = new Bitmap(16, 16)) bitmap.Save(Path.Combine(root, "atlas.png"));
+        using (var bitmap = new Bitmap(16, 16))
+            bitmap.Save(Path.Combine(root, "atlas.png"));
         TilesheetDefinitionSerializer.Save(Path.Combine(root, "atlas.gts"), new()
         {
             Name = "atlas",

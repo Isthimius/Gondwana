@@ -119,7 +119,8 @@ public sealed class DefinitionReferenceDiscovery
             {
                 cancellation.ThrowIfCancellationRequested();
                 paths.Add(path);
-                try { Include(path, archive: File.Exists(Scope)); }
+                try
+                { Include(path, archive: File.Exists(Scope)); }
                 catch (Exception ex) when (diagnostic && ex is not OperationCanceledException)
                 { _problems.Add(new(path, ex.Message, Kind: Classify(ex))); }
             }
@@ -213,7 +214,8 @@ public sealed class DefinitionReferenceDiscovery
             throw new IOException($"Refusing symbolic link or junction root: {path}.");
         for (var current = path; current is not null; current = Path.GetDirectoryName(current))
         {
-            if (current != path && File.Exists(current)) throw new IOException($"Parent is a file: {current}.");
+            if (current != path && File.Exists(current))
+                throw new IOException($"Parent is a file: {current}.");
             var parent = Path.GetDirectoryName(current);
             if (!OperatingSystem.IsWindows() && parent is not null && Directory.Exists(parent) && Directory.EnumerateFileSystemEntries(parent).Any(p =>
                 StringComparer.OrdinalIgnoreCase.Equals(Path.GetFileName(p), Path.GetFileName(current)) && Path.GetFileName(p) != Path.GetFileName(current)))
@@ -229,17 +231,21 @@ public sealed class DefinitionReferenceDiscovery
             yield return scope;
             yield break;
         }
-        if (!Directory.Exists(scope)) throw new DirectoryNotFoundException(scope);
+        if (!Directory.Exists(scope))
+            throw new DirectoryNotFoundException(scope);
         var pending = new Stack<string>();
         pending.Push(scope);
         while (pending.TryPop(out var directory))
             foreach (var path in Directory.EnumerateFileSystemEntries(directory).Order(StringComparer.Ordinal))
             {
                 cancellation.ThrowIfCancellationRequested();
-                if (Excluded.Contains(Path.GetFileName(path))) continue;
+                if (Excluded.Contains(Path.GetFileName(path)))
+                    continue;
                 CheckPath(path); // Reject links rather than silently producing an incomplete inventory.
-                if (Directory.Exists(path)) pending.Push(path);
-                else if (AssetArchiveFormat.IsArchive(path) || Native(AssetImportPlan.InferType(path))) yield return path;
+                if (Directory.Exists(path))
+                    pending.Push(path);
+                else if (AssetArchiveFormat.IsArchive(path) || Native(AssetImportPlan.InferType(path)))
+                    yield return path;
             }
     }
 
@@ -250,7 +256,8 @@ public sealed class DefinitionReferenceDiscovery
     {
         _cancellation.ThrowIfCancellationRequested();
         CheckPath(path);
-        if (!Files.TryGetValue(path, out var bytes)) Files.Add(path, bytes = File.ReadAllBytes(path));
+        if (!Files.TryGetValue(path, out var bytes))
+            Files.Add(path, bytes = File.ReadAllBytes(path));
         return bytes ?? throw new FileNotFoundException("Missing dependency", path);
     }
 
@@ -262,7 +269,8 @@ public sealed class DefinitionReferenceDiscovery
         if (archive || AssetArchiveFormat.IsArchive(path))
         {
             ReadArchive(path);
-            foreach (var content in Contents.Values.Where(c => Paths.Equals(c.Location.Path, path))) Included.Add(Key(content.Location));
+            foreach (var content in Contents.Values.Where(c => Paths.Equals(c.Location.Path, path)))
+                Included.Add(Key(content.Location));
         }
         else
         {
@@ -277,14 +285,16 @@ public sealed class DefinitionReferenceDiscovery
     /// <returns>Validated independent snapshot.</returns>
     internal Archive ReadArchive(string path)
     {
-        if (Archives.TryGetValue(path, out var result)) return result;
+        if (Archives.TryGetValue(path, out var result))
+            return result;
         var bytes = Read(path);
         var password = _credentials(path);
         try
         {
             using var zip = new ZipFile(new MemoryStream(bytes));
             bool encrypt = zip.Cast<ZipEntry>().Any(entry => entry.AESKeySize > 0);
-            try { AssetsFile.Validate(path, password); }
+            try
+            { AssetsFile.Validate(path, password); }
             catch (Exception ex) when (zip.Cast<ZipEntry>().Any(entry => entry.IsCrypted))
             { throw new ReferenceInspectionException(ReferenceProblemKind.Authentication, $"Authentication required or failed for '{path}'. Open the archive with its correct password and rescan.", ex); }
             using var archive = AssetsFile.LoadOrCreate(path, password, encrypt, register: false);
@@ -297,7 +307,8 @@ public sealed class DefinitionReferenceDiscovery
                 var location = new AssetLocation(pair.Key.AssetType, path, pair.Key.AssetName);
                 Contents.Add(Key(location), new(location, pair.Value));
             }
-            if (!File.ReadAllBytes(path).AsSpan().SequenceEqual(bytes)) throw new IOException($"Archive changed while scanning: {path}.");
+            if (!File.ReadAllBytes(path).AsSpan().SequenceEqual(bytes))
+                throw new IOException($"Archive changed while scanning: {path}.");
             return result;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -317,18 +328,21 @@ public sealed class DefinitionReferenceDiscovery
             var comparer = type == AssetTypes.AnimationDefinition ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
             var matches = Included.Select(key => Contents[key]).Where(c => c.Location.AssetType == type &&
                 PackDefinitionDocument.Read(type, c.Bytes, c.Location.AssetEntryName ?? c.Location.Path)?.Members().Any(m => comparer.Equals(m.Identity, selector)) == true).ToArray();
-            if (matches.Length != 1) throw new ReferenceInspectionException(matches.Length == 0 ? ReferenceProblemKind.Missing : ReferenceProblemKind.Ambiguous,
+            if (matches.Length != 1)
+                throw new ReferenceInspectionException(matches.Length == 0 ? ReferenceProblemKind.Missing : ReferenceProblemKind.Ambiguous,
                 $"Logical {type} '{selector}' has {matches.Length} matching documents in scope; author an explicit physical source.");
             return matches[0];
         }
-        if (Contents.TryGetValue(Key(location), out var found)) return found;
+        if (Contents.TryGetValue(Key(location), out var found))
+            return found;
         if (location.AssetEntryName is not null)
         {
             ReadArchive(location.Path);
             return Contents.GetValueOrDefault(Key(location)) ?? throw new ReferenceInspectionException(ReferenceProblemKind.Missing, $"Missing typed entry {location}.");
         }
         var inferred = AssetImportPlan.InferType(location.Path);
-        if (Native(inferred) && inferred != type) throw new InvalidDataException($"Incompatible dependency type: {location}.");
+        if (Native(inferred) && inferred != type)
+            throw new InvalidDataException($"Incompatible dependency type: {location}.");
         return new(location, Read(location.Path));
     }
 

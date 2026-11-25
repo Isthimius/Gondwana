@@ -151,8 +151,10 @@ public class CompositeSprite : IMovableOnSceneLayer
     /// <exception cref="InvalidOperationException">Thrown when the sprite belongs to a different SceneLayer than existing children.</exception>
     public void Add(Sprite sprite)
     {
-        if (sprite is null) throw new ArgumentNullException(nameof(sprite));
-        if (_children.Contains(sprite)) return;
+        if (sprite is null)
+            throw new ArgumentNullException(nameof(sprite));
+        if (_children.Contains(sprite))
+            return;
 
         EnforceSameSceneLayer(sprite);
 
@@ -169,8 +171,10 @@ public class CompositeSprite : IMovableOnSceneLayer
     /// <exception cref="InvalidOperationException">Thrown when the sprite belongs to a different SceneLayer than existing children.</exception>
     public void AddChildAtPosition(Sprite sprite, Vector2 absolutePosition)
     {
-        if (sprite is null) throw new ArgumentNullException(nameof(sprite));
-        if (_children.Contains(sprite)) return;
+        if (sprite is null)
+            throw new ArgumentNullException(nameof(sprite));
+        if (_children.Contains(sprite))
+            return;
 
         EnforceSameSceneLayer(sprite);
 
@@ -190,8 +194,10 @@ public class CompositeSprite : IMovableOnSceneLayer
     /// <exception cref="InvalidOperationException">Thrown when the sprite belongs to a different SceneLayer than existing children.</exception>
     public void AddChildWithOffset(Sprite sprite, Vector2 offsetFromCompositeAnchor)
     {
-        if (sprite is null) throw new ArgumentNullException(nameof(sprite));
-        if (_children.Contains(sprite)) return;
+        if (sprite is null)
+            throw new ArgumentNullException(nameof(sprite));
+        if (_children.Contains(sprite))
+            return;
 
         EnforceSameSceneLayer(sprite);
 
@@ -223,8 +229,10 @@ public class CompositeSprite : IMovableOnSceneLayer
     /// <param name="sprite">The sprite to remove.</param>
     public void Remove(Sprite sprite)
     {
-        if (sprite is null) return;
-        if (!_children.Contains(sprite)) return;
+        if (sprite is null)
+            return;
+        if (!_children.Contains(sprite))
+            return;
 
         sprite.Disposing -= sprite_Disposing;
         _children.Remove(sprite);
@@ -284,10 +292,14 @@ public class CompositeSprite : IMovableOnSceneLayer
             {
                 var r = sprite.DrawLocationWorld;
 
-                if (r.Left < minX) minX = r.Left;
-                if (r.Top < minY) minY = r.Top;
-                if (r.Right > maxX) maxX = r.Right;
-                if (r.Bottom > maxY) maxY = r.Bottom;
+                if (r.Left < minX)
+                    minX = r.Left;
+                if (r.Top < minY)
+                    minY = r.Top;
+                if (r.Right > maxX)
+                    maxX = r.Right;
+                if (r.Bottom > maxY)
+                    maxY = r.Bottom;
             }
 
             return Rectangle.FromLTRB(minX, minY, maxX, maxY);

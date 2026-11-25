@@ -141,7 +141,8 @@ public sealed partial class CompositionTests
         studio.RebuildViewMenu();
         studio.RebuildViewMenu();
         // Menu disposal must not unregister the shell's activation synchronization.
-        foreach (ToolStripItem item in view.DropDownItems.Cast<ToolStripItem>().ToArray()) item.Dispose();
+        foreach (ToolStripItem item in view.DropDownItems.Cast<ToolStripItem>().ToArray())
+            item.Dispose();
         Assert.True(store.Write(NavigationIconSize.Medium));
         typeof(Form).GetMethod("OnActivated", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(studio, new object[] { EventArgs.Empty });
@@ -189,7 +190,8 @@ public sealed partial class CompositionTests
         using var owner = new Form { Size = new Size(600, 600), Opacity = 0, ShowInTaskbar = false };
         using var images = new ImageList { ImageSize = new Size(32, 32), ColorDepth = ColorDepth.Depth32Bit };
         using var red = new Bitmap(32, 32);
-        using (var graphics = Graphics.FromImage(red)) graphics.Clear(Color.Red);
+        using (var graphics = Graphics.FromImage(red))
+            graphics.Clear(Color.Red);
         images.Images.Add("red", red);
         _ = images.Handle;
         using var tree = new TreeView { Dock = DockStyle.Fill, ImageList = images };
@@ -208,18 +210,21 @@ public sealed partial class CompositionTests
         var first = tree.ImageList!;
         Assert.NotSame(images, first);
         Assert.Equal("red", first.Images.Keys[0]);
-        using (var pixel = new Bitmap(first.Images[0])) Assert.Equal(Color.Red.ToArgb(), pixel.GetPixel(20, 20).ToArgb());
+        using (var pixel = new Bitmap(first.Images[0]))
+            Assert.Equal(Color.Red.ToArgb(), pixel.GetPixel(20, 20).ToArgb());
         bool disposed = false;
         first.Disposed += (_, _) => disposed = true;
         using var blue = new Bitmap(32, 32);
-        using (var graphics = Graphics.FromImage(blue)) graphics.Clear(Color.Blue);
+        using (var graphics = Graphics.FromImage(blue))
+            graphics.Clear(Color.Blue);
         images.Images.Add(blue); // Lazy frame thumbnails use numeric indices without keys.
         NavigationSizing.RefreshImages(tree);
         Assert.True(disposed);
         Assert.Equal(2, tree.ImageList!.Images.Count);
         Assert.Equal("red", tree.ImageList.Images.Keys[0]);
         Assert.True(string.IsNullOrEmpty(tree.ImageList.Images.Keys[1]));
-        using (var pixel = new Bitmap(tree.ImageList.Images[1])) Assert.Equal(Color.Blue.ToArgb(), pixel.GetPixel(20, 20).ToArgb());
+        using (var pixel = new Bitmap(tree.ImageList.Images[1]))
+            Assert.Equal(Color.Blue.ToArgb(), pixel.GetPixel(20, 20).ToArgb());
         Assert.Equal(new Size(32, 32), images.ImageSize);
         Assert.Same(selected, tree.SelectedNode);
         Assert.Equal("red", selected.ImageKey);

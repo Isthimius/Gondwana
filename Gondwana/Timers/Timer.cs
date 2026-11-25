@@ -97,7 +97,8 @@ public sealed class Timer : IDisposable
     /// </remarks>
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         GC.SuppressFinalize(this);
         _timers.TryRemove(TimerID, out _);
         Tick = null;
@@ -220,7 +221,8 @@ public sealed class Timer : IDisposable
         foreach (var (key, timer) in _timers.ToArray())
         {
             // checking this TimerType (i.e., PreCycle or PostCycle)
-            if (timer.Type != type) continue;
+            if (timer.Type != type)
+                continue;
 
             // "push" time forward for Paused Timer instances
             if (PausedAll || timer.Paused)

@@ -26,13 +26,15 @@ internal sealed partial class MainForm
             RefreshPreviews = () => { tab.Editor.ReloadSources(); return tab.Editor.SourcesLoadedSuccessfully; },
             Reload = () =>
             {
-                if (model.FilePath is null) return;
+                if (model.FilePath is null)
+                    return;
                 var selected = model.Definition.Key;
                 var loaded = SpriteDocument.Open(model.FilePath);
                 try
                 {
                     var member = loaded.Definitions.FirstOrDefault(d => DefinitionReferenceQuery.MembersEqual(AssetTypes.SpriteDefinition, d.Key, selected));
-                    if (member is not null) loaded.SelectDefinition(member);
+                    if (member is not null)
+                        loaded.SelectDefinition(member);
                     EditorSourceMonitorController.Replace(tab, () =>
                     {
                         var replacement = ShowDocument(loaded);

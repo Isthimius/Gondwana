@@ -190,9 +190,12 @@ public sealed class DefinitionDocumentTests : IDisposable
             var members = new[] { Member(format, "first"), Member(format, "second") };
             foreach (var member in members)
             {
-                if (extension == "gts") member["Image"] = new JObject { ["FilePath"] = "image.png" };
-                else if (extension == "gsnd") member["Resources"] = new JArray(new JObject { ["Key"] = "sound", ["FilePath"] = "sound.wav" });
-                else member["TilesheetSources"] = new JArray(new JObject { ["Tilesheet"] = "terrain", ["GtsPath"] = "tiles.gts" });
+                if (extension == "gts")
+                    member["Image"] = new JObject { ["FilePath"] = "image.png" };
+                else if (extension == "gsnd")
+                    member["Resources"] = new JArray(new JObject { ["Key"] = "sound", ["FilePath"] = "sound.wav" });
+                else
+                    member["TilesheetSources"] = new JArray(new JObject { ["Tilesheet"] = "terrain", ["GtsPath"] = "tiles.gts" });
             }
             var path = Path.Combine(original, "all." + extension);
             File.WriteAllText(path, Envelope(members));

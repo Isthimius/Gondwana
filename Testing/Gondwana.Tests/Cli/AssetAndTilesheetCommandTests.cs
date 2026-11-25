@@ -29,9 +29,12 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         var app = new CommandApp();
         app.Configure(c =>
         {
-            c.AddCommand<AssetsPackCommand>("pack"); c.AddCommand<AssetsValidateCommand>("validate");
-            c.AddCommand<AssetsInspectCommand>("inspect"); c.AddCommand<AssetsExtractCommand>("unpack");
-            c.AddCommand<TilesheetValidateCommand>("gts-validate"); c.AddCommand<TilesheetInfoCommand>("gts-info");
+            c.AddCommand<AssetsPackCommand>("pack");
+            c.AddCommand<AssetsValidateCommand>("validate");
+            c.AddCommand<AssetsInspectCommand>("inspect");
+            c.AddCommand<AssetsExtractCommand>("unpack");
+            c.AddCommand<TilesheetValidateCommand>("gts-validate");
+            c.AddCommand<TilesheetInfoCommand>("gts-info");
         });
         return app.Run(args);
     }
@@ -136,7 +139,8 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         using var bitmap = new SKBitmap(32, 32);
         using var image = SKImage.FromBitmap(bitmap);
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        using (var output = File.Create(Path.Combine(root, "image.png"))) data.SaveTo(output);
+        using (var output = File.Create(Path.Combine(root, "image.png")))
+            data.SaveTo(output);
         return new TilesheetDefinition
         {
             Name = "fixture",
@@ -268,7 +272,8 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
     {
         var path = Path.Combine(root, "bad-crc.assets");
         using (var zip = ZipFile.Open(path, ZipArchiveMode.Create))
-        using (var writer = new StreamWriter(zip.CreateEntry("Misc_data.txt", CompressionLevel.NoCompression).Open())) writer.Write("original payload");
+        using (var writer = new StreamWriter(zip.CreateEntry("Misc_data.txt", CompressionLevel.NoCompression).Open()))
+            writer.Write("original payload");
         var bytes = File.ReadAllBytes(path);
         var offset = bytes.AsSpan().IndexOf(System.Text.Encoding.UTF8.GetBytes("original payload"));
         Assert.True(offset >= 0);

@@ -53,7 +53,8 @@ internal sealed class BreakoutGame
 
     internal void Launch()
     {
-        if (Phase != GamePhase.Ready) return;
+        if (Phase != GamePhase.Ready)
+            return;
         _velocity = new Vector2(350f, -570f);
         Phase = GamePhase.Playing;
     }
@@ -79,7 +80,8 @@ internal sealed class BreakoutGame
             Ball = new Vector2(PaddleX, PaddleY - PaddleHeight / 2f - BallRadius - 5f);
             return;
         }
-        if (Phase != GamePhase.Playing) return;
+        if (Phase != GamePhase.Playing)
+            return;
 
         // Short fixed substeps prevent tunneling through narrow bricks on slower machines.
         int steps = Math.Max(1, (int)MathF.Ceiling(dt / 0.008f));
@@ -167,7 +169,8 @@ internal sealed class BreakoutGame
                 Phase = GamePhase.GameOver;
                 _velocity = Vector2.Zero;
             }
-            else ResetBall();
+            else
+                ResetBall();
         }
     }
 

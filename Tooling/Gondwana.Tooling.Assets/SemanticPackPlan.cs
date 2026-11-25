@@ -56,18 +56,21 @@ internal sealed partial class SemanticPackPlan
         var plan = new SemanticPackPlan(Path.GetFullPath(settings.Source), Path.GetFullPath(settings.Output),
             settings.Password, settings.Encrypt, settings.AllowExternal, cancellation);
         cancellation.ThrowIfCancellationRequested();
-        if (settings.Append && File.Exists(plan._output)) plan.ReadExisting();
+        if (settings.Append && File.Exists(plan._output))
+            plan.ReadExisting();
         var names = new HashSet<AssetsFileEntry>();
         foreach (var path in Directory.EnumerateFiles(plan._source, "*", settings.Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Order(StringComparer.Ordinal))
         {
             cancellation.ThrowIfCancellationRequested();
             var fullPath = Path.GetFullPath(path);
-            if (Paths.Equals(fullPath, plan._output)) continue;
+            if (Paths.Equals(fullPath, plan._output))
+                continue;
             var name = Path.GetRelativePath(plan._source, fullPath).Replace('\\', '/');
             SafeFilePath.ValidateRelative(name);
             var type = map.Infer(fullPath, fallback);
             var key = new AssetsFileEntry { AssetType = type, AssetName = name };
-            if (!names.Add(key)) throw new InvalidDataException($"Conflicting destination identity: {type} / {name}.");
+            if (!names.Add(key))
+                throw new InvalidDataException($"Conflicting destination identity: {type} / {name}.");
             var bytes = File.ReadAllBytes(fullPath);
             var entry = ReadEntry(new(type, fullPath), new(type, plan._output, name), bytes);
             plan._entries[key] = entry; // Append replaces this complete typed entry, never its members individually.
@@ -97,7 +100,8 @@ internal sealed partial class SemanticPackPlan
 
     private static Entry ReadEntry(AssetLocation location, AssetLocation destination, byte[] bytes)
     {
-        try { return new(location, destination, bytes, PackDefinitionDocument.Read(location.AssetType, bytes, location.AssetEntryName ?? location.Path)); }
+        try
+        { return new(location, destination, bytes, PackDefinitionDocument.Read(location.AssetType, bytes, location.AssetEntryName ?? location.Path)); }
         catch (Exception ex) when (ex is InvalidDataException or ArgumentException)
         { throw new InvalidDataException($"{location}: {ex.Message}", ex); }
     }
@@ -124,7 +128,8 @@ internal sealed partial class SemanticPackPlan
     internal int Commit()
     {
         _cancellation.ThrowIfCancellationRequested();
-        if (_incoming.Count == 0) return 0;
+        if (_incoming.Count == 0)
+            return 0;
         var directory = Path.GetDirectoryName(_output)!;
         Directory.CreateDirectory(directory);
         var staging = Path.Combine(directory, $".{Path.GetFileName(_output)}.{Guid.NewGuid():N}.tmp");
@@ -157,7 +162,8 @@ internal sealed partial class SemanticPackPlan
 
     private Entry Logical(AssetTypes type, string identity, string label)
     {
-        if (_referenceResolver is not null) return _referenceResolver(null, type, identity, label);
+        if (_referenceResolver is not null)
+            return _referenceResolver(null, type, identity, label);
         var candidates = _entries.Values.Where(entry => entry.Location.AssetType == type && Contains(entry, identity)).ToArray();
         if (candidates.Length != 1)
             throw new InvalidDataException($"{label}: logical {type} '{identity}' has {candidates.Length} matching documents in the final inventory. Specify an explicit source. {string.Join("; ", candidates.Select(entry => entry.Location))}");
@@ -167,18 +173,23 @@ internal sealed partial class SemanticPackPlan
 
     private Entry? FindPacked(AssetLocation location)
     {
-        if (!Paths.Equals(location.Path, _output)) return null;
+        if (!Paths.Equals(location.Path, _output))
+            return null;
         return _entries.GetValueOrDefault(new AssetsFileEntry { AssetType = location.AssetType, AssetName = location.AssetEntryName! });
     }
 
     private Entry Resolve(AssetLocation location, string? identity, string label)
     {
-        if (_referenceResolver is not null) return _referenceResolver(location, location.AssetType, identity, label);
+        if (_referenceResolver is not null)
+            return _referenceResolver(location, location.AssetType, identity, label);
         _cancellation.ThrowIfCancellationRequested();
         var found = _entries.Values.FirstOrDefault(entry => Same(entry.Location, location));
-        if (found is null && !_validateReusedTargets) found = FindImportAlias(location);
-        if (found is null && location.AssetEntryName is not null) found = FindPacked(location);
-        if (_validateReusedTargets && found is not null && _incoming.Contains(found)) found = null;
+        if (found is null && !_validateReusedTargets)
+            found = FindImportAlias(location);
+        if (found is null && location.AssetEntryName is not null)
+            found = FindPacked(location);
+        if (_validateReusedTargets && found is not null && _incoming.Contains(found))
+            found = null;
         if (found is null && _entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
             StringComparer.OrdinalIgnoreCase.Equals(entry.Location.AssetEntryName, location.AssetEntryName) && entry.Location.AssetType != location.AssetType))
             throw new InvalidDataException($"{label}: dependency {location} was inventoried under an incompatible asset type.");
@@ -201,7 +212,8 @@ internal sealed partial class SemanticPackPlan
             if (found is null)
             {
                 byte[] bytes;
-                if (location.AssetEntryName is null) bytes = File.ReadAllBytes(location.Path);
+                if (location.AssetEntryName is null)
+                    bytes = File.ReadAllBytes(location.Path);
                 else
                 {
                     if (!_externalArchives.TryGetValue(location.Path, out var contents))
@@ -229,18 +241,21 @@ internal sealed partial class SemanticPackPlan
         }
         if (identity is not null && !Contains(found, identity))
             throw new InvalidDataException($"{label}: {location} does not contain logical member '{identity}'.");
-        if (_importDependencies && _external.Contains(found)) found = ImportDependency(found);
+        if (_importDependencies && _external.Contains(found))
+            found = ImportDependency(found);
         TrackReuse(found);
         return found;
     }
 
     private static void Map(Entry owner, AssetLocation source, AssetLocation destination)
     {
-        if (Same(source, destination)) return;
+        if (Same(source, destination))
+            return;
         var previous = owner.Mappings.FirstOrDefault(mapping => Same(mapping.Source, source));
         if (previous is not null)
         {
-            if (!Same(previous.Destination, destination)) throw new InvalidDataException($"Conflicting dependency mapping: {source}.");
+            if (!Same(previous.Destination, destination))
+                throw new InvalidDataException($"Conflicting dependency mapping: {source}.");
             return;
         }
         owner.Mappings.Add(new(source, destination));
@@ -250,7 +265,8 @@ internal sealed partial class SemanticPackPlan
     private static AssetLocation Physical(Entry owner, AssetTypes type, string? file, string? archive, string? entry, int? kind, string label)
     {
         if (kind is null && string.IsNullOrWhiteSpace(file) && string.IsNullOrWhiteSpace(archive) &&
-            !string.IsNullOrWhiteSpace(entry) && owner.Location.AssetEntryName is not null) archive = owner.Location.Path;
+            !string.IsNullOrWhiteSpace(entry) && owner.Location.AssetEntryName is not null)
+            archive = owner.Location.Path;
         bool loose = !string.IsNullOrWhiteSpace(file);
         bool packed = !string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry);
         if (loose == packed || (loose && (!string.IsNullOrWhiteSpace(archive) || !string.IsNullOrWhiteSpace(entry))) ||

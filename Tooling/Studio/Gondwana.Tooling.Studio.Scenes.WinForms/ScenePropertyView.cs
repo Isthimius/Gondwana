@@ -23,7 +23,8 @@ internal sealed class ScenePropertyView(SceneDocument document, object model) : 
         public override object? GetValue(object? component) => inner.GetValue(model);
         public override void SetValue(object? component, object? value)
         {
-            if (!IsReadOnly) document.Edit(model, "Change " + DisplayName, () => inner.SetValue(model, value));
+            if (!IsReadOnly)
+                document.Edit(model, "Change " + DisplayName, () => inner.SetValue(model, value));
         }
         public override bool CanResetValue(object component) => false;
         public override void ResetValue(object component) { }
@@ -46,7 +47,8 @@ internal sealed class ScenePropertyView(SceneDocument document, object model) : 
             try
             {
                 var edited = inner.EditValue(context, service, value);
-                if (service.Cancelled) { snapshot.Restore(); return value; }
+                if (service.Cancelled)
+                { snapshot.Restore(); return value; }
                 document.RecordCollectionEdit(snapshot, "Edit " + property.DisplayName);
                 document.Edit(model, "Change " + property.DisplayName, () => property.SetValue(model, edited));
                 transaction.Commit();

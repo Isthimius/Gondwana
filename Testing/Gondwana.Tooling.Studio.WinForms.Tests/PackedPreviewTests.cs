@@ -213,7 +213,8 @@ public sealed partial class CompositionTests
         Assert.False(sprites.Document.IsDirty);
         Assert.Equal(runtimePackages, AssetsFile.AllAssetsFiles);
         Assert.Equal(runtimeTilesheets, Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance.Names);
-        foreach (var (path, contents) in snapshots) Assert.Equal(contents, File.ReadAllBytes(path));
+        foreach (var (path, contents) in snapshots)
+            Assert.Equal(contents, File.ReadAllBytes(path));
 
         ReplacePreviewImage(root, archive, Color.Blue);
         animations.ReloadSources();
@@ -227,7 +228,8 @@ public sealed partial class CompositionTests
         Assert.False(animations.Document.IsDirty);
         Assert.False(scenes.Document.IsDirty);
         Assert.False(sprites.Document.IsDirty);
-        foreach (var path in new[] { gts, gani, gscn, gspr }) Assert.Equal(snapshots[path], File.ReadAllBytes(path));
+        foreach (var path in new[] { gts, gani, gscn, gspr })
+            Assert.Equal(snapshots[path], File.ReadAllBytes(path));
     });
 
     [Theory]
@@ -279,7 +281,8 @@ public sealed partial class CompositionTests
     {
         var entries = ((IEnumerable)sources).Cast<object>().ToArray();
         Assert.NotEmpty(entries);
-        foreach (var entry in entries) AssertPreviewColor(Property<Bitmap>(entry, "Image"), color);
+        foreach (var entry in entries)
+            AssertPreviewColor(Property<Bitmap>(entry, "Image"), color);
     }
 
     private static void AssertPreviewColor(Bitmap image, Color expected) =>
@@ -360,7 +363,8 @@ public sealed partial class CompositionTests
     private static void WritePreviewImage(string path, Color color)
     {
         using var image = new Bitmap(16, 16);
-        using (var graphics = Graphics.FromImage(image)) graphics.Clear(color);
+        using (var graphics = Graphics.FromImage(image))
+            graphics.Clear(color);
         image.Save(path, System.Drawing.Imaging.ImageFormat.Png);
     }
 

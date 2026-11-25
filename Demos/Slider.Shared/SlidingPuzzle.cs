@@ -142,10 +142,14 @@ internal sealed class SlidingPuzzle
     {
         int col = index % Columns;
         int row = index / Columns;
-        if (col > 0) yield return index - 1;
-        if (col + 1 < Columns) yield return index + 1;
-        if (row > 0) yield return index - Columns;
-        if (row + 1 < Rows) yield return index + Columns;
+        if (col > 0)
+            yield return index - 1;
+        if (col + 1 < Columns)
+            yield return index + 1;
+        if (row > 0)
+            yield return index - Columns;
+        if (row + 1 < Rows)
+            yield return index + Columns;
     }
 }
 

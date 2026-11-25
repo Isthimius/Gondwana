@@ -1371,7 +1371,8 @@ public sealed class Engine : IDisposable
 
     private static void SafeInvoke(Action? evnt)
     {
-        try { evnt?.Invoke(); }
+        try
+        { evnt?.Invoke(); }
         catch (Exception ex)
         {
             // Keep disposal robust; log and continue

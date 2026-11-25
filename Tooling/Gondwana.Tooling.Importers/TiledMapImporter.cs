@@ -27,7 +27,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
     {
         var root = ReadXml(plan.Request.SourcePath);
-        if (root.Name != "map") throw new InvalidDataException("Expected Tiled map XML root.");
+        if (root.Name != "map")
+            throw new InvalidDataException("Expected Tiled map XML root.");
         // Tiled's "infinite" flag describes authoring/storage, not Gondwana topology.
         // It permits zero map dimensions; chunk coordinates determine native bounds.
         var orientation = (string?)root.Attribute("orientation") switch
@@ -51,7 +52,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
         {
             token.ThrowIfCancellationRequested();
             uint first = uint.Parse((string?)reference.Attribute("firstgid") ?? "0", CultureInfo.InvariantCulture);
-            if (first == 0 || tilesets.Any(t => t.First == first)) throw new InvalidDataException("Invalid or duplicate firstgid.");
+            if (first == 0 || tilesets.Any(t => t.First == first))
+                throw new InvalidDataException("Invalid or duplicate firstgid.");
             string source = plan.Request.SourcePath;
             string basename;
             XElement tilesetRoot;
@@ -62,7 +64,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 tilesetRoot = ReadXml(source);
                 basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(source));
             }
-            else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
+            else
+            { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
             // Every tileset in this map becomes a logical member of one GTS document.
             // Standalone TSX imports continue to use their individual GTS filenames.
             var set = ConvertTileset(tilesetRoot, source, basename, plan, token,
@@ -95,7 +98,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 double parallaxX = px * Number(element, "parallaxx", 1), parallaxY = py * Number(element, "parallaxy", 1);
                 if (Number(element, "opacity", 1) != 1 || element.Attribute("tintcolor") is not null || element.Attribute("blendmode") is not null)
                     plan.Report(ExternalImportSeverity.Warning, "tiled.layer.appearance", "Layer opacity, tint, and blend mode are not represented and are omitted.");
-                if (kind == "group") { Layers(element, shown, x, y, parallaxX, parallaxY); continue; }
+                if (kind == "group")
+                { Layers(element, shown, x, y, parallaxX, parallaxY); continue; }
                 if (Int(element, "x", 0) != 0 || Int(element, "y", 0) != 0)
                     throw new InvalidDataException("Nonzero legacy layer tile coordinates are unsupported; use pixel offsets.");
                 var data = element.Element("data") ?? throw new InvalidDataException("Missing layer data.");
@@ -158,7 +162,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     if (hasHexRotation)
                         plan.Report(ExternalImportSeverity.Warning, "tiled.transform.hex",
                             $"Layer {layer.ID}, {context}: hexagonal 120-degree flag is cleared and ignored for this orthogonal/isometric map.");
-                    if (gid == 0) return;
+                    if (gid == 0)
+                        return;
                     var match = tilesets.LastOrDefault(t => t.First <= gid);
                     if (match.Set is null || gid - match.First >= match.Set.Count)
                         throw new InvalidDataException($"Unresolved tile GID {gid} at layer {layer.ID}, {context}.");
@@ -180,8 +185,10 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                     if (match.Set.Animations.TryGetValue(local, out var animation))
                     {
                         var frame = animation.Frames[0];
-                        tile.Frame.XTile = frame.XTile; tile.Frame.YTile = frame.YTile;
-                        tile.AnimationKey = animation.Key; tile.StartAnimation = true;
+                        tile.Frame.XTile = frame.XTile;
+                        tile.Frame.YTile = frame.YTile;
+                        tile.AnimationKey = animation.Key;
+                        tile.StartAnimation = true;
                     }
                     // GSCN materialization applies explicit per-tile defaults after
                     // resolving the frame. Retain the source tile's collision metadata
@@ -208,7 +215,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 scene.Layers.Add(layer);
             }
         }
-        if (root.Descendants("properties").Any()) plan.Report(ExternalImportSeverity.Warning, "tiled.properties", "Custom properties are omitted.");
+        if (root.Descendants("properties").Any())
+            plan.Report(ExternalImportSeverity.Warning, "tiled.properties", "Custom properties are omitted.");
         Layers(root, true, 0, 0, 1, 1);
         plan.Add(name + ".gscn", scene);
     }
@@ -223,7 +231,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
     private static bool FitsRenderCandidateFringe(
         Size cell, Spacing oh, CoordinateSystemTypes orientation)
     {
-        if (oh.IsEmpty) return true;
+        if (oh.IsEmpty)
+            return true;
         if (orientation == CoordinateSystemTypes.Orthogonal)
             return oh.Left <= cell.Width && oh.Right <= cell.Width &&
                 oh.Top <= cell.Height && oh.Bottom <= cell.Height;
@@ -238,7 +247,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
     private static double Number(XElement element, string attribute, double fallback)
     {
         var result = element.Attribute(attribute) is { } a ? double.Parse(a.Value, CultureInfo.InvariantCulture) : fallback;
-        if (!double.IsFinite(result)) throw new InvalidDataException($"Invalid {attribute}.");
+        if (!double.IsFinite(result))
+            throw new InvalidDataException($"Invalid {attribute}.");
         return result;
     }
 
@@ -253,7 +263,8 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             throw new InvalidDataException("Chunked Tiled layer data cannot mix chunks with tile or inline data.");
 
         var chunks = data.Elements("chunk").ToArray();
-        if (chunks.Length == 0) return new(0, 0, 1, 1, []);
+        if (chunks.Length == 0)
+            return new(0, 0, 1, 1, []);
         if (chunks.Length > 16_384)
             throw new InvalidDataException("Too many Tiled chunks in one layer (maximum 16,384).");
 
@@ -276,8 +287,10 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             if (rectangles.Any(r => x < r.Right && right > r.Left && y < r.Bottom && bottom > r.Top))
                 throw new InvalidDataException($"Overlapping Tiled chunks at ({x}, {y}); tile placement is ambiguous.");
             rectangles.Add((x, y, right, bottom));
-            minX = Math.Min(minX, x); minY = Math.Min(minY, y);
-            maxX = Math.Max(maxX, right); maxY = Math.Max(maxY, bottom);
+            minX = Math.Min(minX, x);
+            minY = Math.Min(minY, y);
+            maxX = Math.Max(maxX, right);
+            maxY = Math.Max(maxY, bottom);
             totalCells += cells;
             uint[] gids = DecodeLayer(data, chunk, checked((int)cells));
             for (int i = 0; i < gids.Length; i++)
@@ -304,12 +317,17 @@ public sealed class TiledMapImporter : ExternalAssetImporter
     // Encoding/compression lives on the parent <data>; each <chunk> has its own payload.
     private static uint[] DecodeLayer(XElement attributes, XElement payload, int expectedCount)
     {
-        if (expectedCount <= 0 || expectedCount > 16_000_000) throw new InvalidDataException("Invalid or excessive layer size.");
+        if (expectedCount <= 0 || expectedCount > 16_000_000)
+            throw new InvalidDataException("Invalid or excessive layer size.");
         uint[] result;
         switch ((string?)attributes.Attribute("encoding"))
         {
-            case null: result = payload.Elements("tile").Select(t => uint.Parse((string?)t.Attribute("gid") ?? "0", CultureInfo.InvariantCulture)).ToArray(); break;
-            case "csv": result = payload.Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => uint.Parse(s, CultureInfo.InvariantCulture)).ToArray(); break;
+            case null:
+                result = payload.Elements("tile").Select(t => uint.Parse((string?)t.Attribute("gid") ?? "0", CultureInfo.InvariantCulture)).ToArray();
+                break;
+            case "csv":
+                result = payload.Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => uint.Parse(s, CultureInfo.InvariantCulture)).ToArray();
+                break;
             case "base64":
                 using (var input = new MemoryStream(Convert.FromBase64String(payload.Value)))
                 using (Stream stream = (string?)attributes.Attribute("compression") switch
@@ -322,14 +340,18 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 {
                     var bytes = new byte[checked(expectedCount * 4)];
                     stream.ReadExactly(bytes);
-                    if (stream.ReadByte() != -1) throw new InvalidDataException("Layer data exceeds declared dimensions.");
+                    if (stream.ReadByte() != -1)
+                        throw new InvalidDataException("Layer data exceeds declared dimensions.");
                     result = new uint[expectedCount];
-                    for (int i = 0; i < expectedCount; i++) result[i] = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(i * 4, 4));
+                    for (int i = 0; i < expectedCount; i++)
+                        result[i] = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(i * 4, 4));
                 }
                 break;
-            default: throw new InvalidDataException("Unsupported layer encoding.");
+            default:
+                throw new InvalidDataException("Unsupported layer encoding.");
         }
-        if (result.Length != expectedCount) throw new InvalidDataException("Layer data length differs from declared dimensions.");
+        if (result.Length != expectedCount)
+            throw new InvalidDataException("Layer data length differs from declared dimensions.");
         return result;
     }
 }

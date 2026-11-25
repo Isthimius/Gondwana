@@ -223,8 +223,10 @@ public sealed class AudioTests : IDisposable
         using var data = new MemoryStream([1, 2, 3]);
         Assert.Throws<InvalidOperationException>(() =>
         {
-            if (uri) manager.LoadFromUri("broken", "music.ogg");
-            else manager.LoadFromStream("broken", data, ".wav");
+            if (uri)
+                manager.LoadFromUri("broken", "music.ogg");
+            else
+                manager.LoadFromStream("broken", data, ".wav");
         });
         Assert.True(Assert.Single(backend.Handles).Disposed);
         Assert.Equal(0, backend.Handles[0].CompletionSubscribers);
@@ -286,7 +288,8 @@ public sealed class AudioTests : IDisposable
         {
             release.Set();
             await first;
-            if (second is not null) await second;
+            if (second is not null)
+                await second;
             backend.BeforeCreate = null;
         }
     }
@@ -498,7 +501,8 @@ public sealed class AudioTests : IDisposable
         private Handle Create()
         {
             BeforeCreate?.Invoke();
-            if (Fail) throw new NotSupportedException();
+            if (Fail)
+                throw new NotSupportedException();
             var handle = new Handle { FailDuringSetup = FailDuringSetup };
             Handles.Add(handle);
             return handle;
@@ -532,7 +536,8 @@ public sealed class AudioTests : IDisposable
             get => volume;
             set
             {
-                if (FailDuringSetup) throw new InvalidOperationException("Setup failed");
+                if (FailDuringSetup)
+                    throw new InvalidOperationException("Setup failed");
                 volume = value;
             }
         }

@@ -178,7 +178,8 @@ public class AudioResource : IDisposable
         get => _volume;
         set
         {
-            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (float.IsNaN(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
             _volume = Math.Clamp(value, 0f, 1f);
             if (_playback is not null)
                 _playback.Volume = _volume;
@@ -191,7 +192,8 @@ public class AudioResource : IDisposable
         get => _pan;
         set
         {
-            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (float.IsNaN(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
             _pan = Math.Clamp(value, -1f, 1f);
             if (_playback is not null)
                 _playback.Pan = _pan;
@@ -206,7 +208,8 @@ public class AudioResource : IDisposable
         get => _playbackSpeed;
         set
         {
-            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (float.IsNaN(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
             _playbackSpeed = Math.Clamp(value, MinimumPlaybackSpeed, MaximumPlaybackSpeed);
             if (_playback is not null)
                 _playback.PlaybackSpeed = _playbackSpeed;

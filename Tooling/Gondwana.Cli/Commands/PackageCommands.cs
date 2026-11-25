@@ -25,7 +25,8 @@ internal static class ProjectCommand
     /// <returns>The resulting project packages.</returns>
     public static ProjectPackages Load(string? path)
     {
-        if (!ProjectHelper.TryResolveProject(path, out var project, out var error)) throw new InvalidOperationException(error);
+        if (!ProjectHelper.TryResolveProject(path, out var project, out var error))
+            throw new InvalidOperationException(error);
         return new ProjectPackages(project!);
     }
 
@@ -46,8 +47,10 @@ internal static class ProjectCommand
     /// <param name="changes">The changes.</param>
     public static void PrintChanges(IReadOnlyList<string> changes)
     {
-        foreach (var change in changes) AnsiConsole.WriteLine(change);
-        if (changes.Count == 0) AnsiConsole.WriteLine("Already up to date. No files changed.");
+        foreach (var change in changes)
+            AnsiConsole.WriteLine(change);
+        if (changes.Count == 0)
+            AnsiConsole.WriteLine("Already up to date. No files changed.");
     }
 }
 
@@ -74,7 +77,8 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
             var project = ProjectCommand.Load(settings.Project);
             var changes = project.Add(settings.Feature);
             ProjectCommand.PrintChanges(changes);
-            if (changes.Count > 0) project.Save();
+            if (changes.Count > 0)
+                project.Save();
             return 0;
         }
         catch (Exception ex) { return ProjectCommand.Fail(ex); }
@@ -122,8 +126,10 @@ internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
                 throw new InvalidOperationException("Project uses prerelease packages. Choose --version explicitly to change release tracks.");
             var changes = project.Upgrade(version);
             ProjectCommand.PrintChanges(changes);
-            if (settings.DryRun) AnsiConsole.WriteLine("No files changed (--dry-run).");
-            else if (changes.Count > 0) project.Save();
+            if (settings.DryRun)
+                AnsiConsole.WriteLine("No files changed (--dry-run).");
+            else if (changes.Count > 0)
+                project.Save();
             return 0;
         }
         catch (Exception ex) { return ProjectCommand.Fail(ex); }
@@ -139,7 +145,8 @@ internal static class PackageVersions
     /// <returns>The requested version, or <see langword="null"/> when unavailable.</returns>
     public static Version? StableNumber(string value)
     {
-        if (value.Contains('-') || !Version.TryParse(value.Split('+')[0], out var version)) return null;
+        if (value.Contains('-') || !Version.TryParse(value.Split('+')[0], out var version))
+            return null;
         return new Version(version.Major, version.Minor, Math.Max(0, version.Build), Math.Max(0, version.Revision));
     }
 
@@ -156,8 +163,10 @@ internal static class PackageVersions
         foreach (var name in names.Distinct(StringComparer.OrdinalIgnoreCase))
         {
             var versions = (await getVersions(name)).Where(v => StableNumber(v) is not null).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            if (common is null) common = versions;
-            else common.IntersectWith(versions);
+            if (common is null)
+                common = versions;
+            else
+                common.IntersectWith(versions);
         }
         return common?.OrderByDescending(StableNumber).FirstOrDefault()
             ?? throw new InvalidOperationException("No common stable version found on nuget.org for the referenced Gondwana packages. Use --version for a private feed or explicit version.");

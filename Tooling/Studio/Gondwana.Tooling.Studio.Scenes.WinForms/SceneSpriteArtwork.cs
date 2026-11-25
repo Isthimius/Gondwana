@@ -93,7 +93,8 @@ internal sealed class SceneSpriteArtworkCache : IDisposable
 
     public void Dispose()
     {
-        foreach (var sheet in _sheets.Values) sheet.Dispose();
+        foreach (var sheet in _sheets.Values)
+            sheet.Dispose();
         _sheets.Clear();
         _animations.Clear();
     }

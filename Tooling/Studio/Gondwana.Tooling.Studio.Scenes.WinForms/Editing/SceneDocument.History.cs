@@ -13,11 +13,14 @@ public sealed partial class SceneDocument : IDisposable
         var selected = Definition;
         History.Execute(description, () =>
         {
-            foreach (var member in members) if (!_definitions.Contains(member)) _definitions.Add(member);
+            foreach (var member in members)
+            if (!_definitions.Contains(member))
+                _definitions.Add(member);
             Definition = members[0];
         }, () =>
         {
-            foreach (var member in members) _definitions.Remove(member);
+            foreach (var member in members)
+                _definitions.Remove(member);
             Definition = selected;
         });
     }
@@ -31,7 +34,8 @@ public sealed partial class SceneDocument : IDisposable
     /// <summary>Edits the properties of one owned model object; child objects and collections must use their own operations.</summary>
     public bool Edit(object target, string description, Action change)
     {
-        if (!Owns(target)) throw new ArgumentException("The object does not belong to this document.", nameof(target));
+        if (!Owns(target))
+            throw new ArgumentException("The object does not belong to this document.", nameof(target));
         return History.Edit(description, target, change);
     }
 
@@ -74,8 +78,10 @@ public sealed partial class SceneDocument : IDisposable
     /// <summary>Edits one sparse cell. Undo restores absence when the operation created the cell.</summary>
     public bool EditTile(SceneLayerDefinition layer, int x, int y, string description, Action<SceneLayerTileDefinition> change)
     {
-        if (!Owns(layer)) throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
-        if (x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows) throw new ArgumentOutOfRangeException(nameof(x));
+        if (!Owns(layer))
+            throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+        if (x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
+            throw new ArgumentOutOfRangeException(nameof(x));
         var existing = FindTile(layer, x, y);
         var tile = existing ?? new SceneLayerTileDefinition { X = x, Y = y };
         using var transaction = History.BeginTransaction(description);
@@ -86,7 +92,8 @@ public sealed partial class SceneDocument : IDisposable
             if (tile.Frame is { } frame && FramesMatch(previousFrame, frame))
                 tile.Frame = previousFrame;
         });
-        if (changed && existing is null) History.Insert(description, layer.Tiles, layer.Tiles.Count, tile);
+        if (changed && existing is null)
+            History.Insert(description, layer.Tiles, layer.Tiles.Count, tile);
         transaction.Commit();
         return changed;
     }
@@ -99,8 +106,10 @@ public sealed partial class SceneDocument : IDisposable
     {
         foreach (var member in _definitions)
         {
-            foreach (var source in member.TilesheetSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
-            foreach (var source in member.AnimationSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.TilesheetSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.AnimationSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
         }
     }
 

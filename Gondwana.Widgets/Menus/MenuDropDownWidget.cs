@@ -222,28 +222,33 @@ public sealed class MenuDropDownWidget : ContainerWidget
     internal void UnregisterItem(MenuItemWidget item)
     {
         _bar.UnregisterItem(item);
-        if (_disposed) return;
+        if (_disposed)
+            return;
         OnItemDisabled(item);
         item.SubMenu?.Dispose();
         item.Hovered -= OnItemHovered;
         _items.Remove(item);
         _entries.RemoveAll(entry => ReferenceEquals(entry.Item, item));
         _selectedIndex = -1;
-        foreach (var remaining in _items) remaining.SetSelected(false);
+        foreach (var remaining in _items)
+            remaining.SetSelected(false);
         RecalculateLayout();
     }
 
     internal void OnItemDisabled(MenuItemWidget item)
     {
-        if (item.SubMenu is not null && ReferenceEquals(OpenChild, item.SubMenu)) CloseChild();
-        if (ReferenceEquals(SelectedItem, item)) SetSelectedIndex(-1);
+        if (item.SubMenu is not null && ReferenceEquals(OpenChild, item.SubMenu))
+            CloseChild();
+        if (ReferenceEquals(SelectedItem, item))
+            SetSelectedIndex(-1);
     }
 
     internal void NotifyInvoked(MenuItemWidget item) => _bar.OnItemInvoked(item);
 
     internal void OpenSubMenu(MenuItemWidget item, bool selectFirst)
     {
-        if (!IsOpen || !item.CanInvoke || item.SubMenu is not { } child) return;
+        if (!IsOpen || !item.CanInvoke || item.SubMenu is not { } child)
+            return;
         SetSelectedIndex(_items.IndexOf(item));
         if (!ReferenceEquals(OpenChild, child))
         {
@@ -260,7 +265,8 @@ public sealed class MenuDropDownWidget : ContainerWidget
             child.OpenAnimated(_bar.DropDownAnimation, Math.Max(0, _bar.DropDownAnimationDurationSec));
             child.Activate();
         }
-        if (selectFirst) child.SelectFirstEnabled();
+        if (selectFirst)
+            child.SelectFirstEnabled();
     }
 
     internal void CloseChild()
@@ -356,7 +362,8 @@ public sealed class MenuDropDownWidget : ContainerWidget
 
         SetOpacity(0f);
         SetRevealProgress(animation == MenuDropDownAnimation.FadeAndReveal ? 0f : 1f);
-        foreach (var visual in EnumerateVisuals()) visual.FadeIn(durationSec);
+        foreach (var visual in EnumerateVisuals())
+            visual.FadeIn(durationSec);
 
         if (animation == MenuDropDownAnimation.FadeAndReveal)
         {
@@ -404,14 +411,16 @@ public sealed class MenuDropDownWidget : ContainerWidget
         // Closing is a clean fade. Any in-progress opening reveal is snapped
         // fully open so it cannot continue unfolding while disappearing.
         SetRevealProgress(1f);
-        foreach (var visual in EnumerateVisuals()) visual.FadeOut(durationSec);
+        foreach (var visual in EnumerateVisuals())
+            visual.FadeOut(durationSec);
     }
 
     internal void SetDropDownZOrder(int zOrder)
     {
         _zOrder = zOrder;
         Panel.ZOrder = zOrder;
-        foreach (var item in _items) item.SubMenu?.SetDropDownZOrder(zOrder + 10);
+        foreach (var item in _items)
+            item.SubMenu?.SetDropDownZOrder(zOrder + 10);
 
         foreach (Entry entry in _entries)
         {
@@ -575,7 +584,8 @@ public sealed class MenuDropDownWidget : ContainerWidget
         if (index >= 0)
         {
             SetSelectedIndex(index);
-            if (item.SubMenu is not null) OpenSubMenu(item, selectFirst: false);
+            if (item.SubMenu is not null)
+                OpenSubMenu(item, selectFirst: false);
         }
     }
 

@@ -56,7 +56,8 @@ public sealed class AssetImportPlan
         ArgumentNullException.ThrowIfNull(destination);
         ArgumentNullException.ThrowIfNull(sources);
         cancellation.ThrowIfCancellationRequested();
-        if (string.IsNullOrWhiteSpace(destination.SourcePath)) throw new InvalidOperationException("The destination archive requires a physical path before importing definitions.");
+        if (string.IsNullOrWhiteSpace(destination.SourcePath))
+            throw new InvalidOperationException("The destination archive requires a physical path before importing definitions.");
         var before = Snapshot(destination);
         var (additions, preview) = SemanticPackPlan.PrepareImport(destination, before, sources.ToArray(), importDependencies, cancellation);
         return new(destination, before, additions, preview);
@@ -82,7 +83,8 @@ public sealed class AssetImportPlan
             {
                 cancellation.ThrowIfCancellationRequested();
                 attempted.Add(pair.Key);
-                if (write is not null) write(pair.Key, pair.Value);
+                if (write is not null)
+                    write(pair.Key, pair.Value);
                 else
                 {
                     using var stream = new MemoryStream(pair.Value, writable: false);
@@ -93,7 +95,8 @@ public sealed class AssetImportPlan
         }
         catch
         {
-            foreach (var key in attempted) _destination.Remove(key.AssetType, key.AssetName);
+            foreach (var key in attempted)
+                _destination.Remove(key.AssetType, key.AssetName);
             throw;
         }
         return _additions.Count;

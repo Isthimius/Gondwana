@@ -140,6 +140,7 @@ internal sealed class SceneEditorDocument : DockContent
             Document.Changed -= DocumentChanged;
 
         base.Dispose(disposing);
-        if (disposing) Document.Dispose();
+        if (disposing)
+            Document.Dispose();
     }
 }

@@ -48,19 +48,25 @@ public sealed partial class CompositionTests
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
         var instance = editor.AssetsFile;
         editor.ReplaceAsset(AssetTypes.Misc, "old", [8, 9]);
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
         Assert.True(editor.History.CanUndo);
         var plan = AssetRelocationPlan.Create(path, [new(new(AssetTypes.Misc, path, "old"), new(AssetTypes.Misc, path, "folder/new"))]);
         var original = File.ReadAllBytes(path);
         editor.MarkChanged();
         Assert.Throws<InvalidOperationException>(() => editor.ApplyRelocation(plan));
         Assert.Equal(original, File.ReadAllBytes(path));
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
         editor.ReplaceAsset(AssetTypes.Misc, "old", [1, 2, 3]);
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
         Assert.True(editor.History.CanUndo);
         plan = AssetRelocationPlan.Create(path, [new(new(AssetTypes.Misc, path, "old"), new(AssetTypes.Misc, path, "folder/new"))]);
         int changes = 0;
@@ -68,7 +74,8 @@ public sealed partial class CompositionTests
         editor.ApplyRelocation(plan);
         Assert.Same(instance, editor.AssetsFile);
         Assert.False(editor.IsDirty);
-        Assert.False(editor.History.CanUndo); Assert.False(editor.History.CanRedo);
+        Assert.False(editor.History.CanUndo);
+        Assert.False(editor.History.CanRedo);
         Assert.Equal(0, editor.History.RetainedBytes);
         Assert.Equal(1, changes);
         Assert.Null(instance.Get(AssetTypes.Misc, "old"));
@@ -102,7 +109,8 @@ public sealed partial class CompositionTests
         var subdirectory = Path.Combine(directory, "copies");
         Directory.CreateDirectory(subdirectory);
         var image = Path.Combine(directory, "art.png");
-        using (var bitmap = new Bitmap(1, 1)) bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+        using (var bitmap = new Bitmap(1, 1))
+            bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
         using var archive = AssetsFile.LoadOrCreate(source, null, false, register: false);
         var sheet = new TilesheetDefinition
         {
@@ -110,7 +118,8 @@ public sealed partial class CompositionTests
             Image = new() { FilePath = "art.png" },
             Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 1, 1), TileSize = new Size(1, 1) }]
         };
-        using (var bytes = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)))) archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
+        using (var bytes = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet))))
+            archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
         archive.Save();
         var original = File.ReadAllBytes(source);
         using var editor = new AssetEditorControl(archive);

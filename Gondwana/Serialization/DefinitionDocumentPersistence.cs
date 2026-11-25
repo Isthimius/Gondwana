@@ -44,8 +44,10 @@ internal static class DefinitionDocumentPersistence
             }
             var replacing = File.Exists(path);
             beforeInstall(temporary);
-            if (replacing) File.Replace(temporary, path, destinationBackupFileName: null);
-            else File.Move(temporary, path);
+            if (replacing)
+                File.Replace(temporary, path, destinationBackupFileName: null);
+            else
+                File.Move(temporary, path);
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }

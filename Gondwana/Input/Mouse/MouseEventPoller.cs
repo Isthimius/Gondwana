@@ -148,8 +148,10 @@ public sealed class MouseEventPoller : IDisposable
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (Adapter is null) return;
-        if ((Configuration?.IsPaused ?? true) || !(Configuration?.ReadyForNextEvent(tick) ?? false)) return;
+        if (Adapter is null)
+            return;
+        if ((Configuration?.IsPaused ?? true) || !(Configuration?.ReadyForNextEvent(tick) ?? false))
+            return;
 
         var currentPos = Adapter.CurrentPosition;
         var pressed = Adapter.PressedButtons;
@@ -242,7 +244,8 @@ public sealed class MouseEventPoller : IDisposable
     /// <summary>Releases the current platform adapter when it supports disposal.</summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
         _isDisposed = true;
         (Adapter as IDisposable)?.Dispose();
         Adapter = null;

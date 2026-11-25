@@ -57,7 +57,8 @@ public abstract class RenderSurfaceAdapterBase
         var transform = image.Width == state.BufferWidth && image.Height == state.BufferHeight
             ? state.Transform : PresentationTransform.Fit(image.Width, image.Height, state.AdapterWidth, state.AdapterHeight);
         canvas.Clear(clearColor);
-        if (transform.Scale <= 0) return;
+        if (transform.Scale <= 0)
+            return;
         canvas.DrawImage(image, transform.DestinationRect, PresentationSampling);
     }
 

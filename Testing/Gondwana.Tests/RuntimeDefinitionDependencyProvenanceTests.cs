@@ -245,7 +245,8 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
     public void Dispose()
     {
         foreach (var image in _images)
-            if (File.Exists(image)) File.Delete(image);
+            if (File.Exists(image))
+                File.Delete(image);
     }
 
     private static DefinitionProvenance CaptureSheet(

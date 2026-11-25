@@ -38,7 +38,8 @@ public sealed partial class CompositionTests
     public void AssetImportSharedHostDirtyAndSaveBehavior(bool hosted) => RunSta(directory =>
     {
         var path = Path.Combine(directory, "game.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) initial.Save();
+        using (var initial = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+            initial.Save();
         var diskBefore = File.ReadAllBytes(path);
         using var studio = Host(directory);
         studio.AssetPassword = _ => "secret";
@@ -47,14 +48,16 @@ public sealed partial class CompositionTests
         using var standalone = hosted ? null : new AssetEditorControl(borrowed);
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
         var archive = editor.AssetsFile;
-        using (var bytes = new MemoryStream([9])) archive.Add(AssetTypes.Misc, "unsaved", bytes);
+        using (var bytes = new MemoryStream([9]))
+            archive.Add(AssetTypes.Misc, "unsaved", bytes);
         editor.MarkChanged();
         int changes = 0;
         editor.Changed += (_, _) => changes++;
         var source = Path.Combine(directory, "new.txt");
         File.WriteAllText(source, "new resource");
         var imagePath = Path.Combine(directory, "art.png");
-        using (var image = new Bitmap(1, 1)) image.Save(imagePath, System.Drawing.Imaging.ImageFormat.Png);
+        using (var image = new Bitmap(1, 1))
+            image.Save(imagePath, System.Drawing.Imaging.ImageFormat.Png);
         var sheetPath = Path.Combine(directory, "tiles.gts");
         TilesheetDefinitionSerializer.Save(sheetPath, new TilesheetDefinition
         {
@@ -81,7 +84,8 @@ public sealed partial class CompositionTests
             editor.SaveRequested!(false);
             Assert.True(AwaitUi(studio.SaveDocument(document!)));
         }
-        else editor.SaveTo(path);
+        else
+            editor.SaveTo(path);
         Assert.False(editor.IsDirty);
         using var saved = AssetsFile.LoadOrCreate(path, "secret", true, register: false);
         Assert.Equal(4, saved.GetAllEntries().Count());
@@ -98,13 +102,15 @@ public sealed partial class CompositionTests
     public void AssetExportPreservesOwnershipAndDirtyState(bool hosted) => RunSta(directory =>
     {
         var path = Path.Combine(directory, "game.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false)) initial.Save();
+        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false))
+            initial.Save();
         using var studio = Host(directory);
         using var borrowed = AssetsFile.LoadOrCreate(path, null, false, register: false);
         var document = hosted ? studio.OpenDocument(path) : null;
         using var standalone = hosted ? null : new AssetEditorControl(borrowed);
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
-        using (var bytes = new MemoryStream([9])) editor.AssetsFile.Add(AssetTypes.Misc, "unsaved", bytes);
+        using (var bytes = new MemoryStream([9]))
+            editor.AssetsFile.Add(AssetTypes.Misc, "unsaved", bytes);
         editor.MarkChanged();
         int changes = 0;
         editor.Changed += (_, _) => changes++;
@@ -121,8 +127,10 @@ public sealed partial class CompositionTests
         Assert.True(editor.IsDirty);
         Assert.Equal(0, changes);
         Assert.Single(editor.AssetsFile.GetAllEntries());
-        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
-        else editor.SaveTo(path);
+        if (hosted)
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else
+            editor.SaveTo(path);
         document?.Close();
     });
 

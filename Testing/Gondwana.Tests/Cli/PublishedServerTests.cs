@@ -64,7 +64,8 @@ public sealed class PublishedServerTests : IDisposable
         try
         {
             var first = await Task.WhenAny(server, ready.Task);
-            if (first == server) await server; // Preserve bind failure details.
+            if (first == server)
+                await server; // Preserve bind failure details.
             var url = await ready.Task.WaitAsync(stop.Token);
             using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
             File.WriteAllText(Path.Combine(root, "late.txt"), "not part of the published index");

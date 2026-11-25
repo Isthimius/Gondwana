@@ -78,7 +78,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// </summary>
     public void RefreshDestinationSize()
     {
-        if (_presentationControl.IsDisposed || !_presentationControl.IsHandleCreated) return;
+        if (_presentationControl.IsDisposed || !_presentationControl.IsHandleCreated)
+            return;
 
         var sz = _presentationControl.ClientSize;
         SetDestinationSize(sz.Width, sz.Height);
@@ -171,8 +172,10 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     private void QueueInvalidate()
     {
-        if (_glControl.IsDisposed || _presentationControl.IsDisposed) return;
-        if (Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) != 0) return;
+        if (_glControl.IsDisposed || _presentationControl.IsDisposed)
+            return;
+        if (Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) != 0)
+            return;
 
         Engine.Instance.UiDispatcher!.Post(() =>
         {

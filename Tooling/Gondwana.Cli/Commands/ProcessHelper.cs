@@ -41,16 +41,20 @@ internal static class ProcessHelper
 
             void HandleLine(string? line)
             {
-                if (line is null) return;
+                if (line is null)
+                    return;
                 Console.WriteLine(line);
 
-                if (urlOpened) return;
+                if (urlOpened)
+                    return;
                 var url = ExtractListeningUrl(line);
-                if (url is null) return;
+                if (url is null)
+                    return;
 
                 lock (syncLock)
                 {
-                    if (urlOpened) return;
+                    if (urlOpened)
+                        return;
                     urlOpened = true;
                 }
 
@@ -75,7 +79,8 @@ internal static class ProcessHelper
     {
         const string marker = "Now listening on: ";
         var idx = line.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
-        if (idx < 0) return null;
+        if (idx < 0)
+            return null;
         var url = line[(idx + marker.Length)..].Trim();
         return url.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? url : null;
     }

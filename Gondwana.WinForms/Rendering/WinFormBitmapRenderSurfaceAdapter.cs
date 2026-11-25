@@ -45,7 +45,8 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     /// </summary>
     public void RefreshDestinationSize()
     {
-        if (_control.IsDisposed || !_control.IsHandleCreated) return;
+        if (_control.IsDisposed || !_control.IsHandleCreated)
+            return;
 
         var sz = _control.ClientSize;                     // ← ClientSize, not Width/Height
         SetDestinationSize(sz.Width, sz.Height);
@@ -118,7 +119,8 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
 
         try
         {
-            if (img == null) return;
+            if (img == null)
+                return;
 
             // Retain the complete image for OS expose/resize paints with no new dirty patch.
             DrawImage(canvas, img, SKColors.Black);
@@ -143,7 +145,8 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         SKImage? currentImage;
         lock (_presentSync)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             _disposed = true;
 
             currentImage = _currentImage;

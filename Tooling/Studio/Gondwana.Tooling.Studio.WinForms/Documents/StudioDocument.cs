@@ -136,7 +136,8 @@ internal sealed class StudioDocument : IDisposable
         bool Select<T>(IReadOnlyList<T> members, Func<T, string> key, Action<T> select)
         {
             var matches = members.Where(x => DefinitionReferenceQuery.MembersEqual(TypeFor(Extension), key(x), identity)).ToArray();
-            if (matches.Length != 1) return false;
+            if (matches.Length != 1)
+                return false;
             select(matches[0]);
             return true;
         }
@@ -379,7 +380,8 @@ internal sealed class StudioDocument : IDisposable
                     }
                 }
 
-            default: throw new NotSupportedException($"Unsupported authoring format: {format}");
+            default:
+                throw new NotSupportedException($"Unsupported authoring format: {format}");
         }
     }
 
@@ -389,7 +391,8 @@ internal sealed class StudioDocument : IDisposable
     public void Dispose()
     {
         SourceGeneration++;
-        foreach (var source in Sources.Values) source.Dispose();
+        foreach (var source in Sources.Values)
+            source.Dispose();
         Sources.Clear();
         _detach?.Invoke();
         _detach = null;

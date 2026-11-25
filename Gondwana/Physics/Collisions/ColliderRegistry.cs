@@ -32,7 +32,8 @@ public sealed class ColliderRegistry
             var bounds = collider.BoundsWorldPx;
             if (!periodic)
             {
-                if (area.Intersects(bounds)) results.Add(new(collider, bounds));
+                if (area.Intersects(bounds))
+                    results.Add(new(collider, bounds));
                 continue;
             }
             foreach (var offset in period.Offsets(new(bounds.MinX, bounds.MinY, bounds.Width, bounds.Height), query))
@@ -108,6 +109,7 @@ public sealed class ColliderRegistry
         QueryInstances(area, layerMask, collidesWithMask, instances, ignore);
         results.Clear();
         foreach (var instance in instances)
-            if (!results.Contains(instance.Collider)) results.Add(instance.Collider);
+            if (!results.Contains(instance.Collider))
+                results.Add(instance.Collider);
     }
 }

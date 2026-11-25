@@ -18,11 +18,13 @@ internal sealed class BulkTilePropertiesDialog : Form
     internal BulkTilePropertiesDialog(IReadOnlyList<SceneLayerTileDefinition> tiles)
     {
         Text = $"Edit selected properties — {tiles.Count} authored tiles";
-        Size = new(760, 580); StartPosition = FormStartPosition.CenterParent;
+        Size = new(760, 580);
+        StartPosition = FormStartPosition.CenterParent;
         MinimizeBox = MaximizeBox = false;
         _values = new Values(tiles);
         _grid.SelectedObject = _values;
-        foreach (var property in EditableProperties) _apply.Items.Add(property.Name);
+        foreach (var property in EditableProperties)
+            _apply.Items.Add(property.Name);
         var instruction = new Label
         {
             Dock = DockStyle.Top,
@@ -37,7 +39,8 @@ internal sealed class BulkTilePropertiesDialog : Form
             _grid.Focus();
             foreach (string name in _apply.CheckedItems)
             {
-                if (_values.Edits.ContainsKey(name)) continue;
+                if (_values.Edits.ContainsKey(name))
+                    continue;
                 if (_values.Mixed.Contains(name))
                 {
                     MessageBox.Show(this, $"Enter a value for {name}, or uncheck it.", "Mixed property");
@@ -47,9 +50,14 @@ internal sealed class BulkTilePropertiesDialog : Form
             }
             DialogResult = DialogResult.OK;
         };
-        buttons.Controls.Add(cancel); buttons.Controls.Add(ok);
-        Controls.Add(_grid); Controls.Add(_apply); Controls.Add(instruction); Controls.Add(buttons);
-        CancelButton = cancel; AcceptButton = ok;
+        buttons.Controls.Add(cancel);
+        buttons.Controls.Add(ok);
+        Controls.Add(_grid);
+        Controls.Add(_apply);
+        Controls.Add(instruction);
+        Controls.Add(buttons);
+        CancelButton = cancel;
+        AcceptButton = ok;
         ToolingAppearance.Apply(this);
     }
 
@@ -65,7 +73,8 @@ internal sealed class BulkTilePropertiesDialog : Form
                 var model = typeof(SceneLayerTileDefinition).GetProperty(property.Name)!;
                 var value = model.GetValue(tiles[0]);
                 Initial[property.Name] = value;
-                if (tiles.Skip(1).Any(t => !Equals(value, model.GetValue(t)))) Mixed.Add(property.Name);
+                if (tiles.Skip(1).Any(t => !Equals(value, model.GetValue(t))))
+                    Mixed.Add(property.Name);
             }
         }
         public override PropertyDescriptorCollection GetProperties() => GetProperties(null);

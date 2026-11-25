@@ -103,7 +103,8 @@ internal sealed partial class ScenePreviewControl
 
     internal SceneSpriteVisual? HitSprite(Point client)
     {
-        if (!_showSprites || _definition is null) return null;
+        if (!_showSprites || _definition is null)
+            return null;
         UpdateOffset();
         var world = ScreenToWorld(client);
         var frontToBack = _definition.Layers.Where(IsLayerDisplayed).OrderBy(layer => layer.ZOrder)
@@ -140,17 +141,20 @@ internal sealed partial class ScenePreviewControl
             var anchor = GetProjection(sprite.Layer).GridToWorldPx(sprite.Sprite.Position);
             _spriteGesture = new(sprite, point, new(mouse.X - anchor.X, mouse.Y - anchor.Y));
             Capture = true;
-            if (!Capture) CancelSpriteGesture();
+            if (!Capture)
+                CancelSpriteGesture();
         }
         return true;
     }
 
     private void ContinueSpriteGesture(Point point, bool snap)
     {
-        if (_spriteGesture is not { } gesture) return;
+        if (_spriteGesture is not { } gesture)
+            return;
         var size = SystemInformation.DragSize;
         var threshold = new Rectangle(gesture.Start.X - size.Width / 2, gesture.Start.Y - size.Height / 2, size.Width, size.Height);
-        if (_spriteGhost is null && threshold.Contains(point)) return;
+        if (_spriteGhost is null && threshold.Contains(point))
+            return;
         if (!ClientRectangle.Contains(point) || !IsLayerDisplayed(gesture.Visual.Layer))
         {
             SetSpriteGhost(null);
@@ -180,7 +184,8 @@ internal sealed partial class ScenePreviewControl
 
     internal void CancelSpriteGesture()
     {
-        if (_spriteGesture is null) return;
+        if (_spriteGesture is null)
+            return;
         _spriteGesture = null;
         SetSpriteGhost(null);
         Capture = false;
@@ -195,7 +200,8 @@ internal sealed partial class ScenePreviewControl
             return;
 
         var bounds = ToScreen(SpriteBounds(sprite, position));
-        if (bounds.Width <= 0 || bounds.Height <= 0) return;
+        if (bounds.Width <= 0 || bounds.Height <= 0)
+            return;
         var state = graphics.Save();
         try
         {

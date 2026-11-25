@@ -35,12 +35,14 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
         }
         try
         {
-            for (int i = 0; i < 100000; i++) cycle(i, .001, false, i, .001, false);
+            for (int i = 0; i < 100000; i++)
+                cycle(i, .001, false, i, .001, false);
             for (int run = 0; run < 3; run++)
             {
                 long bytes = GC.GetAllocatedBytesForCurrentThread();
                 long tick = Stopwatch.GetTimestamp();
-                for (int i = 0; i < 1000000; i++) cycle(i, .001, false, i, .001, false);
+                for (int i = 0; i < 1000000; i++)
+                    cycle(i, .001, false, i, .001, false);
                 double ns = (Stopwatch.GetTimestamp() - tick) * 1000d / Stopwatch.Frequency;
                 output.WriteLine($"ENGINE mode={mode} run={run} ns_per_cycle={ns:F2} bytes_per_cycle={(GC.GetAllocatedBytesForCurrentThread() - bytes) / 1000000d:F4}");
             }
@@ -68,7 +70,8 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var thread = new Thread(() =>
         {
-            try { Run(); completion.SetResult(); }
+            try
+            { Run(); completion.SetResult(); }
             catch (Exception error) { completion.SetException(error); }
         })
         { IsBackground = true };
@@ -132,7 +135,8 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
         {
             try
             {
-                if (phase == 0) retainedAtWarmup = GC.GetTotalMemory(true);
+                if (phase == 0)
+                    retainedAtWarmup = GC.GetTotalMemory(true);
                 long now = Stopwatch.GetTimestamp();
                 long allocated = GC.GetTotalAllocatedBytes(false);
                 var currentCpu = process.TotalProcessorTime;
@@ -159,7 +163,11 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                     form.BeginInvoke(() => form.Close());
                     return;
                 }
-                ticks = now; allocation = allocated; cpu = currentCpu; lastCycles = cycles; lastFrames = frames;
+                ticks = now;
+                allocation = allocated;
+                cpu = currentCpu;
+                lastCycles = cycles;
+                lastFrames = frames;
                 timer.Change(5000, Timeout.Infinite);
             }
             catch (Exception error)
@@ -176,8 +184,10 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
                 }
             }
         };
-        try { Application.Run(form); }
+        try
+        { Application.Run(form); }
         finally { request?.Dispose(); host?.Dispose(); }
-        if (failure is not null) throw failure;
+        if (failure is not null)
+            throw failure;
     }
 }

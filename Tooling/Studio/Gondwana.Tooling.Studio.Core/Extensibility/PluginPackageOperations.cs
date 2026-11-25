@@ -81,22 +81,26 @@ public sealed class PluginPackageOperations : IDisposable
     {
         EnsureDirectory(WorkRoot);
         var path = Path.Combine(WorkRoot, "writer.lock");
-        if (File.Exists(path)) PluginPackagePaths.EnsureNoLinks(path);
+        if (File.Exists(path))
+            PluginPackagePaths.EnsureNoLinks(path);
         return new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
     }
 
     /// <summary>Call exactly once, before discovery, and retain this service until the process exits.</summary>
     public void StartSession()
     {
-        if (_started) return;
+        if (_started)
+            return;
         _started = true;
         try
         {
             using var gate = Gate();
             var lease = Path.Combine(WorkRoot, "sessions.lock");
-            if (File.Exists(lease)) PluginPackagePaths.EnsureNoLinks(lease);
+            if (File.Exists(lease))
+                PluginPackagePaths.EnsureNoLinks(lease);
             FileStream? exclusive = null;
-            try { exclusive = new FileStream(lease, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None); }
+            try
+            { exclusive = new FileStream(lease, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None); }
             catch (IOException) { Diagnostic = "Package changes deferred: another Studio instance is using this installation. Close all Studio instances, then launch Studio again."; }
             using (exclusive)
             {
@@ -107,9 +111,12 @@ public sealed class PluginPackageOperations : IDisposable
                     {
                         foreach (var operation in journal.Operations.OrderBy(o => o.PluginId, StringComparer.Ordinal).ToArray())
                         {
-                            if (operation.State == PluginPackageOperationState.Applying) Recover(journal, operation, "Interrupted transaction recovered at startup.");
-                            else if (operation.State == PluginPackageOperationState.Pending) Apply(journal, operation);
-                            else if (operation.State == PluginPackageOperationState.Committed && operation.Diagnostic is null) CleanupCommitted(journal, operation);
+                            if (operation.State == PluginPackageOperationState.Applying)
+                                Recover(journal, operation, "Interrupted transaction recovered at startup.");
+                            else if (operation.State == PluginPackageOperationState.Pending)
+                                Apply(journal, operation);
+                            else if (operation.State == PluginPackageOperationState.Committed && operation.Diagnostic is null)
+                                CleanupCommitted(journal, operation);
                         }
                     }
                     Operations = journal.Operations.ToArray();
@@ -118,7 +125,8 @@ public sealed class PluginPackageOperations : IDisposable
             }
             // Gate is still held: no other process can obtain a writer lease between these opens.
             _session = new FileStream(lease, FileMode.Open, FileAccess.Read, FileShare.Read);
-            if (Diagnostic is not null) _log("Warning: [Plugin packages] " + Diagnostic);
+            if (Diagnostic is not null)
+                _log("Warning: [Plugin packages] " + Diagnostic);
         }
         catch (Exception ex)
         {
@@ -136,7 +144,8 @@ public sealed class PluginPackageOperations : IDisposable
             Operations = ReadJournal().Operations.ToArray();
             _journalHealthy = true;
             if (Diagnostic?.StartsWith("Package journal", StringComparison.Ordinal) == true ||
-                Diagnostic?.StartsWith("Cannot read pending", StringComparison.Ordinal) == true) Diagnostic = null;
+                Diagnostic?.StartsWith("Cannot read pending", StringComparison.Ordinal) == true)
+                Diagnostic = null;
         }
         catch (Exception ex) { _journalHealthy = false; Report($"Cannot read pending plugin operations: {ex.Message}"); }
     }
@@ -158,29 +167,36 @@ public sealed class PluginPackageOperations : IDisposable
         try
         {
             var payload = Payload(operation);
-            if (Directory.Exists(source)) PluginPackageInspection.CopyDirectory(source, payload);
+            if (Directory.Exists(source))
+                PluginPackageInspection.CopyDirectory(source, payload);
             else
             {
                 var extracted = Path.Combine(transaction, "extracted");
                 EnsureDirectory(extracted);
                 PluginPackageInspection.Extract(source, extracted);
                 var roots = Directory.GetFiles(extracted, "plugin.json", SearchOption.AllDirectories);
-                if (roots.Length != 1) throw new InvalidDataException("ZIP must contain one plugin.json, at its root or in one enclosing directory.");
+                if (roots.Length != 1)
+                    throw new InvalidDataException("ZIP must contain one plugin.json, at its root or in one enclosing directory.");
                 var package = Path.GetDirectoryName(roots[0])!;
                 if (package != extracted && (Path.GetDirectoryName(package) != extracted || Directory.GetFileSystemEntries(extracted).Length != 1))
                     throw new InvalidDataException("Ambiguous ZIP layout: use package contents at the root or one enclosing package directory.");
                 Directory.Move(package, payload);
-                if (Directory.Exists(extracted)) Directory.Delete(extracted);
+                if (Directory.Exists(extracted))
+                    Directory.Delete(extracted);
             }
             var manifest = _inspection.Value.Validate(payload);
-            if (IsBundled(manifest.Id)) throw new InvalidDataException("Studio-distributed plugins cannot be installed or updated here. Use Studio's distribution/update process; disabling remains available.");
-            if (updateId is not null && manifest.Id != updateId) throw new InvalidDataException("The replacement manifest ID must match the selected plugin.");
+            if (IsBundled(manifest.Id))
+                throw new InvalidDataException("Studio-distributed plugins cannot be installed or updated here. Use Studio's distribution/update process; disabling remains available.");
+            if (updateId is not null && manifest.Id != updateId)
+                throw new InvalidDataException("The replacement manifest ID must match the selected plugin.");
             var installed = FindInstalled(manifest.Id!);
-            if (updateId is not null && installed is null) throw new InvalidDataException("Selected installation is missing. Refresh and use Install Plugin instead.");
+            if (updateId is not null && installed is null)
+                throw new InvalidDataException("Selected installation is missing. Refresh and use Install Plugin instead.");
             var folder = installed is null ? "package-" + manifest.Id : Path.GetFileName(installed);
             Protect(manifest.Id!, folder);
             var target = Path.Combine(PluginRoot, folder);
-            if (installed is null && (Directory.Exists(target) || File.Exists(target))) throw new InvalidDataException("Proposed destination is occupied by unrelated content.");
+            if (installed is null && (Directory.Exists(target) || File.Exists(target)))
+                throw new InvalidDataException("Proposed destination is occupied by unrelated content.");
             PluginManifest? previous = installed is null ? null : PluginManifest.Read(installed);
             previous?.Validate();
             operation = operation with
@@ -229,7 +245,8 @@ public sealed class PluginPackageOperations : IDisposable
     /// <summary>Persist an explicitly confirmed preview. Same-version replacements/downgrades require separate consent.</summary>
     public void Queue(PluginPackagePreview preview, bool confirmed, bool replacementConfirmed = false)
     {
-        if (!confirmed) throw new InvalidOperationException("Package changes require explicit confirmation.");
+        if (!confirmed)
+            throw new InvalidOperationException("Package changes require explicit confirmation.");
         using var gate = Gate();
         var journal = ReadJournal();
         var operation = preview.Operation;
@@ -238,17 +255,22 @@ public sealed class PluginPackageOperations : IDisposable
         if (operation.Kind == PluginPackageOperationKind.Update && !replacementConfirmed &&
             CompareVersions(operation.Version!, PluginManifest.Read(Destination(operation)).Version!) <= 0)
             throw new InvalidOperationException("Explicit downgrade/same-version replacement confirmation is required.");
-        if (operation.Kind != PluginPackageOperationKind.Remove) ValidatePayload(operation);
+        if (operation.Kind != PluginPackageOperationKind.Remove)
+            ValidatePayload(operation);
         var prior = journal.Operations.SingleOrDefault(o => o.PluginId == operation.PluginId);
         if (prior is not null && !(operation.Kind == PluginPackageOperationKind.Update && prior.Kind == PluginPackageOperationKind.Update && prior.State == PluginPackageOperationState.Pending))
             throw new InvalidOperationException("Cancel the existing operation before requesting a different change for this plugin.");
-        if (prior?.Token == operation.Token) throw new InvalidOperationException("This preview is already queued.");
-        if (prior is null && journal.Operations.Count >= 128) throw new InvalidOperationException("At most 128 package operations can be pending.");
-        if (prior is not null) journal.Operations.Remove(prior);
+        if (prior?.Token == operation.Token)
+            throw new InvalidOperationException("This preview is already queued.");
+        if (prior is null && journal.Operations.Count >= 128)
+            throw new InvalidOperationException("At most 128 package operations can be pending.");
+        if (prior is not null)
+            journal.Operations.Remove(prior);
         journal.Operations.Add(operation with { State = PluginPackageOperationState.Pending, Diagnostic = null });
         Save(journal);
         Operations = journal.Operations.ToArray();
-        if (prior is not null) TryDeleteTransaction(prior);
+        if (prior is not null)
+            TryDeleteTransaction(prior);
         _log($"[Plugin packages] {operation.Kind} queued for '{operation.PluginId}'; restart required.");
     }
 
@@ -256,7 +278,8 @@ public sealed class PluginPackageOperations : IDisposable
     {
         using var gate = Gate();
         ValidateRecord(preview.Operation);
-        if (ReadJournal().Operations.All(o => o.Token != preview.Operation.Token)) TryDeleteTransaction(preview.Operation);
+        if (ReadJournal().Operations.All(o => o.Token != preview.Operation.Token))
+            TryDeleteTransaction(preview.Operation);
     }
 
     public void Cancel(string id)
@@ -274,28 +297,35 @@ public sealed class PluginPackageOperations : IDisposable
 
     private string? FindInstalled(string id)
     {
-        if (File.Exists(PluginRoot)) throw new IOException("The plugin root is occupied by a file, not a directory.");
-        if (!Directory.Exists(PluginRoot)) return null;
+        if (File.Exists(PluginRoot))
+            throw new IOException("The plugin root is occupied by a file, not a directory.");
+        if (!Directory.Exists(PluginRoot))
+            return null;
         PluginPackagePaths.EnsureNoLinks(PluginRoot);
         var matches = new List<string>();
         foreach (var directory in Directory.GetDirectories(PluginRoot))
         {
             PluginPackagePaths.EnsureNoLinks(directory);
             var path = Path.Combine(directory, "plugin.json");
-            if (!File.Exists(path)) continue;
+            if (!File.Exists(path))
+                continue;
             PluginPackagePaths.EnsureNoLinks(path);
-            try { if (PluginManifest.Read(directory).Id == id) matches.Add(directory); }
+            try
+            { if (PluginManifest.Read(directory).Id == id) matches.Add(directory); }
             catch (Exception ex) when (ex is JsonException or InvalidDataException) { /* Invalid unrelated packages remain the discovery host's responsibility. */ }
         }
-        if (matches.Count > 1) throw new InvalidDataException($"Conflicting installations of '{id}'. Remove the ambiguity before managing this ID.");
+        if (matches.Count > 1)
+            throw new InvalidDataException($"Conflicting installations of '{id}'. Remove the ambiguity before managing this ID.");
         return matches.SingleOrDefault();
     }
 
     private static void Protect(string id, string folder)
     {
         PluginPackageInspection.SafeRelative(folder);
-        if (folder.Contains('/')) throw new InvalidDataException("Destination must be one immediate package directory.");
-        if (IsBundled(id, folder)) throw new InvalidDataException("Bundled Studio packages are protected. Disable them instead; Studio's updater owns their files.");
+        if (folder.Contains('/'))
+            throw new InvalidDataException("Destination must be one immediate package directory.");
+        if (IsBundled(id, folder))
+            throw new InvalidDataException("Bundled Studio packages are protected. Disable them instead; Studio's updater owns their files.");
     }
 
     private void CheckDestination(PluginPackageOperation operation)
@@ -305,7 +335,8 @@ public sealed class PluginPackageOperations : IDisposable
         var target = Destination(operation);
         if (operation.Kind == PluginPackageOperationKind.Install)
         {
-            if (installed is not null || Directory.Exists(target) || File.Exists(target)) throw new IOException("Installation destination or plugin ID changed since review. Cancel and review again.");
+            if (installed is not null || Directory.Exists(target) || File.Exists(target))
+                throw new IOException("Installation destination or plugin ID changed since review. Cancel and review again.");
         }
         else if (installed is null || !PluginPackagePaths.Comparer.Equals(installed, target) || PluginPackageInspection.Fingerprint(target) != operation.OriginalHash)
             throw new IOException("Installed package changed or disappeared since review. Cancel and review the current installation again.");
@@ -324,14 +355,17 @@ public sealed class PluginPackageOperations : IDisposable
         try
         {
             CheckDestination(operation);
-            if (operation.Kind != PluginPackageOperationKind.Remove) ValidatePayload(operation);
+            if (operation.Kind != PluginPackageOperationKind.Remove)
+                ValidatePayload(operation);
             EnsureDirectory(PluginRoot);
             operation = Replace(journal, operation, PluginPackageOperationState.Applying, null);
             Save(journal); // Write ahead: recovery can reason about every following rename.
             Checkpoint?.Invoke("before-backup");
-            if (operation.Kind != PluginPackageOperationKind.Install) Directory.Move(Destination(operation), Backup(operation));
+            if (operation.Kind != PluginPackageOperationKind.Install)
+                Directory.Move(Destination(operation), Backup(operation));
             Checkpoint?.Invoke("after-backup");
-            if (operation.Kind != PluginPackageOperationKind.Remove) Directory.Move(Payload(operation), Destination(operation));
+            if (operation.Kind != PluginPackageOperationKind.Remove)
+                Directory.Move(Payload(operation), Destination(operation));
             Checkpoint?.Invoke("after-publish");
             operation = Replace(journal, operation, PluginPackageOperationState.Committed, null);
             Save(journal);
@@ -341,7 +375,8 @@ public sealed class PluginPackageOperations : IDisposable
         catch (Exception ex)
         {
             _log($"Error: [Plugin packages] {operation.Kind} '{operation.PluginId}': {ex}");
-            if (!committed && operation.State is PluginPackageOperationState.Applying or PluginPackageOperationState.Committed) Recover(journal, operation, ex.Message);
+            if (!committed && operation.State is PluginPackageOperationState.Applying or PluginPackageOperationState.Committed)
+                Recover(journal, operation, ex.Message);
             else
             {
                 Replace(journal, operation, PluginPackageOperationState.Failed, ex.Message);
@@ -358,7 +393,8 @@ public sealed class PluginPackageOperations : IDisposable
             var backup = Backup(operation);
             if (Directory.Exists(backup))
             {
-                if (PluginManifest.Read(backup).Id != operation.PluginId || PluginPackageInspection.Fingerprint(backup) != operation.OriginalHash) throw new IOException("Backup changed unexpectedly; manual recovery is required.");
+                if (PluginManifest.Read(backup).Id != operation.PluginId || PluginPackageInspection.Fingerprint(backup) != operation.OriginalHash)
+                    throw new IOException("Backup changed unexpectedly; manual recovery is required.");
                 if (Directory.Exists(target))
                 {
                     if (operation.Kind != PluginPackageOperationKind.Update || PluginManifest.Read(target).Id != operation.PluginId || PluginPackageInspection.Fingerprint(target) != operation.PackageHash)
@@ -371,7 +407,8 @@ public sealed class PluginPackageOperations : IDisposable
             {
                 if (Directory.Exists(target))
                 {
-                    if (PluginManifest.Read(target).Id != operation.PluginId || PluginPackageInspection.Fingerprint(target) != operation.PackageHash) throw new IOException("Unexpected installation content; manual recovery required.");
+                    if (PluginManifest.Read(target).Id != operation.PluginId || PluginPackageInspection.Fingerprint(target) != operation.PackageHash)
+                        throw new IOException("Unexpected installation content; manual recovery required.");
                     Directory.Move(target, Path.Combine(Transaction(operation), "rejected"));
                 }
             }
@@ -409,22 +446,27 @@ public sealed class PluginPackageOperations : IDisposable
     {
         var next = operation with { State = state, Diagnostic = diagnostic };
         var index = journal.Operations.FindIndex(o => o.Token == operation.Token);
-        if (index < 0) journal.Operations.Add(next);
-        else journal.Operations[index] = next;
+        if (index < 0)
+            journal.Operations.Add(next);
+        else
+            journal.Operations[index] = next;
         return next;
     }
 
     private void DeleteOwned(string path)
     {
-        if (!Directory.Exists(path)) return;
-        if (Path.GetDirectoryName(path) != WorkRoot || !Guid.TryParseExact(Path.GetFileName(path), "N", out _)) throw new InvalidDataException("Unsafe transaction cleanup path.");
+        if (!Directory.Exists(path))
+            return;
+        if (Path.GetDirectoryName(path) != WorkRoot || !Guid.TryParseExact(Path.GetFileName(path), "N", out _))
+            throw new InvalidDataException("Unsafe transaction cleanup path.");
         PluginPackagePaths.ValidateTree(path); // Never follow links while deleting staged or backup content.
         Directory.Delete(path, true);
     }
     private void VerifyTransactionContents(PluginPackageOperation operation)
     {
         var path = Transaction(operation);
-        if (!Directory.Exists(path)) return;
+        if (!Directory.Exists(path))
+            return;
         foreach (var child in Directory.GetFileSystemEntries(path))
         {
             var name = Path.GetFileName(child);
@@ -436,7 +478,8 @@ public sealed class PluginPackageOperations : IDisposable
     }
     private void TryDeleteTransaction(PluginPackageOperation operation)
     {
-        try { VerifyTransactionContents(operation); DeleteOwned(Transaction(operation)); }
+        try
+        { VerifyTransactionContents(operation); DeleteOwned(Transaction(operation)); }
         catch (Exception ex) { _log($"Warning: [Plugin packages] Staging retained at '{Transaction(operation)}': {ex.Message}"); }
     }
 
@@ -451,7 +494,8 @@ public sealed class PluginPackageOperations : IDisposable
     private static void ValidateRecord(PluginPackageOperation operation)
     {
         if (!Guid.TryParseExact(operation.Token, "N", out _) || !PluginManifest.IsValidId(operation.PluginId) ||
-            !Enum.IsDefined(operation.Kind) || !Enum.IsDefined(operation.State)) throw new InvalidDataException("Invalid package journal identity or operation.");
+            !Enum.IsDefined(operation.Kind) || !Enum.IsDefined(operation.State))
+            throw new InvalidDataException("Invalid package journal identity or operation.");
         Protect(operation.PluginId, operation.Folder);
         if (operation.Kind != PluginPackageOperationKind.Install && operation.OriginalHash is null ||
             operation.Kind != PluginPackageOperationKind.Remove && operation.PackageHash is null)
@@ -468,10 +512,13 @@ public sealed class PluginPackageOperations : IDisposable
         }
         catch (FileNotFoundException) { return new(); }
         using var stream = input;
-        if (stream.Length > 1024 * 1024) throw new InvalidDataException("Package journal exceeds 1 MiB.");
+        if (stream.Length > 1024 * 1024)
+            throw new InvalidDataException("Package journal exceeds 1 MiB.");
         var journal = JsonSerializer.Deserialize<Journal>(stream) ?? throw new InvalidDataException("Empty package journal.");
-        if (journal.SchemaVersion != 1 || journal.Operations is null || journal.Operations.Count > 128) throw new InvalidDataException("Unsupported or invalid package journal.");
-        foreach (var operation in journal.Operations) ValidateRecord(operation);
+        if (journal.SchemaVersion != 1 || journal.Operations is null || journal.Operations.Count > 128)
+            throw new InvalidDataException("Unsupported or invalid package journal.");
+        foreach (var operation in journal.Operations)
+            ValidateRecord(operation);
         if (journal.Operations.Select(o => o.PluginId).Distinct(StringComparer.Ordinal).Count() != journal.Operations.Count ||
             journal.Operations.Select(o => o.Token).Distinct(StringComparer.Ordinal).Count() != journal.Operations.Count)
             throw new InvalidDataException("Duplicate journal identities.");
@@ -486,7 +533,8 @@ public sealed class PluginPackageOperations : IDisposable
             using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
             {
                 var bytes = JsonSerializer.SerializeToUtf8Bytes(journal, JsonOptions);
-                if (bytes.Length > 1024 * 1024) throw new InvalidDataException("Pending-operation journal exceeds 1 MiB; cancel completed/unneeded operations first.");
+                if (bytes.Length > 1024 * 1024)
+                    throw new InvalidDataException("Pending-operation journal exceeds 1 MiB; cancel completed/unneeded operations first.");
                 stream.Write(bytes);
                 stream.Flush(true);
             }
@@ -500,16 +548,23 @@ public sealed class PluginPackageOperations : IDisposable
     {
         var a = left.Split('+')[0].Split('-', 2);
         var b = right.Split('+')[0].Split('-', 2);
-        var ac = a[0].Split('.'); var bc = b[0].Split('.');
-        for (var i = 0; i < 3; i++) { var c = BigInteger.Parse(ac[i]).CompareTo(BigInteger.Parse(bc[i])); if (c != 0) return c; }
-        if (a.Length != b.Length) return a.Length == 1 ? 1 : -1;
-        if (a.Length == 1) return 0;
-        var ap = a[1].Split('.'); var bp = b[1].Split('.');
+        var ac = a[0].Split('.');
+        var bc = b[0].Split('.');
+        for (var i = 0; i < 3; i++)
+        { var c = BigInteger.Parse(ac[i]).CompareTo(BigInteger.Parse(bc[i])); if (c != 0) return c; }
+        if (a.Length != b.Length)
+            return a.Length == 1 ? 1 : -1;
+        if (a.Length == 1)
+            return 0;
+        var ap = a[1].Split('.');
+        var bp = b[1].Split('.');
         for (var i = 0; i < Math.Min(ap.Length, bp.Length); i++)
         {
-            var an = BigInteger.TryParse(ap[i], NumberStyles.None, CultureInfo.InvariantCulture, out var av); var bn = BigInteger.TryParse(bp[i], NumberStyles.None, CultureInfo.InvariantCulture, out var bv);
+            var an = BigInteger.TryParse(ap[i], NumberStyles.None, CultureInfo.InvariantCulture, out var av);
+            var bn = BigInteger.TryParse(bp[i], NumberStyles.None, CultureInfo.InvariantCulture, out var bv);
             var c = an && bn ? av.CompareTo(bv) : an != bn ? an ? -1 : 1 : StringComparer.Ordinal.Compare(ap[i], bp[i]);
-            if (c != 0) return c;
+            if (c != 0)
+                return c;
         }
         return ap.Length.CompareTo(bp.Length);
     }

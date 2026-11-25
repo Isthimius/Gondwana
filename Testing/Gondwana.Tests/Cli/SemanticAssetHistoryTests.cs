@@ -21,9 +21,12 @@ public sealed partial class SemanticAssetPackTests
         edits.AcceptSavedArchive(adopted);
         var checkpoint = AssetImportPlan.Snapshot(adopted);
         Assert.Equal(5, checkpoint.Keys.Where(e => PackDefinitionDocument.IsNative(e.AssetType)).Select(e => e.AssetType).Distinct().Count());
-        edits.History.Undo(); Assert.Empty(adopted.GetAllEntries());
-        edits.History.Redo(); Assert.False(edits.History.IsDirty);
+        edits.History.Undo();
+        Assert.Empty(adopted.GetAllEntries());
+        edits.History.Redo();
+        Assert.False(edits.History.IsDirty);
         var restored = AssetImportPlan.Snapshot(adopted);
-        foreach (var pair in checkpoint) Assert.Equal(pair.Value, restored[pair.Key]);
+        foreach (var pair in checkpoint)
+            Assert.Equal(pair.Value, restored[pair.Key]);
     }
 }

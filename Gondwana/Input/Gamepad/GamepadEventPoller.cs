@@ -105,7 +105,8 @@ public sealed class GamepadEventPoller
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (PauseAllInput || ButtonDown is null || Adapters is null) return;
+        if (PauseAllInput || ButtonDown is null || Adapters is null)
+            return;
 
         foreach (var adapter in Adapters)
         {
@@ -117,7 +118,8 @@ public sealed class GamepadEventPoller
                 var button = kvp.Key;
                 var config = kvp.Value;
 
-                if (config.IsPaused || !adapter.PressedButtons.Contains(button)) continue;
+                if (config.IsPaused || !adapter.PressedButtons.Contains(button))
+                    continue;
 
                 if (config.ReadyForNextEvent(tick))
                 {

@@ -63,7 +63,8 @@ public sealed partial class CompositionTests
     public void StandalonePickerReusesVerifiedCredentialsAndRetriesAfterPasswordChange() => RunSta(root =>
     {
         var archive = CreatePreviewArchive(root, "encrypted.gaf", Color.Blue);
-        using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false)) package.Save();
+        using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false))
+            package.Save();
         using var owner = new Form();
         using var packages = PackedResourcePicker.CreateCatalog(owner);
         int prompts = 0;
@@ -72,7 +73,8 @@ public sealed partial class CompositionTests
         timer.Tick += (_, _) =>
         {
             var prompt = Application.OpenForms.Cast<Form>().FirstOrDefault(form => form.Text == "Asset password");
-            if (prompt is null) return;
+            if (prompt is null)
+                return;
             prompts++;
             prompt.Controls.OfType<TextBox>().Single().Text = password;
             ((Button)prompt.AcceptButton!).PerformClick();
@@ -111,7 +113,8 @@ public sealed partial class CompositionTests
     public void PackedSelectionsPreviewNonFirstMembersAndSurviveSaveAs(bool sharedCatalog) => RunSta(root =>
     {
         var archive = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
-        foreach (var file in Directory.GetFiles(root).Where(file => file != archive)) File.Delete(file);
+        foreach (var file in Directory.GetFiles(root).Where(file => file != archive))
+            File.Delete(file);
         var original = File.ReadAllBytes(archive);
         using var packages = new AssetPackageCatalog();
         var catalog = sharedCatalog ? packages : null;
@@ -126,7 +129,8 @@ public sealed partial class CompositionTests
         AssertSourceImages(Private(animations, "_sources"), Color.LimeGreen);
         var scenePath = Path.Combine(root, "scene.gscn");
         var scene = PreviewScene("assets.gaf");
-        scene.TilesheetSources.Clear(); scene.AnimationSources.Clear();
+        scene.TilesheetSources.Clear();
+        scene.AnimationSources.Clear();
         SceneDefinitionSerializer.Save(scenePath, scene);
         using var scenes = new SceneEditorControl(SceneDocument.Open(scenePath), catalog);
         scenes.AddPackedTilesheetSource(gts);
@@ -136,9 +140,11 @@ public sealed partial class CompositionTests
         AssertRenderedColor((Control)Private(scenes, "_preview"), Color.LimeGreen);
         var spriteDocument = SpriteDocument.Create(root);
         var sprite = spriteDocument.AddSprite();
-        sprite.SceneId = "island"; sprite.SceneLayerId = "ground";
+        sprite.SceneId = "island";
+        sprite.SceneLayerId = "ground";
         sprite.Frame = new() { Tilesheet = "terrain", RegionName = "default" };
-        sprite.AnimationKey = "water.flow"; sprite.StartAnimation = true;
+        sprite.AnimationKey = "water.flow";
+        sprite.StartAnimation = true;
         using var sprites = new SpriteEditorControl(spriteDocument, catalog);
         sprites.AddPackedTilesheetSource(gts);
         sprites.AddPackedSceneSource(gscn);
@@ -175,7 +181,9 @@ public sealed partial class CompositionTests
         animations.Document.Definition.Key = "unsaved";
         animations.Document.MarkChanged();
         ReplacePreviewImage(root, archive, Color.Blue);
-        animations.ReloadSources(); scenes.ReloadSources(); sprites.ReloadSources();
+        animations.ReloadSources();
+        scenes.ReloadSources();
+        sprites.ReloadSources();
         AssertSourceImages(Private(animations, "_sources"), Color.Blue);
         AssertRenderedColor((Control)Private(scenes, "_preview"), Color.Blue);
         Assert.Equal("unsaved", animations.Document.Definition.Key);
@@ -236,10 +244,19 @@ public sealed partial class CompositionTests
         // Real PCM WAVE header and one silent sample.
         using (var writer = new BinaryWriter(File.Create(wave)))
         {
-            writer.Write("RIFF"u8.ToArray()); writer.Write(38); writer.Write("WAVEfmt "u8.ToArray());
-            writer.Write(16); writer.Write((short)1); writer.Write((short)1); writer.Write(8000);
-            writer.Write(16000); writer.Write((short)2); writer.Write((short)16);
-            writer.Write("data"u8.ToArray()); writer.Write(2); writer.Write((short)0);
+            writer.Write("RIFF"u8.ToArray());
+            writer.Write(38);
+            writer.Write("WAVEfmt "u8.ToArray());
+            writer.Write(16);
+            writer.Write((short)1);
+            writer.Write((short)1);
+            writer.Write(8000);
+            writer.Write(16000);
+            writer.Write((short)2);
+            writer.Write((short)16);
+            writer.Write("data"u8.ToArray());
+            writer.Write(2);
+            writer.Write((short)0);
         }
         var entry = extensionless ? "sounds/alert" : "sounds/alert.wav";
         using (var package = AssetsFile.LoadOrCreate(archive, null, false, register: false))
@@ -253,7 +270,8 @@ public sealed partial class CompositionTests
         var resource = Assert.Single(packages.GetResources(archive, AssetTypes.Audio));
         Assert.Equal(entry, resource.EntryName);
         using var editor = new AudioEditorControl(AudioDocument.Create(root), packages);
-        if (extensionless) Assert.Throws<InvalidDataException>(() => editor.AddPackedAudio(new(resource)));
+        if (extensionless)
+            Assert.Throws<InvalidDataException>(() => editor.AddPackedAudio(new(resource)));
         editor.AddPackedAudio(new(resource, SourceExtension: ".wav"));
         Assert.Empty(editor.Document.Validate());
         foreach (var directory in new[] { root, Path.Combine(root, "saved") })
@@ -289,7 +307,8 @@ public sealed partial class CompositionTests
         packages.PasswordAccepted += (_, _) => accepted++;
         PackedResourceSelection? result = null;
         using var dialog = PackedResourcePicker.CreateDialog(packages, locked, AssetTypes.TilesheetDefinition, selected => result = selected);
-        dialog.Show(); Application.DoEvents();
+        dialog.Show();
+        Application.DoEvents();
         T Find<T>(string name) where T : Control => (T)dialog.Controls.Find(name, true).Single();
         Assert.Contains("password", Find<TextBox>("status").Text, StringComparison.OrdinalIgnoreCase);
         Assert.Empty(Find<ListBox>("entries").Items.Cast<object>());

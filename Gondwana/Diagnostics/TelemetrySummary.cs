@@ -58,17 +58,21 @@ public sealed record TelemetrySummary(
         var availability = TelemetryAvailability.Unsupported;
         foreach (var value in summaries)
         {
-            if (kind is not null && kind != value.Kind) throw new ArgumentException("Cannot combine different metric kinds.", nameof(summaries));
+            if (kind is not null && kind != value.Kind)
+                throw new ArgumentException("Cannot combine different metric kinds.", nameof(summaries));
             kind = value.Kind;
-            if (value.Availability > availability) availability = value.Availability;
-            if (value.Count == 0) continue;
+            if (value.Availability > availability)
+                availability = value.Availability;
+            if (value.Count == 0)
+                continue;
             count += value.Count;
             sum += value.Sum;
             min = min is null ? value.Minimum : Math.Min(min.Value, value.Minimum!.Value);
             max = max is null ? value.Maximum : Math.Max(max.Value, value.Maximum!.Value);
             last = value.Last;
             observed = value.LastObservedSeconds;
-            if (value.WindowDelta is { } change) delta = (delta ?? 0) + change;
+            if (value.WindowDelta is { } change)
+                delta = (delta ?? 0) + change;
         }
         return new(availability, count, sum, min, max, last)
         {
@@ -109,9 +113,12 @@ public sealed record TelemetryOptions
     {
         if (Interval < TimeSpan.FromMilliseconds(10) || Interval > TimeSpan.FromMinutes(1))
             throw new ArgumentOutOfRangeException(nameof(Interval));
-        if (HistoryCapacity is < 1 or > 1024) throw new ArgumentOutOfRangeException(nameof(HistoryCapacity));
-        if (SourceCapacity is < 1 or > 64) throw new ArgumentOutOfRangeException(nameof(SourceCapacity));
-        if (MetricCapacity is < 8 or > 512) throw new ArgumentOutOfRangeException(nameof(MetricCapacity));
+        if (HistoryCapacity is < 1 or > 1024)
+            throw new ArgumentOutOfRangeException(nameof(HistoryCapacity));
+        if (SourceCapacity is < 1 or > 64)
+            throw new ArgumentOutOfRangeException(nameof(SourceCapacity));
+        if (MetricCapacity is < 8 or > 512)
+            throw new ArgumentOutOfRangeException(nameof(MetricCapacity));
 
         long retainedMetricSummaries =
             (long)HistoryCapacity * SourceCapacity * MetricCapacity;

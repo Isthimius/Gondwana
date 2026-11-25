@@ -35,7 +35,8 @@ internal sealed class CollisionAdjustConverter : ExpandableObjectConverter
         if (value is string text)
         {
             var parts = text.Split(',');
-            if (parts.Length != 4) throw new FormatException("Enter four integer insets: top, right, bottom, left.");
+            if (parts.Length != 4)
+                throw new FormatException("Enter four integer insets: top, right, bottom, left.");
             var insets = parts.Select(p => int.Parse(p.Trim(), CultureInfo.InvariantCulture)).ToArray();
             return new CollisionAdjust(top: insets[0], bottom: insets[2], left: insets[3], right: insets[1]);
         }

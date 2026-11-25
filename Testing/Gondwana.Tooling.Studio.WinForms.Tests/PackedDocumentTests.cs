@@ -90,7 +90,8 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.Image, Path.Combine(root, "blue.png"), "blue.png");
             archive.Save();
         }
-        foreach (var loose in new[] { "world.gts", "water.gani", "island.gscn", "atlas.png", "blue.png" }) File.Delete(Path.Combine(root, loose));
+        foreach (var loose in new[] { "world.gts", "water.gani", "island.gscn", "atlas.png", "blue.png" })
+            File.Delete(Path.Combine(root, loose));
         using var studio = Host(root);
         var scene = studio.OpenDocument(new AssetLocation(AssetTypes.SceneDefinition, path, "definitions/island.gscn"));
         var scenes = (SceneEditorControl)scene.Document.Editor;
@@ -164,8 +165,10 @@ public sealed partial class CompositionTests
         try
         {
             studio.AskSave = _ => DialogResult.Yes;
-            if (command == "close") child.Close();
-            if (command == "shutdown") studio.Close();
+            if (command == "close")
+                child.Close();
+            if (command == "shutdown")
+                studio.Close();
             var save = studio.SaveDocument(child);
             Assert.False(save.IsCompleted);
             Assert.False(child.IsDisposed);
@@ -179,8 +182,10 @@ public sealed partial class CompositionTests
             release.Set();
             Assert.True(AwaitUi(save));
             Application.DoEvents();
-            if (command != "save") Assert.True(child.IsDisposed);
-            if (command == "shutdown") Assert.True(studio.IsDisposed);
+            if (command != "save")
+                Assert.True(child.IsDisposed);
+            if (command == "shutdown")
+                Assert.True(studio.IsDisposed);
             using var saved = StudioArchiveSnapshot.Open(path, null);
             Assert.Contains("persisted", Encoding.UTF8.GetString(StudioArchiveSnapshot.Entry(saved.Archive, NativeLocation(path, "gsnd"))));
         }
@@ -348,7 +353,8 @@ public sealed partial class CompositionTests
     {
         var path = Path.Combine(root, name);
         using var archive = AssetsFile.LoadOrCreate(path, password, password is not null, register: false);
-        foreach (var format in new[] { "gts", "gani", "gscn", "gspr", "gsnd" }) AddNative(archive, format, "nested/same." + format);
+        foreach (var format in new[] { "gts", "gani", "gscn", "gspr", "gsnd" })
+            AddNative(archive, format, "nested/same." + format);
         using var bytes = new MemoryStream([42, 11, 7]);
         archive.Add(AssetTypes.Misc, "keep.bin", bytes);
         archive.Save();
@@ -361,11 +367,26 @@ public sealed partial class CompositionTests
     {
         switch (model.Editor)
         {
-            case TilesheetEditorControl e: e.Document.Definition.Name = name; e.Document.MarkChanged(); break;
-            case AnimationEditorControl e: e.Document.Definition.Key = name; e.Document.MarkChanged(); break;
-            case SceneEditorControl e: e.Document.Definition.ID = name; e.Document.MarkChanged(); break;
-            case SpriteEditorControl e: e.Document.Definition.Key = name; e.Document.MarkChanged(); break;
-            case AudioEditorControl e: e.Document.Definition.Key = name; e.Document.MarkChanged(); break;
+            case TilesheetEditorControl e:
+                e.Document.Definition.Name = name;
+                e.Document.MarkChanged();
+                break;
+            case AnimationEditorControl e:
+                e.Document.Definition.Key = name;
+                e.Document.MarkChanged();
+                break;
+            case SceneEditorControl e:
+                e.Document.Definition.ID = name;
+                e.Document.MarkChanged();
+                break;
+            case SpriteEditorControl e:
+                e.Document.Definition.Key = name;
+                e.Document.MarkChanged();
+                break;
+            case AudioEditorControl e:
+                e.Document.Definition.Key = name;
+                e.Document.MarkChanged();
+                break;
         }
     }
 
@@ -498,7 +519,8 @@ public sealed partial class CompositionTests
             changed.Add(AssetTypes.TilesheetDefinition, child.Document.PackedLocation()!.AssetEntryName!, externalEntry);
             changed.Save();
         }
-        else studio.BeforeArchiveInstall = () => throw new IOException("Injected failure after staging.");
+        else
+            studio.BeforeArchiveInstall = () => throw new IOException("Injected failure after staging.");
         var before = File.ReadAllBytes(path);
         studio.ReportError = _ => { };
         Assert.False(AwaitUi(studio.SaveDocument(child)));

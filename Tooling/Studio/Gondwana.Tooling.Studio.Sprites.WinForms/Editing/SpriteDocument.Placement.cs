@@ -22,9 +22,11 @@ public sealed partial class SpriteDocument
     /// <summary>Resolves a stable ID in the requested logical member of this editing session.</summary>
     public SpriteInstanceDefinition? FindInstance(string memberKey, Guid id)
     {
-        if (id == Guid.Empty) return null;
+        if (id == Guid.Empty)
+            return null;
         var members = Definitions.Where(member => member.Key == memberKey).Take(2).ToArray();
-        if (members.Length != 1) return null;
+        if (members.Length != 1)
+            return null;
         var instances = members[0].Sprites.Where(sprite => sprite.Id == id).Take(2).ToArray();
         return instances.Length == 1 ? instances[0] : null;
     }

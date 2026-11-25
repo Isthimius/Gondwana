@@ -42,25 +42,32 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
         if (key is not null)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            if (_itemsByKey.ContainsKey(key)) throw new ArgumentException($"Duplicate menu item key '{key}'.", nameof(key));
+            if (_itemsByKey.ContainsKey(key))
+                throw new ArgumentException($"Duplicate menu item key '{key}'.", nameof(key));
         }
         if (shortcut is { } gesture)
         {
-            if (gesture.Key <= 0) throw new ArgumentException("A shortcut requires a nonzero key.", nameof(shortcut));
-            if (_shortcuts.ContainsKey(gesture)) throw new ArgumentException($"Duplicate menu shortcut '{gesture}'.", nameof(shortcut));
+            if (gesture.Key <= 0)
+                throw new ArgumentException("A shortcut requires a nonzero key.", nameof(shortcut));
+            if (_shortcuts.ContainsKey(gesture))
+                throw new ArgumentException($"Duplicate menu shortcut '{gesture}'.", nameof(shortcut));
         }
     }
 
     internal void RegisterItem(MenuItemWidget item)
     {
-        if (item.Key is not null) _itemsByKey.Add(item.Key, item);
-        if (item.Shortcut is { } gesture) _shortcuts.Add(gesture, item);
+        if (item.Key is not null)
+            _itemsByKey.Add(item.Key, item);
+        if (item.Shortcut is { } gesture)
+            _shortcuts.Add(gesture, item);
     }
 
     internal void UnregisterItem(MenuItemWidget item)
     {
-        if (item.Key is not null && _itemsByKey.GetValueOrDefault(item.Key) == item) _itemsByKey.Remove(item.Key);
-        if (item.Shortcut is { } gesture && _shortcuts.GetValueOrDefault(gesture) == item) _shortcuts.Remove(gesture);
+        if (item.Key is not null && _itemsByKey.GetValueOrDefault(item.Key) == item)
+            _itemsByKey.Remove(item.Key);
+        if (item.Shortcut is { } gesture && _shortcuts.GetValueOrDefault(gesture) == item)
+            _shortcuts.Remove(gesture);
     }
 
     private WidgetBase? _previousFocus;
@@ -361,7 +368,8 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
 
     private void HandleKeyboard(WidgetKeyboardEventArgs args)
     {
-        if (args.Handled || args.KeyAction != KeyAction.Pressed || !IsAvailable) return;
+        if (args.Handled || args.KeyAction != KeyAction.Pressed || !IsAvailable)
+            return;
         if (args.Key > 0 && _shortcuts.TryGetValue(new KeyGesture(args.Key, args.Modifiers), out var command) && command.CanInvoke)
         {
             args.Handled = true;
@@ -379,17 +387,22 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
                 return;
             }
         }
-        if (_openMenuIndex < 0 || args.Modifiers != KeyboardModifierState.None) return;
+        if (_openMenuIndex < 0 || args.Modifiers != KeyboardModifierState.None)
+            return;
         var dropDown = _menus[_openMenuIndex].DropDown.ActiveMenu;
         switch (args.Key)
         {
             case 27:
-                if (dropDown.ParentMenu is { } parent) parent.CloseChild();
-                else CloseMenu();
+                if (dropDown.ParentMenu is { } parent)
+                    parent.CloseChild();
+                else
+                    CloseMenu();
                 break;
             case 37:
-                if (dropDown.ParentMenu is { } previous) previous.CloseChild();
-                else OpenMenuAt((_openMenuIndex - 1 + _menus.Count) % _menus.Count);
+                if (dropDown.ParentMenu is { } previous)
+                    previous.CloseChild();
+                else
+                    OpenMenuAt((_openMenuIndex - 1 + _menus.Count) % _menus.Count);
                 break;
             case 39:
                 if (dropDown.SelectedItem is { SubMenu: not null } owner)
@@ -397,13 +410,20 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
                 else if (dropDown.ParentMenu is null)
                     OpenMenuAt((_openMenuIndex + 1) % _menus.Count);
                 break;
-            case 38: dropDown.SelectPreviousEnabled(); break;
-            case 40: dropDown.SelectNextEnabled(); break;
+            case 38:
+                dropDown.SelectPreviousEnabled();
+                break;
+            case 40:
+                dropDown.SelectNextEnabled();
+                break;
             case 13:
-            case 32: dropDown.InvokeSelectedItem(); break;
+            case 32:
+                dropDown.InvokeSelectedItem();
+                break;
             default:
                 var item = dropDown.Items.FirstOrDefault(item => item.CanInvoke && MatchesMnemonic(item.Mnemonic, args.Key));
-                if (item is null) return;
+                if (item is null)
+                    return;
                 item.PerformClick();
                 break;
         }

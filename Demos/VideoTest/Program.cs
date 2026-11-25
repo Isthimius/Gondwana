@@ -22,7 +22,8 @@ internal static class Program
         }
         try
         {
-            if (args.Contains("--headless")) return NativeSmoke.Run(args[0]);
+            if (args.Contains("--headless"))
+                return NativeSmoke.Run(args[0]);
             ApplicationConfiguration.Initialize();
             using var assets = args.Contains("--gaf")
                 ? AssetsFile.LoadOrCreate(Path.GetFullPath(args[0]), null, false, register: false) : null;
@@ -151,7 +152,8 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
     /// <inheritdoc/>
     protected override void OnDisposing()
     {
-        foreach (var control in _controls) control.Dispose();
+        foreach (var control in _controls)
+            control.Dispose();
         _controls.Clear();
         DisposeVideo();
     }

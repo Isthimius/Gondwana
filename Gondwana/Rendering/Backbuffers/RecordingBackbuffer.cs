@@ -836,7 +836,8 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
-        if (image is not null) Canvas.DrawImage(image, destRectScreen.ToSKRect());
+        if (image is not null)
+            Canvas.DrawImage(image, destRectScreen.ToSKRect());
     }
 
     /// <inheritdoc/>

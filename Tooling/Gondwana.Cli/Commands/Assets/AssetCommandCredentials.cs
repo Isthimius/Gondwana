@@ -14,7 +14,8 @@ internal static class AssetCommandCredentials
         if (path is not null)
             foreach (var pair in JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(path)) ?? throw new InvalidDataException("Invalid credential map."))
             {
-                if (!Path.IsPathFullyQualified(pair.Key)) throw new InvalidDataException("Credential keys must be absolute archive paths.");
+                if (!Path.IsPathFullyQualified(pair.Key))
+                    throw new InvalidDataException("Credential keys must be absolute archive paths.");
                 credentials.Add(Path.GetFullPath(pair.Key), pair.Value);
             }
         return credentials;

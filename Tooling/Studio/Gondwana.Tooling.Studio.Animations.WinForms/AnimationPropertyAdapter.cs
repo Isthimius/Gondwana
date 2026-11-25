@@ -22,7 +22,8 @@ internal sealed class AnimationPropertyAdapter
             ? _document.Definition.Frames[SelectedFrameIndex].DurationSeconds : null;
         set
         {
-            if (SelectedFrameIndex < 0 || SelectedFrameIndex >= _document.Definition.Frames.Count) return;
+            if (SelectedFrameIndex < 0 || SelectedFrameIndex >= _document.Definition.Frames.Count)
+                return;
             if (value is { } duration && (!double.IsFinite(duration) || duration <= 0))
                 throw new ArgumentOutOfRangeException(nameof(value), "Duration must be finite and positive.");
             var frame = _document.Definition.Frames[SelectedFrameIndex];

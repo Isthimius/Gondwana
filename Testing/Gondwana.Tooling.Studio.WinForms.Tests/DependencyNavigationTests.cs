@@ -154,7 +154,8 @@ public sealed partial class CompositionTests
         int calls = 0;
         studio.InspectDependencies = (_, _, token) =>
         {
-            if (++calls == 1) { oldToken = token; return first.Task; }
+            if (++calls == 1)
+            { oldToken = token; return first.Task; }
             return second.Task;
         };
         int uiThread = Environment.CurrentManagedThreadId;
@@ -185,7 +186,8 @@ public sealed partial class CompositionTests
         using var studio = Host(root);
         var document = parentArchive ? studio.OpenDocument(archive) : studio.OpenDocument(NativeLocation(archive, "gsnd"));
         WaitForArchives(studio.Browser);
-        if (!parentArchive) RenameFirst(document.Document, "saved-after-scan");
+        if (!parentArchive)
+            RenameFirst(document.Document, "saved-after-scan");
         var opened = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         CancellationToken scanToken = default;

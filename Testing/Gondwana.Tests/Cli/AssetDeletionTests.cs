@@ -63,7 +63,8 @@ public sealed partial class SemanticAssetPackTests
             using var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false);
             archive.Save();
         }
-        else { Content(true, false); Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        else
+        { Content(true, false); Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
         var plan = AssetDeletionPlan.Create(Output, [], [Output]);
         Assert.False(plan.ForceRequired);
         Assert.Equal(empty ? 0 : 16, plan.InternalReferences.Count);
@@ -88,7 +89,8 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal(original, File.ReadAllBytes(Output));
         Assert.Throws<IOException>(() => plan.CommitCore(true, (phase, _) =>
         {
-            if (phase == "stage") File.AppendAllText(Output, "concurrent change");
+            if (phase == "stage")
+                File.AppendAllText(Output, "concurrent change");
         }, default));
         Assert.Equal(original.Concat(System.Text.Encoding.UTF8.GetBytes("concurrent change")), File.ReadAllBytes(Output));
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(Output)!, ".gondwana-relocate-*"));
@@ -143,7 +145,8 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal(0, Delete("delete", Output, "--scope", _root, "--source-entry", "nested/item", "--type", "Misc", "--credentials", credentials, "--force"));
         Assert.Equal(original, File.ReadAllBytes(Output));
         Assert.Equal(0, Delete("delete", Output, "--scope", _root, "--source-entry", "nested/item", "--type", "Misc", "--credentials", credentials, "--commit"));
-        using (var archive = AssetsFile.LoadOrCreate(Output, "secret", true, register: false)) Assert.Empty(archive.GetAllEntries());
+        using (var archive = AssetsFile.LoadOrCreate(Output, "secret", true, register: false))
+            Assert.Empty(archive.GetAllEntries());
         Assert.Equal(0, Delete("delete", Output, "--scope", _root, "--archive", "--credentials", credentials));
         Assert.True(File.Exists(Output));
         Assert.Equal(0, Delete("delete", Output, "--scope", _root, "--archive", "--credentials", credentials, "--commit"));
@@ -184,7 +187,8 @@ public sealed partial class SemanticAssetPackTests
     public void DeletionBlocksAllEightRelationships(bool packed, bool explicitSources, bool legacy)
     {
         Content(explicitSources, legacy);
-        if (packed) { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        if (packed)
+        { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
         var scope = packed ? Output : Source;
         var scan = DefinitionReferenceDiscovery.Scan(scope);
         Assert.Equal(8, scan.References.Select(r => (r.Document.AssetType, r.Target.AssetType)).Distinct().Count());
@@ -198,7 +202,8 @@ public sealed partial class SemanticAssetPackTests
             Assert.All(plan.BlockingReferences, r => Assert.Contains(r.Member, string.Join("\n", plan.Preview)));
             Assert.Throws<InvalidOperationException>(() => plan.Commit());
         }
-        foreach (var pair in originals) Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
+        foreach (var pair in originals)
+            Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
     }
 
     /// <summary>Deleting only unreferenced documents leaves remaining dependencies loadable and removes no implicit dependents.</summary>
@@ -209,7 +214,8 @@ public sealed partial class SemanticAssetPackTests
     public void DeletionSafeDocumentsPreserveSurvivors(bool packed)
     {
         Content(true, false);
-        if (packed) { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        if (packed)
+        { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
         AssetLocation Target(AssetTypes type, string name) => new(type, packed ? Output : Path.Combine(Source, name), packed ? name : null);
         var scope = packed ? Output : Source;
         var plan = AssetDeletionPlan.Create(scope, [Target(AssetTypes.SpriteDefinition, "actors.gspr")]);
@@ -246,7 +252,8 @@ public sealed partial class SemanticAssetPackTests
             using var empty = AssetsFile.LoadOrCreate(Output, null, false, register: false);
             Assert.Empty(empty.GetAllEntries());
         }
-        else Assert.Empty(Directory.GetFiles(Source));
+        else
+            Assert.Empty(Directory.GetFiles(Source));
     }
 
     /// <summary>Batch-owned references are internal; encrypted archives preserve exact untouched bytes.</summary>
@@ -298,7 +305,8 @@ public sealed partial class SemanticAssetPackTests
     public void DeletionForceLeavesReviewedDanglingReferences(bool packed)
     {
         Content(true, false);
-        if (packed) { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
+        if (packed)
+        { Assert.Equal(0, Run("pack", Source, Output)); Directory.Delete(Source, true); }
         var scope = packed ? Output : Source;
         var target = new AssetLocation(AssetTypes.Image, packed ? Output : Path.Combine(Source, "art0.png"), packed ? "art0.png" : null);
         var plan = AssetDeletionPlan.Create(scope, [target]);
@@ -318,14 +326,16 @@ public sealed partial class SemanticAssetPackTests
             var archive = AssetsFile.LoadOrCreate(Output);
             var current = AssetImportPlan.Snapshot(archive);
             Assert.Equal(entries!.Count - 1, current.Count);
-            foreach (var pair in current) Assert.Equal(entries[pair.Key], pair.Value);
+            foreach (var pair in current)
+                Assert.Equal(entries[pair.Key], pair.Value);
             Assert.ThrowsAny<Exception>(() => TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "tiles.gts", "terrain0"));
             Assert.Equal("terrain1", TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "tiles.gts", "terrain1").Name);
         }
         else
         {
             Assert.False(File.Exists(target.Path));
-            foreach (var pair in files) Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
+            foreach (var pair in files)
+                Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
             Assert.ThrowsAny<Exception>(() => TilesheetRegistry.Instance.LoadFromDefinitionFile(Path.Combine(Source, "tiles.gts"), "terrain0"));
             Assert.Equal("terrain1", TilesheetRegistry.Instance.LoadFromDefinitionFile(Path.Combine(Source, "tiles.gts"), "terrain1").Name);
         }
@@ -420,15 +430,18 @@ public sealed partial class SemanticAssetPackTests
         using var cancellation = new CancellationTokenSource();
         Assert.ThrowsAny<Exception>(() => plan.CommitCore(false, (at, _) =>
         {
-            if (at != phase) return;
+            if (at != phase)
+                return;
             if (at == "complete-manifest")
             {
                 var manifest = Assert.Single(Directory.GetFiles(_root, ".gondwana-relocate-*.json"));
                 Assert.Contains("Prepared", File.ReadAllText(manifest));
                 Assert.Contains("Completed", File.ReadAllText(manifest + ".completed"));
             }
-            if (cancel) cancellation.Cancel();
-            else throw new IOException("Injected deletion failure");
+            if (cancel)
+                cancellation.Cancel();
+            else
+                throw new IOException("Injected deletion failure");
         }, cancellation.Token));
         Assert.Equal(new byte[] { 3 }, File.ReadAllBytes(first));
         Assert.Equal(new byte[] { 4 }, File.ReadAllBytes(second));

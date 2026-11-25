@@ -130,7 +130,9 @@ internal sealed class SpriteProperties(SpriteInstanceDefinition entry, SpriteDoc
     public int CollisionLeft { get => entry.AdjustCollisionArea.Left; set { Edit("Change sprite collision insets", () => { var adjust = entry.AdjustCollisionArea; adjust.Left = value; entry.AdjustCollisionArea = adjust; }); } }
     private void Edit(string description, Action change)
     {
-        if (document is null) change();
-        else document.Edit(entry, description, change);
+        if (document is null)
+            change();
+        else
+            document.Edit(entry, description, change);
     }
 }

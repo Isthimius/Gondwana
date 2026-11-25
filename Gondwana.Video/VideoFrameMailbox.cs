@@ -15,18 +15,21 @@ internal sealed class VideoFrameMailbox : IDisposable
     {
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             int rowBytes = checked(frame.Width * 4);
             int length = checked(rowBytes * frame.Height);
             if (frame.Width <= 0 || frame.Height <= 0 || frame.Stride < rowBytes || frame.Pixels == IntPtr.Zero)
                 throw new ArgumentException("Invalid video frame dimensions, stride, or pointer.", nameof(frame));
-            if (_pixels.Length != length) _pixels = new byte[length];
+            if (_pixels.Length != length)
+                _pixels = new byte[length];
             for (int y = 0; y < frame.Height; y++)
             {
                 Marshal.Copy(IntPtr.Add(frame.Pixels, checked(y * frame.Stride)), _pixels, y * rowBytes, rowBytes);
                 // RV32's X byte is undefined. Skia raster copies can preserve that byte even
                 // with Opaque metadata, so establish real opaque BGRA without swapping RGB.
-                for (int x = y * rowBytes + 3; x < (y + 1) * rowBytes; x += 4) _pixels[x] = 255;
+                for (int x = y * rowBytes + 3; x < (y + 1) * rowBytes; x += 4)
+                    _pixels[x] = 255;
             }
             _width = frame.Width;
             _height = frame.Height;
@@ -36,7 +39,8 @@ internal sealed class VideoFrameMailbox : IDisposable
 
     internal void Reset()
     {
-        lock (_gate) { _pending = false; _clear = true; }
+        lock (_gate)
+        { _pending = false; _clear = true; }
     }
 
     // Called only by the engine thread. Holding the gate for the copy bounds storage to
@@ -45,10 +49,13 @@ internal sealed class VideoFrameMailbox : IDisposable
     {
         lock (_gate)
         {
-            if (_disposed) return false;
+            if (_disposed)
+                return false;
             bool changed = _clear;
-            if (_clear) { bitmap?.Dispose(); bitmap = null; _clear = false; }
-            if (!_pending) return changed;
+            if (_clear)
+            { bitmap?.Dispose(); bitmap = null; _clear = false; }
+            if (!_pending)
+                return changed;
             if (bitmap is null || bitmap.Width != _width || bitmap.Height != _height)
             {
                 bitmap?.Dispose();
@@ -68,6 +75,7 @@ internal sealed class VideoFrameMailbox : IDisposable
     /// </summary>
     public void Dispose()
     {
-        lock (_gate) { _disposed = true; _pending = false; _pixels = []; }
+        lock (_gate)
+        { _disposed = true; _pending = false; _pixels = []; }
     }
 }

@@ -76,7 +76,8 @@ public sealed partial class SpriteDocument
         _definitions = [definition];
         Definition = definition;
         BaseDirectory = Path.GetFullPath(directory);
-        if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = "sprite";
+        if (string.IsNullOrWhiteSpace(definition.Key))
+            definition.Key = "sprite";
         FilePath = path;
         History = new(initiallySaved: !dirty);
         History.Changed += HistoryChanged;
@@ -98,7 +99,8 @@ public sealed partial class SpriteDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = SpriteDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
         var document = new SpriteDocument(definitions[0], Path.GetDirectoryName(path)!, path, false);
         document._definitions = definitions;
         document.SourceVersion = version;
@@ -138,7 +140,8 @@ public sealed partial class SpriteDocument
     private string UniqueName(string basis)
     {
         var name = basis;
-        for (int i = 2; Definition.Sprites.Any(sprite => sprite.Nickname == name); i++) name = basis + "-" + i;
+        for (int i = 2; Definition.Sprites.Any(sprite => sprite.Nickname == name); i++)
+            name = basis + "-" + i;
         return name;
     }
 
@@ -150,7 +153,8 @@ public sealed partial class SpriteDocument
     {
         path = Path.GetFullPath(path);
         if (Definition.TilesheetSources.Any(source => source.Tilesheet == name && source.Kind == SpriteTilesheetSourceKind.LooseDefinitionFile &&
-            !string.IsNullOrWhiteSpace(source.GtsPath) && string.Equals(ResolveReferencePath(source.GtsPath), path, StringComparison.OrdinalIgnoreCase))) return;
+            !string.IsNullOrWhiteSpace(source.GtsPath) && string.Equals(ResolveReferencePath(source.GtsPath), path, StringComparison.OrdinalIgnoreCase)))
+            return;
         var before = new ModelSnapshot(Definition.TilesheetSources);
         Definition.TilesheetSources.RemoveAll(source => source.Tilesheet == name);
         Definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose(name, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
@@ -167,7 +171,8 @@ public sealed partial class SpriteDocument
     {
         path = Path.GetFullPath(path);
         if (member.SceneSources.Any(source => source.SceneId == id && source.Kind == SpriteSceneSourceKind.LooseDefinitionFile &&
-            !string.IsNullOrWhiteSpace(source.GscnPath) && string.Equals(ResolveReferencePath(source.GscnPath), path, StringComparison.OrdinalIgnoreCase))) return;
+            !string.IsNullOrWhiteSpace(source.GscnPath) && string.Equals(ResolveReferencePath(source.GscnPath), path, StringComparison.OrdinalIgnoreCase)))
+            return;
         var before = new ModelSnapshot(member.SceneSources);
         member.SceneSources.RemoveAll(source => source.SceneId == id);
         member.SceneSources.Add(SpriteSceneSourceDefinition.Loose(id, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
@@ -183,7 +188,8 @@ public sealed partial class SpriteDocument
         path = Path.GetFullPath(path);
         if (Definition.AnimationSources.Any(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase) &&
             source.Kind == SpriteAnimationSourceKind.LooseDefinitionFile && !string.IsNullOrWhiteSpace(source.GaniPath) &&
-            string.Equals(ResolveReferencePath(source.GaniPath), path, StringComparison.OrdinalIgnoreCase))) return;
+            string.Equals(ResolveReferencePath(source.GaniPath), path, StringComparison.OrdinalIgnoreCase)))
+            return;
         var before = new ModelSnapshot(Definition.AnimationSources);
         Definition.AnimationSources.RemoveAll(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase));
         Definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(
@@ -215,7 +221,8 @@ public sealed partial class SpriteDocument
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = SpriteDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
-        if (!allowInvalid && errors.Count > 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Key)) ||
             _definitions.Select(member => member.Key).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
@@ -279,7 +286,8 @@ public sealed partial class SpriteDocument
     /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(SpriteDefinition definition)
     {
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
         Definition = definition;
         NotifyChanged();
     }
@@ -301,7 +309,8 @@ public sealed partial class SpriteDocument
         var definition = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(Definition));
         definition.Source = Definition.Source;
         definition.Key = UniqueDefinitionIdentity(Definition.Key + "-copy");
-        foreach (var sprite in definition.Sprites) { sprite.Id = Guid.NewGuid(); if (!string.IsNullOrWhiteSpace(sprite.Nickname)) sprite.Nickname += "-" + definition.Key; }
+        foreach (var sprite in definition.Sprites)
+        { sprite.Id = Guid.NewGuid(); if (!string.IsNullOrWhiteSpace(sprite.Nickname)) sprite.Nickname += "-" + definition.Key; }
         AddMembers([definition], "Duplicate sprite definition");
         return definition;
     }
@@ -312,12 +321,14 @@ public sealed partial class SpriteDocument
     public bool RemoveDefinition(SpriteDefinition definition)
     {
         int index = _definitions.IndexOf(definition);
-        if (_definitions.Count == 1 || index < 0) return false;
+        if (_definitions.Count == 1 || index < 0)
+            return false;
         var selected = Definition;
         History.Execute("Remove definition", () =>
         {
             _definitions.RemoveAt(index);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+            if (ReferenceEquals(Definition, definition))
+                Definition = _definitions[0];
         }, () => { _definitions.Insert(index, definition); Definition = selected; });
         return true;
     }
@@ -369,7 +380,8 @@ public sealed partial class SpriteDocument
             }
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "sprites");
-        if (imported.Count == 0) return 0;
+        if (imported.Count == 0)
+            return 0;
         AddMembers(imported, "Import sprite definitions");
         return imported.Count;
     }
@@ -377,7 +389,8 @@ public sealed partial class SpriteDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++) candidate = basis + "-" + i;
+        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++)
+            candidate = basis + "-" + i;
         return candidate;
     }
 }

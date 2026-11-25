@@ -40,10 +40,13 @@ public sealed partial class SemanticAssetPackTests
             Assert.Equal(original.Count(pair => roots.Contains(Path.GetFileName(pair.Key))) + (dependencies ? (legacy ? 5 : 7) : 0), plan.AdditionCount);
             destination.Save();
         }
-        foreach (var pair in original) Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
-        if (dependencies) Directory.Delete(Source, true);
+        foreach (var pair in original)
+            Assert.Equal(pair.Value, File.ReadAllBytes(pair.Key));
+        if (dependencies)
+            Directory.Delete(Source, true);
         var archive = AssetsFile.LoadOrCreate(Output, "secret");
-        using (var unsaved = archive.Get(AssetTypes.Misc, "unsaved")) Assert.Equal(42, unsaved!.ReadByte());
+        using (var unsaved = archive.Get(AssetTypes.Misc, "unsaved"))
+            Assert.Equal(42, unsaved!.ReadByte());
         int count = legacy ? 1 : 2;
         if (dependencies)
         {
@@ -73,7 +76,8 @@ public sealed partial class SemanticAssetPackTests
         Image("art.png");
         Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
         using var destination = AssetsFile.LoadOrCreate(Output, null, false, register: false);
-        using (var stream = File.OpenRead(Path.Combine(Source, "art.png"))) destination.Add(AssetTypes.Image, "art.png", stream);
+        using (var stream = File.OpenRead(Path.Combine(Source, "art.png")))
+            destination.Add(AssetTypes.Image, "art.png", stream);
         var path = Path.Combine(Source, "sheet.gts");
         TilesheetDefinitionSerializer.Save(path, Sheet("terrain", "art.png"));
         var plan = AssetImportPlan.Create(destination, [new(path, AssetTypes.TilesheetDefinition, "renamed.gts")], true);
@@ -157,10 +161,12 @@ public sealed partial class SemanticAssetPackTests
         Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
         var physicalImage = Path.Combine(Source, "art.png");
         using var destination = AssetsFile.LoadOrCreate(Output, null, false, register: false);
-        using (var image = File.OpenRead(physicalImage)) destination.Add(AssetTypes.Image, "images/custom.png", image);
+        using (var image = File.OpenRead(physicalImage))
+            destination.Add(AssetTypes.Image, "images/custom.png", image);
         var sheetBytes = System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(
             Sheet("terrain", Path.GetRelativePath(Path.GetDirectoryName(Output)!, physicalImage))));
-        using (var stream = new MemoryStream(sheetBytes)) destination.Add(AssetTypes.TilesheetDefinition, "terrain.gts", stream);
+        using (var stream = new MemoryStream(sheetBytes))
+            destination.Add(AssetTypes.TilesheetDefinition, "terrain.gts", stream);
         var animationPath = Path.Combine(Source, "walk.gani");
         AnimationDefinitionSerializer.Save(animationPath, new AnimationDefinition
         {
@@ -203,10 +209,12 @@ public sealed partial class SemanticAssetPackTests
         {
             using var stream = new MemoryStream(bytes);
             destination.Add(key.AssetType, key.AssetName, stream);
-            if (++writes == 2) throw new IOException("Injected post-write failure");
+            if (++writes == 2)
+                throw new IOException("Injected post-write failure");
         }, default));
         Assert.Empty(destination.GetAllEntries());
-        using (var stream = new MemoryStream([9])) destination.Add(AssetTypes.Misc, "another-unsaved-edit", stream);
+        using (var stream = new MemoryStream([9]))
+            destination.Add(AssetTypes.Misc, "another-unsaved-edit", stream);
         Assert.Throws<InvalidOperationException>(() => plan.Apply());
         Assert.Equal("another-unsaved-edit", Assert.Single(destination.GetAllEntries()).AssetName);
     }
@@ -222,7 +230,8 @@ public sealed partial class SemanticAssetPackTests
         TilesheetDefinitionSerializer.Save(path, Sheet("terrain", "art.png"));
         Assert.Throws<InvalidDataException>(() => AssetImportPlan.Create(destination, [new(path, AssetTypes.Misc, "sheet.gts")], true));
         Assert.Throws<InvalidDataException>(() => AssetImportPlan.Create(destination, [new(path, AssetTypes.TilesheetDefinition, "../escape")], true));
-        using (var stream = new MemoryStream([99])) destination.Add(AssetTypes.Image, "art.png", stream);
+        using (var stream = new MemoryStream([99]))
+            destination.Add(AssetTypes.Image, "art.png", stream);
         Assert.Throws<InvalidDataException>(() => AssetImportPlan.Create(destination, [new(path, AssetTypes.TilesheetDefinition, "sheet.gts")], true));
         File.Delete(Path.Combine(Source, "art.png"));
         Assert.Throws<InvalidDataException>(() => AssetImportPlan.Create(destination, [new(path, AssetTypes.TilesheetDefinition, "sheet.gts")], false));
@@ -238,7 +247,8 @@ public sealed partial class SemanticAssetPackTests
         Image("art.png");
         Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
         using var destination = AssetsFile.LoadOrCreate(Output, null, false, register: false);
-        using (var stream = File.OpenRead(Path.Combine(Source, "art.png"))) destination.Add(AssetTypes.Image, "images/exact.png", stream);
+        using (var stream = File.OpenRead(Path.Combine(Source, "art.png")))
+            destination.Add(AssetTypes.Image, "images/exact.png", stream);
         var definition = Sheet("terrain", "unused");
         definition.Image = new() { AssetsFilePath = Output, AssetEntryName = "images/exact.png" };
         var path = Path.Combine(Source, "sheet.gts");
@@ -276,7 +286,8 @@ public sealed partial class SemanticAssetPackTests
         var plan = AssetImportPlan.Create(destination, [new(path, AssetTypes.TilesheetDefinition, "sheet.gts"), new(sounds, AssetTypes.AudioDefinition, "sounds.gsnd")], dependencies);
         Assert.Contains(plan.Preview, line => line.StartsWith("External URI"));
         plan.Apply();
-        if (dependencies) File.Delete(externalPath);
+        if (dependencies)
+            File.Delete(externalPath);
         Assert.Equal("terrain", TilesheetRegistry.Instance.LoadFromDefinitionAsset(destination, "sheet.gts").Name);
         Assert.Equal("https://example.invalid/radio", AudioDefinitionSerializer.Load(destination, "sounds.gsnd").Resources[0].SourceUri);
     }
@@ -300,7 +311,8 @@ public sealed partial class SemanticAssetPackTests
         destination.Remove(AssetTypes.TilesheetDefinition, "two.gts");
         Assert.Throws<InvalidDataException>(() => AssetImportPlan.Create(destination, [new(path, AssetTypes.AnimationDefinition, "walk.gani")], true));
         Image("art.png");
-        using (var image = File.OpenRead(Path.Combine(Source, "art.png"))) destination.Add(AssetTypes.Image, "art.png", image);
+        using (var image = File.OpenRead(Path.Combine(Source, "art.png")))
+            destination.Add(AssetTypes.Image, "art.png", image);
         var sheet = Sheet("terrain", "unused");
         sheet.Image = new() { AssetsFilePath = Output, AssetEntryName = "art.png" };
         using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet))))

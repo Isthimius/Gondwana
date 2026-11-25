@@ -49,7 +49,8 @@ public sealed partial class CompositionTests
             var previous = button.Image!;
             bool changes = strip.TestDpi != dpi;
             strip.ChangeDpi(dpi);
-            if (changes) Assert.Throws<ArgumentException>(() => previous.Width);
+            if (changes)
+                Assert.Throws<ArgumentException>(() => previous.Width);
             int expectedButton = ToolbarSizing.Pixels(logicalButton, dpi);
             int expectedImage = ToolbarSizing.Pixels(logicalImage, dpi);
             Assert.Equal(new Size(expectedButton, expectedButton), button.Size);

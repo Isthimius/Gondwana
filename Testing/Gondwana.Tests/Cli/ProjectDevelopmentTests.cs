@@ -335,7 +335,8 @@ public sealed class ProjectDevelopmentTests : IDisposable
             Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.NAudio");
             Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.Midi");
         }
-        else Assert.Equal(before, File.ReadAllBytes(path));
+        else
+            Assert.Equal(before, File.ReadAllBytes(path));
         Assert.Equal(target, XDocument.Load(path).Descendants("TargetFrameworks").Single().Value);
     }
 
@@ -369,7 +370,8 @@ public sealed class ProjectDevelopmentTests : IDisposable
         {
             if (path == blocked)
             {
-                if (denied) throw new UnauthorizedAccessException("Access denied");
+                if (denied)
+                    throw new UnauthorizedAccessException("Access denied");
                 throw new IOException("Directory disappeared");
             }
             return new DirectoryInfo(path).GetFileSystemInfos();

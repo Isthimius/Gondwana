@@ -120,16 +120,22 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
 
         _modifiers = KeyboardModifierState.None;
         var km = e.KeyModifiers;
-        if ((km & KeyModifiers.Shift) != 0) _modifiers |= KeyboardModifierState.Shift;
-        if ((km & KeyModifiers.Control) != 0) _modifiers |= KeyboardModifierState.Ctrl;
-        if ((km & KeyModifiers.Alt) != 0) _modifiers |= KeyboardModifierState.Alt;
+        if ((km & KeyModifiers.Shift) != 0)
+            _modifiers |= KeyboardModifierState.Shift;
+        if ((km & KeyModifiers.Control) != 0)
+            _modifiers |= KeyboardModifierState.Ctrl;
+        if ((km & KeyModifiers.Alt) != 0)
+            _modifiers |= KeyboardModifierState.Alt;
     }
 
     private static GondwanaMouseButton MapButton(PointerPointProperties props)
     {
-        if (props.IsLeftButtonPressed) return GondwanaMouseButton.Left;
-        if (props.IsRightButtonPressed) return GondwanaMouseButton.Right;
-        if (props.IsMiddleButtonPressed) return GondwanaMouseButton.Middle;
+        if (props.IsLeftButtonPressed)
+            return GondwanaMouseButton.Left;
+        if (props.IsRightButtonPressed)
+            return GondwanaMouseButton.Right;
+        if (props.IsMiddleButtonPressed)
+            return GondwanaMouseButton.Middle;
         return GondwanaMouseButton.None;
     }
 

@@ -61,13 +61,17 @@ internal sealed class AssetFileTransaction
                 DefinitionReferenceDiscovery.CheckPath(path);
                 var parent = Path.GetDirectoryName(path)!;
                 var missing = new Stack<string>();
-                for (var current = parent; !Directory.Exists(current); current = Path.GetDirectoryName(current)!) missing.Push(current);
-                while (missing.TryPop(out var folder)) { Directory.CreateDirectory(folder); created.Add(folder); }
+                for (var current = parent; !Directory.Exists(current); current = Path.GetDirectoryName(current)!)
+                    missing.Push(current);
+                while (missing.TryPop(out var folder))
+                { Directory.CreateDirectory(folder); created.Add(folder); }
                 var item = new RecoveryFile(path, Path.Combine(parent, $".gondwana-relocate-{id}-{recovery.Count}.old"),
                     Path.Combine(parent, $".gondwana-relocate-{id}-{recovery.Count}.new"), File.Exists(path));
                 recovery.Add(item);
-                if (item.Existed) File.Copy(path, item.Backup, overwrite: false);
-                if (_looseWrites.TryGetValue(path, out var bytes)) File.WriteAllBytes(item.Staged, bytes);
+                if (item.Existed)
+                    File.Copy(path, item.Backup, overwrite: false);
+                if (_looseWrites.TryGetValue(path, out var bytes))
+                    File.WriteAllBytes(item.Staged, bytes);
                 else if (_archiveWrites.TryGetValue(path, out var archive))
                 {
                     void StageArchive(string stagePath, Dictionary<AssetsFileEntry, byte[]> entries)
@@ -86,10 +90,12 @@ internal sealed class AssetFileTransaction
                     {
                         StageArchive(item.Staged + ".final", archive.Entries);
                         var intermediate = new Dictionary<AssetsFileEntry, byte[]>(archive.Entries);
-                        foreach (var pair in retained) intermediate.Add(pair.Key, pair.Value);
+                        foreach (var pair in retained)
+                            intermediate.Add(pair.Key, pair.Value);
                         StageArchive(item.Staged, intermediate);
                     }
-                    else StageArchive(item.Staged, archive.Entries);
+                    else
+                        StageArchive(item.Staged, archive.Entries);
                 }
                 checkpoint?.Invoke("stage", recovery.Count);
             }
@@ -109,7 +115,8 @@ internal sealed class AssetFileTransaction
                 checkpoint?.Invoke("install", ++index);
             }
             VerifyWrites(retainSources: true);
-            foreach (var path in _scan.Files.Keys.Except(AffectedFiles, DefinitionReferenceDiscovery.Paths)) CheckUnchanged(path);
+            foreach (var path in _scan.Files.Keys.Except(AffectedFiles, DefinitionReferenceDiscovery.Paths))
+                CheckUnchanged(path);
             index = 0;
             foreach (var item in recovery.Where(r => File.Exists(r.Staged + ".final")))
             {
@@ -143,8 +150,10 @@ internal sealed class AssetFileTransaction
                     try
                     {
                         DefinitionReferenceDiscovery.CheckPath(item.Target);
-                        if (item.Existed) File.Copy(item.Backup, item.Target, overwrite: true);
-                        else File.Delete(item.Target);
+                        if (item.Existed)
+                            File.Copy(item.Backup, item.Target, overwrite: true);
+                        else
+                            File.Delete(item.Target);
                     }
                     catch (Exception rollback) { failures.Add(rollback); }
                 }
@@ -170,7 +179,8 @@ internal sealed class AssetFileTransaction
                     File.Delete(completedManifest);
                     File.Delete(manifest);
                     foreach (var folder in created.AsEnumerable().Reverse())
-                        if (Directory.Exists(folder) && !Directory.EnumerateFileSystemEntries(folder).Any()) Directory.Delete(folder);
+                        if (Directory.Exists(folder) && !Directory.EnumerateFileSystemEntries(folder).Any())
+                            Directory.Delete(folder);
                 }
                 catch (IOException) when (completed) { _preview.Add($"Operation completed; remove leftover recovery files listed in {manifest} after inspection."); }
                 catch (UnauthorizedAccessException) when (completed) { _preview.Add($"Operation completed; remove leftover recovery files listed in {manifest} after inspection."); }
@@ -192,7 +202,8 @@ internal sealed class AssetFileTransaction
         foreach (var mapping in _mappings.Where(m => m.Source.AssetEntryName is not null && DefinitionReferenceDiscovery.Paths.Equals(m.Source.Path, path)))
         {
             var key = new AssetsFileEntry { AssetType = mapping.Source.AssetType, AssetName = mapping.Source.AssetEntryName! };
-            if (!_archiveWrites[path].Entries.ContainsKey(key)) result.Add(key, _scan.Archives[path].Entries[key]);
+            if (!_archiveWrites[path].Entries.ContainsKey(key))
+                result.Add(key, _scan.Archives[path].Entries[key]);
         }
         return result;
     }
@@ -200,13 +211,16 @@ internal sealed class AssetFileTransaction
     private void VerifyWrites(bool retainSources = false)
     {
         foreach (var pair in _looseWrites)
-            if (!File.ReadAllBytes(pair.Key).AsSpan().SequenceEqual(pair.Value)) throw new IOException($"Committed bytes differ: {pair.Key}.");
+            if (!File.ReadAllBytes(pair.Key).AsSpan().SequenceEqual(pair.Value))
+                throw new IOException($"Committed bytes differ: {pair.Key}.");
         foreach (var pair in _archiveWrites)
         {
             using var archive = AssetsFile.LoadOrCreate(pair.Key, pair.Value.Password, pair.Value.Encrypt, register: false);
             var actual = AssetImportPlan.Snapshot(archive);
             var expected = new Dictionary<AssetsFileEntry, byte[]>(pair.Value.Entries);
-            if (retainSources) foreach (var retained in RetainedEntries(pair.Key)) expected.Add(retained.Key, retained.Value);
+            if (retainSources)
+            foreach (var retained in RetainedEntries(pair.Key))
+                expected.Add(retained.Key, retained.Value);
             if (actual.Count != expected.Count || expected.Any(p => !actual.TryGetValue(p.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(p.Value)))
                 throw new IOException($"Committed archive differs: {pair.Key}.");
         }

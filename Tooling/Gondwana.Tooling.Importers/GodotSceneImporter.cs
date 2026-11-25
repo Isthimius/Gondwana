@@ -46,7 +46,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 path = ResolvePath(source, GodotTextResource.String(Get(external.Attributes, "path")));
                 plan.Dependencies.Add(path);
                 key = "external:" + path;
-                if (sets.TryGetValue(key, out var cached)) return cached;
+                if (sets.TryGetValue(key, out var cached))
+                    return cached;
                 if (!string.Equals(Path.GetExtension(path), ".tres", StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException($"TileSet {path}: only text .tres resources are supported.");
                 resources = GodotTextResource.Parse(File.ReadAllText(path));
@@ -56,18 +57,21 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     throw new InvalidDataException($"Expected a Godot 4 TileSet in {path}.");
                 ValidateResources(resources);
                 var roots = resources.Where(s => s.Kind == "resource").ToArray();
-                if (roots.Length != 1) throw new InvalidDataException($"Expected one TileSet resource in {path}.");
+                if (roots.Length != 1)
+                    throw new InvalidDataException($"Expected one TileSet resource in {path}.");
                 root = roots[0];
             }
             else
             {
                 string id = Reference(reference, "SubResource");
                 key = "embedded:" + id;
-                if (sets.TryGetValue(key, out var cached)) return cached;
+                if (sets.TryGetValue(key, out var cached))
+                    return cached;
                 root = FindResource(sections, "sub_resource", id, "TileSet");
             }
             var cell = Vector(Get(root.Properties, "tile_size", "Vector2i(16, 16)"));
-            if (cell.X <= 0 || cell.Y <= 0) throw new InvalidDataException("TileSet cell dimensions must be positive.");
+            if (cell.X <= 0 || cell.Y <= 0)
+                throw new InvalidDataException("TileSet cell dimensions must be positive.");
             foreach (var property in root.Properties)
                 if ((property.Key is "tile_shape" or "tile_layout" or "tile_offset_axis" && property.Value != "0") ||
                     property.Key.Contains("proxies", StringComparison.Ordinal))
@@ -107,7 +111,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
             {
                 plan.Report(ExternalImportSeverity.Warning, "godot.node.unsupported", $"Node '{nodePath}' ({type}) is omitted; tile descendants cannot be imported.");
                 nodes.Add(nodePath, new(parent.Position, parent.Visible, parent.Z, false));
-                if (isTile) throw new InvalidDataException($"Tile node '{nodePath}' has an unsupported ancestor; use a Node or Node2D root followed by Node2D parents.");
+                if (isTile)
+                    throw new InvalidDataException($"Tile node '{nodePath}' has an unsupported ancestor; use a Node or Node2D root followed by Node2D parents.");
                 continue;
             }
             var p = node.Properties;
@@ -121,7 +126,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
             int z = checked((Boolean(Get(p, "z_as_relative", "true")) ? parent.Z : 0) + Integer(Get(p, "z_index", "0")));
             CheckZOrder(z, nodePath);
             nodes.Add(nodePath, new(position, visible, z, true));
-            if (!isTile) continue;
+            if (!isTile)
+                continue;
             var set = ResolveSet(Get(p, "tile_set"));
             if (type == "TileMapLayer")
                 AddLayer(p, "tile_map_data", false, nodePath, visible, z);
@@ -131,8 +137,10 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                     throw new InvalidDataException($"TileMap '{nodePath}': only Godot 4 format=2 (FORMAT_3) cell data is supported; resave in Godot 4.");
                 var indices = p.Keys.Select(k => Regex.Match(k, @"^layer_(\d+)/")).Where(m => m.Success)
                     .Select(m => Integer(m.Groups[1].Value)).Distinct().Order().ToArray();
-                if (indices.Length == 0) indices = [0];
-                if (indices[^1] > 4095) throw new InvalidDataException("Excessive TileMap layer count.");
+                if (indices.Length == 0)
+                    indices = [0];
+                if (indices[^1] > 4095)
+                    throw new InvalidDataException("Excessive TileMap layer count.");
                 for (int index = 0; index <= indices[^1]; index++)
                 {
                     string prefix = $"layer_{index}/";
@@ -152,7 +160,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 int minY = cells.Count == 0 ? 0 : cells.Min(c => c.Position.Y);
                 int width = cells.Count == 0 ? 1 : cells.Max(c => c.Position.X) - minX + 1;
                 int height = cells.Count == 0 ? 1 : cells.Max(c => c.Position.Y) - minY + 1;
-                if ((long)width * height > 1_000_000) throw new InvalidDataException($"Layer '{label}': occupied bounds exceed one million native grid cells; split the scene.");
+                if ((long)width * height > 1_000_000)
+                    throw new InvalidDataException($"Layer '{label}': occupied bounds exceed one million native grid cells; split the scene.");
                 var layer = new SceneLayerDefinition
                 {
                     // Diagnostic paths can overlap (Map's layer_0 and a child named layer_0).
@@ -201,10 +210,12 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 scene.Layers.Add(layer);
             }
         }
-        if (scene.Layers.Count == 0) throw new InvalidDataException("No supported TileMap or TileMapLayer nodes found.");
+        if (scene.Layers.Count == 0)
+            throw new InvalidDataException("No supported TileMap or TileMapLayer nodes found.");
         // Stable source order breaks equal-z ties; assign unique native orders.
         scene.Layers = scene.Layers.OrderBy(l => l.ZOrder).ToList();
-        for (int i = 0; i < scene.Layers.Count; i++) scene.Layers[i].ZOrder = i;
+        for (int i = 0; i < scene.Layers.Count; i++)
+            scene.Layers[i].ZOrder = i;
         foreach (var section in sections.Where(s => s.Kind is not ("gd_scene" or "node" or "ext_resource" or "sub_resource")))
             plan.Report(ExternalImportSeverity.Warning, "godot.section.unsupported", $"Scene section '{section.Kind}' is omitted.");
         plan.Add(name + ".gscn", scene);
@@ -230,9 +241,12 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
     {
         foreach (var (key, value) in properties)
         {
-            if (legacy && Regex.IsMatch(key, @"^layer_\d+/")) continue;
-            if (key is "position" or "visible" or "z_index" or "z_as_relative") continue;
-            if (tile && key is "tile_set" or "tile_map_data" or "tile_data" or "format" or "enabled" or "name") continue;
+            if (legacy && Regex.IsMatch(key, @"^layer_\d+/"))
+                continue;
+            if (key is "position" or "visible" or "z_index" or "z_as_relative")
+                continue;
+            if (tile && key is "tile_set" or "tile_map_data" or "tile_data" or "format" or "enabled" or "name")
+                continue;
             bool harmlessDefault = key switch
             {
                 "rotation" or "skew" or "y_sort_origin" => value == "0" || value == "0.0",
@@ -240,7 +254,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
                 "y_sort_enabled" or "top_level" or "show_behind_parent" or "x_draw_order_reversed" => value == "false",
                 _ => false
             };
-            if (harmlessDefault) continue;
+            if (harmlessDefault)
+                continue;
             if (key is "rotation" or "skew" or "scale" or "transform" or "y_sort_enabled" or "y_sort_origin" or "top_level" or
                 "show_behind_parent" or "x_draw_order_reversed" or "clip_children")
                 throw new InvalidDataException($"Node/layer '{context}': '{key} = {value}' cannot preserve placement or ordering; remove or bake this property.");
@@ -256,7 +271,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
     }
     private static Gondwana.Drawing.TileTransform CellTransform(int alternative, string context)
     {
-        try { return GodotSceneTileData.Transform(alternative); }
+        try
+        { return GodotSceneTileData.Transform(alternative); }
         catch (InvalidDataException ex) { throw new InvalidDataException($"{context}: {ex.Message}", ex); }
     }
     private static bool Boolean(string value) => value switch
@@ -268,7 +284,8 @@ public sealed class GodotSceneImporter : ExternalAssetImporter
     private static Point PixelVector(string value)
     {
         var match = Regex.Match(value, @"^Vector2\(\s*([^,]+),\s*([^,]+)\)$");
-        if (!match.Success) throw new InvalidDataException($"Expected Vector2, found '{value}'.");
+        if (!match.Success)
+            throw new InvalidDataException($"Expected Vector2, found '{value}'.");
         int Pixel(string component)
         {
             double number = double.Parse(component, CultureInfo.InvariantCulture);

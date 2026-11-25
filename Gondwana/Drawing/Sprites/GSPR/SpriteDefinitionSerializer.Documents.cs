@@ -46,7 +46,8 @@ public static partial class SpriteDefinitionSerializer
     public static SpriteDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -80,7 +81,8 @@ public static partial class SpriteDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
+        try
+        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
         catch (InvalidDataException ex) { errors.Add(ex.Message); }
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
@@ -121,7 +123,8 @@ public static partial class SpriteDefinitionSerializer
     private static SpriteDefinition PrepareDocumentMember(SpriteDefinition definition, string path)
     {
         var clone = ParseDefinition(ToJson(definition));
-        if (string.IsNullOrWhiteSpace(clone.Key)) clone.Key = Path.GetFileNameWithoutExtension(path);
+        if (string.IsNullOrWhiteSpace(clone.Key))
+            clone.Key = Path.GetFileNameWithoutExtension(path);
         var origin = definition.Source.GsprFilePath ?? definition.Source.AssetsFilePath;
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
             (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
@@ -215,13 +218,16 @@ public static partial class SpriteDefinitionSerializer
     public static IReadOnlyList<List<Sprite>> ToAllSprites(SpriteDefinitionDocument document)
     {
         var errors = ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         var created = new List<List<Sprite>>();
         var previous = SpriteManager.Instance.DefinitionProvenance;
         try
         {
-            foreach (var definition in document.Definitions) created.Add(ToSprites(definition));
-            if (created.Count != 1) SpriteManager.Instance.DefinitionProvenance = null;
+            foreach (var definition in document.Definitions)
+                created.Add(ToSprites(definition));
+            if (created.Count != 1)
+                SpriteManager.Instance.DefinitionProvenance = null;
             return created;
         }
         catch

@@ -172,7 +172,8 @@ internal static class TemplatePackageHelper
         var b = ExactVersionPattern.Match(right!);
         var core = Version.Parse(a.Groups["core"].Value).CompareTo(
             Version.Parse(b.Groups["core"].Value));
-        if (core != 0) return core;
+        if (core != 0)
+            return core;
 
         var aPre = a.Groups["pre"].Value;
         var bPre = b.Groups["pre"].Value;
@@ -192,7 +193,8 @@ internal static class TemplatePackageHelper
                 comparison = aNumeric ? -1 : 1;
             else
                 comparison = string.Compare(aParts[i], bParts[i], StringComparison.OrdinalIgnoreCase);
-            if (comparison != 0) return comparison;
+            if (comparison != 0)
+                return comparison;
         }
         return aParts.Length.CompareTo(bParts.Length);
     }

@@ -145,7 +145,8 @@ public static class ToolingAppearance
 
             dock.ContentAdded += (_, e) =>
             {
-                if (e.Content is Control child) Apply(child);
+                if (e.Content is Control child)
+                    Apply(child);
             };
 
             return;
@@ -153,12 +154,14 @@ public static class ToolingAppearance
 
         control.ControlAdded += (_, e) =>
         {
-            if (e.Control is { } child) Apply(child);
+            if (e.Control is { } child)
+                Apply(child);
         };
 
         control.ContextMenuStripChanged += (_, _) =>
         {
-            if (control.ContextMenuStrip is { } context) Apply(context);
+            if (control.ContextMenuStrip is { } context)
+                Apply(context);
         };
 
         control.EnabledChanged += (_, _) => control.ForeColor = control.Enabled ? Palette.Foreground : Palette.DisabledForeground;

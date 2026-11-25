@@ -186,7 +186,8 @@ public sealed class ExternalImportPanel : UserControl
         importing = write;
         inputs.Enabled = analyze.Enabled = import.Enabled = false;
         diagnostics.Text = write ? "Importing…" : "Analyzing…";
-        cancellation = new(); var token = cancellation.Token;
+        cancellation = new();
+        var token = cancellation.Token;
 
         work = Task.Run(() => write ? provider.Import(request, token) : new ExternalImportResult(provider.Analyze(request, token), []), token);
     }

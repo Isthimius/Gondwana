@@ -52,7 +52,8 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+            return;
 
         _module = await JS.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
@@ -81,7 +82,8 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <returns>A task that completes when the canvas dimensions have been updated.</returns>
     internal async Task UpdateCanvasSizeAsync()
     {
-        if (!_moduleLoaded || _module is null) return;
+        if (!_moduleLoaded || _module is null)
+            return;
 
         try
         {
@@ -124,7 +126,8 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <param name="canvasHeight">Full canvas height in pixels.</param>
     internal void EnqueueFrame(byte[] rgbaPixels, int width, int height, int x, int y, int canvasWidth, int canvasHeight)
     {
-        if (!_moduleLoaded || _module is null) return;
+        if (!_moduleLoaded || _module is null)
+            return;
 
         if (_module is IJSInProcessObjectReference inProcessModule)
         {
@@ -144,7 +147,8 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
 
         _ = InvokeAsync(async () =>
         {
-            if (!_moduleLoaded || _module is null) return;
+            if (!_moduleLoaded || _module is null)
+                return;
             await _module.InvokeVoidAsync("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels, Adapter.Width, Adapter.Height,
                     Adapter.Presentation.DestinationRect.Left, Adapter.Presentation.DestinationRect.Top,
                     Adapter.Presentation.DestinationRect.Width, Adapter.Presentation.DestinationRect.Height,
@@ -154,7 +158,8 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
 
     private void PresentRetainedFrame()
     {
-        if (_module is null) return;
+        if (_module is null)
+            return;
         var rect = Adapter.Presentation.DestinationRect;
         _ = _module.InvokeVoidAsync("presentBitmap", _canvasRef, Adapter.Width, Adapter.Height,
             rect.Left, rect.Top, rect.Width, rect.Height,

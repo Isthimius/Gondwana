@@ -46,7 +46,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     internal void SetResourceDropCell(SceneLayerDefinition? layer, Point cell = default)
     {
         (SceneLayerDefinition Layer, Point Cell)? next = layer is null ? null : (layer, cell);
-        if (_resourceDrop == next) return;
+        if (_resourceDrop == next)
+            return;
         _resourceDrop = next;
         Invalidate();
     }
@@ -116,7 +117,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         Func<string, SceneAnimationSource?> findAnimation,
         Func<SceneLayerDefinition, bool>? showLayer = null)
     {
-        if (HasGesture) CancelGesture();
+        if (HasGesture)
+            CancelGesture();
         CancelSpriteGesture();
         _definition = definition;
         _findTilesheet = findTilesheet;
@@ -394,9 +396,11 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             return;
 
         UpdateOffset();
-        if (TryStartSpriteGesture(e.Location)) return;
+        if (TryStartSpriteGesture(e.Location))
+            return;
         if (RequireSelectedLayer && (_selectedLayer is null ||
-            !_definition.Layers.Contains(_selectedLayer) || !IsLayerDisplayed(_selectedLayer))) return;
+            !_definition.Layers.Contains(_selectedLayer) || !IsLayerDisplayed(_selectedLayer)))
+            return;
 
         var layer = _selectedLayer is not null && _definition.Layers.Contains(_selectedLayer) && IsLayerDisplayed(_selectedLayer)
             ? _selectedLayer
@@ -416,8 +420,10 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         CancelGesture();
         Focus();
         var world = ScreenToWorld(e.Location);
-        if (!TryHitCell(layer, world, out var cell)) return;
-        if (GestureStarting is not null && !GestureStarting(layer, cell.X, cell.Y)) return;
+        if (!TryHitCell(layer, world, out var cell))
+            return;
+        if (GestureStarting is not null && !GestureStarting(layer, cell.X, cell.Y))
+            return;
 
         _gestureLayer = layer;
         _lastGestureCell = null;
@@ -425,7 +431,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         try
         {
             Capture = true;
-            if (!Capture) { CancelGesture(); return; }
+            if (!Capture)
+            { CancelGesture(); return; }
             VisitCell(layer, cell);
         }
         catch { CancelGesture(); throw; }
@@ -442,7 +449,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
     private void VisitCell(SceneLayerDefinition layer, Point cell)
     {
-        if (_lastGestureCell == cell) return;
+        if (_lastGestureCell == cell)
+            return;
         _lastGestureCell = cell;
         _selectedLayer = layer;
         _selectedX = cell.X;
@@ -453,13 +461,15 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
     private void ContinueGesture(Point location)
     {
-        if (_gestureLayer is not { } layer) return;
+        if (_gestureLayer is not { } layer)
+            return;
         if (_definition?.Layers.Contains(layer) != true || !IsLayerDisplayed(layer))
         {
             CancelGesture();
             return;
         }
-        if (SingleCellGesture) return;
+        if (SingleCellGesture)
+            return;
         UpdateOffset();
         var world = ScreenToWorld(location);
         var start = _previousWorld;
@@ -471,7 +481,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         }
         foreach (var cell in CellsAlongSegment(layer, start, world))
         {
-            if (!ReferenceEquals(_gestureLayer, layer)) break;
+            if (!ReferenceEquals(_gestureLayer, layer))
+                break;
             VisitCell(layer, cell);
         }
     }
@@ -485,7 +496,8 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         Point? yielded = null;
         foreach (var cell in Trace())
         {
-            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || yielded == cell) continue;
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || yielded == cell)
+                continue;
             yielded = cell;
             yield return cell;
         }
@@ -502,9 +514,12 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
                     // neighborhood than the open interval. Inspect both interior sides.
                     double left = Interior(previous, stop), right = Interior(stop, previous);
                     Point insideLeft = CellAt(left), insideRight = CellAt(right);
-                    foreach (var cell in Refine(previous, left, first, insideLeft)) yield return cell;
-                    foreach (var cell in Refine(left, right, insideLeft, insideRight)) yield return cell;
-                    foreach (var cell in Refine(right, stop, insideRight, last)) yield return cell;
+                    foreach (var cell in Refine(previous, left, first, insideLeft))
+                        yield return cell;
+                    foreach (var cell in Refine(left, right, insideLeft, insideRight))
+                        yield return cell;
+                    foreach (var cell in Refine(right, stop, insideRight, last))
+                        yield return cell;
                 }
                 else
                 {
@@ -522,11 +537,15 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             // constant; nearest-center fallback has convex cells. Refine differing cells
             // to representable parameter precision, including endpoint rounding transitions.
             double middle = (from + to) / 2;
-            if (middle == from || middle == to) { yield return right; yield break; }
+            if (middle == from || middle == to)
+            { yield return right; yield break; }
             Point center = CellAt(middle);
-            if (left == right && center == left) { yield return right; yield break; }
-            foreach (var cell in Refine(from, middle, left, center)) yield return cell;
-            foreach (var cell in Refine(middle, to, center, right)) yield return cell;
+            if (left == right && center == left)
+            { yield return right; yield break; }
+            foreach (var cell in Refine(from, middle, left, center))
+                yield return cell;
+            foreach (var cell in Refine(middle, to, center, right))
+                yield return cell;
         }
 
         double Interior(double boundary, double toward)
@@ -535,8 +554,10 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             double direction = Math.Sign(toward - boundary);
             double dx = end.X - start.X, dy = end.Y - start.Y;
             double inset = 0;
-            if (dx != 0) inset = Math.Max(inset, ParameterStep(point.X, dx));
-            if (dy != 0) inset = Math.Max(inset, ParameterStep(point.Y, dy));
+            if (dx != 0)
+                inset = Math.Max(inset, ParameterStep(point.X, dx));
+            if (dy != 0)
+                inset = Math.Max(inset, ParameterStep(point.Y, dy));
             // Move off a float-rounded boundary without stepping over a narrow interval.
             return boundary + direction * Math.Min(inset * 2, Math.Abs(toward - boundary) / 4);
 
@@ -607,13 +628,15 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
 
     private static void AddBoundaries(SortedSet<double> stops, double start, double end, double minimum, double maximum)
     {
-        if (start == end) return;
+        if (start == end)
+            return;
         double first = Math.Ceiling(Math.Max(Math.Min(start, end), minimum));
         double last = Math.Floor(Math.Min(Math.Max(start, end), maximum));
         for (double boundary = first; boundary <= last; boundary++)
         {
             double t = (boundary - start) / (end - start);
-            if (t > 0 && t < 1) stops.Add(t);
+            if (t > 0 && t < 1)
+                stops.Add(t);
         }
     }
 
@@ -623,13 +646,18 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
         base.OnMouseMove(e);
         if (HasSpriteGesture)
         {
-            if ((e.Button & MouseButtons.Left) == 0) CancelSpriteGesture();
-            else ContinueSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
+            if ((e.Button & MouseButtons.Left) == 0)
+                CancelSpriteGesture();
+            else
+                ContinueSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
             return;
         }
-        if (!HasGesture) return;
-        if ((e.Button & MouseButtons.Left) == 0) { CancelGesture(); return; }
-        try { ContinueGesture(e.Location); }
+        if (!HasGesture)
+            return;
+        if ((e.Button & MouseButtons.Left) == 0)
+        { CancelGesture(); return; }
+        try
+        { ContinueGesture(e.Location); }
         catch { CancelGesture(); throw; }
     }
 
@@ -642,16 +670,20 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
             FinishSpriteGesture(e.Location, snap: (ModifierKeys & Keys.Alt) == 0);
             return;
         }
-        if (e.Button != MouseButtons.Left || !HasGesture) return;
-        try { ContinueGesture(e.Location); FinishGesture(cancel: false); }
+        if (e.Button != MouseButtons.Left || !HasGesture)
+            return;
+        try
+        { ContinueGesture(e.Location); FinishGesture(cancel: false); }
         catch { CancelGesture(); throw; }
     }
 
     private void FinishGesture(bool cancel)
     {
-        if (!HasGesture) return;
+        if (!HasGesture)
+            return;
         _gestureLayer = null;
-        try { GestureEnded?.Invoke(cancel); }
+        try
+        { GestureEnded?.Invoke(cancel); }
         finally { Capture = false; Invalidate(); }
     }
 
@@ -669,9 +701,12 @@ internal sealed partial class ScenePreviewControl : UserControl, IMessageFilter
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-        if (keyData == Keys.Escape && HasSpriteGesture) { CancelSpriteGesture(); return true; }
-        if (keyData == Keys.Escape && HasGesture) { CancelGesture(); return true; }
-        if (Focused && NavigationKey?.Invoke(keyData) == true) return true;
+        if (keyData == Keys.Escape && HasSpriteGesture)
+        { CancelSpriteGesture(); return true; }
+        if (keyData == Keys.Escape && HasGesture)
+        { CancelGesture(); return true; }
+        if (Focused && NavigationKey?.Invoke(keyData) == true)
+            return true;
         return base.ProcessCmdKey(ref msg, keyData);
     }
 

@@ -58,8 +58,10 @@ public class StudioPluginHost
         ArgumentNullException.ThrowIfNull(services);
         foreach (var plugin in _plugins.Where(p => p.Enabled))
         {
-            if (plugin.Instance is not IStudioPluginHostServicesAware aware) continue;
-            try { aware.AttachHostServices(services); }
+            if (plugin.Instance is not IStudioPluginHostServicesAware aware)
+                continue;
+            try
+            { aware.AttachHostServices(services); }
             catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex}"); }
         }
     }
@@ -91,7 +93,8 @@ public class StudioPluginHost
             var candidates = new List<string>();
             foreach (var directory in Directory.GetDirectories(pluginDir).Order(StringComparer.Ordinal))
             {
-                if (_discovery.ContainsKey(directory)) continue;
+                if (_discovery.ContainsKey(directory))
+                    continue;
                 var info = InspectPackage(directory);
                 _discovery.Add(directory, [info]);
                 candidates.Add(directory);
@@ -119,12 +122,15 @@ public class StudioPluginHost
             foreach (var source in candidates)
             {
                 var info = _discovery[source][0];
-                if (info.Status == PluginLoadStatus.Loaded) LoadAssemblyPlugins(source, info);
-                else LogResult(info);
+                if (info.Status == PluginLoadStatus.Loaded)
+                    LoadAssemblyPlugins(source, info);
+                else
+                    LogResult(info);
             }
             foreach (var dll in Directory.GetFiles(pluginDir).Where(path => path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).Order(StringComparer.Ordinal))
             {
-                if (_discovery.ContainsKey(dll)) continue;
+                if (_discovery.ContainsKey(dll))
+                    continue;
                 var info = new PluginDiscoveryInfo(null, null, null, pluginDir, dll, true,
                     PluginCompatibility.Unknown, PluginLoadStatus.Loaded, null);
                 _discovery.Add(dll, [info]);
@@ -144,7 +150,8 @@ public class StudioPluginHost
 
     private PluginDiscoveryInfo StartupChoice(PluginDiscoveryInfo info, string? id)
     {
-        if (string.IsNullOrWhiteSpace(id)) return info;
+        if (string.IsNullOrWhiteSpace(id))
+            return info;
         if (!_startupChoices.TryGetValue(id, out var enabled))
             _startupChoices[id] = enabled = _isEnabled(id);
         return info with { PreferenceId = id, EnabledAtStartup = enabled };
@@ -180,7 +187,8 @@ public class StudioPluginHost
                     Diagnostic = $"Contract {manifest.ContractVersion} is unsupported; this host supports contract {PluginManifest.SupportedContractVersion}. Obtain a compatible plugin."
                 };
             info = info with { Compatibility = PluginCompatibility.Compatible };
-            if (!File.Exists(entry)) throw new FileNotFoundException($"Entry assembly not found: {entry}");
+            if (!File.Exists(entry))
+                throw new FileNotFoundException($"Entry assembly not found: {entry}");
             PluginLoadContext.ValidateAssemblies(directory, _sharedAssemblies!);
             return info with { Status = PluginLoadStatus.Loaded };
         }
@@ -309,7 +317,8 @@ public class StudioPluginHost
                     }
                 }
                 rows.Add(row);
-                if (row.Status != PluginLoadStatus.Loaded) LogResult(row);
+                if (row.Status != PluginLoadStatus.Loaded)
+                    LogResult(row);
             }
             if (rows.Count == 0 && !info.IsLegacy)
             {

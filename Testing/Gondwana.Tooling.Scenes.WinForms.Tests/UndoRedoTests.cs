@@ -22,13 +22,16 @@ public sealed partial class SceneEditorTests
         wrapper.EditValue(null, new DialogService(result), groups);
         if (result == DialogResult.Cancel)
         {
-            Assert.Empty(groups); Assert.False(document.History.CanUndo);
+            Assert.Empty(groups);
+            Assert.False(document.History.CanUndo);
         }
         else
         {
             Assert.Equal("new group", Assert.Single(groups));
-            document.History.Undo(); Assert.Empty(groups);
-            document.History.Redo(); Assert.Equal("new group", Assert.Single(groups));
+            document.History.Undo();
+            Assert.Empty(groups);
+            document.History.Redo();
+            Assert.Equal("new group", Assert.Single(groups));
         }
         Assert.False(document.History.InTransaction);
     });
@@ -63,19 +66,30 @@ public sealed partial class SceneEditorTests
         var layer = document.AddLayer();
         using var editor = new SceneEditorControl(document);
         using var host = new Form { Size = new(1500, 950), Opacity = 0, ShowInTaskbar = false };
-        host.Controls.Add(editor); host.Show(); Application.DoEvents();
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
         var adapter = Descendants(editor).OfType<PropertyGrid>().Select(g => g.SelectedObject).OfType<TilePropertyAdapter>().Single();
         adapter.Transform = TileTransform.Rotate90;
         Descendants(editor).OfType<ScenePreviewControl>().Single().Focus();
         Assert.True(InvokeHistoryShortcut(editor, Keys.Control | Keys.Z));
-        Application.DoEvents(); Assert.Empty(layer.Tiles); Assert.Equal(TileTransform.Identity, adapter.Transform);
+        Application.DoEvents();
+        Assert.Empty(layer.Tiles);
+        Assert.Equal(TileTransform.Identity, adapter.Transform);
         Assert.True(InvokeHistoryShortcut(editor, Keys.Control | Keys.Y));
-        Application.DoEvents(); Assert.Equal(TileTransform.Rotate90, adapter.Transform);
+        Application.DoEvents();
+        Assert.Equal(TileTransform.Rotate90, adapter.Transform);
         var view = new ScenePropertyView(document, layer);
         var width = TypeDescriptor.GetProperties(view)["Columns"]!;
-        width.SetValue(view, 25); Assert.Equal(25, layer.Columns);
-        document.History.Undo(); Application.DoEvents(); Assert.Equal(10, width.GetValue(view));
-        using var input = new TextBox(); host.Controls.Add(input); input.BringToFront(); input.Focus();
+        width.SetValue(view, 25);
+        Assert.Equal(25, layer.Columns);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal(10, width.GetValue(view));
+        using var input = new TextBox();
+        host.Controls.Add(input);
+        input.BringToFront();
+        input.Focus();
         Assert.False(UndoRedoMenu.TryShortcut(editor, Keys.Control | Keys.Z, document.History, editor.CommitEdits));
         Assert.Single(layer.Tiles);
         using var menu = new UndoRedoMenu(() => document.History, editor.CommitEdits);

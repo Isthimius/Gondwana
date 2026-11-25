@@ -77,6 +77,7 @@ public sealed class DefinitionSelectionBarTests
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Definition toolbar WinForms test timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

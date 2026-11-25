@@ -29,8 +29,10 @@ public sealed partial class CompositionTests
         var saved = new byte[256];
         Assert.True(GetKeyboardState(saved));
         var state = new byte[256];
-        if (keys.HasFlag(Keys.Control)) state[(int)Keys.ControlKey] = 0x80;
-        if (keys.HasFlag(Keys.Shift)) state[(int)Keys.ShiftKey] = 0x80;
+        if (keys.HasFlag(Keys.Control))
+            state[(int)Keys.ControlKey] = 0x80;
+        if (keys.HasFlag(Keys.Shift))
+            state[(int)Keys.ShiftKey] = 0x80;
         Assert.True(SetKeyboardState(state));
         try
         {
@@ -49,8 +51,10 @@ public sealed partial class CompositionTests
         using var studio = Host(root);
         var child = studio.NewDocument(format);
         var original = child.Document.SelectedMember;
-        if (child.Document.Editor is TilesheetEditorControl tiles) tiles.Document.RenameDefinition("changed");
-        else ((SceneEditorControl)child.Document.Editor).Document.RenameDefinition("changed");
+        if (child.Document.Editor is TilesheetEditorControl tiles)
+            tiles.Document.RenameDefinition("changed");
+        else
+            ((SceneEditorControl)child.Document.Editor).Document.RenameDefinition("changed");
         var control = Descendants(child.Document.Editor).First(c => c.GetType().Name is "ImageViewport" or "ScenePreviewControl");
         Assert.True(control.Focus());
         RouteKey(Keys.Control | Keys.Z);
@@ -90,13 +94,15 @@ public sealed partial class CompositionTests
         Control editor;
         if (shell is not null)
         {
-            shell.Show(); Application.DoEvents();
+            shell.Show();
+            Application.DoEvents();
             shell.GetType().GetMethod("OpenDocument", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
                 .Invoke(shell, [path]);
             Application.DoEvents();
             editor = Descendants(shell).Where(c => c.GetType() == editorType).Single(c => (string)Model(c).FilePath == path);
         }
-        else editor = studio!.OpenDocument(path).Document.Editor;
+        else
+            editor = studio!.OpenDocument(path).Document.Editor;
         var host = shell ?? studio!;
         var menu = host.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&Edit");
         EditHistory history = Model(editor).History;
@@ -114,7 +120,8 @@ public sealed partial class CompositionTests
         {
             Rename("changed");
             Application.DoEvents();
-            if (!target.Visible || !target.CanFocus) continue;
+            if (!target.Visible || !target.CanFocus)
+                continue;
             target.Focus();
             Assert.True(target.ContainsFocus, target.GetType().FullName);
             RouteKey(Keys.Control | Keys.Z);
@@ -124,31 +131,45 @@ public sealed partial class CompositionTests
             RouteKey(Keys.Control | Keys.Z);
             RouteKey(Keys.Control | Keys.Shift | Keys.Z);
             Assert.Equal("changed", Name());
-            menu.DropDownItems[0].PerformClick(); Assert.Equal(original, Name());
-            menu.DropDownItems[1].PerformClick(); Assert.Equal("changed", Name());
-            menu.DropDownItems[0].PerformClick(); Assert.Equal(original, Name());
+            menu.DropDownItems[0].PerformClick();
+            Assert.Equal(original, Name());
+            menu.DropDownItems[1].PerformClick();
+            Assert.Equal("changed", Name());
+            menu.DropDownItems[0].PerformClick();
+            Assert.Equal(original, Name());
             history.Clear();
         }
         // An active text editor keeps native undo; a single document shortcut
         // then undoes exactly one operation even when both editor and host route it.
         using var input = new TextBox { Dock = DockStyle.Top };
-        editor.Controls.Add(input); input.BringToFront();
-        Rename("first"); Rename("second"); Application.DoEvents();
-        input.Focus(); input.Text = "before"; input.SelectAll();
+        editor.Controls.Add(input);
+        input.BringToFront();
+        Rename("first");
+        Rename("second");
+        Application.DoEvents();
+        input.Focus();
+        input.Text = "before";
+        input.SelectAll();
         ReplaceText(input.Handle, 0xC2, 1, "after");
         Assert.True(input.CanUndo);
         RouteKey(Keys.Control | Keys.Z);
-        Assert.Equal("before", input.Text); Assert.Equal("second", Name());
+        Assert.Equal("before", input.Text);
+        Assert.Equal("second", Name());
         var navigation = targets.First(c => c.Visible && c.CanFocus && c is not PropertyGrid);
         navigation.Focus();
-        RouteKey(Keys.Control | Keys.Z); Assert.Equal("first", Name());
-        RouteKey(Keys.Control | Keys.Y); Assert.Equal("second", Name());
+        RouteKey(Keys.Control | Keys.Z);
+        Assert.Equal("first", Name());
+        RouteKey(Keys.Control | Keys.Y);
+        Assert.Equal("second", Name());
         history.Clear();
-        Assert.False(menu.DropDownItems[0].Enabled); Assert.False(menu.DropDownItems[1].Enabled);
-        RouteKey(Keys.Control | Keys.Z); RouteKey(Keys.Control | Keys.Y);
+        Assert.False(menu.DropDownItems[0].Enabled);
+        Assert.False(menu.DropDownItems[1].Enabled);
+        RouteKey(Keys.Control | Keys.Z);
+        RouteKey(Keys.Control | Keys.Y);
         Assert.Equal("second", Name());
 
-        if (editor is SpriteEditorControl spriteEditor) spriteEditor.SelectSprite(spriteEditor.Document.AddSprite());
+        if (editor is SpriteEditorControl spriteEditor)
+            spriteEditor.SelectSprite(spriteEditor.Document.AddSprite());
         if (editor is AudioEditorControl audioEditor)
         {
             audioEditor.Document.AddUri("sound", "https://example.test/sound.ogg");
@@ -161,38 +182,47 @@ public sealed partial class CompositionTests
             System.ComponentModel.TypeDescriptor.GetProperties(g.SelectedObject)[propertyName] is not null);
         var adapter = grid.SelectedObject!;
         var property = System.ComponentModel.TypeDescriptor.GetProperties(adapter)[propertyName]!;
-        history.Clear(); Rename("ready"); Application.DoEvents();
+        history.Clear();
+        Rename("ready");
+        Application.DoEvents();
         var originalValue = property.GetValue(adapter);
         grid.SelectedGridItem = GridItems(grid).Single(item => item.PropertyDescriptor?.Name == propertyName);
         grid.Focus();
         var valueEditor = Descendants(grid).OfType<TextBox>().Single(t => t.Visible);
         valueEditor.Focus();
         string oldText = valueEditor.Text;
-        valueEditor.SelectAll(); ReplaceText(valueEditor.Handle, 0xC2, 1, "pending");
+        valueEditor.SelectAll();
+        ReplaceText(valueEditor.Handle, 0xC2, 1, "pending");
         Assert.True(valueEditor.Modified);
         RouteKey(Keys.Control | Keys.Z);
         Assert.Equal(oldText, valueEditor.Text);
         Assert.Equal(originalValue, property.GetValue(adapter));
         Assert.Equal("ready", Name());
-        valueEditor.SelectAll(); ReplaceText(valueEditor.Handle, 0xC2, 1, "pending");
-        menu.DropDownItems[0].PerformClick(); Application.DoEvents();
+        valueEditor.SelectAll();
+        ReplaceText(valueEditor.Handle, 0xC2, 1, "pending");
+        menu.DropDownItems[0].PerformClick();
+        Application.DoEvents();
         Assert.Equal(originalValue, property.GetValue(adapter));
         Assert.Equal("ready", Name());
-        menu.DropDownItems[1].PerformClick(); Application.DoEvents();
+        menu.DropDownItems[1].PerformClick();
+        Application.DoEvents();
         Assert.Equal("pending", property.GetValue(adapter));
-        menu.DropDownItems[0].PerformClick(); Application.DoEvents();
+        menu.DropDownItems[0].PerformClick();
+        Application.DoEvents();
         history.MarkSaved();
     });
 
     private static IEnumerable<GridItem> GridItems(PropertyGrid grid)
     {
         var root = grid.SelectedGridItem;
-        while (root.Parent is not null) root = root.Parent;
+        while (root.Parent is not null)
+            root = root.Parent;
         IEnumerable<GridItem> Walk(GridItem item)
         {
             yield return item;
             foreach (GridItem child in item.GridItems)
-                foreach (var descendant in Walk(child)) yield return descendant;
+                foreach (var descendant in Walk(child))
+                    yield return descendant;
         }
         return Walk(root);
     }
@@ -212,16 +242,21 @@ public sealed partial class CompositionTests
         {
             Application.DoEvents();
             var target = Descendants(editor).First(c => c.Visible && c.CanFocus && c is TreeView or ListView or ListBox);
-            target.Focus(); Assert.True(target.ContainsFocus);
+            target.Focus();
+            Assert.True(target.ContainsFocus);
         }
         FocusNavigation(second.Document.Editor);
         RouteKey(Keys.Control | Keys.Z);
-        Assert.True(first.Document.History!.CanUndo); Assert.False(second.Document.History!.CanUndo);
+        Assert.True(first.Document.History!.CanUndo);
+        Assert.False(second.Document.History!.CanUndo);
         Assert.Equal("first edit", first.Document.SelectedMember);
-        first.Activate(); FocusNavigation(first.Document.Editor);
+        first.Activate();
+        FocusNavigation(first.Document.Editor);
         RouteKey(Keys.Control | Keys.Z);
-        Assert.False(first.Document.History.CanUndo); Assert.True(second.Document.History.CanRedo);
-        RouteKey(Keys.Control | Keys.Y); Assert.Equal("first edit", first.Document.SelectedMember);
+        Assert.False(first.Document.History.CanUndo);
+        Assert.True(second.Document.History.CanRedo);
+        RouteKey(Keys.Control | Keys.Y);
+        Assert.Equal("first edit", first.Document.SelectedMember);
         Assert.NotEqual("second edit", second.Document.SelectedMember);
     });
 }

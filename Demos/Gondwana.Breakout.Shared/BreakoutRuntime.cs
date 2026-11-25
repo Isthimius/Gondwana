@@ -139,7 +139,8 @@ internal sealed class BreakoutRuntime
             _pressed.Remove(key);
             return;
         }
-        if (args.KeyAction != KeyAction.Pressed) return;
+        if (args.KeyAction != KeyAction.Pressed)
+            return;
         _pressed.Add(key);
         switch (key)
         {
@@ -179,7 +180,8 @@ internal sealed class BreakoutRuntime
 
     private void DrawState()
     {
-        if (_paddle is null || _ball is null || _hud is null) return;
+        if (_paddle is null || _ball is null || _hud is null)
+            return;
 
         _paddle.SetPosition(ToGrid(new Vector2(_game.PaddleX, BreakoutGame.PaddleY)));
         _ball.SetPosition(ToGrid(_game.Ball));

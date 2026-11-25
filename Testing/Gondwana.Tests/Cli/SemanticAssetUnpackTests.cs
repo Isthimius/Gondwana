@@ -98,8 +98,10 @@ public sealed partial class SemanticAssetPackTests
         }
         var pack = new List<string> { "pack", Source, Output };
         var unpack = new List<string> { "unpack", Output, Export };
-        if (protection > 0) { pack.AddRange(["--password", "secret"]); unpack.AddRange(["--password", "secret"]); }
-        if (protection == 2) pack.Add("--encrypt");
+        if (protection > 0)
+        { pack.AddRange(["--password", "secret"]); unpack.AddRange(["--password", "secret"]); }
+        if (protection == 2)
+            pack.Add("--encrypt");
         Assert.Equal(0, Run(pack.ToArray()));
         var original = File.ReadAllBytes(Output);
         Assert.Equal(0, Run(unpack.ToArray()));
@@ -190,7 +192,8 @@ public sealed partial class SemanticAssetPackTests
                 Assert.Equal(2, SpriteDefinitionSerializer.LoadAllSprites(path).Count);
                 break;
             case AssetTypes.AudioDefinition:
-                foreach (var resource in AudioDefinitionSerializer.LoadAll(path).SelectMany(group => group.Resources)) Open(resource.AssetsFilePath);
+                foreach (var resource in AudioDefinitionSerializer.LoadAll(path).SelectMany(group => group.Resources))
+                    Open(resource.AssetsFilePath);
                 var backend = new Backend();
                 AudioResourceManager.Instance.ConfigureBackend(backend);
                 Assert.Equal(2, AudioDefinitionSerializer.LoadAllIntoManager(path).Count);
@@ -225,11 +228,13 @@ public sealed partial class SemanticAssetPackTests
         Archive((AssetTypes.Image, "images/art.png", File.ReadAllBytes(Path.Combine(Source, "art.png"))),
             (AssetTypes.TilesheetDefinition, "tiles/terrain.gts", Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet))));
         var args = new List<string> { "unpack", Output, Export };
-        if (partial) args.AddRange(["--entry", "tiles/terrain.gts"]);
+        if (partial)
+            args.AddRange(["--entry", "tiles/terrain.gts"]);
         Assert.Equal(0, Run(args.ToArray()));
         var definition = TilesheetDefinitionSerializer.Load(Path.Combine(Export, "tiles", "terrain.gts"));
         Assert.Equal(partial, definition.Image.AssetEntryName is not null);
-        if (!partial) File.Delete(Output);
+        if (!partial)
+            File.Delete(Output);
         Assert.Equal("terrain", TilesheetRegistry.Instance.LoadFromDefinitionFile(Path.Combine(Export, "tiles", "terrain.gts")).Name);
     }
 
@@ -280,7 +285,8 @@ public sealed partial class SemanticAssetPackTests
     [Fact]
     public void UnpackRollbackRestoresEarlierFiles()
     {
-        if (!OperatingSystem.IsWindows()) return;
+        if (!OperatingSystem.IsWindows())
+            return;
         Archive((AssetTypes.Misc, "a.txt", [1]), (AssetTypes.Misc, "z.txt", [2]));
         Directory.CreateDirectory(Export);
         var first = Path.Combine(Export, "a.txt");
@@ -390,7 +396,8 @@ public sealed partial class SemanticAssetPackTests
             process.WaitForExit();
             Assert.Equal(0, process.ExitCode);
         }
-        else Directory.CreateSymbolicLink(link, elsewhere);
+        else
+            Directory.CreateSymbolicLink(link, elsewhere);
         try
         {
             Assert.ThrowsAny<IOException>(() => SemanticUnpackPlan.Create(Output, Path.Combine(link, "child"), null, AssetTypes.Misc, "folder", false, default));

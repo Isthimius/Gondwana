@@ -427,13 +427,16 @@ public sealed class AudioResourceManager : IDisposable
             var provenance = DefinitionProvenance;
             _retainedDefinitionResources = previous.Values.ToHashSet();
             T result;
-            try { result = load(); }
+            try
+            { result = load(); }
             catch
             {
                 foreach (var resource in _soundResources.Values.ToArray())
-                    if (!_retainedDefinitionResources.Contains(resource)) resource.Dispose();
+                    if (!_retainedDefinitionResources.Contains(resource))
+                        resource.Dispose();
                 _soundResources.Clear();
-                foreach (var pair in previous) _soundResources[pair.Key] = pair.Value;
+                foreach (var pair in previous)
+                    _soundResources[pair.Key] = pair.Value;
                 foreach (var pair in settings)
                 {
                     pair.Key.Volume = pair.Value.Volume;

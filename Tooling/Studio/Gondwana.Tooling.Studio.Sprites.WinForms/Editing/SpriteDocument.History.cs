@@ -12,11 +12,13 @@ public sealed partial class SpriteDocument : IDisposable
         var selected = Definition;
         History.Execute(description, () =>
         {
-            foreach (var member in members) _definitions.Add(member);
+            foreach (var member in members)
+                _definitions.Add(member);
             Definition = members[0];
         }, () =>
         {
-            foreach (var member in members) _definitions.Remove(member);
+            foreach (var member in members)
+                _definitions.Remove(member);
             Definition = selected;
         });
     }
@@ -38,7 +40,8 @@ public sealed partial class SpriteDocument : IDisposable
     /// <summary>Assigns a frame, suppressing assignments of the same logical frame.</summary>
     public bool AssignFrame(SpriteInstanceDefinition sprite, SpriteFrameDefinition frame)
     {
-        if (FramesMatch(sprite.Frame, frame)) return false;
+        if (FramesMatch(sprite.Frame, frame))
+            return false;
         return Edit(sprite, "Assign sprite frame", () => sprite.Frame = frame);
     }
 
@@ -51,7 +54,8 @@ public sealed partial class SpriteDocument : IDisposable
         Edit(sprite, "Change sprite animation", () =>
         {
             sprite.AnimationKey = key;
-            if (key is null) sprite.StartAnimation = false;
+            if (key is null)
+                sprite.StartAnimation = false;
         });
 
     /// <summary>Assigns a scene and its layer together.</summary>
@@ -81,9 +85,12 @@ public sealed partial class SpriteDocument : IDisposable
     {
         foreach (var member in _definitions)
         {
-            foreach (var source in member.TilesheetSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
-            foreach (var source in member.AnimationSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
-            foreach (var source in member.SceneSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.TilesheetSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.AnimationSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.SceneSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
         }
     }
 

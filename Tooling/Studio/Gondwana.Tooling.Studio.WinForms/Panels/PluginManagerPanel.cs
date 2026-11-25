@@ -86,7 +86,8 @@ internal sealed partial class PluginManagerPanel : UserControl
                 var records = group.ToArray();
                 var first = records[0];
                 var next = first.PreferenceId is { } id ? (_preferences.IsEnabled(id) ? "Enabled" : "Disabled") : "Unavailable";
-                if (first.PreferenceId is { } key && _preferences.IsPending(key)) next += " (restart required)";
+                if (first.PreferenceId is { } key && _preferences.IsPending(key))
+                    next += " (restart required)";
                 var index = Grid.Rows.Add(first.DisplayName ?? first.Implementation ?? first.Id ?? Path.GetFileName(first.SourceDirectory),
                     first.Version ?? "Unknown", string.Join("; ", records.Select(row => StatusText(row.Status)).Distinct()), next,
                     string.Join("; ", records.Select(row => row.Compatibility.ToString()).Distinct()),
@@ -96,8 +97,10 @@ internal sealed partial class PluginManagerPanel : UserControl
             var restore = Grid.Rows.Cast<DataGridViewRow>().FirstOrDefault(row => row.Tag is PluginDiscoveryInfo[] records &&
                 records.Any(record => selected is not null && (selected.PreferenceId is not null
                     ? record.PreferenceId == selected.PreferenceId : record.SourceDirectory == selected.SourceDirectory)));
-            if (restore is not null) Grid.CurrentCell = restore.Cells[0];
-            else if (Grid.Rows.Count > 0) Grid.CurrentCell = Grid.Rows[0].Cells[0];
+            if (restore is not null)
+                Grid.CurrentCell = restore.Cells[0];
+            else if (Grid.Rows.Count > 0)
+                Grid.CurrentCell = Grid.Rows[0].Cells[0];
             StatusLabel.Text = _saveError ?? _operations?.Diagnostic ?? (_preferences.ReadError is { } error
                 ? $"Preferences unavailable; startup defaults to enabled. Repair or remove '{_preferences.FilePath}' and restart. {error}"
                 : (_preferences.RestartRequired || _operations?.RestartRequired == true) ? "Restart required. Saved choices apply at the next Studio startup; current plugins remain unchanged."
@@ -116,7 +119,8 @@ internal sealed partial class PluginManagerPanel : UserControl
 
     private void ShowSelection()
     {
-        if (_updating) return;
+        if (_updating)
+            return;
         _updating = true;
         try
         {
@@ -162,7 +166,8 @@ internal sealed partial class PluginManagerPanel : UserControl
                         PluginLoadStatus.UserDisabled => "Enable at next startup and restart Studio to activate this plugin.",
                         _ => null
                     };
-                    if (action is not null) details.AppendLine($"Suggested action: {action}");
+                    if (action is not null)
+                        details.AppendLine($"Suggested action: {action}");
                 }
             }
             details.AppendLine("Package management: legacy flat DLLs are inspection/activation-only. Bundled Studio plugins are protected; disabling remains available.");
@@ -173,7 +178,8 @@ internal sealed partial class PluginManagerPanel : UserControl
 
     private void ChangePreference()
     {
-        if (_updating || SelectedRecords?.FirstOrDefault()?.PreferenceId is not { } id) return;
+        if (_updating || SelectedRecords?.FirstOrDefault()?.PreferenceId is not { } id)
+            return;
         _preferences.TrySetEnabled(id, EnabledChoice.Checked, out _saveError);
         RefreshSnapshot();
     }

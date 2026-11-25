@@ -50,7 +50,8 @@ internal static class DefinitionDocumentJson
     /// <param name="allowUnnamedSingleton">Whether historical singleton data may omit its identity.</param>
     internal static void Check<T>(IReadOnlyList<T>? definitions, Func<T, string> identity, bool allowUnnamedSingleton = false, StringComparer? identityComparer = null) where T : class
     {
-        if (definitions is null) throw new InvalidDataException("Definitions must not be null.");
+        if (definitions is null)
+            throw new InvalidDataException("Definitions must not be null.");
         var identities = new HashSet<string>(identityComparer ?? StringComparer.Ordinal);
         for (int i = 0; i < definitions.Count; i++)
         {
@@ -58,7 +59,8 @@ internal static class DefinitionDocumentJson
             var key = identity(member);
             if (string.IsNullOrWhiteSpace(key) && !(allowUnnamedSingleton && definitions.Count == 1))
                 throw new InvalidDataException($"Definitions[{i}] requires a non-empty logical identity.");
-            if (!identities.Add(key)) throw new InvalidDataException($"Duplicate definition identity '{key}'.");
+            if (!identities.Add(key))
+                throw new InvalidDataException($"Duplicate definition identity '{key}'.");
         }
     }
 
@@ -78,7 +80,8 @@ internal static class DefinitionDocumentJson
         }
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         foreach (var member in definitions)
-            if ((identityComparer ?? StringComparer.Ordinal).Equals(identity(member), key)) return member;
+            if ((identityComparer ?? StringComparer.Ordinal).Equals(identity(member), key))
+                return member;
         throw new InvalidDataException($"Definition '{key}' was not found in the document.");
     }
 }

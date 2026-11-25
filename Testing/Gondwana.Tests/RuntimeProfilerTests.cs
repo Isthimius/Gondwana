@@ -157,7 +157,8 @@ public sealed class RuntimeProfilerTests
         source.Define("cpu.ms");
         source.Define("hardware.ms", TelemetryAvailability.Unsupported);
         source.Define("gate.ms", TelemetryAvailability.NotApplicable);
-        for (int i = 0; i < 5; i++) Assert.True(source.Define($"extension.{i}"));
+        for (int i = 0; i < 5; i++)
+            Assert.True(source.Define($"extension.{i}"));
         Assert.False(source.Define("overflow"));
         using var request = profiler.Start();
         var epoch = source.BeginSample();
@@ -259,9 +260,11 @@ public sealed class RuntimeProfilerTests
         source.Define("cpu.ms");
         using var request = profiler.Start();
         var generation = source.BeginSample();
-        for (int i = 0; i < 1000; i++) source.Record(generation, "cpu.ms", 1);
+        for (int i = 0; i < 1000; i++)
+            source.Record(generation, "cpu.ms", 1);
         long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 10000; i++) source.Record(generation, "cpu.ms", 1);
+        for (int i = 0; i < 10000; i++)
+            source.Record(generation, "cpu.ms", 1);
         Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
     }
 }

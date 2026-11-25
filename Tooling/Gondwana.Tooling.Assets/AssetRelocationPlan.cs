@@ -77,7 +77,8 @@ public sealed partial class AssetRelocationPlan
     private static void EnsureNewFile(string path)
     {
         DefinitionReferenceDiscovery.CheckPath(path);
-        if (File.Exists(path) || Directory.Exists(path)) throw new IOException($"Destination exists: {path}.");
+        if (File.Exists(path) || Directory.Exists(path))
+            throw new IOException($"Destination exists: {path}.");
     }
 
     private void Prepare(Func<string, string?>? credentials, CancellationToken cancellation)
@@ -99,11 +100,13 @@ public sealed partial class AssetRelocationPlan
                 throw new InvalidDataException("Archive files require MoveArchive (CLI --archive); ordinary loose relocation cannot preserve their references.");
             if (destination.AssetEntryName is null && AssetArchiveFormat.IsArchive(destination.Path))
                 throw new InvalidDataException("An ordinary loose destination cannot be an archive file; use MoveArchive or a typed packed entry.");
-            if (source.AssetEntryName is not null) SafeFilePath.ValidateRelative(source.AssetEntryName);
+            if (source.AssetEntryName is not null)
+                SafeFilePath.ValidateRelative(source.AssetEntryName);
             var content = _scan.Resolve(source, source.AssetType, null);
             _scan.Contents[DefinitionReferenceDiscovery.Key(source)] = content;
             _scan.Included.Add(DefinitionReferenceDiscovery.Key(source));
-            if (source.AssetEntryName is not null) _scan.Include(source.Path, archive: true);
+            if (source.AssetEntryName is not null)
+                _scan.Include(source.Path, archive: true);
             if (destination.AssetEntryName is null)
             {
                 EnsureNewFile(destination.Path);
@@ -117,7 +120,8 @@ public sealed partial class AssetRelocationPlan
                 DefinitionReferenceDiscovery.CheckPath(destination.Path);
                 if (!_archiveWrites.ContainsKey(destination.Path))
                 {
-                    if (File.Exists(destination.Path)) _scan.Include(destination.Path, archive: true);
+                    if (File.Exists(destination.Path))
+                        _scan.Include(destination.Path, archive: true);
                     else
                     {
                         EnsureNewFile(destination.Path);
@@ -132,11 +136,13 @@ public sealed partial class AssetRelocationPlan
             }
             _preview.Add($"Move {source} → {destination}");
         }
-        if (sourceKeys.Overlaps(destinationKeys)) throw new InvalidDataException("Source/destination identity collisions are not supported.");
+        if (sourceKeys.Overlaps(destinationKeys))
+            throw new InvalidDataException("Source/destination identity collisions are not supported.");
         _scan.Analyze();
         InboundReferences = _scan.Found.Where(r => sourceKeys.Contains(DefinitionReferenceDiscovery.Key(r.Target))).ToArray();
         _preview.Insert(0, $"Scope: {Scope}; explicitly selected source documents and source/destination archives are also inspected. Other outside-scope resources and arbitrary game code are not rewritten.");
-        foreach (var reference in InboundReferences) _preview.Add($"Inbound {reference.ReferencePath} → {reference.Target} (selector '{reference.Selector}')");
+        foreach (var reference in InboundReferences)
+            _preview.Add($"Inbound {reference.ReferencePath} → {reference.Target} (selector '{reference.Selector}')");
         foreach (var key in _scan.Included)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -149,27 +155,33 @@ public sealed partial class AssetRelocationPlan
             {
                 bytes = content.Document?.Relocate(content.Location, target, _mappings, requireAllMappings: false) ?? bytes;
                 Write(target, bytes);
-                if (content.Document is not null) _preview.Add($"Rebase document {content.Location} → {target}; members: {string.Join(", ", content.Document.Members().Select(m => m.Identity))}");
+                if (content.Document is not null)
+                    _preview.Add($"Rebase document {content.Location} → {target}; members: {string.Join(", ", content.Document.Members().Select(m => m.Identity))}");
                 foreach (var reference in _scan.Found.Where(r => DefinitionReferenceDiscovery.Same(r.Document, content.Location)))
                 {
                     var dependency = _mappings.FirstOrDefault(m => DefinitionReferenceDiscovery.Same(m.Source, reference.Target))?.Destination ?? reference.Target;
                     _preview.Add($"Outbound {reference.ReferencePath}: {reference.Target} → {dependency}; relative to {target.Path}");
                 }
-                if (mapping is not null) Retire(content.Location);
+                if (mapping is not null)
+                    Retire(content.Location);
             }
-            if (!_final.TryAdd(DefinitionReferenceDiscovery.Key(target), (target, bytes))) throw new InvalidDataException($"Duplicate final identity: {target}.");
+            if (!_final.TryAdd(DefinitionReferenceDiscovery.Key(target), (target, bytes)))
+                throw new InvalidDataException($"Duplicate final identity: {target}.");
         }
         // Validate the complete prepared graph against its final endpoints, before staging any writes.
         foreach (var content in _final.Values)
             SemanticPackPlan.Discover(content.Location, content.Bytes, (location, type, selector) =>
             {
-                if (location is not null && _final.TryGetValue(DefinitionReferenceDiscovery.Key(location), out var target)) return target;
-                if (location is not null && sourceKeys.Contains(DefinitionReferenceDiscovery.Key(location))) throw new InvalidDataException($"Reference still targets retired resource: {location}.");
+                if (location is not null && _final.TryGetValue(DefinitionReferenceDiscovery.Key(location), out var target))
+                    return target;
+                if (location is not null && sourceKeys.Contains(DefinitionReferenceDiscovery.Key(location)))
+                    throw new InvalidDataException($"Reference still targets retired resource: {location}.");
                 var external = _scan.Resolve(location, type, selector);
                 return (external.Location, external.Bytes);
             }, _ => { }, cancellation);
         _preview.Add("Conflicts: none. Originals are retired only after destination and reference writes succeed. Save/close affected editors before committing.");
-        foreach (var path in AffectedFiles) _preview.Add($"Affected file: {path}");
+        foreach (var path in AffectedFiles)
+            _preview.Add($"Affected file: {path}");
         _scan.Recheck();
     }
 
@@ -185,13 +197,17 @@ public sealed partial class AssetRelocationPlan
 
     private void Write(AssetLocation location, byte[] bytes)
     {
-        if (location.AssetEntryName is null) _looseWrites.Add(location.Path, bytes);
-        else WritableArchive(location.Path).Entries[new() { AssetType = location.AssetType, AssetName = location.AssetEntryName }] = bytes;
+        if (location.AssetEntryName is null)
+            _looseWrites.Add(location.Path, bytes);
+        else
+            WritableArchive(location.Path).Entries[new() { AssetType = location.AssetType, AssetName = location.AssetEntryName }] = bytes;
     }
 
     private void Retire(AssetLocation location)
     {
-        if (location.AssetEntryName is null) _removals.Add(location.Path);
-        else WritableArchive(location.Path).Entries.Remove(new() { AssetType = location.AssetType, AssetName = location.AssetEntryName });
+        if (location.AssetEntryName is null)
+            _removals.Add(location.Path);
+        else
+            WritableArchive(location.Path).Entries.Remove(new() { AssetType = location.AssetType, AssetName = location.AssetEntryName });
     }
 }

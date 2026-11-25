@@ -221,8 +221,10 @@ public sealed class AudioEditorControl : UserControl
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        if (disposing) Document.Changed -= DocumentChanged;
-        if (disposing && _ownsPackages) _packages.Dispose();
+        if (disposing)
+            Document.Changed -= DocumentChanged;
+        if (disposing && _ownsPackages)
+            _packages.Dispose();
         base.Dispose(disposing);
     }
 
@@ -263,7 +265,8 @@ public sealed class AudioEditorControl : UserControl
     /// <summary>Selects an owned definition and refreshes visible resource bindings without reloading or saving the document.</summary>
     public void SelectDefinition(AudioDefinition definition)
     {
-        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        if (ReferenceEquals(Document.SelectedDefinition, definition))
+            return;
         Document.SelectDefinition(definition);
         RefreshView();
     }
@@ -354,12 +357,14 @@ public sealed class AudioEditorControl : UserControl
     private bool _historyRefreshPending;
     private void DocumentChanged(object? sender, EventArgs e)
     {
-        if (_historyRefreshPending || !IsHandleCreated) return;
+        if (_historyRefreshPending || !IsHandleCreated)
+            return;
         _historyRefreshPending = true;
         BeginInvoke(() =>
         {
             _historyRefreshPending = false;
-            if (!IsDisposed) RefreshView();
+            if (!IsDisposed)
+                RefreshView();
         });
     }
 }

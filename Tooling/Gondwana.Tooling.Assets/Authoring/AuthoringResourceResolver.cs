@@ -255,7 +255,8 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
         {
             var archive = string.IsNullOrWhiteSpace(image.AssetsFilePath) ? containingArchive
                 : ResolvePath(image.AssetsFilePath, baseDirectory);
-            if (archive is null) throw new InvalidDataException("Packed image has no archive source.");
+            if (archive is null)
+                throw new InvalidDataException("Packed image has no archive source.");
             using var stream = Open(new AuthoringResource(archive, AssetTypes.Image, image.AssetEntryName), AssetTypes.Image);
             return SKBitmap.Decode(stream) ?? throw new InvalidDataException($"Packed image '{image.AssetEntryName}' in '{archive}' is unsupported or corrupt.");
         }

@@ -118,7 +118,8 @@ public sealed class MenuItemWidget : WidgetBase
         ObjectDisposedException.ThrowIf(_disposed, this);
         _isEnabled = enabled;
         ApplyInputState(_owner.IsOpen);
-        if (!enabled) _owner.OnItemDisabled(this);
+        if (!enabled)
+            _owner.OnItemDisabled(this);
         UpdateVisualState();
         return this;
     }
@@ -129,8 +130,10 @@ public sealed class MenuItemWidget : WidgetBase
     public MenuItemWidget SetChecked(bool isChecked)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        if (!IsCheckable) throw new InvalidOperationException("This menu item is not checkable.");
-        if (isChecked && RadioGroup is not null) _owner.UncheckRadioPeers(this);
+        if (!IsCheckable)
+            throw new InvalidOperationException("This menu item is not checkable.");
+        if (isChecked && RadioGroup is not null)
+            _owner.UncheckRadioPeers(this);
         IsChecked = isChecked;
         UpdateVisualState();
         return this;
@@ -140,13 +143,15 @@ public sealed class MenuItemWidget : WidgetBase
     /// <remarks>The bar and ancestor items must be available. State changes and menu closure precede callbacks.</remarks>
     public void PerformClick()
     {
-        if (!CanInvoke) return;
+        if (!CanInvoke)
+            return;
         if (SubMenu is not null)
         {
             _owner.OpenSubMenu(this, selectFirst: true);
             return;
         }
-        if (IsCheckable) SetChecked(RadioGroup is not null || !IsChecked);
+        if (IsCheckable)
+            SetChecked(RadioGroup is not null || !IsChecked);
         bool checkedState = IsChecked;
         _owner.NotifyInvoked(this);
         Invoked?.Invoke(this);
@@ -157,7 +162,8 @@ public sealed class MenuItemWidget : WidgetBase
     internal void SetSelected(bool selected)
     {
         _isSelected = selected;
-        if (!selected) _isPointerOver = false;
+        if (!selected)
+            _isPointerOver = false;
         UpdateVisualState();
     }
 
@@ -175,7 +181,8 @@ public sealed class MenuItemWidget : WidgetBase
         Background.ZOrder = zOrder;
         foreach (var drawing in new DirectDrawingBase[] { Label, ShortcutLabel, Marker, Arrow })
             drawing.ZOrder = zOrder + 1;
-        if (IconDrawing is not null) IconDrawing.ZOrder = zOrder + 1;
+        if (IconDrawing is not null)
+            IconDrawing.ZOrder = zOrder + 1;
     }
 
     internal void SetBounds(Rectangle bounds, int markerWidth, int iconWidth, int shortcutWidth, int arrowWidth)
@@ -192,7 +199,8 @@ public sealed class MenuItemWidget : WidgetBase
         Place(Arrow, new Rectangle(right - arrowWidth, bounds.Y, Math.Max(1, arrowWidth), bounds.Height));
         right -= arrowWidth;
         Place(ShortcutLabel, new Rectangle(right - shortcutWidth, bounds.Y, Math.Max(1, shortcutWidth), bounds.Height));
-        if (shortcutWidth > 0) right -= shortcutWidth + _theme.ShortcutGap;
+        if (shortcutWidth > 0)
+            right -= shortcutWidth + _theme.ShortcutGap;
         Place(Label, new Rectangle(x, bounds.Y, Math.Max(1, right - x), bounds.Height));
         Label.HorizontalPadding = ShortcutLabel.HorizontalPadding = 0;
     }
@@ -211,7 +219,8 @@ public sealed class MenuItemWidget : WidgetBase
     /// <inheritdoc/>
     public override void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         _disposed = true;
         _owner.UnregisterItem(this);
         Hovered = null;
@@ -223,7 +232,8 @@ public sealed class MenuItemWidget : WidgetBase
     protected override void OnPointerEnter(WidgetPointerEventArgs args)
     {
         base.OnPointerEnter(args);
-        if (!_isEnabled) return;
+        if (!_isEnabled)
+            return;
         _isPointerOver = true;
         Hovered?.Invoke(this);
         UpdateVisualState();
@@ -241,7 +251,8 @@ public sealed class MenuItemWidget : WidgetBase
     protected override void OnPointerDown(WidgetPointerEventArgs args)
     {
         base.OnPointerDown(args);
-        if (_isEnabled && args.IsPrimaryButton) SetBackgroundColor(_theme.ItemPressedColor);
+        if (_isEnabled && args.IsPrimaryButton)
+            SetBackgroundColor(_theme.ItemPressedColor);
     }
 
     /// <inheritdoc/>
@@ -255,7 +266,8 @@ public sealed class MenuItemWidget : WidgetBase
     protected override void OnPointerClick(WidgetPointerEventArgs args)
     {
         base.OnPointerClick(args);
-        if (!_isEnabled || !args.IsPrimaryButton) return;
+        if (!_isEnabled || !args.IsPrimaryButton)
+            return;
         args.Handled = true;
         PerformClick();
     }
@@ -265,8 +277,10 @@ public sealed class MenuItemWidget : WidgetBase
     {
         base.OnKeyboardInput(args);
         // Open-menu navigation bubbles to the bar, which knows the active depth.
-        if (_owner.IsOpen || args.Handled || args.KeyAction != KeyAction.Pressed || args.Key is not 13 and not 32) return;
-        if (!CanInvoke) return;
+        if (_owner.IsOpen || args.Handled || args.KeyAction != KeyAction.Pressed || args.Key is not 13 and not 32)
+            return;
+        if (!CanInvoke)
+            return;
         args.Handled = true;
         PerformClick();
     }

@@ -38,8 +38,10 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 .GroupBy(s => (s.Kind, Id: ResourceId(Get(s.Attributes, "id")))).Any(g => g.Count() != 1))
             throw new InvalidDataException("Duplicate or missing Godot resource sections/IDs.");
         var root = sections.SingleOrDefault(s => s.Kind == "resource") ?? throw new InvalidDataException("Missing resource section.");
-        if (format == "2") BuildGodot3Plan(plan, sections, root, token);
-        else BuildGodot4Plan(plan, sections, root, token);
+        if (format == "2")
+            BuildGodot3Plan(plan, sections, root, token);
+        else
+            BuildGodot4Plan(plan, sections, root, token);
     }
 
     internal sealed record ConvertedTile(SceneFrameDefinition Frame, Size Size, string? AnimationKey, string? AnimationFile);
@@ -49,7 +51,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         string? sourcePath = null, string? basename = null, string? gtsFile = null)
     {
         var sources = root.Properties.Where(p => Regex.IsMatch(p.Key, @"^sources/\d+$")).OrderBy(p => int.Parse(p.Key[8..], CultureInfo.InvariantCulture)).ToArray();
-        if (sources.Length == 0) throw new InvalidDataException("No atlas sources found.");
+        if (sources.Length == 0)
+            throw new InvalidDataException("No atlas sources found.");
         sourcePath ??= plan.Request.SourcePath;
         basename ??= ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(sourcePath));
         gtsFile ??= basename + ".gts";
@@ -128,7 +131,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 var durationKeys = p.Keys.Select(k => Regex.Match(k, "^" + Regex.Escape(coord) + @"/animation_frame_(\d+)/duration$")).Where(m => m.Success).ToArray();
                 int count = durationKeys.Length == 0 ? 1 : durationKeys.Max(m => int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture)) + 1;
                 count = checked((int)Number(Get(p, coord + "/animation_frames_count", count.ToString(CultureInfo.InvariantCulture))));
-                if (count <= 0 || count > 100000) throw new InvalidDataException($"Atlas source {id}, tile {coord}: invalid animation frame count.");
+                if (count <= 0 || count > 100000)
+                    throw new InvalidDataException($"Atlas source {id}, tile {coord}: invalid animation frame count.");
                 int columns = count > 1 ? checked((int)Number(Get(p, coord + "/animation_columns", "0"))) : 0;
                 var separation = count > 1 ? Vector(Get(p, coord + "/animation_separation", "Vector2i(0, 0)")) : Point.Empty;
                 double speed = count > 1 ? Number(Get(p, coord + "/animation_speed", "1")) : 1;
@@ -227,24 +231,29 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 continue;
             }
             int id = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-            if (id < 0) throw new InvalidDataException($"Invalid Godot tile ID {id}.");
-            if (!tiles.TryGetValue(id, out var properties)) tiles.Add(id, properties = new(StringComparer.Ordinal));
+            if (id < 0)
+                throw new InvalidDataException($"Invalid Godot tile ID {id}.");
+            if (!tiles.TryGetValue(id, out var properties))
+                tiles.Add(id, properties = new(StringComparer.Ordinal));
             properties.Add(match.Groups[2].Value, property.Value);
         }
-        if (tiles.Count == 0) throw new InvalidDataException("No Godot 3 tiles found.");
+        if (tiles.Count == 0)
+            throw new InvalidDataException("No Godot 3 tiles found.");
         string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
         var imageDimensions = new Dictionary<string, Size>(StringComparer.Ordinal);
         foreach (var (id, p) in tiles)
         {
             token.ThrowIfCancellationRequested();
             int mode = Pixel(Get(p, "tile_mode", "0"));
-            if (mode is not (0 or 1 or 2)) throw new InvalidDataException($"Unsupported Godot 3 tile mode {mode} for tile {id}; expected SINGLE_TILE (0), AUTO_TILE (1), or ATLAS_TILE (2).");
+            if (mode is not (0 or 1 or 2))
+                throw new InvalidDataException($"Unsupported Godot 3 tile mode {mode} for tile {id}; expected SINGLE_TILE (0), AUTO_TILE (1), or ATLAS_TILE (2).");
             string textureId = Reference(Get(p, "texture"), "ExtResource");
             var texture = sections.SingleOrDefault(s => s.Kind == "ext_resource" && ResourceId(Get(s.Attributes, "id")) == textureId)
                 ?? throw new InvalidDataException($"Unresolved texture ExtResource {textureId} for tile {id}.");
             string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(Get(texture.Attributes, "path")));
             plan.Dependencies.Add(path);
-            if (!File.Exists(path)) throw new InvalidDataException($"Missing Godot texture: {path}");
+            if (!File.Exists(path))
+                throw new InvalidDataException($"Missing Godot texture: {path}");
             if (!imageDimensions.TryGetValue(path, out var imageSize))
             {
                 using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot texture: {path}");
@@ -293,7 +302,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         foreach (string property in properties.Keys)
         {
             if (property is "texture" or "region" or "tile_mode" ||
-                (mode != 0 && property is "autotile/tile_size" or "autotile/spacing")) continue;
+                (mode != 0 && property is "autotile/tile_size" or "autotile/spacing"))
+                continue;
             string category = property switch
             {
                 "name" => "name",
@@ -305,7 +315,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 "normal_map" or "material" or "modulate" or "tex_offset" or "z_index" or "autotile/z_index_map" => "rendering",
                 _ => "metadata"
             };
-            if (!categories.TryGetValue(category, out var keys)) categories.Add(category, keys = []);
+            if (!categories.TryGetValue(category, out var keys))
+                categories.Add(category, keys = []);
             keys.Add(property);
         }
         foreach (var (category, keys) in categories)
@@ -326,9 +337,11 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
     private static int[] Geometry(string value, string kind, int count)
     {
         var match = Regex.Match(value, "^" + kind + @"\(\s*([^()]*)\s*\)$");
-        if (!match.Success) throw new InvalidDataException($"Expected {kind}, found {value}.");
+        if (!match.Success)
+            throw new InvalidDataException($"Expected {kind}, found {value}.");
         var parts = match.Groups[1].Value.Split(',');
-        if (parts.Length != count) throw new InvalidDataException($"Expected {count} components in {kind}.");
+        if (parts.Length != count)
+            throw new InvalidDataException($"Expected {count} components in {kind}.");
         return parts.Select(Pixel).ToArray();
     }
 
@@ -340,8 +353,10 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
 
     internal static string ResourceId(string value)
     {
-        if (value.StartsWith('"')) return GodotTextResource.String(value);
-        if (!Regex.IsMatch(value, @"^\d+$")) throw new InvalidDataException($"Invalid Godot resource ID '{value}'.");
+        if (value.StartsWith('"'))
+            return GodotTextResource.String(value);
+        if (!Regex.IsMatch(value, @"^\d+$"))
+            throw new InvalidDataException($"Invalid Godot resource ID '{value}'.");
         return int.Parse(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
     }
 
@@ -355,7 +370,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
     internal static Point Vector(string value)
     {
         var match = Regex.Match(value, @"^Vector2i\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)$");
-        if (!match.Success) throw new InvalidDataException($"Expected Vector2i, found {value}.");
+        if (!match.Success)
+            throw new InvalidDataException($"Expected Vector2i, found {value}.");
         return new(int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture), int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture));
     }
     internal static string Reference(string value, string kind)
@@ -366,9 +382,11 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
     internal static string ResolvePath(string source, string dependency)
     {
         string directory = Path.GetDirectoryName(Path.GetFullPath(source))!;
-        if (!dependency.StartsWith("res://", StringComparison.Ordinal)) return Path.GetFullPath(dependency, directory);
+        if (!dependency.StartsWith("res://", StringComparison.Ordinal))
+            return Path.GetFullPath(dependency, directory);
         DirectoryInfo? root = new DirectoryInfo(directory);
-        while (root is not null && !File.Exists(Path.Combine(root.FullName, "project.godot"))) root = root.Parent;
+        while (root is not null && !File.Exists(Path.Combine(root.FullName, "project.godot")))
+            root = root.Parent;
         // A standalone TileSet does not require a Godot project. When there is no
         // project.godot ancestor, resolve res:// from the TileSet's own directory.
         return Path.GetFullPath(dependency[6..], root?.FullName ?? directory);

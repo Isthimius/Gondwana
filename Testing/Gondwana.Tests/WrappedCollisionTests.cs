@@ -35,7 +35,8 @@ public sealed class WrappedCollisionTests
         int events = 0;
         void OnOverlap(ICollider a, ICollider b, Rectangle bounds)
         {
-            if (!ReferenceEquals(a, mover)) return;
+            if (!ReferenceEquals(a, mover))
+                return;
             Assert.Same(other, b);
             Assert.False(bounds.IsEmpty);
             events++;
@@ -45,8 +46,10 @@ public sealed class WrappedCollisionTests
         var before = mover.CollisionArea;
         layer.CollisionResolver.Resolve();
         Assert.Equal(1, events);
-        if (trigger) Assert.Equal(before, mover.CollisionArea);
-        else Assert.NotEqual(before, mover.CollisionArea);
+        if (trigger)
+            Assert.Equal(before, mover.CollisionArea);
+        else
+            Assert.NotEqual(before, mover.CollisionArea);
     }
 
     /// <summary>

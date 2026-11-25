@@ -88,14 +88,17 @@ internal sealed class AssetEditorDocument : DockContent
 
     internal bool ConfirmClose()
     {
-        if (!Editor.IsDirty) return true;
+        if (!Editor.IsDirty)
+            return true;
         switch (AskSave())
         {
-            case DialogResult.No: return true;
+            case DialogResult.No:
+                return true;
             case DialogResult.Yes:
                 Editor.Save();
                 return !Editor.IsDirty;
-            default: return false;
+            default:
+                return false;
         }
     }
 
@@ -103,13 +106,15 @@ internal sealed class AssetEditorDocument : DockContent
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (!e.Cancel && !CloseApproved) e.Cancel = !ConfirmClose();
+        if (!e.Cancel && !CloseApproved)
+            e.Cancel = !ConfirmClose();
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-        if (disposing) _assetsFile.Dispose();
+        if (disposing)
+            _assetsFile.Dispose();
     }
 }

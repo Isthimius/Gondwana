@@ -172,14 +172,19 @@ public sealed class DockLayoutTests
             using var next = Editor("gts");
             Assert.False(next.Model.IsPaneVisible("Validation"));
         }
-        using (var next = Editor("gts")) Assert.False(next.Model.IsPaneVisible("Validation"));
-        using (var other = Editor("gani")) Assert.True(other.Model.IsPaneVisible("Validation"));
+        using (var next = Editor("gts"))
+            Assert.False(next.Model.IsPaneVisible("Validation"));
+        using (var other = Editor("gani"))
+            Assert.True(other.Model.IsPaneVisible("Validation"));
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gscn");
-        using (var editor = Editor("gscn")) Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
+        using (var editor = Editor("gscn"))
+            Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "studio");
-        using (var editor = Editor("gscn")) Assert.True(editor.Model.IsPaneVisible("Validation"));
+        using (var editor = Editor("gscn"))
+            Assert.True(editor.Model.IsPaneVisible("Validation"));
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gscn");
-        using (var editor = Editor("gscn")) Assert.False(editor.Model.IsPaneVisible("Validation"));
+        using (var editor = Editor("gscn"))
+            Assert.False(editor.Model.IsPaneVisible("Validation"));
     });
 
     /// <summary>
@@ -198,14 +203,16 @@ public sealed class DockLayoutTests
     {
         using (var editor = Editor(kind))
             Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
-        if (fault == "malformed") File.WriteAllText(Layout(kind), "<broken");
+        if (fault == "malformed")
+            File.WriteAllText(Layout(kind), "<broken");
         else
         {
             var xml = XDocument.Load(Layout(kind));
             if (fault == "unknown")
                 xml.Root!.Element("Contents")!.Elements().Single(e => (string?)e.Attribute("PersistString") == (kind == "gspr" ? "gspr.scene-sources" : "gscn.gani-animations"))
                     .SetAttributeValue("PersistString", "plugin.removed");
-            else xml.Root!.Element("Panes")!.Elements().First().SetAttributeValue("ActiveContent", "9999");
+            else
+                xml.Root!.Element("Panes")!.Elements().First().SetAttributeValue("ActiveContent", "9999");
             xml.Save(Layout(kind));
         }
         using var restored = Editor(kind);
@@ -275,9 +282,12 @@ public sealed class DockLayoutTests
     [InlineData(true)]
     public void StudioIgnoresMissingPluginsAndCorruptPreferences(bool corrupt) => Sta(() =>
     {
-        using (var studio = Studio()) Tool(studio, "Output").Hide();
-        if (corrupt) File.WriteAllText(Layout("shell"), "not XML");
-        else File.WriteAllText(Layout("shell"), File.ReadAllText(Layout("shell")).Replace("shell.working-directory", "plugin.uninstalled"));
+        using (var studio = Studio())
+            Tool(studio, "Output").Hide();
+        if (corrupt)
+            File.WriteAllText(Layout("shell"), "not XML");
+        else
+            File.WriteAllText(Layout("shell"), File.ReadAllText(Layout("shell")).Replace("shell.working-directory", "plugin.uninstalled"));
         using var restored = Studio();
         Assert.Equal(4, restored.Workspace.Contents.Count);
         Assert.False(Tool(restored, "Working directory").IsHidden);
@@ -314,13 +324,15 @@ public sealed class DockLayoutTests
         foreach (Control child in parent.Controls)
         {
             yield return child;
-            foreach (var nested in Descendants(child)) yield return nested;
+            foreach (var nested in Descendants(child))
+                yield return nested;
         }
     }
     private static void PumpUntil(Func<bool> done)
     {
         var elapsed = Stopwatch.StartNew();
-        while (!done() && elapsed.Elapsed < TimeSpan.FromSeconds(5)) { Application.DoEvents(); Thread.Sleep(20); }
+        while (!done() && elapsed.Elapsed < TimeSpan.FromSeconds(5))
+        { Application.DoEvents(); Thread.Sleep(20); }
         Assert.True(done(), "Debounced layout save did not complete.");
     }
     private static void Sta(Action action)
@@ -339,6 +351,7 @@ public sealed class DockLayoutTests
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Layout interaction timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

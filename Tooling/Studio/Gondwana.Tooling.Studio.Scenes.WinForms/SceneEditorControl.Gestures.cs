@@ -46,7 +46,8 @@ public sealed partial class SceneEditorControl
             tile.AnimationKey = key;
             tile.EnableAnimator = true;
             tile.StartAnimation = true;
-            if (frame is not null) SetFrame(tile, frame);
+            if (frame is not null)
+                SetFrame(tile, frame);
         };
     }
 
@@ -61,15 +62,18 @@ public sealed partial class SceneEditorControl
 
     private bool BeginPreviewGesture(SceneLayerDefinition layer, int x, int y)
     {
-        if (!Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return false;
-        if (ActiveTool != SceneEditorTool.Select && !ReferenceEquals(layer, _selectedLayer)) return false;
+        if (!Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer))
+            return false;
+        if (ActiveTool != SceneEditorTool.Select && !ReferenceEquals(layer, _selectedLayer))
+            return false;
         SelectLayerNode(layer);
         _previousSelection = _selectedCells;
         _previousActiveCell = new((int)_tileX.Value, (int)_tileY.Value);
         SetSelectedTile(layer, x, y);
         bool painting = ActiveTool is SceneEditorTool.Paint or SceneEditorTool.RectanglePaint or SceneEditorTool.Fill;
         var assignment = painting ? CapturePaintAssignment() : null;
-        if (painting && assignment is null) { UpdatePaintSourceLabel(); return false; }
+        if (painting && assignment is null)
+        { UpdatePaintSourceLabel(); return false; }
         _preview.SampleStroke = ActiveTool is SceneEditorTool.Paint or SceneEditorTool.Erase;
         _preview.SingleCellGesture = ActiveTool == SceneEditorTool.Fill;
         _gestureTool = ActiveTool;
@@ -93,9 +97,12 @@ public sealed partial class SceneEditorControl
 
     private void PreviewCellClicked(SceneLayerDefinition layer, int x, int y)
     {
-        if (!GestureTargetIsValid()) { _preview.CancelGesture(); return; }
-        if (!ReferenceEquals(layer, _gestureLayer) || x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows) return;
-        if (_gestureTool == SceneEditorTool.Fill) return;
+        if (!GestureTargetIsValid())
+        { _preview.CancelGesture(); return; }
+        if (!ReferenceEquals(layer, _gestureLayer) || x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
+            return;
+        if (_gestureTool == SceneEditorTool.Fill)
+            return;
         _activeGestureCell = new(x, y);
         if (_gestureTool == SceneEditorTool.Select || IsRectangle(_gestureTool))
         {
@@ -107,7 +114,8 @@ public sealed partial class SceneEditorControl
         {
             if (_gestureTool == SceneEditorTool.Paint)
                 Document.EditTile(layer, x, y, "Assign source", _gestureAssignment!);
-            else Document.RemoveTile(layer, x, y);
+            else
+                Document.RemoveTile(layer, x, y);
         }
     }
 
@@ -140,7 +148,8 @@ public sealed partial class SceneEditorControl
             transaction?.Dispose();
             if (!IsDisposed && !Disposing && layer is not null && ReferenceEquals(_selectedLayer, layer) && Definition.Layers.Contains(layer))
             {
-                if (cancel && selecting) _selectedCells = _previousSelection;
+                if (cancel && selecting)
+                    _selectedCells = _previousSelection;
                 var cell = cancel ? _previousActiveCell : _activeGestureCell;
                 SetSelectedTile(layer, cell.X, cell.Y, preserveSelection: selecting);
                 RefreshPreview();
@@ -177,11 +186,14 @@ public sealed partial class SceneEditorControl
     {
         _preview.CancelGesture();
         var layer = _selectedLayer;
-        if (layer is null || !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer)) return;
+        if (layer is null || !Definition.Layers.Contains(layer) || !IsLayerVisibleInPreview(layer))
+            return;
         var cells = Rectangle.Intersect(_selectedCells, new Rectangle(0, 0, layer.Columns, layer.Rows));
-        if (cells.IsEmpty) return;
+        if (cells.IsEmpty)
+            return;
         var assignment = erase ? null : CapturePaintAssignment();
-        if (!erase && assignment is null) { UpdatePaintSourceLabel(); return; }
+        if (!erase && assignment is null)
+        { UpdatePaintSourceLabel(); return; }
         ApplyCells(layer, RectangleCells(cells), (long)cells.Width * cells.Height, erase, assignment, erase ? "Erase selection" : "Paint selection");
         RefreshTileProperties();
         RefreshPreview();

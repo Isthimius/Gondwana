@@ -113,7 +113,8 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             Resources = [new() { Key = "music", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "music.ogg", Volume = .4f }]
         }));
         archive.Save();
-        if (split) other.Save();
+        if (split)
+            other.Save();
         Clear();
 
         archive = AssetsFile.LoadOrCreate(ArchivePath);
@@ -257,9 +258,12 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Clear();
         EngineState.LoadFromFile(StatePath, parts: parts);
         Assert.Single(AssetsFile.AllAssetsFiles);
-        if (parts != EngineStateParts.Audio) Assert.Empty(AudioResourceManager.Instance.GetAll());
-        if (parts == EngineStateParts.Audio) Assert.Empty(TilesheetRegistry.Instance.GetAll());
-        if (parts != EngineStateParts.Sprites) Assert.Empty(SpriteManager.Instance.AllSprites);
+        if (parts != EngineStateParts.Audio)
+            Assert.Empty(AudioResourceManager.Instance.GetAll());
+        if (parts == EngineStateParts.Audio)
+            Assert.Empty(TilesheetRegistry.Instance.GetAll());
+        if (parts != EngineStateParts.Sprites)
+            Assert.Empty(SpriteManager.Instance.AllSprites);
     }
 
     /// <summary>
@@ -484,7 +488,8 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
     public void AnonymousStreamAudioExportsReloadableLooseMedia()
     {
         var archive = AssetsFile.LoadOrCreate(ArchivePath);
-        using (var bytes = new MemoryStream([1, 2, 3, 4])) archive.Add(AssetTypes.Audio, "sound.wav", bytes);
+        using (var bytes = new MemoryStream([1, 2, 3, 4]))
+            archive.Add(AssetTypes.Audio, "sound.wav", bytes);
         archive.Save();
         Clear();
         using var stream = File.OpenRead(ArchivePath);
@@ -615,7 +620,8 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
             using var reader = new StreamReader(input);
             var member = JObject.Parse(reader.ReadToEnd());
             member[identity] = key;
-            if (!packed && type == AssetTypes.TilesheetDefinition) member["Image"]!["AssetsFilePath"] = ArchivePath;
+            if (!packed && type == AssetTypes.TilesheetDefinition)
+                member["Image"]!["AssetsFilePath"] = ArchivePath;
             var other = (JObject)member.DeepClone();
             other[identity] = key + "-other";
             var json = new JObject { ["Definitions"] = new JArray(member, other) }.ToString();
@@ -626,19 +632,30 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Clear();
         archive = AssetsFile.LoadOrCreate(ArchivePath);
         string FileFor(string entry) => Path.Combine(_root, "assets", entry);
-        if (packed) TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "terrain.gts", "terrain");
-        else TilesheetRegistry.Instance.LoadFromDefinitionFile(FileFor("terrain.gts"), "terrain");
-        if (packed) AnimationDefinitionSerializer.LoadCycle(archive, "walk.gani", "walk");
-        else AnimationDefinitionSerializer.LoadCycle(FileFor("walk.gani"), "walk");
-        if (packed) SceneDefinitionSerializer.LoadScene(archive, "level.gscn", "level");
-        else SceneDefinitionSerializer.LoadScene(FileFor("level.gscn"), "level");
-        if (packed) AudioDefinitionSerializer.LoadIntoManager(archive, "audio.gsnd", "audio");
-        else AudioDefinitionSerializer.LoadIntoManager(FileFor("audio.gsnd"), "audio");
-        if (packed) SpriteDefinitionSerializer.LoadSprites(archive, "actors.gspr", "actors");
-        else SpriteDefinitionSerializer.LoadSprites(FileFor("actors.gspr"), "actors");
+        if (packed)
+            TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "terrain.gts", "terrain");
+        else
+            TilesheetRegistry.Instance.LoadFromDefinitionFile(FileFor("terrain.gts"), "terrain");
+        if (packed)
+            AnimationDefinitionSerializer.LoadCycle(archive, "walk.gani", "walk");
+        else
+            AnimationDefinitionSerializer.LoadCycle(FileFor("walk.gani"), "walk");
+        if (packed)
+            SceneDefinitionSerializer.LoadScene(archive, "level.gscn", "level");
+        else
+            SceneDefinitionSerializer.LoadScene(FileFor("level.gscn"), "level");
+        if (packed)
+            AudioDefinitionSerializer.LoadIntoManager(archive, "audio.gsnd", "audio");
+        else
+            AudioDefinitionSerializer.LoadIntoManager(FileFor("audio.gsnd"), "audio");
+        if (packed)
+            SpriteDefinitionSerializer.LoadSprites(archive, "actors.gspr", "actors");
+        else
+            SpriteDefinitionSerializer.LoadSprites(FileFor("actors.gspr"), "actors");
         new EngineState().SaveToFile(StatePath, Preserve());
         var root = Read(StatePath);
-        foreach (var entry in Entries(root)) Assert.False(string.IsNullOrWhiteSpace((string?)entry["DefinitionIdentity"]));
+        foreach (var entry in Entries(root))
+            Assert.False(string.IsNullOrWhiteSpace((string?)entry["DefinitionIdentity"]));
         Clear();
         EngineState.LoadFromFile(StatePath);
         Assert.Equal("terrain", Assert.Single(TilesheetRegistry.Instance.GetAll()).Key);
@@ -647,7 +664,8 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Equal("music", Assert.Single(AudioResourceManager.Instance.GetAll()).Key);
         Assert.Equal("actor", Assert.Single(SpriteManager.Instance.AllSprites).Nickname);
         // An old state reference cannot silently pick the first member after its source becomes a document.
-        foreach (var entry in Entries(root)) entry.Remove("DefinitionIdentity");
+        foreach (var entry in Entries(root))
+            entry.Remove("DefinitionIdentity");
         File.WriteAllText(StatePath, root.ToString());
         Clear();
         var error = Assert.Throws<InvalidDataException>(() => EngineState.LoadFromFile(StatePath));

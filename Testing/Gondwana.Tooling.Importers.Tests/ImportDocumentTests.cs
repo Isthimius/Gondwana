@@ -12,12 +12,23 @@ public sealed partial class ImportPipelineTests
     {
         switch (kind)
         {
-            case "GTS": plan.Add(file, new TilesheetDefinition { Name = key, Image = new() { FilePath = "../atlas.png" } }); break;
-            case "GANI": plan.Add(file, new AnimationDefinition { Key = key, Frames = [new() { Tilesheet = "terrain" }] }); break;
-            case "GSCN": plan.Add(file, new SceneDefinition { ID = key }); break;
-            case "GSPR": plan.Add(file, new SpriteDefinition { Key = key }); break;
-            case "GSND": plan.Add(file, new AudioDefinition { Key = key }); break;
-            default: throw new ArgumentException(kind);
+            case "GTS":
+                plan.Add(file, new TilesheetDefinition { Name = key, Image = new() { FilePath = "../atlas.png" } });
+                break;
+            case "GANI":
+                plan.Add(file, new AnimationDefinition { Key = key, Frames = [new() { Tilesheet = "terrain" }] });
+                break;
+            case "GSCN":
+                plan.Add(file, new SceneDefinition { ID = key });
+                break;
+            case "GSPR":
+                plan.Add(file, new SpriteDefinition { Key = key });
+                break;
+            case "GSND":
+                plan.Add(file, new AudioDefinition { Key = key });
+                break;
+            default:
+                throw new ArgumentException(kind);
         }
     }
 
@@ -54,8 +65,10 @@ public sealed partial class ImportPipelineTests
         Assert.Equal(new[] { "one", "two" }, ReadKeys(kind, path));
         var root = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path));
         Assert.Equal(2, root["Definitions"]!.Count());
-        if (kind is "GSPR" or "GSND") Assert.All(root["Definitions"]!, member => Assert.Null(member["Source"]));
-        else Assert.All(root["Definitions"]!, member => Assert.Equal(3, (int)member["Source"]!["Kind"]!));
+        if (kind is "GSPR" or "GSND")
+            Assert.All(root["Definitions"]!, member => Assert.Null(member["Source"]));
+        else
+            Assert.All(root["Definitions"]!, member => Assert.Equal(3, (int)member["Source"]!["Kind"]!));
         // Overwrite replaces the full document; it does not append to its prior members.
         var replacement = new Provider(plan => Native(plan, file, kind, "replacement"));
         Assert.Empty(replacement.Import(request).WrittenFiles);
@@ -111,7 +124,8 @@ public sealed partial class ImportPipelineTests
         var canceled = new Provider(plan => { Native(plan, file, kind, "one"); Native(plan, file, kind, "two"); cancellation.Cancel(); });
         Assert.Throws<OperationCanceledException>(() => canceled.Import(request, cancellation.Token));
         Assert.False(Directory.Exists(request.OutputDirectory));
-        if (!OperatingSystem.IsWindows()) return;
+        if (!OperatingSystem.IsWindows())
+            return;
         Directory.CreateDirectory(request.OutputDirectory);
         var first = Path.Combine(request.OutputDirectory, file);
         var second = Path.Combine(request.OutputDirectory, "image.png");
@@ -119,7 +133,8 @@ public sealed partial class ImportPipelineTests
         File.WriteAllText(second, "original image");
         var provider = new Provider(plan =>
         {
-            Native(plan, file, kind, "one"); Native(plan, file, kind, "two");
+            Native(plan, file, kind, "one");
+            Native(plan, file, kind, "two");
             plan.Add("image.png", "PNG", null, [1, 2, 3]);
         });
         using (var locked = new FileStream(second, FileMode.Open, FileAccess.Read, FileShare.Read))

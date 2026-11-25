@@ -11,7 +11,8 @@ internal sealed partial class SemanticPackPlan
 {
     private void Analyze(Entry owner)
     {
-        if (owner.Document is null) return;
+        if (owner.Document is null)
+            return;
         string PackedPath(AssetLocation location) => Path.GetRelativePath(Path.GetDirectoryName(owner.Location.Path)!, location.Path);
         foreach (var (identity, member) in owner.Document.Members())
         {
@@ -88,7 +89,8 @@ internal sealed partial class SemanticPackPlan
                                     SpriteSceneSourceDefinition.Packed(key, PackedPath(location), location.AssetEntryName));
                             foreach (var sprite in sprites.Sprites)
                             {
-                                if (string.IsNullOrWhiteSpace(sprite.SceneId)) continue;
+                                if (string.IsNullOrWhiteSpace(sprite.SceneId))
+                                    continue;
                                 var sceneDefinition = (SceneDefinition)scenes[sprite.SceneId].Document!.Members().Single(item => item.Identity == sprite.SceneId).Member;
                                 if (!sceneDefinition.Layers.Any(layer => layer.ID == sprite.SceneLayerId))
                                     throw new InvalidDataException($"{label}: sprite '{sprite.Nickname ?? sprite.Id.ToString()}' references missing layer '{sprite.SceneLayerId}' in scene '{sprite.SceneId}'.");
@@ -111,7 +113,8 @@ internal sealed partial class SemanticPackPlan
         {
             var source = sources[sourceIndex];
             var key = identity(source);
-            if (resolved.ContainsKey(key)) throw new InvalidDataException($"{label}: duplicate/conflicting {type} source '{key}'.");
+            if (resolved.ContainsKey(key))
+                throw new InvalidDataException($"{label}: duplicate/conflicting {type} source '{key}'.");
             var location = physical(source);
             var collection = type == AssetTypes.TilesheetDefinition ? "TilesheetSources" : type == AssetTypes.AnimationDefinition ? "AnimationSources" : "SceneSources";
             var target = Resolve(location, key, label + $" :: {collection}[{sourceIndex}] {type} '{key}'");
@@ -120,7 +123,8 @@ internal sealed partial class SemanticPackPlan
         }
         foreach (var key in required.Where(key => !string.IsNullOrWhiteSpace(key)).Select(key => key!).Distinct(comparer))
         {
-            if (resolved.ContainsKey(key)) continue;
+            if (resolved.ContainsKey(key))
+                continue;
             var target = Logical(type, key, label);
             sources.Add(create(key, target.Location));
             owner.NeedsRewrite = true;

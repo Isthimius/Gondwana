@@ -98,7 +98,8 @@ public sealed class SceneAnimationSourceTests
     {
         var root = Path.Combine(Path.GetTempPath(), "GscnAnimationPreview-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
-        try { action(root); }
+        try
+        { action(root); }
         finally { Directory.Delete(root, recursive: true); }
     }
 }

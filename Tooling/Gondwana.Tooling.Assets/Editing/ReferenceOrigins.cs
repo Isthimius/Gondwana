@@ -23,8 +23,10 @@ public sealed class ReferenceOrigins
         {
             string? Rebase(string? path)
             {
-                if (string.IsNullOrWhiteSpace(path) || string.Equals(directory, origin.Directory, StringComparison.OrdinalIgnoreCase)) return path;
-                try { return Path.GetRelativePath(directory, Path.GetFullPath(path, origin.Directory)).Replace('\\', '/'); }
+                if (string.IsNullOrWhiteSpace(path) || string.Equals(directory, origin.Directory, StringComparison.OrdinalIgnoreCase))
+                    return path;
+                try
+                { return Path.GetRelativePath(directory, Path.GetFullPath(path, origin.Directory)).Replace('\\', '/'); }
                 // Invalid draft references remain invalid and visible to document validation, but cannot break replay.
                 catch (Exception ex) when (ex is ArgumentException or NotSupportedException) { return path; }
             }

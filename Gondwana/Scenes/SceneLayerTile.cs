@@ -102,14 +102,18 @@ public class SceneLayerTile : Tile
         get => _transform;
         set
         {
-            if (!Enum.IsDefined(value)) throw new ArgumentOutOfRangeException(nameof(value));
-            if (_transform == value) return;
+            if (!Enum.IsDefined(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+            if (_transform == value)
+                return;
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
             _transform = value;
             if (!ReferenceEquals(SceneLayer, SceneLayer.Empty))
             {
-                if (value == TileTransform.Identity) SceneLayer.TransformedTiles.Remove(this);
-                else SceneLayer.TransformedTiles.Add(this);
+                if (value == TileTransform.Identity)
+                    SceneLayer.TransformedTiles.Remove(this);
+                else
+                    SceneLayer.TransformedTiles.Add(this);
             }
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }

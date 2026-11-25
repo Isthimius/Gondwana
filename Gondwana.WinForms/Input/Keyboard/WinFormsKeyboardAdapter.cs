@@ -122,9 +122,12 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
         int mods = 0;
         var mk = Control.ModifierKeys;
 
-        if ((mk & Keys.Shift) != 0) mods |= (int)KeyboardModifierState.Shift;
-        if ((mk & Keys.Control) != 0) mods |= (int)KeyboardModifierState.Ctrl;
-        if ((mk & Keys.Alt) != 0) mods |= (int)KeyboardModifierState.Alt;
+        if ((mk & Keys.Shift) != 0)
+            mods |= (int)KeyboardModifierState.Shift;
+        if ((mk & Keys.Control) != 0)
+            mods |= (int)KeyboardModifierState.Ctrl;
+        if ((mk & Keys.Alt) != 0)
+            mods |= (int)KeyboardModifierState.Alt;
 
         Volatile.Write(ref _modsBits, mods);
     }

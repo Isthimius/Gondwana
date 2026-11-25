@@ -48,7 +48,8 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
     /// <inheritdoc/>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        if (!_active) return;
+        if (!_active)
+            return;
         float size = Math.Min(_theme.IndicatorSize, Math.Min(destRectScreen.Width, destRectScreen.Height));
         float x = destRectScreen.X + (destRectScreen.Width - size) / 2;
         float y = destRectScreen.Y + (destRectScreen.Height - size) / 2;

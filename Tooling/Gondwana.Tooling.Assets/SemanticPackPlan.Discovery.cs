@@ -26,7 +26,8 @@ internal sealed partial class SemanticPackPlan
         var plan = new SemanticPackPlan(Path.GetDirectoryName(owner.Path)!, owner.Path, null, false, true, cancellation);
         var entry = ReadEntry(owner, owner, bytes);
         entry.Document?.Validate(owner.ToString());
-        if (failed is not null) plan._discoveryProblem = error => failed(null, error);
+        if (failed is not null)
+            plan._discoveryProblem = error => failed(null, error);
         plan._externalReference = external;
         plan._referenceResolver = (location, type, selector, label) =>
         {

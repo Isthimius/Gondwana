@@ -57,7 +57,8 @@ public sealed partial class MainForm
         AddButton(bar, "WorkingDirectory", "Choose working directory", "folder", ChooseDirectory);
         AddButton(bar, "Refresh", "Refresh working directory", "refresh", () =>
         {
-            foreach (var document in _documents.ToArray()) RefreshSourceRegistrations(document);
+            foreach (var document in _documents.ToArray())
+                RefreshSourceRegistrations(document);
             VerifyDocumentSources();
             Browser.RefreshDirectory();
             SyncActiveDocumentSelection();
@@ -102,7 +103,8 @@ public sealed partial class MainForm
 
     private void UpdateToolbarState()
     {
-        if (_disposed || IsDisposed || _saveButton is null) return;
+        if (_disposed || IsDisposed || _saveButton is null)
+            return;
         var active = ActiveDocument;
         bool hasActive = active is { IsDisposed: false };
         _saveButton.Enabled = hasActive;
@@ -120,7 +122,8 @@ public sealed partial class MainForm
     /// <returns>True only when every modified document was saved.</returns>
     internal async Task<bool> SaveAllDocuments()
     {
-        if (_savingAll) return false;
+        if (_savingAll)
+            return false;
         _savingAll = true;
         UpdateToolbarState();
         try
@@ -130,10 +133,13 @@ public sealed partial class MainForm
             // SaveArchive still detects genuine same-entry conflicts.
             foreach (var document in _documents.ToArray().OrderBy(item => item.Document.Kind == "asset" ? 0 : 1))
             {
-                if (document.IsDisposed) continue;
+                if (document.IsDisposed)
+                    continue;
                 // Commit pending PropertyGrid/text edits before deciding that a document is clean.
-                if (!document.Document.CommitEdits()) return false;
-                if (document.Document.Dirty() && !await SaveDocument(document)) return false;
+                if (!document.Document.CommitEdits())
+                    return false;
+                if (document.Document.Dirty() && !await SaveDocument(document))
+                    return false;
             }
             return true;
         }
@@ -153,10 +159,12 @@ public sealed partial class MainForm
     /// <returns>Validation errors, or null when no active document exists or pending edits cannot be committed.</returns>
     internal IReadOnlyList<string>? ValidateActiveDocument()
     {
-        if (ActiveDocument is not { IsDisposed: false } document || document.Document.Kind == "asset") return null;
+        if (ActiveDocument is not { IsDisposed: false } document || document.Document.Kind == "asset")
+            return null;
         try
         {
-            if (!document.Document.CommitEdits()) return null;
+            if (!document.Document.CommitEdits())
+                return null;
             var errors = document.Document.Validate();
             if (errors.Count == 0)
                 _output.Log($"Info: Validation passed: {document.Document.Caption}");
@@ -164,7 +172,8 @@ public sealed partial class MainForm
             {
                 document.Document.ShowPane("Validation");
                 _output.Log($"Error: Validation found {errors.Count} error(s): {document.Document.Caption}");
-                foreach (var error in errors) _output.Log("  Error: " + error);
+                foreach (var error in errors)
+                    _output.Log("  Error: " + error);
             }
             return errors;
         }

@@ -114,7 +114,8 @@ public sealed class DirectoryPanel : UserControl
 
         Tree.NodeMouseClick += (_, e) =>
         {
-            if (e.Button != MouseButtons.Right) return;
+            if (e.Button != MouseButtons.Right)
+                return;
             if (PrepareCategoryMenu(e.Node))
                 _categoryMenu.Show(Tree, e.Location);
             else if (PrepareFileMenu(e.Node))
@@ -465,7 +466,8 @@ public sealed class DirectoryPanel : UserControl
     internal async Task<T> RunArchiveReadAsync<T>(Func<Task<T>> read, CancellationToken cancellationToken)
     {
         await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try { return await read().ConfigureAwait(false); }
+        try
+        { return await read().ConfigureAwait(false); }
         finally { _archiveGate.Release(); }
     }
 
@@ -481,7 +483,8 @@ public sealed class DirectoryPanel : UserControl
         {
             await OnUiAsync(() =>
             {
-                try { action(); }
+                try
+                { action(); }
                 finally { RefreshDirectory(); }
             }, cancellationToken).ConfigureAwait(false);
         }
@@ -515,7 +518,8 @@ public sealed class DirectoryPanel : UserControl
             "gsnd" => "Sound",
             _ => null
         };
-        if (label is null) return false;
+        if (label is null)
+            return false;
 
         _fileMenu.Close();
         _menuPath = null;

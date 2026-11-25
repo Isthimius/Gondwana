@@ -25,7 +25,8 @@ public sealed partial class CompositionTests
         studio.ReportError = ex => failure = ex;
         FileStream? blocker = null;
         studio.BeforeArchiveInstall = () => blocker = File.OpenRead(path); // Denies File.Replace, after successful staging.
-        try { Assert.False(AwaitUi(studio.SaveDocument(document))); }
+        try
+        { Assert.False(AwaitUi(studio.SaveDocument(document))); }
         finally { blocker?.Dispose(); }
         Assert.IsType<IOException>(failure);
         Assert.Equal(original, File.ReadAllBytes(path));
@@ -61,7 +62,8 @@ public sealed partial class CompositionTests
             archive.Add(AssetTypes.Image, Path.Combine(root, "blue.png"), "blue.png");
             archive.Save();
         }
-        foreach (var file in Directory.GetFiles(root).Where(file => !file.EndsWith(".gaf"))) File.Delete(file);
+        foreach (var file in Directory.GetFiles(root).Where(file => !file.EndsWith(".gaf")))
+            File.Delete(file);
         using var studio = Host(root);
         var animation = studio.OpenDocument(new AssetLocation(AssetTypes.AnimationDefinition, path, "definitions/water.gani"));
         SelectPackedMember(animation.Document.Editor, "water.flow");
@@ -69,7 +71,8 @@ public sealed partial class CompositionTests
         SelectPackedMember(scene.Document.Editor, "island");
         var sprite = studio.OpenDocument(new AssetLocation(AssetTypes.SpriteDefinition, path, "actors.gspr"));
         var dependents = new[] { animation, scene, sprite };
-        foreach (var document in dependents) RenameFirst(document.Document, "unsaved-member");
+        foreach (var document in dependents)
+            RenameFirst(document.Document, "unsaved-member");
         var edits = dependents.Select(document => document.Document.SerializePacked!()).ToArray();
         var tilesheet = studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "definitions/world.gts"));
         SelectPackedMember(tilesheet.Document.Editor, "terrain");
@@ -98,7 +101,8 @@ public sealed partial class CompositionTests
     public void VerifiedPreviewPasswordSurvivesReloadAndPackedDocumentOpen() => RunSta(root =>
     {
         var path = CreatePreviewArchive(root, "encrypted.gaf", Color.LimeGreen);
-        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) encrypted.Save();
+        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+            encrypted.Save();
         var loose = Path.Combine(root, "preview.gani");
         AnimationDefinitionSerializer.Save(loose, PreviewAnimation("encrypted.gaf"));
         using var studio = Host(root);
@@ -170,7 +174,8 @@ public sealed partial class CompositionTests
     public void RestorationSharesFailedAuthenticationAcrossPackedDocumentsAndPreviews(bool packedFirst, string? answer) => RunSta(root =>
     {
         var path = CreatePreviewArchive(root, "encrypted.gaf", Color.LimeGreen);
-        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) encrypted.Save();
+        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+            encrypted.Save();
         var loose = Path.Combine(root, "loose.gani");
         AnimationDefinitionSerializer.Save(loose, PreviewAnimation("encrypted.gaf"));
         var packedDocument = new WorkspaceSessionDocument(Path.GetFullPath(path), "gts",

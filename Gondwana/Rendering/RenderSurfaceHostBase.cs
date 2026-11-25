@@ -168,7 +168,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
         long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
         bool collectDiagnostics = diagnostics is not null || telemetryGeneration != 0;
         var slot = FrameMailbox.TryAcquire();
-        if (slot is null) return Backbuffer.Snapshot();
+        if (slot is null)
+            return Backbuffer.Snapshot();
 
         long acquired = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
         var counters = !collectDiagnostics ? default : FrameMailbox.Counters;
@@ -222,7 +223,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
         }
         finally
         {
-            try { Backbuffer.BeginFrame(); }
+            try
+            { Backbuffer.BeginFrame(); }
             finally { FrameMailbox.Release(slot); }
 
             if (collectDiagnostics)
@@ -339,7 +341,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
     {
         var presentation = RenderSurfaceAdapter?.Presentation ?? default;
         canvas.Clear(Backbuffer.ClearColor);
-        if (presentation.Scale <= 0) return;
+        if (presentation.Scale <= 0)
+            return;
         canvas.Save();
         try
         {

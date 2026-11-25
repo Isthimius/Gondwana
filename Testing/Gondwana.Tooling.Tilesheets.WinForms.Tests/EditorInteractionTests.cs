@@ -467,12 +467,15 @@ public sealed partial class EditorInteractionTests
         Assert.Equal("Left", grid.SelectedGridItem?.PropertyDescriptor?.Name);
         Edit(grid, "CollisionAdjust.Left", "-4", enter: false);
         Assert.Equal(-4, region.CollisionAdjust.Left);
-        document.History.Undo(); Application.DoEvents();
+        document.History.Undo();
+        Application.DoEvents();
         Assert.Equal(-3, region.CollisionAdjust.Left);
         Assert.Equal(-3, Items(grid).Single(item =>
             item.PropertyDescriptor?.Name == "Left" &&
             item.Parent?.PropertyDescriptor?.Name == "CollisionAdjust").Value);
-        document.History.Redo(); Application.DoEvents(); Assert.Equal(-4, region.CollisionAdjust.Left);
+        document.History.Redo();
+        Application.DoEvents();
+        Assert.Equal(-4, region.CollisionAdjust.Left);
         Edit(grid, "Overhang.Top", "2");
         Assert.Equal(2, region.Overhang.Top);
 
@@ -702,7 +705,8 @@ public sealed partial class EditorInteractionTests
                 finally { view.GetType().GetMethod("CloseDropDown", PrivateInstance)!.Invoke(view, null); }
             });
             view.GetType().GetMethod("F4Selection", PrivateInstance)!.Invoke(view, [false]);
-            if (failure is not null) ExceptionDispatchInfo.Capture(failure).Throw();
+            if (failure is not null)
+                ExceptionDispatchInfo.Capture(failure).Throw();
             Application.DoEvents();
             return;
         }
@@ -726,13 +730,15 @@ public sealed partial class EditorInteractionTests
     private static IEnumerable<GridItem> Items(PropertyGrid grid)
     {
         var root = grid.SelectedGridItem!;
-        while (root.Parent is not null) root = root.Parent;
+        while (root.Parent is not null)
+            root = root.Parent;
         return Walk(root);
         static IEnumerable<GridItem> Walk(GridItem item)
         {
             yield return item;
             foreach (GridItem child in item.GridItems)
-                foreach (var descendant in Walk(child)) yield return descendant;
+                foreach (var descendant in Walk(child))
+                    yield return descendant;
         }
     }
 
@@ -741,7 +747,8 @@ public sealed partial class EditorInteractionTests
         foreach (Control control in parent.Controls)
         {
             yield return control;
-            foreach (var descendant in Descendants(control)) yield return descendant;
+            foreach (var descendant in Descendants(control))
+                yield return descendant;
         }
     }
 
@@ -763,6 +770,7 @@ public sealed partial class EditorInteractionTests
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "Windows interaction test timed out.");
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

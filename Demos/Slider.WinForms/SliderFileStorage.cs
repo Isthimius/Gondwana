@@ -20,7 +20,8 @@ internal sealed class SliderFileStorage : ISliderScoreStore
         if (!File.Exists(ScorePath))
             return [];
 
-        try { return SliderPersistence.DeserializeScores(File.ReadAllText(ScorePath)); }
+        try
+        { return SliderPersistence.DeserializeScores(File.ReadAllText(ScorePath)); }
         catch (IOException) { return []; }
         catch (JsonException) { return []; }
         catch (UnauthorizedAccessException) { return []; }

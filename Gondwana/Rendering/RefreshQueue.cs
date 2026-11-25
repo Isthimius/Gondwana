@@ -45,7 +45,8 @@ internal sealed class RefreshQueue
     /// <returns>A snapshot of the queued dirty rectangles in world pixels.</returns>
     internal Rectangle[] SnapshotWorldRects()
     {
-        lock (_syncRoot) return _worldRects.ToArray();
+        lock (_syncRoot)
+            return _worldRects.ToArray();
     }
 
     /// <summary>

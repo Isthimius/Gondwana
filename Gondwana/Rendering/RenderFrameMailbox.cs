@@ -59,11 +59,13 @@ internal sealed class RenderFrameMailbox : IDisposable
     {
         lock (_gate)
         {
-            if (_closed) return null;
+            if (_closed)
+                return null;
             if (_slots.Any(s => s.Ownership == State.Building))
                 throw new InvalidOperationException("Only one snapshot producer is supported.");
             var slot = _slots.FirstOrDefault(s => s.Ownership == State.Free);
-            if (slot is null) return null;
+            if (slot is null)
+                return null;
             slot.Ownership = State.Building;
             return slot;
         }
@@ -95,7 +97,8 @@ internal sealed class RenderFrameMailbox : IDisposable
                 _publishedCount++;
             }
         }
-        if (retired is not null) Recycle(retired);
+        if (retired is not null)
+            Recycle(retired);
     }
 
     internal void AbortBuild(Slot slot)
@@ -111,7 +114,8 @@ internal sealed class RenderFrameMailbox : IDisposable
     {
         lock (_gate)
         {
-            if (_closed || _published is null) return null;
+            if (_closed || _published is null)
+                return null;
             if (_slots.Any(s => s.Ownership == State.Rendering))
                 throw new InvalidOperationException("Only one snapshot consumer is supported.");
             var slot = _published;
@@ -139,7 +143,8 @@ internal sealed class RenderFrameMailbox : IDisposable
 
     private void Recycle(Slot slot)
     {
-        try { slot.Frame?.Dispose(); }
+        try
+        { slot.Frame?.Dispose(); }
         finally
         {
             lock (_gate)
@@ -158,14 +163,17 @@ internal sealed class RenderFrameMailbox : IDisposable
         Slot? retired;
         lock (_gate)
         {
-            if (_closed) return;
+            if (_closed)
+                return;
             _closed = true;
             retired = _published;
             _published = null;
-            if (retired is not null) retired.Ownership = State.Releasing;
+            if (retired is not null)
+                retired.Ownership = State.Releasing;
             // Building and Rendering belong to their callers until Publish/Abort/Release.
         }
-        if (retired is not null) Recycle(retired);
+        if (retired is not null)
+            Recycle(retired);
     }
 }
 

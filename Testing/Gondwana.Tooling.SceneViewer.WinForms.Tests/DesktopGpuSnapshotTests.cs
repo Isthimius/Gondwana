@@ -34,7 +34,8 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var thread = new Thread(() =>
         {
-            try { Run(); completion.SetResult(); }
+            try
+            { Run(); completion.SetResult(); }
             catch (Exception exception) { completion.SetException(exception); }
         });
         thread.SetApartmentState(ApartmentState.STA);

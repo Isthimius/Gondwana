@@ -26,7 +26,8 @@ public partial class EngineConfiguration
         {
             if (!float.IsFinite(value) || value <= 0)
                 throw new ArgumentOutOfRangeException(nameof(value), "RenderScale must be finite and positive.");
-            if (_renderScale == value) return;
+            if (_renderScale == value)
+                return;
             var surfaces = RenderSurfaceHostRegistry.Snapshot();
             // Validate every dimension before publishing intent or queuing any changes.
             foreach (var surface in surfaces)
@@ -51,7 +52,8 @@ public partial class EngineConfiguration
         get => _renderScalingFilter;
         set
         {
-            if (!Enum.IsDefined(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (!Enum.IsDefined(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
             _renderScalingFilter = value;
             foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
                 surface.InvalidatePresentation();

@@ -42,7 +42,8 @@ public sealed class RuntimeProfiler : IDisposable
         lock (_sync)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
-            if (_requests != 0) throw new InvalidOperationException("Configure telemetry while inactive.");
+            if (_requests != 0)
+                throw new InvalidOperationException("Configure telemetry while inactive.");
             if (_sources.Count > options.SourceCapacity || _sources.Values.Any(s => s.Metrics.Count > options.MetricCapacity))
                 throw new InvalidOperationException("Configured limits are smaller than registered detail.");
             _options = options;
@@ -64,7 +65,8 @@ public sealed class RuntimeProfiler : IDisposable
                 _started = _clock();
                 ClearAccumulators();
                 foreach (var source in _sources.Values)
-                    foreach (var accumulator in source.Metrics.Values) accumulator.Rebase();
+                    foreach (var accumulator in source.Metrics.Values)
+                        accumulator.Rebase();
             }
             _requests++;
             return new Request(this);
@@ -82,7 +84,8 @@ public sealed class RuntimeProfiler : IDisposable
         lock (_sync)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
-            if (_sources.Count >= _options.SourceCapacity) { _truncated = true; return null; }
+            if (_sources.Count >= _options.SourceCapacity)
+            { _truncated = true; return null; }
             var source = new TelemetrySource(this, ++_nextId, name, backend);
             _sources.Add(source.Id, source);
             return source;
@@ -129,7 +132,8 @@ public sealed class RuntimeProfiler : IDisposable
     {
         lock (_sync)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             _disposed = true;
             _requests = 0;
             _generation++;
@@ -154,14 +158,16 @@ public sealed class RuntimeProfiler : IDisposable
         ValidateName(name);
         lock (_sync)
         {
-            if (!_sources.ContainsKey(source.Id)) return false;
+            if (!_sources.ContainsKey(source.Id))
+                return false;
             if (source.Metrics.TryGetValue(name, out var existing))
             {
                 if (existing.Availability == TelemetryAvailability.Unsupported && availability == TelemetryAvailability.NotYetSampled)
                     existing.Availability = availability;
                 return true;
             }
-            if (source.Metrics.Count >= _options.MetricCapacity) { _truncated = true; return false; }
+            if (source.Metrics.Count >= _options.MetricCapacity)
+            { _truncated = true; return false; }
             source.Metrics.Add(name, new Accumulator { Availability = availability, Kind = kind });
             return true;
         }
@@ -174,13 +180,17 @@ public sealed class RuntimeProfiler : IDisposable
     /// <param name="value">Finite observation in declared units.</param>
     internal void Record(TelemetrySource source, long generation, string metric, double value)
     {
-        if (generation == 0 || !IsCollecting || !double.IsFinite(value)) return;
+        if (generation == 0 || !IsCollecting || !double.IsFinite(value))
+            return;
         lock (_sync)
         {
-            if (_requests == 0 || generation != _generation || !_sources.ContainsKey(source.Id)) return;
+            if (_requests == 0 || generation != _generation || !_sources.ContainsKey(source.Id))
+                return;
             Advance();
-            if (!source.Metrics.TryGetValue(metric, out var accumulator)) return;
-            if (accumulator.Availability is TelemetryAvailability.Unsupported or TelemetryAvailability.NotApplicable) return;
+            if (!source.Metrics.TryGetValue(metric, out var accumulator))
+                return;
+            if (accumulator.Availability is TelemetryAvailability.Unsupported or TelemetryAvailability.NotApplicable)
+                return;
             accumulator.Add(value, _clock());
         }
     }
@@ -193,12 +203,14 @@ public sealed class RuntimeProfiler : IDisposable
     /// <param name="generation">Epoch of the omitted observations.</param>
     internal void MarkTruncated(long generation)
     {
-        lock (_sync) { if (generation == _generation && _requests != 0) _truncated = true; }
+        lock (_sync)
+        { if (generation == _generation && _requests != 0) _truncated = true; }
     }
 
     private static void ValidateName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > 96) throw new ArgumentException("Names must contain 1–96 characters.", nameof(name));
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 96)
+            throw new ArgumentException("Names must contain 1–96 characters.", nameof(name));
     }
 
     private void ResetCore()
@@ -209,27 +221,32 @@ public sealed class RuntimeProfiler : IDisposable
         _started = _clock();
         ClearAccumulators();
         foreach (var source in _sources.Values)
-            foreach (var accumulator in source.Metrics.Values) accumulator.Rebase();
+            foreach (var accumulator in source.Metrics.Values)
+                accumulator.Rebase();
     }
 
     private void ClearAccumulators()
     {
         foreach (var source in _sources.Values)
-            foreach (var accumulator in source.Metrics.Values) accumulator.Clear();
+            foreach (var accumulator in source.Metrics.Values)
+                accumulator.Clear();
     }
 
     private void Advance()
     {
-        if (_requests == 0) return;
+        if (_requests == 0)
+            return;
         double now = _clock();
-        if (now - _started >= _options.Interval.TotalSeconds) Publish(now);
+        if (now - _started >= _options.Interval.TotalSeconds)
+            Publish(now);
     }
 
     private void Publish(double now)
     {
         var sources = _sources.Values.Select(source => new TelemetrySourceSnapshot(source.Id, source.Name, source.Backend,
             new ReadOnlyDictionary<string, TelemetrySummary>(source.Metrics.ToDictionary(p => p.Key, p => p.Value.Snapshot())))).ToArray();
-        if (_history.Count == _options.HistoryCapacity) _history.Dequeue();
+        if (_history.Count == _options.HistoryCapacity)
+            _history.Dequeue();
         _latestSnapshot = new(_generation, _started, now, Array.AsReadOnly(sources), _truncated);
         _history.Enqueue(_latestSnapshot);
         ClearAccumulators();
@@ -240,11 +257,13 @@ public sealed class RuntimeProfiler : IDisposable
     {
         lock (_sync)
         {
-            if (_requests == 0) return;
+            if (_requests == 0)
+                return;
             if (_requests == 1)
             {
                 double now = _clock();
-                if (now > _started) Publish(now);
+                if (now > _started)
+                    Publish(now);
                 _generation++;
             }
             _requests--;

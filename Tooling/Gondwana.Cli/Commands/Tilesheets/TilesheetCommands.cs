@@ -20,9 +20,11 @@ internal sealed class TilesheetValidateCommand : Command<TilesheetSettings>
     {
         var results = TilesheetInspection.AllFromFile(settings.File);
         foreach (var result in results)
-            foreach (var error in result.Errors) AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(result.Definition?.Name ?? "document")} :: {Markup.Escape(error)}");
+            foreach (var error in result.Errors)
+                AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(result.Definition?.Name ?? "document")} :: {Markup.Escape(error)}");
         bool valid = results.All(result => result.Errors.Count == 0);
-        if (valid) AnsiConsole.WriteLine($"OK: {results.Count} tilesheet definition(s) validated.");
+        if (valid)
+            AnsiConsole.WriteLine($"OK: {results.Count} tilesheet definition(s) validated.");
         return valid ? 0 : 1;
     }
 }
@@ -48,7 +50,8 @@ internal sealed class TilesheetInfoCommand : Command<TilesheetSettings>
                     AnsiConsole.WriteLine($"    collision {region.CollisionType}; insets L/T/R/B {region.CollisionAdjust.Left}/{region.CollisionAdjust.Top}/{region.CollisionAdjust.Right}/{region.CollisionAdjust.Bottom}; overhang {region.Overhang}");
                 }
             }
-            foreach (var error in result.Errors) AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(error)}");
+            foreach (var error in result.Errors)
+                AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(error)}");
         }
         return results.All(result => result.Errors.Count == 0) ? 0 : 1;
     }

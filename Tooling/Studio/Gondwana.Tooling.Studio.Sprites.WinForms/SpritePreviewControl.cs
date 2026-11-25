@@ -32,8 +32,10 @@ internal sealed class SpritePreviewControl : UserControl
         var zoom = new ComboBox { Width = 80, DropDownStyle = ComboBoxStyle.DropDownList };
         var zoomSelector = new ZoomSelector(zoom, requested =>
         {
-            if (requested is { } value) _canvas.SetZoom(value);
-            else _canvas.Fit();
+            if (requested is { } value)
+                _canvas.SetZoom(value);
+            else
+                _canvas.Fit();
         });
         _canvas.ZoomChanged += () => zoomSelector.Show(_canvas.Zoom, _canvas.IsFit);
         minus.Click += (_, _) => _canvas.SetZoom(_canvas.Zoom / 1.25f);
@@ -129,7 +131,10 @@ internal sealed class SpritePreviewControl : UserControl
                 Math.Min(Math.Min(corners.Min(point => point.Y), _anchor.Y), _origin.Y) - 8,
                 Math.Max(Math.Max(corners.Max(point => point.X), _anchor.X), _origin.X) + 8,
                 Math.Max(Math.Max(corners.Max(point => point.Y), _anchor.Y), _origin.Y) + 8);
-            if (_fit) Fit(); else SetZoom(Zoom);
+            if (_fit)
+                Fit();
+            else
+                SetZoom(Zoom);
         }
         /// <summary>Sets explicit magnification and disables automatic fitting.</summary>
         /// <param name="zoom">Scale factor clamped to 0.05 through 16.</param>
@@ -155,14 +160,17 @@ internal sealed class SpritePreviewControl : UserControl
         /// <inheritdoc/>
         protected override void OnMouseWheel(MouseEventArgs e)
         {
-            if ((ModifierKeys & Keys.Control) != 0) SetZoom(Zoom * MathF.Pow(1.25f, e.Delta / 120f));
-            else base.OnMouseWheel(e);
+            if ((ModifierKeys & Keys.Control) != 0)
+                SetZoom(Zoom * MathF.Pow(1.25f, e.Delta / 120f));
+            else
+                base.OnMouseWheel(e);
         }
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            if (_entry is null) return;
+            if (_entry is null)
+                return;
             var g = e.Graphics;
             g.TranslateTransform(AutoScrollPosition.X + 40, AutoScrollPosition.Y + 40);
             g.ScaleTransform(Zoom, Zoom);
@@ -194,7 +202,8 @@ internal sealed class SpritePreviewControl : UserControl
                         ?? region.CollisionAdjust;
                 }
                 var collision = adjust.ApplyTo(_bounds);
-                if (collision.Width > 0 && collision.Height > 0) g.DrawRectangle(Pens.LimeGreen, collision);
+                if (collision.Width > 0 && collision.Height > 0)
+                    g.DrawRectangle(Pens.LimeGreen, collision);
             }
         }
         /// <inheritdoc/>

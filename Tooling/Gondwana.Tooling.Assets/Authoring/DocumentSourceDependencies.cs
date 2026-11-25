@@ -43,19 +43,22 @@ public static class DocumentSourceDependencies
             { incomplete = ex; }
             foreach (var reference in references)
             {
-                if (!visited.Add(reference)) continue;
+                if (!visited.Add(reference))
+                    continue;
                 if (!archiveOwner || !PathEquals(reference.Path, owner.Path))
                 {
                     observed.Add(reference);
                     yield return reference;
                 }
-                if (!PackDefinitionDocument.IsNative(reference.AssetType)) continue;
+                if (!PackDefinitionDocument.IsNative(reference.AssetType))
+                    continue;
                 byte[] bytes;
                 try
                 {
                     var physical = File.ReadAllBytes(reference.Path);
                     var hash = DocumentSourceVersion.Hash(physical);
-                    if (reference.AssetEntryName is null) bytes = physical;
+                    if (reference.AssetEntryName is null)
+                        bytes = physical;
                     else
                     {
                         using var stream = new MemoryStream(physical, writable: false);
@@ -81,7 +84,8 @@ public static class DocumentSourceDependencies
                 pending.Enqueue((reference, bytes));
             }
         }
-        if (incomplete is not null) throw new IOException("Some dependency references could not be read; retain the previous inventory.", incomplete);
+        if (incomplete is not null)
+            throw new IOException("Some dependency references could not be read; retain the previous inventory.", incomplete);
     }
 
     private static bool PathEquals(string left, string right) => Paths.Equals(left, right);

@@ -47,7 +47,8 @@ public sealed partial class SpriteEditorControl
 
             _spriteDragStart = null;
             _spriteDragCandidate = null;
-            if (!CommitEdits()) return;
+            if (!CommitEdits())
+                return;
             if (CreateInstanceDrag(sprite) is { } drag)
                 _sprites.DoDragDrop(new ResourceDragData<SpriteInstanceDrag>(drag), DragDropEffects.Move);
             else
@@ -336,16 +337,22 @@ public sealed partial class SpriteEditorControl
         switch (resource.AssetType)
         {
             case AssetTypes.TilesheetDefinition:
-                if (resource.EntryName is { } gts) Document.AddPackedTilesheetSource(member, resource.Path, gts);
-                else Document.SetLooseTilesheetSource(member, resource.Path);
+                if (resource.EntryName is { } gts)
+                    Document.AddPackedTilesheetSource(member, resource.Path, gts);
+                else
+                    Document.SetLooseTilesheetSource(member, resource.Path);
                 break;
             case AssetTypes.AnimationDefinition:
-                if (resource.EntryName is { } gani) Document.AddPackedAnimationSource(member, resource.Path, gani);
-                else Document.SetLooseAnimationSource(member, resource.Path);
+                if (resource.EntryName is { } gani)
+                    Document.AddPackedAnimationSource(member, resource.Path, gani);
+                else
+                    Document.SetLooseAnimationSource(member, resource.Path);
                 break;
             case AssetTypes.SceneDefinition:
-                if (resource.EntryName is { } gscn) Document.AddPackedSceneSource(member, resource.Path, gscn);
-                else Document.SetLooseSceneSource(member, resource.Path);
+                if (resource.EntryName is { } gscn)
+                    Document.AddPackedSceneSource(member, resource.Path, gscn);
+                else
+                    Document.SetLooseSceneSource(member, resource.Path);
                 break;
         }
     }
@@ -412,7 +419,8 @@ public sealed partial class SpriteEditorControl
             _animationDefinitions.Remove(cached);
         }
         if (_animationTilesheets.Remove(animation.Key, out var previous))
-            foreach (var sheet in previous) sheet.Dispose();
+            foreach (var sheet in previous)
+                sheet.Dispose();
         _animationDefinitions.Add(animation);
         _animationTilesheets.Add(animation.Key, sheets);
     }

@@ -68,7 +68,8 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsDown(int keyCode)
     {
-        if ((uint)keyCode >= (uint)_down.Length) return false;
+        if ((uint)keyCode >= (uint)_down.Length)
+            return false;
         return Volatile.Read(ref _down[keyCode]) != 0;
     }
 
@@ -89,14 +90,16 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     private void OnKeyDown(KeyboardEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
         SetDown(e.Code, true);
         UpdateMods(e);
     }
 
     private void OnKeyUp(KeyboardEventArgs e)
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
         SetDown(e.Code, false);
         UpdateMods(e);
     }
@@ -104,9 +107,11 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetDown(string code, bool down)
     {
-        if (!Enum.TryParse<BlazorKey>(code, false, out var key) || key == BlazorKey.None) return;
+        if (!Enum.TryParse<BlazorKey>(code, false, out var key) || key == BlazorKey.None)
+            return;
         var index = (int)key;
-        if ((uint)index >= (uint)_down.Length) return;
+        if ((uint)index >= (uint)_down.Length)
+            return;
         Volatile.Write(ref _down[index], down ? 1 : 0);
     }
 
@@ -114,16 +119,20 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     private void UpdateMods(KeyboardEventArgs e)
     {
         int mods = 0;
-        if (e.ShiftKey) mods |= (int)KeyboardModifierState.Shift;
-        if (e.CtrlKey) mods |= (int)KeyboardModifierState.Ctrl;
-        if (e.AltKey) mods |= (int)KeyboardModifierState.Alt;
+        if (e.ShiftKey)
+            mods |= (int)KeyboardModifierState.Shift;
+        if (e.CtrlKey)
+            mods |= (int)KeyboardModifierState.Ctrl;
+        if (e.AltKey)
+            mods |= (int)KeyboardModifierState.Alt;
         Volatile.Write(ref _modsBits, mods);
     }
 
     /// <summary>Releases all resources and removes event handlers registered by this adapter.</summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
         _isDisposed = true;
 
         _component.KeyDown -= OnKeyDown;

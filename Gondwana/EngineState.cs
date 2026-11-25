@@ -49,7 +49,8 @@ public sealed partial class EngineState
         public override SpriteStateEntry? ReadJson(JsonReader reader, Type objectType,
             SpriteStateEntry? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
+            if (reader.TokenType == JsonToken.Null)
+                return null;
             var token = JToken.Load(reader);
             // PreserveReferencesHandling.All wrapped historical arrays in $values.
             if (token is JArray || token["$values"] is not null)
@@ -406,7 +407,8 @@ public sealed partial class EngineState
 
         ArgumentNullException.ThrowIfNull(options);
         foreach (var mode in new[] { options.Tilesheets, options.Cycles, options.Scenes, options.Audio, options.Sprites })
-            if (!Enum.IsDefined(mode)) throw new ArgumentOutOfRangeException(nameof(options));
+            if (!Enum.IsDefined(mode))
+                throw new ArgumentOutOfRangeException(nameof(options));
         var parts = options.Parts;
         if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource)
             parts |= EngineStateParts.Scenes | EngineStateParts.Cycles | EngineStateParts.Tilesheets;
@@ -560,14 +562,19 @@ public sealed partial class EngineState
         // sprite-only and scene-only merges that deliberately use existing registries.
         if (parts.HasFlag(EngineStateParts.Sprites) && (snapshot?.Sprites?.AssetsFilePath is not null || snapshot?.SpriteGroups?.Any(entry => entry.AssetsFilePath is not null) == true))
         {
-            if (snapshot.Scenes is not null) parts |= EngineStateParts.Scenes;
-            if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
-            if (snapshot.Tilesheets is not null) parts |= EngineStateParts.Tilesheets;
+            if (snapshot.Scenes is not null)
+                parts |= EngineStateParts.Scenes;
+            if (snapshot.Cycles is not null)
+                parts |= EngineStateParts.Cycles;
+            if (snapshot.Tilesheets is not null)
+                parts |= EngineStateParts.Tilesheets;
         }
         if (parts.HasFlag(EngineStateParts.Scenes) && snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true)
         {
-            if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
-            if (snapshot.Tilesheets is not null) parts |= EngineStateParts.Tilesheets;
+            if (snapshot.Cycles is not null)
+                parts |= EngineStateParts.Cycles;
+            if (snapshot.Tilesheets is not null)
+                parts |= EngineStateParts.Tilesheets;
         }
 
         // GANI definitions resolve Frame references through the TilesheetRegistry.
@@ -656,7 +663,8 @@ public sealed partial class EngineState
             entry.GsprPath = loosePath;
             return entry;
         }
-        if (persistence != DefinitionPersistence.Loose) return new() { Definition = definition };
+        if (persistence != DefinitionPersistence.Loose)
+            return new() { Definition = definition };
         var path = Path.Combine(Path.GetDirectoryName(engineStatePath)!,
             Path.GetFileNameWithoutExtension(engineStatePath) + ".sprites.gspr");
         SpriteDefinitionSerializer.Save(path, definition);
@@ -898,7 +906,8 @@ public sealed partial class EngineState
 
         if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is { } groups)
         {
-            foreach (var group in groups) MergeAudio(null, group, null, overwriteExisting, baseDirectory);
+            foreach (var group in groups)
+                MergeAudio(null, group, null, overwriteExisting, baseDirectory);
         }
         else
             if (parts.HasFlag(EngineStateParts.Audio))
@@ -986,7 +995,8 @@ public sealed partial class EngineState
                     var loaded = FindAssetsFile(path);
                     if (loaded is null)
                     {
-                        if (!File.Exists(path)) throw new FileNotFoundException($"EngineState assets file not found: {path}", path);
+                        if (!File.Exists(path))
+                            throw new FileNotFoundException($"EngineState assets file not found: {path}", path);
                         loaded = AssetsFile.LoadOrCreate(path, raw.Password, raw.UseEncryption);
                     }
 

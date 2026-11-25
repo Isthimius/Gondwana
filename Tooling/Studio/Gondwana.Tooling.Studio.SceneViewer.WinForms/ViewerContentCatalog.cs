@@ -60,13 +60,15 @@ internal sealed class ViewerContentCatalog
                 using var stream = archive?.Get(type, source.Entry!);
                 var definitions = archive is null ? TilesheetDefinitionSerializer.LoadAll(source.Path) :
                     TilesheetDefinitionSerializer.LoadAll(archive, source.Entry!);
-                foreach (var definition in definitions) AddIdentity(_sheets, definition.Name, source);
+                foreach (var definition in definitions)
+                    AddIdentity(_sheets, definition.Name, source);
             }
             else if (type == AssetTypes.AnimationDefinition)
             {
                 var definitions = archive is null ? AnimationDefinitionSerializer.LoadAll(source.Path) :
                     AnimationDefinitionSerializer.LoadAll(archive, source.Entry!);
-                foreach (var definition in definitions) AddIdentity(_animations, definition.Key, source);
+                foreach (var definition in definitions)
+                    AddIdentity(_animations, definition.Key, source);
             }
             else
             {
@@ -101,7 +103,8 @@ internal sealed class ViewerContentCatalog
 
     private static Source? Select(Dictionary<string, List<Source>> index, string key, string format)
     {
-        if (!index.TryGetValue(key, out var candidates)) return null;
+        if (!index.TryGetValue(key, out var candidates))
+            return null;
         var loose = candidates.Where(source => !source.Packed).ToList();
         var selected = loose.Count > 0 ? loose : candidates;
         if (selected.Count != 1)

@@ -185,15 +185,18 @@ public sealed class ImportPlan(ExternalImportRequest request)
             try
             {
                 var errors = output.Validate();
-                foreach (var error in errors) Report(ExternalImportSeverity.Error, "native.validation", $"{output.Path}: {error}");
-                if (errors.Count == 0) content = output.Serialize();
+                foreach (var error in errors)
+                    Report(ExternalImportSeverity.Error, "native.validation", $"{output.Path}: {error}");
+                if (errors.Count == 0)
+                    content = output.Serialize();
             }
             catch (Exception ex) when (ex is InvalidDataException or ArgumentException or Newtonsoft.Json.JsonException)
             {
                 Report(ExternalImportSeverity.Error, "native.validation", $"{output.Path}: {ex.Message}");
             }
             Outputs.Add((artifact, content));
-            if (!paths.Add(artifact.OutputPath)) Report(ExternalImportSeverity.Error, "output.duplicate", $"Duplicate output: {artifact.OutputPath}");
+            if (!paths.Add(artifact.OutputPath))
+                Report(ExternalImportSeverity.Error, "output.duplicate", $"Duplicate output: {artifact.OutputPath}");
             foreach (var key in artifact.LogicalKeys)
                 if (!keys.Add(artifact.Kind + ":" + key))
                     Report(ExternalImportSeverity.Error, "key.duplicate", $"{artifact.OutputPath}: Duplicate {artifact.Kind} key: {key}");
@@ -203,7 +206,8 @@ public sealed class ImportPlan(ExternalImportRequest request)
                 Report(ExternalImportSeverity.Error, "output.source", $"Output would replace a source dependency: {artifact.OutputPath}");
         }
         foreach (var dependency in Dependencies.Distinct(StringComparer.OrdinalIgnoreCase))
-            if (!File.Exists(dependency)) Report(ExternalImportSeverity.Error, "dependency.missing", $"Missing source dependency: {dependency}");
+            if (!File.Exists(dependency))
+                Report(ExternalImportSeverity.Error, "dependency.missing", $"Missing source dependency: {dependency}");
         CheckExistingKeys(keys, token);
         token.ThrowIfCancellationRequested();
         return new(providerId, Dependencies.Distinct(StringComparer.OrdinalIgnoreCase).ToArray(), Outputs.Select(x => x.Artifact).ToArray(), Diagnostics.ToArray());
@@ -211,14 +215,16 @@ public sealed class ImportPlan(ExternalImportRequest request)
 
     private void CheckExistingKeys(HashSet<string> plannedKeys, CancellationToken token)
     {
-        if (!Directory.Exists(Request.OutputDirectory)) return;
+        if (!Directory.Exists(Request.OutputDirectory))
+            return;
         var plannedPaths = Outputs.Select(o => o.Artifact.OutputPath).ToHashSet(StringComparer.OrdinalIgnoreCase);
         try
         {
             foreach (string file in Directory.EnumerateFiles(Request.OutputDirectory).OrderBy(p => p, StringComparer.Ordinal))
             {
                 token.ThrowIfCancellationRequested();
-                if (plannedPaths.Contains(Path.GetFullPath(file))) continue;
+                if (plannedPaths.Contains(Path.GetFullPath(file)))
+                    continue;
                 IEnumerable<string> existingKeys;
                 try
                 {
@@ -273,7 +279,8 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         {
             token.ThrowIfCancellationRequested();
             var outputDirectory = Path.GetFullPath(request.OutputDirectory);
-            if (File.Exists(outputDirectory)) throw new InvalidDataException("Output directory points to an existing file.");
+            if (File.Exists(outputDirectory))
+                throw new InvalidDataException("Output directory points to an existing file.");
             plan.Dependencies.Add(Path.GetFullPath(request.SourcePath));
             BuildPlan(plan, token);
         }
@@ -301,14 +308,16 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
     public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default)
     {
         WriteGate.Wait(cancellationToken);
-        try { return ImportCore(request, cancellationToken); }
+        try
+        { return ImportCore(request, cancellationToken); }
         finally { WriteGate.Release(); }
     }
 
     private ExternalImportResult ImportCore(ExternalImportRequest request, CancellationToken cancellationToken)
     {
         var (plan, analysis) = Prepare(request, cancellationToken);
-        if (!analysis.CanImport) return new(analysis, []);
+        if (!analysis.CanImport)
+            return new(analysis, []);
         cancellationToken.ThrowIfCancellationRequested();
         Directory.CreateDirectory(request.OutputDirectory);
         var stage = Path.Combine(Path.GetFullPath(request.OutputDirectory), ".gondwana-import-" + Guid.NewGuid().ToString("N"));
@@ -347,8 +356,10 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
             {
                 foreach (var (target, backup, installed) in committed.AsEnumerable().Reverse())
                 {
-                    if (installed) File.Delete(target);
-                    if (backup is not null) File.Move(backup, target);
+                    if (installed)
+                        File.Delete(target);
+                    if (backup is not null)
+                        File.Move(backup, target);
                 }
             }
             catch { cleanup = false; throw new IOException($"Import rollback could not complete. Recovery files remain in {stage}."); }

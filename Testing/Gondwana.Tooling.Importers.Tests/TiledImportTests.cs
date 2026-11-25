@@ -64,7 +64,8 @@ public sealed class TiledImportTests : IDisposable
     {
         if (encoding == "xml")
             return string.Concat(gids.Select(gid => $"<tile gid='{gid}'/>"));
-        if (encoding == "csv") return string.Join(",", gids);
+        if (encoding == "csv")
+            return string.Join(",", gids);
 
         var bytes = new byte[gids.Length * 4];
         for (int i = 0; i < gids.Length; i++)
@@ -87,7 +88,8 @@ public sealed class TiledImportTests : IDisposable
     {
         string source = Path.Combine(directory, "chunked.tmx");
         string attributes = encoding == "xml" ? "" : $" encoding='{encoding}'";
-        if (compression.Length != 0) attributes += $" compression='{compression}'";
+        if (compression.Length != 0)
+            attributes += $" compression='{compression}'";
         File.WriteAllText(source, $"""
             <map orientation='{orientation}' infinite='1' width='0' height='0' tilewidth='{tileWidth}' tileheight='{tileHeight}' {mapAttributes}>
               <tileset firstgid='1' source='{(tileWidth == 2 ? "terrain.tsx" : "oversized.tsx")}'/>
@@ -1040,12 +1042,15 @@ public sealed class TiledImportTests : IDisposable
         var importer = new TiledTilesetImporter();
         var first = importer.Import(request).WrittenFiles.ToDictionary(p => p, File.ReadAllBytes);
         importer.Import(request with { Overwrite = true });
-        foreach (var (path, bytes) in first) Assert.Equal(bytes, File.ReadAllBytes(path));
+        foreach (var (path, bytes) in first)
+            Assert.Equal(bytes, File.ReadAllBytes(path));
         File.WriteAllText(source, File.ReadAllText(source).Replace("<frame tileid=\"1\" duration=\"100\"/><frame tileid=\"0\" duration=\"250\"/>", ""));
         var result = importer.Import(request with { Overwrite = true });
-        Assert.False(result.Analysis.CanImport); Assert.Empty(result.WrittenFiles);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Empty(result.WrittenFiles);
         Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains("animation", StringComparison.OrdinalIgnoreCase));
-        foreach (var (path, bytes) in first) Assert.Equal(bytes, File.ReadAllBytes(path));
+        foreach (var (path, bytes) in first)
+            Assert.Equal(bytes, File.ReadAllBytes(path));
     }
 
     /// <summary>
@@ -1169,7 +1174,8 @@ public sealed class TiledImportTests : IDisposable
     {
         byte[] raw = [1, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0];
         using var memory = new MemoryStream();
-        if (compression.Length == 0) memory.Write(raw);
+        if (compression.Length == 0)
+            memory.Write(raw);
         else
         {
             using Stream compressed = compression == "zlib"

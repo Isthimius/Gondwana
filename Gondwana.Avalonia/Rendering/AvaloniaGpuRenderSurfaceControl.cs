@@ -83,7 +83,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
         // pointers from it without requiring any explicit proc-address lookup delegate.
         lock (_lifecycleGate)
         {
-            if (_disposeRequested != 0) return;
+            if (_disposeRequested != 0)
+                return;
             _glInterface = GRGlInterface.Create();
             if (_glInterface == null)
             {
@@ -104,7 +105,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
         var physW = (int)Math.Round(Bounds.Width * scaling);
         var physH = (int)Math.Round(Bounds.Height * scaling);
 
-        if (physW <= 0 || physH <= 0) return;
+        if (physW <= 0 || physH <= 0)
+            return;
 
         _lastPhysW = physW;
         _lastPhysH = physH;
@@ -117,7 +119,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     protected override void OnOpenGlRender(GlInterface gl, int fb)
     {
         long telemetryGeneration = Host?.Telemetry?.BeginSample() ?? 0;
-        if (Volatile.Read(ref _disposeRequested) != 0 || _gpuBackbuffer == null) return;
+        if (Volatile.Read(ref _disposeRequested) != 0 || _gpuBackbuffer == null)
+            return;
         if (_grContext == null)
         {
             if (Interlocked.Exchange(ref _contextFailureReported, 1) == 0)
@@ -179,7 +182,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
 
         _grContext.Flush();
         _gpuBackbuffer.RecordFrame();
-        if (telemetryGeneration != 0) Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
+        if (telemetryGeneration != 0)
+            Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
     }
 
     /// <inheritdoc/>
@@ -194,7 +198,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
             _grContext = null;
             _glInterface?.Dispose();
             _glInterface = null;
-            if (_disposeRequested != 0) _gpuBackbuffer?.Dispose();
+            if (_disposeRequested != 0)
+                _gpuBackbuffer?.Dispose();
         }
     }
 
@@ -205,13 +210,15 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (Interlocked.Exchange(ref _disposeRequested, 1) != 0) return;
+        if (Interlocked.Exchange(ref _disposeRequested, 1) != 0)
+            return;
         Host.Dispose();
         Adapter.Dispose();
         lock (_lifecycleGate)
         {
             // If GL is already gone (or never existed), only CPU resources remain.
-            if (_grContext is null) _gpuBackbuffer?.Dispose();
+            if (_grContext is null)
+                _gpuBackbuffer?.Dispose();
         }
         GC.SuppressFinalize(this);
     }

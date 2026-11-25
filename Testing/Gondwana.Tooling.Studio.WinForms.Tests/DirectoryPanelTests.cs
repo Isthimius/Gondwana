@@ -55,8 +55,10 @@ public sealed partial class CompositionTests
             {
                 var identity = Assert.IsType<PackedAssetNodeIdentity>(node.Tag);
                 Assert.True(Path.IsPathFullyQualified(identity.ArchivePath));
-                if (group < 6) Assert.Equal(types[group - 1], identity.AssetType);
-                else Assert.DoesNotContain(identity.AssetType, types.Take(5));
+                if (group < 6)
+                    Assert.Equal(types[group - 1], identity.AssetType);
+                else
+                    Assert.DoesNotContain(identity.AssetType, types.Take(5));
                 Assert.Equal(identity.EntryName, node.Text);
                 Assert.Equal($"Archive: {identity.ArchivePath}\nEntry: {identity.EntryName}\nAsset type: {identity.AssetType}", node.ToolTipText);
                 Assert.Equal(groups[group].Name, node.ImageKey);
@@ -75,7 +77,8 @@ public sealed partial class CompositionTests
         Assert.NotEqual(sameNames[0], sameNames[1]);
         Assert.Equal(registered, AssetsFile.AllAssetsFiles);
         Assert.Equal(before.Keys.Order(), Directory.GetFiles(directory).Order());
-        foreach (var file in before) Assert.Equal(file.Value, File.ReadAllBytes(file.Key));
+        foreach (var file in before)
+            Assert.Equal(file.Value, File.ReadAllBytes(file.Key));
     });
 
     [Theory]
@@ -466,14 +469,17 @@ public sealed partial class CompositionTests
     {
         var store = new NavigationPreferenceStore();
         Directory.CreateDirectory(Path.GetDirectoryName(store.FilePath)!);
-        if (fault is "invalid" or "undefined") File.WriteAllText(store.FilePath, fault == "invalid" ? "broken" : "128");
-        if (fault == "unreadable") Directory.CreateDirectory(store.FilePath);
+        if (fault is "invalid" or "undefined")
+            File.WriteAllText(store.FilePath, fault == "invalid" ? "broken" : "128");
+        if (fault == "unreadable")
+            Directory.CreateDirectory(store.FilePath);
         using var studio = Host(directory);
         Assert.Equal(NavigationIconSize.Small, studio.Browser.IconSize);
         studio.RebuildViewMenu();
         var view = (ToolStripMenuItem)studio.MainMenuStrip!.Items[1];
         var menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
-        if (fault == "unreadable") Directory.Delete(store.FilePath);
+        if (fault == "unreadable")
+            Directory.Delete(store.FilePath);
         menu.DropDownItems.Cast<ToolStripMenuItem>().Single(i => i.Text == "Large").PerformClick();
         Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(store.FilePath)!, "*.tmp"));
@@ -651,8 +657,10 @@ public sealed partial class CompositionTests
             Assert.Throws<IOException>(() => File.Open(path, FileMode.Open, FileAccess.Write, FileShare.None));
             var destination = command == "saveAs" ? Path.Combine(directory, "copy.gaf") : path;
             studio.AskSave = _ => DialogResult.Yes;
-            if (command == "close") document.Close();
-            if (command == "shutdown") studio.Close();
+            if (command == "close")
+                document.Close();
+            if (command == "shutdown")
+                studio.Close();
             var save = studio.SaveDocument(document, command == "saveAs", destination);
             Assert.False(save.IsCompleted);
             bool uiResponded = false;
@@ -669,9 +677,11 @@ public sealed partial class CompositionTests
             if (command is "close" or "shutdown")
             {
                 var timeout = Stopwatch.StartNew();
-                while (!document.IsDisposed && timeout.Elapsed < TimeSpan.FromSeconds(10)) Application.DoEvents();
+                while (!document.IsDisposed && timeout.Elapsed < TimeSpan.FromSeconds(10))
+                    Application.DoEvents();
                 Assert.True(document.IsDisposed);
-                if (command == "shutdown") Assert.True(studio.IsDisposed);
+                if (command == "shutdown")
+                    Assert.True(studio.IsDisposed);
             }
             else
             {
@@ -683,7 +693,8 @@ public sealed partial class CompositionTests
             Assert.Equal(2, saved.GetAllEntries().Count());
             using var changed = saved[AssetTypes.Misc, "changed.bin"];
             Assert.Equal(2, changed!.ReadByte());
-            if (!studio.IsDisposed) WaitForArchives(studio.Browser);
+            if (!studio.IsDisposed)
+                WaitForArchives(studio.Browser);
         }
         finally
         {

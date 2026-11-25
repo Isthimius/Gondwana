@@ -112,13 +112,18 @@ public readonly struct GamepadStickState
     /// <returns>The stick direction after applying the deadzone.</returns>
     public StickDirection Direction(float threshold = 0.15f)
     {
-        if (!IsEngaged(threshold)) return StickDirection.None;
+        if (!IsEngaged(threshold))
+            return StickDirection.None;
 
         var dir = StickDirection.None;
-        if (Y >= threshold) dir |= StickDirection.Up;
-        if (Y <= -threshold) dir |= StickDirection.Down;
-        if (X <= -threshold) dir |= StickDirection.Left;
-        if (X >= threshold) dir |= StickDirection.Right;
+        if (Y >= threshold)
+            dir |= StickDirection.Up;
+        if (Y <= -threshold)
+            dir |= StickDirection.Down;
+        if (X <= -threshold)
+            dir |= StickDirection.Left;
+        if (X >= threshold)
+            dir |= StickDirection.Right;
 
         return dir;
     }

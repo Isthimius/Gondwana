@@ -23,7 +23,8 @@ public sealed partial class AnimationEditorControl : UserControl
         selection.Validate(_packages, AssetTypes.TilesheetDefinition);
         var resource = selection.Resource;
         var source = TilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
-        try { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
+        try
+        { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
         catch { source.Dispose(); throw; }
         _sources.Add(source);
         RefreshAfterSourceChange();
@@ -378,7 +379,8 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         _packages.Clear();
         _preview.ClearSourceFrame();
-        foreach (var source in _sources) source.Dispose();
+        foreach (var source in _sources)
+            source.Dispose();
         _sources.Clear();
         LoadDefinitionTilesheetSources(recoverLegacySources: false);
         RefreshView();
@@ -561,7 +563,8 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         var errors = Document.Validate().ToList();
         var lines = errors.Select(error => "ERROR: " + error).ToList();
-        if (_frameDropError is not null) lines.Add("WARNING: Frame drop rejected. " + _frameDropError);
+        if (_frameDropError is not null)
+            lines.Add("WARNING: Frame drop rejected. " + _frameDropError);
         lines.AddRange(_sourceDiagnostics);
 
         for (int i = 0; i < Definition.Frames.Count; i++)
@@ -856,14 +859,16 @@ public sealed partial class AnimationEditorControl : UserControl
     /// <summary>Selects an owned definition and refreshes its source previews and controls without reloading or saving the document.</summary>
     public void SelectDefinition(AnimationDefinition definition)
     {
-        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        if (ReferenceEquals(Document.SelectedDefinition, definition))
+            return;
         Document.SelectDefinition(definition);
         RefreshSelectedDefinition();
     }
 
     private void RefreshSelectedDefinition()
     {
-        foreach (var source in _sources) source.Dispose();
+        foreach (var source in _sources)
+            source.Dispose();
         _sources.Clear();
         LoadDefinitionTilesheetSources();
         _historyDefinition = Definition;
@@ -1325,7 +1330,8 @@ public sealed partial class AnimationEditorControl : UserControl
                     _historySources = sources;
                 }
                 var frames = Definition.Frames.ToArray();
-                if (!_historyFrames.SequenceEqual(frames)) _preview.ClearSourceFrame();
+                if (!_historyFrames.SequenceEqual(frames))
+                    _preview.ClearSourceFrame();
                 _historyFrames = frames;
                 _properties.Refresh();
                 RefreshFrameList();
@@ -1363,7 +1369,8 @@ public sealed partial class AnimationEditorControl : UserControl
             _animationFrameImages.Dispose();
         }
 
-        if (disposing && _ownsPackages) _packages.Dispose();
+        if (disposing && _ownsPackages)
+            _packages.Dispose();
         base.Dispose(disposing);
     }
     /// <inheritdoc/>

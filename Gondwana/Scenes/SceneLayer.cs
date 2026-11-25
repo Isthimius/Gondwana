@@ -200,7 +200,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             {
                 var tile = _sceneLayerTileArray[x, y] ??= new SceneLayerTile(this);
                 tile.parentSceneLayer = this;
-                if (tile.Transform != TileTransform.Identity) TransformedTiles.Add(tile);
+                if (tile.Transform != TileTransform.Identity)
+                    TransformedTiles.Add(tile);
                 tile.sceneLayerCoordinates = new Point(x, y);
 
                 if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
@@ -673,7 +674,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get => _originPx;
         set
         {
-            if (_originPx == value) return;
+            if (_originPx == value)
+                return;
             _originPx = value;
             OriginPxChanged?.Invoke(this);
         }
@@ -843,7 +845,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         if (WrapHorizontally || WrapVertically)
             _ = GetPeriod();
 
-        static int Mod(int value, int period) { int remainder = value % period; return remainder < 0 ? remainder + period : remainder; }
+        static int Mod(int value, int period)
+        { int remainder = value % period; return remainder < 0 ? remainder + period : remainder; }
 
         return this[WrapHorizontally ? Mod(column, GridColumnCount) : column,
             WrapVertically ? Mod(row, GridRowCount) : row];
@@ -1158,7 +1161,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         var instances = new List<IDrawable>();
         void Add(IDrawable drawable, RectangleF bounds)
         {
-            if (!drawable.Visible) return;
+            if (!drawable.Visible)
+                return;
             foreach (var offset in period.Offsets(bounds, worldRect))
             {
                 if (instances.Count >= 1_000_000)
@@ -1170,11 +1174,14 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // Inspect actual artwork bounds, including overhang, rather than assuming
         // a tile-sized margin can enclose all content.
         foreach (var tile in _sceneLayerTileArray)
-            if (tile is not null) Add(tile, tile.DrawLocationWorld);
+            if (tile is not null)
+                Add(tile, tile.DrawLocationWorld);
         foreach (var sprite in SpriteManager.Instance.AllSprites)
-            if (ReferenceEquals(sprite.SceneLayer, this)) Add(sprite, sprite.VisualBoundsWorld);
+            if (ReferenceEquals(sprite.SceneLayer, this))
+                Add(sprite, sprite.VisualBoundsWorld);
         foreach (var drawing in DirectDrawingManager.Instance.GetDrawingsForLayer(this))
-            if (drawing.Mode == DirectDrawingMode.SceneLayer) Add(drawing, drawing.WorldBounds);
+            if (drawing.Mode == DirectDrawingMode.SceneLayer)
+                Add(drawing, drawing.WorldBounds);
 
         long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         instances.Sort(CompareWrappedDrawables);
@@ -1219,7 +1226,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         var x = (WrappedDrawable)a;
         var y = (WrappedDrawable)b;
         int z = a.ZOrder.CompareTo(b.ZOrder);
-        if (z != 0) return z;
+        if (z != 0)
+            return z;
 
         if (x.Owner is Tile ta && y.Owner is Tile tb)
         {
@@ -1237,12 +1245,14 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                     : tb.DrawLocationWorld.Bottom - tb.Overhang.Bottom - 1) +
                 y.Offset.Y;
             int depth = ay.CompareTo(by);
-            if (depth != 0) return depth;
+            if (depth != 0)
+                return depth;
 
             int horizontal =
                 (ta.DrawLocationWorld.Left + x.Offset.X)
                 .CompareTo(tb.DrawLocationWorld.Left + y.Offset.X);
-            if (horizontal != 0) return horizontal;
+            if (horizontal != 0)
+                return horizontal;
         }
 
         int identity = a.Id.CompareTo(b.Id);

@@ -24,7 +24,8 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         string name = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
         int columns = Math.Min(sprite.Frames.Count, Math.Max(1, 4096 / sprite.Width));
         int rows = (sprite.Frames.Count + columns - 1) / columns;
-        if ((long)rows * sprite.Height > 16384 || sprite.Width > 16384) throw new InvalidDataException("Generated atlas exceeds the 16384-pixel dimension limit.");
+        if ((long)rows * sprite.Height > 16384 || sprite.Width > 16384)
+            throw new InvalidDataException("Generated atlas exceeds the 16384-pixel dimension limit.");
         using var atlas = new SKBitmap(columns * sprite.Width, rows * sprite.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
         atlas.Erase(SKColors.Transparent);
         using (var canvas = new SKCanvas(atlas))
@@ -45,18 +46,21 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         {
             string key = ImportNaming.Sanitize(tag.Name);
             var sequence = Enumerable.Range(tag.From, tag.To - tag.From + 1).ToList();
-            if (tag.Direction is 1 or 3) sequence.Reverse();
+            if (tag.Direction is 1 or 3)
+                sequence.Reverse();
             var type = tag.Direction >= 2 ? CycleType.PingPong : CycleType.Repeating;
             if (tag.Repeat > 0)
             {
-                if ((long)sequence.Count * tag.Repeat > 100000) throw new InvalidDataException("Finite tag expansion exceeds 100000 frames.");
+                if ((long)sequence.Count * tag.Repeat > 100000)
+                    throw new InvalidDataException("Finite tag expansion exceeds 100000 frames.");
                 var expanded = new List<int>();
                 for (int repetition = 0; repetition < tag.Repeat; repetition++)
                 {
                     var pass = tag.Direction >= 2 && repetition % 2 != 0 ? sequence.AsEnumerable().Reverse() : sequence;
                     expanded.AddRange(tag.Direction >= 2 && repetition > 0 && sequence.Count > 1 ? pass.Skip(1) : pass);
                 }
-                sequence = expanded; type = CycleType.Simple;
+                sequence = expanded;
+                type = CycleType.Simple;
             }
             var gani = new AnimationDefinition
             {
@@ -84,14 +88,19 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         for (int i = 0; i < sprite.Layers.Count; i++)
         {
             var layer = sprite.Layers[i];
-            while (stack.Count > layer.Level) stack.RemoveAt(stack.Count - 1);
-            if (stack.Count != layer.Level) throw new InvalidDataException("Invalid Aseprite group hierarchy.");
+            while (stack.Count > layer.Level)
+                stack.RemoveAt(stack.Count - 1);
+            if (stack.Count != layer.Level)
+                throw new InvalidDataException("Invalid Aseprite group hierarchy.");
             parents[i] = stack.Count == 0 ? -1 : stack[^1];
-            if (layer.Type == 1) stack.Add(i);
+            if (layer.Type == 1)
+                stack.Add(i);
         }
         var cels = sprite.Frames[frameIndex].Cels.ToDictionary(c => c.Layer);
-        if (cels.Keys.Any(i => i < 0 || i >= sprite.Layers.Count)) throw new InvalidDataException("Cel references an unknown layer.");
-        if (cels.Keys.Any(i => sprite.Layers[i].Type != 0)) throw new InvalidDataException("Image cels must reference image layers.");
+        if (cels.Keys.Any(i => i < 0 || i >= sprite.Layers.Count))
+            throw new InvalidDataException("Cel references an unknown layer.");
+        if (cels.Keys.Any(i => sprite.Layers[i].Type != 0))
+            throw new InvalidDataException("Image cels must reference image layers.");
         AsepriteCel Resolve(AsepriteCel cel)
         {
             int current = frameIndex;
@@ -99,7 +108,8 @@ public sealed class AsepriteImporter : ExternalAssetImporter
             var seen = new HashSet<int>();
             while (source.LinkedFrame is { } link)
             {
-                if (link < 0 || link >= sprite.Frames.Count || !seen.Add(link)) throw new InvalidDataException("Invalid or cyclic linked cel.");
+                if (link < 0 || link >= sprite.Frames.Count || !seen.Add(link))
+                    throw new InvalidDataException("Invalid or cyclic linked cel.");
                 current = link;
                 source = sprite.Frames[current].Cels.SingleOrDefault(c => c.Layer == cel.Layer)
                     ?? throw new InvalidDataException("Linked cel target is missing.");
@@ -121,7 +131,8 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                     token.ThrowIfCancellationRequested();
                     var layer = sprite.Layers[i];
                     // Reference layers are guides, not artwork to include in the generated atlas.
-                    if ((layer.Flags & (1 | 64)) != 1) continue;
+                    if ((layer.Flags & (1 | 64)) != 1)
+                        continue;
                     if (layer.Type == 1)
                     {
                         using var group = RenderGroup(i);
@@ -129,9 +140,11 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                         canvas.DrawBitmap(group, 0, 0, paint);
                         continue;
                     }
-                    if (!cels.TryGetValue(i, out var cel)) continue;
+                    if (!cels.TryGetValue(i, out var cel))
+                        continue;
                     var image = Resolve(cel);
-                    if (image.Width == 0 || image.Height == 0) continue;
+                    if (image.Width == 0 || image.Height == 0)
+                        continue;
                     using var pixels = new SKBitmap(image.Width, image.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
                     int bpp = sprite.Depth / 8;
                     for (int y = 0; y < image.Height; y++)

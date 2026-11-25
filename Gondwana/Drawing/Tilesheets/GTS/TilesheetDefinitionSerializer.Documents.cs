@@ -47,7 +47,8 @@ public static partial class TilesheetDefinitionSerializer
     public static TilesheetDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -81,7 +82,8 @@ public static partial class TilesheetDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Name); }
+        try
+        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Name); }
         catch (InvalidDataException ex) { errors.Add(ex.Message); }
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)

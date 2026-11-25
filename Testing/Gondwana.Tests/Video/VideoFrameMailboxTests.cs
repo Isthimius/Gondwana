@@ -91,7 +91,8 @@ public sealed class VideoFrameMailboxTests
             start.Set();
             for (int i = 0; i < 2000; i++)
             {
-                if (!mailbox.Consume(ref bitmap)) continue;
+                if (!mailbox.Consume(ref bitmap))
+                    continue;
                 byte[] data = new byte[256];
                 Marshal.Copy(bitmap!.GetPixels(), data, 0, data.Length);
                 for (int j = 0; j < data.Length; j++)
@@ -146,7 +147,8 @@ public sealed class VideoFrameMailboxTests
     private static void Publish(VideoFrameMailbox mailbox, byte[] pixels, int width, int height, int stride)
     {
         var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
-        try { mailbox.Publish(new(handle.AddrOfPinnedObject(), width, height, stride, 0)); }
+        try
+        { mailbox.Publish(new(handle.AddrOfPinnedObject(), width, height, stride, 0)); }
         finally { handle.Free(); }
     }
 }

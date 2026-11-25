@@ -10,10 +10,12 @@ public static class ModelEdits
         var properties = target.GetType().GetProperties().Where(p => p.CanRead && p.SetMethod?.IsPublic == true && p.GetIndexParameters().Length == 0).ToArray();
         var before = properties.Select(p => p.GetValue(target)).ToArray();
         object?[] after;
-        try { history.Capture(change); after = properties.Select(p => p.GetValue(target)).ToArray(); }
+        try
+        { history.Capture(change); after = properties.Select(p => p.GetValue(target)).ToArray(); }
         finally { for (int i = 0; i < properties.Length; i++) properties[i].SetValue(target, before[i]); }
         var changed = Enumerable.Range(0, properties.Length).Where(i => !Equals(before[i], after[i])).ToArray();
-        if (changed.Length == 0) return false;
+        if (changed.Length == 0)
+            return false;
         // Retain only modified properties. In particular, replay must not restore old save provenance.
         var edits = changed.Select(i => (Property: properties[i], Before: before[i], After: after[i])).ToArray();
         history.Execute(description,
@@ -35,7 +37,8 @@ public static class ModelEdits
     public static bool Remove<T>(this EditHistory history, string description, IList<T> list, T item)
     {
         int index = list.IndexOf(item);
-        if (index < 0) return false;
+        if (index < 0)
+            return false;
         bool removed = false;
         history.Execute(description,
             () => { if (!removed) { list.RemoveAt(index); removed = true; } },
@@ -47,9 +50,11 @@ public static class ModelEdits
     public static int RemoveWhere<T>(this EditHistory history, string description, IList<T> list, Func<T, bool> predicate)
     {
         var items = list.Where(predicate).ToArray();
-        if (items.Length == 0) return 0;
+        if (items.Length == 0)
+            return 0;
         using var transaction = history.BeginTransaction(description);
-        foreach (var item in items) history.Remove(description, list, item);
+        foreach (var item in items)
+            history.Remove(description, list, item);
         transaction.Commit();
         return items.Length;
     }

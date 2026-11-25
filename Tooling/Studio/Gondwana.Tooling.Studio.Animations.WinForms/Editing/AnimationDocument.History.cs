@@ -21,11 +21,13 @@ public sealed partial class AnimationDocument : IDisposable
         var selected = Definition;
         History.Execute(description, () =>
         {
-            foreach (var member in members) _definitions.Add(member);
+            foreach (var member in members)
+                _definitions.Add(member);
             Definition = members[0];
         }, () =>
         {
-            foreach (var member in members) _definitions.Remove(member);
+            foreach (var member in members)
+                _definitions.Remove(member);
             Definition = selected;
         });
     }
@@ -56,7 +58,8 @@ public sealed partial class AnimationDocument : IDisposable
     {
         foreach (var member in _definitions)
         {
-            foreach (var source in member.TilesheetSources) _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
+            foreach (var source in member.TilesheetSources)
+                _origins.Remember(source, BaseDirectory, PackedLocation?.Path);
         }
     }
 
@@ -89,7 +92,8 @@ public sealed partial class AnimationDocument : IDisposable
     {
         var frames = Definition.Frames;
         int target = index + offset;
-        if (index < 0 || index >= frames.Count || target < 0 || target >= frames.Count || index == target) return false;
+        if (index < 0 || index >= frames.Count || target < 0 || target >= frames.Count || index == target)
+            return false;
         var frame = frames[index];
         History.Execute("Move animation frame", () => { frames.RemoveAt(index); frames.Insert(target, frame); },
             () => { frames.RemoveAt(target); frames.Insert(index, frame); });

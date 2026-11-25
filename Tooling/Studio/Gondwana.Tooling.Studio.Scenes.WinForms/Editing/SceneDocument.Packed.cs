@@ -24,7 +24,8 @@ public sealed partial class SceneDocument
         var path = Path.GetFullPath(archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
         var directory = Path.GetDirectoryName(path)!;
         var definitions = SceneDefinitionSerializer.LoadAll(archive, entryName).ToList();
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
         var document = new SceneDocument(definitions[0], null, directory, false)
         {
             _definitions = definitions,
@@ -45,7 +46,8 @@ public sealed partial class SceneDocument
     /// <exception cref="InvalidOperationException">The document has no packed location.</exception>
     public void AcceptPackedSave()
     {
-        if (PackedLocation is null) throw new InvalidOperationException("This document is not packed.");
+        if (PackedLocation is null)
+            throw new InvalidOperationException("This document is not packed.");
         History.MarkSaved();
     }
 }

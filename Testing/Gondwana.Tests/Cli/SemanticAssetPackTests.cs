@@ -139,8 +139,10 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         Content(explicitSources, legacy);
         var args = new List<string> { "assets", "pack", Source, Output };
-        if (protection != 0) args.AddRange(["--password", "test-password"]);
-        if (protection == 2) args.Add("--encrypt");
+        if (protection != 0)
+            args.AddRange(["--password", "test-password"]);
+        if (protection == 2)
+            args.Add("--encrypt");
         Assert.Equal(0, Run(args.ToArray()));
         Directory.Delete(Source, true);
         var archive = AssetsFile.LoadOrCreate(Output, protection == 0 ? null : "test-password");
@@ -368,7 +370,8 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Content(true, false);
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
-        foreach (var file in Directory.GetFiles(Source)) File.Delete(file);
+        foreach (var file in Directory.GetFiles(Source))
+            File.Delete(file);
         File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(Sheet("terrain0", "art0.png")));
         Assert.NotEqual(0, Run("pack", Source, Output, "--append"));
         Assert.Equal(original, File.ReadAllBytes(Output));
@@ -378,7 +381,8 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     [Fact]
     public void FailedCommitPreservesOutput()
     {
-        if (!OperatingSystem.IsWindows()) return; // Windows sharing rules provide a deterministic replacement failure.
+        if (!OperatingSystem.IsWindows())
+            return; // Windows sharing rules provide a deterministic replacement failure.
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "original");
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);

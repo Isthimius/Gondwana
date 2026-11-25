@@ -310,7 +310,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
                 try
                 {
-                    try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { }
+                    try
+                    { if (File.Exists(zipPath)) File.Delete(zipPath); }
+                    catch { }
 
                     using var request = new HttpRequestMessage(HttpMethod.Get, url);
                     using var response = http.SendAsync(
@@ -361,7 +363,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
         finally
         {
-            try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { }
+            try
+            { if (File.Exists(zipPath)) File.Delete(zipPath); }
+            catch { }
         }
     }
 
@@ -498,9 +502,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 : $"Gondwana.Templates {installedVersion} ({templateNames})");
 
         var found = new List<string>();
-        if (hasWinForms) found.Add("gondwana-winforms");
-        if (hasAvalonia) found.Add("gondwana-avalonia");
-        if (hasBlazor) found.Add("gondwana-blazor");
+        if (hasWinForms)
+            found.Add("gondwana-winforms");
+        if (hasAvalonia)
+            found.Add("gondwana-avalonia");
+        if (hasBlazor)
+            found.Add("gondwana-blazor");
 
         if (found.Count > 0)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)

@@ -32,7 +32,8 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     /// <param name="status">Status text to display beneath the results.</param>
     public void Clear(string status)
     {
-        if (IsDisposed) return;
+        if (IsDisposed)
+            return;
         _definitions.Nodes.Clear();
         _problems.Items.Clear();
         _status.Text = status;
@@ -42,7 +43,8 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     /// <param name="result">Scan data to render on the UI thread; no engine models are retained.</param>
     public void ShowResult(ProjectScanResult result)
     {
-        if (IsDisposed) return;
+        if (IsDisposed)
+            return;
         Clear($"{result.Definitions.Count} definitions; {result.Definitions.Count(d => !d.Loaded)} load failures; {result.Problems.Count} problems.");
         _definitions.BeginUpdate();
         _problems.BeginUpdate();
@@ -69,7 +71,8 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     /// <param name="disposing">Whether to dispose the managed polling timer.</param>
     protected override void Dispose(bool disposing)
     {
-        if (disposing) _timer.Dispose();
+        if (disposing)
+            _timer.Dispose();
         base.Dispose(disposing);
     }
 }

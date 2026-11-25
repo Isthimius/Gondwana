@@ -27,8 +27,10 @@ public sealed class WrappedRenderingTests
     [InlineData(true, true, true)]
     public void Render_RepeatsLayerDrawings_RefreshesAllCopies_AndKeepsViewUiFixed(bool gpu, bool horizontal, bool vertical)
     {
-        if (gpu) Render<GpuBackbuffer>(horizontal, vertical);
-        else Render<BitmapBackbuffer>(horizontal, vertical);
+        if (gpu)
+            Render<GpuBackbuffer>(horizontal, vertical);
+        else
+            Render<BitmapBackbuffer>(horizontal, vertical);
     }
 
     private static void Render<T>(bool horizontal, bool vertical) where T : BackbufferBase

@@ -53,7 +53,8 @@ public sealed class AssetDeletionPlan
         {
             cancellation.ThrowIfCancellationRequested();
             var fullPath = Path.GetFullPath(path);
-            if (!plan._archives.Add(fullPath)) throw new InvalidDataException($"Duplicate archive target: {fullPath}.");
+            if (!plan._archives.Add(fullPath))
+                throw new InvalidDataException($"Duplicate archive target: {fullPath}.");
             plan._scan.Include(fullPath, archive: true);
             plan._removals.Add(fullPath);
             foreach (var entry in plan._scan.Archives[fullPath].Entries.Keys)
@@ -72,7 +73,8 @@ public sealed class AssetDeletionPlan
                 throw new InvalidDataException($"Overlapping physical file and entry targets: {target.Path}.");
             if (target.AssetEntryName is null)
             {
-                if (AssetArchiveFormat.IsArchive(target.Path)) throw new InvalidDataException("Select whole-archive deletion instead of treating a package as a loose resource.");
+                if (AssetArchiveFormat.IsArchive(target.Path))
+                    throw new InvalidDataException("Select whole-archive deletion instead of treating a package as a loose resource.");
                 var inferred = AssetImportPlan.InferType(target.Path);
                 if (inferred != AssetTypes.Misc && inferred != target.AssetType)
                     throw new InvalidDataException($"Incompatible loose target type: {target} (expected {inferred}).");
@@ -95,7 +97,8 @@ public sealed class AssetDeletionPlan
             }
             plan._targets.Add(target);
         }
-        if (plan._targets.Count == 0 && plan._archives.Count == 0) throw new InvalidDataException("Select at least one resource to delete.");
+        if (plan._targets.Count == 0 && plan._archives.Count == 0)
+            throw new InvalidDataException("Select at least one resource to delete.");
         plan._scan.Analyze();
         // A loose file has only one physical identity; a misleading type must not hide its references.
         foreach (var target in plan._targets.Where(t => t.AssetEntryName is null))
@@ -109,11 +112,16 @@ public sealed class AssetDeletionPlan
         plan.InternalReferences = plan.InboundReferences.Where(r => keys.Contains(DefinitionReferenceDiscovery.Key(r.Document))).ToArray();
         plan.BlockingReferences = plan.InboundReferences.Except(plan.InternalReferences).ToArray();
         plan._preview.Add($"Search scope: {plan.Scope}. Explicit target documents and complete target archives are also inspected. References outside this scope and arbitrary game code are unknown.");
-        foreach (var path in plan.InspectedFiles) plan._preview.Add($"Inspected: {path}");
-        foreach (var target in plan.Targets) plan._preview.Add($"Delete: {target}");
-        foreach (var path in plan.WholeArchives) plan._preview.Add($"Delete entire archive: {path}");
-        foreach (var reference in plan.InternalReferences) plan._preview.Add($"Internal (owner also deleted): {Describe(reference)}");
-        foreach (var reference in plan.BlockingReferences) plan._preview.Add($"WILL BREAK: {Describe(reference)}");
+        foreach (var path in plan.InspectedFiles)
+            plan._preview.Add($"Inspected: {path}");
+        foreach (var target in plan.Targets)
+            plan._preview.Add($"Delete: {target}");
+        foreach (var path in plan.WholeArchives)
+            plan._preview.Add($"Delete entire archive: {path}");
+        foreach (var reference in plan.InternalReferences)
+            plan._preview.Add($"Internal (owner also deleted): {Describe(reference)}");
+        foreach (var reference in plan.BlockingReferences)
+            plan._preview.Add($"WILL BREAK: {Describe(reference)}");
         plan._preview.Add(plan.ForceRequired
             ? $"Blocked: {plan.BlockingReferences.Count} surviving references. Explicit force leaves precisely these references unchanged and dangling; dependents are not deleted."
             : "No surviving inbound references found within the inspected scope.");
@@ -137,7 +145,8 @@ public sealed class AssetDeletionPlan
     internal void CommitCore(bool force, Action<string, int>? checkpoint, CancellationToken cancellation)
     {
         cancellation.ThrowIfCancellationRequested();
-        if (ForceRequired && !force) throw new InvalidOperationException("Deletion blocked by surviving references. Review Preview and explicitly authorize force to break them.");
+        if (ForceRequired && !force)
+            throw new InvalidOperationException("Deletion blocked by surviving references. Review Preview and explicitly authorize force to break them.");
         // Discovery validated every original relationship. Only reviewed targets are removed; surviving bytes
         // are preserved exactly and the shared transaction rechecks every inspected dependency. Therefore
         // force permits only the reviewed dangling edges, never unrelated pre-existing or concurrent corruption.

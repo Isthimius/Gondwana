@@ -81,19 +81,26 @@ internal sealed class RageToProGameHost : WinFormsGameHost
 
     private void OnKeyDown(KeyDownEventArgs args)
     {
-        if (args.KeyAction != KeyAction.Pressed || !Enum.TryParse(args.KeyConfig.Key, true, out Keys key)) return;
-        if (key == Keys.Space) _game.TogglePlaying();
-        if (key is >= Keys.D1 and <= Keys.D4) _game.TryBuy((int)key - (int)Keys.D1);
-        if (key == Keys.R) _game.Reset();
+        if (args.KeyAction != KeyAction.Pressed || !Enum.TryParse(args.KeyConfig.Key, true, out Keys key))
+            return;
+        if (key == Keys.Space)
+            _game.TogglePlaying();
+        if (key is >= Keys.D1 and <= Keys.D4)
+            _game.TryBuy((int)key - (int)Keys.D1);
+        if (key == Keys.R)
+            _game.Reset();
     }
 
     private void OnMouse(Gondwana.Input.Mouse.MouseEventArgs args)
     {
         _game.Mouse = args.CurrentPosition;
-        if (!args.LeftButtonJustPressed) return;
-        if (BedroomDrawing.PlayButton.Contains(args.CurrentPosition)) _game.TogglePlaying();
+        if (!args.LeftButtonJustPressed)
+            return;
+        if (BedroomDrawing.PlayButton.Contains(args.CurrentPosition))
+            _game.TogglePlaying();
         for (int i = 0; i < BedroomDrawing.ShopButtons.Length; i++)
-            if (BedroomDrawing.ShopButtons[i].Contains(args.CurrentPosition)) _game.TryBuy(i);
+            if (BedroomDrawing.ShopButtons[i].Contains(args.CurrentPosition))
+                _game.TryBuy(i);
     }
 
     private void Update()
@@ -101,7 +108,8 @@ internal sealed class RageToProGameHost : WinFormsGameHost
         long tick = HighResTimer.GetCurrentTick();
         float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0f, .05f);
         _lastTick = tick;
-        if (dt <= 0) return;
+        if (dt <= 0)
+            return;
         _game.Update(dt);
         _drawing.Invalidate();
     }
@@ -140,14 +148,22 @@ internal sealed class GamerState
 
     internal void Reset()
     {
-        Money = 12; Rage = 8; TotalHours = 0; HourProgress = 0; UpgradeLevel = 0;
-        ThingsBroken = 0; Playing = false; SmashTime = 0;
-        Message = "Fresh start. Same terrible computer."; MessageTime = 3;
+        Money = 12;
+        Rage = 8;
+        TotalHours = 0;
+        HourProgress = 0;
+        UpgradeLevel = 0;
+        ThingsBroken = 0;
+        Playing = false;
+        SmashTime = 0;
+        Message = "Fresh start. Same terrible computer.";
+        MessageTime = 3;
     }
 
     internal void TogglePlaying()
     {
-        if (SmashTime > 0) return;
+        if (SmashTime > 0)
+            return;
         Playing = !Playing;
         Message = Playing ? "Queue popped. Money and questionable decisions incoming." : "Taking five. Rage is cooling down.";
         MessageTime = 2;
@@ -190,7 +206,8 @@ internal sealed class GamerState
         }
         MessageTime = 1.15f;
 
-        if (Rage >= 100) SmashSomething();
+        if (Rage >= 100)
+            SmashSomething();
     }
 
     private void SmashSomething()
@@ -211,14 +228,16 @@ internal sealed class GamerState
         if (slot != UpgradeLevel)
         {
             Message = slot < UpgradeLevel ? "Already installed." : "Buy the upgrades in order.";
-            MessageTime = 2; return;
+            MessageTime = 2;
+            return;
         }
 
         int cost = UpgradeCosts[slot];
         if (Money < cost)
         {
             Message = $"Need ${cost - Money:0} more for {UpgradeNames[slot]}.";
-            MessageTime = 2; return;
+            MessageTime = 2;
+            return;
         }
 
         Money -= cost;

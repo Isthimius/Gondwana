@@ -65,7 +65,8 @@ public static class SkiaExtensions
     public static SKPoint[] ToSKPoints(this Point[] points, bool enclose = false)
     {
         if (!enclose)
-            return points.Select(p => new SKPoint(p.X, p.Y)).ToArray(); ;
+            return points.Select(p => new SKPoint(p.X, p.Y)).ToArray();
+        ;
 
         var len = points.Length + 1;
         var result = new SKPoint[len];

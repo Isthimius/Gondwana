@@ -148,7 +148,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         object? Read()
         {
             object? value = model;
-            foreach (var p in path) value = p.GetValue(value);
+            foreach (var p in path)
+                value = p.GetValue(value);
             return value;
         }
 

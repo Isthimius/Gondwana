@@ -25,7 +25,8 @@ public sealed partial class InteractionTests
         var imagePath = Path.Combine(directory, "actors.png");
         using (var bitmap = new Bitmap(32, 16))
         {
-            using var graphics = Graphics.FromImage(bitmap); graphics.Clear(Color.Red);
+            using var graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(Color.Red);
             bitmap.Save(imagePath);
         }
         var gts = Path.Combine(directory, "actors.gts");
@@ -41,35 +42,57 @@ public sealed partial class InteractionTests
         var entry = document.AddSprite();
         using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(1200, 800) };
         using var editor = new SpriteEditorControl(document);
-        host.Controls.Add(editor); host.Show(); Application.DoEvents();
-        editor.AddTilesheetSources([gts]); editor.AddSceneSources([gscn]); editor.SelectSprite(entry);
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
+        editor.AddTilesheetSources([gts]);
+        editor.AddSceneSources([gscn]);
+        editor.SelectSprite(entry);
         var trees = Descendants(editor).OfType<TreeView>().ToArray();
         void DoubleClick(TreeView tree, TreeNode node) => typeof(TreeView).GetMethod("OnNodeMouseDoubleClick", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(tree, [new TreeNodeMouseClickEventArgs(node, MouseButtons.Left, 2, 0, 0)]);
         var sceneTree = trees.Single(tree => tree.Nodes[0].Text == "level");
         DoubleClick(sceneTree, sceneTree.Nodes[0].Nodes[0]);
-        Assert.Equal("level", entry.SceneId); Assert.Equal("actors-layer", entry.SceneLayerId);
+        Assert.Equal("level", entry.SceneId);
+        Assert.Equal("actors-layer", entry.SceneLayerId);
         var frameTree = trees.Single(tree => tree.Nodes[0].Text == "actors");
         DoubleClick(frameTree, frameTree.Nodes[0].Nodes[0].Nodes[1]);
         Assert.Equal(1, entry.Frame!.XTile);
         Assert.Equal("actors", entry.Frame.Tilesheet);
         var assigned = entry.Frame;
-        document.History.Undo(); Application.DoEvents(); Assert.Null(entry.Frame);
-        document.History.Undo(); Application.DoEvents(); Assert.Equal("", entry.SceneId); Assert.Equal("", entry.SceneLayerId);
-        document.History.Redo(); document.History.Redo(); Application.DoEvents(); Assert.Same(assigned, entry.Frame);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Null(entry.Frame);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal("", entry.SceneId);
+        Assert.Equal("", entry.SceneLayerId);
+        document.History.Redo();
+        document.History.Redo();
+        Application.DoEvents();
+        Assert.Same(assigned, entry.Frame);
         var grid = Descendants(editor).OfType<PropertyGrid>().Single();
         var properties = Assert.IsType<SpriteProperties>(grid.SelectedObject);
-        properties.NudgeX = 9; properties.CollisionLeft = 2;
-        Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
-        document.History.Undo(); document.History.Undo(); Application.DoEvents();
-        Assert.Equal(0, entry.NudgeX); Assert.Equal(0, entry.AdjustCollisionArea.Left);
-        document.History.Redo(); document.History.Redo(); Application.DoEvents();
-        Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
+        properties.NudgeX = 9;
+        properties.CollisionLeft = 2;
+        Assert.Equal(9, entry.NudgeX);
+        Assert.Equal(2, entry.AdjustCollisionArea.Left);
+        document.History.Undo();
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Equal(0, entry.NudgeX);
+        Assert.Equal(0, entry.AdjustCollisionArea.Left);
+        document.History.Redo();
+        document.History.Redo();
+        Application.DoEvents();
+        Assert.Equal(9, entry.NudgeX);
+        Assert.Equal(2, entry.AdjustCollisionArea.Left);
         var preview = Descendants(editor).OfType<SpritePreviewControl>().Single();
         var canvas = preview.Controls.OfType<UserControl>().Single();
         using var before = new Bitmap(canvas.Width, canvas.Height);
         canvas.DrawToBitmap(before, canvas.ClientRectangle);
-        entry.Visible = false; editor.SelectSprite(entry);
+        entry.Visible = false;
+        editor.SelectSprite(entry);
         using var after = new Bitmap(canvas.Width, canvas.Height);
         canvas.DrawToBitmap(after, canvas.ClientRectangle);
         Point? FirstRedPixel(Bitmap bitmap)
@@ -78,7 +101,8 @@ public sealed partial class InteractionTests
                 for (int x = 0; x < bitmap.Width; x++)
                 {
                     var pixel = bitmap.GetPixel(x, y);
-                    if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30) return new Point(x, y);
+                    if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30)
+                        return new Point(x, y);
                 }
             return null;
         }
@@ -146,7 +170,9 @@ public sealed partial class InteractionTests
         entry.AnimationKey = "IDLE";
         using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(1200, 800) };
         using var editor = new SpriteEditorControl(document);
-        host.Controls.Add(editor); host.Show(); Application.DoEvents();
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
         editor.AddAnimationSources([gani]);
         editor.SelectSprite(entry);
 
@@ -175,7 +201,9 @@ public sealed partial class InteractionTests
         var document = SpriteDocument.Create(directory);
         using var host = new Form { ShowInTaskbar = false, Opacity = 0, Width = 1200, Height = 800 };
         using var editor = new SpriteEditorControl(document);
-        host.Controls.Add(editor); host.Show(); Application.DoEvents();
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
         var first = document.AddSprite();
         var second = document.DuplicateSprite(first);
         Assert.NotEqual(first.Id, second.Id);
@@ -186,7 +214,8 @@ public sealed partial class InteractionTests
         Assert.NotEmpty(editor.UpdateValidation());
         var path = Path.Combine(directory, "actors.gspr");
         Assert.Throws<InvalidDataException>(() => document.Save(path));
-        foreach (var entry in document.Definition.Sprites) { entry.SceneId = "level"; entry.SceneLayerId = "actors"; }
+        foreach (var entry in document.Definition.Sprites)
+        { entry.SceneId = "level"; entry.SceneLayerId = "actors"; }
         var sourcePath = Path.Combine(directory, "level.gscn");
         SceneDefinitionSerializer.Save(sourcePath, new SceneDefinition { ID = "level", Layers = [new() { ID = "actors", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }] });
         editor.AddSceneSources([sourcePath]);
@@ -216,7 +245,9 @@ public sealed partial class InteractionTests
         {
             var host = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
             var editor = new SpriteEditorControl(SpriteDocument.Create(directory));
-            host.Controls.Add(editor); host.Show(); Application.DoEvents();
+            host.Controls.Add(editor);
+            host.Show();
+            Application.DoEvents();
             return (host, editor, Descendants(editor).OfType<DockPanel>().Single());
         }
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gspr");
@@ -235,16 +266,24 @@ public sealed partial class InteractionTests
         second.Dock.Contents.OfType<DockContent>().Single(pane => pane.Text == "Validation").Hide();
         second.Host.Dispose();
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "studio");
-        var studio = Open(); Assert.True(studio.Editor.IsPaneVisible("Validation")); studio.Host.Dispose();
+        var studio = Open();
+        Assert.True(studio.Editor.IsPaneVisible("Validation"));
+        studio.Host.Dispose();
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gspr");
-        var third = Open(); Assert.False(third.Editor.IsPaneVisible("Validation")); third.Editor.ResetLayout(); third.Host.Dispose();
-        var fourth = Open(); Assert.True(fourth.Editor.IsPaneVisible("Validation")); fourth.Host.Dispose();
+        var third = Open();
+        Assert.False(third.Editor.IsPaneVisible("Validation"));
+        third.Editor.ResetLayout();
+        third.Host.Dispose();
+        var fourth = Open();
+        Assert.True(fourth.Editor.IsPaneVisible("Validation"));
+        fourth.Host.Dispose();
     });
 
     [Fact]
     public void SourceReplayReplacesThumbnailsInsteadOfAccumulatingThem() => Sta(directory =>
     {
-        using (var bitmap = new Bitmap(32, 16)) bitmap.Save(Path.Combine(directory, "tiles.png"));
+        using (var bitmap = new Bitmap(32, 16))
+            bitmap.Save(Path.Combine(directory, "tiles.png"));
         var path = Path.Combine(directory, "tiles.gts");
         TilesheetDefinitionSerializer.Save(path, new TilesheetDefinition
         {
@@ -255,15 +294,21 @@ public sealed partial class InteractionTests
         using var document = SpriteDocument.Create(directory);
         using var host = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
         using var editor = new SpriteEditorControl(document);
-        host.Controls.Add(editor); host.Show(); Application.DoEvents();
-        editor.AddTilesheetSources([path]); Application.DoEvents();
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
+        editor.AddTilesheetSources([path]);
+        Application.DoEvents();
         var tree = Descendants(editor).OfType<TreeView>().Single(t => t.Nodes.Count > 0 && t.Nodes[0].Text == "tiles");
         Assert.Equal(2, tree.ImageList!.Images.Count);
         for (int replay = 0; replay < 4; replay++)
         {
-            document.History.Undo(); Application.DoEvents();
-            Assert.Empty(tree.Nodes); Assert.Equal(0, tree.ImageList.Images.Count);
-            document.History.Redo(); Application.DoEvents();
+            document.History.Undo();
+            Application.DoEvents();
+            Assert.Empty(tree.Nodes);
+            Assert.Equal(0, tree.ImageList.Images.Count);
+            document.History.Redo();
+            Application.DoEvents();
             Assert.Equal(2, tree.ImageList.Images.Count);
             var frames = tree.Nodes[0].Nodes[0].Nodes.Cast<TreeNode>().ToArray();
             Assert.Equal(new[] { 0, 1 }, frames.Select(frame => frame.ImageIndex));
@@ -272,7 +317,8 @@ public sealed partial class InteractionTests
     });
     private static IEnumerable<Control> Descendants(Control control)
     {
-        foreach (Control child in control.Controls) { yield return child; foreach (var nested in Descendants(child)) yield return nested; }
+        foreach (Control child in control.Controls)
+        { yield return child; foreach (var nested in Descendants(child)) yield return nested; }
     }
     private static void Sta(Action<string> action)
     {
@@ -280,8 +326,11 @@ public sealed partial class InteractionTests
         var directory = Path.Combine(Path.GetTempPath(), "GsprTests-" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
         var thread = new Thread(() => { try { action(directory); } catch (Exception ex) { error = ex; } });
-        thread.SetApartmentState(ApartmentState.STA); thread.Start(); thread.Join();
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
         Directory.Delete(directory, true);
-        if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+        if (error is not null)
+            ExceptionDispatchInfo.Capture(error).Throw();
     }
 }

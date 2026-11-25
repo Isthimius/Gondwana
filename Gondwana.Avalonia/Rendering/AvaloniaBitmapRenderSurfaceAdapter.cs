@@ -54,7 +54,8 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     /// </summary>
     public void RefreshDestinationSize()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         var w = (int)_control.Bounds.Width;
         var h = (int)_control.Bounds.Height;
         if (w > 0 && h > 0)
@@ -124,17 +125,20 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
             _blitScheduled = false;
         }
 
-        if (img == null) return;
+        if (img == null)
+            return;
 
         try
         {
             var w = img.Width;
             var h = img.Height;
-            if (w <= 0 || h <= 0) return;
+            if (w <= 0 || h <= 0)
+                return;
 
             var imageBounds = new SKRectI(0, 0, w, h);
             sourceRect = SKRectI.Intersect(sourceRect, imageBounds);
-            if (sourceRect.IsEmpty) return;
+            if (sourceRect.IsEmpty)
+                return;
 
             // A new bitmap has no retained pixels, so its first copy must cover the full image.
             var bitmap = _bitmap;
@@ -172,7 +176,8 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
                     sourceRect.Top);
             }
 
-            if (!copied) return;
+            if (!copied)
+                return;
 
             _control.SetBitmap(bitmap);
             _control.InvalidateVisual();
@@ -185,8 +190,10 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
     private static SKRectI Union(SKRectI left, SKRectI right)
     {
-        if (left.IsEmpty) return right;
-        if (right.IsEmpty) return left;
+        if (left.IsEmpty)
+            return right;
+        if (right.IsEmpty)
+            return left;
 
         return new SKRectI(
             Math.Min(left.Left, right.Left),
@@ -209,7 +216,8 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
         SKImage? currentImage;
         lock (_presentSync)
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             _disposed = true;
 
             currentImage = _currentImage;

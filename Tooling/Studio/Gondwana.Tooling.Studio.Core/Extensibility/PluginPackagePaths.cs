@@ -10,7 +10,8 @@ internal static class PluginPackagePaths
         foreach (var path in Directory.EnumerateFileSystemEntries(directory))
         {
             EnsureNoLinks(path);
-            if (Directory.Exists(path)) ValidateTree(path);
+            if (Directory.Exists(path))
+                ValidateTree(path);
         }
     }
 

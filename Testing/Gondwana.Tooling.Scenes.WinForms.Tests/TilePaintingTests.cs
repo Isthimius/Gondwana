@@ -43,25 +43,35 @@ public sealed partial class SceneEditorTests
         Assert.True(InvokeHistoryShortcut(editor, Keys.Control | Keys.Y));
         Application.DoEvents();
         tile = Assert.Single(layer.Tiles);
-        tile.Id = Guid.NewGuid(); tile.Nickname = "authored"; tile.Transform = TileTransform.Rotate90;
-        tile.EnableFog = true; tile.Visible = false; tile.CollisionProfileName = "solid";
-        tile.CollisionTypeByFrame = true; tile.AdjustCollisionAreaByFrame = true;
+        tile.Id = Guid.NewGuid();
+        tile.Nickname = "authored";
+        tile.Transform = TileTransform.Rotate90;
+        tile.EnableFog = true;
+        tile.Visible = false;
+        tile.CollisionProfileName = "solid";
+        tile.CollisionTypeByFrame = true;
+        tile.AdjustCollisionAreaByFrame = true;
         string metadata = JsonConvert.SerializeObject(tile);
         SelectPaintFrame(source, 0, 0);
         ClickCell(preview, layer, 2, 3);
         Assert.Equal(TileTransform.Rotate90, tile.Transform);
         Assert.Equal("solid", tile.CollisionProfileName);
-        document.History.Undo(); Application.DoEvents();
+        document.History.Undo();
+        Application.DoEvents();
         Assert.Equal(metadata, JsonConvert.SerializeObject(tile));
         Tool(editor, "Erase").PerformClick();
         ClickCell(preview, layer, 2, 3);
         Assert.Empty(layer.Tiles);
         ClickCell(preview, layer, 2, 3);
-        document.History.Undo(); Application.DoEvents();
+        document.History.Undo();
+        Application.DoEvents();
         Assert.Same(tile, Assert.Single(layer.Tiles));
         Assert.Equal(metadata, JsonConvert.SerializeObject(tile));
-        document.History.Redo(); Application.DoEvents(); Assert.Empty(layer.Tiles);
-        document.History.Undo(); Application.DoEvents();
+        document.History.Redo();
+        Application.DoEvents();
+        Assert.Empty(layer.Tiles);
+        document.History.Undo();
+        Application.DoEvents();
         document.Save(Path.Combine(root, "scene.gscn"), allowInvalid: true);
         using var reloaded = SceneDocument.Open(document.FilePath!);
         Assert.Equal(metadata, JsonConvert.SerializeObject(Assert.Single(reloaded.Definition.Layers[0].Tiles)));
@@ -75,11 +85,13 @@ public sealed partial class SceneEditorTests
         document.Save(Path.Combine(root, "scene.gscn"));
         Tool(editor, "Paint").PerformClick();
         ClickCell(preview, layer, 1, 1);
-        Assert.Empty(layer.Tiles); Assert.False(document.IsDirty);
+        Assert.Empty(layer.Tiles);
+        Assert.False(document.IsDirty);
         SelectPaintFrame(source);
         source.SelectedNode = source.Nodes[0]; // A root is not a frame.
         ClickCell(preview, layer, 1, 1);
-        Assert.Empty(layer.Tiles); Assert.False(document.IsDirty);
+        Assert.Empty(layer.Tiles);
+        Assert.False(document.IsDirty);
         string gani = Path.Combine(root, "flow.gani");
         AnimationDefinitionSerializer.Save(gani, new AnimationDefinition
         {
@@ -88,7 +100,8 @@ public sealed partial class SceneEditorTests
             TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "terrain.gts")],
             Frames = [new() { Tilesheet = "terrain", RegionName = "detail", XTile = 0, YTile = 1 }]
         });
-        editor.AddAnimationSources([gani]); Application.DoEvents();
+        editor.AddAnimationSources([gani]);
+        Application.DoEvents();
         SelectPaintFrame(source);
         var animations = Descendants(editor).OfType<ListView>().Single();
         animations.Items[0].Selected = true;
@@ -98,15 +111,19 @@ public sealed partial class SceneEditorTests
         ClickCell(preview, layer, 1, 1);
         var tile = Assert.Single(layer.Tiles);
         Assert.Equal("water.flow", tile.AnimationKey);
-        Assert.True(tile.EnableAnimator); Assert.True(tile.StartAnimation);
+        Assert.True(tile.EnableAnimator);
+        Assert.True(tile.StartAnimation);
         Assert.Equal(("terrain", "detail", 0, 1), (tile.Frame!.Tilesheet, tile.Frame.RegionName, tile.Frame.XTile, tile.Frame.YTile));
         ClickCell(preview, layer, 1, 1);
-        document.History.Undo(); Application.DoEvents();
-        Assert.Empty(layer.Tiles); Assert.False(document.IsDirty);
+        document.History.Undo();
+        Application.DoEvents();
+        Assert.Empty(layer.Tiles);
+        Assert.False(document.IsDirty);
         source.Focus(); // Reusing the still-selected frame explicitly changes the source kind.
         ClickCell(preview, layer, 1, 1);
         tile = Assert.Single(layer.Tiles);
-        Assert.Null(tile.AnimationKey); Assert.Equal(1, tile.Frame!.XTile);
+        Assert.Null(tile.AnimationKey);
+        Assert.Equal(1, tile.Frame!.XTile);
         Assert.Single(document.Definition.TilesheetSources);
         Assert.Single(document.Definition.AnimationSources);
     });
@@ -131,7 +148,8 @@ public sealed partial class SceneEditorTests
             .Invoke(preview, [new MouseEventArgs(MouseButtons.Right, 1, 100, 100, 0)]);
         typeof(ScenePreviewControl).GetMethod("OnMouseMove", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(preview, [new MouseEventArgs(MouseButtons.Left, 1, 100, 100, 0)]);
-        Assert.Empty(layer.Tiles); Assert.False(document.IsDirty);
+        Assert.Empty(layer.Tiles);
+        Assert.False(document.IsDirty);
     });
 
     [Theory]
@@ -147,11 +165,14 @@ public sealed partial class SceneEditorTests
                 ThrottleTime = .1,
                 Frames = [new() { Tilesheet = "terrain", RegionName = "detail" }]
             });
-            editor.AddAnimationSources([gani]); Application.DoEvents();
+            editor.AddAnimationSources([gani]);
+            Application.DoEvents();
             var animations = Descendants(editor).OfType<ListView>().Single();
-            animations.Items[0].Selected = true; animations.Focus();
+            animations.Items[0].Selected = true;
+            animations.Focus();
             SelectPaintFrame(source);
-            if (animationLast) animations.Focus();
+            if (animationLast)
+                animations.Focus();
             var document = editor.Document;
             var layer = document.Definition.Layers[0];
             string directory = Path.Combine(root, "saved");
@@ -187,7 +208,8 @@ public sealed partial class SceneEditorTests
         editor.ReloadSources();
         SelectPaintFrame(source);
         var document = editor.Document;
-        document.Save(Path.Combine(root, "scene.gscn")); Application.DoEvents();
+        document.Save(Path.Combine(root, "scene.gscn"));
+        Application.DoEvents();
         string? undo = document.History.UndoDescription;
         Tool(editor, "Paint").PerformClick();
         ClickCell(preview, document.Definition.Layers[0], 1, 1);
@@ -211,11 +233,14 @@ public sealed partial class SceneEditorTests
                 Frames = [new() { Tilesheet = "terrain", RegionName = "detail", XTile = firstFrameX },
                     new() { Tilesheet = "terrain", RegionName = secondRegion }]
             }));
-            editor.AddAnimationSources([path]); Application.DoEvents();
+            editor.AddAnimationSources([path]);
+            Application.DoEvents();
             var animations = Descendants(editor).OfType<ListView>().Single();
-            animations.Items[0].Selected = true; animations.Focus();
+            animations.Items[0].Selected = true;
+            animations.Focus();
             var document = editor.Document;
-            document.Save(Path.Combine(root, "scene.gscn")); Application.DoEvents();
+            document.Save(Path.Combine(root, "scene.gscn"));
+            Application.DoEvents();
             string? undo = document.History.UndoDescription;
             Tool(editor, "Paint").PerformClick();
             ClickCell(preview, document.Definition.Layers[0], 1, 1);
@@ -231,8 +256,11 @@ public sealed partial class SceneEditorTests
         var layer = document.Definition.Layers[0];
         document.EditTile(layer, 1, 1, "Seed animated tile", tile =>
         {
-            tile.AnimationKey = "water.flow"; tile.EnableAnimator = true; tile.StartAnimation = true;
-            tile.Transform = TileTransform.Rotate90; tile.Nickname = "authored";
+            tile.AnimationKey = "water.flow";
+            tile.EnableAnimator = true;
+            tile.StartAnimation = true;
+            tile.Transform = TileTransform.Rotate90;
+            tile.Nickname = "authored";
         });
         var original = Assert.Single(layer.Tiles);
         string before = JsonConvert.SerializeObject(original);
@@ -240,11 +268,14 @@ public sealed partial class SceneEditorTests
         Tool(editor, "Paint").PerformClick();
         ClickCell(preview, layer, 1, 1);
         Assert.Equal("water.flow", original.AnimationKey);
-        Assert.True(original.EnableAnimator); Assert.True(original.StartAnimation);
-        Assert.Equal(TileTransform.Rotate90, original.Transform); Assert.Equal("authored", original.Nickname);
+        Assert.True(original.EnableAnimator);
+        Assert.True(original.StartAnimation);
+        Assert.Equal(TileTransform.Rotate90, original.Transform);
+        Assert.Equal("authored", original.Nickname);
         Assert.Equal(("terrain", "detail", 1, 1),
             (original.Frame!.Tilesheet, original.Frame.RegionName, original.Frame.XTile, original.Frame.YTile));
-        document.History.Undo(); Application.DoEvents();
+        document.History.Undo();
+        Application.DoEvents();
         Assert.Equal(before, JsonConvert.SerializeObject(original));
     });
 
@@ -261,10 +292,15 @@ public sealed partial class SceneEditorTests
             var document = editor.Document;
             var layer = document.Definition.Layers[0];
             layer.CoordinateSystemType = projection;
-            layer.Columns = 80; layer.Rows = 80; layer.OriginPx = new(37, -19);
-            var upper = document.AddLayer(); upper.ZOrder = 100;
-            var other = document.AddDefinition(); var otherLayer = document.AddLayer();
-            editor.SelectDefinition(document.Definitions[0]); Application.DoEvents();
+            layer.Columns = 80;
+            layer.Rows = 80;
+            layer.OriginPx = new(37, -19);
+            var upper = document.AddLayer();
+            upper.ZOrder = 100;
+            var other = document.AddDefinition();
+            var otherLayer = document.AddLayer();
+            editor.SelectDefinition(document.Definitions[0]);
+            Application.DoEvents();
             var structure = Descendants(editor).OfType<TreeView>().Single(tree => tree.Nodes[0].Tag is SceneDefinition);
             structure.SelectedNode = structure.Nodes[0].Nodes.Cast<TreeNode>().Single(node => ReferenceEquals(node.Tag, layer));
             SelectPaintFrame(source);
@@ -275,7 +311,8 @@ public sealed partial class SceneEditorTests
             ClickCell(preview, layer, 5, 6);
             var tile = Assert.Single(layer.Tiles);
             Assert.Equal((5, 6), (tile.X, tile.Y));
-            Assert.Empty(upper.Tiles); Assert.Empty(otherLayer.Tiles);
+            Assert.Empty(upper.Tiles);
+            Assert.Empty(otherLayer.Tiles);
             string content = SceneDefinitionSerializer.ToJson(document.Definition);
             ClickPreview(preview, new(-10000, -10000));
             Assert.Equal(content, SceneDefinitionSerializer.ToJson(document.Definition));
@@ -283,7 +320,8 @@ public sealed partial class SceneEditorTests
             ClickPreview(preview, new(100, 100));
             Assert.Equal(content, SceneDefinitionSerializer.ToJson(document.Definition));
             Assert.Empty(upper.Tiles);
-            editor.SelectDefinition(other); Application.DoEvents();
+            editor.SelectDefinition(other);
+            Application.DoEvents();
             ClickCell(preview, otherLayer, 1, 1); // Source selection was cleared on member change.
             Assert.Empty(otherLayer.Tiles);
             Assert.Single(layer.Tiles);
@@ -294,8 +332,10 @@ public sealed partial class SceneEditorTests
 
     private static void SelectPaintFrame(TreeView tree, int x = 1, int y = 1)
     {
-        var region = tree.Nodes[0].Nodes[0]; region.Expand();
-        var row = region.Nodes[y]; row.Expand();
+        var region = tree.Nodes[0].Nodes[0];
+        region.Expand();
+        var row = region.Nodes[y];
+        row.Expand();
         tree.SelectedNode = row.Nodes[x];
         tree.Focus();
     }
@@ -331,7 +371,8 @@ public sealed partial class SceneEditorTests
         Directory.CreateDirectory(root);
         try
         {
-            using (var bitmap = new Bitmap(32, 32)) bitmap.Save(Path.Combine(root, "atlas.png"));
+            using (var bitmap = new Bitmap(32, 32))
+                bitmap.Save(Path.Combine(root, "atlas.png"));
             TilesheetDefinitionSerializer.Save(Path.Combine(root, "terrain.gts"), new TilesheetDefinition
             {
                 Name = "terrain",
@@ -342,8 +383,11 @@ public sealed partial class SceneEditorTests
             document.AddLayer();
             using var editor = new SceneEditorControl(document);
             using var host = new Form { Size = new(1500, 950), Opacity = 0, ShowInTaskbar = false };
-            host.Controls.Add(editor); host.Show(); Application.DoEvents();
-            editor.AddTilesheetSources([Path.Combine(root, "terrain.gts")]); Application.DoEvents();
+            host.Controls.Add(editor);
+            host.Show();
+            Application.DoEvents();
+            editor.AddTilesheetSources([Path.Combine(root, "terrain.gts")]);
+            Application.DoEvents();
             var preview = Descendants(editor).OfType<ScenePreviewControl>().Single();
             var source = Descendants(editor).OfType<TreeView>().Single(tree => tree.Nodes.Count > 0 && tree.Nodes[0].Tag is SceneTilesheetSource);
             test(editor, preview, source, root);

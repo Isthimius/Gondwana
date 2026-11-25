@@ -87,7 +87,8 @@ internal sealed class ProjectPackages
         foreach (var file in new[] { "Directory.Build.props", "Directory.Build.targets", "Directory.Packages.props" })
         {
             var found = FindAncestorFile(System.IO.Path.GetDirectoryName(Path)!, file);
-            if (found is not null) Load(found);
+            if (found is not null)
+                Load(found);
         }
         Central = documents.FirstOrDefault(d => System.IO.Path.GetFileName(d.Key).Equals("Directory.Packages.props", StringComparison.OrdinalIgnoreCase)).Value;
         var management = Elements("ManagePackageVersionsCentrally").ToArray();
@@ -106,7 +107,8 @@ internal sealed class ProjectPackages
             if (node is null && CentrallyManaged)
             {
                 var matches = Central?.Descendants().Where(e => e.Name.LocalName == "PackageVersion" && Name(e).Equals(Name(reference), StringComparison.OrdinalIgnoreCase)).ToArray() ?? [];
-                if (matches.Length == 1 && !Conditional(matches[0])) node = VersionNode(matches[0], "Version");
+                if (matches.Length == 1 && !Conditional(matches[0]))
+                    node = VersionNode(matches[0], "Version");
             }
             node = ResolveProperty(node);
             Packages.Add(new(Name(reference), reference, node, Value(node)));
@@ -115,10 +117,13 @@ internal sealed class ProjectPackages
             .Select(e => System.IO.Path.GetFileNameWithoutExtension(Name(e).Replace('\\', '/'))).Where(IsGondwana).ToList();
         var names = Packages.Select(p => p.Name).Concat(References).ToArray();
         var hosts = new[] { "WinForms", "Avalonia", "Blazor" }.Where(h => names.Any(n => n.Equals($"Gondwana.{h}", StringComparison.OrdinalIgnoreCase) || n.Equals($"Gondwana.{h}.Hosting", StringComparison.OrdinalIgnoreCase))).ToArray();
-        if (hosts.Length == 0 && ProjectHelper.IsBlazorWebAssemblyProject(Path)) hosts = ["Blazor"];
-        if (hosts.Length == 0 && Project.Descendants().Any(e => e.Name.LocalName == "UseWindowsForms" && !Conditional(e) && e.Value.Equals("true", StringComparison.OrdinalIgnoreCase))) hosts = ["WinForms"];
+        if (hosts.Length == 0 && ProjectHelper.IsBlazorWebAssemblyProject(Path))
+            hosts = ["Blazor"];
+        if (hosts.Length == 0 && Project.Descendants().Any(e => e.Name.LocalName == "UseWindowsForms" && !Conditional(e) && e.Value.Equals("true", StringComparison.OrdinalIgnoreCase)))
+            hosts = ["WinForms"];
         Host = hosts.Length == 1 ? hosts[0] : null;
-        if (hosts.Length > 1) Limitations.Add("Multiple Gondwana platform adapters; host selection is ambiguous.");
+        if (hosts.Length > 1)
+            Limitations.Add("Multiple Gondwana platform adapters; host selection is ambiguous.");
     }
 
     private XDocument Load(string path)
@@ -134,7 +139,8 @@ internal sealed class ProjectPackages
         for (var current = new DirectoryInfo(directory); current is not null; current = current.Parent)
         {
             var candidate = System.IO.Path.Combine(current.FullName, name);
-            if (File.Exists(candidate)) return candidate;
+            if (File.Exists(candidate))
+                return candidate;
         }
         return null;
     }
@@ -145,9 +151,11 @@ internal sealed class ProjectPackages
     private XObject? ResolveProperty(XObject? node)
     {
         var value = Value(node);
-        if (value is null || !value.Contains('$')) return node;
+        if (value is null || !value.Contains('$'))
+            return node;
         var match = Regex.Match(value, @"^\$\((\w+)\)$");
-        if (!match.Success) return null;
+        if (!match.Success)
+            return null;
         var candidates = Elements(match.Groups[1].Value).Where(e => e.Parent?.Name.LocalName == "PropertyGroup").ToArray();
         return candidates.Length == 1 && !Conditional(candidates[0]) && ExactVersion(candidates[0].Value) ? candidates[0] : null;
     }
@@ -170,9 +178,12 @@ internal sealed class ProjectPackages
     /// </summary>
     public void EnsureEditable()
     {
-        if (Packages.Count == 0) throw new InvalidOperationException("No Gondwana NuGet references found. Project-reference-only games must manage versions in their source repository.");
-        if (References.Count != 0) throw new InvalidOperationException("Mixed Gondwana package/project references require manual review before editing.");
-        if (Limitations.Count > 0) throw new InvalidOperationException(string.Join(" ", Limitations));
+        if (Packages.Count == 0)
+            throw new InvalidOperationException("No Gondwana NuGet references found. Project-reference-only games must manage versions in their source repository.");
+        if (References.Count != 0)
+            throw new InvalidOperationException("Mixed Gondwana package/project references require manual review before editing.");
+        if (Limitations.Count > 0)
+            throw new InvalidOperationException(string.Join(" ", Limitations));
         if (Packages.GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase).Any(g => g.Count() > 1) || Packages.Any(p => Conditional(p.Reference) || p.Reference.Elements().Any(Conditional) || p.Reference.Attribute("Include") is null || p.VersionNode is null || !ExactVersion(p.Version)))
             throw new InvalidOperationException("Conditional, duplicate, Update-only, or unresolved Gondwana versions require manual review. No files changed.");
         if (Packages.Any(p => new[] { "Version", "VersionOverride" }.Any(name => p.Reference.Attributes(name).Count() + p.Reference.Elements().Count(e => e.Name.LocalName == name) > 1)))
@@ -197,14 +208,17 @@ internal sealed class ProjectPackages
     public IReadOnlyList<string> Upgrade(string version)
     {
         EnsureEditable();
-        if (!ExactVersion(version)) throw new InvalidOperationException("Specify an exact NuGet version, not a range or MSBuild expression.");
+        if (!ExactVersion(version))
+            throw new InvalidOperationException("Specify an exact NuGet version, not a range or MSBuild expression.");
         var changes = new List<string>();
         foreach (var package in Packages.Where(p => p.Version != version))
         {
             var owner = documents.Single(d => d.Value == package.VersionNode!.Document).Key;
             changes.Add($"{package.Name}: {package.Version} -> {version} ({owner})");
-            if (package.VersionNode is XAttribute a) a.Value = version;
-            else ((XElement)package.VersionNode!).Value = version;
+            if (package.VersionNode is XAttribute a)
+                a.Value = version;
+            else
+                ((XElement)package.VersionNode!).Value = version;
         }
         return changes;
     }
@@ -249,18 +263,22 @@ internal sealed class ProjectPackages
     public IReadOnlyList<string> Add(string feature)
     {
         var name = FeaturePackage(feature);
-        if (Packages.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) || References.Contains(name, StringComparer.OrdinalIgnoreCase)) return [];
+        if (Packages.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) || References.Contains(name, StringComparer.OrdinalIgnoreCase))
+            return [];
         var version = AlignedVersion();
         var reference = new XElement(Project.Root!.Name.Namespace + "PackageReference", new XAttribute("Include", name));
         if (CentrallyManaged)
         {
-            if (Central is null) throw new InvalidOperationException("No editable Directory.Packages.props found.");
+            if (Central is null)
+                throw new InvalidOperationException("No editable Directory.Packages.props found.");
             var entries = Central.Descendants().Where(e => e.Name.LocalName == "PackageVersion" && Name(e).Equals(name, StringComparison.OrdinalIgnoreCase)).ToArray();
             if (entries.Length > 0 && (entries.Length != 1 || Conditional(entries[0]) || Value(ResolveProperty(VersionNode(entries[0], "Version"))) != version))
                 throw new InvalidOperationException($"Central version for {name} is ambiguous or differs from {version}; align it manually first.");
-            if (entries.Length == 0) AppendItem(Central, new XElement(Central.Root!.Name.Namespace + "PackageVersion", new XAttribute("Include", name), new XAttribute("Version", version)));
+            if (entries.Length == 0)
+                AppendItem(Central, new XElement(Central.Root!.Name.Namespace + "PackageVersion", new XAttribute("Include", name), new XAttribute("Version", version)));
         }
-        else reference.Add(new XAttribute("Version", version));
+        else
+            reference.Add(new XAttribute("Version", version));
         AppendItem(Project, reference);
         return [$"Add {name} {version} to {Path}" + (CentrallyManaged ? " (centrally managed; Directory.Packages.props may also change)" : "")];
     }
@@ -277,8 +295,10 @@ internal sealed class ProjectPackages
         }
         var indent = group.Elements().LastOrDefault()?.PreviousNode as XText;
         var whitespace = indent?.Value ?? newline + "        ";
-        if (group.LastNode is XText last && string.IsNullOrWhiteSpace(last.Value)) last.AddBeforeSelf(new XText(whitespace), item);
-        else group.Add(new XText(whitespace), item, new XText(newline + "    "));
+        if (group.LastNode is XText last && string.IsNullOrWhiteSpace(last.Value))
+            last.AddBeforeSelf(new XText(whitespace), item);
+        else
+            group.Add(new XText(whitespace), item, new XText(newline + "    "));
     }
 
     /// <summary>
@@ -288,11 +308,13 @@ internal sealed class ProjectPackages
     {
         // Validate all owners before writing any of them; never overwrite concurrent edits.
         foreach (var (path, bytes) in originals)
-            if (!File.ReadAllBytes(path).SequenceEqual(bytes)) throw new IOException($"{path} changed during inspection. Retry the command.");
+            if (!File.ReadAllBytes(path).SequenceEqual(bytes))
+                throw new IOException($"{path} changed during inspection. Retry the command.");
         foreach (var (path, document) in documents)
         {
             var oldDoc = XDocument.Load(new MemoryStream(originals[path]), LoadOptions.PreserveWhitespace);
-            if (XNode.DeepEquals(oldDoc, document)) continue;
+            if (XNode.DeepEquals(oldDoc, document))
+                continue;
             var bytes = originals[path];
             var encoding = bytes.Length >= 2 && bytes[0] == 0xff && bytes[1] == 0xfe ? Encoding.Unicode
                 : bytes.Length >= 2 && bytes[0] == 0xfe && bytes[1] == 0xff ? Encoding.BigEndianUnicode
@@ -301,7 +323,8 @@ internal sealed class ProjectPackages
             try
             {
                 var newline = encoding.GetString(bytes).Contains("\r\n") ? "\r\n" : "\n";
-                using (var writer = XmlWriter.Create(temporary, new XmlWriterSettings { Encoding = encoding, Indent = false, OmitXmlDeclaration = document.Declaration is null, NewLineHandling = NewLineHandling.Replace, NewLineChars = newline })) document.Save(writer);
+                using (var writer = XmlWriter.Create(temporary, new XmlWriterSettings { Encoding = encoding, Indent = false, OmitXmlDeclaration = document.Declaration is null, NewLineHandling = NewLineHandling.Replace, NewLineChars = newline }))
+                    document.Save(writer);
                 File.Move(temporary, path, overwrite: true);
             }
             finally { if (File.Exists(temporary)) File.Delete(temporary); }

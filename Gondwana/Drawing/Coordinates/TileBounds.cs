@@ -46,7 +46,8 @@ public static class TileBounds
     /// <returns>The tile rectangle after applying the requested size and spacing adjustments.</returns>
     public static Rectangle ApplyTileGeometry(Rectangle cell, Tile tile, bool include)
     {
-        if (!include) return cell;
+        if (!include)
+            return cell;
         return tile is Gondwana.Scenes.SceneLayerTile fixedTile
             ? ApplyOverhang(TileTransformGeometry.GetVisualBounds(cell, Spacing.None, fixedTile.Transform), tile.Overhang, true)
             : ApplyOverhang(cell, tile.Overhang, true);

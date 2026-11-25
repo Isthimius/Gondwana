@@ -43,7 +43,8 @@ internal sealed partial class PluginManagerPanel
         RemoveButton.Click += async (_, _) => await RunPackageChange(null, SelectedPackageId, remove: true);
         CancelButton.Click += async (_, _) =>
         {
-            if (PendingGrid.CurrentRow?.Tag is not PluginPackageOperation operation) return;
+            if (PendingGrid.CurrentRow?.Tag is not PluginPackageOperation operation)
+                return;
             await RunBusy(() => Task.Run(() => _operations!.Cancel(operation.PluginId)));
         };
         PendingGrid.CurrentCellChanged += (_, _) => { UpdateActions(); if (PendingGrid.Focused) ShowPendingDetails(); };
@@ -55,13 +56,15 @@ internal sealed partial class PluginManagerPanel
         {
             var updateId = _sourceUpdateId;
             using var dialog = new OpenFileDialog { Filter = "Plugin ZIP archives (*.zip)|*.zip", Title = "Select local plugin package" };
-            if (dialog.ShowDialog(this) == DialogResult.OK) await RunPackageChange(dialog.FileName, updateId);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+                await RunPackageChange(dialog.FileName, updateId);
         });
         SourceMenu.Items.Add("Package directory…", null, async (_, _) =>
         {
             var updateId = _sourceUpdateId;
             using var dialog = new FolderBrowserDialog { Description = "Select the package directory containing plugin.json", UseDescriptionForTitle = true };
-            if (dialog.ShowDialog(this) == DialogResult.OK) await RunPackageChange(dialog.SelectedPath, updateId);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+                await RunPackageChange(dialog.SelectedPath, updateId);
         });
         ToolingAppearance.Apply(SourceMenu);
         return actions;
@@ -83,13 +86,15 @@ internal sealed partial class PluginManagerPanel
             try
             {
                 preview = await Task.Run(() => remove ? _operations!.PreviewRemoval(id!) : _operations!.Preview(source!, id));
-                if (!await OnUi(() => ConfirmPackage(preview))) return;
+                if (!await OnUi(() => ConfirmPackage(preview)))
+                    return;
                 await OnUi(() => { StatusLabel.Text = "Saving reviewed package operation…"; return true; });
                 await Task.Run(() => _operations!.Queue(preview, confirmed: true, replacementConfirmed: true));
             }
             finally
             {
-                if (preview is not null) await Task.Run(() => _operations!.Discard(preview));
+                if (preview is not null)
+                    await Task.Run(() => _operations!.Discard(preview));
             }
         });
     }
@@ -97,14 +102,17 @@ internal sealed partial class PluginManagerPanel
     // Embedded hosts may not install a SynchronizationContext. Dispatch explicitly.
     private Task<T> OnUi<T>(Func<T> action)
     {
-        if (IsDisposed || Disposing) return Task.FromResult(default(T)!);
-        if (Environment.CurrentManagedThreadId == _uiThread) return Task.FromResult(action());
+        if (IsDisposed || Disposing)
+            return Task.FromResult(default(T)!);
+        if (Environment.CurrentManagedThreadId == _uiThread)
+            return Task.FromResult(action());
         var completion = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
         try
         {
             BeginInvoke(() =>
             {
-                try { completion.SetResult(IsDisposed || Disposing ? default! : action()); }
+                try
+                { completion.SetResult(IsDisposed || Disposing ? default! : action()); }
                 catch (Exception ex) { completion.SetException(ex); }
             });
         }
@@ -116,7 +124,8 @@ internal sealed partial class PluginManagerPanel
     {
         if (!await OnUi(() =>
         {
-            if (_busy || _operations is null) return false;
+            if (_busy || _operations is null)
+                return false;
             _busy = true;
             _saveError = null;
             UpdateActions();
@@ -124,9 +133,11 @@ internal sealed partial class PluginManagerPanel
             StatusLabel.Text = "Inspecting and staging plugin files. Current plugins remain unchanged…";
             UseWaitCursor = true;
             return true;
-        })) return;
+        }))
+            return;
         string? failure = null;
-        try { await operation(); }
+        try
+        { await operation(); }
         catch (Exception ex) { failure = "Package operation failed: " + ex.Message; _operations!.ReportFailure(ex.ToString()); }
         finally
         {
@@ -143,7 +154,8 @@ internal sealed partial class PluginManagerPanel
 
     private void RefreshOperations()
     {
-        if (_operations is null) return;
+        if (_operations is null)
+            return;
         _operations.Refresh();
         var selected = (PendingGrid.CurrentRow?.Tag as PluginPackageOperation)?.PluginId;
         PendingGrid.Rows.Clear();
@@ -152,9 +164,11 @@ internal sealed partial class PluginManagerPanel
         {
             var index = PendingGrid.Rows.Add(operation.Name, operation.Kind, operation.State, operation.Diagnostic ?? "Applies before discovery at the next safe startup.");
             PendingGrid.Rows[index].Tag = operation;
-            if (operation.PluginId == selected) restore = PendingGrid.Rows[index];
+            if (operation.PluginId == selected)
+                restore = PendingGrid.Rows[index];
         }
-        if (PendingGrid.Rows.Count > 0) PendingGrid.CurrentCell = (restore ?? PendingGrid.Rows[0]).Cells[0];
+        if (PendingGrid.Rows.Count > 0)
+            PendingGrid.CurrentCell = (restore ?? PendingGrid.Rows[0]).Cells[0];
         UpdateActions();
     }
 
@@ -176,7 +190,8 @@ internal sealed partial class PluginManagerPanel
 
     private void ShowPendingDetails()
     {
-        if (PendingGrid.CurrentRow?.Tag is not PluginPackageOperation operation) return;
+        if (PendingGrid.CurrentRow?.Tag is not PluginPackageOperation operation)
+            return;
         DetailsBox.Text = $"Package operation: {operation.Kind}\r\nPlugin: {operation.Name}\r\nID: {operation.PluginId}\r\nInstalled version: {operation.PreviousVersion ?? operation.Version}\r\nProposed version: {operation.Version}\r\nState: {operation.State}\r\nDestination: {Path.Combine(_operations!.PluginRoot, operation.Folder)}\r\nDiagnostics: {operation.Diagnostic ?? "Restart required; close all Studio instances before restarting."}\r\nActivation preferences are unchanged. Current plugin instances remain loaded until exit.";
     }
 
@@ -203,8 +218,11 @@ internal sealed partial class PluginManagerPanel
         var accept = new Button { Text = "Confirm for next startup", AutoSize = true, Enabled = false, DialogResult = DialogResult.OK };
         consent.CheckedChanged += (_, _) => accept.Enabled = consent.Checked;
         buttons.Controls.AddRange([cancel, accept]);
-        dialog.Controls.Add(details); dialog.Controls.Add(consent); dialog.Controls.Add(buttons);
-        dialog.AcceptButton = accept; dialog.CancelButton = cancel;
+        dialog.Controls.Add(details);
+        dialog.Controls.Add(consent);
+        dialog.Controls.Add(buttons);
+        dialog.AcceptButton = accept;
+        dialog.CancelButton = cancel;
         ToolingAppearance.Apply(dialog);
         return dialog.ShowDialog() == DialogResult.OK;
     }

@@ -27,7 +27,8 @@ public sealed class RenderFrameSnapshotIntegrationTests
         profiler.Reset();
         using var host = new RenderSurfaceHost<BitmapBackbuffer>(new Adapter());
         using var buffer = host.Backbuffer;
-        using (profiler.Start()) { }
+        using (profiler.Start())
+        { }
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal("Bitmap", source.Backend);
         Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["replay.cpu.ms"].Availability);

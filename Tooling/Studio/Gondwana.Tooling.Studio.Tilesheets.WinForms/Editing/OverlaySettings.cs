@@ -42,12 +42,15 @@ internal sealed class OverlaySettings
         var settings = new OverlaySettings(path);
         try
         {
-            if (!File.Exists(settings.FilePath)) return settings;
+            if (!File.Exists(settings.FilePath))
+                return settings;
             var data = JsonSerializer.Deserialize<SettingsData>(File.ReadAllText(settings.FilePath));
-            if (data?.OverlayColors is null) throw new JsonException("OverlayColors is missing.");
+            if (data?.OverlayColors is null)
+                throw new JsonException("OverlayColors is missing.");
             foreach (var (key, value) in data.OverlayColors)
             {
-                if (!Enum.TryParse<OverlayKind>(key, out var kind) || !Enum.IsDefined(kind)) continue;
+                if (!Enum.TryParse<OverlayKind>(key, out var kind) || !Enum.IsDefined(kind))
+                    continue;
                 if (value is { Length: 7 } && value[0] == '#' &&
                     int.TryParse(value.AsSpan(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int rgb))
                     settings._colors[kind] = Color.FromArgb(255, (rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255);
@@ -68,11 +71,13 @@ internal sealed class OverlaySettings
     internal static OverlaySettings LoadWithLegacyFallback(string path)
     {
         var current = Load(path);
-        if (File.Exists(current.FilePath)) return current;
+        if (File.Exists(current.FilePath))
+            return current;
 
         var legacyPath = Path.Combine(Path.GetDirectoryName(current.FilePath)!,
             "Gondwana.Tooling.Tilesheets.WinForms.settings.json");
-        if (!File.Exists(legacyPath)) return current;
+        if (!File.Exists(legacyPath))
+            return current;
 
         var legacy = Load(legacyPath);
         foreach (var (kind, color) in legacy._colors)
@@ -99,7 +104,8 @@ internal sealed class OverlaySettings
         }
         finally
         {
-            if (File.Exists(temporary)) File.Delete(temporary);
+            if (File.Exists(temporary))
+                File.Delete(temporary);
         }
         _colors[kind] = Color.FromArgb(color.R, color.G, color.B);
         Warning = null;

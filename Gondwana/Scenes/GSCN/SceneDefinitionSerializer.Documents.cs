@@ -46,7 +46,8 @@ public static partial class SceneDefinitionSerializer
     public static SceneDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -80,7 +81,8 @@ public static partial class SceneDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.ID); }
+        try
+        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.ID); }
         catch (InvalidDataException ex) { errors.Add(ex.Message); }
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
@@ -121,7 +123,8 @@ public static partial class SceneDefinitionSerializer
     private static SceneDefinition PrepareDocumentMember(SceneDefinition definition, string path)
     {
         var clone = ParseDefinition(ToJson(definition), null);
-        if (string.IsNullOrWhiteSpace(clone.ID)) clone.ID = Path.GetFileNameWithoutExtension(path);
+        if (string.IsNullOrWhiteSpace(clone.ID))
+            clone.ID = Path.GetFileNameWithoutExtension(path);
         var origin = definition.Source.GscnFilePath ?? definition.Source.AssetsFilePath;
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
             (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
@@ -210,16 +213,19 @@ public static partial class SceneDefinitionSerializer
     public static IReadOnlyList<Scene> ToAllScenes(SceneDefinitionDocument document)
     {
         var errors = ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         var created = new List<Scene>();
         try
         {
-            foreach (var definition in document.Definitions) created.Add(ToScene(definition));
+            foreach (var definition in document.Definitions)
+                created.Add(ToScene(definition));
             return created;
         }
         catch
         {
-            foreach (var item in created) item.Dispose();
+            foreach (var item in created)
+                item.Dispose();
             throw;
         }
     }

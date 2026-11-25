@@ -76,7 +76,8 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
             for (int x = minX; x <= maxX; x++)
             {
                 var gPt = sceneLayer[x, y];
-                if (gPt == null) continue;
+                if (gPt == null)
+                    continue;
 
                 // Overhang-aware pixel rect
                 var rect = GetPixelRangeForTile(gPt, includeOverhang);

@@ -15,11 +15,13 @@ public sealed class ModelSnapshot
         var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
         void Visit(object? target)
         {
-            if (target is null || target is string || target.GetType().IsValueType || !visited.Add(target)) return;
+            if (target is null || target is string || target.GetType().IsValueType || !visited.Add(target))
+                return;
             if (target is IList list)
             {
                 _lists.Add((list, list.Cast<object?>().ToArray()));
-                foreach (var item in list) Visit(item);
+                foreach (var item in list)
+                    Visit(item);
                 return;
             }
             foreach (var property in target.GetType().GetProperties().Where(p => p.CanRead && p.SetMethod?.IsPublic == true && p.GetIndexParameters().Length == 0 && p.Name != "Source"))
@@ -35,8 +37,10 @@ public sealed class ModelSnapshot
     /// <summary>Restores the captured values and membership while retaining original instances.</summary>
     public void Restore()
     {
-        foreach (var (target, property, value) in _properties) property.SetValue(target, value);
-        foreach (var (list, items) in _lists) Replace(list, items);
+        foreach (var (target, property, value) in _properties)
+            property.SetValue(target, value);
+        foreach (var (list, items) in _lists)
+            Replace(list, items);
     }
 
     /// <summary>Records only actual differences as one reversible operation.</summary>
@@ -50,21 +54,28 @@ public sealed class ModelSnapshot
         var lists = _lists.Select(p => (p.List, Before: p.Items, After: p.List.Cast<object?>().ToArray()))
             .Where(p => !p.Before.SequenceEqual(p.After)).ToArray();
         Restore();
-        if (properties.Length == 0 && lists.Length == 0) return;
+        if (properties.Length == 0 && lists.Length == 0)
+            return;
         history.Execute(description, () =>
         {
-            foreach (var p in properties) p.Property.SetValue(p.Target, restoreValue is null ? p.After : restoreValue(p.Target, p.Property.Name, p.After));
-            foreach (var p in lists) Replace(p.List, p.After);
+            foreach (var p in properties)
+                p.Property.SetValue(p.Target, restoreValue is null ? p.After : restoreValue(p.Target, p.Property.Name, p.After));
+            foreach (var p in lists)
+                Replace(p.List, p.After);
         }, () =>
         {
-            foreach (var p in properties) p.Property.SetValue(p.Target, restoreValue is null ? p.Before : restoreValue(p.Target, p.Property.Name, p.Before));
-            foreach (var p in lists) Replace(p.List, p.Before);
+            foreach (var p in properties)
+                p.Property.SetValue(p.Target, restoreValue is null ? p.Before : restoreValue(p.Target, p.Property.Name, p.Before));
+            foreach (var p in lists)
+                Replace(p.List, p.Before);
         });
     }
 
     private static void Replace(IList list, object?[] items)
     {
-        if (list.IsFixedSize) { for (int i = 0; i < items.Length; i++) list[i] = items[i]; }
-        else { list.Clear(); foreach (var item in items) list.Add(item); }
+        if (list.IsFixedSize)
+        { for (int i = 0; i < items.Length; i++) list[i] = items[i]; }
+        else
+        { list.Clear(); foreach (var item in items) list.Add(item); }
     }
 }

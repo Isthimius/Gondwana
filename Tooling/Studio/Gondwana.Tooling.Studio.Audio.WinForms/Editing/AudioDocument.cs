@@ -34,7 +34,8 @@ public sealed partial class AudioDocument
     {
         _definitions = [definition];
         Definition = definition;
-        if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = "audio";
+        if (string.IsNullOrWhiteSpace(definition.Key))
+            definition.Key = "audio";
         FilePath = filePath;
         BaseDirectory = Path.GetFullPath(baseDirectory);
         History = new(initiallySaved: !isDirty);
@@ -53,7 +54,8 @@ public sealed partial class AudioDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = AudioDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
         var document = new AudioDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
         document.SourceVersion = version;
@@ -156,7 +158,8 @@ public sealed partial class AudioDocument
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = AudioDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
-        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Key)) ||
             _definitions.Select(member => member.Key).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
@@ -224,7 +227,8 @@ public sealed partial class AudioDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
         var extension = string.IsNullOrWhiteSpace(sourceExtension) ? Path.GetExtension(entryName) : sourceExtension;
-        if (string.IsNullOrWhiteSpace(extension)) throw new InvalidDataException("Packed audio requires a source extension.");
+        if (string.IsNullOrWhiteSpace(extension))
+            throw new InvalidDataException("Packed audio requires a source extension.");
         var resource = new AudioResourceDefinition
         {
             Key = UniqueKey(Path.GetFileNameWithoutExtension(entryName)),
@@ -265,7 +269,8 @@ public sealed partial class AudioDocument
     /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(AudioDefinition definition)
     {
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -297,12 +302,14 @@ public sealed partial class AudioDocument
     public bool RemoveDefinition(AudioDefinition definition)
     {
         int index = _definitions.IndexOf(definition);
-        if (_definitions.Count == 1 || index < 0) return false;
+        if (_definitions.Count == 1 || index < 0)
+            return false;
         var selected = Definition;
         History.Execute("Remove definition", () =>
         {
             _definitions.RemoveAt(index);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+            if (ReferenceEquals(Definition, definition))
+                Definition = _definitions[0];
         }, () => { _definitions.Insert(index, definition); Definition = selected; });
         return true;
     }
@@ -344,7 +351,8 @@ public sealed partial class AudioDocument
             }
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "audio");
-        if (imported.Count == 0) return 0;
+        if (imported.Count == 0)
+            return 0;
         AddMembers(imported, "Import audio definitions");
         return imported.Count;
     }
@@ -352,7 +360,8 @@ public sealed partial class AudioDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++) candidate = basis + "-" + i;
+        for (int i = 2; _definitions.Any(member => member.Key == candidate); i++)
+            candidate = basis + "-" + i;
         return candidate;
     }
 }

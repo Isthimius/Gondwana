@@ -41,7 +41,8 @@ internal static class AssetArchivePersistence
 
             AssetsFile.Validate(temporary, contents.Password);
 
-            using (var staged = new FileStream(temporary, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) staged.Flush(flushToDisk: true);
+            using (var staged = new FileStream(temporary, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                staged.Flush(flushToDisk: true);
             var hash = SHA256.HashData(File.ReadAllBytes(temporary));
 
             beforeInstall?.Invoke();

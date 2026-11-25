@@ -27,7 +27,8 @@ internal sealed class PackDefinitionDocument
     /// <returns>A complete typed document, or null for binary content.</returns>
     internal static PackDefinitionDocument? Read(AssetTypes type, byte[] bytes, string identity)
     {
-        if (!IsNative(type)) return null;
+        if (!IsNative(type))
+            return null;
         using var reader = new StreamReader(new MemoryStream(bytes), Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
         var json = reader.ReadToEnd();
         object document = type switch
@@ -60,7 +61,8 @@ internal sealed class PackDefinitionDocument
     {
         AssetLocation Physical(AssetTypes type, string? file, string? archive, string? entry)
         {
-            if (string.IsNullOrWhiteSpace(file) && string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry)) archive = owner.Path;
+            if (string.IsNullOrWhiteSpace(file) && string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry))
+                archive = owner.Path;
             bool loose = !string.IsNullOrWhiteSpace(file);
             bool packed = !string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry);
             if (loose == packed || loose && (!string.IsNullOrWhiteSpace(archive) || !string.IsNullOrWhiteSpace(entry)))
@@ -70,39 +72,49 @@ internal sealed class PackDefinitionDocument
         IEnumerable<AssetLocation> Resolve(AssetTypes type, string? file, string? archive, string? entry)
         {
             AssetLocation? location = null;
-            try { location = Physical(type, file, archive, entry); }
+            try
+            { location = Physical(type, file, archive, entry); }
             catch (Exception ex) when (invalid is not null && ex is InvalidDataException or ArgumentException or IOException)
             { invalid(ex); }
-            if (location is not null) yield return location;
+            if (location is not null)
+                yield return location;
         }
         foreach (var (_, member) in Members())
         {
             switch (member)
             {
                 case TilesheetDefinition sheet:
-                    foreach (var reference in Resolve(AssetTypes.Image, sheet.Image?.FilePath, sheet.Image?.AssetsFilePath, sheet.Image?.AssetEntryName)) yield return reference;
+                    foreach (var reference in Resolve(AssetTypes.Image, sheet.Image?.FilePath, sheet.Image?.AssetsFilePath, sheet.Image?.AssetEntryName))
+                        yield return reference;
                     break;
                 case AnimationDefinition animation:
                     foreach (var source in animation.TilesheetSources)
-                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName))
+                            yield return reference;
                     break;
                 case SceneDefinition scene:
                     foreach (var source in scene.TilesheetSources)
-                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName))
+                            yield return reference;
                     foreach (var source in scene.AnimationSources)
-                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName))
+                            yield return reference;
                     break;
                 case SpriteDefinition sprites:
                     foreach (var source in sprites.TilesheetSources)
-                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName))
+                            yield return reference;
                     foreach (var source in sprites.AnimationSources)
-                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName))
+                            yield return reference;
                     foreach (var source in sprites.SceneSources)
-                        foreach (var reference in Resolve(AssetTypes.SceneDefinition, source.GscnPath, source.AssetsFilePath, source.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.SceneDefinition, source.GscnPath, source.AssetsFilePath, source.AssetEntryName))
+                            yield return reference;
                     break;
                 case AudioDefinition audio:
                     foreach (var resource in audio.Resources.Where(r => r.SourceKind != AudioResourceSourceKind.Uri))
-                        foreach (var reference in Resolve(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName)) yield return reference;
+                        foreach (var reference in Resolve(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName))
+                            yield return reference;
                     break;
             }
         }
@@ -121,7 +133,8 @@ internal sealed class PackDefinitionDocument
             AudioDefinitionDocument document => AudioDefinitionSerializer.ValidateDocument(document),
             _ => throw new InvalidOperationException("Unknown native document.")
         };
-        if (errors.Count != 0) throw new InvalidDataException($"{label}: {string.Join("; ", errors)}");
+        if (errors.Count != 0)
+            throw new InvalidDataException($"{label}: {string.Join("; ", errors)}");
     }
 
     /// <summary>Uses Phase 1 to transform complete documents and emits canonical bytes once.</summary>

@@ -216,7 +216,8 @@ public class GpuBackbuffer : BackbufferBase
     {
         if (width <= 0 || height <= 0)
             return;
-        if (_disposed) return;
+        if (_disposed)
+            return;
 
         (int requestedSampleCount, long configurationRevision) = GetMsaaConfigurationSnapshot();
         int maxSupportedSampleCount = grContext.GetMaxSurfaceSampleCount(SKColorType.Rgba8888);
@@ -255,7 +256,8 @@ public class GpuBackbuffer : BackbufferBase
     public bool EnsureInitialized(GRContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
-        if (_disposed) return false;
+        if (_disposed)
+            return false;
         var request = Interlocked.Exchange(ref _requestedResolution, null);
         int width = request?.Width ?? Width;
         int height = request?.Height ?? Height;
@@ -282,7 +284,8 @@ public class GpuBackbuffer : BackbufferBase
     /// </summary>
     protected internal override void BeginFrame()
     {
-        if (_disposed || _surface is null) return;
+        if (_disposed || _surface is null)
+            return;
         var c = _surface.Canvas;
         c.RestoreToCount(1);
         c.Save();
@@ -295,7 +298,8 @@ public class GpuBackbuffer : BackbufferBase
     /// </summary>
     protected internal override void EndFrame()
     {
-        if (_disposed || _surface is null) return;
+        if (_disposed || _surface is null)
+            return;
         _surface.Flush();
     }
 
@@ -307,7 +311,8 @@ public class GpuBackbuffer : BackbufferBase
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
-        if (image is null || _surface is null) return;
+        if (image is null || _surface is null)
+            return;
 
         var canvas = _surface.Canvas;
 
@@ -419,7 +424,8 @@ public class GpuBackbuffer : BackbufferBase
     /// </summary>
     public override void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+            return;
         _disposed = true;
         base.Dispose();
         DisposeSurface();

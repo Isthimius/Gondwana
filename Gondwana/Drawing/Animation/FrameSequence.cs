@@ -35,12 +35,14 @@ public struct FrameSequence : IEnumerable<Frame>
     /// <param name="seconds">The seconds.</param>
     public void SetDurationSeconds(int index, double? seconds)
     {
-        if (index < 0 || index >= FrameCount) throw new ArgumentOutOfRangeException(nameof(index));
+        if (index < 0 || index >= FrameCount)
+            throw new ArgumentOutOfRangeException(nameof(index));
         if (seconds is { } duration && (!double.IsFinite(duration) || duration <= 0))
             throw new ArgumentOutOfRangeException(nameof(seconds));
         // Copy on write: cloned cycles share images, but editing timing must not change the original.
         frameDurations = frameDurations is null ? new List<double?>() : new(frameDurations);
-        while (frameDurations.Count < FrameCount) frameDurations.Add(null);
+        while (frameDurations.Count < FrameCount)
+            frameDurations.Add(null);
         frameDurations[index] = seconds;
     }
 

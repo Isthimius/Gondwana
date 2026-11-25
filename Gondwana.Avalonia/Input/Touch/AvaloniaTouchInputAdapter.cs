@@ -191,7 +191,8 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+            return;
         _isDisposed = true;
 
         _control.PointerPressed -= OnPointerPressed;

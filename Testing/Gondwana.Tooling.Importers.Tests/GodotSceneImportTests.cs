@@ -75,7 +75,8 @@ public sealed class GodotSceneImportTests : IDisposable
                 TileTransform.Rotate180, TileTransform.FlipDiagonal, TileTransform.Rotate90, TileTransform.Rotate270, TileTransform.FlipAntiDiagonal };
             Assert.Equal(expected, ground.Tiles.Where(t => t.Y == 1).OrderBy(t => t.X).Select(t => t.Transform));
         }
-        else Assert.Equal(TileTransform.FlipHorizontal, otherSource.Transform);
+        else
+            Assert.Equal(TileTransform.FlipHorizontal, otherSource.Transform);
 
         var runtimeSheets = TilesheetRegistry.Instance.LoadAllFromDefinitionFile(Path.Combine(request.OutputDirectory, name + ".gts"));
         var cycles = new List<Cycle>();
@@ -104,14 +105,17 @@ public sealed class GodotSceneImportTests : IDisposable
         }
         finally
         {
-            foreach (var cycle in cycles) cycle.Dispose();
-            foreach (var sheet in runtimeSheets) sheet.Dispose();
+            foreach (var cycle in cycles)
+                cycle.Dispose();
+            foreach (var sheet in runtimeSheets)
+                sheet.Dispose();
         }
         var before = result.WrittenFiles.ToDictionary(f => f, File.ReadAllBytes);
         Assert.Empty(importer.Import(request).WrittenFiles);
         var overwritten = importer.Import(request with { Overwrite = true });
         Assert.True(overwritten.Analysis.CanImport);
-        foreach (var (path, bytes) in before) Assert.Equal(bytes, File.ReadAllBytes(path));
+        foreach (var (path, bytes) in before)
+            Assert.Equal(bytes, File.ReadAllBytes(path));
     }
 
     [Theory]
@@ -151,7 +155,8 @@ public sealed class GodotSceneImportTests : IDisposable
         Assert.False(failed.Analysis.CanImport);
         Assert.Empty(failed.WrittenFiles);
         Assert.Contains(failed.Analysis.Diagnostics, d => d.Severity == ExternalImportSeverity.Error && d.Message.Contains(diagnostic));
-        foreach (var (path, bytes) in before) Assert.Equal(bytes, File.ReadAllBytes(path));
+        foreach (var (path, bytes) in before)
+            Assert.Equal(bytes, File.ReadAllBytes(path));
     }
 
     [Theory]

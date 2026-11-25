@@ -26,11 +26,14 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
         var pending = new Queue<Assembly>(contracts);
         while (pending.TryDequeue(out var assembly))
         {
-            if (!shared.TryAdd(assembly.GetName().Name!, assembly)) continue;
+            if (!shared.TryAdd(assembly.GetName().Name!, assembly))
+                continue;
             foreach (var reference in assembly.GetReferencedAssemblies())
             {
-                if (shared.ContainsKey(reference.Name!)) continue;
-                try { pending.Enqueue(Default.LoadFromAssemblyName(reference)); }
+                if (shared.ContainsKey(reference.Name!))
+                    continue;
+                try
+                { pending.Enqueue(Default.LoadFromAssemblyName(reference)); }
                 catch (FileNotFoundException) { /* Optional host dependency; never substitute a private Gondwana assembly. */ }
             }
         }
@@ -63,8 +66,10 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (_shared.TryGetValue(assemblyName.Name!, out var shared)) return shared;
-        if (FrameworkAssemblies.Contains(assemblyName.Name!)) return null;
+        if (_shared.TryGetValue(assemblyName.Name!, out var shared))
+            return shared;
+        if (FrameworkAssemblies.Contains(assemblyName.Name!))
+            return null;
         if (!_legacy && IsReserved(assemblyName.Name!, _shared))
             throw new FileLoadException($"Host does not supply required shared assembly '{assemblyName.Name}'.");
 
@@ -72,11 +77,13 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
         if (path is null)
         {
             var adjacent = Path.Combine(_directory, assemblyName.Name + ".dll");
-            if (File.Exists(adjacent)) path = adjacent;
+            if (File.Exists(adjacent))
+                path = adjacent;
         }
         if (path is not null)
             return LoadFromAssemblyPath(_legacy ? path : PluginPackagePaths.RequireContained(_directory, path));
-        if (_legacy) return null;
+        if (_legacy)
+            return null;
         throw new FileNotFoundException($"Private dependency '{assemblyName}' is missing from package '{_directory}'. Deploy it and its .deps.json, then restart Studio.");
     }
 
@@ -85,7 +92,8 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
         var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
         if (path is not null)
             return LoadUnmanagedDllFromPath(_legacy ? path : PluginPackagePaths.RequireContained(_directory, path));
-        if (_legacy) return IntPtr.Zero;
+        if (_legacy)
+            return IntPtr.Zero;
         throw new DllNotFoundException($"Native dependency '{unmanagedDllName}' is missing from package '{_directory}'.");
     }
 

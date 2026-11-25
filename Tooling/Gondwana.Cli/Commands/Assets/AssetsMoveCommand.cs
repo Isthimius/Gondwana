@@ -53,25 +53,32 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(settings.Scope)) throw new ArgumentException("An explicit --scope directory or GAF is required.");
+            if (string.IsNullOrWhiteSpace(settings.Scope))
+                throw new ArgumentException("An explicit --scope directory or GAF is required.");
             var credentials = AssetCommandCredentials.Load(settings.Credentials);
             AssetRelocationPlan plan;
             if (settings.Archive)
             {
-                if (settings.SourceEntry is not null || settings.DestinationEntry is not null || settings.Type is not null) throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
+                if (settings.SourceEntry is not null || settings.DestinationEntry is not null || settings.Type is not null)
+                    throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
                 plan = AssetRelocationPlan.MoveArchive(settings.Source, settings.Destination, settings.Scope, path => credentials.GetValueOrDefault(path), cancellationToken);
             }
             else
             {
-                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source)) throw new ArgumentException("Archive files require --archive.");
-                if (settings.SourceEntry is not null && settings.Type is null) throw new ArgumentException("Packed sources require --type.");
+                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source))
+                    throw new ArgumentException("Archive files require --archive.");
+                if (settings.SourceEntry is not null && settings.Type is null)
+                    throw new ArgumentException("Packed sources require --type.");
                 var type = settings.Type is null ? AssetImportPlan.InferType(settings.Source) : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
                 plan = AssetRelocationPlan.Create(settings.Scope, [new(new(type, Path.GetFullPath(settings.Source), settings.SourceEntry),
                     new(type, Path.GetFullPath(settings.Destination), settings.DestinationEntry))], path => credentials.GetValueOrDefault(path), cancellationToken);
             }
-            foreach (var line in plan.Preview) AnsiConsole.WriteLine(line);
-            if (settings.Commit) { plan.Commit(cancellationToken); AnsiConsole.WriteLine("Move committed; original locations retired."); }
-            else AnsiConsole.WriteLine("Preview only. Use --commit to execute after saving/closing affected editors.");
+            foreach (var line in plan.Preview)
+                AnsiConsole.WriteLine(line);
+            if (settings.Commit)
+            { plan.Commit(cancellationToken); AnsiConsole.WriteLine("Move committed; original locations retired."); }
+            else
+                AnsiConsole.WriteLine("Preview only. Use --commit to execute after saving/closing affected editors.");
             return 0;
         }
         catch (Exception ex) { AnsiConsole.WriteLine(ex.Message); return 1; }

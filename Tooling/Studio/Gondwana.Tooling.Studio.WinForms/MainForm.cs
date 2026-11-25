@@ -118,9 +118,12 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         if (loadPlugins && pluginDirectory is null && packageOperations is null)
             packageOperations = PluginPackageStore.Open(message =>
             {
-                if (IsDisposed) return;
-                if (IsHandleCreated && InvokeRequired) BeginInvoke(() => { if (!IsDisposed) _output.Log(message); });
-                else _output.Log(message);
+                if (IsDisposed)
+                    return;
+                if (IsHandleCreated && InvokeRequired)
+                    BeginInvoke(() => { if (!IsDisposed) _output.Log(message); });
+                else
+                    _output.Log(message);
             });
         packageOperations?.StartSession(); // Transactions finish before any plugin construction.
         PluginManager = new PluginManagerPanel(_plugins, _pluginPreferences, packageOperations);
@@ -212,9 +215,12 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         if (loadPlugins && (packageOperations is null || packageOperations.CanDiscover))
         {
-            if (packageOperations is not null) _plugins.DiscoverAndLoad(packageOperations.PluginRoot);
-            else if (pluginDirectory is null) _plugins.DiscoverAndLoad();
-            else _plugins.DiscoverAndLoad(pluginDirectory);
+            if (packageOperations is not null)
+                _plugins.DiscoverAndLoad(packageOperations.PluginRoot);
+            else if (pluginDirectory is null)
+                _plugins.DiscoverAndLoad();
+            else
+                _plugins.DiscoverAndLoad(pluginDirectory);
             _plugins.AttachHostServices(this);
             AttachPlugins();
         }
@@ -444,7 +450,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
             _plugins.NotifyProjectClosed();
 
         Browser.SetDirectory(path);
-        foreach (var document in _documents.ToArray()) RefreshSourceRegistrations(document);
+        foreach (var document in _documents.ToArray())
+            RefreshSourceRegistrations(document);
         SyncActiveDocumentSelection();
         _workingDirectory = path;
         _plugins.NotifyProjectOpened(path);
@@ -479,7 +486,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         };
 
         if (dialog.ShowDialog(this) == DialogResult.OK)
-            foreach (var path in dialog.FileNames) TryOpen(path);
+            foreach (var path in dialog.FileNames)
+                TryOpen(path);
     }
 
     private void TryOpen(string path)
@@ -500,7 +508,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
     internal StudioDockDocument OpenDocument(AssetLocation location, string? password = null)
     {
-        if (_paths.TryGetValue(location, out var existing)) { existing.Activate(); return existing; }
+        if (_paths.TryGetValue(location, out var existing))
+        { existing.Activate(); return existing; }
         return ShowDocument(CreateModel(location, password));
     }
 
@@ -579,7 +588,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
             model.Changed += ToolbarDocumentChanged;
             model.Changed += DependencySelectionChanged;
             model.Changed += SourcesChanged;
-            if (model.Kind == "sprite") model.Changed += SpriteDocumentChanged;
+            if (model.Kind == "sprite")
+                model.Changed += SpriteDocumentChanged;
             var referencesMenu = new ContextMenuStrip();
 
             foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
@@ -634,7 +644,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 referencesMenu.Dispose();
                 _documents.Remove(document);
                 _saves.Remove(document);
-                if (model.Kind == "sprite") SpriteRegistryChanged();
+                if (model.Kind == "sprite")
+                    SpriteRegistryChanged();
 
                 foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray())
                     _paths.Remove(key);
@@ -642,10 +653,13 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 UpdateToolbarState();
             };
 
-            if (replacing?.Pane is { } pane) document.Show(pane, replacing);
-            else document.Show(Workspace, DockState.Document);
+            if (replacing?.Pane is { } pane)
+                document.Show(pane, replacing);
+            else
+                document.Show(Workspace, DockState.Document);
             RefreshSourceRegistrations(document);
-            if (model.Kind == "sprite") SpriteRegistryChanged();
+            if (model.Kind == "sprite")
+                SpriteRegistryChanged();
             document.Activate();
             SyncActiveDocumentSelection();
             UpdateToolbarState();
@@ -660,7 +674,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         catch
         {
             _documents.Remove(document);
-            foreach (var key in _paths.Where(p => p.Value == document).Select(p => p.Key).ToArray()) _paths.Remove(key);
+            foreach (var key in _paths.Where(p => p.Value == document).Select(p => p.Key).ToArray())
+                _paths.Remove(key);
             document.Dispose();
             throw;
         }
@@ -733,13 +748,15 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 model.ContentStale = false;
                 model.SourceProblem = null;
                 model.PromptedConflict = null;
-                foreach (var open in _documents.ToArray()) RefreshSourceRegistrations(open);
+                foreach (var open in _documents.ToArray())
+                    RefreshSourceRegistrations(open);
                 document.UpdateCaption();
 
                 SyncActiveDocumentSelection();
 
                 _packages.Invalidate(destination);
-                if (model.Kind == "sprite") SpriteRegistryChanged();
+                if (model.Kind == "sprite")
+                    SpriteRegistryChanged();
                 _output.Log($"Saved {model.Tooltip}");
 
                 InvalidateDependencies();
@@ -782,7 +799,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         }
         catch (Exception ex)
         {
-            if (ex is IOException && HandleSourceSaveFailure(document)) return false;
+            if (ex is IOException && HandleSourceSaveFailure(document))
+                return false;
             ReportError(ex);
             return false;
         }
@@ -912,7 +930,8 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
         void Place()
         {
             tool.Show(Workspace, state);
-            if (!showByDefault) tool.Hide();
+            if (!showByDefault)
+                tool.Hide();
         }
         _layout.Register(tool, Place);
         Place();

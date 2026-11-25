@@ -73,7 +73,8 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
     /// <returns><see langword="true"/> if the specified entry is equal to the current entry; otherwise, <see langword="false"/>.</returns>
     public bool Equals(AssetsFileEntry? other)
     {
-        if (other is null) return false;
+        if (other is null)
+            return false;
         return AssetType == other.AssetType &&
                string.Equals(AssetName, other.AssetName, StringComparison.OrdinalIgnoreCase);
     }

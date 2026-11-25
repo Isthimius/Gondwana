@@ -76,7 +76,8 @@ public sealed class ReferenceRelocationTests : IDisposable
     private static JObject Member(Format format, string extension, string key, AssetLocation document, IEnumerable<(Reference Reference, AssetLocation Location)> dependencies)
     {
         var member = new JObject { [format.Identity] = key };
-        if (extension == "gani") member["NextCycleKey"] = "untouched-next";
+        if (extension == "gani")
+            member["NextCycleKey"] = "untouched-next";
         foreach (var (reference, location) in dependencies)
         {
             var packed = location.AssetEntryName is not null;
@@ -84,8 +85,10 @@ public sealed class ReferenceRelocationTests : IDisposable
             {
                 [packed ? "AssetsFilePath" : reference.FileProperty] = Path.GetRelativePath(Path.GetDirectoryName(document.Path)!, location.Path)
             };
-            if (packed) item["AssetEntryName"] = location.AssetEntryName;
-            if (reference.Collection is null) member["Image"] = item;
+            if (packed)
+                item["AssetEntryName"] = location.AssetEntryName;
+            if (reference.Collection is null)
+                member["Image"] = item;
             else
             {
                 item[extension == "gsnd" ? "SourceKind" : "Kind"] = packed ?
@@ -156,7 +159,8 @@ public sealed class ReferenceRelocationTests : IDisposable
                 if (references[i].Collection is not null)
                     Assert.Contains("logical-member", actual.ToString());
             }
-        if (extension == "gani") Assert.Equal("untouched-next", (string?)outputJson["Definitions"]![0]!["NextCycleKey"]);
+        if (extension == "gani")
+            Assert.Equal("untouched-next", (string?)outputJson["Definitions"]![0]!["NextCycleKey"]);
         var repeated = format.Relocate(output, destination, destination, mappings, true);
         Assert.Equal(format.Json(output), format.Json(repeated));
         // Saving a transformed authoring copy must use its new base, even though it has no load stamp.
@@ -322,7 +326,8 @@ public sealed class ReferenceRelocationTests : IDisposable
     [Fact]
     public void DifferentVolumesRemainAbsolute()
     {
-        if (!OperatingSystem.IsWindows()) return;
+        if (!OperatingSystem.IsWindows())
+            return;
         var source = new AssetLocation(AssetTypes.TilesheetDefinition, @"C:\project\sheet.gts");
         var destination = new AssetLocation(AssetTypes.TilesheetDefinition, @"D:\project\sheet.gts");
         var input = new TilesheetDefinitionDocument { Definitions = [new() { Name = "terrain", Image = new() { FilePath = "art.png" } }] };
@@ -407,6 +412,7 @@ public sealed class ReferenceRelocationTests : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Directory.Exists(_root)) Directory.Delete(_root, true);
+        if (Directory.Exists(_root))
+            Directory.Delete(_root, true);
     }
 }

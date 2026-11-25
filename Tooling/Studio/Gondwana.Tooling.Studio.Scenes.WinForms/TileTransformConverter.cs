@@ -16,7 +16,8 @@ internal sealed class TileTransformConverter : EnumConverter
     /// <inheritdoc/>
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        if (value is string text && Array.IndexOf(Labels, text) is var index && index >= 0) return (TileTransform)index;
+        if (value is string text && Array.IndexOf(Labels, text) is var index && index >= 0)
+            return (TileTransform)index;
         return base.ConvertFrom(context, culture, value);
     }
 }

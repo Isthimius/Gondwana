@@ -46,7 +46,8 @@ public static partial class AudioDefinitionSerializer
     public static AudioDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -80,7 +81,8 @@ public static partial class AudioDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
+        try
+        { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
         catch (InvalidDataException ex) { errors.Add(ex.Message); }
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
@@ -121,7 +123,8 @@ public static partial class AudioDefinitionSerializer
     private static AudioDefinition PrepareDocumentMember(AudioDefinition definition, string path)
     {
         var clone = ParseDefinition(ToJson(definition), null);
-        if (string.IsNullOrWhiteSpace(clone.Key)) clone.Key = Path.GetFileNameWithoutExtension(path);
+        if (string.IsNullOrWhiteSpace(clone.Key))
+            clone.Key = Path.GetFileNameWithoutExtension(path);
         var origin = definition.Source.GsndFilePath ?? definition.Source.AssetsFilePath;
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
             (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
@@ -130,7 +133,8 @@ public static partial class AudioDefinitionSerializer
             Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
         foreach (var resource in clone.Resources)
         {
-            if (resource.SourceKind == AudioResourceSourceKind.Uri) continue;
+            if (resource.SourceKind == AudioResourceSourceKind.Uri)
+                continue;
             resource.FilePath = RebasePath(resource.FilePath);
             resource.AssetsFilePath = RebasePath(resource.AssetsFilePath);
         }
@@ -215,12 +219,14 @@ public static partial class AudioDefinitionSerializer
     public static IReadOnlyList<IReadOnlyList<AudioResource>> LoadDocumentIntoManager(AudioDefinitionDocument document, bool overwriteExisting = true)
     {
         var errors = ValidateDocument(document);
-        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        if (errors.Count != 0)
+            throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         var manager = AudioResourceManager.Instance;
         return manager.LoadDefinitionDocument<IReadOnlyList<IReadOnlyList<AudioResource>>>(() =>
         {
             var groups = document.Definitions.Select(definition => LoadIntoManager(definition, overwriteExisting)).ToList();
-            if (groups.Count != 1) manager.DefinitionProvenance = null;
+            if (groups.Count != 1)
+                manager.DefinitionProvenance = null;
             return groups;
         });
     }

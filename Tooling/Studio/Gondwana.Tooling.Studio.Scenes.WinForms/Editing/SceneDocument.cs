@@ -77,7 +77,8 @@ public sealed partial class SceneDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = SceneDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
-        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+        if (definitions.Count == 0)
+            throw new InvalidDataException("Document contains no definitions.");
         var document = new SceneDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
         document.SourceVersion = version;
@@ -150,7 +151,8 @@ public sealed partial class SceneDocument
         int x,
         int y)
     {
-        if (!Owns(layer)) throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+        if (!Owns(layer))
+            throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
         if (x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
             throw new ArgumentOutOfRangeException(nameof(x), "Tile coordinates must be inside the selected layer.");
 
@@ -174,7 +176,8 @@ public sealed partial class SceneDocument
     /// <returns>True if any overrides were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTile(SceneLayerDefinition layer, int x, int y)
     {
-        if (!Owns(layer)) throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
+        if (!Owns(layer))
+            throw new ArgumentException("Layer does not belong to this document.", nameof(layer));
         return History.RemoveWhere("Erase tile", layer.Tiles, tile => tile.X == x && tile.Y == y) > 0;
     }
 
@@ -300,10 +303,12 @@ public sealed partial class SceneDocument
     /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, bool allowInvalid = false)
     {
-        if (History.InTransaction || History.IsExecuting) throw new InvalidOperationException("Finish the current edit before saving.");
+        if (History.InTransaction || History.IsExecuting)
+            throw new InvalidOperationException("Finish the current edit before saving.");
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = SceneDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
-        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+        if (!allowInvalid && errors.Count > 0)
+            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.ID)) ||
             _definitions.Select(member => member.ID).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
@@ -353,7 +358,8 @@ public sealed partial class SceneDocument
     {
         int n = Definition.Layers.Count + 1;
         string candidate;
-        do candidate = $"layer-{n++}";
+        do
+            candidate = $"layer-{n++}";
         while (Definition.Layers.Any(layer =>
             string.Equals(layer.ID, candidate, StringComparison.Ordinal)));
         return candidate;
@@ -397,7 +403,8 @@ public sealed partial class SceneDocument
     public void SelectDefinition(SceneDefinition definition)
     {
         EditingContextChanging?.Invoke();
-        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        if (!_definitions.Contains(definition))
+            throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -430,16 +437,19 @@ public sealed partial class SceneDocument
     public bool RemoveDefinition(SceneDefinition definition)
     {
         EditingContextChanging?.Invoke();
-        if (_definitions.Count == 1 || !_definitions.Contains(definition)) return false;
+        if (_definitions.Count == 1 || !_definitions.Contains(definition))
+            return false;
         var selected = Definition;
         int index = _definitions.IndexOf(definition);
         History.Execute("Remove definition", () =>
         {
             _definitions.Remove(definition);
-            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+            if (ReferenceEquals(Definition, definition))
+                Definition = _definitions[0];
         }, () =>
         {
-            if (!_definitions.Contains(definition)) _definitions.Insert(index, definition);
+            if (!_definitions.Contains(definition))
+                _definitions.Insert(index, definition);
             Definition = selected;
         });
         return true;
@@ -487,7 +497,8 @@ public sealed partial class SceneDocument
             }
             return clone;
         }, member => member.ID, (member, identity) => member.ID = identity, "scene");
-        if (imported.Count == 0) return 0;
+        if (imported.Count == 0)
+            return 0;
         AddMembers(imported, "Import definitions");
         return imported.Count;
     }
@@ -495,7 +506,8 @@ public sealed partial class SceneDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
-        for (int i = 2; _definitions.Any(member => member.ID == candidate); i++) candidate = basis + "-" + i;
+        for (int i = 2; _definitions.Any(member => member.ID == candidate); i++)
+            candidate = basis + "-" + i;
         return candidate;
     }
 }

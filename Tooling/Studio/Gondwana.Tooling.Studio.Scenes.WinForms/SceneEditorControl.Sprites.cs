@@ -52,13 +52,16 @@ public sealed partial class SceneEditorControl
     /// <summary>Refreshes sprite preview data after the host changes a live source or its registry.</summary>
     public void InvalidateSpriteOwners(bool reloadSaved = false)
     {
-        if (reloadSaved) _spriteSourcesScanned = false;
-        if (IsDisposed || Disposing || _refreshSpritesPending || !IsHandleCreated) return;
+        if (reloadSaved)
+            _spriteSourcesScanned = false;
+        if (IsDisposed || Disposing || _refreshSpritesPending || !IsHandleCreated)
+            return;
         _refreshSpritesPending = true;
         BeginInvoke(() =>
         {
             _refreshSpritesPending = false;
-            if (!IsDisposed && !Disposing && Visible) RefreshSpriteVisuals();
+            if (!IsDisposed && !Disposing && Visible)
+                RefreshSpriteVisuals();
         });
     }
 
@@ -93,13 +96,16 @@ public sealed partial class SceneEditorControl
         {
             var gesture = _spriteMove;
             _spriteMove = null;
-            if (gesture is not null) CommitSpritePlacement(gesture, position);
+            if (gesture is not null)
+                CommitSpritePlacement(gesture, position);
         };
         _preview.SpriteMoveCanceled += () => _spriteMove = null;
         VisibleChanged += (_, _) =>
         {
-            if (Visible) InvalidateSpriteOwners(reloadSaved: true);
-            else CancelSpritePlacement();
+            if (Visible)
+                InvalidateSpriteOwners(reloadSaved: true);
+            else
+                CancelSpritePlacement();
         };
     }
 
@@ -117,8 +123,10 @@ public sealed partial class SceneEditorControl
                 Multiselect = true,
                 Title = "Load saved sprite previews"
             };
-            if (dialog.ShowDialog(this) != DialogResult.OK) return;
-            foreach (var path in dialog.FileNames) _explicitSpriteSources.Add(path);
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+            foreach (var path in dialog.FileNames)
+                _explicitSpriteSources.Add(path);
             _spriteSourcesScanned = false;
             RefreshSpriteVisuals();
         });
@@ -173,8 +181,10 @@ public sealed partial class SceneEditorControl
                 foreach (var resource in resources)
                 {
                     var address = new ResourceAddress(resource);
-                    if (owners.Any(owner => Owns(owner, address))) continue;
-                    try { _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource)); }
+                    if (owners.Any(owner => Owns(owner, address)))
+                        continue;
+                    try
+                    { _savedSprites.TryAdd(address, new AuthoringResourceResolver(packages).LoadSprites(resource)); }
                     catch (Exception ex) when (IsAuthoringException(ex)) { _spriteDiscoveryWarning = ex.Message; }
                 }
             }
@@ -253,8 +263,10 @@ public sealed partial class SceneEditorControl
     private static string? SceneReferenceRestriction(SpriteCandidate sprite, ResourceAddress target)
     {
         var references = sprite.Member.SceneSources.Where(source => source.SceneId == target.Member).Take(2).ToArray();
-        if (references.Length > 1) return "Multiple scene sources use this ID. Resolve them in GSPR before moving the sprite.";
-        if (references.Length == 0) return null;
+        if (references.Length > 1)
+            return "Multiple scene sources use this ID. Resolve them in GSPR before moving the sprite.";
+        if (references.Length == 0)
+            return null;
         try
         {
             var address = AuthoringResourceResolver.SpriteSceneSource(references[0], Path.GetDirectoryName(sprite.Address.Location.Path)!);
@@ -310,13 +322,15 @@ public sealed partial class SceneEditorControl
             !owners.Any(owner => ReferenceEquals(owner.Session, previousOwner.Session)))
             _spriteSelection = null;
         _selectedSprite = _spriteSelection is { } previous ? visuals.FirstOrDefault(previous.SameInstance) : null;
-        if (_selectedSprite is not null) _spriteSelection = _selectedSprite;
+        if (_selectedSprite is not null)
+            _spriteSelection = _selectedSprite;
         _preview.SetSprites(visuals);
         _preview.SelectSprite(_selectedSprite);
         if (_spriteMove is { } gesture && (!PlacementTargetIsCurrent(gesture, requireSelection: false) || ResolveLiveSprite(gesture.Data.Payload!) is null))
             CancelSpritePlacement();
         UpdateSpriteStatus();
-        if (previousHistory != SelectedSpriteHistory) SpriteHistorySelectionChanged?.Invoke();
+        if (previousHistory != SelectedSpriteHistory)
+            SpriteHistorySelectionChanged?.Invoke();
     }
 
     private SceneSpriteVisual CreateVisual(SpriteCandidate candidate, SceneLayerDefinition layer, string? restriction)
@@ -370,7 +384,8 @@ public sealed partial class SceneEditorControl
 
     private void ClearPreviewSpriteSelection()
     {
-        if (_spriteSelection is null) return;
+        if (_spriteSelection is null)
+            return;
         _selectedSprite = _spriteSelection = null;
         CancelSpritePlacement();
         _preview.SelectSprite(null);
@@ -407,13 +422,15 @@ public sealed partial class SceneEditorControl
     private SpriteCandidate? ResolveLiveSprite(SpriteInstanceDrag drag)
     {
         if (drag.SpriteId == Guid.Empty || drag.Address.Location.AssetType != AssetTypes.SpriteDefinition ||
-            string.IsNullOrWhiteSpace(drag.Address.Member)) return null;
+            string.IsNullOrWhiteSpace(drag.Address.Member))
+            return null;
         var owners = LiveOwners().Where(owner => Owns(owner, drag.Address)).Take(2).ToArray();
         if (owners.Length != 1 || !owners[0].CanPlace || !ReferenceEquals(owners[0].Session, drag.Session) ||
             owners[0].Revision != drag.Revision || owners[0].History.InTransaction || owners[0].History.IsExecuting)
             return null;
         var members = owners[0].Definitions.Where(member => member.Key == drag.Address.Member).Take(2).ToArray();
-        if (members.Length != 1) return null;
+        if (members.Length != 1)
+            return null;
         var instances = members[0].Sprites.Where(sprite => sprite.Id == drag.SpriteId).Take(2).ToArray();
         return instances.Length == 1 ? new(drag.Address, members[0], instances[0], owners[0]) : null;
     }
@@ -442,7 +459,8 @@ public sealed partial class SceneEditorControl
                 throw new InvalidDataException("A neighboring GSPR already assigns this sprite ID or nickname to the scene. Resolve the conflict before placing it.");
 
             bool changed = sprite.Owner!.Place(payload, gesture.Target, gesture.Layer.ID, position);
-            if (payload.Address.Member is { } member) sprite.Owner.Select(member, payload.SpriteId);
+            if (payload.Address.Member is { } member)
+                sprite.Owner.Select(member, payload.SpriteId);
             _spriteSelection = new(sprite.Address, sprite.Sprite, gesture.Layer, null, sprite.Owner, null);
             RefreshSpriteVisuals();
             SpriteHistorySelectionChanged?.Invoke();
@@ -462,9 +480,12 @@ public sealed partial class SceneEditorControl
 
     private void SpriteDragEnter(ResourceDragData<SpriteInstanceDrag> data, DragEventArgs e)
     {
-        if (_preview.HasGesture || _preview.HasSpriteGesture || (e.AllowedEffect & DragDropEffects.Move) == 0) return;
-        if (SceneAddress() is not { } target) { UpdateSpriteStatus("Save this scene before placing sprites."); return; }
-        if (!ViewerDiscovers(data.Address.Location, target)) { UpdateSpriteStatus(OutsideViewerScope()); return; }
+        if (_preview.HasGesture || _preview.HasSpriteGesture || (e.AllowedEffect & DragDropEffects.Move) == 0)
+            return;
+        if (SceneAddress() is not { } target)
+        { UpdateSpriteStatus("Save this scene before placing sprites."); return; }
+        if (!ViewerDiscovers(data.Address.Location, target))
+        { UpdateSpriteStatus(OutsideViewerScope()); return; }
         if (data.Payload is not { } drag || ResolveLiveSprite(drag) is not { } sprite)
         {
             UpdateSpriteStatus("Open the owning GSPR document and drag a sprite with a unique ID.");
@@ -521,7 +542,8 @@ public sealed partial class SceneEditorControl
 
     private void ClearSpriteDrop()
     {
-        if (_spriteDrop is null) return;
+        if (_spriteDrop is null)
+            return;
         _spriteDrop = null;
         _dropSpriteVisual = null;
         _preview.SetSpriteGhost(null);
