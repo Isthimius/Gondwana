@@ -156,6 +156,8 @@ catch (Exception ex)
 
 Do not insert a blank line between the closing brace of `try` and its `catch`. Check generated code for these conventions before returning it, including when the formatter does not enforce them.
 
+For optional local formatting cleanup, use [`Tooling/scripts/Format-Code.ps1`](Tooling/scripts/README.md#format-codeps1) with `-Files` for the specific files being changed. Use `-All` only for an explicitly requested repository-wide cleanup. This tool is not a substitute for generating properly formatted code in the first place and is not required by CI or developer setup.
+
 ## Demos and Game Boilerplate
 
 When creating or changing sample game code:
