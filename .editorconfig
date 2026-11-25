@@ -20,14 +20,27 @@ csharp_space_before_comma = false
 csharp_space_around_binary_operators = before_and_after
 csharp_space_between_method_declaration_name_and_open_parenthesis = false
 csharp_space_between_method_call_name_and_opening_parenthesis = false
-csharp_preserve_single_line_blocks = true
-csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_blocks = false
+csharp_preserve_single_line_statements = false
+
+# Prefer separate lines for control-flow bodies and a blank line after blocks.
+# These experimental Roslyn style rules are advisory, not new CI gates.
+# IDE2003 covers blocks; AGENTS.md also requires spacing after unbraced bodies.
+csharp_style_allow_embedded_statements_on_same_line_experimental = false
+dotnet_style_allow_statement_immediately_after_block_experimental = false
+dotnet_diagnostic.IDE2001.severity = suggestion
+dotnet_diagnostic.IDE2003.severity = suggestion
 
 # Keep using directives deterministic without forcing grouping changes.
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = false
 
 # JetBrains/ReSharper/Rider extension settings.
+resharper_csharp_keep_existing_embedded_arrangement = false
+resharper_csharp_place_simple_embedded_statement_on_same_line = never
+resharper_csharp_keep_existing_embedded_block_arrangement = false
+resharper_csharp_place_simple_embedded_block_on_same_line = false
+
 # Up to three parameters/arguments may stay on one line. Four or more are
 # chopped so each parameter/argument is placed on its own line.
 resharper_csharp_wrap_parameters_style = chop_if_long
