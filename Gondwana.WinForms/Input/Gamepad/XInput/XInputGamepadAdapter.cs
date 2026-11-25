@@ -94,6 +94,7 @@ public sealed class XInputGamepadAdapter : IGamepadAdapter
         RightTrigger = gamepad.bRightTrigger / 255f;
 
         var buttons = (XInputButtons)gamepad.wButtons;
+
         foreach (XInputButtons button in Enum.GetValues<XInputButtons>())
         {
             if ((buttons & button) != 0)

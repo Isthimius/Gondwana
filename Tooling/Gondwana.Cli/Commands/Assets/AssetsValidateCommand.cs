@@ -6,17 +6,25 @@ namespace Gondwana.Cli.Commands.Assets;
 internal sealed class AssetsValidateCommand : Command<AssetsListCommand.Settings>
 {
     /// <inheritdoc/>
-    public override int Execute(CommandContext context, AssetsListCommand.Settings settings, CancellationToken cancellationToken)
+    public override int Execute(
+        CommandContext context,
+        AssetsListCommand.Settings settings,
+        CancellationToken cancellationToken)
     {
         try
         {
             if (settings.TypeFilter is not null)
-                throw new ArgumentException("assets validate checks the entire bundle; --type is supported only by list, inspect, and unpack.");
+                throw new ArgumentException(
+                    "assets validate checks the entire bundle; --type is supported only by list, inspect, and unpack.");
+
             var errors = BundleHelper.ValidateContents(settings.File, settings.Password);
+
             foreach (var error in errors)
                 AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(error)}");
+
             if (errors.Count == 0)
                 AnsiConsole.WriteLine("OK: Bundle structure, integrity, paths, and tilesheet definitions validated.");
+
             return errors.Count == 0 ? 0 : 1;
         }
         catch (Exception ex)
@@ -29,5 +37,8 @@ internal sealed class AssetsValidateCommand : Command<AssetsListCommand.Settings
 internal sealed class AssetsInspectCommand : Command<AssetsListCommand.Settings>
 {
     /// <inheritdoc/>
-    public override int Execute(CommandContext context, AssetsListCommand.Settings settings, CancellationToken cancellationToken) => AssetsListCommand.Display(settings, summary: true);
+    public override int Execute(
+        CommandContext context,
+        AssetsListCommand.Settings settings,
+        CancellationToken cancellationToken) => AssetsListCommand.Display(settings, summary: true);
 }

@@ -197,6 +197,7 @@ public class Animator : IDisposable
 
             // recalculate throttle for the new current frame
             throttle = CurrentCycle.CurrentFrameThrottle;
+
             if (throttle <= 0)
             {
                 StopAnimation();

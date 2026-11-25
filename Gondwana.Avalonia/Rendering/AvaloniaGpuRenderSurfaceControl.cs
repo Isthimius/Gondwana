@@ -85,17 +85,24 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
         {
             if (_disposeRequested != 0)
                 return;
+
             _glInterface = GRGlInterface.Create();
+
             if (_glInterface == null)
             {
-                Trace.TraceError("Gondwana Avalonia GPU: could not create a GRGlInterface from the current OpenGL context. Check the Windows GPU backend and driver.");
+                Trace.TraceError(
+                    "Gondwana Avalonia GPU: could not create a GRGlInterface from the current OpenGL context. Check the Windows GPU backend and driver.");
+
                 return;
             }
 
             _grContext = GRContext.CreateGl(_glInterface);
+
             if (_grContext == null)
             {
-                Trace.TraceError("Gondwana Avalonia GPU: SkiaSharp could not create a GRContext from the current OpenGL context.");
+                Trace.TraceError(
+                    "Gondwana Avalonia GPU: SkiaSharp could not create a GRContext from the current OpenGL context.");
+
                 _glInterface.Dispose();
                 _glInterface = null;
                 return;
@@ -120,12 +127,15 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     protected override void OnOpenGlRender(GlInterface gl, int fb)
     {
         long telemetryGeneration = Host?.Telemetry?.BeginSample() ?? 0;
+
         if (Volatile.Read(ref _disposeRequested) != 0 || _gpuBackbuffer == null)
             return;
+
         if (_grContext == null)
         {
             if (Interlocked.Exchange(ref _contextFailureReported, 1) == 0)
                 Trace.TraceError("Gondwana Avalonia GPU: render requested without a SkiaSharp OpenGL context.");
+
             return;
         }
 
@@ -150,7 +160,6 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
             _lastPhysW = physW;
             _lastPhysH = physH;
             Adapter.UpdateDimensions(physW, physH);
-
         }
 
         _gpuBackbuffer.EnsureInitialized(_grContext);
@@ -158,13 +167,25 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
         // Wrap the Avalonia-provided framebuffer in a SkiaSharp surface for compositing.
         // The framebuffer uses OpenGL bottom-left origin, RGBA8 color format.
         var fbInfo = new GRGlFramebufferInfo((uint)fb, GlRgba8);
-        using var renderTarget = new GRBackendRenderTarget(physW, physH, sampleCount: 0, stencilBits: 0, fbInfo);
-        using var fbSurface = SKSurface.Create(_grContext, renderTarget, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
+
+        using var renderTarget = new GRBackendRenderTarget(
+            physW,
+            physH,
+            sampleCount: 0,
+            stencilBits: 0,
+            fbInfo);
+
+        using var fbSurface = SKSurface.Create(
+            _grContext,
+            renderTarget,
+            GRSurfaceOrigin.BottomLeft,
+            SKColorType.Rgba8888);
 
         if (fbSurface == null)
         {
             if (Interlocked.Exchange(ref _contextFailureReported, 1) == 0)
                 Trace.TraceError("Gondwana Avalonia GPU: unable to wrap Avalonia's framebuffer as an SKSurface.");
+
             return;
         }
 
@@ -172,6 +193,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
 
         // Replay the newest immutable Engine snapshot on GL and blit the result.
         using var img = Host.GlRenderAndSnapshot();
+
         if (img != null)
         {
             Adapter.DrawImage(canvas, img, Adapter.ClearColor);
@@ -183,6 +205,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
 
         _grContext.Flush();
         _gpuBackbuffer.RecordFrame();
+
         if (telemetryGeneration != 0)
             Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
     }
@@ -199,6 +222,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
             _grContext = null;
             _glInterface?.Dispose();
             _glInterface = null;
+
             if (_disposeRequested != 0)
                 _gpuBackbuffer?.Dispose();
         }
@@ -213,8 +237,10 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     {
         if (Interlocked.Exchange(ref _disposeRequested, 1) != 0)
             return;
+
         Host.Dispose();
         Adapter.Dispose();
+
         lock (_lifecycleGate)
         {
             // If GL is already gone (or never existed), only CPU resources remain.

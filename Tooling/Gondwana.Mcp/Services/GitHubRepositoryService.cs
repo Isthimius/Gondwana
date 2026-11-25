@@ -32,6 +32,7 @@ public sealed class GitHubRepositoryService
 
         _httpClient.BaseAddress ??= new Uri("https://api.github.com/");
         _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Gondwana-MCP/1.0");
+
         _httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
             "X-GitHub-Api-Version",
             GitHubApiVersion);
@@ -68,6 +69,7 @@ public sealed class GitHubRepositoryService
             ?? GondwanaMcpOptions.DefaultRef;
 
         DateTimeOffset? pushedAt = null;
+
         if (repository.TryGetProperty("pushed_at", out JsonElement pushedElement) &&
             pushedElement.ValueKind == JsonValueKind.String &&
             DateTimeOffset.TryParse(pushedElement.GetString(), out DateTimeOffset parsedPushedAt))
@@ -125,13 +127,14 @@ public sealed class GitHubRepositoryService
 
         foreach (JsonElement item in document.RootElement.EnumerateArray())
         {
-            entries.Add(new RepositoryEntryResult(
-                item.GetProperty("name").GetString() ?? string.Empty,
-                item.GetProperty("path").GetString() ?? string.Empty,
-                item.GetProperty("type").GetString() ?? string.Empty,
-                item.TryGetProperty("size", out JsonElement size) ? size.GetInt64() : 0,
-                item.GetProperty("sha").GetString() ?? string.Empty,
-                item.GetProperty("html_url").GetString() ?? string.Empty));
+            entries.Add(
+                new RepositoryEntryResult(
+                    item.GetProperty("name").GetString() ?? string.Empty,
+                    item.GetProperty("path").GetString() ?? string.Empty,
+                    item.GetProperty("type").GetString() ?? string.Empty,
+                    item.TryGetProperty("size", out JsonElement size) ? size.GetInt64() : 0,
+                    item.GetProperty("sha").GetString() ?? string.Empty,
+                    item.GetProperty("html_url").GetString() ?? string.Empty));
         }
 
         return new DirectoryListingResult(
@@ -201,6 +204,7 @@ public sealed class GitHubRepositoryService
         }
 
         string encoding = root.GetProperty("encoding").GetString() ?? string.Empty;
+
         if (!string.Equals(encoding, "base64", StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException(
@@ -220,6 +224,7 @@ public sealed class GitHubRepositoryService
         }
 
         string text;
+
         try
         {
             text = new UTF8Encoding(false, true).GetString(bytes);
@@ -375,11 +380,12 @@ public sealed class GitHubRepositoryService
                     }
                 }
 
-                matches.Add(new CodeSearchMatchResult(
-                    item.GetProperty("path").GetString() ?? string.Empty,
-                    item.GetProperty("sha").GetString() ?? string.Empty,
-                    item.GetProperty("html_url").GetString() ?? string.Empty,
-                    fragment));
+                matches.Add(
+                    new CodeSearchMatchResult(
+                        item.GetProperty("path").GetString() ?? string.Empty,
+                        item.GetProperty("sha").GetString() ?? string.Empty,
+                        item.GetProperty("html_url").GetString() ?? string.Empty,
+                        fragment));
             }
         }
 

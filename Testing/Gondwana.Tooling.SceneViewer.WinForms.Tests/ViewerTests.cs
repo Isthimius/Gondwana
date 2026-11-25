@@ -18,7 +18,11 @@ namespace Gondwana.Tooling.Studio.SceneViewer.WinForms.Tests;
 /// </summary>
 public sealed partial class ViewerTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), "GondwanaViewerTests", Guid.NewGuid().ToString("N"));
+    private readonly string _directory = Path.Combine(
+        Path.GetTempPath(),
+        "GondwanaViewerTests",
+        Guid.NewGuid().ToString("N"));
+
     private string ScenePath => Path.Combine(_directory, "scene with spaces.gscn");
 
     /// <summary>
@@ -43,8 +47,14 @@ public sealed partial class ViewerTests : IDisposable
     public void ArgumentsAcceptSceneMember()
     {
         File.WriteAllText(ScenePath, "{}");
-        Assert.Equal(ScenePath, SceneViewerArguments.Parse(["--scene", ScenePath, "--scene-id", "dungeon"], _directory));
-        Assert.Throws<ArgumentException>(() => SceneViewerArguments.Parse(["--scene", ScenePath, "--scene-id", ""], _directory));
+
+        Assert.Equal(
+            ScenePath,
+            SceneViewerArguments.Parse(["--scene", ScenePath, "--scene-id", "dungeon"], _directory));
+
+        Assert.Throws<ArgumentException>(() => SceneViewerArguments.Parse(
+            ["--scene", ScenePath, "--scene-id", ""],
+            _directory));
     }
 
     /// <summary>Only application-owned temporary filenames may be deleted by the viewer.</summary>
@@ -56,21 +66,31 @@ public sealed partial class ViewerTests : IDisposable
         Directory.CreateDirectory(tempDirectory);
         var temporary = Path.Combine(tempDirectory, $"scene-{Guid.NewGuid():N}.gscn");
         File.WriteAllText(temporary, "{}");
+
         try
         {
-            var parsed = SceneViewerArguments.ParseScene([
-                "--scene", temporary, "--scene-id", "island", "--content-root", _directory, "--temporary-scene"
-            ], _directory);
+            var parsed = SceneViewerArguments.ParseScene(
+                [
+                    "--scene", temporary, "--scene-id", "island", "--content-root", _directory, "--temporary-scene"
+                ],
+                _directory);
+
             Assert.NotNull(parsed);
             Assert.Equal("island", parsed.SceneId);
             Assert.Equal(_directory, parsed.ContentRoot);
             Assert.True(parsed.TemporaryScene);
-            Assert.Throws<ArgumentException>(() => SceneViewerArguments.ParseScene([
-                "--scene", ScenePath, "--content-root", _directory, "--temporary-scene"
-            ], _directory));
-            Assert.Throws<ArgumentException>(() => SceneViewerArguments.ParseScene([
-                "--scene", temporary, "--temporary-scene"
-            ], _directory));
+
+            Assert.Throws<ArgumentException>(() => SceneViewerArguments.ParseScene(
+                [
+                    "--scene", ScenePath, "--content-root", _directory, "--temporary-scene"
+                ],
+                _directory));
+
+            Assert.Throws<ArgumentException>(() => SceneViewerArguments.ParseScene(
+                [
+                    "--scene", temporary, "--temporary-scene"
+                ],
+                _directory));
         }
         finally
         {
@@ -91,6 +111,7 @@ public sealed partial class ViewerTests : IDisposable
 
         var iso = SceneViewerArguments.ParseStress(
             ["--stress", "20000", "--projection", "IsometricRhombic"]);
+
         Assert.NotNull(iso);
         Assert.Equal(20_000, iso.TileCount);
         Assert.Equal(CoordinateSystemTypes.IsometricRhombic, iso.Projection);
@@ -223,16 +244,23 @@ public sealed partial class ViewerTests : IDisposable
     {
         WriteContent();
         string archivePath = Path.Combine(_directory, "content.gaf");
+
         using (var archive = AssetsFile.LoadOrCreate(archivePath))
         {
             var sheet = TilesheetDefinitionSerializer.Load(Path.Combine(_directory, "sheet.gts"));
             sheet.Image = new TilesheetImageDefinition { AssetEntryName = "image" };
-            using var sheetStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+
+            using var sheetStream = new MemoryStream(
+                System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+
             archive.Add(AssetTypes.TilesheetDefinition, "sheet", sheetStream);
             archive.Add(AssetTypes.Image, Path.Combine(_directory, "image.png"), "image");
             var animation = AnimationDefinitionSerializer.Load(Path.Combine(_directory, "animation.gani"));
             animation.TilesheetSources = [AnimationTilesheetSourceDefinition.Packed("sheet", "content.gaf", "sheet")];
-            using var animationStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(animation)));
+
+            using var animationStream = new MemoryStream(
+                System.Text.Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(animation)));
+
             archive.Add(AssetTypes.AnimationDefinition, "walk", animationStream);
             archive.Save();
         }
@@ -254,7 +282,10 @@ public sealed partial class ViewerTests : IDisposable
     public void InvalidSceneFailsBeforeMaterialization()
     {
         File.WriteAllText(ScenePath, "{\"Layers\":[{\"Columns\":-1}]}");
-        Assert.Contains("validation", Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath)).Message);
+
+        Assert.Contains(
+            "validation",
+            Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath)).Message);
     }
 
     /// <summary>
@@ -301,50 +332,82 @@ public sealed partial class ViewerTests : IDisposable
         using var bitmap = new SKBitmap(32, 16);
         bitmap.Erase(SKColors.Coral);
         using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+
         using (var stream = File.Create(Path.Combine(_directory, "image.png")))
             data.SaveTo(stream);
-        TilesheetDefinitionSerializer.Save(Path.Combine(_directory, "sheet.gts"), new TilesheetDefinition
-        {
-            Name = "sheet",
-            Image = new TilesheetImageDefinition { FilePath = "image.png" },
-            Regions = [new TilesheetRegionDefinition { Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
-        });
-        AnimationDefinitionSerializer.Save(Path.Combine(_directory, "animation.gani"), new AnimationDefinition
-        {
-            Key = "walk",
-            ThrottleTime = .1,
-            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", "sheet.gts")],
-            Frames = [new AnimationFrameDefinition { Tilesheet = "sheet" }, new AnimationFrameDefinition { Tilesheet = "sheet", XTile = 1 }]
-        });
-        SceneDefinitionSerializer.Save(ScenePath, new SceneDefinition
-        {
-            ID = "viewer-test",
-            TilesheetSources = [SceneTilesheetSourceDefinition.Loose("sheet", "sheet.gts")],
-            AnimationSources = [SceneAnimationSourceDefinition.Loose("walk", "animation.gani")],
-            Layers =
-            [
-                new SceneLayerDefinition
-                {
-                    ID = "front", Columns = 2, Rows = 1, TileWidth = 16, TileHeight = 16,
-                    Tiles =
-                    [
-                        new SceneLayerTileDefinition { AnimationKey = "walk", StartAnimation = true },
-                        new SceneLayerTileDefinition { X = 1, AnimationKey = "walk", StartAnimation = true, Transform = TileTransform.FlipHorizontal }
-                    ]
-                },
-                new SceneLayerDefinition { ID = "back", Columns = 2, Rows = 1, ZOrder = -1, Parallax = .5f }
-            ]
-        });
+
+        TilesheetDefinitionSerializer.Save(
+            Path.Combine(_directory, "sheet.gts"),
+            new TilesheetDefinition
+            {
+                Name = "sheet",
+                Image = new TilesheetImageDefinition { FilePath = "image.png" },
+                Regions =
+                [
+                    new TilesheetRegionDefinition
+                    {
+                        Area = new Rectangle(
+                            0,
+                            0,
+                            32,
+                            16),
+                        TileSize = new Size(16, 16)
+                    }
+                ]
+            });
+
+        AnimationDefinitionSerializer.Save(
+            Path.Combine(_directory, "animation.gani"),
+            new AnimationDefinition
+            {
+                Key = "walk",
+                ThrottleTime = .1,
+                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", "sheet.gts")],
+                Frames =
+                [
+                    new AnimationFrameDefinition { Tilesheet = "sheet" },
+                    new AnimationFrameDefinition { Tilesheet = "sheet", XTile = 1 }
+                ]
+            });
+
+        SceneDefinitionSerializer.Save(
+            ScenePath,
+            new SceneDefinition
+            {
+                ID = "viewer-test",
+                TilesheetSources = [SceneTilesheetSourceDefinition.Loose("sheet", "sheet.gts")],
+                AnimationSources = [SceneAnimationSourceDefinition.Loose("walk", "animation.gani")],
+                Layers =
+                [
+                    new SceneLayerDefinition
+                    {
+                        ID = "front", Columns = 2, Rows = 1, TileWidth = 16, TileHeight = 16,
+                        Tiles =
+                        [
+                            new SceneLayerTileDefinition { AnimationKey = "walk", StartAnimation = true },
+                            new SceneLayerTileDefinition
+                            {
+                                X = 1, AnimationKey = "walk", StartAnimation = true,
+                                Transform = TileTransform.FlipHorizontal
+                            }
+                        ]
+                    },
+                    new SceneLayerDefinition { ID = "back", Columns = 2, Rows = 1, ZOrder = -1, Parallax = .5f }
+                ]
+            });
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
         Gondwana.Drawing.Sprites.SpriteManager.Instance.Clear();
+
         // Headless tests have no engine update loop to sweep the queued removals.
-        typeof(Gondwana.Drawing.Sprites.SpriteManager).GetMethod("SweepDisposedSprites",
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+        typeof(Gondwana.Drawing.Sprites.SpriteManager).GetMethod(
+                "SweepDisposedSprites",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
             .Invoke(Gondwana.Drawing.Sprites.SpriteManager.Instance, null);
+
         Scene.ClearAllScenes();
         Cycle.ClearAllAnimationCycles();
         TilesheetRegistry.Instance.Clear();

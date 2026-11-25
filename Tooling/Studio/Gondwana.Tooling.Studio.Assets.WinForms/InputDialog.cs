@@ -1,4 +1,5 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+
 namespace Gondwana.Tooling.Studio.Assets.WinForms;
 
 internal sealed class InputDialog : Form
@@ -75,10 +76,16 @@ internal sealed class InputDialog : Form
     /// <param name="initialValue">Initial input text.</param>
     /// <param name="password">Whether the input is masked.</param>
     /// <returns>Trimmed input on OK, including an empty string; null on cancellation.</returns>
-    public static string? Show(IWin32Window owner, string title, string prompt, string initialValue = "", bool password = false)
+    public static string? Show(
+        IWin32Window owner,
+        string title,
+        string prompt,
+        string initialValue = "",
+        bool password = false)
     {
         using var dialog = new InputDialog(title, prompt, initialValue);
         dialog._textBox.UseSystemPasswordChar = password;
+
         return dialog.ShowDialog(owner) == DialogResult.OK
             ? dialog.Value
             : null;

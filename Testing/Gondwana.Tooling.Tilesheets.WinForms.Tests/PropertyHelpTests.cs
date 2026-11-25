@@ -26,7 +26,13 @@ public sealed class PropertyHelpTests
         maskFields.AddModel(new TilesheetMaskDefinition(), document.MarkChanged);
         AssertHelp(maskFields);
 
-        var frame = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
+        var frame = PropertyFields.Frame(
+            document,
+            region,
+            0,
+            0,
+            document.MarkChanged);
+
         AssertHelp(frame);
     }
 
@@ -45,8 +51,11 @@ public sealed class PropertyHelpTests
         Assert.Equal(typeof(Size), imageSize.PropertyType);
         Assert.Equal(new Size(640, 480), imageSize.GetValue(fields));
         Assert.True(imageSize.Converter.GetPropertiesSupported());
-        Assert.Equal(new[] { "Height", "Width" }, imageSize.Converter.GetProperties(imageSize.GetValue(fields)!)!
-            .Cast<PropertyDescriptor>().Select(p => p.Name).Order().ToArray());
+
+        Assert.Equal(
+            new[] { "Height", "Width" },
+            imageSize.Converter.GetProperties(imageSize.GetValue(fields)!)!
+                .Cast<PropertyDescriptor>().Select(p => p.Name).Order().ToArray());
 
         Assert.Null(properties["Red"]);
         Assert.Null(properties["Green"]);
@@ -56,8 +65,11 @@ public sealed class PropertyHelpTests
         var initialColor = (PropertyFields.MaskRgb)properties["Color"]!.GetValue(fields)!;
         Assert.Equal(((byte)2, (byte)10, (byte)22), (initialColor.Red, initialColor.Green, initialColor.Blue));
         var colorConverter = properties["Color"]!.Converter;
-        Assert.Equal(new[] { "Red", "Green", "Blue" },
+
+        Assert.Equal(
+            new[] { "Red", "Green", "Blue" },
             colorConverter.GetProperties(initialColor)!.Cast<PropertyDescriptor>().Select(property => property.Name));
+
         Assert.Equal("2, 10, 22", colorConverter.ConvertToInvariantString(initialColor));
         var editor = Assert.IsType<MaskColorEditor>(properties["Color"]!.GetEditor(typeof(UITypeEditor)));
         Assert.Equal(UITypeEditorEditStyle.Modal, editor.GetEditStyle(null));
@@ -88,7 +100,8 @@ public sealed class PropertyHelpTests
     {
         foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(fields))
         {
-            Assert.False(string.IsNullOrWhiteSpace(property.Description),
+            Assert.False(
+                string.IsNullOrWhiteSpace(property.Description),
                 $"Tilesheet field {property.Name} needs explanatory help.");
         }
     }
@@ -101,6 +114,7 @@ public sealed class PropertyHelpTests
         var regionFields = new PropertyFields();
         regionFields.AddModel(region, document.MarkChanged, "Frames");
         var properties = TypeDescriptor.GetProperties(regionFields);
+
         foreach (PropertyDescriptor property in properties)
             Assert.NotEqual("Misc", property.Category);
 
@@ -112,21 +126,37 @@ public sealed class PropertyHelpTests
         Assert.Equal("Collision", properties["CollisionAdjust"]!.Category);
         var collision = properties["CollisionAdjust"]!;
         Assert.Equal(typeof(Gondwana.Physics.Collisions.CollisionAdjust), collision.PropertyType);
-        Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" },
+
+        Assert.Equal(
+            new[] { "Top", "Right", "Bottom", "Left" },
             collision.Converter.GetProperties(collision.GetValue(regionFields)!)!
                 .Cast<PropertyDescriptor>().Select(property => property.Name));
-        Assert.Equal(new[] { "Name", "Area", "TileSize", "RegionMargin", "Overhang",
-            "TilePadding", "CollisionType", "CollisionAdjust" },
+
+        Assert.Equal(
+            new[]
+            {
+                "Name", "Area", "TileSize", "RegionMargin", "Overhang",
+                "TilePadding", "CollisionType", "CollisionAdjust"
+            },
             properties.Cast<PropertyDescriptor>().Select(property => property.Name));
+
         Assert.Equal("Collision", properties["CollisionType"]!.Category);
 
-        var frameFields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
+        var frameFields = PropertyFields.Frame(
+            document,
+            region,
+            0,
+            0,
+            document.MarkChanged);
+
         var frameProperties = TypeDescriptor.GetProperties(frameFields);
         Assert.Equal(" Coordinates (read only)", frameProperties["XTile"]!.Category);
         Assert.Equal(" Coordinates (read only)", frameProperties["YTile"]!.Category);
         Assert.Equal("Collision", frameProperties["CollisionAdjust mode"]!.Category);
         Assert.Equal("Collision", frameProperties["Left"]!.Category);
-        Assert.Equal(new[] { "XTile", "YTile", "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
+
+        Assert.Equal(
+            new[] { "XTile", "YTile", "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
             frameProperties.Cast<PropertyDescriptor>().Select(property => property.Name));
     }
 
@@ -136,9 +166,14 @@ public sealed class PropertyHelpTests
     {
         var region = new TilesheetRegionDefinition
         {
-            Area = new Rectangle(7, 11, 40, 28),
+            Area = new Rectangle(
+                7,
+                11,
+                40,
+                28),
             TileSize = new Size(16, 12)
         };
+
         int changes = 0;
         var fields = new PropertyFields();
         fields.AddModel(region, () => changes++, "Frames");
@@ -148,17 +183,66 @@ public sealed class PropertyHelpTests
         var tileSize = properties["TileSize"]!;
         Assert.Equal(typeof(Rectangle), area.PropertyType);
         Assert.Equal(typeof(Size), tileSize.PropertyType);
-        AssertChildren(area, fields, "X", "Y", "Width", "Height");
-        Assert.Equal(new[] { "X", "Y", "Width", "Height" },
-            area.Converter.GetProperties(area.GetValue(fields)!)!.Cast<PropertyDescriptor>().Select(property => property.Name));
-        AssertChildren(tileSize, fields, "Width", "Height");
 
-        area.SetValue(fields, WithComponent(area, fields, "Width", 64));
-        area.SetValue(fields, WithComponent(area, fields, "X", 19));
-        area.SetValue(fields, WithComponent(area, fields, "Y", 23));
-        Assert.Equal(new Rectangle(19, 23, 64, 28), region.Area);
+        AssertChildren(
+            area,
+            fields,
+            "X",
+            "Y",
+            "Width",
+            "Height");
 
-        tileSize.SetValue(fields, WithComponent(tileSize, fields, "Height", 24));
+        Assert.Equal(
+            new[] { "X", "Y", "Width", "Height" },
+            area.Converter.GetProperties(area.GetValue(fields)!)!.Cast<PropertyDescriptor>()
+                .Select(property => property.Name));
+
+        AssertChildren(
+            tileSize,
+            fields,
+            "Width",
+            "Height");
+
+        area.SetValue(
+            fields,
+            WithComponent(
+                area,
+                fields,
+                "Width",
+                64));
+
+        area.SetValue(
+            fields,
+            WithComponent(
+                area,
+                fields,
+                "X",
+                19));
+
+        area.SetValue(
+            fields,
+            WithComponent(
+                area,
+                fields,
+                "Y",
+                23));
+
+        Assert.Equal(
+            new Rectangle(
+                19,
+                23,
+                64,
+                28),
+            region.Area);
+
+        tileSize.SetValue(
+            fields,
+            WithComponent(
+                tileSize,
+                fields,
+                "Height",
+                24));
+
         Assert.Equal(new Size(16, 24), region.TileSize);
         Assert.Equal(4, changes);
         Assert.Null(properties["Area.X"]);
@@ -170,10 +254,23 @@ public sealed class PropertyHelpTests
     {
         var region = new TilesheetRegionDefinition
         {
-            TilePadding = new Spacing(1, 2, 3, 4),
-            RegionMargin = new Spacing(5, 6, 7, 8),
-            Overhang = new Spacing(9, 10, 11, 12)
+            TilePadding = new Spacing(
+                1,
+                2,
+                3,
+                4),
+            RegionMargin = new Spacing(
+                5,
+                6,
+                7,
+                8),
+            Overhang = new Spacing(
+                9,
+                10,
+                11,
+                12)
         };
+
         int changes = 0;
         var fields = new PropertyFields();
         fields.AddModel(region, () => changes++, "Frames");
@@ -183,23 +280,83 @@ public sealed class PropertyHelpTests
         {
             var property = properties[name]!;
             Assert.Equal(typeof(Spacing), property.PropertyType);
-            AssertChildren(property, fields, "Top", "Right", "Bottom", "Left");
-            Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" },
+
+            AssertChildren(
+                property,
+                fields,
+                "Top",
+                "Right",
+                "Bottom",
+                "Left");
+
+            Assert.Equal(
+                new[] { "Top", "Right", "Bottom", "Left" },
                 property.Converter.GetProperties(property.GetValue(fields)!)!
                     .Cast<PropertyDescriptor>().Select(child => child.Name));
+
             Assert.Null(properties[name + ".Left"]);
         }
 
-        properties["TilePadding"]!.SetValue(fields, WithComponent(properties["TilePadding"]!, fields, "Left", 21));
-        properties["RegionMargin"]!.SetValue(fields, WithComponent(properties["RegionMargin"]!, fields, "Top", 22));
-        properties["Overhang"]!.SetValue(fields, WithComponent(properties["Overhang"]!, fields, "Right", 23));
-        Assert.Equal(new Spacing(21, 2, 3, 4), region.TilePadding);
-        Assert.Equal(new Spacing(5, 22, 7, 8), region.RegionMargin);
-        Assert.Equal(new Spacing(9, 10, 23, 12), region.Overhang);
+        properties["TilePadding"]!.SetValue(
+            fields,
+            WithComponent(
+                properties["TilePadding"]!,
+                fields,
+                "Left",
+                21));
+
+        properties["RegionMargin"]!.SetValue(
+            fields,
+            WithComponent(
+                properties["RegionMargin"]!,
+                fields,
+                "Top",
+                22));
+
+        properties["Overhang"]!.SetValue(
+            fields,
+            WithComponent(
+                properties["Overhang"]!,
+                fields,
+                "Right",
+                23));
+
+        Assert.Equal(
+            new Spacing(
+                21,
+                2,
+                3,
+                4),
+            region.TilePadding);
+
+        Assert.Equal(
+            new Spacing(
+                5,
+                22,
+                7,
+                8),
+            region.RegionMargin);
+
+        Assert.Equal(
+            new Spacing(
+                9,
+                10,
+                23,
+                12),
+            region.Overhang);
+
         Assert.Equal(3, changes);
 
         var converter = properties["Overhang"]!.Converter;
-        Assert.Equal(new Spacing(4, 1, 2, 3), converter.ConvertFromInvariantString("1, 2, 3, 4"));
+
+        Assert.Equal(
+            new Spacing(
+                4,
+                1,
+                2,
+                3),
+            converter.ConvertFromInvariantString("1, 2, 3, 4"));
+
         Assert.Equal("10, 23, 12, 9", converter.ConvertToInvariantString(region.Overhang));
         Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("1, 2, 3"));
     }
@@ -210,18 +367,28 @@ public sealed class PropertyHelpTests
         Assert.True(parent.Converter.GetPropertiesSupported());
         Assert.True(parent.Converter.GetCreateInstanceSupported());
         var children = parent.Converter.GetProperties(parent.GetValue(fields)!)!;
-        Assert.Equal(expected.OrderBy(name => name),
+
+        Assert.Equal(
+            expected.OrderBy(name => name),
             children.Cast<PropertyDescriptor>().Select(child => child.Name).OrderBy(name => name));
+
         if (parent.Name != "TileSize")
-            Assert.All(children.Cast<PropertyDescriptor>(),
+            Assert.All(
+                children.Cast<PropertyDescriptor>(),
                 child => Assert.False(string.IsNullOrWhiteSpace(child.Description)));
     }
 
-    private static object WithComponent(PropertyDescriptor parent, PropertyFields fields, string component, int value)
+    private static object WithComponent(
+        PropertyDescriptor parent,
+        PropertyFields fields,
+        string component,
+        int value)
     {
         object original = parent.GetValue(fields)!;
+
         var values = parent.Converter.GetProperties(original)!.Cast<PropertyDescriptor>()
             .ToDictionary(child => child.Name, child => child.GetValue(original)!);
+
         values[component] = value;
         return parent.Converter.CreateInstance(null, values)!;
     }
@@ -235,11 +402,12 @@ public sealed class PropertyHelpTests
         fields.AddModel(region, document.MarkChanged, "Frames");
 
         var properties = TypeDescriptor.GetProperties(fields).Cast<PropertyDescriptor>().ToArray();
+
         foreach (var group in properties.GroupBy(property => property.Category))
             Assert.Equal(group.Count(), group.Select(property => property.DisplayName).Distinct().Count());
+
         Assert.Equal("Padding", properties.Single(property => property.Name == "TilePadding").DisplayName);
         Assert.Equal("Margin", properties.Single(property => property.Name == "RegionMargin").DisplayName);
         Assert.Equal("Overhang", properties.Single(property => property.Name == "Overhang").DisplayName);
     }
-
 }

@@ -19,13 +19,16 @@ internal sealed class AnimationPropertyAdapter
     public double? DurationSeconds
     {
         get => SelectedFrameIndex >= 0 && SelectedFrameIndex < _document.Definition.Frames.Count
-            ? _document.Definition.Frames[SelectedFrameIndex].DurationSeconds : null;
+            ? _document.Definition.Frames[SelectedFrameIndex].DurationSeconds
+            : null;
         set
         {
             if (SelectedFrameIndex < 0 || SelectedFrameIndex >= _document.Definition.Frames.Count)
                 return;
+
             if (value is { } duration && (!double.IsFinite(duration) || duration <= 0))
                 throw new ArgumentOutOfRangeException(nameof(value), "Duration must be finite and positive.");
+
             var frame = _document.Definition.Frames[SelectedFrameIndex];
             _document.Edit(frame, "Change frame duration", () => frame.DurationSeconds = value);
         }
@@ -51,7 +54,8 @@ internal sealed class AnimationPropertyAdapter
     /// <summary>Gets or sets the default interval between animation frames, in seconds; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Throttle time")]
-    [Description("Default delay in seconds between animation frames; a frame-specific duration overrides it. Smaller values play faster.")]
+    [Description(
+        "Default delay in seconds between animation frames; a frame-specific duration overrides it. Smaller values play faster.")]
     public double ThrottleTime
     {
         get => _document.Definition.ThrottleTime;
@@ -64,7 +68,8 @@ internal sealed class AnimationPropertyAdapter
     /// <summary>Gets or sets the playback traversal mode; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Cycle type")]
-    [Description("Frame traversal pattern for this animation (for example, forward or ping-pong); controls what happens at the ends of the frame sequence.")]
+    [Description(
+        "Frame traversal pattern for this animation (for example, forward or ping-pong); controls what happens at the ends of the frame sequence.")]
     public CycleType CycleType
     {
         get => _document.Definition.CycleType;
@@ -108,7 +113,10 @@ internal sealed class AnimationPropertyAdapter
                 return;
             }
 
-            _document.Edit(_document.Definition, "Change next cycle key", () => _document.Definition.NextCycleKey = normalized);
+            _document.Edit(
+                _document.Definition,
+                "Change next cycle key",
+                () => _document.Definition.NextCycleKey = normalized);
         }
     }
 
@@ -124,7 +132,8 @@ internal sealed class AnimationPropertyAdapter
         T current,
         T value,
         Action<T> assign,
-        [System.Runtime.CompilerServices.CallerMemberName] string property = "")
+        [System.Runtime.CompilerServices.CallerMemberName]
+        string property = "")
     {
         if (EqualityComparer<T>.Default.Equals(current, value))
             return;

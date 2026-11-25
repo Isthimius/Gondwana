@@ -23,7 +23,13 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     /// <summary>Creates a render surface with simulated mouse and touch input.</summary>
     public PrimaryPointerRoutingTests()
     {
-        _host.ViewManager.AddView(new Rectangle(0, 0, 640, 480));
+        _host.ViewManager.AddView(
+            new Rectangle(
+                0,
+                0,
+                640,
+                480));
+
         _view = _host.ViewManager.Views[0];
 
         TouchEventPoller.Initialize(_touch, new TouchEventConfiguration());
@@ -31,7 +37,11 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
         MouseEventPoller.Instance!.StartMonitoringMouse(timeBetweenEvents: 0);
 
         _router = new WidgetInputRouter(
-            _host, null, MouseEventPoller.Instance, TouchEventPoller.Instance);
+            _host,
+            null,
+            MouseEventPoller.Instance,
+            TouchEventPoller.Instance);
+
         _router.UnhandledPrimaryAction += _actions.Add;
         _router.Start();
     }
@@ -60,7 +70,13 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     [Fact]
     public void WidgetConsumesMouseAndTouch()
     {
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
+
         var downs = 0;
         button.PointerDown += _ => downs++;
 
@@ -77,7 +93,13 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     [Fact]
     public void HidingWidgetDoesNotLeakTapToGameplay()
     {
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
+
         button.PointerDown += _ => button.Hide();
 
         Tap(new Point(30, 30));
@@ -90,7 +112,13 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     [Fact]
     public void WidgetAppearingDuringContactBlocksGameplay()
     {
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
+
         button.Hide();
 
         _touch.Begin(1, new Point(30, 30));
@@ -135,7 +163,13 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
         TouchEventPoller.Instance.PollForEvents(_tick++);
         TouchEventPoller.Instance.StartMonitoringTouch();
 
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
+
         button.PointerDown += _ => button.Hide();
 
         Tap(new Point(30, 30));
@@ -147,7 +181,12 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     [Fact]
     public void ReusedContactIdAfterTouchPauseAllowsGameplayTap()
     {
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
 
         _touch.Begin(1, new Point(30, 30));
         TouchEventPoller.Instance!.PollForEvents(_tick++);
@@ -170,7 +209,12 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     [Fact]
     public void TapCrossingWidgetEdgeOnReleaseDoesNotProduceGameplayAction()
     {
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
 
         _touch.Begin(1, new Point(5, 20));
         _touch.End(1, new Point(15, 20));
@@ -183,7 +227,12 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     [Fact]
     public void TapMovingWithinThresholdOutsideWidgetsProducesGameplayAction()
     {
-        using var button = Button(new Rectangle(10, 10, 120, 50));
+        using var button = Button(
+            new Rectangle(
+                10,
+                10,
+                120,
+                50));
 
         _touch.Begin(1, new Point(200, 200));
         _touch.End(1, new Point(205, 205));
@@ -237,7 +286,12 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
 
     private ButtonWidget Button(Rectangle bounds)
     {
-        var button = new ButtonWidget(_host, _view, bounds, "Action");
+        var button = new ButtonWidget(
+            _host,
+            _view,
+            bounds,
+            "Action");
+
         button.Show();
         return button;
     }
@@ -253,10 +307,13 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
     {
         /// <inheritdoc/>
         public Point CurrentPosition { get; set; }
+
         /// <inheritdoc/>
         public HashSet<MouseButton> PressedButtons { get; } = [];
+
         /// <inheritdoc/>
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
+
         /// <inheritdoc/>
         public int ScrollDelta => 0;
     }
@@ -269,8 +326,10 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
 
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active.Values.ToArray();
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeBeganTouches() => Drain(_began);
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => Drain(_ended);
 

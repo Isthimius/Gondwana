@@ -26,6 +26,7 @@ public sealed class SceneLayerCoordinateSystemTests
     public void IsometricAxial_UsesTightlyPackedAffineBasis()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             columnCount: 4,
             rowCount: 4,
@@ -47,6 +48,7 @@ public sealed class SceneLayerCoordinateSystemTests
     public void IsometricAxial_WorldToGrid_InvertsAffineBasis()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             columnCount: 8,
             rowCount: 8,
@@ -65,6 +67,7 @@ public sealed class SceneLayerCoordinateSystemTests
     public void IsometricAxial_AdjacentRowsShareDiamondEdge()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             columnCount: 2,
             rowCount: 2,
@@ -92,6 +95,7 @@ public sealed class SceneLayerCoordinateSystemTests
         float expectedRowX)
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             columnCount: 4,
             rowCount: 4,
@@ -116,6 +120,7 @@ public sealed class SceneLayerCoordinateSystemTests
         float anchorX)
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             columnCount: 5,
             rowCount: 5,
@@ -135,6 +140,7 @@ public sealed class SceneLayerCoordinateSystemTests
     public void ObliqueLeft_PolygonMirrorsObliqueRight()
     {
         using var scene = new Scene();
+
         var right = scene.AddLayer(
             1,
             1,

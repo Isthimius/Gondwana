@@ -14,24 +14,30 @@ public readonly record struct KeyGesture
     {
         if (key <= 0)
             throw new ArgumentOutOfRangeException(nameof(key));
+
         if ((modifiers & ~(KeyboardModifierState.Ctrl | KeyboardModifierState.Shift | KeyboardModifierState.Alt)) != 0)
             throw new ArgumentOutOfRangeException(nameof(modifiers));
+
         Key = key;
         Modifiers = modifiers;
     }
 
     /// <summary>Gets the adapter key code.</summary>
     public int Key { get; }
+
     /// <summary>Gets the exact modifier combination.</summary>
     public KeyboardModifierState Modifiers { get; }
+
     /// <summary>Creates a Control-key gesture.</summary>
     /// <param name="key">The lookup key for the resource.</param>
     /// <returns>A key gesture requiring the Control modifier.</returns>
     public static KeyGesture Ctrl(int key) => new(key, KeyboardModifierState.Ctrl);
+
     /// <summary>Creates a Control-Shift gesture.</summary>
     /// <param name="key">The lookup key for the resource.</param>
     /// <returns>A key gesture requiring both Control and Shift modifiers.</returns>
     public static KeyGesture CtrlShift(int key) => new(key, KeyboardModifierState.Ctrl | KeyboardModifierState.Shift);
+
     /// <summary>Returns a display label such as Ctrl+O or Alt+F4.</summary>
     /// <returns>The formatted keyboard shortcut text.</returns>
     public override string ToString()
@@ -57,6 +63,7 @@ public readonly record struct KeyGesture
             46 => "Delete",
             _ => Key.ToString(System.Globalization.CultureInfo.InvariantCulture)
         };
+
         return (Modifiers.HasFlag(KeyboardModifierState.Ctrl) ? "Ctrl+" : "") +
                (Modifiers.HasFlag(KeyboardModifierState.Alt) ? "Alt+" : "") +
                (Modifiers.HasFlag(KeyboardModifierState.Shift) ? "Shift+" : "") + key;

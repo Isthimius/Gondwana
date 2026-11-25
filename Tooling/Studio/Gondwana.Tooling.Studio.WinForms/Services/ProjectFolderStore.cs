@@ -10,8 +10,10 @@ internal sealed class ProjectFolderStore
 
     internal ProjectFolderStore(string? applicationId = null, string? settingsRoot = null)
     {
-        FilePath = Path.Combine(DockLayoutStore.ApplicationDirectory(applicationId, settingsRoot),
-            "Studio", "project-folder.txt");
+        FilePath = Path.Combine(
+            DockLayoutStore.ApplicationDirectory(applicationId, settingsRoot),
+            "Studio",
+            "project-folder.txt");
     }
 
     internal string? Read()
@@ -34,6 +36,7 @@ internal sealed class ProjectFolderStore
     internal void Write(string path)
     {
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
         try
         {
             path = Path.GetFullPath(path);

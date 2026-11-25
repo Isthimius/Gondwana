@@ -27,12 +27,13 @@ public sealed class NameTagWidget : WidgetBase
     /// <param name="size">The size.</param>
     /// <param name="offsetPx">The offset in pixels.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public NameTagWidget(RenderSurfaceHostBase renderSurfaceHost,
-                         Sprite target,
-                         string text,
-                         Size? size = null,
-                         Point? offsetPx = null,
-                         string? nickname = null)
+    public NameTagWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        Sprite target,
+        string text,
+        Size? size = null,
+        Point? offsetPx = null,
+        string? nickname = null)
         : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, nickname: nickname)
     {
         Target = target ?? throw new ArgumentNullException(nameof(target));
@@ -41,13 +42,22 @@ public sealed class NameTagWidget : WidgetBase
         _offsetPx = offsetPx ?? Point.Empty;
 
         Background = new DirectRectangle(
-                Color.FromArgb(185, 20, 22, 28),
+                Color.FromArgb(
+                    185,
+                    20,
+                    22,
+                    28),
                 renderSurfaceHost,
                 Target.SceneLayer,
                 new Rectangle(Point.Empty, _size),
                 $"{Nickname}-name-tag-background")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(200, 220, 220, 230))
+            .SetBorderColor(
+                Color.FromArgb(
+                    200,
+                    220,
+                    220,
+                    230))
             .SetStrokeWidth(1f)
             .SetCornerRadius(4f);
 
@@ -110,6 +120,7 @@ public sealed class NameTagWidget : WidgetBase
         set
         {
             Size validated = ValidateSize(value);
+
             if (_size == validated)
                 return;
 

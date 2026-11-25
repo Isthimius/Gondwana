@@ -17,15 +17,24 @@ internal sealed class VideoFrameMailbox : IDisposable
         {
             if (_disposed)
                 return;
+
             int rowBytes = checked(frame.Width * 4);
             int length = checked(rowBytes * frame.Height);
+
             if (frame.Width <= 0 || frame.Height <= 0 || frame.Stride < rowBytes || frame.Pixels == IntPtr.Zero)
                 throw new ArgumentException("Invalid video frame dimensions, stride, or pointer.", nameof(frame));
+
             if (_pixels.Length != length)
                 _pixels = new byte[length];
+
             for (int y = 0; y < frame.Height; y++)
             {
-                Marshal.Copy(IntPtr.Add(frame.Pixels, checked(y * frame.Stride)), _pixels, y * rowBytes, rowBytes);
+                Marshal.Copy(
+                    IntPtr.Add(frame.Pixels, checked(y * frame.Stride)),
+                    _pixels,
+                    y * rowBytes,
+                    rowBytes);
+
                 // RV32's X byte is undefined. Skia raster copies can preserve that byte even
                 // with Opaque metadata, so establish real opaque BGRA without swapping RGB.
                 for (int x = y * rowBytes + 3; x < (y + 1) * rowBytes; x += 4)
@@ -55,7 +64,9 @@ internal sealed class VideoFrameMailbox : IDisposable
         {
             if (_disposed)
                 return false;
+
             bool changed = _clear;
+
             if (_clear)
             {
                 bitmap?.Dispose();
@@ -65,15 +76,28 @@ internal sealed class VideoFrameMailbox : IDisposable
 
             if (!_pending)
                 return changed;
+
             if (bitmap is null || bitmap.Width != _width || bitmap.Height != _height)
             {
                 bitmap?.Dispose();
-                bitmap = new SKBitmap(new SKImageInfo(_width, _height, SKColorType.Bgra8888, SKAlphaType.Opaque));
+
+                bitmap = new SKBitmap(
+                    new SKImageInfo(
+                        _width,
+                        _height,
+                        SKColorType.Bgra8888,
+                        SKAlphaType.Opaque));
             }
 
             int rowBytes = checked(_width * 4);
+
             for (int y = 0; y < _height; y++)
-                Marshal.Copy(_pixels, y * rowBytes, IntPtr.Add(bitmap.GetPixels(), y * bitmap.RowBytes), rowBytes);
+                Marshal.Copy(
+                    _pixels,
+                    y * rowBytes,
+                    IntPtr.Add(bitmap.GetPixels(), y * bitmap.RowBytes),
+                    rowBytes);
+
             bitmap.NotifyPixelsChanged();
             _pending = false;
             return true;

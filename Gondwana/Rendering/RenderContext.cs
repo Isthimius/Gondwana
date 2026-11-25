@@ -9,8 +9,7 @@ namespace Gondwana.Rendering;
 /// </summary>
 internal sealed class RenderContext
 {
-    [ThreadStatic]
-    private static RenderContext? _current;
+    [ThreadStatic] private static RenderContext? _current;
     private static long _nextPassId;
 
     internal static RenderContext? Current => _current;

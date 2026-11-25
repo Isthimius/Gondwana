@@ -57,7 +57,6 @@ public sealed record GpuRenderFrameDiagnostics(
     public int AtlasBatchedTileCount { get; init; }
 }
 
-
 /// <summary>
 /// Captures time spent waiting for and holding the shared live render-state synchronization gate.
 /// </summary>
@@ -81,12 +80,16 @@ public sealed record GpuRenderSynchronizationDiagnostics(
 
     /// <summary>Age of the completed snapshot when acquired by GL.</summary>
     public double SnapshotAgeMilliseconds { get; init; }
+
     /// <summary>Total snapshots published by this surface.</summary>
     public long PublishedSnapshots { get; init; }
+
     /// <summary>Total published snapshots replaced before acquisition.</summary>
     public long DroppedSnapshots { get; init; }
+
     /// <summary>Occupied slots at acquisition, including the rendering slot (maximum three).</summary>
     public int SnapshotSlotsInUse { get; init; }
+
     /// <summary>Approximate number of native Skia operations in the acquired recording.</summary>
     public int SnapshotCommandCount { get; init; }
 }

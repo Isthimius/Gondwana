@@ -92,11 +92,16 @@ public abstract class WidgetBase : DirectComposite
     /// <param name="mode">The drawing mode used to render the widget.</param>
     /// <param name="anchor">The anchor position used by the widget.</param>
     /// <param name="nickname">The optional nickname assigned to the widget.</param>
-    protected WidgetBase(RenderSurfaceHostBase renderSurfaceHost,
-                         DirectDrawingMode mode,
-                         PointF anchor = default,
-                         string? nickname = null)
-        : base(renderSurfaceHost, mode, anchor, nickname)
+    protected WidgetBase(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            anchor,
+            nickname)
     {
     }
 
@@ -200,8 +205,9 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>
     /// <c>true</c> if the widget contains the specified screen position; otherwise, <c>false</c>.
     /// </returns>
-    public virtual bool HitTest(View view,
-                                Point screenPositionPx)
+    public virtual bool HitTest(
+        View view,
+        Point screenPositionPx)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -213,7 +219,7 @@ public abstract class WidgetBase : DirectComposite
         }
 
         if (Mode == DirectDrawingMode.View
-                 && !ReferenceEquals(View, view))
+            && !ReferenceEquals(View, view))
         {
             return false;
         }
@@ -225,18 +231,27 @@ public abstract class WidgetBase : DirectComposite
         RectangleF screenBounds = GetDrawLocationScreen(view);
 
         return !screenBounds.IsEmpty
-            && screenBounds.Contains(screenPositionPx.X, screenPositionPx.Y);
+               && screenBounds.Contains(screenPositionPx.X, screenPositionPx.Y);
     }
 
     internal PointF? GetWrappedHitOffset(View view, Point screenPositionPx)
     {
         if (Mode != DirectDrawingMode.SceneLayer || SceneLayer is not { } layer)
             return PointF.Empty;
+
         var world = view.ScreenPxToWorldPx(layer, screenPositionPx);
-        foreach (var offset in layer.GetWrappedOffsets(WorldBounds, new RectangleF(world.X, world.Y, 0.01f, 0.01f)))
+
+        foreach (var offset in layer.GetWrappedOffsets(
+                     WorldBounds,
+                     new RectangleF(
+                         world.X,
+                         world.Y,
+                         0.01f,
+                         0.01f)))
         {
             RectangleF bounds = WorldBounds;
             bounds.Offset(offset);
+
             if (bounds.Contains(world))
                 return offset;
         }

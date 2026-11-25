@@ -28,6 +28,7 @@ public sealed class WrappedSpriteTests
         var layer = scene.AddLayer(4, 4);
         layer.WrapHorizontally = layer.WrapVertically = layerWrap;
         var sprite = SpriteManager.Instance.CreateSprite(layer, default);
+
         try
         {
             sprite.SetPosition(new(3.9f, 1));
@@ -54,6 +55,7 @@ public sealed class WrappedSpriteTests
         var layer = scene.AddLayer(4, 4);
         layer.WrapHorizontally = true;
         var sprite = SpriteManager.Instance.CreateSprite(layer, default);
+
         try
         {
             sprite.Visible = true;
@@ -61,7 +63,17 @@ public sealed class WrappedSpriteTests
             sprite.Collider!.CollisionGroup = sprite.Collider.CollidesWith = 1;
             sprite.CollisionType = TileCollisionType.Trigger;
             sprite.SetPosition(new(3.9f, 1));
-            var camera = new Camera(scene) { WorldBoundsPx = new(0, 0, 128, 128), GetVisibleWorldSizePx = () => new(32, 32) };
+
+            var camera = new Camera(scene)
+            {
+                WorldBoundsPx = new(
+                    0,
+                    0,
+                    128,
+                    128),
+                GetVisibleWorldSizePx = () => new(32, 32)
+            };
+
             camera.FollowCentered(sprite, hard: true);
             camera.SnapTo(new(120, 0));
             camera.Update(1);
@@ -75,10 +87,20 @@ public sealed class WrappedSpriteTests
             tile.CollisionsEnabled = true;
             tile.Collider!.CollisionGroup = tile.Collider.CollidesWith = 1;
             bool hit = false;
-            layer.CollisionResolver.TriggerOverlap += (a, b, _) => hit |= ReferenceEquals(a, sprite.Collider) && ReferenceEquals(b, tile.Collider);
+
+            layer.CollisionResolver.TriggerOverlap += (a, b, _) =>
+                hit |= ReferenceEquals(a, sprite.Collider) && ReferenceEquals(b, tile.Collider);
+
             layer.CollisionResolver.Resolve();
             Assert.True(hit);
-            var instances = layer.GetDrawablesInWorldRect(new(125, 30, 30, 30)).Cast<WrappedDrawable>();
+
+            var instances = layer.GetDrawablesInWorldRect(
+                new(
+                    125,
+                    30,
+                    30,
+                    30)).Cast<WrappedDrawable>();
+
             Assert.Contains(instances, d => ReferenceEquals(d.Owner, sprite) && d.Offset.X == 128);
         }
         finally

@@ -15,22 +15,49 @@ public static class AssetDeleteDialog
     /// <param name="execute">Host executor with explicit force authorization.</param>
     /// <param name="knownPasswords">Known per-archive passwords.</param>
     /// <returns>Whether deletion completed.</returns>
-    public static bool Show(IWin32Window owner, IReadOnlyList<AssetLocation> targets, IReadOnlyList<string> archives,
-        string scope, Action<AssetDeletionPlan, bool> execute, IReadOnlyDictionary<string, string?>? knownPasswords = null)
+    public static bool Show(
+        IWin32Window owner,
+        IReadOnlyList<AssetLocation> targets,
+        IReadOnlyList<string> archives,
+        string scope,
+        Action<AssetDeletionPlan, bool> execute,
+        IReadOnlyDictionary<string, string?>? knownPasswords = null)
     {
-        var selectedScope = InputDialog.Show(owner, "Delete search scope", "Directory to inspect recursively, or one GAF/ZIP. References outside the inspected scope and game code are UNKNOWN:", scope);
+        var selectedScope = InputDialog.Show(
+            owner,
+            "Delete search scope",
+            "Directory to inspect recursively, or one GAF/ZIP. References outside the inspected scope and game code are UNKNOWN:",
+            scope);
+
         if (string.IsNullOrWhiteSpace(selectedScope))
             return false;
+
         var credential = AssetOperationDialog.Credentials(owner, knownPasswords);
+
         try
         {
-            var plan = AssetDeletionPlan.Create(selectedScope, targets, archives, credential);
-            if (!AssetOperationDialog.Review(owner, "Delete preview — changes will be saved to disk", plan.Preview, plan.ForceRequired ? "Delete anyway…" : "Delete"))
+            var plan = AssetDeletionPlan.Create(
+                selectedScope,
+                targets,
+                archives,
+                credential);
+
+            if (!AssetOperationDialog.Review(
+                    owner,
+                    "Delete preview — changes will be saved to disk",
+                    plan.Preview,
+                    plan.ForceRequired ? "Delete anyway…" : "Delete"))
                 return false;
-            if (plan.ForceRequired && ThemedMessageBox.Show(owner,
+
+            if (plan.ForceRequired && ThemedMessageBox.Show(
+                    owner,
                     $"Explicitly break all {plan.BlockingReferences.Count} surviving relationships listed in the preview? Referencing documents remain unchanged. Dependents will NOT be deleted.",
-                    "Authorize broken references", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+                    "Authorize broken references",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2) != DialogResult.Yes)
                 return false;
+
             execute(plan, plan.ForceRequired);
             return true;
         }
@@ -40,7 +67,13 @@ public static class AssetDeleteDialog
         }
         catch (Exception ex)
         {
-            ThemedMessageBox.Show(owner, ex.Message, "Delete not completed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            ThemedMessageBox.Show(
+                owner,
+                ex.Message,
+                "Delete not completed",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
             return false;
         }
     }

@@ -124,8 +124,10 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
 
         if ((mk & Keys.Shift) != 0)
             mods |= (int)KeyboardModifierState.Shift;
+
         if ((mk & Keys.Control) != 0)
             mods |= (int)KeyboardModifierState.Ctrl;
+
         if ((mk & Keys.Alt) != 0)
             mods |= (int)KeyboardModifierState.Alt;
 

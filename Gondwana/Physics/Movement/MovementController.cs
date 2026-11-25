@@ -49,9 +49,9 @@ public sealed partial class MovementController : IDisposable
             _sceneLayer = layer;
 
             _coords = layer.CoordinateSystem
-                ?? throw new ArgumentException(
-                    "SceneLayer must have a CoordinateSystem.",
-                    nameof(layer));
+                      ?? throw new ArgumentException(
+                          "SceneLayer must have a CoordinateSystem.",
+                          nameof(layer));
         }
     }
 

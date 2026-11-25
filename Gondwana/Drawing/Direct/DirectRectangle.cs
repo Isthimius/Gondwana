@@ -91,8 +91,9 @@ public class DirectRectangle : DirectDrawingMovableBase
         Repeat
     }
 
-    private readonly SKPaint _fillPaint;        // cached fill
-    private readonly SKPaint _strokePaint;      // cached stroke
+    private readonly SKPaint _fillPaint; // cached fill
+    private readonly SKPaint _strokePaint; // cached stroke
+
     private readonly SKPaint _imagePaint = new()
     {
         IsAntialias = true,
@@ -100,8 +101,8 @@ public class DirectRectangle : DirectDrawingMovableBase
         BlendMode = SKBlendMode.SrcOver
     };
 
-    private SKColor? _borderColor;              // optional distinct border color
-    private SKShader? _fillShader;              // optional fill shader
+    private SKColor? _borderColor; // optional distinct border color
+    private SKShader? _fillShader; // optional fill shader
     private SKImage? _fillImage;
     private SKBitmap? _fillBitmap;
     private ImageFillMode _imageFillMode = ImageFillMode.Stretch;
@@ -130,11 +131,13 @@ public class DirectRectangle : DirectDrawingMovableBase
         /// Uses a sine wave for pulsing.
         /// </summary>
         Sine,
+
         /// <summary>
         /// Uses a triangle wave for pulsing.
         /// </summary>
         Triangle
     }
+
     private PulseWave _pulseFillWave = PulseWave.Sine;
     private PulseWave _pulseBorderWave = PulseWave.Sine;
 
@@ -142,20 +145,28 @@ public class DirectRectangle : DirectDrawingMovableBase
     private long _pulseLastTick = 0;
     private float _timeSec; // accumulated seconds
 
-    private DirectRectangle(Color color,
-                           RenderSurfaceHostBase renderSurfaceHost,
-                           DirectDrawingMode mode,
-                           SceneLayer? sceneLayer,
-                           View? view,
-                           Rectangle? screenBounds,
-                           Rectangle? worldBounds,
-                           string? nickname = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
+    private DirectRectangle(
+        Color color,
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            nickname)
     {
         // initialize with defaults; actual paints built lazily
         _fillPaint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill };
         _strokePaint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1 };
-        SetColor(color);                 // sets base color and marks rebuild
+        SetColor(color); // sets base color and marks rebuild
         SetBlendMode(SKBlendMode.SrcOver);
         SetFilled(false);
     }
@@ -180,12 +191,23 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// <see cref="SetFilled"/> and <see cref="SetStrokeWidth"/> to customize the appearance.
     /// </para>
     /// </remarks>
-    public DirectRectangle(Color color,
-                           RenderSurfaceHostBase renderSurfaceHost,
-                           SceneLayer sceneLayer,
-                           Rectangle worldBounds,
-                           string? nickname = null)
-        : this(color, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+    public DirectRectangle(
+        Color color,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? nickname = null)
+        : this(
+            color,
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            null,
+            null,
+            worldBounds,
+            nickname)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectRectangle"/> class for view (screen-space) rendering.
@@ -207,12 +229,23 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// <see cref="SetFilled"/> and <see cref="SetStrokeWidth"/> to customize the appearance.
     /// </para>
     /// </remarks>
-    public DirectRectangle(Color color,
-                           RenderSurfaceHostBase renderSurfaceHost,
-                           View view,
-                           Rectangle screenBounds,
-                           string? nickname = null)
-        : this(color, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
+    public DirectRectangle(
+        Color color,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? nickname = null)
+        : this(
+            color,
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            null,
+            view,
+            screenBounds,
+            null,
+            nickname)
+    {
+    }
 
     /// <summary>
     /// Sets the base color used for both fill and stroke (unless a distinct border color is specified).
@@ -293,11 +326,19 @@ public class DirectRectangle : DirectDrawingMovableBase
     public DirectRectangle SetAlpha(int alpha)
     {
         var c = _fillPaint.Color;
-        var withA = new SKColor(c.Red, c.Green, c.Blue, (byte)alpha);
+
+        var withA = new SKColor(
+            c.Red,
+            c.Green,
+            c.Blue,
+            (byte)alpha);
+
         _fillPaint.Color = withA;
+
         // Only change stroke when it's not using a distinct border color
         if (_borderColor is null)
             _strokePaint.Color = withA;
+
         _needsRebuildPaints = true;
         return this;
     }
@@ -539,7 +580,12 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// for later re-enabling.
     /// </para>
     /// </remarks>
-    public DirectRectangle PulseFill(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
+    public DirectRectangle PulseFill(
+        Color from,
+        Color to,
+        float periodSec,
+        bool enabled = true,
+        bool triangle = false)
     {
         _pulseFillEnabled = enabled;
         _pulseFillFrom = from.ToSKColor();
@@ -579,7 +625,12 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// for later re-enabling.
     /// </para>
     /// </remarks>
-    public DirectRectangle PulseBorder(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
+    public DirectRectangle PulseBorder(
+        Color from,
+        Color to,
+        float periodSec,
+        bool enabled = true,
+        bool triangle = false)
     {
         _pulseBorderEnabled = enabled;
         _pulseBorderFrom = from.ToSKColor();
@@ -607,7 +658,7 @@ public class DirectRectangle : DirectDrawingMovableBase
     public DirectRectangle StopPulses()
     {
         _pulseFillEnabled = _pulseBorderEnabled = false;
-        RebuildPaints();   // restore fill/border to SetColor/SetBorderColor values
+        RebuildPaints(); // restore fill/border to SetColor/SetBorderColor values
         ForceRefresh();
         return this;
     }
@@ -649,24 +700,32 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// To remove the pattern and return to solid color fill, call <see cref="ClearFillPattern"/>.
     /// </para>
     /// </remarks>
-    public DirectRectangle SetFillPattern(SKBitmap bitmap,
-                                          SKShaderTileMode tileX = SKShaderTileMode.Repeat,
-                                          SKShaderTileMode tileY = SKShaderTileMode.Repeat,
-                                          float scale = 1f,
-                                          SKPoint? offsetPx = null,
-                                          SKFilterQuality filterQuality = SKFilterQuality.None)
+    public DirectRectangle SetFillPattern(
+        SKBitmap bitmap,
+        SKShaderTileMode tileX = SKShaderTileMode.Repeat,
+        SKShaderTileMode tileY = SKShaderTileMode.Repeat,
+        float scale = 1f,
+        SKPoint? offsetPx = null,
+        SKFilterQuality filterQuality = SKFilterQuality.None)
     {
         ArgumentNullException.ThrowIfNull(bitmap);
 
         scale = float.IsFinite(scale) && scale > 0f
             ? scale
-            : throw new ArgumentOutOfRangeException(nameof(scale), "Pattern scale must be finite and greater than zero.");
+            : throw new ArgumentOutOfRangeException(
+                nameof(scale),
+                "Pattern scale must be finite and greater than zero.");
 
         var m = SKMatrix.CreateScale(scale, scale);
+
         if (offsetPx is { } o)
             m = m.PostConcat(SKMatrix.CreateTranslation(o.X, o.Y));
 
-        SKShader newShader = SKShader.CreateBitmap(bitmap, tileX, tileY, m);
+        SKShader newShader = SKShader.CreateBitmap(
+            bitmap,
+            tileX,
+            tileY,
+            m);
 
         _fillPaint.Shader = null;
         _fillShader?.Dispose();
@@ -837,6 +896,7 @@ public class DirectRectangle : DirectDrawingMovableBase
         {
             float t = PulseT(_timeSec, _pulseFillPeriodSec, _pulseFillWave);
             var c = LerpColor(_pulseFillFrom, _pulseFillTo, t);
+
             if (_fillPaint.Color != c)
             {
                 _fillPaint.Color = c;
@@ -851,15 +911,15 @@ public class DirectRectangle : DirectDrawingMovableBase
 
             if (_strokePaint.Color != c)
             {
-                _strokePaint.Color = c;   // paint-only override
+                _strokePaint.Color = c; // paint-only override
                 ForceRefresh();
             }
         }
 
         if (changed)
         {
-            _needsRebuildPaints = false;    // we already set paints directly
-            ForceRefresh();                 // request redraw
+            _needsRebuildPaints = false; // we already set paints directly
+            ForceRefresh(); // request redraw
         }
 
         base.Update(tick);
@@ -895,7 +955,8 @@ public class DirectRectangle : DirectDrawingMovableBase
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         if (backbuffer is RecordingBackbuffer && _fillImage?.IsTextureBacked == true)
-            throw new NotSupportedException("Desktop frame recording requires a CPU image, not a context-bound texture.");
+            throw new NotSupportedException(
+                "Desktop frame recording requires a CPU image, not a context-bound texture.");
 
         var canvas = backbuffer.Canvas;
 
@@ -919,6 +980,7 @@ public class DirectRectangle : DirectDrawingMovableBase
 
         // 1.5) corner radius for the stroke path, adjusted to keep the inner/outer arcs aligned to the fill
         float strokeCornerRadius;
+
         switch (_strokeAlign)
         {
             case StrokeAlign.Outside:
@@ -947,7 +1009,11 @@ public class DirectRectangle : DirectDrawingMovableBase
             }
             else if (_cornerRadius > 0)
             {
-                canvas.DrawRoundRect(fillRect, strokeCornerRadius, strokeCornerRadius, _fillPaint);
+                canvas.DrawRoundRect(
+                    fillRect,
+                    strokeCornerRadius,
+                    strokeCornerRadius,
+                    _fillPaint);
             }
             else
             {
@@ -967,13 +1033,18 @@ public class DirectRectangle : DirectDrawingMovableBase
 
             // If pulsing, keep color from Update(),
             // else use base border color (or previous).
-            var strokeColor = _pulseBorderEnabled ? _strokePaint.Color
-                                                  : (_borderColor ?? prevColor);
+            var strokeColor = _pulseBorderEnabled
+                ? _strokePaint.Color
+                : (_borderColor ?? prevColor);
 
             _strokePaint.Color = strokeColor.WithAlpha(255);
 
             if (_cornerRadius > 0)
-                canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
+                canvas.DrawRoundRect(
+                    strokeRect,
+                    _cornerRadius,
+                    _cornerRadius,
+                    _strokePaint);
             else
                 canvas.DrawRect(strokeRect, _strokePaint);
 
@@ -1240,6 +1311,7 @@ public class DirectRectangle : DirectDrawingMovableBase
     private static float PositiveModulo(float value, float modulus)
     {
         float remainder = value % modulus;
+
         return remainder < 0f
             ? remainder + modulus
             : remainder;
@@ -1307,6 +1379,7 @@ public class DirectRectangle : DirectDrawingMovableBase
     private static float PulseT(float timeSec, float periodSec, PulseWave wave)
     {
         float phase = (timeSec / periodSec) % 1f;
+
         if (wave == PulseWave.Sine)
         {
             // (sin(2πx)+1)/2 in [0..1]
@@ -1328,6 +1401,10 @@ public class DirectRectangle : DirectDrawingMovableBase
         byte bch = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte aA = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
 
-        return new SKColor(r, g, bch, aA);
+        return new SKColor(
+            r,
+            g,
+            bch,
+            aA);
     }
 }

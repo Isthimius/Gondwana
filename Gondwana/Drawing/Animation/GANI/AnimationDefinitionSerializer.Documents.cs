@@ -24,7 +24,12 @@ public static partial class AnimationDefinitionSerializer
     public static string ToDocumentJson(AnimationDefinitionDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
-        DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+
+        DefinitionDocumentJson.Check(
+            document.Definitions,
+            definition => definition.Key,
+            identityComparer: StringComparer.OrdinalIgnoreCase);
+
         return DefinitionDocumentPersistence.Serialize(document, Settings);
     }
 
@@ -36,6 +41,7 @@ public static partial class AnimationDefinitionSerializer
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         var path = Path.GetFullPath(filePath);
         var document = FromDocumentJson(File.ReadAllText(path), path);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = AnimationDefinitionSource.LooseDefinitionFile(path);
@@ -51,8 +57,10 @@ public static partial class AnimationDefinitionSerializer
     public static AnimationDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
+
         if (!stream.CanRead)
             throw new ArgumentException("Stream must be readable.", nameof(stream));
+
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -65,16 +73,24 @@ public static partial class AnimationDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+
         using var stream = assetsFile.Get(AssetTypes.AnimationDefinition, entryName)
-            ?? throw new FileNotFoundException($"GANI asset entry not found: {entryName}", entryName);
+                           ?? throw new FileNotFoundException($"GANI asset entry not found: {entryName}", entryName);
+
         using var reader = new StreamReader(stream);
         var document = FromDocumentJson(reader.ReadToEnd(), entryName);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
                 ? AnimationDefinitionSource.None()
                 : AnimationDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
-            definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Key);
+
+            definition.LoadStamp = new(
+                definition,
+                assetsFilePath: assetsFile.SourcePath,
+                entryName: entryName,
+                definitionIdentity: definition.Key);
         }
 
         return document;
@@ -87,9 +103,13 @@ public static partial class AnimationDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
+
         try
         {
-            DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+            DefinitionDocumentJson.Check(
+                document.Definitions,
+                definition => definition.Key,
+                identityComparer: StringComparer.OrdinalIgnoreCase);
         }
         catch (InvalidDataException ex)
         {
@@ -98,7 +118,10 @@ public static partial class AnimationDefinitionSerializer
 
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
-                errors.AddRange(AnimationDefinitionValidator.Validate(definition).Select(error => $"Animation '{definition.Key}': {error}"));
+                errors.AddRange(
+                    AnimationDefinitionValidator.Validate(definition)
+                        .Select(error => $"Animation '{definition.Key}': {error}"));
+
         return errors;
     }
 
@@ -114,19 +137,29 @@ public static partial class AnimationDefinitionSerializer
     /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
-    public static void SaveAll(string filePath, IEnumerable<AnimationDefinition> definitions) => SaveAll(filePath, definitions, null);
+    public static void SaveAll(string filePath, IEnumerable<AnimationDefinition> definitions) =>
+        SaveAll(filePath, definitions, null);
 
     /// <summary>Saves with a pre-install check after preparation and staging. Throw to abort; the callback must not alter the staging file.</summary>
     /// <param name="filePath">Final destination used for reference rebasing.</param>
     /// <param name="definitions">All members to persist.</param>
     /// <param name="beforeInstall">Receives the sibling staging path immediately before atomic installation.</param>
-    public static void SaveAll(string filePath, IEnumerable<AnimationDefinition> definitions, Action<string>? beforeInstall)
+    public static void SaveAll(
+        string filePath,
+        IEnumerable<AnimationDefinition> definitions,
+        Action<string>? beforeInstall)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         ArgumentNullException.ThrowIfNull(definitions);
         var path = Path.GetFullPath(filePath);
         var members = definitions.ToList();
-        DefinitionDocumentJson.Check(members, definition => definition.Key, allowUnnamedSingleton: true, identityComparer: StringComparer.OrdinalIgnoreCase);
+
+        DefinitionDocumentJson.Check(
+            members,
+            definition => definition.Key,
+            allowUnnamedSingleton: true,
+            identityComparer: StringComparer.OrdinalIgnoreCase);
+
         var saved = members.Select(definition => PrepareDocumentMember(definition, path)).ToList();
         var json = ToDocumentJson(new() { Definitions = saved });
         DefinitionDocumentPersistence.WriteAtomic(path, json, beforeInstall);
@@ -136,11 +169,21 @@ public static partial class AnimationDefinitionSerializer
     {
         var clone = ParseDefinition(ToJson(definition), null);
         var origin = definition.Source.GaniFilePath ?? definition.Source.AssetsFilePath;
+
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
+                           (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin)
+                               ? null
+                               : Path.GetDirectoryName(origin));
+
         var newDirectory = Path.GetDirectoryName(path)!;
-        string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
-            Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
+        string? RebasePath(string? value) =>
+            string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value))
+                ? value
+                : Path.GetRelativePath(
+                    newDirectory,
+                    oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
         foreach (var source in clone.TilesheetSources)
         {
             source.GtsPath = RebasePath(source.GtsPath);
@@ -161,7 +204,11 @@ public static partial class AnimationDefinitionSerializer
     /// <param name="key">The logical member identity; null requires a singleton.</param>
     /// <returns>The selected definition.</returns>
     public static AnimationDefinition Load(string filePath, string? key) =>
-        DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key, key, StringComparer.OrdinalIgnoreCase);
+        DefinitionDocumentJson.Select(
+            LoadAll(filePath),
+            definition => definition.Key,
+            key,
+            StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Loads all logical definitions in document order.</summary>
     /// <param name="stream">The readable stream, left open.</param>
@@ -173,13 +220,18 @@ public static partial class AnimationDefinitionSerializer
     /// <param name="key">The logical member identity; null requires a singleton.</param>
     /// <returns>The selected definition.</returns>
     public static AnimationDefinition Load(Stream stream, string? key) =>
-        DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key, key, StringComparer.OrdinalIgnoreCase);
+        DefinitionDocumentJson.Select(
+            LoadAll(stream),
+            definition => definition.Key,
+            key,
+            StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Loads all logical definitions in document order.</summary>
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry name.</param>
     /// <returns>All definitions.</returns>
-    public static IReadOnlyList<AnimationDefinition> LoadAll(AssetsFile assetsFile, string entryName) => LoadDocument(assetsFile, entryName).Definitions;
+    public static IReadOnlyList<AnimationDefinition> LoadAll(AssetsFile assetsFile, string entryName) =>
+        LoadDocument(assetsFile, entryName).Definitions;
 
     /// <summary>Loads a logical member by its case-insensitive Key.</summary>
     /// <param name="assetsFile">The archive.</param>
@@ -187,7 +239,11 @@ public static partial class AnimationDefinitionSerializer
     /// <param name="key">The logical member identity; null requires a singleton.</param>
     /// <returns>The selected definition.</returns>
     public static AnimationDefinition Load(AssetsFile assetsFile, string entryName, string? key) =>
-        DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key, key, StringComparer.OrdinalIgnoreCase);
+        DefinitionDocumentJson.Select(
+            LoadAll(assetsFile, entryName),
+            definition => definition.Key,
+            key,
+            StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Materializes the selected logical definition using registered dependencies.</summary>
     /// <param name="filePath">The document path.</param>
@@ -205,13 +261,15 @@ public static partial class AnimationDefinitionSerializer
     /// <param name="entryName">The document entry.</param>
     /// <param name="identity">The logical identity; null requires a singleton.</param>
     /// <returns>The materialized runtime content.</returns>
-    public static Cycle LoadCycle(AssetsFile assetsFile, string entryName, string? identity) => ToCycle(Load(assetsFile, entryName, identity));
+    public static Cycle LoadCycle(AssetsFile assetsFile, string entryName, string? identity) =>
+        ToCycle(Load(assetsFile, entryName, identity));
 
     /// <summary>Materializes all document members, rolling back newly created content on failure.</summary>
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry.</param>
     /// <returns>The materialized members in document order.</returns>
-    public static IReadOnlyList<Cycle> LoadAllCycles(AssetsFile assetsFile, string entryName) => ToAllCycles(LoadDocument(assetsFile, entryName));
+    public static IReadOnlyList<Cycle> LoadAllCycles(AssetsFile assetsFile, string entryName) =>
+        ToAllCycles(LoadDocument(assetsFile, entryName));
 
     /// <summary>Materializes all members and rolls back new runtime content on failure.</summary>
     /// <param name="document">The document to materialize.</param>
@@ -219,24 +277,31 @@ public static partial class AnimationDefinitionSerializer
     public static IReadOnlyList<Cycle> ToAllCycles(AnimationDefinitionDocument document)
     {
         var errors = ValidateDocument(document);
+
         if (errors.Count != 0)
             throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+
         var created = new List<Cycle>();
         var previous = new Dictionary<string, Cycle>(Cycle._cycles, StringComparer.OrdinalIgnoreCase);
+
         try
         {
             foreach (var definition in document.Definitions)
                 created.Add(MaterializeCycle(definition));
+
             for (int i = 0; i < created.Count; i++)
                 ApplyNextCycle(created[i], document.Definitions[i]);
+
             return created;
         }
         catch
         {
             foreach (var item in created)
                 item.Dispose();
+
             foreach (var pair in previous)
                 Cycle._cycles[pair.Key] = pair.Value;
+
             throw;
         }
     }

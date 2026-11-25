@@ -28,7 +28,17 @@ public sealed class WrappedCameraTests
         var layer = scene.AddLayer(4, 4);
         layer.WrapHorizontally = horizontal;
         layer.WrapVertically = vertical;
-        var camera = new Camera(scene) { WorldBoundsPx = new(0, 0, 128, 128), GetVisibleWorldSizePx = () => new(32, 32) };
+
+        var camera = new Camera(scene)
+        {
+            WorldBoundsPx = new(
+                0,
+                0,
+                128,
+                128),
+            GetVisibleWorldSizePx = () => new(32, 32)
+        };
+
         camera.SnapTo(new(200, -30));
         Assert.Equal(new PointF(horizontal ? 200 : 96, vertical ? -30 : 0), camera.PositionPx);
     }
@@ -42,7 +52,17 @@ public sealed class WrappedCameraTests
         using var scene = new Scene();
         var layer = scene.AddLayer(4, 4);
         layer.WrapHorizontally = true;
-        var camera = new Camera(scene) { WorldBoundsPx = new(0, 0, 128, 128), GetVisibleWorldSizePx = () => new(32, 32) };
+
+        var camera = new Camera(scene)
+        {
+            WorldBoundsPx = new(
+                0,
+                0,
+                128,
+                128),
+            GetVisibleWorldSizePx = () => new(32, 32)
+        };
+
         camera.SnapTo(new(110, 0));
         var target = new PointF(127, 16);
         camera.Follow(() => target, true);
@@ -60,7 +80,14 @@ public sealed class WrappedCameraTests
     public void Camera_FollowCenteredX_SelectsWrappedImageByTrackedAxis()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(4, 4, 32, 32, coordinateSystem: CoordinateSystemTypes.IsometricAxial);
+
+        var layer = scene.AddLayer(
+            4,
+            4,
+            32,
+            32,
+            coordinateSystem: CoordinateSystemTypes.IsometricAxial);
+
         layer.WrapHorizontally = true;
         layer.WrapVertically = true;
         var camera = new Camera(scene) { GetVisibleWorldSizePx = () => new(32, 32) };
@@ -71,20 +98,25 @@ public sealed class WrappedCameraTests
         Assert.Equal(new PointF(178, 84), camera.PositionPx);
     }
 
-    private sealed class TestMovable(SceneLayer sceneLayer, MovementSpace positionSpace, Vector2 position) : IMovableOnSceneLayer
+    private sealed class TestMovable(SceneLayer sceneLayer, MovementSpace positionSpace, Vector2 position)
+        : IMovableOnSceneLayer
     {
         /// <summary>
         /// Gets the coordinate space used by the position API.
         /// </summary>
         public MovementSpace PositionSpace { get; } = positionSpace;
+
         /// <inheritdoc/>
         public SceneLayer SceneLayer { get; } = sceneLayer;
+
         private Vector2 Position { get; set; } = position;
+
         /// <summary>
         /// Gets the sprite position in scene-layer grid coordinates.
         /// </summary>
         /// <returns>The sprite position in scene-layer grid coordinates.</returns>
         public Vector2 GetPosition() => Position;
+
         /// <summary>
         /// Sets the sprite position in scene-layer grid coordinates and invalidates its old and new bounds.
         /// </summary>

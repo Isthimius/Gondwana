@@ -20,13 +20,19 @@ public sealed class MenuHeaderWidget : WidgetBase
     internal event Action<MenuHeaderWidget>? Invoked;
     internal event Action<MenuHeaderWidget>? Hovered;
 
-    internal MenuHeaderWidget(RenderSurfaceHostBase host,
-                              View view,
-                              Rectangle bounds,
-                              string text,
-                              MenuBarTheme theme,
-                              string? nickname = null, char? mnemonic = null)
-        : base(host, DirectDrawingMode.View, bounds.Location, nickname)
+    internal MenuHeaderWidget(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string text,
+        MenuBarTheme theme,
+        string? nickname = null,
+        char? mnemonic = null)
+        : base(
+            host,
+            DirectDrawingMode.View,
+            bounds.Location,
+            nickname)
     {
         Mnemonic = mnemonic;
         _theme = theme ?? throw new ArgumentNullException(nameof(theme));
@@ -200,6 +206,10 @@ public sealed class MenuHeaderWidget : WidgetBase
 
     private static SKColor ToSkColor(Color color)
     {
-        return new SKColor(color.R, color.G, color.B, color.A);
+        return new SKColor(
+            color.R,
+            color.G,
+            color.B,
+            color.A);
     }
 }

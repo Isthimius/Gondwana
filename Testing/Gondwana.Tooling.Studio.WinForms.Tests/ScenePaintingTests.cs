@@ -15,25 +15,45 @@ public sealed partial class CompositionTests
         var document = editor.Document;
         var layer = document.AddLayer();
         string gts = Path.Combine(root, "paint.gts");
+
         using (var image = new Bitmap(16, 16))
             image.Save(Path.Combine(root, "paint.png"));
-        TilesheetDefinitionSerializer.Save(gts, new TilesheetDefinition
-        {
-            Name = "terrain",
-            Image = new() { FilePath = "paint.png" },
-            Regions = [new() { Name = "default", Area = new(0, 0, 16, 16), TileSize = new(16, 16) }]
-        });
+
+        TilesheetDefinitionSerializer.Save(
+            gts,
+            new TilesheetDefinition
+            {
+                Name = "terrain",
+                Image = new() { FilePath = "paint.png" },
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "default", Area = new(
+                            0,
+                            0,
+                            16,
+                            16),
+                        TileSize = new(16, 16)
+                    }
+                ]
+            });
+
         editor.AddTilesheetSources([gts]);
         Application.DoEvents();
+
         var source = Descendants(editor).OfType<TreeView>().Single(tree =>
             tree.Nodes.Count > 0 && tree.Nodes[0].Text.StartsWith("terrain", StringComparison.Ordinal));
+
         var region = source.Nodes[0].Nodes[0];
         region.Expand();
         var row = region.Nodes[0];
         row.Expand();
         source.SelectedNode = row.Nodes[0];
+
         var buttons = Descendants(editor).OfType<ToolStrip>()
             .SelectMany(bar => bar.Items.OfType<ToolStripButton>()).ToArray();
+
         ToolStripButton Tool(string name) => buttons.Single(button => button.Text == name);
         Assert.True(Tool("Select").Checked);
         Tool("Paint").PerformClick();
@@ -43,12 +63,20 @@ public sealed partial class CompositionTests
         preview.GetType().GetMethod("UpdateOffset", flags)!.Invoke(preview, null);
         var offset = (PointF)preview.GetType().GetField("_offset", flags)!.GetValue(preview)!;
         float zoom = (float)preview.GetType().GetProperty("Zoom")!.GetValue(preview)!;
+
         void Click()
         {
             foreach (var method in new[] { "OnMouseDown", "OnMouseUp" })
-                preview.GetType().GetMethod(method, flags)!.Invoke(preview,
-                    [new MouseEventArgs(MouseButtons.Left, 1, (int)(offset.X + layer.TileWidth * 1.5f * zoom),
-                        (int)(offset.Y + layer.TileHeight * 1.5f * zoom), 0)]);
+                preview.GetType().GetMethod(method, flags)!.Invoke(
+                    preview,
+                    [
+                        new MouseEventArgs(
+                            MouseButtons.Left,
+                            1,
+                            (int)(offset.X + layer.TileWidth * 1.5f * zoom),
+                            (int)(offset.Y + layer.TileHeight * 1.5f * zoom),
+                            0)
+                    ]);
         }
 
         Click();
@@ -72,12 +100,25 @@ public sealed partial class CompositionTests
         Assert.Empty(layer.Tiles);
 
         // The same shared canvas supports rectangle commands and grouped drag strokes in Studio.
-        Point Cell(int x, int y) => new((int)(offset.X + layer.TileWidth * (x + .5f) * zoom),
+        Point Cell(int x, int y) => new(
+            (int)(offset.X + layer.TileWidth * (x + .5f) * zoom),
             (int)(offset.Y + layer.TileHeight * (y + .5f) * zoom));
-        void Pointer(string method, Point point) => preview.GetType().GetMethod(method, flags)!.Invoke(preview,
-            [new MouseEventArgs(MouseButtons.Left, 1, point.X, point.Y, 0)]);
-        void Command(string text) => Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.Cast<ToolStripItem>())
+
+        void Pointer(string method, Point point) => preview.GetType().GetMethod(method, flags)!.Invoke(
+            preview,
+            [
+                new MouseEventArgs(
+                    MouseButtons.Left,
+                    1,
+                    point.X,
+                    point.Y,
+                    0)
+            ]);
+
+        void Command(string text) => Descendants(editor).OfType<ToolStrip>()
+            .SelectMany(bar => bar.Items.Cast<ToolStripItem>())
             .Single(item => item.Text == text).PerformClick();
+
         Tool("Select").PerformClick();
         Pointer("OnMouseDown", Cell(1, 1));
         Pointer("OnMouseMove", Cell(3, 2));

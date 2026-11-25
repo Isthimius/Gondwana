@@ -55,8 +55,9 @@ internal sealed class WidgetDragBehavior
                args.IsPrimaryButton;
     }
 
-    internal void ProcessPointerDown(WidgetPointerEventArgs args,
-                                     Func<WidgetPointerEventArgs, bool> canStartDrag)
+    internal void ProcessPointerDown(
+        WidgetPointerEventArgs args,
+        Func<WidgetPointerEventArgs, bool> canStartDrag)
     {
         if (_isPointerDown || !canStartDrag(args))
         {
@@ -75,11 +76,12 @@ internal sealed class WidgetDragBehavior
         _dragStartPointerPositionPx = GetPointerPositionInWidgetSpace(args.ScreenPositionPx, args.View);
     }
 
-    internal void ProcessPointerMove(WidgetPointerEventArgs args,
-                                     Func<Vector2, View, Vector2> convertDelta,
-                                     Func<Vector2, Vector2> constrainPosition,
-                                     Action<WidgetDragEventArgs> dragStarted,
-                                     Action<WidgetDragEventArgs> dragged)
+    internal void ProcessPointerMove(
+        WidgetPointerEventArgs args,
+        Func<Vector2, View, Vector2> convertDelta,
+        Func<Vector2, Vector2> constrainPosition,
+        Action<WidgetDragEventArgs> dragStarted,
+        Action<WidgetDragEventArgs> dragged)
     {
         if (!_isPointerDown || args.PointerId != _dragPointerId)
             return;
@@ -89,6 +91,7 @@ internal sealed class WidgetDragBehavior
         if (!IsDragging)
         {
             float thresholdSquared = DragThresholdPx * DragThresholdPx;
+
             if (totalScreenDeltaPx.LengthSquared() < thresholdSquared)
                 return;
 
@@ -102,15 +105,20 @@ internal sealed class WidgetDragBehavior
                 return;
         }
 
-        ApplyDragPosition(totalScreenDeltaPx, _dragView ?? args.View, convertDelta, constrainPosition);
+        ApplyDragPosition(
+            totalScreenDeltaPx,
+            _dragView ?? args.View,
+            convertDelta,
+            constrainPosition);
 
         dragged(CreateDragEventArgs(args));
     }
 
-    internal void ProcessPointerUp(WidgetPointerEventArgs args,
-                                   Func<Vector2, View, Vector2> convertDelta,
-                                   Func<Vector2, Vector2> constrainPosition,
-                                   Action<WidgetDragEventArgs> dragEnded)
+    internal void ProcessPointerUp(
+        WidgetPointerEventArgs args,
+        Func<Vector2, View, Vector2> convertDelta,
+        Func<Vector2, Vector2> constrainPosition,
+        Action<WidgetDragEventArgs> dragEnded)
     {
         if (!_isPointerDown || !IsMatchingRelease(args))
             return;
@@ -120,7 +128,12 @@ internal sealed class WidgetDragBehavior
         if (IsDragging)
         {
             Vector2 totalScreenDeltaPx = GetTotalScreenDelta(args.ScreenPositionPx);
-            ApplyDragPosition(totalScreenDeltaPx, _dragView ?? args.View, convertDelta, constrainPosition);
+
+            ApplyDragPosition(
+                totalScreenDeltaPx,
+                _dragView ?? args.View,
+                convertDelta,
+                constrainPosition);
 
             dragArgs = CreateDragEventArgs(args);
         }
@@ -147,16 +160,18 @@ internal sealed class WidgetDragBehavior
         return false;
     }
 
-    internal Vector2 ConvertScreenDeltaToPositionDelta(Vector2 totalScreenDeltaPx,
-                                                       View view)
+    internal Vector2 ConvertScreenDeltaToPositionDelta(
+        Vector2 totalScreenDeltaPx,
+        View view)
     {
         ArgumentNullException.ThrowIfNull(view);
 
         if (_owner.Mode == DirectDrawingMode.View)
             return totalScreenDeltaPx;
 
-        var currentScreenPositionPx = new PointF(_dragStartScreenPositionPx.X + totalScreenDeltaPx.X,
-                                                 _dragStartScreenPositionPx.Y + totalScreenDeltaPx.Y);
+        var currentScreenPositionPx = new PointF(
+            _dragStartScreenPositionPx.X + totalScreenDeltaPx.X,
+            _dragStartScreenPositionPx.Y + totalScreenDeltaPx.Y);
 
         Vector2 currentPointerPositionPx = GetPointerPositionInWidgetSpace(currentScreenPositionPx, view);
 
@@ -178,14 +193,16 @@ internal sealed class WidgetDragBehavior
             _suppressNextPointerClick = false;
     }
 
-    private Vector2 GetPointerPositionInWidgetSpace(PointF screenPositionPx,
-                                                    View view)
+    private Vector2 GetPointerPositionInWidgetSpace(
+        PointF screenPositionPx,
+        View view)
     {
         if (_owner.Mode == DirectDrawingMode.View)
             return new Vector2(screenPositionPx.X, screenPositionPx.Y);
 
         var sceneLayer = _owner.SceneLayer
-            ?? throw new InvalidOperationException("A scene-layer draggable widget must contain children attached to a SceneLayer.");
+                         ?? throw new InvalidOperationException(
+                             "A scene-layer draggable widget must contain children attached to a SceneLayer.");
 
         PointF worldPositionPx = view.ScreenPxToWorldPx(sceneLayer, screenPositionPx);
 
@@ -194,14 +211,16 @@ internal sealed class WidgetDragBehavior
 
     private Vector2 GetTotalScreenDelta(PointF currentScreenPositionPx)
     {
-        return new Vector2(currentScreenPositionPx.X - _dragStartScreenPositionPx.X,
-                           currentScreenPositionPx.Y - _dragStartScreenPositionPx.Y);
+        return new Vector2(
+            currentScreenPositionPx.X - _dragStartScreenPositionPx.X,
+            currentScreenPositionPx.Y - _dragStartScreenPositionPx.Y);
     }
 
-    private void ApplyDragPosition(Vector2 totalScreenDeltaPx,
-                                   View view,
-                                   Func<Vector2, View, Vector2> convertDelta,
-                                   Func<Vector2, Vector2> constrainPosition)
+    private void ApplyDragPosition(
+        Vector2 totalScreenDeltaPx,
+        View view,
+        Func<Vector2, View, Vector2> convertDelta,
+        Func<Vector2, Vector2> constrainPosition)
     {
         Vector2 positionDeltaPx = convertDelta(totalScreenDeltaPx, view);
         Vector2 proposedPositionPx = _dragStartWidgetPositionPx + positionDeltaPx;
@@ -218,11 +237,12 @@ internal sealed class WidgetDragBehavior
 
     private WidgetDragEventArgs CreateDragEventArgs(WidgetPointerEventArgs pointerArgs)
     {
-        return new WidgetDragEventArgs(_owner,
-                                       _dragStartScreenPositionPx,
-                                       pointerArgs.ScreenPositionPx,
-                                       _dragButton,
-                                       pointerArgs.Tick,
-                                       pointerArgs.PointerId);
+        return new WidgetDragEventArgs(
+            _owner,
+            _dragStartScreenPositionPx,
+            pointerArgs.ScreenPositionPx,
+            _dragButton,
+            pointerArgs.Tick,
+            pointerArgs.PointerId);
     }
 }

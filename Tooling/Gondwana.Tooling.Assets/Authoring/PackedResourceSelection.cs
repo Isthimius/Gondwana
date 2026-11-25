@@ -7,12 +7,16 @@ using Gondwana.Tooling.Tilesheets.Sources;
 namespace Gondwana.Tooling.Assets;
 
 /// <summary>An exact physical entry and, for definition documents, a separate logical member.</summary>
-public sealed record PackedResourceSelection(AuthoringResource Resource, string? Member = null, string? SourceExtension = null)
+public sealed record PackedResourceSelection(
+    AuthoringResource Resource,
+    string? Member = null,
+    string? SourceExtension = null)
 {
     /// <summary>Reads selectable logical identities without substituting a first member.</summary>
     public static IReadOnlyList<string> GetMembers(AssetPackageCatalog packages, AuthoringResource resource)
     {
         RequirePacked(resource);
+
         if (resource.AssetType is AssetTypes.Audio or AssetTypes.Image)
         {
             using var stream = packages.OpenAsset(resource.Path, resource.AssetType, resource.EntryName!);
@@ -20,8 +24,10 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
         }
 
         var members = new AuthoringResourceResolver(packages).GetMembers(resource);
+
         if (members.Count == 0)
             throw new InvalidDataException($"Entry '{resource.EntryName}' contains no logical definitions.");
+
         return members;
     }
 
@@ -29,10 +35,13 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
     public void Validate(AssetPackageCatalog packages, AssetTypes expectedType)
     {
         RequirePacked(Resource);
+
         if (Resource.AssetType != expectedType)
             throw new InvalidDataException($"Expected {expectedType}, received {Resource.AssetType}.");
+
         var resolver = new AuthoringResourceResolver(packages);
         IReadOnlyList<string> errors;
+
         switch (expectedType)
         {
             case AssetTypes.TilesheetDefinition:
@@ -51,25 +60,31 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
             case AssetTypes.Image:
                 if (Member is not null)
                     throw new InvalidDataException("Media entries have no logical definition member.");
+
                 if (expectedType == AssetTypes.Audio)
                 {
                     var extension = string.IsNullOrWhiteSpace(SourceExtension)
                         ? Path.GetExtension(Resource.EntryName)
                         : SourceExtension;
+
                     if (string.IsNullOrWhiteSpace(Path.GetExtension(extension)))
-                        throw new InvalidDataException("Supply an audio source extension including its leading dot (for example .wav).");
+                        throw new InvalidDataException(
+                            "Supply an audio source extension including its leading dot (for example .wav).");
                 }
 
                 using (var stream = packages.OpenAsset(Resource.Path, expectedType, Resource.EntryName!))
                     if (stream.ReadByte() < 0)
                         throw new InvalidDataException("The selected media entry is empty.");
+
                 return;
             default:
                 throw new InvalidDataException($"Unsupported dependency type: {expectedType}.");
         }
 
         if (errors.Count > 0)
-            throw new InvalidDataException($"Invalid definition '{Member}' in '{Resource.EntryName}':{Environment.NewLine}" + string.Join(Environment.NewLine, errors));
+            throw new InvalidDataException(
+                $"Invalid definition '{Member}' in '{Resource.EntryName}':{Environment.NewLine}" +
+                string.Join(Environment.NewLine, errors));
     }
 
     private void RequireMember()

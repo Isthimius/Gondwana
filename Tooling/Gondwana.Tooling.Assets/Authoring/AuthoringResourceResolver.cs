@@ -16,6 +16,7 @@ public sealed record AuthoringResource(string Path, AssetTypes AssetType, string
 {
     /// <summary>Gets the absolute directory containing the loose file or archive.</summary>
     public string BaseDirectory => System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(Path))!;
+
     /// <summary>Gets the stored archive path for a packed entry, or null for a loose file.</summary>
     public string? ArchivePath => EntryName is null ? null : Path;
 }
@@ -51,7 +52,9 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
             AnimationTilesheetSourceKind.LooseDefinitionFile =>
                 new(ResolvePath(source.GtsPath!, baseDirectory), AssetTypes.TilesheetDefinition),
             AnimationTilesheetSourceKind.PackedDefinitionFile =>
-                new(ResolvePath(source.AssetsFilePath!, baseDirectory), AssetTypes.TilesheetDefinition,
+                new(
+                    ResolvePath(source.AssetsFilePath!, baseDirectory),
+                    AssetTypes.TilesheetDefinition,
                     RequireEntry(source.AssetEntryName)),
             _ => throw new InvalidDataException($"Unsupported tilesheet source kind: {source.Kind}.")
         };
@@ -62,23 +65,33 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
         var resource = source.Kind switch
         {
             SpriteSceneSourceKind.LooseDefinitionFile => new AuthoringResource(
-                ResolvePath(source.GscnPath!, baseDirectory), AssetTypes.SceneDefinition),
+                ResolvePath(source.GscnPath!, baseDirectory),
+                AssetTypes.SceneDefinition),
             SpriteSceneSourceKind.PackedDefinitionFile => new AuthoringResource(
-                ResolvePath(source.AssetsFilePath!, baseDirectory), AssetTypes.SceneDefinition, RequireEntry(source.AssetEntryName)),
+                ResolvePath(source.AssetsFilePath!, baseDirectory),
+                AssetTypes.SceneDefinition,
+                RequireEntry(source.AssetEntryName)),
             _ => throw new InvalidDataException($"'{source.SceneId}' has an incomplete scene source reference.")
         };
+
         return new(resource, source.SceneId);
     }
 
     private static string RequireEntry(string? entry) =>
-        !string.IsNullOrWhiteSpace(entry) ? entry : throw new InvalidDataException("Packed source has no exact entry name.");
+        !string.IsNullOrWhiteSpace(entry)
+            ? entry
+            : throw new InvalidDataException("Packed source has no exact entry name.");
 
     private Stream Open(AuthoringResource resource, AssetTypes expectedType)
     {
         if (resource.AssetType != expectedType)
-            throw new InvalidDataException($"Expected {expectedType}, received {resource.AssetType} for '{resource.Path}'.");
+            throw new InvalidDataException(
+                $"Expected {expectedType}, received {resource.AssetType} for '{resource.Path}'.");
+
         beforeRead?.Invoke(resource.Path);
-        return resource.EntryName is null ? File.OpenRead(resource.Path)
+
+        return resource.EntryName is null
+            ? File.OpenRead(resource.Path)
             : packages.OpenAsset(resource.Path, expectedType, RequireEntry(resource.EntryName));
     }
 
@@ -102,7 +115,13 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     public TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetFrameDrag frame, out TilesheetDefinition definition)
     {
         definition = LoadExplicitTilesheet(frame.Address);
-        var region = ResolveTilesheetFrame(definition, frame.RegionName, frame.X, frame.Y);
+
+        var region = ResolveTilesheetFrame(
+            definition,
+            frame.RegionName,
+            frame.X,
+            frame.Y);
+
         ValidateTilesheetImage(frame.Address.Resource, definition);
         return region;
     }
@@ -121,7 +140,11 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
             throw new InvalidDataException("Select a specific tilesheet definition before dragging a frame.");
 
         var resource = address.Resource;
-        if (resource.EntryName is null && !string.Equals(Path.GetExtension(resource.Path), ".gts", StringComparison.OrdinalIgnoreCase))
+
+        if (resource.EntryName is null && !string.Equals(
+                Path.GetExtension(resource.Path),
+                ".gts",
+                StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException("A loose tilesheet source must be a .gts file.");
 
         return LoadTilesheet(resource, address.Member);
@@ -131,20 +154,27 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     {
         using var image = DecodeImage(definition, resource.BaseDirectory, resource.ArchivePath);
         var errors = TilesheetDefinitionValidator.Validate(definition, image.Width, image.Height);
+
         if (errors.Count > 0)
             throw new InvalidDataException($"Tilesheet '{definition.Name}': {errors[0]}");
     }
 
     /// <summary>Resolves a region and coordinates against an already validated tilesheet.</summary>
-    public static TilesheetRegionDefinition ResolveTilesheetFrame(TilesheetDefinition definition, string regionName, int x, int y)
+    public static TilesheetRegionDefinition ResolveTilesheetFrame(
+        TilesheetDefinition definition,
+        string regionName,
+        int x,
+        int y)
     {
         if (string.IsNullOrWhiteSpace(regionName))
             throw new InvalidDataException("Select a specific region before dragging a frame.");
 
         var region = definition.Regions.FirstOrDefault(candidate =>
-            string.Equals(candidate.Name, regionName, StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidDataException($"Region '{regionName}' was not found in '{definition.Name}'.");
+                         string.Equals(candidate.Name, regionName, StringComparison.OrdinalIgnoreCase))
+                     ?? throw new InvalidDataException($"Region '{regionName}' was not found in '{definition.Name}'.");
+
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+
         if (x < 0 || y < 0 || x >= columns || y >= rows)
             throw new InvalidDataException($"Frame ({x}, {y}) is outside region '{region.Name}'.");
 
@@ -163,25 +193,37 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     }
 
     /// <summary>Resolves a saved animation and validates the tilesheet coordinates and image of each frame.</summary>
-    public AnimationDefinition ResolveAnimation(AnimationDrag drag, Func<string, ResourceAddress?> declaredTilesheet,
+    public AnimationDefinition ResolveAnimation(
+        AnimationDrag drag,
+        Func<string, ResourceAddress?> declaredTilesheet,
         Action<ResourceAddress, TilesheetDefinition>? onValidatedTilesheet = null)
     {
         var resource = drag.Address.Resource;
         RequireSavedMember(drag.Address, ".gani");
         var animation = LoadAnimation(resource, drag.Address.Member);
         var errors = AnimationDefinitionValidator.Validate(animation);
+
         if (errors.Count != 0)
             throw new InvalidDataException($"Animation '{animation.Key}': {errors[0]}");
 
         foreach (var frames in animation.Frames.GroupBy(frame => frame.Tilesheet, StringComparer.Ordinal))
         {
             var source = animation.TilesheetSources.FirstOrDefault(item => item.Tilesheet == frames.Key);
+
             var sheet = source is null
-                ? declaredTilesheet(frames.Key) ?? throw new InvalidDataException($"Animation '{animation.Key}' needs a saved GTS source for '{frames.Key}'.")
+                ? declaredTilesheet(frames.Key) ?? throw new InvalidDataException(
+                    $"Animation '{animation.Key}' needs a saved GTS source for '{frames.Key}'.")
                 : new ResourceAddress(TilesheetSource(source, resource.BaseDirectory), frames.Key);
+
             var definition = LoadValidatedTilesheet(sheet);
+
             foreach (var frame in frames)
-                ResolveTilesheetFrame(definition, frame.RegionName, frame.XTile, frame.YTile);
+                ResolveTilesheetFrame(
+                    definition,
+                    frame.RegionName,
+                    frame.XTile,
+                    frame.YTile);
+
             onValidatedTilesheet?.Invoke(sheet, definition);
         }
 
@@ -193,11 +235,15 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     {
         RequireSavedMember(drag.Address, ".gscn");
         var scene = LoadScene(drag.Address.Resource, drag.Address.Member);
+
         if (string.IsNullOrWhiteSpace(drag.LayerId) || scene.Layers.Count(layer => layer.ID == drag.LayerId) != 1)
             throw new InvalidDataException($"Layer '{drag.LayerId}' is missing or ambiguous in scene '{scene.ID}'.");
+
         var errors = SceneDefinitionValidator.Validate(scene);
+
         if (errors.Count != 0)
             throw new InvalidDataException($"Scene '{scene.ID}': {errors[0]}");
+
         return scene;
     }
 
@@ -205,6 +251,7 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     {
         if (string.IsNullOrWhiteSpace(address.Member))
             throw new InvalidDataException("Choose a specific saved definition.");
+
         if (address.Location.AssetEntryName is null &&
             !string.Equals(Path.GetExtension(address.Location.Path), extension, StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException($"A loose source must be a {extension} file.");
@@ -215,17 +262,22 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     {
         using var stream = Open(resource, AssetTypes.SpriteDefinition);
         using var reader = new StreamReader(stream);
-        return SpriteDefinitionSerializer.FromDocumentJson(reader.ReadToEnd(), resource.EntryName ?? resource.Path).Definitions;
+
+        return SpriteDefinitionSerializer.FromDocumentJson(reader.ReadToEnd(), resource.EntryName ?? resource.Path)
+            .Definitions;
     }
 
     /// <summary>Lists saved logical members from an exact loose or packed definition address.</summary>
     public IReadOnlyList<string> GetMembers(AuthoringResource resource)
     {
         using var stream = Open(resource, resource.AssetType);
+
         return resource.AssetType switch
         {
-            AssetTypes.TilesheetDefinition => TilesheetDefinitionSerializer.LoadAll(stream).Select(item => item.Name).ToArray(),
-            AssetTypes.AnimationDefinition => AnimationDefinitionSerializer.LoadAll(stream).Select(item => item.Key).ToArray(),
+            AssetTypes.TilesheetDefinition => TilesheetDefinitionSerializer.LoadAll(stream).Select(item => item.Name)
+                .ToArray(),
+            AssetTypes.AnimationDefinition => AnimationDefinitionSerializer.LoadAll(stream).Select(item => item.Key)
+                .ToArray(),
             AssetTypes.SceneDefinition => SceneDefinitionSerializer.LoadAll(stream).Select(item => item.ID).ToArray(),
             _ => throw new InvalidDataException($"Unsupported resource type: {resource.AssetType}.")
         };
@@ -251,20 +303,31 @@ public sealed class AuthoringResourceResolver(AssetPackageCatalog packages, Acti
     public SKBitmap DecodeImage(TilesheetDefinition definition, string baseDirectory, string? containingArchive = null)
     {
         var image = definition.Image ?? throw new InvalidDataException("GTS does not define an image source.");
+
         if (!string.IsNullOrWhiteSpace(image.AssetEntryName))
         {
-            var archive = string.IsNullOrWhiteSpace(image.AssetsFilePath) ? containingArchive
+            var archive = string.IsNullOrWhiteSpace(image.AssetsFilePath)
+                ? containingArchive
                 : ResolvePath(image.AssetsFilePath, baseDirectory);
+
             if (archive is null)
                 throw new InvalidDataException("Packed image has no archive source.");
-            using var stream = Open(new AuthoringResource(archive, AssetTypes.Image, image.AssetEntryName), AssetTypes.Image);
-            return SKBitmap.Decode(stream) ?? throw new InvalidDataException($"Packed image '{image.AssetEntryName}' in '{archive}' is unsupported or corrupt.");
+
+            using var stream = Open(
+                new AuthoringResource(archive, AssetTypes.Image, image.AssetEntryName),
+                AssetTypes.Image);
+
+            return SKBitmap.Decode(stream) ?? throw new InvalidDataException(
+                $"Packed image '{image.AssetEntryName}' in '{archive}' is unsupported or corrupt.");
         }
 
         if (!string.IsNullOrWhiteSpace(image.AssetsFilePath))
             throw new InvalidDataException("Packed image has no exact entry name.");
+
         var path = ResolvePath(image.FilePath!, baseDirectory);
         beforeRead?.Invoke(path);
-        return SKBitmap.Decode(path) ?? throw new InvalidDataException($"Image '{path}' is missing, unsupported or corrupt.");
+
+        return SKBitmap.Decode(path) ??
+               throw new InvalidDataException($"Image '{path}' is missing, unsupported or corrupt.");
     }
 }

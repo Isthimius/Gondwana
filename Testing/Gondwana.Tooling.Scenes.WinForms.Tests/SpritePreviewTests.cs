@@ -34,17 +34,27 @@ public sealed partial class SceneEditorTests
             var fractional = new PointF(6.25f, 5.5f);
             var world = projection.GridToWorldPx(fractional);
             var client = SpriteClient(preview, world);
+
             if (!preview.ClientRectangle.Contains(client))
             {
                 var scroll = preview.AutoScrollPosition;
+
                 preview.AutoScrollPosition = new(
                     Math.Max(0, client.X - scroll.X - preview.ClientSize.Width / 2),
                     Math.Max(0, client.Y - scroll.Y - preview.ClientSize.Height / 2));
+
                 client = SpriteClient(preview, world);
             }
 
             Assert.NotEqual(Point.Empty, preview.AutoScrollPosition);
-            Assert.True(preview.TryGetSpriteDropPosition(layer, preview.PointToScreen(client), snap: false, out var position));
+
+            Assert.True(
+                preview.TryGetSpriteDropPosition(
+                    layer,
+                    preview.PointToScreen(client),
+                    snap: false,
+                    out var position));
+
             Assert.InRange(position.X, fractional.X - .04f, fractional.X + .04f);
             Assert.InRange(position.Y, fractional.Y - .04f, fractional.Y + .04f);
         });
@@ -60,6 +70,7 @@ public sealed partial class SceneEditorTests
             layer.TileWidth = 32;
             layer.TileHeight = 24;
             document.Save(Path.Combine(root, "scene.gscn"));
+
             var back = new SpriteInstanceDefinition
             {
                 Id = Guid.NewGuid(),
@@ -69,6 +80,7 @@ public sealed partial class SceneEditorTests
                 Position = new(3, 3),
                 RenderSize = new(50, 50)
             };
+
             var front = new SpriteInstanceDefinition
             {
                 Id = Guid.NewGuid(),
@@ -80,8 +92,11 @@ public sealed partial class SceneEditorTests
                 Rotation = 90f,
                 ZOrder = 2
             };
-            SpriteDefinitionSerializer.SaveAll(Path.Combine(root, "actors.gspr"),
+
+            SpriteDefinitionSerializer.SaveAll(
+                Path.Combine(root, "actors.gspr"),
                 [new() { Key = "actors", Sprites = [back, front] }]);
+
             editor.InvalidateSpriteOwners(reloadSaved: true);
             Application.DoEvents();
             preview.SetZoom(1);
@@ -119,23 +134,51 @@ public sealed partial class SceneEditorTests
 
             using (var bitmap = new Bitmap(32, 32))
                 bitmap.Save(Path.Combine(root, "atlas.png"));
-            TilesheetDefinitionSerializer.Save(Path.Combine(root, "atlas.gts"), new TilesheetDefinition
-            {
-                Name = "atlas",
-                Image = new() { FilePath = "atlas.png" },
-                Regions =
-                [
-                    new() { Name = "plain", Area = new(0, 0, 16, 16), TileSize = new(16, 16) },
-                    new() { Name = "overhang", Area = new(0, 0, 16, 16), TileSize = new(16, 16), Overhang = new(0, 0, 0, 12) }
-                ]
-            });
+
+            TilesheetDefinitionSerializer.Save(
+                Path.Combine(root, "atlas.gts"),
+                new TilesheetDefinition
+                {
+                    Name = "atlas",
+                    Image = new() { FilePath = "atlas.png" },
+                    Regions =
+                    [
+                        new()
+                        {
+                            Name = "plain", Area = new(
+                                0,
+                                0,
+                                16,
+                                16),
+                            TileSize = new(16, 16)
+                        },
+                        new()
+                        {
+                            Name = "overhang", Area = new(
+                                0,
+                                0,
+                                16,
+                                16),
+                            TileSize = new(16, 16), Overhang = new(
+                                0,
+                                0,
+                                0,
+                                12)
+                        }
+                    ]
+                });
+
             var front = Actor("plain", new(3, 3));
             var back = Actor("overhang", new(3, 3.25f));
-            SpriteDefinitionSerializer.Save(Path.Combine(root, "actors.gspr"), new SpriteDefinition
-            {
-                Sprites = [front, back],
-                TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("atlas", "atlas.gts")]
-            });
+
+            SpriteDefinitionSerializer.Save(
+                Path.Combine(root, "actors.gspr"),
+                new SpriteDefinition
+                {
+                    Sprites = [front, back],
+                    TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("atlas", "atlas.gts")]
+                });
+
             editor.InvalidateSpriteOwners(reloadSaved: true);
             Application.DoEvents();
             preview.SetZoom(1);
@@ -157,7 +200,9 @@ public sealed partial class SceneEditorTests
         });
 
     private static SceneLayer SpriteProjection(ScenePreviewControl preview, SceneLayerDefinition layer) =>
-        (SceneLayer)typeof(ScenePreviewControl).GetMethod("GetProjection", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(preview, [layer])!;
+        (SceneLayer)typeof(ScenePreviewControl).GetMethod(
+            "GetProjection",
+            BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(preview, [layer])!;
 
     private static Point SpriteClient(ScenePreviewControl preview, PointF world)
     {

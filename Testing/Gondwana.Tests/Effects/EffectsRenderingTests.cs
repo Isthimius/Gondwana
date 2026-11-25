@@ -69,12 +69,17 @@ public sealed class EffectsRenderingTests
         host.Bind(scene, limitCameraToWorldBoundPx: false);
 
         var view = Assert.Single(host.ViewManager.Views);
+
         using var rectangle = new DirectRectangle(
-            Color.Red,
-            host,
-            view,
-            new Rectangle(0, 0, 100, 50),
-            nickname: $"effects-render-{typeof(TBackbuffer).Name}")
+                Color.Red,
+                host,
+                view,
+                new Rectangle(
+                    0,
+                    0,
+                    100,
+                    50),
+                nickname: $"effects-render-{typeof(TBackbuffer).Name}")
             .SetFilled(true);
 
         host.Effects.Run(view, new FadeOutEffect(1f));
@@ -99,16 +104,26 @@ public sealed class EffectsRenderingTests
         where TBackbuffer : BackbufferBase
     {
         using var scene = new Scene();
-        SceneLayer layer = scene.AddLayer(4, 2, width: 25, height: 25);
+
+        SceneLayer layer = scene.AddLayer(
+            4,
+            2,
+            width: 25,
+            height: 25);
+
         using var host = new RenderSurfaceHost<TBackbuffer>(new TestAdapter(100, 50));
         host.Bind(scene, limitCameraToWorldBoundPx: false);
 
         using var rectangle = new DirectRectangle(
-            Color.Red,
-            host,
-            layer,
-            new Rectangle(0, 0, 100, 50),
-            nickname: $"effects-layer-render-{typeof(TBackbuffer).Name}")
+                Color.Red,
+                host,
+                layer,
+                new Rectangle(
+                    0,
+                    0,
+                    100,
+                    50),
+                nickname: $"effects-layer-render-{typeof(TBackbuffer).Name}")
             .SetFilled(true);
 
         host.Effects.Run(layer, new FadeOutEffect(1f));

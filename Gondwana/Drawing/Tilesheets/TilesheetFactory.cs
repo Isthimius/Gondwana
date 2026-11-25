@@ -29,6 +29,7 @@ internal static class TilesheetFactory
             throw new ArgumentException("GTS path must be a non-empty string.", nameof(gtsPath));
 
         var fullPath = Path.GetFullPath(gtsPath);
+
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"GTS file not found: {fullPath}", fullPath);
 
@@ -41,17 +42,24 @@ internal static class TilesheetFactory
     /// <param name="baseDirectory">An explicit dependency base, or null to use the actual load location followed by authoring source metadata.</param>
     /// <param name="defaultAssetsFile">The archive for implicit packed image sources.</param>
     /// <returns>The materialized tilesheet.</returns>
-    internal static Tilesheet FromDefinition(TilesheetDefinition definition,
-                                             string? baseDirectory = null,
-                                             AssetsFile? defaultAssetsFile = null)
+    internal static Tilesheet FromDefinition(
+        TilesheetDefinition definition,
+        string? baseDirectory = null,
+        AssetsFile? defaultAssetsFile = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
         var origin = definition.Source.GtsFilePath ?? definition.Source.AssetsFilePath;
+
         baseDirectory ??= definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
+                          (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin)
+                              ? null
+                              : Path.GetDirectoryName(origin));
+
         var archivePath = definition.LoadStamp?.AssetsFilePath ?? definition.Source.AssetsFilePath;
+
         if (defaultAssetsFile is null && !string.IsNullOrWhiteSpace(archivePath) &&
-            string.IsNullOrWhiteSpace(definition.Image?.FilePath) && string.IsNullOrWhiteSpace(definition.Image?.AssetsFilePath) &&
+            string.IsNullOrWhiteSpace(definition.Image?.FilePath) &&
+            string.IsNullOrWhiteSpace(definition.Image?.AssetsFilePath) &&
             !string.IsNullOrWhiteSpace(definition.Image?.AssetEntryName))
             defaultAssetsFile = LoadExistingAssetsFile(ResolvePath(archivePath, baseDirectory));
 
@@ -112,8 +120,10 @@ internal static class TilesheetFactory
                 tilesheet.ApplyPremultiplyAlpha();
             }
 
-            tilesheet.DefinitionProvenance = definition.LoadStamp?.Materialized(definition,
+            tilesheet.DefinitionProvenance = definition.LoadStamp?.Materialized(
+                definition,
                 () => TilesheetDefinitionSerializer.FromTilesheet(tilesheet));
+
             return tilesheet;
         }
         catch
@@ -162,8 +172,8 @@ internal static class TilesheetFactory
         AssetsFile? defaultAssetsFile = null)
     {
         var image = definition.Image
-            ?? throw new InvalidOperationException(
-                "TilesheetDefinition must specify an image source.");
+                    ?? throw new InvalidOperationException(
+                        "TilesheetDefinition must specify an image source.");
 
         ValidateImageDefinition(image, defaultAssetsFile);
 
@@ -239,11 +249,16 @@ internal static class TilesheetFactory
             throw new ArgumentException("Assets file path must be a non-empty string.", nameof(path));
 
         var fullPath = Path.GetFullPath(path);
+
         var loaded = AssetsFile.AllAssetsFiles.FirstOrDefault(file =>
-            !string.IsNullOrWhiteSpace(file.SourcePath) && string.Equals(Path.GetFullPath(file.SourcePath), fullPath,
+            !string.IsNullOrWhiteSpace(file.SourcePath) && string.Equals(
+                Path.GetFullPath(file.SourcePath),
+                fullPath,
                 OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
+
         if (loaded is not null)
             return loaded;
+
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"Assets file not found: {fullPath}", fullPath);
 

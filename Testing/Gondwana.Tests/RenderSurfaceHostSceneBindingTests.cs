@@ -22,8 +22,7 @@ public sealed class RenderSurfaceHostSceneBindingTests
 
         firstHost.Bind(scene);
 
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => secondHost.Bind(scene));
+        var exception = Assert.Throws<InvalidOperationException>(() => secondHost.Bind(scene));
 
         Assert.Contains(scene.ID, exception.Message);
         Assert.Same(firstHost, scene.BoundRenderSurfaceHost);

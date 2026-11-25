@@ -7,16 +7,22 @@ internal static class SafeFilePath
     /// <param name="destinations">Absolute physical paths and whether multiple entries may share that archive.</param>
     internal static void ValidateDestinations(IEnumerable<(string Path, bool Archive)> destinations)
     {
-        var paths = new Dictionary<string, (string Spelling, bool File, bool Archive)>(StringComparer.OrdinalIgnoreCase);
+        var paths = new Dictionary<string, (string Spelling, bool File, bool Archive)>(
+            StringComparer.OrdinalIgnoreCase);
+
         foreach (var destination in destinations)
         {
             bool file = true;
+
             for (string? path = destination.Path; path is not null; path = Path.GetDirectoryName(path))
             {
                 bool archive = file && destination.Archive;
+
                 if (paths.TryGetValue(path, out var prior) &&
                     (prior.Spelling != path || prior.File != file || (file && !(prior.Archive && archive))))
-                    throw new InvalidDataException($"Conflicting planned destination path or directory prefix: {path} (already planned as {prior.Spelling}).");
+                    throw new InvalidDataException(
+                        $"Conflicting planned destination path or directory prefix: {path} (already planned as {prior.Spelling}).");
+
                 paths[path] = (path, file, archive);
                 file = false;
             }
@@ -29,14 +35,21 @@ internal static class SafeFilePath
     public static void ValidateRelative(string name)
     {
         var normalized = name.Replace('\\', '/');
+
         if (string.IsNullOrWhiteSpace(normalized) || normalized.StartsWith('/') || normalized.Contains(':'))
             throw new InvalidDataException($"Unsafe asset path: {name}");
+
         foreach (var part in normalized.Split('/'))
         {
             var stem = part.Split('.')[0];
-            if (part is "" or "." or ".." || part.EndsWith('.') || part.EndsWith(' ') || part.Any(c => c < 32 || "<>\"|?*".Contains(c)) ||
+
+            if (part is "" or "." or ".." || part.EndsWith('.') || part.EndsWith(' ') ||
+                part.Any(c => c < 32 || "<>\"|?*".Contains(c)) ||
                 new[] { "CON", "PRN", "AUX", "NUL" }.Contains(stem, StringComparer.OrdinalIgnoreCase) ||
-                System.Text.RegularExpressions.Regex.IsMatch(stem, @"^(COM|LPT)[1-9]$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    stem,
+                    @"^(COM|LPT)[1-9]$",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                 throw new InvalidDataException($"Unsafe asset path: {name}");
         }
     }
@@ -51,17 +64,27 @@ internal static class SafeFilePath
     {
         ValidateRelative(name);
         var fullRoot = Path.GetFullPath(root);
-        var destination = Path.GetFullPath(Path.Combine(fullRoot, name.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)));
+
+        var destination = Path.GetFullPath(
+            Path.Combine(
+                fullRoot,
+                name.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)));
+
         var prefix = Path.EndsInDirectorySeparator(fullRoot) ? fullRoot : fullRoot + Path.DirectorySeparatorChar;
-        if (!destination.StartsWith(prefix, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+
+        if (!destination.StartsWith(
+                prefix,
+                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
             throw new InvalidDataException($"Path escapes the root: {name}");
+
         for (var current = destination; current is not null; current = Path.GetDirectoryName(current))
         {
-            if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+            if ((File.Exists(current) || Directory.Exists(current)) &&
+                (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
                 throw new IOException($"Refusing to follow symbolic link or junction: {current}");
+
             if (new FileInfo(current).LinkTarget is not null)
                 throw new IOException($"Refusing symbolic link: {current}");
-
         }
 
         return destination;

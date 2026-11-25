@@ -35,6 +35,7 @@ public sealed partial class ViewerTests
         sprite.Rotation = 30;
         sprite.NudgeX = 3;
         sprite.NudgeY = -4;
+
         var definition = new SpriteDefinition
         {
             Key = "actors",
@@ -42,11 +43,18 @@ public sealed partial class ViewerTests
             AnimationSources = [SpriteAnimationSourceDefinition.Loose("walk", "animation.gani")],
             SceneSources = [SpriteSceneSourceDefinition.Loose(scene.ID, Path.GetFileName(ScenePath))]
         };
+
         if (packed)
-            Pack("actors.gaf", AssetTypes.SpriteDefinition, "sprites/nested/actors.gspr",
-                SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = "decoy" }, definition] }));
+            Pack(
+                "actors.gaf",
+                AssetTypes.SpriteDefinition,
+                "sprites/nested/actors.gspr",
+                SpriteDefinitionSerializer.ToDocumentJson(
+                    new() { Definitions = [new() { Key = "decoy" }, definition] }));
         else
-            SpriteDefinitionSerializer.SaveAll(Path.Combine(_directory, "actors.gspr"), [new() { Key = "decoy" }, definition]);
+            SpriteDefinitionSerializer.SaveAll(
+                Path.Combine(_directory, "actors.gspr"),
+                [new() { Key = "decoy" }, definition]);
 
         using var runtime = new ViewerSceneLoader().Load(ScenePath);
         var placed = Assert.Single(SpriteManager.Instance.AllSprites);
@@ -55,10 +63,21 @@ public sealed partial class ViewerTests
         Assert.Equal(layer.ID, placed.SceneLayer.ID);
         Assert.True(placed.TileAnimator.IsCycling);
         Assert.Equal(30, placed.Rotation);
+
         // Hex anchor (-62, 101), centered horizontally and bottom-aligned, with (3,-4) nudge.
-        Assert.Equal(new Rectangle(-50, 109, 30, 20), placed.DrawLocationWorld);
+        Assert.Equal(
+            new Rectangle(
+                -50,
+                109,
+                30,
+                20),
+            placed.DrawLocationWorld);
+
         var runtimeLayer = runtime.SceneLayers.Single(item => item.ID == layer.ID);
-        Assert.Equal(sprite.Position, runtimeLayer.WorldPxToContinuousGrid(runtimeLayer.GridToWorldPx(sprite.Position)));
+
+        Assert.Equal(
+            sprite.Position,
+            runtimeLayer.WorldPxToContinuousGrid(runtimeLayer.GridToWorldPx(sprite.Position)));
     }
 
     [Theory]
@@ -81,17 +100,25 @@ public sealed partial class ViewerTests
         {
             string loose = $"external/{actor}.gani";
             string entry = $"cycles/{actor}.gani";
+
             var source = packed
                 ? SpriteAnimationSourceDefinition.Packed("walk", "external/walk.gaf", entry)
                 : SpriteAnimationSourceDefinition.Loose("walk", loose);
+
             if (packed)
-                Pack("external/walk.gaf", AssetTypes.AnimationDefinition, entry, json);
+                Pack(
+                    "external/walk.gaf",
+                    AssetTypes.AnimationDefinition,
+                    entry,
+                    json);
             else
                 File.WriteAllText(Path.Combine(_directory, loose), json);
 
             var sprite = Sprite(actor);
             sprite.AnimationKey = "walk";
-            SpriteDefinitionSerializer.Save(Path.Combine(_directory, actor + ".gspr"),
+
+            SpriteDefinitionSerializer.Save(
+                Path.Combine(_directory, actor + ".gspr"),
                 new SpriteDefinition { Sprites = [sprite], AnimationSources = [source] });
         }
 
@@ -111,21 +138,28 @@ public sealed partial class ViewerTests
         AnimationDefinitionSerializer.Save(walkPath, walk);
 
         Directory.CreateDirectory(Path.Combine(_directory, "external"));
-        AnimationDefinitionSerializer.Save(Path.Combine(_directory, "external", "return.gani"), new AnimationDefinition
-        {
-            Key = "return",
-            NextCycleKey = "walk",
-            ThrottleTime = .1,
-            Frames = [new AnimationFrameDefinition { Tilesheet = "sheet" }]
-        });
+
+        AnimationDefinitionSerializer.Save(
+            Path.Combine(_directory, "external", "return.gani"),
+            new AnimationDefinition
+            {
+                Key = "return",
+                NextCycleKey = "walk",
+                ThrottleTime = .1,
+                Frames = [new AnimationFrameDefinition { Tilesheet = "sheet" }]
+            });
+
         var sprite = Sprite("walker");
         sprite.AnimationKey = "walk";
         sprite.StartAnimation = true;
-        SpriteDefinitionSerializer.Save(Path.Combine(_directory, "walker.gspr"), new SpriteDefinition
-        {
-            Sprites = [sprite],
-            AnimationSources = [SpriteAnimationSourceDefinition.Loose("return", "external/return.gani")]
-        });
+
+        SpriteDefinitionSerializer.Save(
+            Path.Combine(_directory, "walker.gspr"),
+            new SpriteDefinition
+            {
+                Sprites = [sprite],
+                AnimationSources = [SpriteAnimationSourceDefinition.Loose("return", "external/return.gani")]
+            });
 
         using var scene = new ViewerSceneLoader().Load(ScenePath);
         Assert.True(Assert.Single(SpriteManager.Instance.AllSprites).TileAnimator.IsCycling);

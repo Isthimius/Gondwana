@@ -65,6 +65,7 @@ public sealed class EngineInputSystems
         ArgumentNullException.ThrowIfNull(configuration);
 
         var manager = _gamepadManager;
+
         if (manager is null)
             return;
 

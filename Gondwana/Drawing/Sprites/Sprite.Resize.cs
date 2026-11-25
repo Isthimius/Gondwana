@@ -49,11 +49,13 @@ public partial class Sprite
         _resizeElapsedSeconds += deltaSeconds;
 
         float t = _resizeElapsedSeconds / _resizeDurationSeconds;
+
         if (t >= 1f)
             t = 1f;
 
         int w = (int)MathF.Round(
             _resizeStart.Width + ((_resizeTarget.Width - _resizeStart.Width) * t));
+
         int h = (int)MathF.Round(
             _resizeStart.Height + ((_resizeTarget.Height - _resizeStart.Height) * t));
 
@@ -79,24 +81,28 @@ public partial class Sprite
             if (_pulseForward)
             {
                 _pulseForward = false;
+
                 StartResizeLeg(
                     start: _resizePeak,
                     target: _resizeOriginalStart,
                     durationSeconds: _pulseShrinkDurationSeconds,
                     returnToStart: false,
                     returnDurationSeconds: 0f);
+
                 return;
             }
 
             if (_pulseLoop)
             {
                 _pulseForward = true;
+
                 StartResizeLeg(
                     start: _resizeOriginalStart,
                     target: _resizePeak,
                     durationSeconds: _pulseGrowDurationSeconds,
                     returnToStart: false,
                     returnDurationSeconds: 0f);
+
                 return;
             }
 

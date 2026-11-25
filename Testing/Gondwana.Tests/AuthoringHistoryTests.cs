@@ -14,7 +14,10 @@ namespace Gondwana.Tests;
 
 public sealed class AuthoringHistoryTests : IDisposable
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "AuthoringHistory_" + Guid.NewGuid().ToString("N"));
+    private readonly string _root = Path.Combine(
+        Path.GetTempPath(),
+        "AuthoringHistory_" + Guid.NewGuid().ToString("N"));
+
     public AuthoringHistoryTests() => Directory.CreateDirectory(_root);
     public void Dispose() => Directory.Delete(_root, true);
 
@@ -51,19 +54,59 @@ public sealed class AuthoringHistoryTests : IDisposable
     {
         using var document = TilesheetDocument.Create(_root);
         var member = document.Definition;
-        var region = new TilesheetRegionDefinition { Name = "region", Area = new(3, 4, 32, 32), TileSize = new(16, 16) };
+
+        var region = new TilesheetRegionDefinition
+        {
+            Name = "region", Area = new(
+                3,
+                4,
+                32,
+                32),
+            TileSize = new(16, 16)
+        };
+
         document.AddRegion(region);
         document.Save(Path.Combine(_root, "tiles.gts"), allowInvalid: true);
         var fields = new PropertyFields(document);
         fields.AddModel(region, document.MarkChanged, "Frames");
-        fields.GetProperties()["Area"]!.SetValue(fields, new Rectangle(3, 4, 64, 48));
-        Assert.Equal(new Rectangle(3, 4, 64, 48), region.Area);
+
+        fields.GetProperties()["Area"]!.SetValue(
+            fields,
+            new Rectangle(
+                3,
+                4,
+                64,
+                48));
+
+        Assert.Equal(
+            new Rectangle(
+                3,
+                4,
+                64,
+                48),
+            region.Area);
+
         document.History.Undo();
-        Assert.Equal(new Rectangle(3, 4, 32, 32), region.Area);
+
+        Assert.Equal(
+            new Rectangle(
+                3,
+                4,
+                32,
+                32),
+            region.Area);
+
         Assert.False(document.IsDirty);
         document.History.Redo();
         Assert.Equal(64, region.Area.Width);
-        var frameFields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
+
+        var frameFields = PropertyFields.Frame(
+            document,
+            region,
+            0,
+            0,
+            document.MarkChanged);
+
         frameFields.GetProperties()["CollisionType"]!.SetValue(frameFields, FrameCollisionChoice.Blocking);
         var frame = Assert.Single(region.Frames);
         document.History.Undo();
@@ -71,7 +114,15 @@ public sealed class AuthoringHistoryTests : IDisposable
         document.History.Redo();
         Assert.Same(frame, Assert.Single(region.Frames));
         Assert.Same(member, document.Definition);
-        Assert.False(document.EditFrame(region, 0, 0, "Same", f => f.CollisionType = TileCollisionType.Blocking));
+
+        Assert.False(
+            document.EditFrame(
+                region,
+                0,
+                0,
+                "Same",
+                f => f.CollisionType = TileCollisionType.Blocking));
+
         Assert.Equal("Change frame collision type", document.History.UndoDescription);
     }
 
@@ -80,9 +131,26 @@ public sealed class AuthoringHistoryTests : IDisposable
     {
         using var d = TilesheetDocument.Create(_root);
         var first = d.Definition;
-        var region = new TilesheetRegionDefinition { Name = "region", Area = new(0, 0, 16, 16), TileSize = new(16, 16) };
+
+        var region = new TilesheetRegionDefinition
+        {
+            Name = "region", Area = new(
+                0,
+                0,
+                16,
+                16),
+            TileSize = new(16, 16)
+        };
+
         d.AddRegion(region);
-        d.EditFrame(region, 2, 0, "Collision", f => f.CollisionType = TileCollisionType.Blocking);
+
+        d.EditFrame(
+            region,
+            2,
+            0,
+            "Collision",
+            f => f.CollisionType = TileCollisionType.Blocking);
+
         var frame = region.Frames.Single();
         Assert.Equal(1, d.RemoveOutOfGridMetadata(region));
         d.History.Undo();
@@ -134,16 +202,23 @@ public sealed class AuthoringHistoryTests : IDisposable
         d.Save(Path.Combine(_root, "scene.gscn"));
         int changes = 0;
         d.Changed += (_, _) => changes++;
+
         using (var group = d.History.BeginTransaction("Many tiles"))
         {
             for (int x = 0; x < 30; x++)
-                for (int y = 0; y < 10; y++)
-                    d.EditTile(layer, x, y, "Assign", tile =>
+            for (int y = 0; y < 10; y++)
+                d.EditTile(
+                    layer,
+                    x,
+                    y,
+                    "Assign",
+                    tile =>
                     {
                         tile.AnimationKey = "walk";
                         tile.EnableAnimator = true;
                         tile.Transform = TileTransform.Rotate90;
                     });
+
             group.Commit();
         }
 
@@ -154,7 +229,14 @@ public sealed class AuthoringHistoryTests : IDisposable
         Assert.False(d.IsDirty);
         d.History.Redo();
         var original = d.FindTile(layer, 0, 0)!;
-        d.EditTile(layer, 0, 0, "Assign frame", tile => tile.Frame = new() { Tilesheet = "terrain", XTile = 3 });
+
+        d.EditTile(
+            layer,
+            0,
+            0,
+            "Assign frame",
+            tile => tile.Frame = new() { Tilesheet = "terrain", XTile = 3 });
+
         Assert.Equal("walk", original.AnimationKey);
         Assert.Equal(TileTransform.Rotate90, original.Transform);
         d.History.Undo();
@@ -163,7 +245,14 @@ public sealed class AuthoringHistoryTests : IDisposable
         d.RemoveTile(layer, 0, 0);
         d.History.Undo();
         Assert.Same(original, d.FindTile(layer, 0, 0));
-        Assert.False(d.EditTile(layer, 0, 0, "No-op", tile => tile.AnimationKey = "walk"));
+
+        Assert.False(
+            d.EditTile(
+                layer,
+                0,
+                0,
+                "No-op",
+                tile => tile.AnimationKey = "walk"));
     }
 
     [Fact]
@@ -249,13 +338,18 @@ public sealed class AuthoringHistoryTests : IDisposable
     {
         using var d = SceneDocument.Create(_root);
         var originalPath = Path.Combine(_root, animation ? "original.gani" : "original.gts");
+
         if (animation)
             d.SetLooseAnimationSource("walk", originalPath);
         else
             d.SetLooseTilesheetSource("terrain", originalPath);
+
         d.Save(Path.Combine(_root, "original.gscn"));
         object source = animation ? d.Definition.AnimationSources.Single() : d.Definition.TilesheetSources.Single();
-        var snapshot = new ModelSnapshot(animation ? (object)d.Definition.AnimationSources : d.Definition.TilesheetSources);
+
+        var snapshot = new ModelSnapshot(
+            animation ? (object)d.Definition.AnimationSources : d.Definition.TilesheetSources);
+
         if (animation)
         {
             d.Definition.AnimationSources[0].GaniPath = "edited.gani";
@@ -269,10 +363,15 @@ public sealed class AuthoringHistoryTests : IDisposable
 
         d.RecordCollectionEdit(snapshot, "Edit then remove source");
         d.Save(Path.Combine(_root, "nested", "saved.gscn"));
+
         for (int replay = 0; replay < 3; replay++)
         {
             d.History.Undo();
-            var restored = animation ? (object)d.Definition.AnimationSources.Single() : d.Definition.TilesheetSources.Single();
+
+            var restored = animation
+                ? (object)d.Definition.AnimationSources.Single()
+                : d.Definition.TilesheetSources.Single();
+
             Assert.Same(source, restored);
             var path = animation ? d.Definition.AnimationSources[0].GaniPath : d.Definition.TilesheetSources[0].GtsPath;
             Assert.Equal(originalPath, d.ResolveReferencePath(path!));
@@ -290,12 +389,27 @@ public sealed class AuthoringHistoryTests : IDisposable
     public void PackedCheckpointsAndPackedToLooseSaveAsRetainHistory(string format)
     {
         string archivePath = Path.Combine(_root, "content.gaf");
-        using var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
-        string json = format == "gts" ? TilesheetDefinitionSerializer.ToJson(new() { Name = "tiles", Image = new() { AssetEntryName = "images/tile.png" } })
+
+        using var archive = AssetsFile.LoadOrCreate(
+            archivePath,
+            null,
+            false,
+            register: false);
+
+        string json = format == "gts"
+            ? TilesheetDefinitionSerializer.ToJson(
+                new() { Name = "tiles", Image = new() { AssetEntryName = "images/tile.png" } })
             : SceneDefinitionSerializer.ToJson(new SceneDefinition { ID = "scene" });
+
         using var bytes = new MemoryStream(Encoding.UTF8.GetBytes(json));
-        archive.Add(format == "gts" ? AssetTypes.TilesheetDefinition : AssetTypes.SceneDefinition, "nested/document." + format, bytes);
+
+        archive.Add(
+            format == "gts" ? AssetTypes.TilesheetDefinition : AssetTypes.SceneDefinition,
+            "nested/document." + format,
+            bytes);
+
         archive.Save();
+
         if (format == "gts")
         {
             using var d = TilesheetDocument.Open(archive, "nested/document.gts");

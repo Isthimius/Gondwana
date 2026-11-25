@@ -31,6 +31,7 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
         var gani = Path.Combine(root, "animations", "walk.gani");
         var output = Path.Combine(root, "scenes", "world.gscn");
         Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+
         try
         {
             looseSheet.DefinitionProvenance = CaptureSheet(looseSheet, looseGts);
@@ -38,11 +39,22 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
 
             var key = $"walk.{Guid.NewGuid():N}";
             using var cycle = new Cycle(new FrameSequence([looseSheet.GetFrame(0, 0)]), 0.1, key);
+
             cycle.DefinitionProvenance = DefinitionProvenance.Capture(
-                gani, null, null, () => AnimationDefinitionSerializer.FromCycle(cycle), key);
+                gani,
+                null,
+                null,
+                () => AnimationDefinitionSerializer.FromCycle(cycle),
+                key);
 
             using var scene = new Scene();
-            var layer = scene.AddLayer(3, 1, 16, 16);
+
+            var layer = scene.AddLayer(
+                3,
+                1,
+                16,
+                16);
+
             layer[0, 0]!.CurrentFrame = looseSheet.GetFrame(0, 0);
             layer[1, 0]!.CurrentFrame = packedSheet.GetFrame(0, 0);
             layer[2, 0]!.CurrentFrame = looseSheet.GetFrame(0, 0);
@@ -51,7 +63,11 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
 
             var projected = SceneDefinitionSerializer.FromScene(scene);
             Assert.Equal(2, projected.TilesheetSources.Count);
-            Assert.Equal(looseGts, Assert.Single(projected.TilesheetSources, s => s.Tilesheet == looseSheet.Name).GtsPath);
+
+            Assert.Equal(
+                looseGts,
+                Assert.Single(projected.TilesheetSources, s => s.Tilesheet == looseSheet.Name).GtsPath);
+
             var packed = Assert.Single(projected.TilesheetSources, s => s.Tilesheet == packedSheet.Name);
             Assert.Equal(SceneTilesheetSourceKind.PackedDefinitionFile, packed.Kind);
             Assert.Equal(archive, packed.AssetsFilePath);
@@ -61,11 +77,17 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
             SceneDefinitionSerializer.Save(output, scene);
             var saved = SceneDefinitionSerializer.Load(output);
             var outputDirectory = Path.GetDirectoryName(output)!;
-            Assert.Equal(Path.GetRelativePath(outputDirectory, looseGts),
+
+            Assert.Equal(
+                Path.GetRelativePath(outputDirectory, looseGts),
                 Assert.Single(saved.TilesheetSources, s => s.Tilesheet == looseSheet.Name).GtsPath);
-            Assert.Equal(Path.GetRelativePath(outputDirectory, archive),
+
+            Assert.Equal(
+                Path.GetRelativePath(outputDirectory, archive),
                 Assert.Single(saved.TilesheetSources, s => s.Tilesheet == packedSheet.Name).AssetsFilePath);
-            Assert.Equal(Path.GetRelativePath(outputDirectory, gani),
+
+            Assert.Equal(
+                Path.GetRelativePath(outputDirectory, gani),
                 Assert.Single(saved.AnimationSources).GaniPath);
         }
         finally
@@ -84,7 +106,13 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
         modifiedSheet.DefaultRegion.TileSize = new Size(8, 8);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            1,
+            16,
+            16);
+
         layer[0, 0]!.CurrentFrame = modifiedSheet.GetFrame(0, 0);
         layer[1, 0]!.CurrentFrame = generatedSheet.GetFrame(0, 0);
 
@@ -102,7 +130,9 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
 
         using var cycle = new Cycle(
             new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0)]),
-            0.1, $"cycle.{Guid.NewGuid():N}");
+            0.1,
+            $"cycle.{Guid.NewGuid():N}");
+
         var source = Assert.Single(AnimationDefinitionSerializer.FromCycle(cycle).TilesheetSources);
         Assert.Equal(AnimationTilesheetSourceKind.PackedDefinitionFile, source.Kind);
         Assert.Equal(archive, source.AssetsFilePath);
@@ -124,15 +154,31 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
 
         var key = $"sprite.run.{Guid.NewGuid():N}";
         using var cycle = new Cycle(new FrameSequence([sheet.GetFrame(0, 0)]), 0.1, key);
+
         cycle.DefinitionProvenance = DefinitionProvenance.Capture(
-            null, ganiArchive, "movement", () => AnimationDefinitionSerializer.FromCycle(cycle), key);
+            null,
+            ganiArchive,
+            "movement",
+            () => AnimationDefinitionSerializer.FromCycle(cycle),
+            key);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         scene.DefinitionProvenance = DefinitionProvenance.Capture(
-            gscn, null, null, () => SceneDefinitionSerializer.FromScene(scene), scene.ID);
+            gscn,
+            null,
+            null,
+            () => SceneDefinitionSerializer.FromScene(scene),
+            scene.ID);
 
         var sprite = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(0, 0), $"sprite-{Guid.NewGuid():N}");
+
         try
         {
             sprite.TileAnimator.SetCurrentCycle(key);
@@ -164,13 +210,29 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
         using var next = new Cycle(new FrameSequence([sheet.GetFrame(1, 0)]), 0.1, nextKey);
         first.NextCycle = next;
         next.NextCycle = first; // An intentional cycle must not recurse indefinitely.
+
         first.DefinitionProvenance = DefinitionProvenance.Capture(
-            firstPath, null, null, () => AnimationDefinitionSerializer.FromCycle(first), firstKey);
+            firstPath,
+            null,
+            null,
+            () => AnimationDefinitionSerializer.FromCycle(first),
+            firstKey);
+
         next.DefinitionProvenance = DefinitionProvenance.Capture(
-            null, nextArchive, "next-cycle", () => AnimationDefinitionSerializer.FromCycle(next), nextKey);
+            null,
+            nextArchive,
+            "next-cycle",
+            () => AnimationDefinitionSerializer.FromCycle(next),
+            nextKey);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            1,
+            16,
+            16);
+
         foreach (var tile in new[] { layer[0, 0]!, layer[1, 0]! })
         {
             tile.CurrentFrame = sheet.GetFrame(0, 0);
@@ -180,13 +242,18 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
 
         var definition = SceneDefinitionSerializer.FromScene(scene);
         Assert.Equal(2, definition.AnimationSources.Count);
-        Assert.Equal(firstPath,
+
+        Assert.Equal(
+            firstPath,
             Assert.Single(definition.AnimationSources, source => source.AnimationKey == firstKey).GaniPath);
+
         var indirect = Assert.Single(definition.AnimationSources, source => source.AnimationKey == nextKey);
         Assert.Equal(SceneAnimationSourceKind.PackedDefinitionFile, indirect.Kind);
         Assert.Equal(nextArchive, indirect.AssetsFilePath);
         Assert.Equal("next-cycle", indirect.AssetEntryName);
-        Assert.DoesNotContain(definition.Layers.SelectMany(layer => layer.Tiles),
+
+        Assert.DoesNotContain(
+            definition.Layers.SelectMany(layer => layer.Tiles),
             tile => tile.AnimationKey == nextKey);
     }
 
@@ -202,24 +269,48 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
         using var first = new Cycle(new FrameSequence([sheet.GetFrame(0, 0)]), 0.1, firstKey);
         using var next = new Cycle(new FrameSequence([sheet.GetFrame(1, 0)]), 0.1, nextKey);
         first.NextCycle = next;
+
         first.DefinitionProvenance = DefinitionProvenance.Capture(
-            firstPath, null, null, () => AnimationDefinitionSerializer.FromCycle(first), firstKey);
+            firstPath,
+            null,
+            null,
+            () => AnimationDefinitionSerializer.FromCycle(first),
+            firstKey);
+
         next.DefinitionProvenance = DefinitionProvenance.Capture(
-            nextPath, null, null, () => AnimationDefinitionSerializer.FromCycle(next), nextKey);
+            nextPath,
+            null,
+            null,
+            () => AnimationDefinitionSerializer.FromCycle(next),
+            nextKey);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
-        var sprite = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(0, 0),
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
+        var sprite = SpriteManager.Instance.CreateSprite(
+            layer,
+            sheet.GetFrame(0, 0),
             $"sprite-{Guid.NewGuid():N}");
+
         try
         {
             sprite.TileAnimator.SetCurrentCycle(firstKey);
             var definition = SpriteDefinitionSerializer.FromSprites([sprite]);
             Assert.Equal(2, definition.AnimationSources.Count);
-            Assert.Equal(firstPath,
+
+            Assert.Equal(
+                firstPath,
                 Assert.Single(definition.AnimationSources, source => source.AnimationKey == firstKey).GaniPath);
-            Assert.Equal(nextPath,
+
+            Assert.Equal(
+                nextPath,
                 Assert.Single(definition.AnimationSources, source => source.AnimationKey == nextKey).GaniPath);
+
             Assert.Equal(firstKey, Assert.Single(definition.Sprites).AnimationKey);
         }
         finally
@@ -232,7 +323,9 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
     private Tilesheet NewSheet()
     {
         var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
-            $"source.{Guid.NewGuid():N}", new SKBitmap(32, 16));
+            $"source.{Guid.NewGuid():N}",
+            new SKBitmap(32, 16));
+
         sheet.DefaultRegion.TileSize = new Size(16, 16);
         // FromTilesheet requires an actual image source, even when definition
         // provenance itself is simulated by these tests.
@@ -250,7 +343,14 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
     }
 
     private static DefinitionProvenance CaptureSheet(
-        Tilesheet sheet, string? loose = null, string? archive = null, string? entry = null) =>
-        DefinitionProvenance.Capture(loose, archive, entry,
-            () => TilesheetDefinitionSerializer.FromTilesheet(sheet), sheet.Name)!;
+        Tilesheet sheet,
+        string? loose = null,
+        string? archive = null,
+        string? entry = null) =>
+        DefinitionProvenance.Capture(
+            loose,
+            archive,
+            entry,
+            () => TilesheetDefinitionSerializer.FromTilesheet(sheet),
+            sheet.Name)!;
 }

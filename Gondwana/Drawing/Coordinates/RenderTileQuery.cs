@@ -64,18 +64,53 @@ internal static class RenderTileQuery
         return coordinates switch
         {
             OrthogonalCoordinates =>
-                VisitOrthogonal(coordinates, layer, worldPixelRange, includeOverhang, visitor),
+                VisitOrthogonal(
+                    coordinates,
+                    layer,
+                    worldPixelRange,
+                    includeOverhang,
+                    visitor),
             IsometricRhombicCoordinates =>
-                VisitIsometricRhombic(coordinates, layer, worldPixelRange, includeOverhang, visitor),
+                VisitIsometricRhombic(
+                    coordinates,
+                    layer,
+                    worldPixelRange,
+                    includeOverhang,
+                    visitor),
             IsometricAxialCoordinates =>
-                VisitIsometricAxial(coordinates, layer, worldPixelRange, includeOverhang, visitor),
+                VisitIsometricAxial(
+                    coordinates,
+                    layer,
+                    worldPixelRange,
+                    includeOverhang,
+                    visitor),
             HexAxialFlatTopCoordinates =>
-                VisitHexFlat(coordinates, layer, worldPixelRange, includeOverhang, visitor),
+                VisitHexFlat(
+                    coordinates,
+                    layer,
+                    worldPixelRange,
+                    includeOverhang,
+                    visitor),
             HexAxialPointedTop =>
-                VisitHexPointed(coordinates, layer, worldPixelRange, includeOverhang, visitor),
+                VisitHexPointed(
+                    coordinates,
+                    layer,
+                    worldPixelRange,
+                    includeOverhang,
+                    visitor),
             ObliqueRightCoordinates or ObliqueLeftCoordinates =>
-                VisitOblique(coordinates, layer, worldPixelRange, includeOverhang, visitor),
-            _ => VisitExactFallback(coordinates, layer, worldPixelRange, includeOverhang, visitor)
+                VisitOblique(
+                    coordinates,
+                    layer,
+                    worldPixelRange,
+                    includeOverhang,
+                    visitor),
+            _ => VisitExactFallback(
+                coordinates,
+                layer,
+                worldPixelRange,
+                includeOverhang,
+                visitor)
         };
     }
 
@@ -105,9 +140,17 @@ internal static class RenderTileQuery
             grid);
 
         if (layer.CoordinateSystem is IsometricRhombicCoordinates or IsometricAxialCoordinates)
-            return new Rectangle(anchor.X - width / 2, anchor.Y, width, height);
+            return new Rectangle(
+                anchor.X - width / 2,
+                anchor.Y,
+                width,
+                height);
 
-        return new Rectangle(anchor.X, anchor.Y, width, height);
+        return new Rectangle(
+            anchor.X,
+            anchor.Y,
+            width,
+            height);
     }
 
     private static bool VisitOrthogonal(
@@ -118,9 +161,11 @@ internal static class RenderTileQuery
         Func<SceneLayerTile, bool> visitor)
     {
         var candidate = TileBounds.GetTransformedTileCandidateRange(layer, query, includeOverhang);
+
         var ul = coordinates.GetSceneLayerCoordinatesAtPixel(
             layer,
             new PointF(candidate.Left, candidate.Top));
+
         var br = coordinates.GetSceneLayerCoordinatesAtPixel(
             layer,
             new PointF(candidate.Right - 1, candidate.Bottom - 1));
@@ -130,7 +175,13 @@ internal static class RenderTileQuery
         int minY = Math.Max(0, (int)Math.Floor(ul.Y) - 1);
         int maxY = Math.Min(layer.GridRowCount - 1, (int)Math.Ceiling(br.Y) + 1);
 
-        return VisitRowMajor(layer, minX, maxX, minY, maxY, visitor);
+        return VisitRowMajor(
+            layer,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            visitor);
     }
 
     private static bool VisitIsometricRhombic(
@@ -151,7 +202,12 @@ internal static class RenderTileQuery
             out int minY,
             out int maxY);
 
-        if (!Clamp(layer, ref minX, ref maxX, ref minY, ref maxY))
+        if (!Clamp(
+                layer,
+                ref minX,
+                ref maxX,
+                ref minY,
+                ref maxY))
             return true;
 
         for (int depth = minX + minY; depth <= maxX + maxY; depth++)
@@ -162,6 +218,7 @@ internal static class RenderTileQuery
             for (int x = xStart; x <= xEnd; x++)
             {
                 int y = depth - x;
+
                 if (layer[x, y] is { } tile && !visitor(tile))
                     return false;
             }
@@ -188,7 +245,13 @@ internal static class RenderTileQuery
             out int minY,
             out int maxY);
 
-        return VisitRowMajorClamped(layer, minX, maxX, minY, maxY, visitor);
+        return VisitRowMajorClamped(
+            layer,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            visitor);
     }
 
     private static bool VisitHexPointed(
@@ -205,6 +268,7 @@ internal static class RenderTileQuery
         int minRow = Math.Max(
             0,
             (int)Math.Floor((candidate.Top + layer.OriginPx.Y) / (height * 0.75f)) - 2);
+
         int maxRow = Math.Min(
             layer.GridRowCount - 1,
             (int)Math.Ceiling((candidate.Bottom + layer.OriginPx.Y) / (height * 0.75f)) + 2);
@@ -215,10 +279,12 @@ internal static class RenderTileQuery
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = (row & 1) == 0 ? 0 : width / 2;
+
             int minCol = Math.Max(
                 0,
                 (int)Math.Floor(
                     (candidate.Left + layer.OriginPx.X - xOffset) / (float)width) - 2);
+
             int maxCol = Math.Min(
                 layer.GridColumnCount - 1,
                 (int)Math.Ceiling(
@@ -249,6 +315,7 @@ internal static class RenderTileQuery
         int minCol = Math.Max(
             0,
             (int)Math.Floor((candidate.Left + layer.OriginPx.X) / (width * 0.75f)) - 2);
+
         int maxCol = Math.Min(
             layer.GridColumnCount - 1,
             (int)Math.Ceiling((candidate.Right + layer.OriginPx.X) / (width * 0.75f)) + 2);
@@ -258,17 +325,21 @@ internal static class RenderTileQuery
 
         int minEven =
             (int)Math.Floor((candidate.Top + layer.OriginPx.Y) / (float)height) - 2;
+
         int maxEven =
             (int)Math.Ceiling((candidate.Bottom + layer.OriginPx.Y) / (float)height) + 2;
+
         int minOdd =
             (int)Math.Floor(
                 (candidate.Top + layer.OriginPx.Y - halfHeight) / (float)height) - 2;
+
         int maxOdd =
             (int)Math.Ceiling(
                 (candidate.Bottom + layer.OriginPx.Y - halfHeight) / (float)height) + 2;
 
         int minRow = Math.Max(0, Math.Min(minEven, minOdd));
         int maxRow = Math.Min(layer.GridRowCount - 1, Math.Max(maxEven, maxOdd));
+
         if (minRow > maxRow)
             return true;
 
@@ -277,10 +348,12 @@ internal static class RenderTileQuery
             for (int col = minCol; col <= maxCol; col++)
             {
                 int numerator = depth - (col & 1);
+
                 if ((numerator & 1) != 0)
                     continue;
 
                 int row = numerator / 2;
+
                 if (row < minRow || row > maxRow)
                     continue;
 
@@ -310,7 +383,13 @@ internal static class RenderTileQuery
             out int minY,
             out int maxY);
 
-        return VisitRowMajorClamped(layer, minX, maxX, minY, maxY, visitor);
+        return VisitRowMajorClamped(
+            layer,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            visitor);
     }
 
     private static bool VisitExactFallback(
@@ -346,15 +425,19 @@ internal static class RenderTileQuery
         out int maxY)
     {
         var candidate = TileBounds.GetTransformedTileCandidateRange(layer, query, includeOverhang);
+
         var ul = coordinates.GetSceneLayerCoordinatesAtPixel(
             layer,
             new PointF(candidate.Left, candidate.Top));
+
         var ur = coordinates.GetSceneLayerCoordinatesAtPixel(
             layer,
             new PointF(candidate.Right, candidate.Top));
+
         var ll = coordinates.GetSceneLayerCoordinatesAtPixel(
             layer,
             new PointF(candidate.Left, candidate.Bottom));
+
         var lr = coordinates.GetSceneLayerCoordinatesAtPixel(
             layer,
             new PointF(candidate.Right, candidate.Bottom));
@@ -362,12 +445,15 @@ internal static class RenderTileQuery
         minX =
             (int)Math.Floor(Math.Min(Math.Min(ul.X, ur.X), Math.Min(ll.X, lr.X))) -
             margin;
+
         maxX =
             (int)Math.Ceiling(Math.Max(Math.Max(ul.X, ur.X), Math.Max(ll.X, lr.X))) +
             margin;
+
         minY =
             (int)Math.Floor(Math.Min(Math.Min(ul.Y, ur.Y), Math.Min(ll.Y, lr.Y))) -
             margin;
+
         maxY =
             (int)Math.Ceiling(Math.Max(Math.Max(ul.Y, ur.Y), Math.Max(ll.Y, lr.Y))) +
             margin;
@@ -381,10 +467,21 @@ internal static class RenderTileQuery
         int maxY,
         Func<SceneLayerTile, bool> visitor)
     {
-        if (!Clamp(layer, ref minX, ref maxX, ref minY, ref maxY))
+        if (!Clamp(
+                layer,
+                ref minX,
+                ref maxX,
+                ref minY,
+                ref maxY))
             return true;
 
-        return VisitRowMajor(layer, minX, maxX, minY, maxY, visitor);
+        return VisitRowMajor(
+            layer,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            visitor);
     }
 
     private static bool VisitRowMajor(

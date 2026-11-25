@@ -121,6 +121,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         _player.SetPosition(SpawnPosition);
         _player.Visible = true;
         _player.ZOrder = 20;
+
         _player.AdjustCollisionArea = new CollisionAdjust(
             top: 4,
             bottom: 0,
@@ -135,7 +136,13 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         _player.Movement.SetAcceleration(new Vector2(0f, Gravity));
 
         var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
-        camera.DeadZonePx = new Rectangle(360, 0, 240, RenderSurface.Height);
+
+        camera.DeadZonePx = new Rectangle(
+            360,
+            0,
+            240,
+            RenderSurface.Height);
+
         camera.FollowCenteredX(_player, speed: 9f);
         SpawnEnemy();
     }
@@ -146,40 +153,70 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         var view = RenderSurface.Host.ViewManager.Views[0];
 
         var panel = new DirectRectangle(
-                Color.FromArgb(210, 28, 39, 51),
+                Color.FromArgb(
+                    210,
+                    28,
+                    39,
+                    51),
                 RenderSurface.Host,
                 view,
-                new Rectangle(12, 12, 474, 68),
+                new Rectangle(
+                    12,
+                    12,
+                    474,
+                    68),
                 "hud-panel")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(235, 236, 223, 186))
+            .SetBorderColor(
+                Color.FromArgb(
+                    235,
+                    236,
+                    223,
+                    186))
             .SetStrokeWidth(2f)
             .SetCornerRadius(8f);
+
         panel.ZOrder = 1000;
 
         _hudText = new TextBlock(
                 RenderSurface.Host,
                 view,
-                new Rectangle(26, 22, 446, 48),
+                new Rectangle(
+                    26,
+                    22,
+                    446,
+                    48),
                 "hud-text")
             .SetFont(SKTypeface.Default, 17f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
             .EnableWrapping(false)
             .UseShadow();
+
         _hudText.ZOrder = 1001;
 
         _messageText = new TextBlock(
                 RenderSurface.Host,
                 view,
-                new Rectangle(150, 220, 660, 136),
+                new Rectangle(
+                    150,
+                    220,
+                    660,
+                    136),
                 "status-text")
             .SetFont(SKTypeface.Default, 30f, minSize: 20f)
-            .SetColors(SKColors.White, new SKColor(28, 39, 51, 210))
+            .SetColors(
+                SKColors.White,
+                new SKColor(
+                    28,
+                    39,
+                    51,
+                    210))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(3)
             .UseShadow()
             .UseOutline();
+
         _messageText.HorizontalPadding = 18f;
         _messageText.VerticalPadding = 12f;
         _messageText.ZOrder = 1100;
@@ -305,11 +342,13 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     {
         var tile = _worldLayer[x, y]!;
         tile.CurrentFrame = _tilesheet[PlatformerArt.SpikeFrame, 0];
+
         tile.AdjustCollisionArea = new CollisionAdjust(
             top: 14,
             bottom: 1,
             left: 3,
             right: 3);
+
         _hazards.Add(tile);
     }
 
@@ -317,11 +356,13 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     {
         var tile = _worldLayer[x, y]!;
         tile.CurrentFrame = _tilesheet[PlatformerArt.RelicFrame, 0];
+
         tile.AdjustCollisionArea = new CollisionAdjust(
             top: 5,
             bottom: 5,
             left: 5,
             right: 5);
+
         _relics.Add(tile);
     }
 
@@ -340,6 +381,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
                 if (key == Keys.R)
                     RestartGame();
+
                 break;
 
             case KeyAction.Released:
@@ -365,7 +407,9 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
         var horizontal = moveLeft == moveRight
             ? 0f
-            : moveLeft ? -RunSpeed : RunSpeed;
+            : moveLeft
+                ? -RunSpeed
+                : RunSpeed;
 
         if (horizontal < 0f && !_facingLeft)
             SetPlayerFacing(left: true);
@@ -392,6 +436,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
         _grounded = IsStandingOnSolid();
         CollectRelics();
+
         if (ResolveEnemyContacts())
             return;
 
@@ -427,16 +472,27 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     {
         // Choose real ground near the player, keeping clear of pits and the respawn point.
         var playerX = _player.GetPosition().X;
+
         var column = Enumerable.Range(6, WorldColumns - 7)
             .Where(x => _worldLayer[x, 16]!.CollisionsEnabled && Math.Abs(x - playerX) >= 5f)
             .OrderBy(x => Math.Abs(x - (playerX + 8f)))
             .First();
+
         var sprite = Engine.Managers.Sprites.CreateSprite(
-            _worldLayer, _tilesheet[PlatformerArt.EnemyWalkFrame, 0], $"mushroom-{++_enemyId}");
+            _worldLayer,
+            _tilesheet[PlatformerArt.EnemyWalkFrame, 0],
+            $"mushroom-{++_enemyId}");
+
         sprite.SetPosition(new Vector2(column, 15f));
         sprite.Visible = true;
         sprite.ZOrder = 19;
-        sprite.AdjustCollisionArea = new CollisionAdjust(top: 3, bottom: 0, left: 3, right: 3);
+
+        sprite.AdjustCollisionArea = new CollisionAdjust(
+            top: 3,
+            bottom: 0,
+            left: 3,
+            right: 3);
+
         sprite.Collider!.CollisionGroup = Scene!.CollisionGroups.Actors;
         sprite.Collider.CollidesWith = Scene.CollisionGroups.WorldStatic;
         sprite.Collider.ResponseType = CollisionResponseType.Solid;
@@ -448,6 +504,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     private void UpdateEnemies(float elapsed)
     {
         _spawnElapsed += elapsed;
+
         while (_spawnElapsed >= 10f)
         {
             _spawnElapsed -= 10f;
@@ -460,23 +517,32 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
             var sprite = enemy.Sprite;
             enemy.PreviousArea = sprite.CollisionArea;
             enemy.Age += elapsed;
+
             if (enemy.Flattened)
             {
                 // Hold the flattened pose briefly, then fade over 0.6 seconds.
                 var fade = Math.Clamp((enemy.Age - 0.2f) / 0.6f, 0f, 1f);
+
                 sprite.CurrentFrame = _tilesheet[PlatformerArt.EnemyFlattenedFrame +
-                    (int)(fade * (PlatformerArt.EnemyFadeFrames - 1)), 0];
+                                                 (int)(fade * (PlatformerArt.EnemyFadeFrames - 1)),
+                    0];
+
                 if (fade < 1f)
                     continue;
             }
             else if (sprite.GetPosition().Y <= WorldRows + 2)
             {
                 var dx = _player.GetPosition().X - sprite.GetPosition().X;
-                sprite.Movement.SetVelocity(new Vector2(
-                    Math.Abs(dx) < 0.1f ? 0f : Math.Sign(dx) * 2f,
-                    Math.Min(sprite.Movement.MovementState.Velocity.Y, MaxFallSpeed)));
+
+                sprite.Movement.SetVelocity(
+                    new Vector2(
+                        Math.Abs(dx) < 0.1f ? 0f : Math.Sign(dx) * 2f,
+                        Math.Min(sprite.Movement.MovementState.Velocity.Y, MaxFallSpeed)));
+
                 sprite.CurrentFrame = _tilesheet[
-                    PlatformerArt.EnemyWalkFrame + (int)(enemy.Age / 0.16f) % 2, 0];
+                    PlatformerArt.EnemyWalkFrame + (int)(enemy.Age / 0.16f) % 2,
+                    0];
+
                 continue;
             }
 
@@ -493,13 +559,19 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         for (var i = 0; i < _enemies.Count; i++)
         {
             var enemy = _enemies[i];
+
             if (enemy.Flattened)
                 continue;
 
             var area = _player.CollisionArea;
             var target = enemy.Sprite.CollisionArea;
-            if (EnemyContact.IsStomp(_previousPlayerArea, area,
-                    enemy.PreviousArea, target, _player.Movement.MovementState.Velocity.Y))
+
+            if (EnemyContact.IsStomp(
+                    _previousPlayerArea,
+                    area,
+                    enemy.PreviousArea,
+                    target,
+                    _player.Movement.MovementState.Velocity.Y))
             {
                 enemy.Flattened = true;
                 enemy.Age = 0f;
@@ -553,6 +625,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     {
         var area = _player.CollisionArea;
         var playerCollider = _player.Collider!;
+
         var footProbe = new Aabb(
             area.Left + 3,
             area.Bottom,
@@ -588,6 +661,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     private void SetPlayerFacing(bool left)
     {
         _facingLeft = left;
+
         _player.CurrentFrame = _tilesheet[
             left ? PlatformerArt.PlayerLeftFrame : PlatformerArt.PlayerRightFrame,
             0];
@@ -653,6 +727,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     private void UpdateHud(bool force = false)
     {
         var state = _gameState == GameState.Won ? "Road found" : "Find the old road";
+
         var hud =
             $"Relics {_relicsCollected}/{_relics.Count}   {state}\n" +
             "A/D or ←/→ move   W/↑/Space jump   R restart   Esc quit";
@@ -670,6 +745,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         /// Specifies playing.
         /// </summary>
         Playing,
+
         /// <summary>
         /// Specifies won.
         /// </summary>

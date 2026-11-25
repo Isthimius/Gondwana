@@ -116,6 +116,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
         set
         {
             var clamped = Math.Max(1f, value);
+
             if (Math.Abs(_radiusWorldPx - clamped) < 0.001f)
                 return;
 
@@ -150,6 +151,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
         set
         {
             var clamped = Clamp01(value);
+
             if (Math.Abs(_intensity - clamped) < 0.001f)
                 return;
 
@@ -189,6 +191,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
         set
         {
             var clamped = Clamp01(value);
+
             if (Math.Abs(_hotspotRadiusRatio - clamped) < 0.001f)
                 return;
 
@@ -206,6 +209,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
         set
         {
             var clamped = Clamp01(value);
+
             if (Math.Abs(_midpointRadiusRatio - clamped) < 0.001f)
                 return;
 
@@ -223,6 +227,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
         set
         {
             var clamped = Clamp01(value);
+
             if (Math.Abs(_midpointIntensityRatio - clamped) < 0.001f)
                 return;
 
@@ -280,6 +285,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
         set
         {
             var clamped = Math.Clamp(value, 0f, 1f);
+
             if (Math.Abs(_flickerAmount - clamped) < 0.001f)
                 return;
 
@@ -350,7 +356,12 @@ public sealed class DirectRadialLight : DirectDrawingBase
         if (worldBounds.Width <= 0 || worldBounds.Height <= 0)
             return;
 
-        var rect = new SKRect(destRectScreen.Left, destRectScreen.Top, destRectScreen.Right, destRectScreen.Bottom);
+        var rect = new SKRect(
+            destRectScreen.Left,
+            destRectScreen.Top,
+            destRectScreen.Right,
+            destRectScreen.Bottom);
+
         float scaleX = destRectScreen.Width / worldBounds.Width;
         float scaleY = destRectScreen.Height / worldBounds.Height;
 
@@ -445,13 +456,22 @@ public sealed class DirectRadialLight : DirectDrawingBase
         var right = (int)MathF.Ceiling(centerWorldPx.X + radius);
         var bottom = (int)MathF.Ceiling(centerWorldPx.Y + radius);
 
-        return Rectangle.FromLTRB(left, top, right, bottom);
+        return Rectangle.FromLTRB(
+            left,
+            top,
+            right,
+            bottom);
     }
 
     private static SKColor ToSkColor(Color color, float intensity)
     {
         var alpha = (byte)Math.Clamp(color.A * Clamp01(intensity), 0f, 255f);
-        return new SKColor(color.R, color.G, color.B, alpha);
+
+        return new SKColor(
+            color.R,
+            color.G,
+            color.B,
+            alpha);
     }
 
     private static float Clamp01(float value) => Math.Clamp(value, 0f, 1f);

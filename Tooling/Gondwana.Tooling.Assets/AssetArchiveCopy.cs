@@ -10,26 +10,57 @@ public static class AssetArchiveCopy
     /// <param name="destination">New file path; existing destinations are rejected.</param>
     /// <param name="password">New archive password.</param>
     /// <param name="encrypt">New archive encryption setting.</param>
-    public static void Save(AssetsFile source, string destination, string? password, bool encrypt) =>
-        SaveVersioned(source, destination, password, encrypt);
+    public static void Save(
+        AssetsFile source,
+        string destination,
+        string? password,
+        bool encrypt) =>
+        SaveVersioned(
+            source,
+            destination,
+            password,
+            encrypt);
 
     /// <summary>Returns the exact installed staging version so a host never accepts an adjacent external write.</summary>
-    internal static byte[] SaveVersioned(AssetsFile source, string destination, string? password, bool encrypt)
+    internal static byte[] SaveVersioned(
+        AssetsFile source,
+        string destination,
+        string? password,
+        bool encrypt)
     {
         destination = Path.GetFullPath(destination);
         DefinitionReferenceDiscovery.CheckPath(destination);
+
         if (File.Exists(destination) || Directory.Exists(destination))
             throw new IOException($"Copy destination exists: {destination}.");
+
         var sourcePath = Path.GetFullPath(source.SourcePath!);
         var contents = AssetImportPlan.Snapshot(source);
-        var mappings = contents.Keys.Select(key => new ReferenceRelocation(new(key.AssetType, sourcePath, key.AssetName), new(key.AssetType, destination, key.AssetName))).ToArray();
-        var transformed = contents.ToDictionary(pair => pair.Key, pair =>
-            PackDefinitionDocument.Read(pair.Key.AssetType, pair.Value, pair.Key.AssetName)?.Relocate(
-                new(pair.Key.AssetType, sourcePath, pair.Key.AssetName), new(pair.Key.AssetType, destination, pair.Key.AssetName), mappings, false) ?? pair.Value);
-        var temporary = Path.Combine(Path.GetDirectoryName(destination)!, ".gondwana-copy-" + Guid.NewGuid().ToString("N") + ".tmp");
+
+        var mappings = contents.Keys.Select(key => new ReferenceRelocation(
+            new(key.AssetType, sourcePath, key.AssetName),
+            new(key.AssetType, destination, key.AssetName))).ToArray();
+
+        var transformed = contents.ToDictionary(
+            pair => pair.Key,
+            pair =>
+                PackDefinitionDocument.Read(pair.Key.AssetType, pair.Value, pair.Key.AssetName)?.Relocate(
+                    new(pair.Key.AssetType, sourcePath, pair.Key.AssetName),
+                    new(pair.Key.AssetType, destination, pair.Key.AssetName),
+                    mappings,
+                    false) ?? pair.Value);
+
+        var temporary = Path.Combine(
+            Path.GetDirectoryName(destination)!,
+            ".gondwana-copy-" + Guid.NewGuid().ToString("N") + ".tmp");
+
         try
         {
-            using (var copy = AssetsFile.LoadOrCreate(temporary, password, encrypt, register: false))
+            using (var copy = AssetsFile.LoadOrCreate(
+                       temporary,
+                       password,
+                       encrypt,
+                       register: false))
             {
                 foreach (var pair in transformed)
                 {
@@ -42,8 +73,10 @@ public static class AssetArchiveCopy
 
             AssetsFile.Validate(temporary, password);
             byte[] hash;
+
             using (var staged = File.OpenRead(temporary))
                 hash = System.Security.Cryptography.SHA256.HashData(staged);
+
             File.Move(temporary, destination, overwrite: false);
             return hash;
         }

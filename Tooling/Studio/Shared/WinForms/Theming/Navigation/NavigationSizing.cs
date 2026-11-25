@@ -16,13 +16,24 @@ public static class NavigationSizing
     /// <param name="defaultSize">Optional fallback; null leaves existing defaults untouched until a size is saved.</param>
     /// <param name="store">Preference source; pass the same store to the shell/menu when using an isolated root.</param>
     /// <returns>The tree's presentation binding.</returns>
-    public static TreeNavigationSizing Attach(TreeView tree, Func<int, ImageList>? createImages = null,
-        NavigationIconSize? defaultSize = null, NavigationPreferenceStore? store = null)
+    public static TreeNavigationSizing Attach(
+        TreeView tree,
+        Func<int, ImageList>? createImages = null,
+        NavigationIconSize? defaultSize = null,
+        NavigationPreferenceStore? store = null)
     {
-        var binding = Trees.GetValue(tree, key => new TreeNavigationSizing(key, createImages, defaultSize, store));
+        var binding = Trees.GetValue(
+            tree,
+            key => new TreeNavigationSizing(
+                key,
+                createImages,
+                defaultSize,
+                store));
 
         if (store is not null && !binding.UsesStore(store))
-            throw new ArgumentException("The tree is already registered with another preference source.", nameof(store));
+            throw new ArgumentException(
+                "The tree is already registered with another preference source.",
+                nameof(store));
 
         return binding;
     }
@@ -35,19 +46,23 @@ public static class NavigationSizing
 
     private static NavigationPreferenceStore GetShellStore(Form owner, NavigationPreferenceStore? store)
     {
-        var registered = ShellStores.GetValue(owner, _ =>
-        {
-            var source = store ?? new NavigationPreferenceStore();
-            void Refresh(object? sender, EventArgs e) => PreferenceChanged?.Invoke(source.FilePath);
+        var registered = ShellStores.GetValue(
+            owner,
+            _ =>
+            {
+                var source = store ?? new NavigationPreferenceStore();
+                void Refresh(object? sender, EventArgs e) => PreferenceChanged?.Invoke(source.FilePath);
 
-            owner.Activated += Refresh;
-            owner.Disposed += (_, _) => owner.Activated -= Refresh;
+                owner.Activated += Refresh;
+                owner.Disposed += (_, _) => owner.Activated -= Refresh;
 
-            return source;
-        });
+                return source;
+            });
 
         if (store is not null && !SamePreferenceFile(registered, store))
-            throw new ArgumentException("The shell is already registered with another preference source.", nameof(store));
+            throw new ArgumentException(
+                "The shell is already registered with another preference source.",
+                nameof(store));
 
         return registered;
     }
@@ -66,11 +81,14 @@ public static class NavigationSizing
     public static ImageList CopyImages(ImageList source, int pixels)
     {
         var result = new ImageList { ImageSize = new Size(pixels, pixels), ColorDepth = ColorDepth.Depth32Bit };
+
         try
         {
             for (int index = 0; index < source.Images.Count; index++)
             {
-                using var image = source.Images[index]; // ImageList returns a new bitmap; the source list remains intact.
+                using var
+                    image = source.Images[index]; // ImageList returns a new bitmap; the source list remains intact.
+
                 result.Images.Add(source.Images.Keys[index] ?? string.Empty, image);
                 _ = result.Handle; // Materialize native copies before releasing the source image.
             }
@@ -88,11 +106,20 @@ public static class NavigationSizing
     /// <param name="owner">Shell owning the menu.</param>
     /// <param name="store">Optional isolated store for tests or embedding hosts.</param>
     /// <param name="notify">Reports failed saves; the current presentation is retained.</param>
-    public static ToolStripMenuItem CreateMenu(Form owner, NavigationPreferenceStore? store = null,
+    public static ToolStripMenuItem CreateMenu(
+        Form owner,
+        NavigationPreferenceStore? store = null,
         Action<string>? notify = null)
     {
         store = GetShellStore(owner, store);
-        notify ??= message => ThemedMessageBox.Show(owner, message, "Icon Size", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+        notify ??= message => ThemedMessageBox.Show(
+            owner,
+            message,
+            "Icon Size",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning);
+
         var menu = new ToolStripMenuItem("Icon Size");
 
         void RefreshChecks()
@@ -112,6 +139,7 @@ public static class NavigationSizing
         foreach (var size in Enum.GetValues<NavigationIconSize>())
         {
             var item = new ToolStripMenuItem(size.ToString()) { Tag = size };
+
             item.Click += (_, _) =>
             {
                 if (!store.Write(size))

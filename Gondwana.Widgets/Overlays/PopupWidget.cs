@@ -398,6 +398,7 @@ public sealed class PopupWidget : WidgetBase
         Point offset = offsetPx ?? Point.Empty;
 
         SourceTile = source;
+
         SourceGridLocation = source is SceneLayerTile fixedTile
             ? fixedTile.GridCoordinatesAbs
             : null;
@@ -429,7 +430,9 @@ public sealed class PopupWidget : WidgetBase
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
         SceneLayerTile tile = sceneLayer[gridLocation]
-            ?? throw new ArgumentOutOfRangeException(nameof(gridLocation), "The grid location is outside the SceneLayer.");
+                              ?? throw new ArgumentOutOfRangeException(
+                                  nameof(gridLocation),
+                                  "The grid location is outside the SceneLayer.");
 
         BindTo(tile, sourceAnchor, offsetPx);
         SourceGridLocation = gridLocation;
@@ -666,6 +669,8 @@ public sealed class PopupWidget : WidgetBase
     private static void ValidateBounds(Rectangle bounds)
     {
         if (bounds.Width <= 0 || bounds.Height <= 0)
-            throw new ArgumentOutOfRangeException(nameof(bounds), "Popup bounds must have a positive width and height.");
+            throw new ArgumentOutOfRangeException(
+                nameof(bounds),
+                "Popup bounds must have a positive width and height.");
     }
 }

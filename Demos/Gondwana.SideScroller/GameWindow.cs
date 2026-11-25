@@ -15,6 +15,7 @@ internal sealed class GameWindow : Form
         StartPosition = FormStartPosition.CenterScreen;
         KeyPreview = true;
         Controls.Add(_renderSurface);
+
         KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Escape)
@@ -28,6 +29,7 @@ internal sealed class GameWindow : Form
         base.OnLoad(e);
 
         _gameHost = new SideScrollerGameHost(_renderSurface);
+
         _gameHost.Engine.InitializationComplete += () =>
         {
             _gameHost.Engine.Configuration.TargetFPS = 0;
@@ -49,7 +51,13 @@ internal sealed class GameWindow : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "Startup Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
             Close();
         }
     }

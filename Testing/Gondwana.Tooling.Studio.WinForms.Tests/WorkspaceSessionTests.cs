@@ -1,5 +1,4 @@
 extern alias studio;
-
 using System.Collections;
 using System.Reflection;
 using Gondwana.Assets;
@@ -23,12 +22,17 @@ public sealed partial class CompositionTests
     {
         string[] formats = ["gaf", "gts", "gani", "gsnd", "gscn", "gspr"];
         Control[] editors;
+
         using (var studio = Host(directory))
         {
             foreach (string format in formats)
             {
-                var document = studio.NewDocument(format, format == "gaf" ? Path.Combine(directory, "saved.gaf") : null);
-                Assert.True(AwaitUi(studio.SaveDocument(document, destination: Path.Combine(directory, "saved." + format))));
+                var document = studio.NewDocument(
+                    format,
+                    format == "gaf" ? Path.Combine(directory, "saved.gaf") : null);
+
+                Assert.True(
+                    AwaitUi(studio.SaveDocument(document, destination: Path.Combine(directory, "saved." + format))));
             }
 
             studio.Documents[5].Pane.SetContentIndex(studio.Documents[5], 0);
@@ -40,7 +44,11 @@ public sealed partial class CompositionTests
 
         Assert.All(editors, editor => Assert.True(editor.IsDisposed));
         using var reopened = Host(directory);
-        Assert.Equal(new[] { "gspr", "gaf", "gts", "gani", "gsnd", "gscn" }, reopened.Documents.Select(document => document.Document.Extension));
+
+        Assert.Equal(
+            new[] { "gspr", "gaf", "gts", "gani", "gsnd", "gscn" },
+            reopened.Documents.Select(document => document.Document.Extension));
+
         Assert.Equal("gts", reopened.ActiveDocument!.Document.Extension);
         Assert.All(reopened.Documents, document => Assert.DoesNotContain(document.Document.Editor, editors));
         reopened.RestoreSession();
@@ -105,37 +113,56 @@ public sealed partial class CompositionTests
     [InlineData(typeof(AudioEditorControl), "gsnd")]
     [InlineData(typeof(SceneEditorControl), "gscn")]
     [InlineData(typeof(SpriteEditorControl), "gspr")]
-    public void StandaloneShellsRestoreTheirSupportedFileAndCaptureApprovedClose(Type editorType, string format) => RunSta(directory =>
-    {
-        string path = Path.Combine(directory, "saved." + format);
-        using (var studio = Host(directory))
+    public void StandaloneShellsRestoreTheirSupportedFileAndCaptureApprovedClose(Type editorType, string format) =>
+        RunSta(directory =>
         {
-            var document = studio.NewDocument(format, format == "gaf" ? path : null);
-            Assert.True(AwaitUi(studio.SaveDocument(document, destination: path)));
-            // No session is committed by Dispose alone.
-        }
+            string path = Path.Combine(directory, "saved." + format);
 
-        var store = new WorkspaceSessionStore(_ => { });
-        Assert.True(store.Write(new() { WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!], ActiveDocument = path }));
-        Type shellType = editorType.Assembly.GetType(editorType.Namespace + ".MainForm", throwOnError: true)!;
-        using var shell = (Form)Activator.CreateInstance(shellType, nonPublic: true)!;
-        shell.Opacity = 0;
-        shell.ShowInTaskbar = false;
-        shell.Show();
-        Application.DoEvents();
-        var documents = ((IEnumerable)shellType.GetField("_documents", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(shell)!).Cast<DockContent>().ToArray();
-        Assert.Single(documents);
-        Assert.NotNull(documents[0].Controls.OfType<UserControl>().SingleOrDefault(control => control.GetType() == editorType));
-        shell.Close();
-        Assert.True(shell.IsDisposed);
-        Assert.Equal(path, Assert.Single(store.Read().Documents).Path);
-        Assert.Equal(path, store.Read().ActiveDocument);
-    });
+            using (var studio = Host(directory))
+            {
+                var document = studio.NewDocument(format, format == "gaf" ? path : null);
+                Assert.True(AwaitUi(studio.SaveDocument(document, destination: path)));
+                // No session is committed by Dispose alone.
+            }
+
+            var store = new WorkspaceSessionStore(_ => { });
+
+            Assert.True(
+                store.Write(
+                    new()
+                    {
+                        WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!],
+                        ActiveDocument = path
+                    }));
+
+            Type shellType = editorType.Assembly.GetType(editorType.Namespace + ".MainForm", throwOnError: true)!;
+            using var shell = (Form)Activator.CreateInstance(shellType, nonPublic: true)!;
+            shell.Opacity = 0;
+            shell.ShowInTaskbar = false;
+            shell.Show();
+            Application.DoEvents();
+
+            var documents =
+                ((IEnumerable)shellType.GetField("_documents", BindingFlags.NonPublic | BindingFlags.Instance)!
+                    .GetValue(shell)!).Cast<DockContent>().ToArray();
+
+            Assert.Single(documents);
+
+            Assert.NotNull(
+                documents[0].Controls.OfType<UserControl>()
+                    .SingleOrDefault(control => control.GetType() == editorType));
+
+            shell.Close();
+            Assert.True(shell.IsDisposed);
+            Assert.Equal(path, Assert.Single(store.Read().Documents).Path);
+            Assert.Equal(path, store.Read().ActiveDocument);
+        });
 
     [Fact]
     public void StandaloneAssetCloseHonorsCancelBeforeSavingSession() => RunSta(directory =>
     {
         string path = Path.Combine(directory, "saved.gaf");
+
         using (var studio = Host(directory))
         {
             var created = studio.NewDocument("gaf", path);
@@ -149,7 +176,10 @@ public sealed partial class CompositionTests
         shell.Show();
         Application.DoEvents();
         var dock = Descendants(shell).OfType<DockPanel>().First();
-        var document = dock.Contents.OfType<DockContent>().Single(content => content.Controls.OfType<AssetEditorControl>().Any());
+
+        var document = dock.Contents.OfType<DockContent>()
+            .Single(content => content.Controls.OfType<AssetEditorControl>().Any());
+
         var editor = document.Controls.OfType<AssetEditorControl>().Single();
         editor.MarkChanged();
         // The wrapper is internal to the Assets assembly; exercise its real close path.
@@ -169,10 +199,22 @@ public sealed partial class CompositionTests
     {
         var store = new WorkspaceSessionStore(_ => { });
         string path = Path.Combine(directory, "saved.gts");
-        Assert.True(store.Write(new() { WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!] }));
+
+        Assert.True(
+            store.Write(
+                new() { WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!] }));
+
         var controller = new WorkspaceSessionController(startEmpty: true);
         Assert.Equal(Environment.CurrentDirectory, controller.InitialWorkingDirectory(directory));
-        controller.Restore(["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail());
+
+        controller.Restore(
+            ["gts"],
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail());
+
         controller.Save(directory, [null, path, path], path);
         Assert.Equal(path, Assert.Single(store.Read().Documents).Path);
     });
@@ -182,7 +224,12 @@ public sealed partial class CompositionTests
     {
         string archive = Path.Combine(directory, "protected.gaf");
         string tiles = Path.Combine(directory, "saved.gts");
-        using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   archive,
+                   "secret",
+                   true,
+                   register: false))
         {
             using var payload = new MemoryStream([1, 2, 3]);
             package.Add(AssetTypes.Misc, "protected-entry", payload);
@@ -196,14 +243,23 @@ public sealed partial class CompositionTests
         }
 
         var store = new WorkspaceSessionStore(_ => { });
-        Assert.True(store.Write(new() { Documents = [WorkspaceSessionDocument.FromPath(archive)!, WorkspaceSessionDocument.FromPath(tiles)!] }));
+
+        Assert.True(
+            store.Write(
+                new()
+                {
+                    Documents = [WorkspaceSessionDocument.FromPath(archive)!, WorkspaceSessionDocument.FromPath(tiles)!]
+                }));
+
         using var reopened = new MainForm(loadPlugins: false) { Opacity = 0, ShowInTaskbar = false };
         int prompts = 0;
+
         reopened.AssetPassword = _ =>
         {
             prompts++;
             return null;
         };
+
         reopened.ReportError = _ => Assert.Fail("Restore errors must be logged, not shown as modal failures.");
         reopened.Show();
         Application.DoEvents();
@@ -223,12 +279,19 @@ public sealed partial class CompositionTests
         var startup = new List<string>();
         var errors = new List<string>();
         bool startupComplete = false;
-        controller.Restore(["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(),
+
+        controller.Restore(
+            ["gts"],
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
             message =>
             {
                 Assert.False(startupComplete);
                 startup.Add(message);
-            }, errors.Add);
+            },
+            errors.Add);
+
         startupComplete = true;
         Assert.Single(startup);
         Assert.Empty(errors);
@@ -236,10 +299,16 @@ public sealed partial class CompositionTests
         // A directory at the destination forces an actual write failure without relying on user permissions.
         File.Delete(store.FilePath);
         Directory.CreateDirectory(store.FilePath);
-        var restore = menu.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text == "Restore workspace on startup");
+
+        var restore = menu.DropDownItems.OfType<ToolStripMenuItem>()
+            .Single(item => item.Text == "Restore workspace on startup");
+
         restore.PerformClick();
         Assert.True(restore.Checked);
-        var empty = menu.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text == "Start empty on next launch");
+
+        var empty = menu.DropDownItems.OfType<ToolStripMenuItem>()
+            .Single(item => item.Text == "Start empty on next launch");
+
         empty.PerformClick();
         Assert.False(empty.Checked);
         controller.Save(directory, [], null);
@@ -269,8 +338,10 @@ public sealed partial class CompositionTests
         Type shellType = editorType.Assembly.GetType(editorType.Namespace + ".MainForm", throwOnError: true)!;
         using var shell = (Form)Activator.CreateInstance(shellType, nonPublic: true)!;
         var errors = new List<string>();
+
         shellType.GetProperty("ReportSessionError", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(shell, (Action<string>)errors.Add);
+
         shell.Opacity = 0;
         shell.ShowInTaskbar = false;
         shell.Show();
@@ -293,5 +364,6 @@ public sealed partial class CompositionTests
     });
 
     private static ToolStripMenuItem SessionMenu(Form shell, string text) =>
-        ((ToolStripMenuItem)shell.MainMenuStrip!.Items[0]).DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text == text);
+        ((ToolStripMenuItem)shell.MainMenuStrip!.Items[0]).DropDownItems.OfType<ToolStripMenuItem>()
+        .Single(item => item.Text == text);
 }

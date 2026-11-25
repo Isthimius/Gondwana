@@ -30,7 +30,12 @@ public sealed class ImportContractTests
     [InlineData(ExternalImportSeverity.Error, false)]
     public void FatalDiagnosticsPreventImport(ExternalImportSeverity severity, bool expected)
     {
-        var analysis = new ExternalImportAnalysis("test", [], [], [new(severity, "test", "Diagnostic")]);
+        var analysis = new ExternalImportAnalysis(
+            "test",
+            [],
+            [],
+            [new(severity, "test", "Diagnostic")]);
+
         Assert.Equal(expected, analysis.CanImport);
     }
 }

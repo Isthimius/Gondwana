@@ -7,7 +7,9 @@ internal sealed class SliderFileStorage : ISliderScoreStore
 {
     private static string ScorePath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Gondwana", "Slider", "high-scores.json");
+        "Gondwana",
+        "Slider",
+        "high-scores.json");
 
     internal static void SaveGame(string path, SliderSave save)
         => File.WriteAllText(path, SliderPersistence.Serialize(save));

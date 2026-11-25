@@ -44,7 +44,8 @@ public sealed class DirectVideo : DirectDrawingMovableBase
             if (_stretch != value)
             {
                 _stretch = value;
-                ForceRefresh(); }
+                ForceRefresh();
+            }
         }
     }
 
@@ -101,9 +102,22 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="sceneLayer">The scene layer that owns the content.</param>
     /// <param name="worldBounds">The bounds in world pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(IVideoPlayer player, Uri source, RenderSurfaceHostBase renderSurfaceHost,
-        SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
-        : this(player, VideoSource.FromUri(source), renderSurfaceHost, sceneLayer, worldBounds, name) { }
+    public DirectVideo(
+        IVideoPlayer player,
+        Uri source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? name = null)
+        : this(
+            player,
+            VideoSource.FromUri(source),
+            renderSurfaceHost,
+            sceneLayer,
+            worldBounds,
+            name)
+    {
+    }
 
     /// <summary>Creates a screen-space video with required presentation bounds. Owns the player.</summary>
     /// <param name="player">The media player to use.</param>
@@ -112,9 +126,22 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="view">The view used for presentation and coordinate conversion.</param>
     /// <param name="screenBounds">The bounds in screen pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(IVideoPlayer player, Uri source, RenderSurfaceHostBase renderSurfaceHost,
-        View view, Rectangle screenBounds, string? name = null)
-        : this(player, VideoSource.FromUri(source), renderSurfaceHost, view, screenBounds, name) { }
+    public DirectVideo(
+        IVideoPlayer player,
+        Uri source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? name = null)
+        : this(
+            player,
+            VideoSource.FromUri(source),
+            renderSurfaceHost,
+            view,
+            screenBounds,
+            name)
+    {
+    }
 
     /// <summary>Creates a world-space video using an owned player from the factory.</summary>
     /// <param name="playerFactory">The factory used to create the video player.</param>
@@ -123,9 +150,22 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="sceneLayer">The scene layer that owns the content.</param>
     /// <param name="worldBounds">The bounds in world pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(Func<IVideoPlayer> playerFactory, Uri source, RenderSurfaceHostBase renderSurfaceHost,
-        SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
-        : this(playerFactory, VideoSource.FromUri(source), renderSurfaceHost, sceneLayer, worldBounds, name) { }
+    public DirectVideo(
+        Func<IVideoPlayer> playerFactory,
+        Uri source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? name = null)
+        : this(
+            playerFactory,
+            VideoSource.FromUri(source),
+            renderSurfaceHost,
+            sceneLayer,
+            worldBounds,
+            name)
+    {
+    }
 
     /// <summary>Creates a screen-space video using an owned player from the factory.</summary>
     /// <param name="playerFactory">The factory used to create the video player.</param>
@@ -134,9 +174,22 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="view">The view used for presentation and coordinate conversion.</param>
     /// <param name="screenBounds">The bounds in screen pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(Func<IVideoPlayer> playerFactory, Uri source, RenderSurfaceHostBase renderSurfaceHost,
-        View view, Rectangle screenBounds, string? name = null)
-        : this(playerFactory, VideoSource.FromUri(source), renderSurfaceHost, view, screenBounds, name) { }
+    public DirectVideo(
+        Func<IVideoPlayer> playerFactory,
+        Uri source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? name = null)
+        : this(
+            playerFactory,
+            VideoSource.FromUri(source),
+            renderSurfaceHost,
+            view,
+            screenBounds,
+            name)
+    {
+    }
 
     /// <summary>Creates a world-space URI/stream/GAF video and starts playback. Owns the player.</summary>
     /// <param name="player">The media player to use.</param>
@@ -145,9 +198,25 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="sceneLayer">The scene layer that owns the content.</param>
     /// <param name="worldBounds">The bounds in world pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(IVideoPlayer player, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
-        SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
-        : this(() => player, source, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, name) { }
+    public DirectVideo(
+        IVideoPlayer player,
+        VideoSource source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? name = null)
+        : this(
+            () => player,
+            source,
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            null,
+            null,
+            worldBounds,
+            name)
+    {
+    }
 
     /// <summary>Creates a screen-space URI/stream/GAF video and starts playback. Owns the player.</summary>
     /// <param name="player">The media player to use.</param>
@@ -156,9 +225,25 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="view">The view used for presentation and coordinate conversion.</param>
     /// <param name="screenBounds">The bounds in screen pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(IVideoPlayer player, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
-        View view, Rectangle screenBounds, string? name = null)
-        : this(() => player, source, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, name) { }
+    public DirectVideo(
+        IVideoPlayer player,
+        VideoSource source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? name = null)
+        : this(
+            () => player,
+            source,
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            null,
+            view,
+            screenBounds,
+            null,
+            name)
+    {
+    }
 
     /// <summary>Creates a world-space URI/stream/GAF video using an owned player from the factory.</summary>
     /// <param name="playerFactory">The factory used to create the video player.</param>
@@ -167,9 +252,25 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="sceneLayer">The scene layer that owns the content.</param>
     /// <param name="worldBounds">The bounds in world pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(Func<IVideoPlayer> playerFactory, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
-        SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
-        : this(playerFactory, source, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, name) { }
+    public DirectVideo(
+        Func<IVideoPlayer> playerFactory,
+        VideoSource source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? name = null)
+        : this(
+            playerFactory,
+            source,
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            null,
+            null,
+            worldBounds,
+            name)
+    {
+    }
 
     /// <summary>Creates a screen-space URI/stream/GAF video using an owned player from the factory.</summary>
     /// <param name="playerFactory">The factory used to create the video player.</param>
@@ -178,20 +279,54 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="view">The view used for presentation and coordinate conversion.</param>
     /// <param name="screenBounds">The bounds in screen pixels.</param>
     /// <param name="name">The name.</param>
-    public DirectVideo(Func<IVideoPlayer> playerFactory, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
-        View view, Rectangle screenBounds, string? name = null)
-        : this(playerFactory, source, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, name) { }
+    public DirectVideo(
+        Func<IVideoPlayer> playerFactory,
+        VideoSource source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? name = null)
+        : this(
+            playerFactory,
+            source,
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            null,
+            view,
+            screenBounds,
+            null,
+            name)
+    {
+    }
 
-    private DirectVideo(Func<IVideoPlayer> playerFactory, VideoSource source,
-        RenderSurfaceHostBase renderSurfaceHost, DirectDrawingMode mode, SceneLayer? sceneLayer,
-        View? view, Rectangle? screenBounds, Rectangle? worldBounds, string? name)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
+    private DirectVideo(
+        Func<IVideoPlayer> playerFactory,
+        VideoSource source,
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? name)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            name)
     {
         try
         {
             ArgumentNullException.ThrowIfNull(playerFactory);
             ArgumentNullException.ThrowIfNull(source);
-            _player = playerFactory() ?? throw new ArgumentException("The factory returned no video player.", nameof(playerFactory));
+
+            _player = playerFactory() ?? throw new ArgumentException(
+                "The factory returned no video player.",
+                nameof(playerFactory));
+
             HookPlayer();
             source.Open(_player);
             _player.Play();
@@ -199,6 +334,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
         catch
         {
             _mailbox.Dispose();
+
             if (_player is not null)
             {
                 _player.FrameReady -= OnFrameReady;
@@ -232,6 +368,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
 
     /// <summary>Decoded source dimensions, or (0,0) until known.</summary>
     public (int width, int height) NaturalSize => _player.NaturalSize;
+
     /// <summary>
     /// Subscribes to the player's events for frame delivery and playback lifecycle.
     /// </summary>
@@ -249,15 +386,28 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var bmp = _frame;
+
         if (bmp is null)
             return;
 
         var canvas = backbuffer.Canvas;
-        var dest = ComputeDestRect(destRectScreen, bmp.Width, bmp.Height, Stretch);
+
+        var dest = ComputeDestRect(
+            destRectScreen,
+            bmp.Width,
+            bmp.Height,
+            Stretch);
 
         // DirectDrawingBase.Draw applies opacity and fades once.
         canvas.Save();
-        canvas.ClipRect(new SKRect(destRectScreen.Left, destRectScreen.Top, destRectScreen.Right, destRectScreen.Bottom));
+
+        canvas.ClipRect(
+            new SKRect(
+                destRectScreen.Left,
+                destRectScreen.Top,
+                destRectScreen.Right,
+                destRectScreen.Bottom));
+
         canvas.DrawBitmap(bmp, dest);
         canvas.Restore();
     }
@@ -270,10 +420,20 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     /// <param name="srcH">The source video height in pixels.</param>
     /// <param name="mode">The stretch mode to apply.</param>
     /// <returns>The computed destination rectangle.</returns>
-    internal static SKRect ComputeDestRect(RectangleF bounds, int srcW, int srcH, StretchMode mode)
+    internal static SKRect ComputeDestRect(
+        RectangleF bounds,
+        int srcW,
+        int srcH,
+        StretchMode mode)
     {
         var b = bounds;
-        var dst = new SKRect(b.Left, b.Top, b.Right, b.Bottom);
+
+        var dst = new SKRect(
+            b.Left,
+            b.Top,
+            b.Right,
+            b.Bottom);
+
         if (mode == StretchMode.Fill || srcW <= 0 || srcH <= 0)
             return dst;
 
@@ -282,19 +442,33 @@ public sealed class DirectVideo : DirectDrawingMovableBase
         float arDst = bw / bh;
 
         if (mode == StretchMode.None)
-            return new SKRect(b.Left, b.Top, b.Left + srcW, b.Top + srcH);
+            return new SKRect(
+                b.Left,
+                b.Top,
+                b.Left + srcW,
+                b.Top + srcH);
 
         if (mode == StretchMode.Uniform)
         {
             if (arSrc > arDst)
             {
                 float w = bw, h = w / arSrc, y = b.Top + (bh - h) / 2f;
-                return new SKRect(b.Left, y, b.Left + w, y + h);
+
+                return new SKRect(
+                    b.Left,
+                    y,
+                    b.Left + w,
+                    y + h);
             }
             else
             {
                 float h = bh, w = h * arSrc, x = b.Left + (bw - w) / 2f;
-                return new SKRect(x, b.Top, x + w, b.Top + h);
+
+                return new SKRect(
+                    x,
+                    b.Top,
+                    x + w,
+                    b.Top + h);
             }
         }
 
@@ -302,12 +476,22 @@ public sealed class DirectVideo : DirectDrawingMovableBase
         if (arSrc < arDst)
         {
             float w = bw, h = w / arSrc, y = b.Top + (bh - h) / 2f;
-            return new SKRect(b.Left, y, b.Left + w, y + h);
+
+            return new SKRect(
+                b.Left,
+                y,
+                b.Left + w,
+                y + h);
         }
         else
         {
             float h = bh, w = h * arSrc, x = b.Left + (bw - w) / 2f;
-            return new SKRect(x, b.Top, x + w, b.Top + h);
+
+            return new SKRect(
+                x,
+                b.Top,
+                x + w,
+                b.Top + h);
         }
     }
 
@@ -326,8 +510,10 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     {
         if (_videoDisposed)
             return;
+
         if (_mailbox.Consume(ref _frame))
             ForceRefresh();
+
         base.Update(tick);
     }
     // --- control surface (thin passthrough to player) ---
@@ -403,10 +589,12 @@ public sealed class DirectVideo : DirectDrawingMovableBase
 
         if (_videoDisposed)
             return;
+
         _videoDisposed = true;
         _mailbox.Dispose();
         _player.FrameReady -= OnFrameReady;
         _player.StateChanged -= OnPlayerStateChanged;
+
         try
         {
             _player.Dispose();

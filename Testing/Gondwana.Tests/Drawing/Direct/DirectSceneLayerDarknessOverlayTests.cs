@@ -18,6 +18,7 @@ public sealed class DirectSceneLayerDarknessOverlayTests
     public void Draw_WithRevealSource_CarvesDarknessAtCenter()
     {
         using var host = new TestRenderSurfaceHost();
+
         SceneLayer layer = host.Scene.AddLayer(
             columnCount: 2,
             rowCount: 2,
@@ -25,17 +26,29 @@ public sealed class DirectSceneLayerDarknessOverlayTests
             height: 32);
 
         using var backbuffer = new BitmapBackbuffer(64, 64);
+
         using var overlay = new DirectSceneLayerDarknessOverlay(
             host,
             layer,
-            new Rectangle(0, 0, 64, 64));
+            new Rectangle(
+                0,
+                0,
+                64,
+                64));
 
         overlay.AddRevealSource(
             centerWorldPx: new PointF(32f, 32f),
             radiusWorldPx: 12f);
 
         backbuffer.Canvas.Clear(SKColors.White);
-        overlay.Draw(backbuffer, new RectangleF(0f, 0f, 64f, 64f));
+
+        overlay.Draw(
+            backbuffer,
+            new RectangleF(
+                0f,
+                0f,
+                64f,
+                64f));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap result = SKBitmap.FromImage(snapshot);
@@ -54,6 +67,7 @@ public sealed class DirectSceneLayerDarknessOverlayTests
     public void TrackLight_WhenLightMoves_SyncsRevealSource()
     {
         using var host = new TestRenderSurfaceHost();
+
         SceneLayer layer = host.Scene.AddLayer(
             columnCount: 2,
             rowCount: 2,
@@ -61,7 +75,11 @@ public sealed class DirectSceneLayerDarknessOverlayTests
             height: 32);
 
         using var light = new DirectRadialLight(
-            Color.FromArgb(180, 255, 190, 80),
+            Color.FromArgb(
+                180,
+                255,
+                190,
+                80),
             host,
             layer,
             new PointF(12f, 14f),
@@ -70,7 +88,11 @@ public sealed class DirectSceneLayerDarknessOverlayTests
         using var overlay = new DirectSceneLayerDarknessOverlay(
             host,
             layer,
-            new Rectangle(0, 0, 64, 64));
+            new Rectangle(
+                0,
+                0,
+                64,
+                64));
 
         var reveal = overlay.TrackLight(
             light,
@@ -93,11 +115,25 @@ public sealed class DirectSceneLayerDarknessOverlayTests
     public void TrackLight_WhenLightIsOnDifferentSceneLayer_Throws()
     {
         using var host = new TestRenderSurfaceHost();
-        SceneLayer darknessLayer = host.Scene.AddLayer(2, 2, 32, 32);
-        SceneLayer lightLayer = host.Scene.AddLayer(2, 2, 32, 32);
+
+        SceneLayer darknessLayer = host.Scene.AddLayer(
+            2,
+            2,
+            32,
+            32);
+
+        SceneLayer lightLayer = host.Scene.AddLayer(
+            2,
+            2,
+            32,
+            32);
 
         using var light = new DirectRadialLight(
-            Color.FromArgb(180, 255, 190, 80),
+            Color.FromArgb(
+                180,
+                255,
+                190,
+                80),
             host,
             lightLayer,
             new PointF(12f, 14f),
@@ -106,7 +142,11 @@ public sealed class DirectSceneLayerDarknessOverlayTests
         using var overlay = new DirectSceneLayerDarknessOverlay(
             host,
             darknessLayer,
-            new Rectangle(0, 0, 64, 64));
+            new Rectangle(
+                0,
+                0,
+                64,
+                64));
 
         Assert.Throws<ArgumentException>(() => overlay.TrackLight(light));
     }
@@ -118,12 +158,23 @@ public sealed class DirectSceneLayerDarknessOverlayTests
     public void TrackLightLayer_WhenLightIsRemoved_RemovesTrackedRevealSource()
     {
         using var host = new TestRenderSurfaceHost();
-        SceneLayer layer = host.Scene.AddLayer(2, 2, 32, 32);
+
+        SceneLayer layer = host.Scene.AddLayer(
+            2,
+            2,
+            32,
+            32);
+
         using var lights = new DirectLightLayer(host, layer);
+
         using var overlay = new DirectSceneLayerDarknessOverlay(
             host,
             layer,
-            new Rectangle(0, 0, 64, 64));
+            new Rectangle(
+                0,
+                0,
+                64,
+                64));
 
         overlay.TrackLightLayer(lights);
 

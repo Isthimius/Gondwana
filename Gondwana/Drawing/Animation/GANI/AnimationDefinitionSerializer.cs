@@ -25,7 +25,10 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(string filePath)
     {
-        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+        return DefinitionDocumentJson.Select(
+            LoadAll(filePath),
+            definition => definition.Key,
+            identityComparer: StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -35,7 +38,10 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(Stream stream)
     {
-        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+        return DefinitionDocumentJson.Select(
+            LoadAll(stream),
+            definition => definition.Key,
+            identityComparer: StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -46,7 +52,10 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(AssetsFile assetsFile, string entryName)
     {
-        return DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+        return DefinitionDocumentJson.Select(
+            LoadAll(assetsFile, entryName),
+            definition => definition.Key,
+            identityComparer: StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -77,7 +86,10 @@ public static partial class AnimationDefinitionSerializer
     /// <param name="json">The JSON text to deserialize.</param>
     /// <returns>The deserialized definition.</returns>
     public static AnimationDefinition FromJson(string json) =>
-        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
+        DefinitionDocumentJson.Select(
+            FromDocumentJson(json).Definitions,
+            definition => definition.Key,
+            identityComparer: StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Serializes the supplied content as JSON.
@@ -118,11 +130,12 @@ public static partial class AnimationDefinitionSerializer
         };
 
         foreach (var name in definition.Frames.Select(frame => frame.Tilesheet)
-            .Where(name => !string.IsNullOrWhiteSpace(name))
-            .Distinct(StringComparer.Ordinal))
+                     .Where(name => !string.IsNullOrWhiteSpace(name))
+                     .Distinct(StringComparer.Ordinal))
         {
             var source = DefinitionDependencyProvenance.ForTilesheet(
                 TilesheetRegistry.Instance.GetOrNull(name));
+
             if (source?.FilePath is { } loose)
                 definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Loose(name, loose));
             else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
@@ -152,6 +165,7 @@ public static partial class AnimationDefinitionSerializer
         var previous = Cycle._cycles.TryGetValue(definition.Key, out var existing)
             ? existing
             : null;
+
         var cycle = MaterializeCycle(definition);
 
         try
@@ -165,6 +179,7 @@ public static partial class AnimationDefinitionSerializer
                 ReferenceEquals(registered, cycle))
             {
                 cycle.Dispose();
+
                 if (previous is not null)
                     Cycle._cycles[definition.Key] = previous;
             }
@@ -194,6 +209,7 @@ public static partial class AnimationDefinitionSerializer
         ArgumentNullException.ThrowIfNull(definition);
 
         var errors = AnimationDefinitionValidator.Validate(definition);
+
         if (errors.Count != 0)
         {
             throw new InvalidDataException(
@@ -248,7 +264,8 @@ public static partial class AnimationDefinitionSerializer
     }
 
     private static void CaptureProvenance(Cycle cycle, AnimationDefinition definition) =>
-        cycle.DefinitionProvenance = definition.LoadStamp?.Materialized(definition,
+        cycle.DefinitionProvenance = definition.LoadStamp?.Materialized(
+            definition,
             () => FromCycle(cycle));
 
     private static AnimationDefinition ParseDefinition(
@@ -261,6 +278,7 @@ public static partial class AnimationDefinitionSerializer
         try
         {
             var definition = JsonConvert.DeserializeObject<AnimationDefinition>(json, Settings);
+
             if (definition is null)
             {
                 var source = string.IsNullOrWhiteSpace(sourceDescription)
@@ -271,6 +289,7 @@ public static partial class AnimationDefinitionSerializer
             }
 
             definition.TilesheetSources ??= [];
+
             for (int i = 0; i < definition.TilesheetSources.Count; i++)
             {
                 if (definition.TilesheetSources[i] is null)
@@ -281,6 +300,7 @@ public static partial class AnimationDefinitionSerializer
             }
 
             definition.Frames ??= [];
+
             for (int i = 0; i < definition.Frames.Count; i++)
             {
                 if (definition.Frames[i] is null)
@@ -319,12 +339,12 @@ public static partial class AnimationDefinitionSerializer
     private static Frame ResolveFrame(AnimationFrameDefinition definition)
     {
         var tilesheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)
-            ?? throw new InvalidDataException(
-                $"GANI references tilesheet '{definition.Tilesheet}', but it is not registered.");
+                        ?? throw new InvalidDataException(
+                            $"GANI references tilesheet '{definition.Tilesheet}', but it is not registered.");
 
         var region = tilesheet.GetRegion(definition.RegionName)
-            ?? throw new InvalidDataException(
-                $"GANI references region '{definition.RegionName}' on tilesheet '{definition.Tilesheet}', but it does not exist.");
+                     ?? throw new InvalidDataException(
+                         $"GANI references region '{definition.RegionName}' on tilesheet '{definition.Tilesheet}', but it does not exist.");
 
         if (definition.XTile < 0 ||
             definition.YTile < 0 ||

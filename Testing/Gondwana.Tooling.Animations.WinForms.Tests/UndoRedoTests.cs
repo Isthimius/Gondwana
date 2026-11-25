@@ -9,6 +9,7 @@ public sealed partial class AnimationEditorTests
     public void ReplayRefreshesFramesSourcesPropertiesAndPlayback() => RunSta(() =>
     {
         string directory = CreateTempDirectory();
+
         try
         {
             using var document = AnimationDocument.Create(directory);
@@ -28,8 +29,13 @@ public sealed partial class AnimationEditorTests
             Application.DoEvents();
             Assert.Single(tree.Nodes);
             document.History.Clear();
-            var first = new AnimationFrameDefinition { Tilesheet = "test-sheet", RegionName = "walk", XTile = 0, YTile = 0 };
-            var second = new AnimationFrameDefinition { Tilesheet = "test-sheet", RegionName = "walk", XTile = 1, YTile = 0, DurationSeconds = .25 };
+
+            var first = new AnimationFrameDefinition
+                { Tilesheet = "test-sheet", RegionName = "walk", XTile = 0, YTile = 0 };
+
+            var second = new AnimationFrameDefinition
+                { Tilesheet = "test-sheet", RegionName = "walk", XTile = 1, YTile = 0, DurationSeconds = .25 };
+
             document.AddFrame(first);
             document.AddFrame(second);
             Application.DoEvents();
@@ -63,12 +69,14 @@ public sealed partial class AnimationEditorTests
             Directory.Delete(directory, recursive: true);
         }
     });
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public void MemberRefreshDoesNotRecoverRemovedSourceOrDiscardHistory(bool rename) => RunSta(() =>
     {
         string directory = CreateTempDirectory();
+
         try
         {
             CreateGts(directory);
@@ -87,7 +95,10 @@ public sealed partial class AnimationEditorTests
             document.History.MarkSaved();
             Assert.True(document.RemoveTilesheetSource("test-sheet"));
             Application.DoEvents();
-            var bar = editor.Controls.OfType<ToolStrip>().Single(strip => strip.Items.Find("RenameDefinition", false).Length != 0);
+
+            var bar = editor.Controls.OfType<ToolStrip>()
+                .Single(strip => strip.Items.Find("RenameDefinition", false).Length != 0);
+
             if (rename)
             {
                 bar.Items.OfType<ToolStripTextBox>().Single().Text = "renamed";
@@ -105,8 +116,10 @@ public sealed partial class AnimationEditorTests
             Assert.Empty(original.TilesheetSources);
             Assert.True(document.History.CanUndo);
             Assert.True(document.IsDirty);
+
             if (rename)
                 document.History.Undo();
+
             document.History.Undo();
             Application.DoEvents();
             Assert.Same(source, Assert.Single(original.TilesheetSources));

@@ -40,7 +40,12 @@ public sealed class SpotBoardInputTests : IDisposable
         _mouse = new Mouse(_adapter);
         TouchEventPoller.Initialize(_touch, new TouchEventConfiguration());
         MouseEventPoller.Initialize(_mouse);
-        _router = new WidgetInputRouter(_host, null, MouseEventPoller.Instance, TouchEventPoller.Instance);
+
+        _router = new WidgetInputRouter(
+            _host,
+            null,
+            MouseEventPoller.Instance,
+            TouchEventPoller.Instance);
 
         _runtime = new SpotGameRuntime(_host, 0, () => _router);
         _scene = _runtime.CreateInitialScene();
@@ -49,20 +54,43 @@ public sealed class SpotBoardInputTests : IDisposable
         _sheet = TilesheetFactory.FromBitmap("spot.board-input", new SKBitmap(320, 320));
         _sheet.DefaultRegion.TileSize = new Size(64, 64);
         _runtime.SetTilesheets(_sheet, _sheet, _sheet);
-        _runtime.SetAudioResources(null, null, null, null, null, null, null, null, null, SKTypeface.Default);
+
+        _runtime.SetAudioResources(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            SKTypeface.Default);
+
         _runtime.SetCloudsEnabled(false);
         _runtime.SetJiggleEnabled(false);
-        _runtime.StartNewGame(new NewGameOptions
-        {
-            PlayerCount = 2,
-            BoardWidth = 12,
-            BoardHeight = 12,
-            Players =
-            [
-                new Player { Name = "Blue", Type = PlayerType.Human, ColorItem = new ColorItem("Blue", SKColors.Blue, SKColors.White) },
-                new Player { Name = "Green", Type = PlayerType.Human, ColorItem = new ColorItem("Green", SKColors.Green, SKColors.White) }
-            ]
-        });
+
+        _runtime.StartNewGame(
+            new NewGameOptions
+            {
+                PlayerCount = 2,
+                BoardWidth = 12,
+                BoardHeight = 12,
+                Players =
+                [
+                    new Player
+                    {
+                        Name = "Blue", Type = PlayerType.Human,
+                        ColorItem = new ColorItem("Blue", SKColors.Blue, SKColors.White)
+                    },
+                    new Player
+                    {
+                        Name = "Green", Type = PlayerType.Human,
+                        ColorItem = new ColorItem("Green", SKColors.Green, SKColors.White)
+                    }
+                ]
+            });
+
         _runtime.OnMouseAdapterInitialized();
         MouseEventPoller.Instance!.StartMonitoringMouse(timeBetweenEvents: 0);
         _runtime.OnTouchAdapterInitialized();
@@ -91,7 +119,9 @@ public sealed class SpotBoardInputTests : IDisposable
 
         Assert.Null(_runtime.SpotGame.SelectedCell);
         Assert.Same(_runtime.SpotGame.CurrentPlayer, _runtime.SpotGame.SpotGameField.GetCell(1, 0).OccupiedBy);
-        Assert.NotSame(_runtime.SpotGame.SpotGameField.GetCell(0, 0).Sprite,
+
+        Assert.NotSame(
+            _runtime.SpotGame.SpotGameField.GetCell(0, 0).Sprite,
             _runtime.SpotGame.SpotGameField.GetCell(1, 0).Sprite);
     }
 
@@ -110,8 +140,17 @@ public sealed class SpotBoardInputTests : IDisposable
     public void WidgetTapDoesNotSelectUnderlyingSpot()
     {
         var position = CellPosition(0, 0);
-        using var button = new ButtonWidget(_host, _host.ViewManager.Views[0],
-            new Rectangle(position.X - 20, position.Y - 20, 40, 40), "Overlay");
+
+        using var button = new ButtonWidget(
+            _host,
+            _host.ViewManager.Views[0],
+            new Rectangle(
+                position.X - 20,
+                position.Y - 20,
+                40,
+                40),
+            "Overlay");
+
         var clicks = 0;
         button.PointerClick += _ => clicks++;
         button.Show();
@@ -127,8 +166,17 @@ public sealed class SpotBoardInputTests : IDisposable
     public void WidgetHidingOnTouchDownStillBlocksBoardTap()
     {
         var position = CellPosition(0, 0);
-        using var button = new ButtonWidget(_host, _host.ViewManager.Views[0],
-            new Rectangle(position.X - 20, position.Y - 20, 40, 40), "Overlay");
+
+        using var button = new ButtonWidget(
+            _host,
+            _host.ViewManager.Views[0],
+            new Rectangle(
+                position.X - 20,
+                position.Y - 20,
+                40,
+                40),
+            "Overlay");
+
         button.PointerDown += _ => button.Hide();
         button.Show();
 
@@ -219,9 +267,11 @@ public sealed class SpotBoardInputTests : IDisposable
         _router.Dispose();
         TouchEventPoller.Reset();
         MouseEventPoller.Reset();
+
         foreach (var drawing in Engine.Instance.Managers.DirectDrawings.DirectDrawings.OfType<DirectDrawingBase>()
                      .Where(drawing => ReferenceEquals(drawing.RenderSurfaceHost, _host)))
             drawing.Dispose();
+
         Engine.Instance.Managers.Sprites.Clear();
         Gondwana.Timers.Timer.ClearAll();
         _scene.Dispose();
@@ -234,14 +284,18 @@ public sealed class SpotBoardInputTests : IDisposable
     private Point CellPosition(int x, int y)
     {
         var position = _host.ViewManager.Views[0].WorldPxToScreenPx(
-            _scene[0], new PointF(x * 64 + 32, y * 64 + 32));
+            _scene[0],
+            new PointF(x * 64 + 32, y * 64 + 32));
+
         return Point.Round(position);
     }
 
     private PointF PhysicalPosition(Point position)
     {
         var transform = _adapter.Presentation;
-        return new PointF(transform.DestinationRect.Left + position.X * transform.Scale,
+
+        return new PointF(
+            transform.DestinationRect.Left + position.X * transform.Scale,
             transform.DestinationRect.Top + position.Y * transform.Scale);
     }
 
@@ -259,6 +313,7 @@ public sealed class SpotBoardInputTests : IDisposable
         /// <param name="width">The canvas width.</param>
         /// <param name="height">The canvas height.</param>
         internal void Resize(int width, int height) => SetDestinationSize(width, height);
+
         /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect destination) => image.Dispose();
     }
@@ -268,10 +323,13 @@ public sealed class SpotBoardInputTests : IDisposable
         private readonly Dictionary<int, TouchPoint> _active = [];
         private readonly Queue<TouchPoint> _began = [];
         private readonly Queue<TouchPoint> _ended = [];
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active.Values.ToArray();
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeBeganTouches() => Drain(_began);
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => Drain(_ended);
 
@@ -307,12 +365,16 @@ public sealed class SpotBoardInputTests : IDisposable
     {
         /// <summary>The physical canvas position.</summary>
         internal PointF Position;
+
         /// <inheritdoc/>
         public Point CurrentPosition => adapter.AdapterPxToScreenPx(Position);
+
         /// <inheritdoc/>
         public HashSet<MouseButton> PressedButtons { get; } = [];
+
         /// <inheritdoc/>
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
+
         /// <inheritdoc/>
         public int ScrollDelta => 0;
     }

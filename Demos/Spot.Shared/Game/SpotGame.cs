@@ -63,6 +63,7 @@ internal class SpotGame : IDisposable
             for (int y = 0; y < SpotGameField.GridRowCount; y++)
             {
                 var cell = SpotGameField.GetCell(x, y);
+
                 if (cell.OccupiedBy != null && cell.OccupiedBy.Equals(player))
                     score++;
             }
@@ -74,6 +75,7 @@ internal class SpotGame : IDisposable
     internal Dictionary<Player, int> GetAllPlayerScores()
     {
         var scores = new Dictionary<Player, int>();
+
         foreach (var player in Players)
         {
             scores[player] = GetPlayerScore(player);
@@ -92,6 +94,7 @@ internal class SpotGame : IDisposable
 
             // if only one player remains, game is over
             var allScores = GetAllPlayerScores();
+
             if (allScores.Count(score => score.Value > 0) <= 1)
                 return true;
 
@@ -134,7 +137,11 @@ internal class SpotGame : IDisposable
             }
 
             // there is a current selection, so this is an attempt to move; validate the move
-            playerMovement = SpotGameField.GetMovementType(SelectedCell.X, SelectedCell.Y, cell.X, cell.Y);
+            playerMovement = SpotGameField.GetMovementType(
+                SelectedCell.X,
+                SelectedCell.Y,
+                cell.X,
+                cell.Y);
 
             switch (playerMovement.Value.MovementType)
             {
@@ -156,6 +163,7 @@ internal class SpotGame : IDisposable
 
         var sprite = playerMovement.FromCell.Sprite;
         var fromCell = playerMovement.FromCell;
+
         var toCell = SpotGameField.GetCell(
             playerMovement.DestX,
             playerMovement.DestY);
@@ -195,10 +203,7 @@ internal class SpotGame : IDisposable
                 0.4f,
                 easingKind,
                 0.1f)
-            .OnBeginning(() =>
-            {
-                PlayerMoveStarted?.Invoke(playerMovement);
-            })
+            .OnBeginning(() => { PlayerMoveStarted?.Invoke(playerMovement); })
             .OnComplete(() =>
             {
                 sprite.CurrentFrame =

@@ -10,17 +10,23 @@ public sealed partial class AudioDocument : IDisposable
     private void AddMembers(IReadOnlyList<AudioDefinition> members, string description)
     {
         var selected = Definition;
-        History.Execute(description, () =>
-        {
-            foreach (var member in members)
-                _definitions.Add(member);
-            Definition = members[0];
-        }, () =>
-        {
-            foreach (var member in members)
-                _definitions.Remove(member);
-            Definition = selected;
-        });
+
+        History.Execute(
+            description,
+            () =>
+            {
+                foreach (var member in members)
+                    _definitions.Add(member);
+
+                Definition = members[0];
+            },
+            () =>
+            {
+                foreach (var member in members)
+                    _definitions.Remove(member);
+
+                Definition = selected;
+            });
     }
 
     private void HistoryChanged(object? sender, EventArgs args)
@@ -34,6 +40,7 @@ public sealed partial class AudioDocument : IDisposable
     {
         if (!_definitions.Any(member => ReferenceEquals(member, target)))
             throw new ArgumentException("Use EditResource for an owned audio resource.", nameof(target));
+
         return History.Edit(description, target, change);
     }
 
@@ -42,10 +49,12 @@ public sealed partial class AudioDocument : IDisposable
     {
         if (!_definitions.Any(member => member.Resources.Contains(resource)))
             throw new ArgumentException("Resource does not belong to this document.", nameof(resource));
+
         using var transaction = History.BeginTransaction(description);
         string directory = BaseDirectory;
         string? archive = PackedLocation?.Path;
         var before = new ModelSnapshot(resource);
+
         try
         {
             change();
@@ -56,19 +65,31 @@ public sealed partial class AudioDocument : IDisposable
             throw;
         }
 
-        before.Record(History, description, (target, property, value) =>
-        {
-            _origins.Remember(target, BaseDirectory, PackedLocation?.Path);
-            if (resource.SourceKind == AudioResourceSourceKind.Uri)
+        before.Record(
+            History,
+            description,
+            (target, property, value) =>
+            {
+                _origins.Remember(target, BaseDirectory, PackedLocation?.Path);
+
+                if (resource.SourceKind == AudioResourceSourceKind.Uri)
+                    return value;
+
+                if (property == nameof(resource.AssetsFilePath) &&
+                    resource.SourceKind == AudioResourceSourceKind.PackedAsset &&
+                    value is null or "" && archive is not null && PackedLocation?.Path != archive)
+                    value = archive;
+
+                if (property is nameof(resource.FilePath) or nameof(resource.AssetsFilePath) && value is string path &&
+                    !string.IsNullOrWhiteSpace(path) && !string.Equals(
+                        directory,
+                        BaseDirectory,
+                        StringComparison.OrdinalIgnoreCase))
+                    return Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path, directory));
+
                 return value;
-            if (property == nameof(resource.AssetsFilePath) && resource.SourceKind == AudioResourceSourceKind.PackedAsset &&
-                value is null or "" && archive is not null && PackedLocation?.Path != archive)
-                value = archive;
-            if (property is nameof(resource.FilePath) or nameof(resource.AssetsFilePath) && value is string path &&
-                !string.IsNullOrWhiteSpace(path) && !string.Equals(directory, BaseDirectory, StringComparison.OrdinalIgnoreCase))
-                return Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path, directory));
-            return value;
-        });
+            });
+
         transaction.Commit();
     }
 
@@ -97,12 +118,22 @@ public sealed partial class AudioDocument : IDisposable
             {
                 if (source.SourceKind == AudioResourceSourceKind.Uri)
                     continue;
-                _origins.Restore(source, BaseDirectory, PackedLocation?.Path, source.AssetEntryName,
-                    () => source.FilePath, value => source.FilePath = value,
-                    () => source.AssetsFilePath, value => source.AssetsFilePath = value);
+
+                _origins.Restore(
+                    source,
+                    BaseDirectory,
+                    PackedLocation?.Path,
+                    source.AssetEntryName,
+                    () => source.FilePath,
+                    value => source.FilePath = value,
+                    () => source.AssetsFilePath,
+                    value => source.AssetsFilePath = value);
             }
 
-            if (FilePath is not null && !string.Equals(member.Source.GsndFilePath, FilePath, StringComparison.OrdinalIgnoreCase))
+            if (FilePath is not null && !string.Equals(
+                    member.Source.GsndFilePath,
+                    FilePath,
+                    StringComparison.OrdinalIgnoreCase))
                 member.Source = AudioDefinitionSource.LooseDefinitionFile(FilePath);
         }
     }

@@ -70,6 +70,7 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
     private void ConnectToTopLevel()
     {
         var topLevel = TopLevel.GetTopLevel(_control);
+
         if (topLevel is null || ReferenceEquals(topLevel, _topLevel))
             return;
 
@@ -120,10 +121,13 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
 
         _modifiers = KeyboardModifierState.None;
         var km = e.KeyModifiers;
+
         if ((km & KeyModifiers.Shift) != 0)
             _modifiers |= KeyboardModifierState.Shift;
+
         if ((km & KeyModifiers.Control) != 0)
             _modifiers |= KeyboardModifierState.Ctrl;
+
         if ((km & KeyModifiers.Alt) != 0)
             _modifiers |= KeyboardModifierState.Alt;
     }
@@ -132,20 +136,24 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
     {
         if (props.IsLeftButtonPressed)
             return GondwanaMouseButton.Left;
+
         if (props.IsRightButtonPressed)
             return GondwanaMouseButton.Right;
+
         if (props.IsMiddleButtonPressed)
             return GondwanaMouseButton.Middle;
+
         return GondwanaMouseButton.None;
     }
 
-    private static GondwanaMouseButton MapReleasedButton(global::Avalonia.Input.MouseButton initialPressButton) => initialPressButton switch
-    {
-        global::Avalonia.Input.MouseButton.Left => GondwanaMouseButton.Left,
-        global::Avalonia.Input.MouseButton.Right => GondwanaMouseButton.Right,
-        global::Avalonia.Input.MouseButton.Middle => GondwanaMouseButton.Middle,
-        _ => GondwanaMouseButton.None
-    };
+    private static GondwanaMouseButton MapReleasedButton(global::Avalonia.Input.MouseButton initialPressButton) =>
+        initialPressButton switch
+        {
+            global::Avalonia.Input.MouseButton.Left => GondwanaMouseButton.Left,
+            global::Avalonia.Input.MouseButton.Right => GondwanaMouseButton.Right,
+            global::Avalonia.Input.MouseButton.Middle => GondwanaMouseButton.Middle,
+            _ => GondwanaMouseButton.None
+        };
 
     private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {

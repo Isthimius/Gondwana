@@ -13,10 +13,12 @@ public enum HorizontalAlignment
     /// Align to the left.
     /// </summary>
     Left,
+
     /// <summary>
     /// Align to the center.
     /// </summary>
     Center,
+
     /// <summary>
     /// Align to the right.
     /// </summary>

@@ -15,6 +15,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
 {
     /// <summary>Neutral session-local measurements for this host; null when source capacity is exhausted or the shared collector is disposed.</summary>
     public Diagnostics.TelemetrySource? Telemetry { get; internal set; }
+
     internal RenderFrameMailbox FrameMailbox { get; } = new();
     internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;
     internal virtual void ProduceRenderFrameSnapshot(long tick) { }
@@ -121,14 +122,17 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
         bool collectSynchronizationDiagnostics =
             GpuRenderSynchronizationDiagnosticsCalculated is not null;
+
         long waitStarted = collectSynchronizationDiagnostics
             ? HighResTimer.GetCurrentTick()
             : 0;
+
         long lockAcquired = 0;
         long lockReleased = 0;
         SKImage? image;
 
         RenderStateSynchronization.EnterGpuRender();
+
         try
         {
             if (collectSynchronizationDiagnostics)
@@ -168,6 +172,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
         bool collectDiagnostics = diagnostics is not null || telemetryGeneration != 0;
         var slot = FrameMailbox.TryAcquire();
+
         if (slot is null)
             return Backbuffer.Snapshot();
 
@@ -179,8 +184,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         long backbufferFlushTicks = 0;
         long snapshotTicks = 0;
         int commands = !collectDiagnostics ? 0 : slot.Frame!.CommandCount;
-        double age = !collectDiagnostics ? 0 :
-            HighResTimer.GetDuration(slot.Frame!.ProducedTick, acquired) * 1000d;
+        double age = !collectDiagnostics ? 0 : HighResTimer.GetDuration(slot.Frame!.ProducedTick, acquired) * 1000d;
 
         try
         {
@@ -192,8 +196,10 @@ public abstract class RenderSurfaceHostBase : IDisposable
             {
                 long snapshotStart = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
                 var resizedSnapshot = Backbuffer.Snapshot();
+
                 if (collectDiagnostics)
                     snapshotTicks = HighResTimer.GetCurrentTick() - snapshotStart;
+
                 return resizedSnapshot;
             }
 
@@ -216,6 +222,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
             long snapshotStartTick = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
             var snapshot = Backbuffer.Snapshot();
+
             if (collectDiagnostics)
                 snapshotTicks = HighResTimer.GetCurrentTick() - snapshotStartTick;
 
@@ -238,6 +245,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
                 double pictureMs = HighResTimer.GetDuration(0, pictureReplayTicks) * 1000d;
                 double flushMs = HighResTimer.GetDuration(0, backbufferFlushTicks) * 1000d;
                 double snapshotMs = HighResTimer.GetDuration(0, snapshotTicks) * 1000d;
+
                 if (telemetryGeneration != 0)
                 {
                     if (replayCompleted)
@@ -255,18 +263,19 @@ public abstract class RenderSurfaceHostBase : IDisposable
                     Telemetry.Record(telemetryGeneration, "snapshot.commands.approximate", commands);
                 }
 
-                diagnostics?.Invoke(new(0, 0)
-                {
-                    ReplayMilliseconds = replayMs,
-                    PictureReplayMilliseconds = pictureMs,
-                    BackbufferFlushMilliseconds = flushMs,
-                    SnapshotMilliseconds = snapshotMs,
-                    SnapshotAgeMilliseconds = age,
-                    PublishedSnapshots = counters.Published,
-                    DroppedSnapshots = counters.Dropped,
-                    SnapshotSlotsInUse = counters.InUse,
-                    SnapshotCommandCount = commands
-                });
+                diagnostics?.Invoke(
+                    new(0, 0)
+                    {
+                        ReplayMilliseconds = replayMs,
+                        PictureReplayMilliseconds = pictureMs,
+                        BackbufferFlushMilliseconds = flushMs,
+                        SnapshotMilliseconds = snapshotMs,
+                        SnapshotAgeMilliseconds = age,
+                        PublishedSnapshots = counters.Published,
+                        DroppedSnapshots = counters.Dropped,
+                        SnapshotSlotsInUse = counters.InUse,
+                        SnapshotCommandCount = commands
+                    });
             }
         }
     }
@@ -298,6 +307,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         }
 
         RenderStateSynchronization.EnterGpuRender();
+
         try
         {
             var tick = HighResTimer.GetCurrentTick();
@@ -347,23 +357,34 @@ public abstract class RenderSurfaceHostBase : IDisposable
     {
         var presentation = RenderSurfaceAdapter?.Presentation ?? default;
         canvas.Clear(Backbuffer.ClearColor);
+
         if (presentation.Scale <= 0)
             return;
+
         canvas.Save();
+
         try
         {
             canvas.Translate(presentation.DestinationRect.Left, presentation.DestinationRect.Top);
             canvas.Scale(presentation.Scale);
-            bool needsLinearSampling = Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.Linear &&
+
+            bool needsLinearSampling =
+                Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.Linear &&
                 (presentation.Scale != 1f ||
                  presentation.DestinationRect.Left != MathF.Floor(presentation.DestinationRect.Left) ||
                  presentation.DestinationRect.Top != MathF.Floor(presentation.DestinationRect.Top));
+
             if (needsLinearSampling)
             {
                 // Skia's DrawSurface does not expose sampling and ignores SKPaint.FilterQuality.
                 // A scoped snapshot is a GPU texture view, not a readback or an intermediate copy.
                 using var image = Backbuffer.Snapshot();
-                canvas.DrawImage(image, 0, 0, RenderSurfaceAdapterBase.PresentationSampling);
+
+                canvas.DrawImage(
+                    image,
+                    0,
+                    0,
+                    RenderSurfaceAdapterBase.PresentationSampling);
             }
             else
             {
@@ -433,6 +454,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     {
         lock (RenderStateSynchronization.SyncRoot)
             Dispose(true);
+
         GC.SuppressFinalize(this);
     }
 
@@ -452,6 +474,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         Telemetry?.Dispose();
+
         if (disposing)
         {
             FrameMailbox.Dispose();

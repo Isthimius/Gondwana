@@ -10,10 +10,12 @@ public sealed class PropertyHelpTests
     public void SpritePropertiesHaveDescriptions()
     {
         var model = new SpriteProperties(new SpriteInstanceDefinition());
+
         foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(model))
         {
             if (property.IsBrowsable)
-                Assert.False(string.IsNullOrWhiteSpace(property.Description),
+                Assert.False(
+                    string.IsNullOrWhiteSpace(property.Description),
                     $"SpriteProperties.{property.Name} must explain its effect.");
         }
 
@@ -24,6 +26,7 @@ public sealed class PropertyHelpTests
     public void SpritePropertiesAreGroupedByPurpose()
     {
         var properties = TypeDescriptor.GetProperties(new SpriteProperties(new SpriteInstanceDefinition()));
+
         foreach (PropertyDescriptor property in properties)
             if (property.IsBrowsable)
                 Assert.NotEqual("Misc", property.Category);
@@ -37,5 +40,4 @@ public sealed class PropertyHelpTests
         Assert.Equal("Collision", properties[nameof(SpriteProperties.CollisionType)]!.Category);
         Assert.Equal("Collision adjustment", properties[nameof(SpriteProperties.CollisionLeft)]!.Category);
     }
-
 }

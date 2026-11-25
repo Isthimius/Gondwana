@@ -74,14 +74,22 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
     /// based on the movement controller's physics simulation.
     /// </para>
     /// </remarks>
-    protected DirectDrawingMovableBase(RenderSurfaceHostBase renderSurfaceHost,
-                                       DirectDrawingMode mode,
-                                       SceneLayer? sceneLayer,
-                                       View? view,
-                                       Rectangle? screenBounds,
-                                       Rectangle? worldBounds,
-                                       string? name = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
+    protected DirectDrawingMovableBase(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? name = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            name)
     {
         Rectangle bounds = (mode == DirectDrawingMode.SceneLayer ? worldBounds : screenBounds)!.Value;
         _posPx = new Vector2(bounds.X, bounds.Y);
@@ -213,12 +221,22 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
         if (Mode == DirectDrawingMode.SceneLayer)
         {
             var r = WorldBounds;
-            WorldBounds = new Rectangle(x, y, r.Width, r.Height);
+
+            WorldBounds = new Rectangle(
+                x,
+                y,
+                r.Width,
+                r.Height);
         }
         else
         {
             var r = ScreenBounds;
-            ScreenBounds = new Rectangle(x, y, r.Width, r.Height);
+
+            ScreenBounds = new Rectangle(
+                x,
+                y,
+                r.Width,
+                r.Height);
         }
 
         // mark new area dirty

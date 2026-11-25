@@ -27,13 +27,18 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <param name="value">The value.</param>
     /// <param name="orientation">The orientation.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ProgressBarWidget(RenderSurfaceHostBase renderSurfaceHost,
-                             View view,
-                             Rectangle bounds,
-                             float value = 0f,
-                             WidgetOrientation orientation = WidgetOrientation.Horizontal,
-                             string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public ProgressBarWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        float value = 0f,
+        WidgetOrientation orientation = WidgetOrientation.Horizontal,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -54,13 +59,18 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <param name="value">The value.</param>
     /// <param name="orientation">The orientation.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ProgressBarWidget(RenderSurfaceHostBase renderSurfaceHost,
-                             SceneLayer sceneLayer,
-                             Rectangle bounds,
-                             float value = 0f,
-                             WidgetOrientation orientation = WidgetOrientation.Horizontal,
-                             string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public ProgressBarWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        float value = 0f,
+        WidgetOrientation orientation = WidgetOrientation.Horizontal,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -94,6 +104,7 @@ public sealed class ProgressBarWidget : WidgetBase
                 throw new ArgumentOutOfRangeException(nameof(value));
 
             float clamped = Math.Clamp(value, 0f, 1f);
+
             if (_value.Equals(clamped))
                 return;
 
@@ -233,7 +244,12 @@ public sealed class ProgressBarWidget : WidgetBase
         CanReceiveFocus = false;
 
         SetProgressZOrder(0);
-        _value = Math.Clamp(float.IsFinite(value) ? value : throw new ArgumentOutOfRangeException(nameof(value)), 0f, 1f);
+
+        _value = Math.Clamp(
+            float.IsFinite(value) ? value : throw new ArgumentOutOfRangeException(nameof(value)),
+            0f,
+            1f);
+
         UpdateFillBounds();
     }
 
@@ -272,9 +288,23 @@ public sealed class ProgressBarWidget : WidgetBase
 
     private DirectRectangle CreateTrack(RenderSurfaceHostBase host, View view, Rectangle bounds)
     {
-        return new DirectRectangle(Color.FromArgb(220, 28, 30, 36), host, view, bounds, $"{Nickname}.track")
+        return new DirectRectangle(
+                Color.FromArgb(
+                    220,
+                    28,
+                    30,
+                    36),
+                host,
+                view,
+                bounds,
+                $"{Nickname}.track")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(235, 225, 228, 234))
+            .SetBorderColor(
+                Color.FromArgb(
+                    235,
+                    225,
+                    228,
+                    234))
             .SetStrokeWidth(1f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
             .SetCornerRadius(2f);
@@ -282,9 +312,23 @@ public sealed class ProgressBarWidget : WidgetBase
 
     private DirectRectangle CreateTrack(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
     {
-        return new DirectRectangle(Color.FromArgb(220, 28, 30, 36), host, layer, bounds, $"{Nickname}.track")
+        return new DirectRectangle(
+                Color.FromArgb(
+                    220,
+                    28,
+                    30,
+                    36),
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.track")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(235, 225, 228, 234))
+            .SetBorderColor(
+                Color.FromArgb(
+                    235,
+                    225,
+                    228,
+                    234))
             .SetStrokeWidth(1f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
             .SetCornerRadius(2f);
@@ -292,7 +336,16 @@ public sealed class ProgressBarWidget : WidgetBase
 
     private DirectRectangle CreateFill(RenderSurfaceHostBase host, View view, Rectangle bounds)
     {
-        return new DirectRectangle(Color.FromArgb(245, 55, 210, 105), host, view, bounds, $"{Nickname}.fill")
+        return new DirectRectangle(
+                Color.FromArgb(
+                    245,
+                    55,
+                    210,
+                    105),
+                host,
+                view,
+                bounds,
+                $"{Nickname}.fill")
             .SetFilled(true)
             .SetStrokeWidth(0f)
             .SetCornerRadius(1f);
@@ -300,7 +353,16 @@ public sealed class ProgressBarWidget : WidgetBase
 
     private DirectRectangle CreateFill(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
     {
-        return new DirectRectangle(Color.FromArgb(245, 55, 210, 105), host, layer, bounds, $"{Nickname}.fill")
+        return new DirectRectangle(
+                Color.FromArgb(
+                    245,
+                    55,
+                    210,
+                    105),
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.fill")
             .SetFilled(true)
             .SetStrokeWidth(0f)
             .SetCornerRadius(1f);

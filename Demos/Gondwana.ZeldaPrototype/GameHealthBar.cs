@@ -34,19 +34,32 @@ internal sealed class GameHealthBar
         _size = size;
 
         _track = new DirectRectangle(
-                Color.FromArgb(220, 20, 24, 31),
+                Color.FromArgb(
+                    220,
+                    20,
+                    24,
+                    31),
                 renderSurfaceHost,
                 target.SceneLayer,
                 new Rectangle(Point.Empty, size),
                 $"{nickname}-track")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(235, 235, 241, 247))
+            .SetBorderColor(
+                Color.FromArgb(
+                    235,
+                    235,
+                    241,
+                    247))
             .SetStrokeWidth(1f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
             .SetCornerRadius(2f);
 
         _fill = new DirectRectangle(
-                Color.FromArgb(245, 55, 210, 105),
+                Color.FromArgb(
+                    245,
+                    55,
+                    210,
+                    105),
                 renderSurfaceHost,
                 target.SceneLayer,
                 Rectangle.Empty,
@@ -96,7 +109,12 @@ internal sealed class GameHealthBar
         int x = targetBounds.Left + (targetBounds.Width - _size.Width) / 2;
         int y = targetBounds.Top - _size.Height - 6;
 
-        _track.WorldBounds = new Rectangle(x, y, _size.Width, _size.Height);
+        _track.WorldBounds = new Rectangle(
+            x,
+            y,
+            _size.Width,
+            _size.Height);
+
         UpdateFillBounds();
     }
 
@@ -113,6 +131,7 @@ internal sealed class GameHealthBar
             _track.WorldBounds.Top + InnerPadding,
             fillWidth,
             availableHeight);
+
         _fill.Visible = _value > 0f && _track.Visible;
     }
 }

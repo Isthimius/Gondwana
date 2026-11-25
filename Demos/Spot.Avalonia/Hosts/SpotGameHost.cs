@@ -107,6 +107,7 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
         foreach (Key key in Enum.GetValues<Key>())
         {
             int keyCode = (int)key;
+
             if (keyCode <= 0 || keyCode == ScoreToggleKey)
                 continue;
 
@@ -183,6 +184,7 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
     private static int TranslateAvaloniaKeyToVirtualKey(Key key)
     {
         string? keyName = Enum.GetName(typeof(Key), key);
+
         if (string.IsNullOrEmpty(keyName))
             return (int)key;
 

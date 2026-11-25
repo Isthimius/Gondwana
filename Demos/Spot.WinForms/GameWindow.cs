@@ -46,6 +46,7 @@ internal partial class GameWindow : Form
         {
             Dock = DockStyle.Fill
         };
+
         Controls.Add(_gpuRenderSurface);
     }
 
@@ -83,6 +84,7 @@ internal partial class GameWindow : Form
                 "Startup Error",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
+
             Close();
         }
     }
@@ -93,6 +95,7 @@ internal partial class GameWindow : Form
             throw new InvalidOperationException("Game host was not initialized before startup splash initialization.");
 
         Enabled = false;
+
         try
         {
             // Initializes the engine.
@@ -100,14 +103,17 @@ internal partial class GameWindow : Form
 
             // Create and display the Gondwana splash screen.
             var host = _gpuRenderSurface!.Host;
-            _gameHost.CreateSplash(host, () =>
-            {
-                // Create game visuals, start music, apply saved settings, and then expose
-                // the in-engine menu once the splash has fully completed.
-                _gameHost.BeginPostSplashStartup();
-                ApplyLoadedSettings();
-                CreateMenu();
-            });
+
+            _gameHost.CreateSplash(
+                host,
+                () =>
+                {
+                    // Create game visuals, start music, apply saved settings, and then expose
+                    // the in-engine menu once the splash has fully completed.
+                    _gameHost.BeginPostSplashStartup();
+                    ApplyLoadedSettings();
+                    CreateMenu();
+                });
         }
         finally
         {
@@ -185,6 +191,7 @@ internal partial class GameWindow : Form
             return;
 
         var view = _gpuRenderSurface.Host.ViewManager.Views[0];
+
         var state = new SpotMenuState(
             ReadBoolSetting(SpotSettings.Music, defaultValue: true),
             ReadBoolSetting(SpotSettings.SoundEffects, defaultValue: true),
@@ -213,6 +220,7 @@ internal partial class GameWindow : Form
     private void StartMonitoringMenuKeys()
     {
         var keyboard = _gameHost?.Engine.Input.KeyboardEventPoller;
+
         if (keyboard == null)
             return;
 
@@ -315,15 +323,17 @@ internal partial class GameWindow : Form
 
         _aboutSpotLogo ??= LoadImage("spot.png");
         _aboutGondwanaLogo ??= LoadImage("gondwana-logo-text.png");
+
         _aboutTypeface ??= SKTypeface.FromStream(fontStream)
-            ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
+                           ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
     }
 
     private SKImage LoadImage(string path)
     {
         using var stream = _gameHost!.OpenAsset(AssetTypes.Image, path);
+
         return SKImage.FromEncodedData(stream)
-            ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
+               ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
     }
 
     private sealed class WinFormsExternalUriLauncher : IExternalUriLauncher
@@ -338,11 +348,12 @@ internal partial class GameWindow : Form
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = uri.AbsoluteUri,
-                UseShellExecute = true
-            });
+            Process.Start(
+                new ProcessStartInfo
+                {
+                    FileName = uri.AbsoluteUri,
+                    UseShellExecute = true
+                });
 
             return ValueTask.CompletedTask;
         }

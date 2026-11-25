@@ -18,21 +18,40 @@ public sealed class DirectRectangleImageFillTests
     public void SetFillImage_RepeatTilesImageAcrossRectangle()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 6, 4));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                6,
+                4));
+
         using var source = CreateTwoColorBitmap();
         using var backbuffer = new BitmapBackbuffer(6, 4);
+
         using var rectangle = new DirectRectangle(
                 Color.White,
                 host,
                 view,
-                new Rectangle(0, 0, 6, 4))
+                new Rectangle(
+                    0,
+                    0,
+                    6,
+                    4))
             .SetStrokeWidth(0f)
             .SetFillImage(
                 source,
                 DirectRectangle.ImageFillMode.Repeat,
                 filterQuality: SKFilterQuality.None);
 
-        rectangle.Draw(backbuffer, new RectangleF(0, 0, 6, 4));
+        rectangle.Draw(
+            backbuffer,
+            new RectangleF(
+                0,
+                0,
+                6,
+                4));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap result = SKBitmap.FromImage(snapshot);
@@ -50,21 +69,40 @@ public sealed class DirectRectangleImageFillTests
     public void SetFillImage_StretchFillsRectangleWithoutRepeating()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 8, 4));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                8,
+                4));
+
         using var source = CreateTwoColorBitmap();
         using var backbuffer = new BitmapBackbuffer(8, 4);
+
         using var rectangle = new DirectRectangle(
                 Color.White,
                 host,
                 view,
-                new Rectangle(0, 0, 8, 4))
+                new Rectangle(
+                    0,
+                    0,
+                    8,
+                    4))
             .SetStrokeWidth(0f)
             .SetFillImage(
                 source,
                 DirectRectangle.ImageFillMode.Stretch,
                 filterQuality: SKFilterQuality.None);
 
-        rectangle.Draw(backbuffer, new RectangleF(0, 0, 8, 4));
+        rectangle.Draw(
+            backbuffer,
+            new RectangleF(
+                0,
+                0,
+                8,
+                4));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap result = SKBitmap.FromImage(snapshot);
@@ -82,21 +120,40 @@ public sealed class DirectRectangleImageFillTests
     public void SetFillPattern_InvalidScalePreservesExistingPattern()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 6, 4));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                6,
+                4));
+
         using var source = CreateTwoColorBitmap();
         using var backbuffer = new BitmapBackbuffer(6, 4);
+
         using var rectangle = new DirectRectangle(
                 Color.White,
                 host,
                 view,
-                new Rectangle(0, 0, 6, 4))
+                new Rectangle(
+                    0,
+                    0,
+                    6,
+                    4))
             .SetStrokeWidth(0f)
             .SetFillPattern(source);
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             rectangle.SetFillPattern(source, scale: 0f));
 
-        rectangle.Draw(backbuffer, new RectangleF(0, 0, 6, 4));
+        rectangle.Draw(
+            backbuffer,
+            new RectangleF(
+                0,
+                0,
+                6,
+                4));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap result = SKBitmap.FromImage(snapshot);
@@ -113,22 +170,41 @@ public sealed class DirectRectangleImageFillTests
     public void SetFillImage_ImageSourceStillRenders()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 8, 4));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                8,
+                4));
+
         using var bitmap = CreateTwoColorBitmap();
         using var source = SKImage.FromBitmap(bitmap);
         using var backbuffer = new BitmapBackbuffer(8, 4);
+
         using var rectangle = new DirectRectangle(
                 Color.White,
                 host,
                 view,
-                new Rectangle(0, 0, 8, 4))
+                new Rectangle(
+                    0,
+                    0,
+                    8,
+                    4))
             .SetStrokeWidth(0f)
             .SetFillImage(
                 source,
                 DirectRectangle.ImageFillMode.Stretch,
                 filterQuality: SKFilterQuality.None);
 
-        rectangle.Draw(backbuffer, new RectangleF(0, 0, 8, 4));
+        rectangle.Draw(
+            backbuffer,
+            new RectangleF(
+                0,
+                0,
+                8,
+                4));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap result = SKBitmap.FromImage(snapshot);

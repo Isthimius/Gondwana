@@ -38,12 +38,14 @@ public sealed class BrowserLocalStorageEngineConfigurationStore : IEngineConfigu
         ArgumentException.ThrowIfNullOrWhiteSpace(storageKey);
 
         _jsRuntime = jsRuntime as IJSInProcessRuntime
-            ?? throw new PlatformNotSupportedException(
-                "BrowserLocalStorageEngineConfigurationStore requires an in-process Blazor WebAssembly JS runtime.");
+                     ?? throw new PlatformNotSupportedException(
+                         "BrowserLocalStorageEngineConfigurationStore requires an in-process Blazor WebAssembly JS runtime.");
+
         _storageKey = storageKey;
         AutoSave = autoSave;
 
         var json = _jsRuntime.Invoke<string?>("localStorage.getItem", _storageKey);
+
         Configuration = string.IsNullOrWhiteSpace(json)
             ? new EngineConfiguration()
             : JsonConvert.DeserializeObject<EngineConfiguration>(json) ?? new EngineConfiguration();

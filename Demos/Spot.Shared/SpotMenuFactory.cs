@@ -40,7 +40,11 @@ internal static class SpotMenuFactory
         var menuBar = new MenuBarWidget(
             host,
             view,
-            new Rectangle(0, 0, view.Viewport.TargetRectPx.Width, Height));
+            new Rectangle(
+                0,
+                0,
+                view.Viewport.TargetRectPx.Width,
+                Height));
 
         menuBar
             .AddMenu(
@@ -54,7 +58,6 @@ internal static class SpotMenuFactory
                         game.AddSeparator()
                             .AddItem("Exit", actions.Exit, mnemonic: 'X');
                     }
-
                 },
                 mnemonic: 'G')
             .AddMenu(

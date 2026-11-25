@@ -15,7 +15,8 @@ public partial class EngineConfigurationFile : IEngineConfigurationStore
     private string _fileName = _defaultConfigFileName;
 
     private EngineConfigurationFile()
-    { }
+    {
+    }
 
     /// <summary>
     /// Creates a new engine configuration file with default settings.
@@ -52,6 +53,7 @@ public partial class EngineConfigurationFile : IEngineConfigurationStore
             .Build();
 
         var settings = configRoot.GetSection(nameof(EngineConfig)).Get<EngineConfiguration>();
+
         return new EngineConfigurationFile
         {
             FileName = configFile,

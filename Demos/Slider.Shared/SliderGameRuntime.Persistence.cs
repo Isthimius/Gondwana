@@ -25,14 +25,25 @@ internal sealed partial class SliderGameRuntime
     internal void RequestRestore(SliderSave save)
     {
         ArgumentNullException.ThrowIfNull(save);
+
         lock (_requestGate)
-            _requests.Enqueue(new PuzzleRequest(null, 0, 0, PuzzleCommand.Restore, SavedGame: save));
+            _requests.Enqueue(
+                new PuzzleRequest(
+                    null,
+                    0,
+                    0,
+                    PuzzleCommand.Restore,
+                    SavedGame: save));
     }
 
     private void CreateMenu()
     {
-        _menu = new SliderMenu(_surface, _uiView, _gameView,
-            _loadAboutLogo, _uriLauncher,
+        _menu = new SliderMenu(
+            _surface,
+            _uiView,
+            _gameView,
+            _loadAboutLogo,
+            _uriLauncher,
             newPuzzle: () => RequestPuzzle(null, _sidebar!.Columns, _sidebar.Rows),
             openPicture: () => OpenPictureRequested?.Invoke(_sidebar!.Columns, _sidebar.Rows),
             shuffle: RequestShuffle,
@@ -57,20 +68,25 @@ internal sealed partial class SliderGameRuntime
     private void CapturePicture(SKBitmap image)
     {
         using SKData encoded = image.Encode(SKEncodedImageFormat.Png, 90)
-            ?? throw new InvalidDataException("Could not encode the puzzle image.");
+                               ?? throw new InvalidDataException("Could not encode the puzzle image.");
+
         _imagePng = encoded.ToArray();
     }
 
     private void RestoreSavedGame(SliderSave save)
     {
         SliderPersistence.Validate(save);
+
         SlidingPuzzle restored = SlidingPuzzle.Restore(
-            save.Columns, save.Rows, save.Cells, save.MoveCount);
+            save.Columns,
+            save.Rows,
+            save.Cells,
+            save.MoveCount);
 
         using SKBitmap image = string.IsNullOrEmpty(save.ImagePngBase64)
             ? CreateSampleImage()
             : SKBitmap.Decode(Convert.FromBase64String(save.ImagePngBase64))
-                ?? throw new InvalidDataException("The saved puzzle image is invalid.");
+              ?? throw new InvalidDataException("The saved puzzle image is invalid.");
 
         CancelAnimation();
         _renderer.Load(image, restored, _showGrid);
@@ -81,6 +97,7 @@ internal sealed partial class SliderGameRuntime
         _timer.Reset();
         _started = save.Started;
         _won = save.Won;
+
         if (_started && !_won)
             _timer.Start();
 
@@ -90,9 +107,15 @@ internal sealed partial class SliderGameRuntime
 
     private void RecordHighScore()
     {
-        _highScores = SliderPersistence.AddScore(_highScores,
-            new SliderScore(_board.Columns, _board.Rows, _board.MoveCount,
-                (_elapsedBeforeResume + _timer.Elapsed).Ticks, DateTime.UtcNow));
+        _highScores = SliderPersistence.AddScore(
+            _highScores,
+            new SliderScore(
+                _board.Columns,
+                _board.Rows,
+                _board.MoveCount,
+                (_elapsedBeforeResume + _timer.Elapsed).Ticks,
+                DateTime.UtcNow));
+
         try
         {
             _scoreStore.SaveScores(_highScores);
@@ -116,6 +139,7 @@ internal sealed partial class SliderGameRuntime
         Sprite? sprite = Engine.Managers.Sprites
             .GetSpritesAtViewPixel(_gameView, args.ScreenPositionPx, _layer)
             .FirstOrDefault();
+
         if (sprite is not null && int.TryParse(sprite.Nickname, out int piece))
             TryMovePiece(piece);
     }

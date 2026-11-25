@@ -11,6 +11,7 @@ public sealed class CssEdgeOrderTests
         var order = TypeDescriptor.GetProperties(typeof(SpriteProperties)).Cast<PropertyDescriptor>()
             .Select(property => property.Name)
             .Where(name => name is "CollisionTop" or "CollisionRight" or "CollisionBottom" or "CollisionLeft");
+
         Assert.Equal(new[] { "CollisionTop", "CollisionRight", "CollisionBottom", "CollisionLeft" }, order);
     }
 }

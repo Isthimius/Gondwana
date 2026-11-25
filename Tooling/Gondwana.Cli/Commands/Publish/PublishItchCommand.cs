@@ -15,7 +15,8 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         /// Gets or sets the project.
         /// </summary>
         [CommandOption("-p|--project")]
-        [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
+        [Description(
+            "Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
         /// <summary>
@@ -44,7 +45,8 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         /// Gets or sets the base href.
         /// </summary>
         [CommandOption("--base-href")]
-        [Description("Override the packaged <base href>, for example ./ or /games/mygame/. No override is applied by default.")]
+        [Description(
+            "Override the packaged <base href>, for example ./ or /games/mygame/. No override is applied by default.")]
         public string? BaseHref { get; init; }
 
         /// <summary>
@@ -68,25 +70,36 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+
             if (error!.Contains("No .csproj found", StringComparison.Ordinal))
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
+
             return 1;
         }
 
         if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine(
+                "[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        if (!ProjectHelper.TryResolveBrowserFramework(
+                csprojPath!,
+                settings.Framework,
+                out var framework,
+                out error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
             return 1;
         }
 
         var projectName = Path.GetFileNameWithoutExtension(csprojPath!);
-        AnsiConsole.MarkupLine($"Packaging [bold]{Markup.Escape(projectName)}[/] for itch.io from {Markup.Escape(framework!)}...");
+
+        AnsiConsole.MarkupLine(
+            $"Packaging [bold]{Markup.Escape(projectName)}[/] for itch.io from {Markup.Escape(framework!)}...");
 
         var zipPath = ProjectHelper.CreateBlazorItchPackage(
             csprojPath!,
@@ -97,6 +110,7 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
             settings.BaseHref,
             settings.Output,
             out var exitCode);
+
         if (exitCode != 0)
             return exitCode;
 

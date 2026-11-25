@@ -19,6 +19,7 @@ internal sealed class GameWindow : Form
         Gondwana.Engine.Instance.Configuration.RenderScale = 1.5f;
         _surface = new WinFormGpuRenderSurfaceControl { Dock = DockStyle.Fill };
         Controls.Add(_surface);
+
         KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Escape)
@@ -35,6 +36,7 @@ internal sealed class GameWindow : Form
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+
         try
         {
             _host!.Initialize(logLevel: LogLevel.Warning);
@@ -42,8 +44,13 @@ internal sealed class GameWindow : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Breakout startup error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "Breakout startup error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
             Close();
         }
     }

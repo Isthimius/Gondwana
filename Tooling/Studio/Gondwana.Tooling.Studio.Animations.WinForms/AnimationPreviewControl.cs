@@ -29,10 +29,12 @@ internal sealed class AnimationPreviewControl : Control
     /// Gets whether playback is active.
     /// </summary>
     public bool IsPlaying => _timer.Enabled;
+
     /// <summary>
     /// Gets the current frame index.
     /// </summary>
     public int CurrentFrameIndex => _index;
+
     /// <summary>Gets whether a source selection is displayed instead of the animation playback frame.</summary>
     public bool IsShowingSourceFrame => _sourcePreviewActive;
 
@@ -63,6 +65,7 @@ internal sealed class AnimationPreviewControl : Control
         _definition = definition;
         _resolver = resolver;
         _hiddenAtEnd = false;
+
         if (_index >= definition.Frames.Count)
             _index = Math.Max(0, definition.Frames.Count - 1);
 
@@ -113,6 +116,7 @@ internal sealed class AnimationPreviewControl : Control
     public void Play()
     {
         ClearSourceFrame();
+
         if (_definition is null ||
             _definition.Frames.Count == 0 ||
             EffectiveDuration <= 0 ||
@@ -185,6 +189,7 @@ internal sealed class AnimationPreviewControl : Control
         }
 
         var throttle = EffectiveDuration;
+
         if (throttle <= 0 || !double.IsFinite(throttle))
         {
             Pause();
@@ -198,9 +203,12 @@ internal sealed class AnimationPreviewControl : Control
                guard++ < 100)
         {
             _lastAdvanceSeconds += throttle;
+
             if (!Advance())
                 break;
+
             throttle = EffectiveDuration;
+
             if (throttle <= 0 || !double.IsFinite(throttle))
             {
                 Pause();
@@ -212,7 +220,8 @@ internal sealed class AnimationPreviewControl : Control
     }
 
     private double EffectiveDuration => _definition is null || _definition.Frames.Count == 0
-        ? 0 : _definition.Frames[_index].DurationSeconds ?? _definition.ThrottleTime;
+        ? 0
+        : _definition.Frames[_index].DurationSeconds ?? _definition.ThrottleTime;
 
     private bool Advance()
     {
@@ -283,6 +292,7 @@ internal sealed class AnimationPreviewControl : Control
         base.OnPaint(e);
 
         var graphics = e.Graphics;
+
         using (var checker = new HatchBrush(
                    HatchStyle.LargeCheckerBoard,
                    Color.FromArgb(52, 52, 52),
@@ -300,6 +310,7 @@ internal sealed class AnimationPreviewControl : Control
                     _sourcePreviewCaption is { Length: > 0 }
                         ? $"No preview source for {_sourcePreviewCaption}."
                         : "No preview source for the selected GTS frame.");
+
                 return;
             }
 
@@ -307,6 +318,7 @@ internal sealed class AnimationPreviewControl : Control
                 graphics,
                 sourcePreview,
                 _sourcePreviewCaption ?? "Selected GTS frame");
+
             return;
         }
 
@@ -327,11 +339,13 @@ internal sealed class AnimationPreviewControl : Control
             Math.Clamp(_index, 0, _definition.Frames.Count - 1)];
 
         var preview = _resolver?.Invoke(frame);
+
         if (preview is null)
         {
             DrawMessage(
                 graphics,
                 $"No preview source for {frame.Tilesheet} / {frame.RegionName} / ({frame.XTile}, {frame.YTile}).");
+
             return;
         }
 
@@ -348,6 +362,7 @@ internal sealed class AnimationPreviewControl : Control
         string caption)
     {
         var source = preview.SourceBounds;
+
         if (source.Width <= 0 || source.Height <= 0)
         {
             DrawMessage(graphics, "Selected frame has invalid dimensions.");
@@ -360,6 +375,7 @@ internal sealed class AnimationPreviewControl : Control
 
         var width = Math.Max(1, (int)Math.Round(source.Width * scale));
         var height = Math.Max(1, (int)Math.Round(source.Height * scale));
+
         var destination = new Rectangle(
             (ClientSize.Width - width) / 2,
             (ClientSize.Height - height) / 2,
@@ -369,6 +385,7 @@ internal sealed class AnimationPreviewControl : Control
         graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
         graphics.PixelOffsetMode = PixelOffsetMode.Half;
         graphics.SmoothingMode = SmoothingMode.None;
+
         graphics.DrawImage(
             preview.Image,
             destination,
@@ -379,7 +396,11 @@ internal sealed class AnimationPreviewControl : Control
             graphics,
             caption,
             Font,
-            new Rectangle(6, ClientSize.Height - 28, ClientSize.Width - 12, 22),
+            new Rectangle(
+                6,
+                ClientSize.Height - 28,
+                ClientSize.Width - 12,
+                22),
             ForeColor,
             TextFormatFlags.HorizontalCenter |
             TextFormatFlags.VerticalCenter |

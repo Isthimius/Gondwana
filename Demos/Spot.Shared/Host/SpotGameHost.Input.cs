@@ -34,6 +34,7 @@ internal sealed partial class SpotGameRuntime
     private void HookBoardInput()
     {
         _boardInputRouter = WidgetInputRouter;
+
         if (_boardInputRouter is not null)
             _boardInputRouter.UnhandledPrimaryAction += WidgetInputRouter_UnhandledPrimaryAction;
     }
@@ -46,6 +47,7 @@ internal sealed partial class SpotGameRuntime
 
         if (_boardInputRouter is not null)
             _boardInputRouter.UnhandledPrimaryAction -= WidgetInputRouter_UnhandledPrimaryAction;
+
         _boardInputRouter = null;
 
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -86,6 +88,7 @@ internal sealed partial class SpotGameRuntime
             selectedCoord.Y >= 0 && selectedCoord.Y < layer.GridRowCount)
         {
             var cell = SpotGame.SpotGameField.GetCell((int)selectedCoord.X, (int)selectedCoord.Y);
+
             if (SpotGame.AttemptSelectCell(cell, out var playerMovement) && playerMovement != null)
                 SpotGame.ExecuteMove(playerMovement.Value);
         }

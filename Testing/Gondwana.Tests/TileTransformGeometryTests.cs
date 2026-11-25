@@ -36,11 +36,45 @@ public sealed class TileTransformGeometryTests
     /// <param name="swap">The swap value for this test case.</param>
     [Theory]
     [MemberData(nameof(Orientations))]
-    public void TransformsDimensionsAndDirectionalMetadata(TileTransform transform, int left, int top, int right, int bottom, bool swap)
+    public void TransformsDimensionsAndDirectionalMetadata(
+        TileTransform transform,
+        int left,
+        int top,
+        int right,
+        int bottom,
+        bool swap)
     {
-        Assert.Equal(new Spacing(left, top, right, bottom), TileTransformGeometry.TransformSpacing(new(1, 2, 3, 4), transform));
-        Assert.Equal(new CollisionAdjust(top, bottom, left, right), TileTransformGeometry.TransformCollisionAdjust(new(2, 4, 1, 3), transform));
-        Assert.Equal(swap ? new Size(20, 40) : new Size(40, 20), TileTransformGeometry.TransformSize(new(40, 20), transform));
+        Assert.Equal(
+            new Spacing(
+                left,
+                top,
+                right,
+                bottom),
+            TileTransformGeometry.TransformSpacing(
+                new(
+                    1,
+                    2,
+                    3,
+                    4),
+                transform));
+
+        Assert.Equal(
+            new CollisionAdjust(
+                top,
+                bottom,
+                left,
+                right),
+            TileTransformGeometry.TransformCollisionAdjust(
+                new(
+                    2,
+                    4,
+                    1,
+                    3),
+                transform));
+
+        Assert.Equal(
+            swap ? new Size(20, 40) : new Size(40, 20),
+            TileTransformGeometry.TransformSize(new(40, 20), transform));
     }
 
     /// <summary>
@@ -51,14 +85,37 @@ public sealed class TileTransformGeometryTests
     {
         foreach (var current in Enum.GetValues<TileTransform>())
         {
-            Assert.Contains(Enum.GetValues<TileTransform>(), operation => TileTransformGeometry.Compose(current, operation) == TileTransform.Identity);
+            Assert.Contains(
+                Enum.GetValues<TileTransform>(),
+                operation => TileTransformGeometry.Compose(current, operation) == TileTransform.Identity);
+
             foreach (var operation in Enum.GetValues<TileTransform>())
             {
                 var composed = TileTransformGeometry.Compose(current, operation);
-                Assert.Equal(TileTransformGeometry.TransformPoint(TileTransformGeometry.TransformPoint(new(7, -3), current), operation),
+
+                Assert.Equal(
+                    TileTransformGeometry.TransformPoint(
+                        TileTransformGeometry.TransformPoint(new(7, -3), current),
+                        operation),
                     TileTransformGeometry.TransformPoint(new(7, -3), composed));
-                Assert.Equal(TileTransformGeometry.TransformSpacing(TileTransformGeometry.TransformSpacing(new(1, -2, 3, -4), current), operation),
-                    TileTransformGeometry.TransformSpacing(new(1, -2, 3, -4), composed));
+
+                Assert.Equal(
+                    TileTransformGeometry.TransformSpacing(
+                        TileTransformGeometry.TransformSpacing(
+                            new(
+                                1,
+                                -2,
+                                3,
+                                -4),
+                            current),
+                        operation),
+                    TileTransformGeometry.TransformSpacing(
+                        new(
+                            1,
+                            -2,
+                            3,
+                            -4),
+                        composed));
             }
         }
     }
@@ -69,7 +126,23 @@ public sealed class TileTransformGeometryTests
     [Fact]
     public void NonSquareCellRotatesAroundItsCenterWithOrientedOverhang()
     {
-        Assert.Equal(new Rectangle(6, -11, 26, 44),
-            TileTransformGeometry.GetVisualBounds(new(0, 0, 40, 20), new(1, 2, 3, 4), TileTransform.Rotate90));
+        Assert.Equal(
+            new Rectangle(
+                6,
+                -11,
+                26,
+                44),
+            TileTransformGeometry.GetVisualBounds(
+                new(
+                    0,
+                    0,
+                    40,
+                    20),
+                new(
+                    1,
+                    2,
+                    3,
+                    4),
+                TileTransform.Rotate90));
     }
 }

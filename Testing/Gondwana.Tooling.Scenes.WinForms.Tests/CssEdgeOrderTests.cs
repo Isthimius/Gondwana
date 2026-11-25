@@ -11,7 +11,13 @@ public sealed class CssEdgeOrderTests
     public void SourceAndEffectiveSpacingUseClockwiseOrder()
     {
         var converter = new SceneSpacingConverter();
-        var spacing = new Spacing(11, 22, 33, 44);
+
+        var spacing = new Spacing(
+            11,
+            22,
+            33,
+            44);
+
         var edges = converter.GetProperties(spacing)!.Cast<PropertyDescriptor>().Select(property => property.Name);
         Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" }, edges);
         Assert.Equal("22, 33, 44, 11", converter.ConvertToInvariantString(spacing));
@@ -22,7 +28,13 @@ public sealed class CssEdgeOrderTests
     public void SceneCollisionInsetConverterUsesClockwiseOrder()
     {
         var converter = new CollisionAdjustConverter();
-        var insets = new CollisionAdjust(top: 12, bottom: 34, left: 56, right: 78);
+
+        var insets = new CollisionAdjust(
+            top: 12,
+            bottom: 34,
+            left: 56,
+            right: 78);
+
         var edges = converter.GetProperties(insets)!.Cast<PropertyDescriptor>().Select(property => property.Name);
         Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" }, edges);
         Assert.Equal("12, 78, 34, 56", converter.ConvertToInvariantString(insets));

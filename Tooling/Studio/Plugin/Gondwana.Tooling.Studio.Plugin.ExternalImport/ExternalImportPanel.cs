@@ -17,7 +17,10 @@ public sealed class ExternalImportPanel : UserControl
     private readonly Button import = new() { Text = "Import", AutoSize = true, Enabled = false };
     private readonly Button cancel = new() { Text = "Cancel", AutoSize = true };
     private readonly ListView artifacts = new() { View = View.Details, Dock = DockStyle.Fill, FullRowSelect = true };
-    private readonly TextBox diagnostics = new() { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, Dock = DockStyle.Fill };
+
+    private readonly TextBox diagnostics = new()
+        { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, Dock = DockStyle.Fill };
+
     private readonly TableLayoutPanel inputs = new() { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 3 };
     private readonly System.Windows.Forms.Timer timer = new() { Interval = 100 };
     private CancellationTokenSource? cancellation;
@@ -83,6 +86,7 @@ public sealed class ExternalImportPanel : UserControl
         }
 
         var chooseSource = new Button { Text = "…", AutoSize = true };
+
         chooseSource.Click += (_, _) =>
         {
             using var dialog = new OpenFileDialog
@@ -95,9 +99,11 @@ public sealed class ExternalImportPanel : UserControl
         };
 
         var chooseOutput = new Button { Text = "…", AutoSize = true };
+
         chooseOutput.Click += (_, _) =>
         {
             using var dialog = new FolderBrowserDialog { SelectedPath = OutputDirectory };
+
             if (dialog.ShowDialog(this) == DialogResult.OK)
                 OutputDirectory = dialog.SelectedPath;
         };
@@ -113,12 +119,13 @@ public sealed class ExternalImportPanel : UserControl
             AutoSize = true
         };
 
-        buttons.Controls.AddRange(new Control[]
-        {
-            analyze,
-            import,
-            cancel
-        });
+        buttons.Controls.AddRange(
+            new Control[]
+            {
+                analyze,
+                import,
+                cancel
+            });
 
         artifacts.Columns.Add("Type", 70);
         artifacts.Columns.Add("Proposed output", 400);
@@ -159,10 +166,11 @@ public sealed class ExternalImportPanel : UserControl
         artifacts.Items.Clear();
         diagnostics.Clear();
     }
+
     /// <summary>Starts background analysis without writing outputs and clears any previous analysis.</summary>
     /// <remarks>Does nothing while busy or disposed. Missing input or an unrecognized source is reported in the panel.</remarks>
-
     public void Analyze() => Start(false);
+
     /// <summary>Starts provider import with the current options when <see cref="CanImport"/> is true.</summary>
     /// <remarks>Clears the displayed analysis and disables inputs while the worker runs. Results are applied by <see cref="Poll"/>.</remarks>
     public void Import()
@@ -182,7 +190,10 @@ public sealed class ExternalImportPanel : UserControl
             return;
         }
 
-        var provider = format.SelectedIndex == 0 ? providers.FirstOrDefault(p => p.CanImport(SourcePath)) : providers[format.SelectedIndex - 1];
+        var provider = format.SelectedIndex == 0
+            ? providers.FirstOrDefault(p => p.CanImport(SourcePath))
+            : providers[format.SelectedIndex - 1];
+
         if (provider is null)
         {
             diagnostics.Text = "No importer recognizes this extension.";
@@ -199,7 +210,11 @@ public sealed class ExternalImportPanel : UserControl
         cancellation = new();
         var token = cancellation.Token;
 
-        work = Task.Run(() => write ? provider.Import(request, token) : new ExternalImportResult(provider.Analyze(request, token), []), token);
+        work = Task.Run(
+            () => write
+                ? provider.Import(request, token)
+                : new ExternalImportResult(provider.Analyze(request, token), []),
+            token);
     }
 
     /// <summary>Applies a completed worker result on the UI thread; does nothing while work is incomplete or the panel is disposed.</summary>
@@ -224,9 +239,13 @@ public sealed class ExternalImportPanel : UserControl
             Analysis = result.Analysis;
 
             foreach (var artifact in Analysis.Artifacts)
-                artifacts.Items.Add(new ListViewItem([artifact.Kind, artifact.OutputPath, string.Join(", ", artifact.LogicalKeys)]));
+                artifacts.Items.Add(
+                    new ListViewItem([artifact.Kind, artifact.OutputPath, string.Join(", ", artifact.LogicalKeys)]));
 
-            diagnostics.Text = string.Join(Environment.NewLine, Analysis.Diagnostics.Select(d => $"{d.Severity}: {d.Message}"));
+            diagnostics.Text = string.Join(
+                Environment.NewLine,
+                Analysis.Diagnostics.Select(d => $"{d.Severity}: {d.Message}"));
+
             import.Enabled = !importing && Analysis.CanImport;
 
             if (importing && result.WrittenFiles.Count > 0)
@@ -265,7 +284,11 @@ public sealed class ExternalImportPanel : UserControl
         cancellation = null;
 
         if (work is { } previous)
-            _ = previous.ContinueWith(t => System.Diagnostics.Trace.TraceError(t.Exception!.ToString()), CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
+            _ = previous.ContinueWith(
+                t => System.Diagnostics.Trace.TraceError(t.Exception!.ToString()),
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted,
+                TaskScheduler.Default);
 
         work = null;
         InvalidateAnalysis();

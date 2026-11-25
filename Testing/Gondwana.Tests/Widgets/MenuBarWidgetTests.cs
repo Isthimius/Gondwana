@@ -19,12 +19,16 @@ public sealed class MenuBarWidgetTests
         View view = AddView(host);
 
         using var menuBar = CreateMenuBar(host, view)
-            .AddMenu("File", menu => menu
-                .AddItem("New", shortcutText: "Ctrl+N")
-                .AddSeparator()
-                .AddItem("Exit"))
-            .AddMenu("Help", menu => menu
-                .AddItem("About"));
+            .AddMenu(
+                "File",
+                menu => menu
+                    .AddItem("New", shortcutText: "Ctrl+N")
+                    .AddSeparator()
+                    .AddItem("Exit"))
+            .AddMenu(
+                "Help",
+                menu => menu
+                    .AddItem("About"));
 
         Assert.Equal(2, menuBar.Menus.Count);
         Assert.Equal("File", menuBar.Menus[0].Header.Text);
@@ -89,8 +93,10 @@ public sealed class MenuBarWidgetTests
         bool invoked = false;
 
         using var menuBar = CreateMenuBar(host, view)
-            .AddMenu("File", menu => menu
-                .AddItem("Exit", () => invoked = true));
+            .AddMenu(
+                "File",
+                menu => menu
+                    .AddItem("Exit", () => invoked = true));
 
         menuBar.DropDownAnimation = MenuDropDownAnimation.None;
         menuBar.Show();
@@ -114,8 +120,10 @@ public sealed class MenuBarWidgetTests
         bool invoked = false;
 
         using var menuBar = CreateMenuBar(host, view)
-            .AddMenu("Edit", menu => menu
-                .AddItem("Undo", () => invoked = true, enabled: false));
+            .AddMenu(
+                "Edit",
+                menu => menu
+                    .AddItem("Undo", () => invoked = true, enabled: false));
 
         menuBar.DropDownAnimation = MenuDropDownAnimation.None;
         menuBar.Show();
@@ -127,8 +135,9 @@ public sealed class MenuBarWidgetTests
         Assert.Equal(0, menuBar.OpenMenuIndex);
     }
 
-    private static MenuBarWidget CreateMenuBar(TestRenderSurfaceHost host,
-                                                View view)
+    private static MenuBarWidget CreateMenuBar(
+        TestRenderSurfaceHost host,
+        View view)
     {
         return new MenuBarWidget(
             host,
@@ -142,7 +151,12 @@ public sealed class MenuBarWidgetTests
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        var bounds = new Rectangle(0, 0, 640, 480);
+        var bounds = new Rectangle(
+            0,
+            0,
+            640,
+            480);
+
         host.ViewManager.AddView(bounds, zOrder: 0);
 
         return host.ViewManager.Views.Single(view =>

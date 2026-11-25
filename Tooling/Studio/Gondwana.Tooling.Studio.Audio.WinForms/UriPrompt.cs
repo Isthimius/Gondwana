@@ -1,4 +1,5 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+
 namespace Gondwana.Tooling.Audio.WinForms;
 
 internal sealed class UriPrompt : Form
@@ -8,6 +9,7 @@ internal sealed class UriPrompt : Form
 
     /// <summary>Gets the trimmed audio resource key entered by the user; the dialog does not validate it.</summary>
     public string ResourceKey => _key.Text.Trim();
+
     /// <summary>Gets the trimmed URI text entered by the user; the dialog does not parse it or contact the resource.</summary>
     public string SourceUri => _uri.Text.Trim();
 
@@ -24,7 +26,10 @@ internal sealed class UriPrompt : Form
         MinimizeBox = false;
 
         var ok = new Button { Text = "Add", DialogResult = DialogResult.OK, Dock = DockStyle.Right, Width = 90 };
-        var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Dock = DockStyle.Right, Width = 90 };
+
+        var cancel = new Button
+            { Text = "Cancel", DialogResult = DialogResult.Cancel, Dock = DockStyle.Right, Width = 90 };
+
         var buttons = new Panel { Dock = DockStyle.Bottom, Height = 40, Padding = new Padding(6) };
         buttons.Controls.Add(cancel);
         buttons.Controls.Add(ok);

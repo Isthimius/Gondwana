@@ -28,24 +28,30 @@ public sealed class TabPageWidget : ContainerWidget
     /// <param name="title">The tab title.</param>
     /// <param name="mnemonic">The optional Alt-key mnemonic.</param>
     /// <param name="nickname">The optional diagnostic nickname.</param>
-    internal TabPageWidget(RenderSurfaceHostBase renderSurfaceHost,
-                           Gondwana.Rendering.Views.View view,
-                           Rectangle contentBounds,
-                           string title,
-                           char? mnemonic,
-                           string? nickname)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(contentBounds).Location, nickname)
+    internal TabPageWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        Gondwana.Rendering.Views.View view,
+        Rectangle contentBounds,
+        string title,
+        char? mnemonic,
+        string? nickname)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(contentBounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
         _title = ValidateTitle(title);
         Mnemonic = mnemonic;
 
-        Background = new DirectRectangle(DefaultBackgroundColor,
-                                         renderSurfaceHost,
-                                         view,
-                                         contentBounds,
-                                         $"{Nickname}.background")
+        Background = new DirectRectangle(
+                DefaultBackgroundColor,
+                renderSurfaceHost,
+                view,
+                contentBounds,
+                $"{Nickname}.background")
             .SetFilled(true)
             .SetBorderColor(DefaultBorderColor)
             .SetStrokeWidth(1f);
@@ -64,24 +70,30 @@ public sealed class TabPageWidget : ContainerWidget
     /// <param name="title">The tab title.</param>
     /// <param name="mnemonic">The optional Alt-key mnemonic.</param>
     /// <param name="nickname">The optional diagnostic nickname.</param>
-    internal TabPageWidget(RenderSurfaceHostBase renderSurfaceHost,
-                           Gondwana.Scenes.SceneLayer sceneLayer,
-                           Rectangle contentBounds,
-                           string title,
-                           char? mnemonic,
-                           string? nickname)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(contentBounds).Location, nickname)
+    internal TabPageWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        Gondwana.Scenes.SceneLayer sceneLayer,
+        Rectangle contentBounds,
+        string title,
+        char? mnemonic,
+        string? nickname)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(contentBounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
         _title = ValidateTitle(title);
         Mnemonic = mnemonic;
 
-        Background = new DirectRectangle(DefaultBackgroundColor,
-                                         renderSurfaceHost,
-                                         sceneLayer,
-                                         contentBounds,
-                                         $"{Nickname}.background")
+        Background = new DirectRectangle(
+                DefaultBackgroundColor,
+                renderSurfaceHost,
+                sceneLayer,
+                contentBounds,
+                $"{Nickname}.background")
             .SetFilled(true)
             .SetBorderColor(DefaultBorderColor)
             .SetStrokeWidth(1f);
@@ -124,15 +136,19 @@ public sealed class TabPageWidget : ContainerWidget
     /// <param name="widget">The widget to add.</param>
     /// <param name="offsetPx">The local content offset, or <see langword="null"/> for the origin.</param>
     /// <returns>The current page.</returns>
-    public TabPageWidget AddWidget(WidgetBase widget,
-                                   Point? offsetPx = null)
+    public TabPageWidget AddWidget(
+        WidgetBase widget,
+        Point? offsetPx = null)
     {
         ArgumentNullException.ThrowIfNull(widget);
 
         Point offset = offsetPx ?? Point.Empty;
-        Add(widget,
+
+        Add(
+            widget,
             keepCurrentOffset: false,
             explicitLocalOffsetPx: new Vector2(offset.X, offset.Y));
+
         SetWidgetZOrder(widget, _pageZOrder + 1);
 
         return this;
@@ -144,8 +160,9 @@ public sealed class TabPageWidget : ContainerWidget
     /// <param name="widget">The widget to remove.</param>
     /// <param name="dispose">Whether to dispose the widget after removing it.</param>
     /// <returns>The current page.</returns>
-    public TabPageWidget RemoveWidget(WidgetBase widget,
-                                      bool dispose = false)
+    public TabPageWidget RemoveWidget(
+        WidgetBase widget,
+        bool dispose = false)
     {
         RemoveChild(widget, dispose);
         return this;
@@ -159,6 +176,7 @@ public sealed class TabPageWidget : ContainerWidget
     public TabPageWidget SetTitle(string title)
     {
         string validatedTitle = ValidateTitle(title);
+
         if (string.Equals(_title, validatedTitle, StringComparison.Ordinal))
             return this;
 
@@ -230,13 +248,20 @@ public sealed class TabPageWidget : ContainerWidget
     /// <param name="offsetPx">The optional bitmap offset.</param>
     /// <param name="filterQuality">The sampling quality.</param>
     /// <returns>The current page.</returns>
-    public TabPageWidget SetBackgroundImage(SKBitmap bitmap,
-                                            DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
-                                            float scale = 1f,
-                                            SKPoint? offsetPx = null,
-                                            SKFilterQuality filterQuality = SKFilterQuality.Medium)
+    public TabPageWidget SetBackgroundImage(
+        SKBitmap bitmap,
+        DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
+        float scale = 1f,
+        SKPoint? offsetPx = null,
+        SKFilterQuality filterQuality = SKFilterQuality.Medium)
     {
-        Background.SetFillImage(bitmap, mode, scale, offsetPx, filterQuality);
+        Background.SetFillImage(
+            bitmap,
+            mode,
+            scale,
+            offsetPx,
+            filterQuality);
+
         return this;
     }
 
@@ -249,13 +274,20 @@ public sealed class TabPageWidget : ContainerWidget
     /// <param name="offsetPx">The optional image offset.</param>
     /// <param name="filterQuality">The sampling quality.</param>
     /// <returns>The current page.</returns>
-    public TabPageWidget SetBackgroundImage(SKImage image,
-                                            DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
-                                            float scale = 1f,
-                                            SKPoint? offsetPx = null,
-                                            SKFilterQuality filterQuality = SKFilterQuality.Medium)
+    public TabPageWidget SetBackgroundImage(
+        SKImage image,
+        DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
+        float scale = 1f,
+        SKPoint? offsetPx = null,
+        SKFilterQuality filterQuality = SKFilterQuality.Medium)
     {
-        Background.SetFillImage(image, mode, scale, offsetPx, filterQuality);
+        Background.SetFillImage(
+            image,
+            mode,
+            scale,
+            offsetPx,
+            filterQuality);
+
         return this;
     }
 
@@ -303,8 +335,17 @@ public sealed class TabPageWidget : ContainerWidget
 
     private const int DefaultBackgroundAlpha = 235;
 
-    private static readonly Color DefaultBackgroundColor = Color.FromArgb(DefaultBackgroundAlpha, 25, 28, 36);
-    private static readonly Color DefaultBorderColor = Color.FromArgb(255, 110, 120, 140);
+    private static readonly Color DefaultBackgroundColor = Color.FromArgb(
+        DefaultBackgroundAlpha,
+        25,
+        28,
+        36);
+
+    private static readonly Color DefaultBorderColor = Color.FromArgb(
+        255,
+        110,
+        120,
+        140);
 
     private void DisablePageInput()
     {
@@ -338,10 +379,12 @@ public sealed class TabPageWidget : ContainerWidget
         return title;
     }
 
-    private static void SetWidgetZOrder(WidgetBase widget,
-                                        int zOrder)
+    private static void SetWidgetZOrder(
+        WidgetBase widget,
+        int zOrder)
     {
         DirectDrawingBase[] visuals = EnumerateVisuals(widget).ToArray();
+
         if (visuals.Length == 0)
             return;
 

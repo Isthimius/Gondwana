@@ -49,7 +49,10 @@ public static class EngineExtensions
     /// <param name="component">The render surface component to capture mouse input from.</param>
     /// <param name="mouseEventConfiguration">Optional configuration for mouse event handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
-    public static void InitializeBlazorMouseAdapter(this Engine engine, BlazorBitmapRenderSurfaceComponent component, MouseEventConfiguration? mouseEventConfiguration = null)
+    public static void InitializeBlazorMouseAdapter(
+        this Engine engine,
+        BlazorBitmapRenderSurfaceComponent component,
+        MouseEventConfiguration? mouseEventConfiguration = null)
         => InitializeBlazorMouseAdapter(engine, (BlazorRenderSurfaceComponentBase)component, mouseEventConfiguration);
 
     /// <summary>
@@ -59,7 +62,10 @@ public static class EngineExtensions
     /// <param name="component">The render surface component to capture mouse input from.</param>
     /// <param name="mouseEventConfiguration">Optional configuration for mouse event handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
-    public static void InitializeBlazorMouseAdapter(this Engine engine, BlazorRenderSurfaceComponentBase component, MouseEventConfiguration? mouseEventConfiguration = null)
+    public static void InitializeBlazorMouseAdapter(
+        this Engine engine,
+        BlazorRenderSurfaceComponentBase component,
+        MouseEventConfiguration? mouseEventConfiguration = null)
     {
         Engine.Logger.LogInformation("Initializing BlazorMouseAdapter...");
 

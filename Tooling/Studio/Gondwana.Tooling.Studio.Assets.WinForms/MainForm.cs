@@ -18,8 +18,10 @@ public sealed partial class MainForm : Form
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string> ReportSessionError { get; set; }
+
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Asset files",
@@ -51,6 +53,7 @@ public sealed partial class MainForm : Form
 
         _workspaceControl = new AssetWorkspaceControl(
             Environment.CurrentDirectory);
+
         _workspaceControl.OpenAssetFileRequested += OpenDocument;
         _workspace.Controls.Add(_workspaceControl);
 
@@ -67,8 +70,19 @@ public sealed partial class MainForm : Form
         var menu = new MenuStrip();
 
         var file = new ToolStripMenuItem("&File");
-        Add(file, "&New", Keys.Control | Keys.N, CreateNewAssetsFile);
-        Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
+
+        Add(
+            file,
+            "&New",
+            Keys.Control | Keys.N,
+            CreateNewAssetsFile);
+
+        Add(
+            file,
+            "&Open…",
+            Keys.Control | Keys.O,
+            OpenFiles);
+
         Add(
             file,
             "Open working &directory…",
@@ -77,25 +91,42 @@ public sealed partial class MainForm : Form
 
         file.DropDownItems.Add(new ToolStripSeparator());
 
-        Add(file, "&Save", Keys.Control | Keys.S, () => ActiveEditor?.Save());
+        Add(
+            file,
+            "&Save",
+            Keys.Control | Keys.S,
+            () => ActiveEditor?.Save());
+
         Add(
             file,
             "Save &As…",
             Keys.Control | Keys.Shift | Keys.S,
             () => ActiveEditor?.SaveAs());
-        Add(file, "&Close", Keys.Control | Keys.W, () => ActiveEditor?.Close());
+
+        Add(
+            file,
+            "&Close",
+            Keys.Control | Keys.W,
+            () => ActiveEditor?.Close());
 
         file.DropDownItems.Add(new ToolStripSeparator());
-        Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+
+        Add(
+            file,
+            "E&xit",
+            Keys.Alt | Keys.F4,
+            Close);
 
         var view = new ToolStripMenuItem("&View");
         view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
+
         var outerWorkspaceItem = Add(
             view,
             "Asset files",
             Keys.None,
             () => _workspace.Show());
+
         Add(
             view,
             "Refresh directory",
@@ -103,12 +134,14 @@ public sealed partial class MainForm : Form
             _workspaceControl.RefreshDirectory);
 
         view.DropDownItems.Add(new ToolStripSeparator());
+
         var paneItems = new Dictionary<string, ToolStripMenuItem>(
             StringComparer.OrdinalIgnoreCase);
 
         foreach (var paneName in AssetEditorControl.PaneNames)
         {
             string capturedName = paneName;
+
             paneItems[capturedName] = Add(
                 view,
                 capturedName,
@@ -117,19 +150,30 @@ public sealed partial class MainForm : Form
         }
 
         view.DropDownItems.Add(new ToolStripSeparator());
+
         var showAllPanesItem = Add(
             view,
             "Show all asset panes",
             Keys.None,
             () => ActiveEditor?.ShowAllPanes());
 
-        Add(view, "Reset application layout", Keys.None, () => _layout.Reset());
-        var resetEditor = Add(view, "Reset active editor layout", Keys.None, () => ActiveEditor?.Editor.ResetLayout());
+        Add(
+            view,
+            "Reset application layout",
+            Keys.None,
+            () => _layout.Reset());
+
+        var resetEditor = Add(
+            view,
+            "Reset active editor layout",
+            Keys.None,
+            () => ActiveEditor?.Editor.ResetLayout());
 
         view.DropDownOpening += (_, _) =>
         {
             outerWorkspaceItem.Checked = !_workspace.IsHidden;
             var editor = ActiveEditor;
+
             foreach (var (paneName, item) in paneItems)
             {
                 item.Enabled = editor is not null;
@@ -164,6 +208,7 @@ public sealed partial class MainForm : Form
         {
             if (e.Cancel)
                 return;
+
             foreach (var document in _documents.ToArray())
                 if (!document.ConfirmClose())
                 {
@@ -172,6 +217,7 @@ public sealed partial class MainForm : Form
                 }
 
             SaveSession();
+
             foreach (var document in _documents)
                 document.CloseApproved = true;
         };
@@ -180,14 +226,23 @@ public sealed partial class MainForm : Form
     private void RestoreSession()
     {
         var messages = new List<string>();
-        _session.Restore(["gaf"], path => _workspaceControl.SetWorkingDirectory(path),
+
+        _session.Restore(
+            ["gaf"],
+            path => _workspaceControl.SetWorkingDirectory(path),
             document => OpenDocument(document.Path),
-            path => _documents.FirstOrDefault(document => string.Equals(document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-            messages.Add, message => ReportSessionError(message));
+            path => _documents.FirstOrDefault(document => string.Equals(
+                document.FilePath,
+                path,
+                StringComparison.OrdinalIgnoreCase))?.Activate(),
+            messages.Add,
+            message => ReportSessionError(message));
+
         WorkspaceSessionController.ShowStatus(this, messages);
     }
 
-    private void SaveSession() => _session.Save(_workspaceControl.WorkingDirectory,
+    private void SaveSession() => _session.Save(
+        _workspaceControl.WorkingDirectory,
         WorkspaceSessionController.DocumentOrder(_dock, _documents).Select(document => document.FilePath),
         ActiveEditor?.FilePath);
 
@@ -228,6 +283,7 @@ public sealed partial class MainForm : Form
     private void OpenDocument(string path)
     {
         path = Path.GetFullPath(path);
+
         if (_session.IsRestoring && !File.Exists(path))
             throw new FileNotFoundException("Asset file was removed.", path);
 
@@ -261,12 +317,14 @@ public sealed partial class MainForm : Form
                 var password = InputDialog.Show(
                     this,
                     "Password",
-                    "Enter password for this asset file:", password: true);
+                    "Enter password for this asset file:",
+                    password: true);
 
                 if (password is null)
                 {
                     if (_session.IsRestoring)
                         throw new OperationCanceledException("Password entry cancelled.");
+
                     return;
                 }
 
@@ -286,6 +344,7 @@ public sealed partial class MainForm : Form
         {
             if (_session.IsRestoring)
                 throw;
+
             ShowError("Failed to open asset file.", ex);
         }
         finally
@@ -345,6 +404,7 @@ public sealed partial class MainForm : Form
                     "Password Required",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
+
                 return;
             }
         }
@@ -377,23 +437,28 @@ public sealed partial class MainForm : Form
     }
 
     private AssetEditorDocument ShowDocument(
-        AssetsFile assetsFile, DocumentSourceVersion? acceptedSource = null)
+        AssetsFile assetsFile,
+        DocumentSourceVersion? acceptedSource = null)
     {
         var editor = new AssetEditorDocument(
             assetsFile,
             _workspaceControl.RefreshDirectory,
-            IsDocumentOpen, acceptedSource);
+            IsDocumentOpen,
+            acceptedSource);
 
         _documents.Add(editor);
         editor.Editor.RelocationScope = () => _workspaceControl.WorkingDirectory;
+
         void ValidateContentOperation()
         {
             if (_documents.Any(document => document != editor))
-                throw new InvalidOperationException("Save and close other open archives before moving or deleting content.");
+                throw new InvalidOperationException(
+                    "Save and close other open archives before moving or deleting content.");
         }
 
         editor.Editor.ValidateRelocation = _ => ValidateContentOperation();
         editor.Editor.ValidateDeletion = _ => ValidateContentOperation();
+
         editor.Disposed += (_, _) =>
             _documents.Remove(editor);
 
@@ -404,7 +469,11 @@ public sealed partial class MainForm : Form
 
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Editor.History, () => ActiveEditor?.Editor.Enabled == true) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            ActiveEditor?.Editor.History,
+            () => ActiveEditor?.Editor.Enabled == true) || base.ProcessCmdKey(ref msg, keyData);
 
     private void ShowError(
         string message,
@@ -426,12 +495,15 @@ public sealed partial class MainForm : Form
             _sources.Dispose();
             _undoRedo.Dispose();
             _layout.Dispose();
+
             foreach (var document in _documents.ToArray())
                 document.Dispose();
+
             _workspace.Dispose();
         }
 
         base.Dispose(disposing);
+
         if (disposing)
             _theme.Dispose();
     }

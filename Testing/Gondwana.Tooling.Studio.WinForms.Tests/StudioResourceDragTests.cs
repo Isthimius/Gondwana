@@ -28,37 +28,64 @@ public sealed partial class CompositionTests
 
         using (var bitmap = new Bitmap(32, 32))
             bitmap.Save(Path.Combine(root, "atlas.png"), System.Drawing.Imaging.ImageFormat.Png);
-        TilesheetDefinitionSerializer.SaveAll(gts,
-        [
-            new() { Name = "other" },
-            new()
-            {
-                Name = "terrain",
-                Image = new() { FilePath = "atlas.png" },
-                Regions = [new() { Name = "ground", Area = new(0, 0, 32, 32), TileSize = new(16, 16) }]
-            }
-        ]);
-        AnimationDefinitionSerializer.SaveAll(gani,
-        [
-            new() { Key = "other" },
-            new()
-            {
-                Key = "torch.burn",
-                ThrottleTime = .1,
-                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "atlas.gts")],
-                Frames = [new() { Tilesheet = "terrain", RegionName = "ground", XTile = 1, YTile = 1 }]
-            }
-        ]);
-        using (var archive = AssetsFile.LoadOrCreate(gaf, password: null, encrypt: false, register: false))
+
+        TilesheetDefinitionSerializer.SaveAll(
+            gts,
+            [
+                new() { Name = "other" },
+                new()
+                {
+                    Name = "terrain",
+                    Image = new() { FilePath = "atlas.png" },
+                    Regions =
+                    [
+                        new()
+                        {
+                            Name = "ground", Area = new(
+                                0,
+                                0,
+                                32,
+                                32),
+                            TileSize = new(16, 16)
+                        }
+                    ]
+                }
+            ]);
+
+        AnimationDefinitionSerializer.SaveAll(
+            gani,
+            [
+                new() { Key = "other" },
+                new()
+                {
+                    Key = "torch.burn",
+                    ThrottleTime = .1,
+                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "atlas.gts")],
+                    Frames = [new() { Tilesheet = "terrain", RegionName = "ground", XTile = 1, YTile = 1 }]
+                }
+            ]);
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   gaf,
+                   password: null,
+                   encrypt: false,
+                   register: false))
         {
             var scene = new SceneDefinition
             {
                 ID = "level",
-                Layers = [new() { ID = "background", Columns = 2, Rows = 2, TileWidth = 16, TileHeight = 16 },
-                    new() { ID = "actors", Columns = 2, Rows = 2, TileWidth = 16, TileHeight = 16 }]
+                Layers =
+                [
+                    new() { ID = "background", Columns = 2, Rows = 2, TileWidth = 16, TileHeight = 16 },
+                    new() { ID = "actors", Columns = 2, Rows = 2, TileWidth = 16, TileHeight = 16 }
+                ]
             };
-            using var contents = new MemoryStream(Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToDocumentJson(
-                new() { Definitions = [new() { ID = "other" }, scene] })));
+
+            using var contents = new MemoryStream(
+                Encoding.UTF8.GetBytes(
+                    SceneDefinitionSerializer.ToDocumentJson(
+                        new() { Definitions = [new() { ID = "other" }, scene] })));
+
             archive.Add(AssetTypes.SceneDefinition, sceneEntry, contents);
             archive.Save();
         }
@@ -70,10 +97,12 @@ public sealed partial class CompositionTests
         }
 
         using var studio = Host(root);
+
         var packedNode = new TreeNode("Friendly name")
         {
             Tag = new PackedAssetNodeIdentity(gaf, AssetTypes.SceneDefinition, sceneEntry)
         };
+
         var packedAddress = Assert.IsType<ResourceAddress>(MainForm.DirectoryDragAddress(packedNode));
         Assert.Equal(sceneEntry, packedAddress.Location.AssetEntryName);
         Assert.Null(MainForm.DirectoryDragAddress(new TreeNode("Archive") { Tag = gaf }));
@@ -83,8 +112,11 @@ public sealed partial class CompositionTests
         Assert.True(sourceDocument.Document.SelectMember("level"));
         var scenes = Assert.IsType<SceneEditorControl>(sourceDocument.Document.Editor);
         var layer = scenes.Definition.Layers[1];
-        var scenePayload = Assert.IsType<SceneLayerDrag>(typeof(SceneEditorControl).GetMethod("CreateSceneLayerDrag", Private)!
-            .Invoke(scenes, [layer]));
+
+        var scenePayload = Assert.IsType<SceneLayerDrag>(
+            typeof(SceneEditorControl).GetMethod("CreateSceneLayerDrag", Private)!
+                .Invoke(scenes, [layer]));
+
         Assert.Equal(packedAddress with { Member = "level" }, scenePayload.Address);
         Assert.Equal("actors", scenePayload.LayerId);
 
@@ -94,12 +126,14 @@ public sealed partial class CompositionTests
         var list = (ListBox)typeof(SpriteEditorControl).GetField("_sprites", Private)!.GetValue(editor)!;
         var sprite = Assert.IsType<SpriteInstanceDefinition>(editor.SelectedSprite);
         int selections = 0;
+
         studio.ChooseDragItem = (_, _, choices) =>
         {
             selections++;
             Assert.Equal(2, choices.Count);
             return choices[1];
         };
+
         studio.ChooseDragCoordinates = (_, columns, rows) =>
         {
             selections++;
@@ -112,7 +146,15 @@ public sealed partial class CompositionTests
             var data = Assert.IsAssignableFrom<ResourceDragData>(studio.CreateResourceDrag(address));
             var bounds = list.GetItemRectangle(0);
             var point = list.PointToScreen(new Point(10, bounds.Top + bounds.Height / 2));
-            var args = new DragEventArgs(data, 0, point.X, point.Y, DragDropEffects.Copy, DragDropEffects.None);
+
+            var args = new DragEventArgs(
+                data,
+                0,
+                point.X,
+                point.Y,
+                DragDropEffects.Copy,
+                DragDropEffects.None);
+
             int before = selections;
             typeof(Control).GetMethod("OnDragEnter", Private)!.Invoke(list, [args]);
             Assert.Equal(DragDropEffects.Copy, args.Effect);
@@ -123,18 +165,31 @@ public sealed partial class CompositionTests
             Application.DoEvents();
         }
 
-        var frameAddress = Assert.IsType<ResourceAddress>(MainForm.DirectoryDragAddress(new TreeNode("Atlas") { Tag = gts }));
+        var frameAddress =
+            Assert.IsType<ResourceAddress>(MainForm.DirectoryDragAddress(new TreeNode("Atlas") { Tag = gts }));
+
         Drop(frameAddress, 2);
-        Assert.Equal(("terrain", "ground", 1, 1), (sprite.Frame!.Tilesheet, sprite.Frame.RegionName, sprite.Frame.XTile, sprite.Frame.YTile));
+
+        Assert.Equal(
+            ("terrain", "ground", 1, 1),
+            (sprite.Frame!.Tilesheet, sprite.Frame.RegionName, sprite.Frame.XTile, sprite.Frame.YTile));
 
         using var explorer = new DependencyExplorerPanel();
         var tree = explorer.Controls.OfType<TreeView>().Single();
-        var animationAddress = new ResourceAddress(new AssetLocation(AssetTypes.AnimationDefinition, gani), "torch.burn");
+
+        var animationAddress = new ResourceAddress(
+            new AssetLocation(AssetTypes.AnimationDefinition, gani),
+            "torch.burn");
+
         var animationNode = new TreeNode("Friendly animation label") { Tag = animationAddress };
         tree.Nodes.Add(animationNode);
         ResourceAddress? requested = null;
         explorer.ResourceDragRequested += (_, address) => requested = address;
-        typeof(TreeView).GetMethod("OnItemDrag", Private)!.Invoke(tree, [new ItemDragEventArgs(MouseButtons.Left, animationNode)]);
+
+        typeof(TreeView).GetMethod("OnItemDrag", Private)!.Invoke(
+            tree,
+            [new ItemDragEventArgs(MouseButtons.Left, animationNode)]);
+
         Assert.Equal(animationAddress, requested);
         Drop(requested!, 0);
         Assert.Equal("torch.burn", sprite.AnimationKey);
@@ -150,11 +205,21 @@ public sealed partial class CompositionTests
         Assert.True(animationDocument.Document.SelectMember("torch.burn"));
         Application.DoEvents();
         var animationEditor = Assert.IsType<AnimationEditorControl>(animationDocument.Document.Editor);
-        var sequence = (ListView)typeof(AnimationEditorControl).GetField("_frames", Private)!.GetValue(animationEditor)!;
+
+        var sequence =
+            (ListView)typeof(AnimationEditorControl).GetField("_frames", Private)!.GetValue(animationEditor)!;
+
         var row = sequence.GetItemRect(0);
         var destination = sequence.PointToScreen(new Point(10, row.Bottom + 2));
-        var deferred = new DragEventArgs(studio.CreateResourceDrag(frameAddress), 0, destination.X, destination.Y,
-            DragDropEffects.Copy, DragDropEffects.None);
+
+        var deferred = new DragEventArgs(
+            studio.CreateResourceDrag(frameAddress),
+            0,
+            destination.X,
+            destination.Y,
+            DragDropEffects.Copy,
+            DragDropEffects.None);
+
         typeof(Control).GetMethod("OnDragEnter", Private)!.Invoke(sequence, [deferred]);
         Assert.Equal(DragDropEffects.Copy, deferred.Effect);
         typeof(Control).GetMethod("OnDragDrop", Private)!.Invoke(sequence, [deferred]);
@@ -169,14 +234,32 @@ public sealed partial class CompositionTests
         string image = Path.Combine(root, "atlas.png");
         string gts = Path.Combine(root, "atlas.gts");
         string gspr = Path.Combine(root, "sprites.gspr");
+
         using (var bitmap = new Bitmap(16, 16))
             bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
-        TilesheetDefinitionSerializer.SaveAll(gts, [new()
-        {
-            Name = "terrain",
-            Image = new() { FilePath = "atlas.png" },
-            Regions = [new() { Name = "ground", Area = new(0, 0, 16, 16), TileSize = new(16, 16) }]
-        }]);
+
+        TilesheetDefinitionSerializer.SaveAll(
+            gts,
+            [
+                new()
+                {
+                    Name = "terrain",
+                    Image = new() { FilePath = "atlas.png" },
+                    Regions =
+                    [
+                        new()
+                        {
+                            Name = "ground", Area = new(
+                                0,
+                                0,
+                                16,
+                                16),
+                            TileSize = new(16, 16)
+                        }
+                    ]
+                }
+            ]);
+
         using (var model = SpriteDocument.Create(root))
         {
             model.AddSprite();
@@ -186,6 +269,7 @@ public sealed partial class CompositionTests
         using var studio = Host(root);
         var editor = Assert.IsType<SpriteEditorControl>(studio.OpenDocument(gspr).Document.Editor);
         Application.DoEvents();
+
         studio.ChooseDragCoordinates = (_, _, _) =>
         {
             var originalWriteTime = File.GetLastWriteTimeUtc(image);
@@ -200,8 +284,15 @@ public sealed partial class CompositionTests
         var list = (ListBox)typeof(SpriteEditorControl).GetField("_sprites", Private)!.GetValue(editor)!;
         var point = list.PointToScreen(new Point(10, list.GetItemRectangle(0).Height / 2));
         var address = new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, gts));
-        var args = new DragEventArgs(studio.CreateResourceDrag(address), 0, point.X, point.Y,
-            DragDropEffects.Copy, DragDropEffects.None);
+
+        var args = new DragEventArgs(
+            studio.CreateResourceDrag(address),
+            0,
+            point.X,
+            point.Y,
+            DragDropEffects.Copy,
+            DragDropEffects.None);
+
         typeof(Control).GetMethod("OnDragEnter", Private)!.Invoke(list, [args]);
         Assert.Equal(DragDropEffects.Copy, args.Effect);
         typeof(Control).GetMethod("OnDragDrop", Private)!.Invoke(list, [args]);

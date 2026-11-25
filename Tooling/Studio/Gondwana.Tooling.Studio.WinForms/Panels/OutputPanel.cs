@@ -33,6 +33,7 @@ public sealed class OutputPanel : UserControl
             ScrollBars = RichTextBoxScrollBars.Vertical,
             WordWrap = false
         };
+
         Controls.Add(_textBox);
 
         _vm.Lines.CollectionChanged += OnLinesChanged;
@@ -55,6 +56,7 @@ public sealed class OutputPanel : UserControl
                 if (!IsDisposed && !Disposing)
                     RebuildLines();
             });
+
             return;
         }
 
@@ -74,6 +76,7 @@ public sealed class OutputPanel : UserControl
     private void RebuildLines()
     {
         _textBox.Clear();
+
         foreach (var line in _vm.Lines)
             AppendLine(line);
     }
@@ -95,19 +98,31 @@ public sealed class OutputPanel : UserControl
     {
         ReadOnlySpan<char> message = line.AsSpan().TrimStart();
         int timestampEnd = message.IndexOf(' ');
+
         if (timestampEnd > 0 &&
-            (DateTime.TryParseExact(message[..timestampEnd], "HH:mm:ss", CultureInfo.CurrentCulture,
-                DateTimeStyles.None, out _) ||
-             DateTime.TryParseExact(message[..timestampEnd], "HH:mm:ss", CultureInfo.InvariantCulture,
-                DateTimeStyles.None, out _)))
+            (DateTime.TryParseExact(
+                 message[..timestampEnd],
+                 "HH:mm:ss",
+                 CultureInfo.CurrentCulture,
+                 DateTimeStyles.None,
+                 out _) ||
+             DateTime.TryParseExact(
+                 message[..timestampEnd],
+                 "HH:mm:ss",
+                 CultureInfo.InvariantCulture,
+                 DateTimeStyles.None,
+                 out _)))
             message = message[(timestampEnd + 1)..].TrimStart();
 
         if (Marked(message, "Error") || Marked(message, "Critical") || Marked(message, "Fatal"))
             return OutputSeverity.Error;
+
         if (Marked(message, "Warning") || Marked(message, "Warn"))
             return OutputSeverity.Warning;
+
         if (Marked(message, "Important") || Marked(message, "Info"))
             return OutputSeverity.Important;
+
         return OutputSeverity.Normal;
     }
 

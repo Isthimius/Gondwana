@@ -177,6 +177,7 @@ public static partial class AudioDefinitionSerializer
         ArgumentNullException.ThrowIfNull(definition);
 
         var errors = AudioDefinitionValidator.Validate(definition);
+
         if (errors.Count != 0)
         {
             throw new InvalidDataException(
@@ -235,14 +236,19 @@ public static partial class AudioDefinitionSerializer
         }
 
         var groupProvenance = !skippedExisting
-            ? definition.LoadStamp?.Materialized(definition, () => FromResources(loaded)) : null;
+            ? definition.LoadStamp?.Materialized(definition, () => FromResources(loaded))
+            : null;
+
         if (!skippedExisting)
             foreach (var resource in loaded)
                 resource.DefinitionProvenance = groupProvenance;
+
         manager.DefinitionProvenance = !skippedExisting && manager.GetAll().Count == loaded.Count
-            ? definition.LoadStamp?.Materialized(definition,
+            ? definition.LoadStamp?.Materialized(
+                definition,
                 () => FromManager(manager))
             : null;
+
         return loaded;
     }
 
@@ -266,17 +272,18 @@ public static partial class AudioDefinitionSerializer
         AudioResourceManager manager)
     {
         var assetsPath = ResolveReferencePath(definition.AssetsFilePath!, baseDirectory);
-        var assetsFile = AssetsFile.AllAssetsFiles.FirstOrDefault(
-            file => !string.IsNullOrWhiteSpace(file.SourcePath) && string.Equals(
-                Path.GetFullPath(file.SourcePath),
-                Path.GetFullPath(assetsPath),
-                StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidDataException(
-                $"GSND resource '{definition.Key}' references assets file '{assetsPath}', but it is not loaded.");
+
+        var assetsFile = AssetsFile.AllAssetsFiles.FirstOrDefault(file => !string.IsNullOrWhiteSpace(file.SourcePath) &&
+                                                                          string.Equals(
+                                                                              Path.GetFullPath(file.SourcePath),
+                                                                              Path.GetFullPath(assetsPath),
+                                                                              StringComparison.OrdinalIgnoreCase))
+                         ?? throw new InvalidDataException(
+                             $"GSND resource '{definition.Key}' references assets file '{assetsPath}', but it is not loaded.");
 
         using var stream = assetsFile.Get(AssetTypes.Audio, definition.AssetEntryName!)
-            ?? throw new InvalidDataException(
-                $"GSND resource '{definition.Key}' references missing audio entry '{definition.AssetEntryName}' in '{assetsPath}'.");
+                           ?? throw new InvalidDataException(
+                               $"GSND resource '{definition.Key}' references missing audio entry '{definition.AssetEntryName}' in '{assetsPath}'.");
 
         var extension = !string.IsNullOrWhiteSpace(definition.SourceExtension)
             ? definition.SourceExtension!
@@ -319,15 +326,18 @@ public static partial class AudioDefinitionSerializer
         try
         {
             var definition = JsonConvert.DeserializeObject<AudioDefinition>(json, Settings);
+
             if (definition is null)
             {
                 var source = string.IsNullOrWhiteSpace(sourceDescription)
                     ? "GSND JSON content"
                     : sourceDescription;
+
                 throw new InvalidDataException($"Failed to deserialize {source}. Result was null.");
             }
 
             definition.Resources ??= [];
+
             for (int i = 0; i < definition.Resources.Count; i++)
             {
                 if (definition.Resources[i] is null)
@@ -341,6 +351,7 @@ public static partial class AudioDefinitionSerializer
             var source = string.IsNullOrWhiteSpace(sourceDescription)
                 ? "GSND JSON content"
                 : sourceDescription;
+
             throw new InvalidDataException($"Failed to deserialize {source}.", ex);
         }
     }
@@ -375,6 +386,7 @@ public static partial class AudioDefinitionSerializer
                     resource.FilePath = MakeReferencePath(
                         ResolveReferencePath(resource.FilePath, oldBaseDirectory),
                         newBaseDirectory);
+
                     break;
 
                 case AudioResourceSourceKind.PackedAsset
@@ -382,6 +394,7 @@ public static partial class AudioDefinitionSerializer
                     resource.AssetsFilePath = MakeReferencePath(
                         ResolveReferencePath(resource.AssetsFilePath, oldBaseDirectory),
                         newBaseDirectory);
+
                     break;
             }
         }
@@ -405,6 +418,7 @@ public static partial class AudioDefinitionSerializer
     {
         var fullPath = Path.GetFullPath(path);
         var fullBase = Path.GetFullPath(baseDirectory);
+
         if (!string.Equals(
                 Path.GetPathRoot(fullPath),
                 Path.GetPathRoot(fullBase),

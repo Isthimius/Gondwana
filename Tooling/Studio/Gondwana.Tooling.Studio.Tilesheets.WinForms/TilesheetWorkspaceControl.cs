@@ -27,6 +27,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
     private sealed record PackageNode(string Path);
 
     private readonly AssetPackageCatalog _assetPackages;
+
     private readonly TreeView _tree = new()
     {
         Dock = DockStyle.Fill,
@@ -41,18 +42,22 @@ public sealed class TilesheetWorkspaceControl : UserControl
     /// Occurs when the user requests opening a GTS definition.
     /// </summary>
     public event Action<string>? OpenGtsRequested;
+
     /// <summary>
     /// Occurs when the user requests a new tilesheet from a loose image.
     /// </summary>
     public event Action<string>? CreateFromLooseImageRequested;
+
     /// <summary>
     /// Occurs when the user selects a loose image for the current tilesheet.
     /// </summary>
     public event Action<string>? UseLooseImageRequested;
+
     /// <summary>
     /// Occurs when the user requests a new tilesheet from a packed image.
     /// </summary>
     public event Action<PackedImageSource>? CreateFromPackedImageRequested;
+
     /// <summary>
     /// Occurs when the user selects a packed image for the current tilesheet.
     /// </summary>
@@ -67,7 +72,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
         string? initialDirectory = null)
     {
         _assetPackages = assetPackages ??
-            throw new ArgumentNullException(nameof(assetPackages));
+                         throw new ArgumentNullException(nameof(assetPackages));
 
         WorkingDirectory = Path.GetFullPath(
             initialDirectory ?? Environment.CurrentDirectory);
@@ -94,6 +99,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
         Controls.Add(tools);
 
         _tree.BeforeExpand += TreeBeforeExpand;
+
         _tree.AfterSelect += (_, e) =>
         {
             if (e.Node?.Tag is string path &&
@@ -126,6 +132,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
         };
 
         var context = new ContextMenuStrip();
+
         context.Items.Add(
             "Create GTS from image",
             null,
@@ -210,6 +217,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
         TreeViewCancelEventArgs e)
     {
         var node = e.Node;
+
         if (node is null ||
             node.Nodes.Count != 1 ||
             node.Nodes[0].Tag is not null)
@@ -314,10 +322,10 @@ public sealed class TilesheetWorkspaceControl : UserControl
                 }
                 catch (Exception ex) when (
                     ex is IOException or
-                    ArgumentException or
-                    UnauthorizedAccessException or
-                    NotSupportedException or
-                    InvalidDataException)
+                        ArgumentException or
+                        UnauthorizedAccessException or
+                        NotSupportedException or
+                        InvalidDataException)
                 {
                     node.ToolTipText =
                         "Cannot read definition: " + ex.Message;

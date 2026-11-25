@@ -14,7 +14,12 @@ public sealed class WidgetMouseWheelEventArgs : WidgetEventArgs
     /// <param name="screenPositionPx">The screen position px.</param>
     /// <param name="delta">The delta.</param>
     /// <param name="tick">The current engine tick.</param>
-    public WidgetMouseWheelEventArgs(WidgetBase widget, View view, PointF screenPositionPx, int delta, long tick = 0)
+    public WidgetMouseWheelEventArgs(
+        WidgetBase widget,
+        View view,
+        PointF screenPositionPx,
+        int delta,
+        long tick = 0)
         : base(widget, tick)
     {
         View = view ?? throw new ArgumentNullException(nameof(view));

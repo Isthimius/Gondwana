@@ -11,8 +11,20 @@ public sealed class RenderFrameMailboxTests
     private static RenderFrameSnapshot Frame(long sequence)
     {
         using var recorder = new SKPictureRecorder();
-        recorder.BeginRecording(new SKRect(0, 0, 8, 8)).Clear(new SKColor((byte)(sequence % 255), 0, 0));
-        return new(recorder.EndRecording(), sequence, sequence, 8, 8);
+
+        recorder.BeginRecording(
+            new SKRect(
+                0,
+                0,
+                8,
+                8)).Clear(new SKColor((byte)(sequence % 255), 0, 0));
+
+        return new(
+            recorder.EndRecording(),
+            sequence,
+            sequence,
+            8,
+            8);
     }
 
     private static RenderFrameMailbox.Slot Publish(RenderFrameMailbox mailbox, long sequence)
@@ -50,6 +62,7 @@ public sealed class RenderFrameMailboxTests
         var rendering = mailbox.TryAcquire()!;
         var frame = rendering.Frame;
         var slots = new HashSet<RenderFrameMailbox.Slot> { rendering };
+
         for (int i = 101; i < 1101; i++)
         {
             slots.Add(Publish(mailbox, i));
@@ -101,26 +114,33 @@ public sealed class RenderFrameMailboxTests
         using var start = new Barrier(2);
         int done = 0;
         const int count = 5000;
+
         var producer = Task.Run(() =>
         {
             start.SignalAndWait();
+
             for (int i = 1; i <= count; i++)
                 Publish(mailbox, i);
+
             Volatile.Write(ref done, 1);
         });
+
         var consumer = Task.Run(() =>
         {
             using var surface = SKSurface.Create(new SKImageInfo(8, 8));
             long previous = 0;
             start.SignalAndWait();
+
             while (true)
             {
                 var slot = mailbox.TryAcquire();
+
                 if (slot is null)
                 {
                     if (Volatile.Read(ref done) == 1)
                     {
                         slot = mailbox.TryAcquire();
+
                         if (slot is null)
                             break;
                     }
@@ -144,6 +164,7 @@ public sealed class RenderFrameMailboxTests
 
             Assert.Equal(count, previous);
         });
+
         await Task.WhenAll(producer, consumer).WaitAsync(TimeSpan.FromSeconds(30));
         Assert.Equal(0, mailbox.Counters.InUse);
     }
@@ -155,17 +176,36 @@ public sealed class RenderFrameMailboxTests
     public void RecordingRetainsImageAndCopiesMutablePaintAndBitmap()
     {
         using var recorder = new SKPictureRecorder();
-        var canvas = recorder.BeginRecording(new SKRect(0, 0, 8, 8));
+
+        var canvas = recorder.BeginRecording(
+            new SKRect(
+                0,
+                0,
+                8,
+                8));
+
         using (var bitmap = new SKBitmap(8, 8))
         using (var paint = new SKPaint())
         {
             bitmap.Erase(SKColors.Red);
-            canvas.DrawBitmap(bitmap, 0, 0, paint);
+
+            canvas.DrawBitmap(
+                bitmap,
+                0,
+                0,
+                paint);
+
             bitmap.Erase(SKColors.Blue);
             paint.Color = SKColors.Green;
         }
 
-        using var frame = new RenderFrameSnapshot(recorder.EndRecording(), 1, 0, 8, 8);
+        using var frame = new RenderFrameSnapshot(
+            recorder.EndRecording(),
+            1,
+            0,
+            8,
+            8);
+
         using var surface = SKSurface.Create(new SKImageInfo(8, 8));
         frame.Replay(surface.Canvas);
         using var image = surface.Snapshot();

@@ -40,6 +40,7 @@ public static class PackedImagePicker
                 "GAF image source",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
+
             return null;
         }
 
@@ -51,6 +52,7 @@ public static class PackedImagePicker
                 "GAF image source",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+
             return null;
         }
 

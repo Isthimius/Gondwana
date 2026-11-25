@@ -22,10 +22,27 @@ public sealed class SpotAssetPackageTests
     /// <param name="columns">The columns value for this test case.</param>
     /// <param name="rows">The rows value for this test case.</param>
     [Theory]
-    [InlineData("spot_defaults", "spots", 93, 96, 1, 5)]
-    [InlineData("spot_selected", "selected", 64, 64, 5, 1)]
+    [InlineData(
+        "spot_defaults",
+        "spots",
+        93,
+        96,
+        1,
+        5)]
+    [InlineData(
+        "spot_selected",
+        "selected",
+        64,
+        64,
+        5,
+        1)]
     public void PackagedDefinitionsPreserveEveryGameplayFrame(
-        string name, string sheetName, int width, int height, int columns, int rows)
+        string name,
+        string sheetName,
+        int width,
+        int height,
+        int columns,
+        int rows)
     {
         AssetsFile.Validate(PackagePath);
         using var packageStream = File.OpenRead(PackagePath);

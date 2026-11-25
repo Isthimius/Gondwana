@@ -28,6 +28,7 @@ public sealed partial class CompositionTests
         "gsnd" => typeof(AudioEditorControl),
         _ => typeof(Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl)
     };
+
     private static Form StandaloneHost(string path, string format)
     {
         var type = StandaloneEditorType(format).Assembly.GetTypes().Single(t => t.Name == "MainForm");
@@ -38,25 +39,39 @@ public sealed partial class CompositionTests
         Application.DoEvents();
         return host;
     }
+
     private static EditorSourceMonitorController StandaloneMonitor(Form host) =>
-        (EditorSourceMonitorController)host.GetType().GetField("_sources", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
-    private static Control StandaloneEditor(Form host, string format) => Descendants(host).Single(c => c.GetType() == StandaloneEditorType(format) && (format == "gaf" || AuthoringModel(c).FilePath is not null));
+        (EditorSourceMonitorController)host.GetType().GetField(
+            "_sources",
+            BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+
+    private static Control StandaloneEditor(Form host, string format) => Descendants(host).Single(c =>
+        c.GetType() == StandaloneEditorType(format) && (format == "gaf" || AuthoringModel(c).FilePath is not null));
+
     private static DockContent StandaloneTab(Control editor)
     {
         for (var control = editor.Parent; control is not null; control = control.Parent)
             if (control is DockContent dock)
                 return dock;
+
         throw new InvalidOperationException("No document tab");
     }
+
     private static EditorSourceMonitorController.Document StandaloneSources(DockContent tab) =>
-        (EditorSourceMonitorController.Document)tab.GetType().GetField("Sources", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(tab)!;
+        (EditorSourceMonitorController.Document)tab.GetType().GetField(
+            "Sources",
+            BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(tab)!;
+
     private static void VerifyStandalone(EditorSourceMonitorController monitor)
     {
         Application.DoEvents();
         monitor.Verify();
         Application.DoEvents();
     }
-    private static string MemberName(dynamic model, string format) => format == "gts" ? model.Definition.Name : format == "gscn" ? model.Definition.ID : model.Definition.Key;
+
+    private static string MemberName(dynamic model, string format) => format == "gts" ? model.Definition.Name :
+        format == "gscn" ? model.Definition.ID : model.Definition.Key;
+
     private static void SaveStandaloneModel(dynamic model, string path, string format)
     {
         if (format == "gts")
@@ -105,21 +120,33 @@ public sealed partial class CompositionTests
         Assert.Contains("[conflict]", tab.Text);
         Assert.Equal("local", MemberName(model, format));
         int prompts = 0;
+
         monitor.ChooseConflict = () =>
         {
             prompts++;
             return DialogResult.Cancel;
         };
+
         for (int i = 0; i < 2; i++)
         {
-            var error = Assert.Throws<DocumentSourceConflictException>(() => { SaveStandaloneModel(model, path, format); });
+            var error = Assert.Throws<DocumentSourceConflictException>(() =>
+            {
+                SaveStandaloneModel(model, path, format);
+            });
+
             Assert.True(sources.SaveFailed(error));
             Application.DoEvents();
         }
 
         Assert.Equal(1, prompts);
         var otherDestination = new AssetLocation(AssetTypes.Misc, Path.Combine(root, "occupied." + format));
-        Assert.False(sources.SaveFailed(new DocumentSourceConflictException(otherDestination, new(DocumentSourceStatus.Available, "other", "other"))));
+
+        Assert.False(
+            sources.SaveFailed(
+                new DocumentSourceConflictException(
+                    otherDestination,
+                    new(DocumentSourceStatus.Available, "other", "other"))));
+
         Application.DoEvents();
         Assert.Equal(1, prompts);
         Assert.Equal(accepted, (DocumentSourceVersion)model.SourceVersion);
@@ -167,7 +194,11 @@ public sealed partial class CompositionTests
         var path = Path.Combine(root, "source.gts");
         var image = Path.Combine(root, "image.png");
         File.WriteAllBytes(image, [1, 2, 3]);
-        Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "sheet", Image = new() { FilePath = "image.png" } }]);
+
+        Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSerializer.SaveAll(
+            path,
+            [new() { Name = "sheet", Image = new() { FilePath = "image.png" } }]);
+
         using var host = StandaloneHost(path, "gts");
         var monitor = StandaloneMonitor(host);
         var editor = (TilesheetEditorControl)StandaloneEditor(host, "gts");
@@ -205,7 +236,12 @@ public sealed partial class CompositionTests
     {
         var password = encrypted ? "test password" : null;
         var path = Path.Combine(root, "archive.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, password, encrypted, register: false))
+
+        using (var initial = AssetsFile.LoadOrCreate(
+                   path,
+                   password,
+                   encrypted,
+                   register: false))
         {
             using var bytes = new MemoryStream([1, 2, 3]);
             initial.Add(AssetTypes.Misc, "initial.bin", bytes);
@@ -216,19 +252,38 @@ public sealed partial class CompositionTests
         host.Show();
         Application.DoEvents();
         var version = DocumentSourceVersion.Read(new(AssetTypes.Misc, path));
-        var loaded = AssetsFile.LoadOrCreate(path, password, encrypted, register: false);
-        host.GetType().GetMethod("ShowDocument", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, [loaded, version]);
+
+        var loaded = AssetsFile.LoadOrCreate(
+            path,
+            password,
+            encrypted,
+            register: false);
+
+        host.GetType().GetMethod("ShowDocument", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(
+            host,
+            [loaded, version]);
+
         var monitor = StandaloneMonitor(host);
         monitor.ReportError = ex => throw new InvalidOperationException("Archive reload failed", ex);
         var editor = (Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl)StandaloneEditor(host, "gaf");
         var tab = StandaloneTab(editor);
         var sources = StandaloneSources(tab);
+
         void External(byte value)
         {
-            using var disk = AssetsFile.LoadOrCreate(path, password, encrypted, register: false);
+            using var disk = AssetsFile.LoadOrCreate(
+                path,
+                password,
+                encrypted,
+                register: false);
+
             using var bytes = new MemoryStream([value]);
             disk.Add(AssetTypes.Misc, "external.bin", bytes);
-            AssetArchivePersistence.Commit(disk, path, Convert.FromHexString(DocumentSourceVersion.Read(new(AssetTypes.Misc, path)).PhysicalHash!));
+
+            AssetArchivePersistence.Commit(
+                disk,
+                path,
+                Convert.FromHexString(DocumentSourceVersion.Read(new(AssetTypes.Misc, path)).PhysicalHash!));
         }
 
         External(1);
@@ -239,8 +294,10 @@ public sealed partial class CompositionTests
         editor = (Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl)StandaloneEditor(host, "gaf");
         tab = StandaloneTab(editor);
         sources = StandaloneSources(tab);
+
         using (var bytes = new MemoryStream([7]))
             editor.AssetsFile.Add(AssetTypes.Misc, "local.bin", bytes);
+
         editor.MarkChanged();
         External(2);
         VerifyStandalone(monitor);
@@ -257,17 +314,30 @@ public sealed partial class CompositionTests
         Assert.True(editor.IsDirty);
         Assert.Same(history, editor.History);
         Assert.Equal(accepted, editor.SourceVersion);
-        using (var disk = AssetsFile.LoadOrCreate(path, password, encrypted, register: false))
+
+        using (var disk = AssetsFile.LoadOrCreate(
+                   path,
+                   password,
+                   encrypted,
+                   register: false))
             Assert.DoesNotContain(disk.GetAllEntries(), e => e.AssetName == "local.bin");
-        using (var disk = AssetsFile.LoadOrCreate(copy, password, encrypted, register: false))
+
+        using (var disk = AssetsFile.LoadOrCreate(
+                   copy,
+                   password,
+                   encrypted,
+                   register: false))
             Assert.Contains(disk.GetAllEntries(), e => e.AssetName == "local.bin");
+
         monitor.ConfirmDiscard = () => true;
         sources.Reload();
         editor = (Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl)StandaloneEditor(host, "gaf");
         tab = StandaloneTab(editor);
         sources = StandaloneSources(tab);
+
         using (var bytes = new MemoryStream([9]))
             editor.AssetsFile.Add(AssetTypes.Misc, "saved.bin", bytes);
+
         editor.MarkChanged();
         editor.SaveTo(path);
         VerifyStandalone(monitor);
@@ -289,18 +359,76 @@ public sealed partial class CompositionTests
     public void StandaloneSourceMonitoringDependenciesAcrossUnselectedMembers(string format) => RunSta(root =>
     {
         var media = Path.Combine(root, "media.png");
+
         using (var bitmap = new Bitmap(2, 2))
             bitmap.Save(media, System.Drawing.Imaging.ImageFormat.Png);
+
         var sheet = Path.Combine(root, "sheet.gts");
         TilesheetDefinitionSerializer.SaveAll(sheet, [new() { Name = "sheet", Image = new() { FilePath = media } }]);
         var path = Path.Combine(root, "source." + format);
+
         var json = format switch
         {
-            "gani" => AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = "first" }, new() { Key = "second", TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)] }] }),
-            "gscn" => SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { ID = "first" }, new() { ID = "second", TilesheetSources = [SceneTilesheetSourceDefinition.Loose("sheet", sheet)] }] }),
-            "gspr" => SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = "first" }, new() { Key = "second", TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("sheet", sheet)] }] }),
-            _ => AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = "first" }, new() { Key = "second", Resources = [new() { Key = "local", FilePath = media }, new() { Key = "remote", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "https://example.test/audio.wav" }] }] })
+            "gani" => AnimationDefinitionSerializer.ToDocumentJson(
+                new()
+                {
+                    Definitions =
+                    [
+                        new() { Key = "first" },
+                        new()
+                        {
+                            Key = "second",
+                            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)]
+                        }
+                    ]
+                }),
+            "gscn" => SceneDefinitionSerializer.ToDocumentJson(
+                new()
+                {
+                    Definitions =
+                    [
+                        new() { ID = "first" },
+                        new()
+                        {
+                            ID = "second", TilesheetSources = [SceneTilesheetSourceDefinition.Loose("sheet", sheet)]
+                        }
+                    ]
+                }),
+            "gspr" => SpriteDefinitionSerializer.ToDocumentJson(
+                new()
+                {
+                    Definitions =
+                    [
+                        new() { Key = "first" },
+                        new()
+                        {
+                            Key = "second", TilesheetSources = [SpriteTilesheetSourceDefinition.Loose("sheet", sheet)]
+                        }
+                    ]
+                }),
+            _ => AudioDefinitionSerializer.ToDocumentJson(
+                new()
+                {
+                    Definitions =
+                    [
+                        new() { Key = "first" },
+                        new()
+                        {
+                            Key = "second",
+                            Resources =
+                            [
+                                new() { Key = "local", FilePath = media },
+                                new()
+                                {
+                                    Key = "remote", SourceKind = AudioResourceSourceKind.Uri,
+                                    SourceUri = "https://example.test/audio.wav"
+                                }
+                            ]
+                        }
+                    ]
+                })
         };
+
         File.WriteAllText(path, json);
         using var host = StandaloneHost(path, format);
         var monitor = StandaloneMonitor(host);
@@ -320,9 +448,14 @@ public sealed partial class CompositionTests
         Assert.Same(history, (EditHistory)model.History);
         Assert.Equal("local edits", MemberName(model, format));
         Assert.False(sources.ContentStale);
+
         if (format != "gsnd")
         {
-            using (var locked = new FileStream(sheet, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            using (var locked = new FileStream(
+                       sheet,
+                       FileMode.Open,
+                       FileAccess.ReadWrite,
+                       FileShare.None))
             {
                 model.RenameDefinition("while dependency locked");
                 VerifyStandalone(monitor);
@@ -338,16 +471,31 @@ public sealed partial class CompositionTests
     public void StandaloneSourceMonitoringSharedDependencySelectionAndAdjacentSave() => RunSta(root =>
     {
         var image = Path.Combine(root, "image.png");
+
         using (var bitmap = new Bitmap(2, 2))
             bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+
         var first = Path.Combine(root, "first.gts");
         var second = Path.Combine(root, "second.gts");
+
         foreach (var path in new[] { first, second })
-            TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "first", Image = new() { FilePath = image } }, new() { Name = "second", Image = new() { FilePath = image } }]);
+            TilesheetDefinitionSerializer.SaveAll(
+                path,
+                [
+                    new() { Name = "first", Image = new() { FilePath = image } },
+                    new() { Name = "second", Image = new() { FilePath = image } }
+                ]);
+
         using var host = StandaloneHost(first, "gts");
-        host.GetType().GetMethod("OpenDocument", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, [second]);
+
+        host.GetType().GetMethod("OpenDocument", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(host, [second]);
+
         var monitor = StandaloneMonitor(host);
-        var editors = Descendants(host).OfType<TilesheetEditorControl>().Where(e => e.Document.FilePath is not null).ToArray();
+
+        var editors = Descendants(host).OfType<TilesheetEditorControl>().Where(e => e.Document.FilePath is not null)
+            .ToArray();
+
         Assert.Equal(2, editors.Length);
         File.WriteAllBytes(image, [7, 8, 9]);
         VerifyStandalone(monitor);
@@ -364,6 +512,7 @@ public sealed partial class CompositionTests
         Assert.Same(pane, StandaloneTab(current).Pane);
         current.Document.RenameDefinition("local");
         bool wrote = false;
+
         current.Document.History.Changed += (_, _) =>
         {
             if (!current.Document.IsDirty && !wrote)
@@ -372,6 +521,7 @@ public sealed partial class CompositionTests
                 File.WriteAllText(first, NativeJson("gts", "external"));
             }
         };
+
         current.Document.Save(first, null, true);
         StandaloneSources(StandaloneTab(current)).Saved();
         VerifyStandalone(monitor);
@@ -395,7 +545,12 @@ public sealed partial class CompositionTests
         var sources = StandaloneSources(StandaloneTab(editor));
         editor.Document.RenameDefinition("local");
         VerifyStandalone(monitor);
-        using (var disk = AssetsFile.LoadOrCreate(archive, null, false, register: false))
+
+        using (var disk = AssetsFile.LoadOrCreate(
+                   archive,
+                   null,
+                   false,
+                   register: false))
         {
             using var bytes = new MemoryStream([1, 2, 3]);
             disk.Add(AssetTypes.Misc, "images/atlas.png", bytes);
@@ -442,7 +597,11 @@ public sealed partial class CompositionTests
         var image = Path.Combine(root, "later.png");
         WritePreviewImage(image, Color.Red);
         var path = Path.Combine(root, "partial.gts");
-        TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "incomplete" }, new() { Name = "valid", Image = new() { FilePath = image } }]);
+
+        TilesheetDefinitionSerializer.SaveAll(
+            path,
+            [new() { Name = "incomplete" }, new() { Name = "valid", Image = new() { FilePath = image } }]);
+
         using var host = StandaloneHost(path, "gts");
         var monitor = StandaloneMonitor(host);
         var editor = StandaloneEditor(host, "gts");

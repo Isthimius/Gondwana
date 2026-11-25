@@ -15,30 +15,37 @@ internal sealed class AssetsDeleteCommand : Command<AssetsDeleteCommand.Settings
         /// <summary>Gets a loose file or archive path.</summary>
         [CommandArgument(0, "<source>")]
         public string Source { get; init; } = "";
+
         /// <summary>Gets the explicit directory or single-archive scope.</summary>
         [CommandOption("--scope")]
         [Description("Required recursive directory or single GAF/ZIP search scope.")]
         public string Scope { get; init; } = "";
+
         /// <summary>Gets an exact typed packed entry, or null for a loose file.</summary>
         [CommandOption("--source-entry")]
         [Description("Exact typed source entry; omit for loose storage.")]
         public string? SourceEntry { get; init; }
+
         /// <summary>Gets the asset type; required for packed entries.</summary>
         [CommandOption("--type")]
         [Description("AssetTypes value; required for packed sources.")]
         public string? Type { get; init; }
+
         /// <summary>Gets whether the entire archive and all its entries are selected.</summary>
         [CommandOption("--archive")]
         [Description("Operate on the whole GAF/ZIP, not an entry.")]
         public bool Archive { get; init; }
+
         /// <summary>Gets permission to execute rather than preview.</summary>
         [CommandOption("--commit")]
         [Description("Execute the reviewed operation; omitted means preview only.")]
         public bool Commit { get; init; }
+
         /// <summary>Gets explicit permission to break the reviewed surviving relationships.</summary>
         [CommandOption("--force")]
         [Description("Delete only: authorize reviewed broken references; does not bypass incomplete discovery.")]
         public bool Force { get; init; }
+
         /// <summary>Gets a JSON object mapping absolute archive paths to individual passwords.</summary>
         [CommandOption("--credentials")]
         [Description("JSON object of absolute GAF/ZIP paths to passwords; never printed.")]
@@ -52,36 +59,56 @@ internal sealed class AssetsDeleteCommand : Command<AssetsDeleteCommand.Settings
         {
             if (string.IsNullOrWhiteSpace(settings.Scope))
                 throw new ArgumentException("An explicit --scope directory or archive is required.");
+
             var credentials = AssetCommandCredentials.Load(settings.Credentials);
             AssetDeletionPlan plan;
+
             if (settings.Archive)
             {
                 if (settings.SourceEntry is not null || settings.Type is not null)
                     throw new ArgumentException("--archive cannot be combined with entry/type selectors.");
-                plan = AssetDeletionPlan.Create(settings.Scope, [], [settings.Source], path => credentials.GetValueOrDefault(path), cancellationToken);
+
+                plan = AssetDeletionPlan.Create(
+                    settings.Scope,
+                    [],
+                    [settings.Source],
+                    path => credentials.GetValueOrDefault(path),
+                    cancellationToken);
             }
             else
             {
                 if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source))
                     throw new ArgumentException("Archive files require --archive or a typed --source-entry.");
+
                 if (settings.SourceEntry is not null && settings.Type is null)
                     throw new ArgumentException("Packed targets require --type.");
-                var type = settings.Type is null ? AssetImportPlan.InferType(settings.Source) : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
-                plan = AssetDeletionPlan.Create(settings.Scope, [new(type, Path.GetFullPath(settings.Source), settings.SourceEntry)],
-                    credentials: path => credentials.GetValueOrDefault(path), cancellation: cancellationToken);
+
+                var type = settings.Type is null
+                    ? AssetImportPlan.InferType(settings.Source)
+                    : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
+
+                plan = AssetDeletionPlan.Create(
+                    settings.Scope,
+                    [new(type, Path.GetFullPath(settings.Source), settings.SourceEntry)],
+                    credentials: path => credentials.GetValueOrDefault(path),
+                    cancellation: cancellationToken);
             }
 
             foreach (var line in plan.Preview)
                 AnsiConsole.WriteLine(line);
+
             if (plan.ForceRequired && !settings.Force)
                 return 2;
+
             if (settings.Commit)
             {
                 plan.Commit(settings.Force, cancellationToken);
                 AnsiConsole.WriteLine("Deletion committed. Surviving documents were not rewritten.");
             }
             else
-                AnsiConsole.WriteLine("Preview only; --force alone never deletes content. Use --commit after reviewing.");
+                AnsiConsole.WriteLine(
+                    "Preview only; --force alone never deletes content. Use --commit after reviewing.");
+
             return 0;
         }
         catch (Exception ex)

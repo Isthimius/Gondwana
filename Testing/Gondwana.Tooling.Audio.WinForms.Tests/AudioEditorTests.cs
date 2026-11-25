@@ -36,6 +36,7 @@ public sealed partial class AudioEditorTests
 
             var firstReference = Assert.Single(document.Definition.Resources).FilePath!;
             Assert.False(Path.IsPathRooted(firstReference));
+
             Assert.Equal(
                 Path.GetFullPath(audioPath),
                 Path.GetFullPath(firstReference, first));
@@ -45,6 +46,7 @@ public sealed partial class AudioEditorTests
 
             var secondReference = Assert.Single(document.Definition.Resources).FilePath!;
             Assert.False(Path.IsPathRooted(secondReference));
+
             Assert.Equal(
                 Path.GetFullPath(audioPath),
                 Path.GetFullPath(secondReference, second));
@@ -75,27 +77,33 @@ public sealed partial class AudioEditorTests
 
             var document = AudioDocument.Create(root);
             using var editor = new AudioEditorControl(document);
+
             using var host = new Form
             {
                 Size = new Size(1100, 760),
                 Opacity = 0,
                 ShowInTaskbar = false
             };
+
             host.Controls.Add(editor);
             host.Show();
             Application.DoEvents();
 
             var dock = Assert.Single(Descendants(editor).OfType<DockPanel>());
             var panes = dock.Contents.Cast<DockContent>().ToArray();
+
             Assert.Equal(
                 ["Audio resources", "Properties", "Validation"],
                 panes.Select(pane => pane.Text).Order().ToArray());
-            Assert.All(panes, pane =>
-            {
-                Assert.Same(dock, pane.DockPanel);
-                Assert.True(pane.HideOnClose);
-                Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
-            });
+
+            Assert.All(
+                panes,
+                pane =>
+                {
+                    Assert.Same(dock, pane.DockPanel);
+                    Assert.True(pane.HideOnClose);
+                    Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
+                });
 
             editor.AddLooseFiles([audioPath]);
             var resource = Assert.Single(document.Definition.Resources);
@@ -146,6 +154,7 @@ public sealed partial class AudioEditorTests
         foreach (Control child in parent.Controls)
         {
             yield return child;
+
             foreach (var descendant in Descendants(child))
                 yield return descendant;
         }
@@ -154,6 +163,7 @@ public sealed partial class AudioEditorTests
     private static void RunSta(Action test)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
         {
             try
@@ -161,6 +171,7 @@ public sealed partial class AudioEditorTests
                 Application.SetUnhandledExceptionMode(
                     UnhandledExceptionMode.ThrowException,
                     threadScope: true);
+
                 test();
             }
             catch (Exception ex)
@@ -174,6 +185,7 @@ public sealed partial class AudioEditorTests
 
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
+
         Assert.True(
             thread.Join(TimeSpan.FromSeconds(30)),
             "GSND WinForms test timed out.");

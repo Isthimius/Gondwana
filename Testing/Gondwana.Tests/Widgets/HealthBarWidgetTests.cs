@@ -86,6 +86,7 @@ public sealed class HealthBarWidgetTests : IDisposable
         sprite.SetPosition(new Vector2(2, 3));
 
         Assert.NotEqual(before.Location, bar.TrackBoundsWorld.Location);
+
         Assert.Equal(
             sprite.DrawLocationWorld.Top - 15,
             bar.TrackBoundsWorld.Top);

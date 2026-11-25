@@ -28,7 +28,12 @@ internal readonly struct TilesheetRegionSlice
     /// Gets the frame-local collision rectangle.
     /// </summary>
     public readonly Rectangle CollisionArea =>
-        CollisionAdjust.ApplyTo(new Rectangle(0, 0, Bitmap.Width, Bitmap.Height));
+        CollisionAdjust.ApplyTo(
+            new Rectangle(
+                0,
+                0,
+                Bitmap.Width,
+                Bitmap.Height));
 
     /// <summary>
     /// Initializes a new cached tilesheet slice.

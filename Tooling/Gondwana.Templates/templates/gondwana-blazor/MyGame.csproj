@@ -1,35 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-	<PropertyGroup>
-		<TargetFramework>net10.0-browser</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<IsPackable>false</IsPackable>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<!-- Link SkiaSharp into the WASM runtime for dotnet run as well as publish. -->
-		<WasmBuildNative>true</WasmBuildNative>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0-browser</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <!-- Link SkiaSharp into the WASM runtime for dotnet run as well as publish. -->
+        <WasmBuildNative>true</WasmBuildNative>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<!--
+    <ItemGroup>
+        <!--
             Core Gondwana packages — track the latest 2.x releases.
             Run 'dotnet add package Gondwana' to update to a newer major version.
         -->
-		<PackageReference Include="Gondwana" Version="2.*" />
-		<PackageReference Include="Gondwana.Hosting" Version="2.*" />
-		<PackageReference Include="Gondwana.Blazor" Version="2.*" />
-		<PackageReference Include="Gondwana.Blazor.Hosting" Version="2.*" />
-		<PackageReference Include="Gondwana.Audio.Browser" Version="2.*" />
+        <PackageReference Include="Gondwana" Version="2.*" />
+        <PackageReference Include="Gondwana.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.Blazor" Version="2.*" />
+        <PackageReference Include="Gondwana.Blazor.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.Audio.Browser" Version="2.*" />
         <PackageReference Include="Gondwana.Widgets" Version="2.*" />
 
-		<!-- Blazor WebAssembly -->
-		<!-- Keep the Blazor runtime and development server on the same published patch.
+        <!-- Blazor WebAssembly -->
+        <!-- Keep the Blazor runtime and development server on the same published patch.
 		     A floating 10.* range can select partially published Microsoft releases and break restore. -->
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
-	</ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14"
+                          PrivateAssets="all" />
+    </ItemGroup>
 
-	<!--
+    <!--
         Static web content.
         gondwana-audio.js is the audio JS module used by Gondwana.Audio.Browser.
         All wwwroot/ files are served by the Blazor WebAssembly host.
@@ -39,7 +40,7 @@
         both work without copying the file into the project's source wwwroot.
     -->
 
-	<!--
+    <!--
         Put browser assets in wwwroot/assets (PNG, GAF, fonts, audio, etc.).
         The Blazor SDK includes wwwroot files as static web assets automatically.
         CopyToOutputDirectory on a desktop assets folder does not expose a web URL.

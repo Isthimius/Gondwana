@@ -16,7 +16,9 @@ public sealed class StudioPluginHost : CoreHost
 
     /// <summary>Creates a WinForms host applying startup preferences before plugin construction.</summary>
     public StudioPluginHost(Action<string> log, Func<string, bool> isEnabled)
-        : base(log, isEnabled, typeof(IStudioPlugin).Assembly) { }
+        : base(log, isEnabled, typeof(IStudioPlugin).Assembly)
+    {
+    }
 
     /// <summary>Calls each enabled WinForms plugin to obtain its panel, logging and skipping failed or null contributions.</summary>
     /// <returns>The contributed controls paired with their plugin display names, for the caller to host and dispose.</returns>
@@ -33,8 +35,11 @@ public sealed class StudioPluginHost : CoreHost
             try
             {
                 var panel = plugin.CreatePanel();
+
                 if (panel is not null)
-                    result.Add(($"plugin.{plugin.GetType().Assembly.GetName().Name}.{plugin.GetType().FullName}.{plugin.Name}", plugin.Name, panel));
+                    result.Add(
+                        ($"plugin.{plugin.GetType().Assembly.GetName().Name}.{plugin.GetType().FullName}.{plugin.Name}",
+                            plugin.Name, panel));
             }
             catch (Exception ex)
             {
@@ -57,6 +62,7 @@ public sealed class StudioPluginHost : CoreHost
             try
             {
                 var item = plugin.CreateMenuItem();
+
                 if (item is not null)
                     result.Add(item);
             }

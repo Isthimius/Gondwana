@@ -102,21 +102,25 @@ public sealed class SplashScreen : WidgetBase
 
     #region factory / constructor
 
-    private SplashScreen(DirectImage image,
-                         float fadeInSec,
-                         float holdSec,
-                         float fadeOutSec,
-                         Action? onHoldingSync,
-                         Func<Task>? onHoldingAsync,
-                         Action? onSplashCompleted)
-        : base(image.RenderSurfaceHost,
-               DirectDrawingMode.View,
-               PointF.Empty,
-               SplashImageNickname + Guid.NewGuid())
+    private SplashScreen(
+        DirectImage image,
+        float fadeInSec,
+        float holdSec,
+        float fadeOutSec,
+        Action? onHoldingSync,
+        Func<Task>? onHoldingAsync,
+        Action? onSplashCompleted)
+        : base(
+            image.RenderSurfaceHost,
+            DirectDrawingMode.View,
+            PointF.Empty,
+            SplashImageNickname + Guid.NewGuid())
     {
         Image = image;
+
         _view = image.View
-            ?? throw new InvalidOperationException("Splash image must be attached to a view.");
+                ?? throw new InvalidOperationException("Splash image must be attached to a view.");
+
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
         CurrentState = State.Hidden;
 
@@ -194,15 +198,16 @@ public sealed class SplashScreen : WidgetBase
     /// </para>
     /// </remarks>
     /// <param name="onSplashCompleted">The on splash completed.</param>
-    public static SplashScreen? TryCreate(Stream imageStream,
-                                          RenderSurfaceHostBase host,
-                                          View view,
-                                          float fadeInSec = 0.45f,
-                                          float holdSec = 3f,
-                                          float fadeOutSec = 0.45f,
-                                          Action? onHoldingSync = null,
-                                          Func<Task>? onHoldingAsync = null,
-                                          Action? onSplashCompleted = null)
+    public static SplashScreen? TryCreate(
+        Stream imageStream,
+        RenderSurfaceHostBase host,
+        View view,
+        float fadeInSec = 0.45f,
+        float holdSec = 3f,
+        float fadeOutSec = 0.45f,
+        Action? onHoldingSync = null,
+        Func<Task>? onHoldingAsync = null,
+        Action? onSplashCompleted = null)
     {
         if (host.ViewManager.Views.Count == 0)
             return null;

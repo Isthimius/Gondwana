@@ -48,11 +48,24 @@ public sealed class TilesheetGtsParityTests : IDisposable
         {
             Name = "spacing",
             Image = new() { FilePath = CreateImageFile("spacing.png", 52, 16) },
-            Regions = [new() { Area = new Rectangle(0, 0, 52, 16), TileSize = new Size(16, 16),
-                TilePadding = new Spacing { Right = 2 }, RegionMargin = new Spacing { Right = trailing } }]
+            Regions =
+            [
+                new()
+                {
+                    Area = new Rectangle(
+                        0,
+                        0,
+                        52,
+                        16),
+                    TileSize = new Size(16, 16),
+                    TilePadding = new Spacing { Right = 2 }, RegionMargin = new Spacing { Right = trailing }
+                }
+            ]
         };
+
         var errors = TilesheetDefinitionValidator.Validate(definition, 52, 16);
         Assert.Equal(valid, errors.Count == 0);
+
         if (!valid)
         {
             Assert.Throws<InvalidOperationException>(() => TilesheetFactory.FromDefinition(definition));
@@ -94,15 +107,38 @@ public sealed class TilesheetGtsParityTests : IDisposable
 
         var originalRegion = original.AddRegion(
             "Actors",
-            new Rectangle(0, 0, 42, 22),
+            new Rectangle(
+                0,
+                0,
+                42,
+                22),
             new Size(16, 16),
-            tilePadding: new Spacing(0, 0, 2, 0),
-            regionMargin: new Spacing(2, 2, 4, 4),
-            overhangPixels: new Spacing(1, 2, 3, 4),
+            tilePadding: new Spacing(
+                0,
+                0,
+                2,
+                0),
+            regionMargin: new Spacing(
+                2,
+                2,
+                4,
+                4),
+            overhangPixels: new Spacing(
+                1,
+                2,
+                3,
+                4),
             collisionAdjust: regionAdjust);
 
         originalRegion.SetFrameCollisionAdjust(1, 0, frameAdjust);
-        original.ApplyMask(new SKColor(10, 20, 30, 255), tolerance: 7);
+
+        original.ApplyMask(
+            new SKColor(
+                10,
+                20,
+                30,
+                255),
+            tolerance: 7);
 
         var definition = TilesheetDefinitionSerializer.FromTilesheet(original);
         using var restored = TilesheetFactory.FromDefinition(definition);
@@ -122,19 +158,24 @@ public sealed class TilesheetGtsParityTests : IDisposable
         Assert.Equal(originalRegion.RegionMargin, restoredRegion.RegionMargin);
         Assert.Equal(originalRegion.Overhang, restoredRegion.Overhang);
         Assert.Equal(originalRegion.CollisionAdjust, restoredRegion.CollisionAdjust);
+
         Assert.Equal(
             originalRegion.GetFrameCollisionAdjust(0, 0),
             restoredRegion.GetFrameCollisionAdjust(0, 0));
+
         Assert.Equal(
             originalRegion.GetFrameCollisionAdjust(1, 0),
             restoredRegion.GetFrameCollisionAdjust(1, 0));
+
         Assert.False(
             restoredRegion.TryGetFrameCollisionAdjustOverride(0, 0, out _));
+
         Assert.True(
             restoredRegion.TryGetFrameCollisionAdjustOverride(
                 1,
                 0,
                 out var restoredFrameAdjust));
+
         Assert.Equal(frameAdjust, restoredFrameAdjust);
     }
 
@@ -161,7 +202,11 @@ public sealed class TilesheetGtsParityTests : IDisposable
                 new TilesheetRegionDefinition
                 {
                     Name = TilesheetRegion.DefaultRegionName,
-                    Area = new Rectangle(0, 0, 16, 16),
+                    Area = new Rectangle(
+                        0,
+                        0,
+                        16,
+                        16),
                     TileSize = new Size(16, 16)
                 }
             ]
@@ -215,8 +260,8 @@ public sealed class TilesheetGtsParityTests : IDisposable
             }
         };
 
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => TilesheetFactory.FromDefinition(definition, _tempDir));
+        var exception =
+            Assert.Throws<InvalidOperationException>(() => TilesheetFactory.FromDefinition(definition, _tempDir));
 
         Assert.Contains("ambiguous", exception.Message.ToLowerInvariant());
     }
@@ -236,8 +281,8 @@ public sealed class TilesheetGtsParityTests : IDisposable
             }
         };
 
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => TilesheetFactory.FromDefinition(definition, _tempDir));
+        var exception =
+            Assert.Throws<InvalidOperationException>(() => TilesheetFactory.FromDefinition(definition, _tempDir));
 
         Assert.Contains(
             nameof(TilesheetImageDefinition.AssetEntryName),
@@ -254,8 +299,8 @@ public sealed class TilesheetGtsParityTests : IDisposable
             "In Memory",
             new SKBitmap(16, 16));
 
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => TilesheetDefinitionSerializer.FromTilesheet(tilesheet));
+        var exception =
+            Assert.Throws<InvalidOperationException>(() => TilesheetDefinitionSerializer.FromTilesheet(tilesheet));
 
         Assert.Contains(
             "no ImageFilePath or AssetIdentifier",
@@ -271,7 +316,13 @@ public sealed class TilesheetGtsParityTests : IDisposable
     {
         var imagePath = Path.Combine(_tempDir, "persisted", "generated.png");
         var bitmap = new SKBitmap(24, 12);
-        bitmap.Erase(new SKColor(10, 20, 30, 255));
+
+        bitmap.Erase(
+            new SKColor(
+                10,
+                20,
+                30,
+                255));
 
         using var tilesheet = TilesheetFactory.FromBitmap("Generated", bitmap);
         tilesheet.PersistImageToFile(imagePath);
@@ -300,7 +351,13 @@ public sealed class TilesheetGtsParityTests : IDisposable
         var expectedImagePath = Path.ChangeExtension(gtsPath, ".png");
 
         var bitmap = new SKBitmap(32, 16);
-        bitmap.Erase(new SKColor(40, 80, 120, 255));
+
+        bitmap.Erase(
+            new SKColor(
+                40,
+                80,
+                120,
+                255));
 
         using var tilesheet = TilesheetFactory.FromBitmap("Terrain", bitmap);
         tilesheet.DefaultRegion.TileSize = new Size(16, 16);
@@ -309,6 +366,7 @@ public sealed class TilesheetGtsParityTests : IDisposable
 
         Assert.True(File.Exists(gtsPath));
         Assert.True(File.Exists(expectedImagePath));
+
         Assert.Equal(
             Path.GetFullPath(expectedImagePath),
             tilesheet.ImageFilePath);
@@ -342,11 +400,13 @@ public sealed class TilesheetGtsParityTests : IDisposable
         TilesheetDefinitionSerializer.Save(gtsPath, tilesheet);
 
         Assert.False(File.Exists(siblingImagePath));
+
         Assert.Equal(
             Path.GetFullPath(sourceImagePath),
             tilesheet.ImageFilePath);
 
         var definition = TilesheetDefinitionSerializer.Load(gtsPath);
+
         Assert.Equal(
             Path.GetRelativePath(
                     Path.GetDirectoryName(gtsPath)!,
@@ -389,7 +449,13 @@ public sealed class TilesheetGtsParityTests : IDisposable
     private static MemoryStream CreateImageStream(int width, int height)
     {
         using var bitmap = new SKBitmap(width, height);
-        bitmap.Erase(new SKColor(40, 80, 120, 200));
+
+        bitmap.Erase(
+            new SKColor(
+                40,
+                80,
+                120,
+                200));
 
         using var image = SKImage.FromBitmap(bitmap);
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);

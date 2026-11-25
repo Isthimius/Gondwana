@@ -43,11 +43,17 @@ public sealed class BrowserAudioBackend : IAudioBackend
         float volume,
         float pan,
         float playbackSpeed)
-        => new BrowserAudioPlaybackHandle(key, uri, volume, pan, playbackSpeed);
+        => new BrowserAudioPlaybackHandle(
+            key,
+            uri,
+            volume,
+            pan,
+            playbackSpeed);
 
     private static string ResolveMimeType(string fileNameOrExtension)
     {
         var extension = Path.GetExtension(fileNameOrExtension);
+
         if (string.IsNullOrWhiteSpace(extension) && fileNameOrExtension.StartsWith('.'))
             extension = fileNameOrExtension;
 

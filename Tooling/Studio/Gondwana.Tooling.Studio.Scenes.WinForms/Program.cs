@@ -1,4 +1,5 @@
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
+
 namespace Gondwana.Tooling.Studio.Scenes.WinForms;
 
 internal static class Program

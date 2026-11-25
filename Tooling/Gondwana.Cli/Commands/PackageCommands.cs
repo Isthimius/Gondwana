@@ -27,6 +27,7 @@ internal static class ProjectCommand
     {
         if (!ProjectHelper.TryResolveProject(path, out var project, out var error))
             throw new InvalidOperationException(error);
+
         return new ProjectPackages(project!);
     }
 
@@ -49,6 +50,7 @@ internal static class ProjectCommand
     {
         foreach (var change in changes)
             AnsiConsole.WriteLine(change);
+
         if (changes.Count == 0)
             AnsiConsole.WriteLine("Already up to date. No files changed.");
     }
@@ -65,7 +67,8 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
         /// Gets or sets the feature.
         /// </summary>
         [CommandArgument(0, "<feature>")]
-        [Description("widgets, audio, midi, gamepad, video, video-widgets, or hosting. Audio selects Browser for Blazor or NAudio for Windows; MIDI requires Windows. Cross-platform desktop audio requires explicit backend selection.")]
+        [Description(
+            "widgets, audio, midi, gamepad, video, video-widgets, or hosting. Audio selects Browser for Blazor or NAudio for Windows; MIDI requires Windows. Cross-platform desktop audio requires explicit backend selection.")]
         public string Feature { get; init; } = "";
     }
 
@@ -77,8 +80,10 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
             var project = ProjectCommand.Load(settings.Project);
             var changes = project.Add(settings.Feature);
             ProjectCommand.PrintChanges(changes);
+
             if (changes.Count > 0)
                 project.Save();
+
             return 0;
         }
         catch (Exception ex)
@@ -99,7 +104,8 @@ internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
         /// Gets or sets the version.
         /// </summary>
         [CommandOption("--version <VERSION>")]
-        [Description("Exact version, including prerelease if explicitly desired. Defaults to latest common stable version on nuget.org.")]
+        [Description(
+            "Exact version, including prerelease if explicitly desired. Defaults to latest common stable version on nuget.org.")]
         public string? Version { get; init; }
 
         /// <summary>
@@ -111,28 +117,46 @@ internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
     }
 
     /// <inheritdoc/>
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        Settings settings,
+        CancellationToken cancellationToken)
     {
         try
         {
             var project = ProjectCommand.Load(settings.Project);
             project.EnsureEditable();
             using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
-            var version = settings.Version ?? await PackageVersions.LatestCommonStable(project.Packages.Select(p => p.Name), async name =>
-            {
-                var data = await http.GetFromJsonAsync<JsonElement>($"https://api.nuget.org/v3-flatcontainer/{name.ToLowerInvariant()}/index.json", cancellationToken);
-                return data.GetProperty("versions").EnumerateArray().Select(v => v.GetString()!).ToArray();
-            });
-            if (settings.Version is null && project.Packages.Any(p => PackageVersions.StableNumber(p.Version!) is { } current && current > PackageVersions.StableNumber(version)))
-                throw new InvalidOperationException("Latest common stable version would downgrade an existing reference. Choose --version explicitly.");
+
+            var version = settings.Version ?? await PackageVersions.LatestCommonStable(
+                project.Packages.Select(p => p.Name),
+                async name =>
+                {
+                    var data = await http.GetFromJsonAsync<JsonElement>(
+                        $"https://api.nuget.org/v3-flatcontainer/{name.ToLowerInvariant()}/index.json",
+                        cancellationToken);
+
+                    return data.GetProperty("versions").EnumerateArray().Select(v => v.GetString()!).ToArray();
+                });
+
+            if (settings.Version is null && project.Packages.Any(p =>
+                    PackageVersions.StableNumber(p.Version!) is { } current &&
+                    current > PackageVersions.StableNumber(version)))
+                throw new InvalidOperationException(
+                    "Latest common stable version would downgrade an existing reference. Choose --version explicitly.");
+
             if (settings.Version is null && project.Packages.Any(p => p.Version!.Contains('-')))
-                throw new InvalidOperationException("Project uses prerelease packages. Choose --version explicitly to change release tracks.");
+                throw new InvalidOperationException(
+                    "Project uses prerelease packages. Choose --version explicitly to change release tracks.");
+
             var changes = project.Upgrade(version);
             ProjectCommand.PrintChanges(changes);
+
             if (settings.DryRun)
                 AnsiConsole.WriteLine("No files changed (--dry-run).");
             else if (changes.Count > 0)
                 project.Save();
+
             return 0;
         }
         catch (Exception ex)
@@ -153,7 +177,12 @@ internal static class PackageVersions
     {
         if (value.Contains('-') || !Version.TryParse(value.Split('+')[0], out var version))
             return null;
-        return new Version(version.Major, version.Minor, Math.Max(0, version.Build), Math.Max(0, version.Revision));
+
+        return new Version(
+            version.Major,
+            version.Minor,
+            Math.Max(0, version.Build),
+            Math.Max(0, version.Revision));
     }
 
     // Network seam: tests supply a deterministic package index.
@@ -163,12 +192,17 @@ internal static class PackageVersions
     /// <param name="names">The names.</param>
     /// <param name="getVersions">The get versions.</param>
     /// <returns>A task whose result is the newest stable version shared by all requested packages.</returns>
-    public static async Task<string> LatestCommonStable(IEnumerable<string> names, Func<string, Task<string[]>> getVersions)
+    public static async Task<string> LatestCommonStable(
+        IEnumerable<string> names,
+        Func<string, Task<string[]>> getVersions)
     {
         HashSet<string>? common = null;
+
         foreach (var name in names.Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            var versions = (await getVersions(name)).Where(v => StableNumber(v) is not null).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var versions = (await getVersions(name)).Where(v => StableNumber(v) is not null)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             if (common is null)
                 common = versions;
             else
@@ -176,6 +210,7 @@ internal static class PackageVersions
         }
 
         return common?.OrderByDescending(StableNumber).FirstOrDefault()
-            ?? throw new InvalidOperationException("No common stable version found on nuget.org for the referenced Gondwana packages. Use --version for a private feed or explicit version.");
+               ?? throw new InvalidOperationException(
+                   "No common stable version found on nuget.org for the referenced Gondwana packages. Use --version for a private feed or explicit version.");
     }
 }

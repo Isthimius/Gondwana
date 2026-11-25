@@ -15,6 +15,7 @@ public abstract class ResourceDragData : DataObject
     {
         Address = address;
         var info = new FileInfo(address.Location.Path);
+
         if (info.Exists)
             _initialStamp = (info.Length, info.LastWriteTimeUtc);
     }
@@ -31,16 +32,22 @@ public abstract class ResourceDragData : DataObject
     public IAuthoringResourceDrag? Resolve(IWin32Window owner, AuthoringResourceResolver resolver)
     {
         var payload = SelectPayload(owner, resolver);
+
         if (payload is not null &&
             (payload.Address with { Member = Address.Member, FieldPath = null } != Address with { FieldPath = null } ||
              string.IsNullOrWhiteSpace(payload.Address.Member) ||
-             Address.Member is { } member && !DefinitionReferenceQuery.MembersEqual(Address.Location.AssetType, member, payload.Address.Member)))
+             Address.Member is { } member && !DefinitionReferenceQuery.MembersEqual(
+                 Address.Location.AssetType,
+                 member,
+                 payload.Address.Member)))
             throw new InvalidDataException("The chosen member does not belong to the dragged resource.");
 
         return payload;
     }
 
-    private protected abstract IAuthoringResourceDrag? SelectPayload(IWin32Window owner, AuthoringResourceResolver resolver);
+    private protected abstract IAuthoringResourceDrag? SelectPayload(
+        IWin32Window owner,
+        AuthoringResourceResolver resolver);
 }
 
 /// <summary>Carries one typed authoring resource between WinForms controls on the editor UI thread.</summary>
@@ -58,6 +65,8 @@ public sealed class ResourceDragData<T> : ResourceDragData where T : class, IAut
     public ResourceDragData(ResourceAddress address, Func<IWin32Window, AuthoringResourceResolver, T?> select)
         : base(typeof(T), address, address) => _select = select;
 
-    private protected override IAuthoringResourceDrag? SelectPayload(IWin32Window owner, AuthoringResourceResolver resolver) =>
+    private protected override IAuthoringResourceDrag? SelectPayload(
+        IWin32Window owner,
+        AuthoringResourceResolver resolver) =>
         Payload ?? _select?.Invoke(owner, resolver);
 }

@@ -31,7 +31,12 @@ internal sealed class ObliqueRightCoordinates : ISceneLayerCoordinates
     /// <returns>The pixel position of the tile's bounding-box anchor.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint)
     {
-        GetGeometry(sceneLayer, out _, out int H, out int skewX, out int faceWidth);
+        GetGeometry(
+            sceneLayer,
+            out _,
+            out int H,
+            out int skewX,
+            out int faceWidth);
 
         float x = -sceneLayer.OriginPx.X
                   + layerPoint.X * faceWidth
@@ -53,7 +58,12 @@ internal sealed class ObliqueRightCoordinates : ISceneLayerCoordinates
     /// <returns>The corresponding continuous scene layer coordinates.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        GetGeometry(sceneLayer, out _, out int H, out int skewX, out int faceWidth);
+        GetGeometry(
+            sceneLayer,
+            out _,
+            out int H,
+            out int skewX,
+            out int faceWidth);
 
         float row = (pixelPt.Y + sceneLayer.OriginPx.Y) / H;
         float col = (pixelPt.X + sceneLayer.OriginPx.X - row * skewX) / faceWidth;
@@ -92,47 +102,53 @@ internal sealed class ObliqueRightCoordinates : ISceneLayerCoordinates
             sceneLayer,
             new PointF(candidateRange.Right, candidateRange.Bottom));
 
-        int minX = (int)Math.Floor(new[]
-        {
-            upperLeft.X,
-            upperRight.X,
-            lowerLeft.X,
-            lowerRight.X
-        }.Min()) - 1;
+        int minX = (int)Math.Floor(
+            new[]
+            {
+                upperLeft.X,
+                upperRight.X,
+                lowerLeft.X,
+                lowerRight.X
+            }.Min()) - 1;
 
-        int maxX = (int)Math.Ceiling(new[]
-        {
-            upperLeft.X,
-            upperRight.X,
-            lowerLeft.X,
-            lowerRight.X
-        }.Max()) + 1;
+        int maxX = (int)Math.Ceiling(
+            new[]
+            {
+                upperLeft.X,
+                upperRight.X,
+                lowerLeft.X,
+                lowerRight.X
+            }.Max()) + 1;
 
-        int minY = (int)Math.Floor(new[]
-        {
-            upperLeft.Y,
-            upperRight.Y,
-            lowerLeft.Y,
-            lowerRight.Y
-        }.Min()) - 1;
+        int minY = (int)Math.Floor(
+            new[]
+            {
+                upperLeft.Y,
+                upperRight.Y,
+                lowerLeft.Y,
+                lowerRight.Y
+            }.Min()) - 1;
 
-        int maxY = (int)Math.Ceiling(new[]
-        {
-            upperLeft.Y,
-            upperRight.Y,
-            lowerLeft.Y,
-            lowerRight.Y
-        }.Max()) + 1;
+        int maxY = (int)Math.Ceiling(
+            new[]
+            {
+                upperLeft.Y,
+                upperRight.Y,
+                lowerLeft.Y,
+                lowerRight.Y
+            }.Max()) + 1;
 
         for (int y = minY; y <= maxY; y++)
         {
             for (int x = minX; x <= maxX; x++)
             {
                 var tile = sceneLayer[x, y];
+
                 if (tile is null)
                     continue;
 
                 var tileRange = GetPixelRangeForTile(tile, includeOverhang);
+
                 if (tileRange.IntersectsWith(worldPixelRange))
                     result.Add(tile);
             }
@@ -175,6 +191,7 @@ internal sealed class ObliqueRightCoordinates : ISceneLayerCoordinates
         foreach (var tile in tileList)
         {
             var tileRange = GetPixelRangeForTile(tile, includeOverhang);
+
             result = result.IsEmpty
                 ? tileRange
                 : Rectangle.Union(result, tileRange);

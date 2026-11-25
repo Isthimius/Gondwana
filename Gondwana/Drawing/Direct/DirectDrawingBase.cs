@@ -89,7 +89,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     private bool _disposed = false;
 
     // Fade/opacity state
-    private float _opacity = 1f;                 // 0..1
+    private float _opacity = 1f; // 0..1
     private float _fadeFrom, _fadeTo;
     private float _fadeDurationSec, _fadeElapsedSec;
     private bool _isFading;
@@ -110,7 +110,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     public bool HideWhenFullyTransparent { get; set; } = true;
 
     // Reveal state
-    private float _revealT = 1f;                 // 0 = hidden, 1 = fully shown
+    private float _revealT = 1f; // 0 = hidden, 1 = fully shown
     private RevealDirection _revealDir = RevealDirection.LeftToRight;
 
     // optional tween state
@@ -170,28 +170,35 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// The constructor automatically registers this direct drawing with the <see cref="DirectDrawingManager"/>
     /// and marks the appropriate regions as dirty to ensure the drawing appears on the next frame.
     /// </remarks>
-    protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost,
-                                DirectDrawingMode mode,
-                                SceneLayer? sceneLayer,
-                                View? view,
-                                Rectangle? screenBounds,
-                                Rectangle? worldBounds,
-                                string? nickname = null)
+    protected DirectDrawingBase(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? nickname = null)
     {
         if (renderSurfaceHost is null)
             throw new ArgumentNullException(nameof(renderSurfaceHost));
 
         if (mode == DirectDrawingMode.SceneLayer && sceneLayer is null)
-            throw new ArgumentException("SceneLayer cannot be null when using DirectDrawingMode.SceneLayer", nameof(sceneLayer));
+            throw new ArgumentException(
+                "SceneLayer cannot be null when using DirectDrawingMode.SceneLayer",
+                nameof(sceneLayer));
 
         if (mode == DirectDrawingMode.View && view is null)
             throw new ArgumentException("View cannot be null when using DirectDrawingMode.View", nameof(view));
 
         if (mode == DirectDrawingMode.SceneLayer && worldBounds is null)
-            throw new ArgumentException("worldBounds cannot be null when using DirectDrawingMode.SceneLayer", nameof(worldBounds));
+            throw new ArgumentException(
+                "worldBounds cannot be null when using DirectDrawingMode.SceneLayer",
+                nameof(worldBounds));
 
         if (mode == DirectDrawingMode.View && screenBounds is null)
-            throw new ArgumentException("screenBounds cannot be null when using DirectDrawingMode.View", nameof(screenBounds));
+            throw new ArgumentException(
+                "screenBounds cannot be null when using DirectDrawingMode.View",
+                nameof(screenBounds));
 
         _renderSurfaceHost = renderSurfaceHost;
         _zOrder = 0;
@@ -449,6 +456,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         if (Mode == DirectDrawingMode.View)
         {
             PointF offset = view.GetEffectOffsetPx(layer: null);
+
             return new RectangleF(
                 _screenBounds.Left + offset.X,
                 _screenBounds.Top + offset.Y,
@@ -498,14 +506,34 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         if (useClip)
         {
-            var r = new SKRect(destRectScreen.Left, destRectScreen.Top, destRectScreen.Right, destRectScreen.Bottom);
+            var r = new SKRect(
+                destRectScreen.Left,
+                destRectScreen.Top,
+                destRectScreen.Right,
+                destRectScreen.Bottom);
 
             SKRect clipRect = _revealDir switch
             {
-                RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
-                RevealDirection.RightToLeft => new SKRect(r.Right - r.Width * _revealT, r.Top, r.Right, r.Bottom),
-                RevealDirection.TopToBottom => new SKRect(r.Left, r.Top, r.Right, r.Top + r.Height * _revealT),
-                RevealDirection.BottomToTop => new SKRect(r.Left, r.Bottom - r.Height * _revealT, r.Right, r.Bottom),
+                RevealDirection.LeftToRight => new SKRect(
+                    r.Left,
+                    r.Top,
+                    r.Left + r.Width * _revealT,
+                    r.Bottom),
+                RevealDirection.RightToLeft => new SKRect(
+                    r.Right - r.Width * _revealT,
+                    r.Top,
+                    r.Right,
+                    r.Bottom),
+                RevealDirection.TopToBottom => new SKRect(
+                    r.Left,
+                    r.Top,
+                    r.Right,
+                    r.Top + r.Height * _revealT),
+                RevealDirection.BottomToTop => new SKRect(
+                    r.Left,
+                    r.Bottom - r.Height * _revealT,
+                    r.Right,
+                    r.Bottom),
                 _ => r
             };
 
@@ -534,7 +562,11 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         {
             using var layerPaint = new SKPaint
             {
-                Color = new SKColor(255, 255, 255, (byte)(_opacity * 255))
+                Color = new SKColor(
+                    255,
+                    255,
+                    255,
+                    (byte)(_opacity * 255))
             };
 
             canvas.SaveLayer(destRectScreen.ToSKRect(), layerPaint);
@@ -577,6 +609,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         set
         {
             var clamped = Math.Clamp(value, 0f, 1f);
+
             if (Math.Abs(clamped - _opacity) < 0.0001f)
                 return;
 

@@ -9,17 +9,18 @@ public sealed class SpriteDefinition
     /// <summary>Gets or sets the stable, case-sensitive logical identity within the document.</summary>
     public string Key { get; set; } = string.Empty;
 
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionLoadStamp? LoadStamp { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionLoadStamp? LoadStamp { get; set; }
 
     /// <summary>
     /// Gets or sets the sprites.
     /// </summary>
     public List<SpriteInstanceDefinition> Sprites { get; set; } = [];
+
     /// <summary>
     /// Gets or sets the tilesheet sources.
     /// </summary>
     public List<SpriteTilesheetSourceDefinition> TilesheetSources { get; set; } = [];
+
     /// <summary>
     /// Gets or sets the scene sources.
     /// </summary>

@@ -25,7 +25,10 @@ internal static class NewSolutionHelper
     /// <param name="projectName">The project name.</param>
     /// <param name="projectDirectory">The project directory.</param>
     /// <param name="dotnetWorkingDirectory">Optional SDK selection directory for solution commands.</param>
-    public static void CreateHoldingSolution(string projectName, string projectDirectory, string? dotnetWorkingDirectory = null)
+    public static void CreateHoldingSolution(
+        string projectName,
+        string projectDirectory,
+        string? dotnetWorkingDirectory = null)
     {
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);
         var projectPath = Path.Combine(fullProjectDirectory, $"{projectName}.csproj");
@@ -34,27 +37,32 @@ internal static class NewSolutionHelper
 
         if (!Directory.Exists(fullProjectDirectory))
         {
-            AnsiConsole.MarkupLine($"[yellow]Warning:[/] Expected project directory [dim]{Markup.Escape(fullProjectDirectory)}[/] was not found.");
+            AnsiConsole.MarkupLine(
+                $"[yellow]Warning:[/] Expected project directory [dim]{Markup.Escape(fullProjectDirectory)}[/] was not found.");
+
             return;
         }
 
         if (!File.Exists(projectPath))
         {
             var existingProjects = Directory.GetFiles(fullProjectDirectory, "*.csproj", SearchOption.TopDirectoryOnly);
+
             projectPath = existingProjects.Length switch
             {
                 1 => existingProjects[0],
                 _ => existingProjects
-                    .FirstOrDefault(path => string.Equals(
-                        Path.GetFileNameWithoutExtension(path),
-                        projectName,
-                        StringComparison.OrdinalIgnoreCase))
-                    ?? string.Empty,
+                         .FirstOrDefault(path => string.Equals(
+                             Path.GetFileNameWithoutExtension(path),
+                             projectName,
+                             StringComparison.OrdinalIgnoreCase))
+                     ?? string.Empty,
             };
 
             if (string.IsNullOrEmpty(projectPath))
             {
-                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Could not locate project file to add in [dim]{Markup.Escape(fullProjectDirectory)}[/].");
+                AnsiConsole.MarkupLine(
+                    $"[yellow]Warning:[/] Could not locate project file to add in [dim]{Markup.Escape(fullProjectDirectory)}[/].");
+
                 return;
             }
         }
@@ -66,6 +74,7 @@ internal static class NewSolutionHelper
             .ToArray();
 
         string solutionPath;
+
         if (existingSolutions.Length == 0)
         {
             solutionPath = defaultSolutionPath;
@@ -85,6 +94,7 @@ internal static class NewSolutionHelper
             {
                 AnsiConsole.MarkupLine(
                     $"[yellow]Warning:[/] Multiple solution files were found in [dim]{Markup.Escape(fullProjectDirectory)}[/], but none matched [dim]{Markup.Escape(projectName)}[/]. Skipping automatic solution update.");
+
                 return;
             }
         }
@@ -97,27 +107,39 @@ internal static class NewSolutionHelper
             }
             catch (Exception ex)
             {
-                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/]: {Markup.Escape(ex.Message)}");
+                AnsiConsole.MarkupLine(
+                    $"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/]: {Markup.Escape(ex.Message)}");
+
                 return;
             }
 
             createdNewSolution = true;
         }
 
-        var slnAddExit = ProcessHelper.RunLive("dotnet", ["sln", solutionPath, "add", projectPath], dotnetWorkingDirectory);
+        var slnAddExit = ProcessHelper.RunLive(
+            "dotnet",
+            ["sln", solutionPath, "add", projectPath],
+            dotnetWorkingDirectory);
+
         if (slnAddExit != 0)
         {
-            AnsiConsole.MarkupLine($"[yellow]Warning:[/] Could not add project to solution [dim]{Markup.Escape(solutionPath)}[/] automatically.");
+            AnsiConsole.MarkupLine(
+                $"[yellow]Warning:[/] Could not add project to solution [dim]{Markup.Escape(solutionPath)}[/] automatically.");
+
             return;
         }
 
         if (createdNewSolution)
             AnsiConsole.MarkupLine($"[green]Solution created and updated successfully.[/]");
         else
-            AnsiConsole.MarkupLine($"[green]Project added to existing solution '{Markup.Escape(Path.GetFileName(solutionPath))}'.[/]");
+            AnsiConsole.MarkupLine(
+                $"[green]Project added to existing solution '{Markup.Escape(Path.GetFileName(solutionPath))}'.[/]");
 
         AnsiConsole.MarkupLine($"[green]Project file:[/] [dim]{Markup.Escape(projectPath)}[/]");
-        AnsiConsole.MarkupLine($"[green]Associated solution:[/] [dim]{Markup.Escape(Path.GetFileName(solutionPath))}[/]");
+
+        AnsiConsole.MarkupLine(
+            $"[green]Associated solution:[/] [dim]{Markup.Escape(Path.GetFileName(solutionPath))}[/]");
+
         if (createdNewSolution)
             AnsiConsole.MarkupLine($"[green]Created solution file:[/] [dim]{Markup.Escape(solutionPath)}[/]");
     }

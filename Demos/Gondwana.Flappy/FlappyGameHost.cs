@@ -121,6 +121,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         _bird.SetPosition(new Vector2(BirdX, BirdStartY));
         _bird.Visible = true;
         _bird.ZOrder = 40;
+
         _bird.AdjustCollisionArea = new CollisionAdjust(
             top: 7,
             bottom: 7,
@@ -145,7 +146,11 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         _scoreText = new TextBlock(
                 RenderSurface.Host,
                 view,
-                new Rectangle(330, 24, 300, 90),
+                new Rectangle(
+                    330,
+                    24,
+                    300,
+                    90),
                 "flappy-score")
             .SetFont(SKTypeface.Default, 44f)
             .SetColors(SKColors.White, SKColors.Transparent)
@@ -159,10 +164,20 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         _messageText = new TextBlock(
                 RenderSurface.Host,
                 view,
-                new Rectangle(190, 190, 580, 190),
+                new Rectangle(
+                    190,
+                    190,
+                    580,
+                    190),
                 "flappy-message")
             .SetFont(SKTypeface.Default, 32f, minSize: 20f)
-            .SetColors(SKColors.White, new SKColor(37, 107, 131, 225))
+            .SetColors(
+                SKColors.White,
+                new SKColor(
+                    37,
+                    107,
+                    131,
+                    225))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(4)
             .UseShadow()
@@ -234,6 +249,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         sprite.Rotation = rotation;
         sprite.Visible = true;
         sprite.ZOrder = 25;
+
         sprite.AdjustCollisionArea = new CollisionAdjust(
             top: 2,
             bottom: 2,
@@ -272,10 +288,12 @@ internal sealed class FlappyGameHost : WinFormsGameHost
     private void BeforeBackgroundTasksExecute()
     {
         long tick = HighResTimer.GetCurrentTick();
+
         _frameDelta = Math.Clamp(
             HighResTimer.GetDuration(_lastUpdateTick, tick),
             0f,
             0.05f);
+
         _lastUpdateTick = tick;
 
         if (_state != GameState.Playing || _frameDelta <= 0f)
@@ -419,13 +437,15 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         pipe.Top.RenderSize = new Size(PipeWidthPx, topHeightPx);
         pipe.Bottom.RenderSize = new Size(PipeWidthPx, bottomHeightPx);
 
-        pipe.Top.SetPosition(new Vector2(
-            pipe.X,
-            topHeightPx / (2f * TileSize)));
+        pipe.Top.SetPosition(
+            new Vector2(
+                pipe.X,
+                topHeightPx / (2f * TileSize)));
 
-        pipe.Bottom.SetPosition(new Vector2(
-            pipe.X,
-            (gapBottomPx + bottomHeightPx / 2f) / TileSize));
+        pipe.Bottom.SetPosition(
+            new Vector2(
+                pipe.X,
+                (gapBottomPx + bottomHeightPx / 2f) / TileSize));
     }
 
     private void RefreshHud()
@@ -463,10 +483,12 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         /// Specifies ready.
         /// </summary>
         Ready,
+
         /// <summary>
         /// Specifies playing.
         /// </summary>
         Playing,
+
         /// <summary>
         /// Specifies game over.
         /// </summary>

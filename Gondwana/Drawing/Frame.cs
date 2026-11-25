@@ -51,7 +51,11 @@ public struct Frame
     /// <param name="regionName">The name of the tilesheet region.</param>
     /// <param name="xTile">The x tile.</param>
     /// <param name="yTile">The y tile.</param>
-    public Frame(Tilesheet tilesheet, string regionName, int xTile, int yTile)
+    public Frame(
+        Tilesheet tilesheet,
+        string regionName,
+        int xTile,
+        int yTile)
     {
         Tilesheet = tilesheet;
         RegionName = regionName;
@@ -98,12 +102,12 @@ public struct Frame
     public CollisionAdjust CollisionAdjust
     {
         readonly get => Tilesheet?.GetRegion(RegionName)?.GetFrameCollisionAdjust(XTile, YTile)
-            ?? Gondwana.Physics.Collisions.CollisionAdjust.None;
+                        ?? Gondwana.Physics.Collisions.CollisionAdjust.None;
         set
         {
             var region = Tilesheet?.GetRegion(RegionName)
-                ?? throw new InvalidOperationException(
-                    $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+                         ?? throw new InvalidOperationException(
+                             $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
 
             region.SetFrameCollisionAdjust(XTile, YTile, value);
         }
@@ -127,8 +131,8 @@ public struct Frame
     public readonly bool ClearCollisionAdjustOverride()
     {
         var region = Tilesheet?.GetRegion(RegionName)
-            ?? throw new InvalidOperationException(
-                $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+                     ?? throw new InvalidOperationException(
+                         $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
 
         return region.ClearFrameCollisionAdjustOverride(XTile, YTile);
     }
@@ -146,12 +150,12 @@ public struct Frame
     public TileCollisionType CollisionType
     {
         readonly get => Tilesheet?.GetRegion(RegionName)?.GetFrameCollisionType(XTile, YTile)
-            ?? TileCollisionType.None;
+                        ?? TileCollisionType.None;
         set
         {
             var region = Tilesheet?.GetRegion(RegionName)
-                ?? throw new InvalidOperationException(
-                    $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+                         ?? throw new InvalidOperationException(
+                             $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
 
             region.SetFrameCollisionType(XTile, YTile, value);
         }
@@ -175,8 +179,8 @@ public struct Frame
     public readonly bool ClearCollisionTypeOverride()
     {
         var region = Tilesheet?.GetRegion(RegionName)
-            ?? throw new InvalidOperationException(
-                $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+                     ?? throw new InvalidOperationException(
+                         $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
 
         return region.ClearFrameCollisionTypeOverride(XTile, YTile);
     }

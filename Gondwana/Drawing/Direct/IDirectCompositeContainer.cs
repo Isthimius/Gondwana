@@ -19,7 +19,10 @@ public interface IDirectCompositeContainer
     /// <param name="keepCurrentOffset">If true, maintains the child's current offset; otherwise, resets the offset.</param>
     /// <param name="explicitLocalOffsetPx">Optional explicit local offset in pixels to apply to the child.</param>
     /// <returns>The current container instance for method chaining.</returns>
-    IDirectCompositeContainer Add(IDirectCompositeChild child, bool keepCurrentOffset = true, Vector2? explicitLocalOffsetPx = null);
+    IDirectCompositeContainer Add(
+        IDirectCompositeChild child,
+        bool keepCurrentOffset = true,
+        Vector2? explicitLocalOffsetPx = null);
 
     /// <summary>
     /// Removes a child element from this container.

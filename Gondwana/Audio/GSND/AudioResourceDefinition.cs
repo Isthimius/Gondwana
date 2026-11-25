@@ -1,4 +1,5 @@
 using System.ComponentModel;
+
 namespace Gondwana.Audio.GSND;
 
 /// <summary>
@@ -42,14 +43,16 @@ public sealed class AudioResourceDefinition
 
     /// <summary>Optional format hint such as .wav or .ogg, required when a packed entry name has no extension.</summary>
     [Category("Source")]
-    [Description("Optional format hint such as .wav or .ogg; needed for packed sources whose entry name has no file extension.")]
+    [Description(
+        "Optional format hint such as .wav or .ogg; needed for packed sources whose entry name has no file extension.")]
     public string? SourceExtension { get; set; }
 
     /// <summary>
     /// Gets or sets the playback volume.
     /// </summary>
     [Category("Playback")]
-    [Description("Playback volume multiplier. 1 is the original level; 0 is silent; values between 0 and 1 are quieter.")]
+    [Description(
+        "Playback volume multiplier. 1 is the original level; 0 is silent; values between 0 and 1 are quieter.")]
     public float Volume { get; set; } = 1.0f;
 
     /// <summary>

@@ -38,8 +38,12 @@ public sealed class ComboBoxChrome(ComboBox combo) : NativeWindow
         using var graphics = m.Msg != WmPaint ? Graphics.FromHdc(m.WParam) : Graphics.FromHwnd(Handle);
 
         int width = SystemInformation.VerticalScrollBarWidth;
-        var button = new Rectangle(combo.RightToLeft == RightToLeft.Yes ? 1 : combo.ClientSize.Width - width - 1,
-            1, width, combo.ClientSize.Height - 2);
+
+        var button = new Rectangle(
+            combo.RightToLeft == RightToLeft.Yes ? 1 : combo.ClientSize.Width - width - 1,
+            1,
+            width,
+            combo.ClientSize.Height - 2);
 
         using var background = new SolidBrush(p.Surface);
         using var foreground = new SolidBrush(combo.Enabled ? p.Foreground : p.DisabledForeground);
@@ -49,11 +53,18 @@ public sealed class ComboBoxChrome(ComboBox combo) : NativeWindow
         int x = button.Left + button.Width / 2;
         int y = button.Top + button.Height / 2;
 
-        graphics.FillPolygon(foreground, new Point[]
-        {
-            new Point(x - 3, y - 1), new Point(x + 3, y - 1), new Point(x, y + 2)
-        });
+        graphics.FillPolygon(
+            foreground,
+            new Point[]
+            {
+                new Point(x - 3, y - 1), new Point(x + 3, y - 1), new Point(x, y + 2)
+            });
 
-        graphics.DrawRectangle(border, 0, 0, combo.ClientSize.Width - 1, combo.ClientSize.Height - 1);
+        graphics.DrawRectangle(
+            border,
+            0,
+            0,
+            combo.ClientSize.Width - 1,
+            combo.ClientSize.Height - 1);
     }
 }

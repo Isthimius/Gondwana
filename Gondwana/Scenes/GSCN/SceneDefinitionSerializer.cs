@@ -109,6 +109,7 @@ public static partial class SceneDefinitionSerializer
                 .Select(name =>
                 {
                     var profile = scene.CollisionProfiles.Get(name);
+
                     return new SceneCollisionProfileDefinition
                     {
                         Name = profile.Name,
@@ -129,12 +130,14 @@ public static partial class SceneDefinitionSerializer
         // remain logical references and must be provided by the caller on restore.
         var tilesheets = new HashSet<string>(StringComparer.Ordinal);
         var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var tile in definition.Layers.SelectMany(layer => layer.Tiles))
         {
             if (tile.Frame?.Tilesheet is { Length: > 0 } name && tilesheets.Add(name))
             {
                 var source = DefinitionDependencyProvenance.ForTilesheet(
                     TilesheetRegistry.Instance.GetOrNull(name));
+
                 if (source?.FilePath is { } loose)
                     definition.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(name, loose));
                 else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
@@ -143,12 +146,14 @@ public static partial class SceneDefinitionSerializer
 
             if (tile.AnimationKey is { Length: > 0 } key)
             {
-                foreach (var (animationKey, source) in DefinitionDependencyProvenance.ForAnimationChain(key, animations))
+                foreach (var (animationKey, source) in
+                         DefinitionDependencyProvenance.ForAnimationChain(key, animations))
                 {
                     if (source.FilePath is { } loose)
                         definition.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(animationKey, loose));
                     else if (source.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
-                        definition.AnimationSources.Add(SceneAnimationSourceDefinition.Packed(animationKey, archive, entry));
+                        definition.AnimationSources.Add(
+                            SceneAnimationSourceDefinition.Packed(animationKey, archive, entry));
                 }
             }
         }
@@ -175,6 +180,7 @@ public static partial class SceneDefinitionSerializer
         ArgumentNullException.ThrowIfNull(definition);
 
         var errors = SceneDefinitionValidator.Validate(definition);
+
         if (errors.Count != 0)
         {
             throw new InvalidDataException(
@@ -205,8 +211,10 @@ public static partial class SceneDefinitionSerializer
                 MaterializeLayer(scene, layerDefinition);
 
             // Generated scene/layer IDs would change on replay and break external bindings.
-            if (definition.ID == scene.ID && (definition.Layers ?? []).All(layer => !string.IsNullOrWhiteSpace(layer.ID)))
+            if (definition.ID == scene.ID &&
+                (definition.Layers ?? []).All(layer => !string.IsNullOrWhiteSpace(layer.ID)))
                 scene.DefinitionProvenance = definition.LoadStamp?.Materialized(definition, () => FromScene(scene));
+
             return scene;
         }
         catch
@@ -240,6 +248,7 @@ public static partial class SceneDefinitionSerializer
         try
         {
             var definition = JsonConvert.DeserializeObject<SceneDefinition>(json, Settings);
+
             if (definition is null)
             {
                 var source = string.IsNullOrWhiteSpace(sourceDescription)
@@ -271,6 +280,7 @@ public static partial class SceneDefinitionSerializer
             {
                 if (profile is null)
                     throw new InvalidDataException("GSCN CollisionProfiles cannot contain null entries.");
+
                 profile.CollidesWith ??= [];
             }
 
@@ -278,6 +288,7 @@ public static partial class SceneDefinitionSerializer
             {
                 if (layer is null)
                     throw new InvalidDataException("GSCN Layers cannot contain null entries.");
+
                 layer.Tiles ??= [];
             }
 
@@ -332,6 +343,7 @@ public static partial class SceneDefinitionSerializer
         int y)
     {
         SceneFrameDefinition? frame = null;
+
         if (tile.CurrentFrame.Tilesheet is not null)
         {
             frame = new SceneFrameDefinition
@@ -357,7 +369,7 @@ public static partial class SceneDefinitionSerializer
                 ? tile.TileAnimator.CurrentCycle?.CycleKey
                 : null,
             StartAnimation = tile.EnableAnimator &&
-                tile.TileAnimator.IsCycling,
+                             tile.TileAnimator.IsCycling,
             EnableFog = tile.EnableFog,
             AdjustCollisionAreaByFrame = tile.AdjustCollisionAreaByFrame,
             AdjustCollisionArea = tile.AdjustCollisionArea,
@@ -436,8 +448,8 @@ public static partial class SceneDefinitionSerializer
         if (animationKey is not null)
         {
             var cycle = Cycle.GetAnimationCycle(animationKey)
-                ?? throw new InvalidDataException(
-                    $"GSCN references animation '{animationKey}', but no matching GANI/cycle is registered.");
+                        ?? throw new InvalidDataException(
+                            $"GSCN references animation '{animationKey}', but no matching GANI/cycle is registered.");
 
             tile.TileAnimator.CurrentCycle = cycle;
 
@@ -449,12 +461,12 @@ public static partial class SceneDefinitionSerializer
     private static Frame ResolveFrame(SceneFrameDefinition definition)
     {
         var tilesheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)
-            ?? throw new InvalidDataException(
-                $"GSCN references tilesheet '{definition.Tilesheet}', but it is not registered.");
+                        ?? throw new InvalidDataException(
+                            $"GSCN references tilesheet '{definition.Tilesheet}', but it is not registered.");
 
         var region = tilesheet.GetRegion(definition.RegionName)
-            ?? throw new InvalidDataException(
-                $"GSCN references region '{definition.RegionName}' on tilesheet '{definition.Tilesheet}', but it does not exist.");
+                     ?? throw new InvalidDataException(
+                         $"GSCN references region '{definition.RegionName}' on tilesheet '{definition.Tilesheet}', but it does not exist.");
 
         if (definition.XTile < 0 ||
             definition.YTile < 0 ||

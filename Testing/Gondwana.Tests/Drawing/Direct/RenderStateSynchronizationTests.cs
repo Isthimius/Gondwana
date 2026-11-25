@@ -17,14 +17,25 @@ public sealed class RenderStateSynchronizationTests
     public void DirectDrawingDispose_WaitsForActiveRenderStateReader()
     {
         using var host = new TestRenderSurfaceHost();
-        host.ViewManager.AddView(new Rectangle(0, 0, 320, 240));
+
+        host.ViewManager.AddView(
+            new Rectangle(
+                0,
+                0,
+                320,
+                240));
+
         View view = host.ViewManager.Views[0];
 
         var rectangle = new DirectRectangle(
             Color.White,
             host,
             view,
-            new Rectangle(0, 0, 32, 32));
+            new Rectangle(
+                0,
+                0,
+                32,
+                32));
 
         using var gateEntered = new ManualResetEventSlim();
         using var releaseGate = new ManualResetEventSlim();
@@ -55,6 +66,7 @@ public sealed class RenderStateSynchronizationTests
         Assert.True(disposer.Wait(TimeSpan.FromSeconds(5)));
         Assert.True(holder.Wait(TimeSpan.FromSeconds(5)));
     }
+
     /// <summary>
     /// Verifies waiting gpu renderer gets admission before next engine style acquisition.
     /// </summary>
@@ -81,6 +93,7 @@ public sealed class RenderStateSynchronizationTests
         Task gpu = Task.Run(() =>
         {
             RenderStateSynchronization.EnterGpuRender();
+
             try
             {
                 gpuAcquired.Set();
@@ -100,6 +113,7 @@ public sealed class RenderStateSynchronizationTests
         Task engine = Task.Run(() =>
         {
             RenderStateSynchronization.WaitForPendingGpuRenderers();
+
             lock (RenderStateSynchronization.SyncRoot)
                 engineAcquired.Set();
         });
@@ -114,5 +128,4 @@ public sealed class RenderStateSynchronizationTests
         Assert.True(engineAcquired.Wait(TimeSpan.FromSeconds(5)));
         Assert.True(Task.WaitAll([initialHolder, gpu, engine], TimeSpan.FromSeconds(5)));
     }
-
 }

@@ -12,9 +12,14 @@ public sealed class AssetsFileRegistrationTests
     public void StreamLoadRetainsEncryptionForAuthoringWithoutChangingExplicitFileSavePolicy()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".gaf");
+
         try
         {
-            using (var source = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+            using (var source = AssetsFile.LoadOrCreate(
+                       path,
+                       "secret",
+                       true,
+                       register: false))
             {
                 using var bytes = new MemoryStream([1, 2, 3]);
                 source.Add(AssetTypes.Misc, "payload", bytes);
@@ -22,10 +27,22 @@ public sealed class AssetsFileRegistrationTests
             }
 
             using var stream = File.OpenRead(path);
-            using var loaded = AssetsFile.Load(stream, "secret", register: false, sourcePath: path);
+
+            using var loaded = AssetsFile.Load(
+                stream,
+                "secret",
+                register: false,
+                sourcePath: path);
+
             Assert.True(loaded.UseEncryption);
             Assert.Equal("secret", loaded.Password);
-            using var explicitPolicy = AssetsFile.LoadOrCreate(path, "secret", false, register: false);
+
+            using var explicitPolicy = AssetsFile.LoadOrCreate(
+                path,
+                "secret",
+                false,
+                register: false);
+
             Assert.False(explicitPolicy.UseEncryption);
         }
         finally
@@ -33,6 +50,7 @@ public sealed class AssetsFileRegistrationTests
             File.Delete(path);
         }
     }
+
     /// <summary>
     /// Verifies detached authoring packages do not change runtime registry.
     /// </summary>
@@ -40,11 +58,18 @@ public sealed class AssetsFileRegistrationTests
     public void DetachedAuthoringPackagesDoNotChangeRuntimeRegistry()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".gaf");
+
         try
         {
             using var runtime = AssetsFile.LoadOrCreate(path);
             Assert.Contains(runtime, AssetsFile.AllAssetsFiles);
-            using var authoring = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+            using var authoring = AssetsFile.LoadOrCreate(
+                path,
+                null,
+                false,
+                register: false);
+
             Assert.DoesNotContain(authoring, AssetsFile.AllAssetsFiles);
             authoring.Dispose();
             Assert.Contains(runtime, AssetsFile.AllAssetsFiles);
@@ -64,6 +89,7 @@ public sealed class AssetsFileRegistrationTests
     public void FailedLoadDoesNotLeaveRegisteredPackage()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".gaf");
+
         try
         {
             File.WriteAllText(path, "not a zip archive");
@@ -75,6 +101,7 @@ public sealed class AssetsFileRegistrationTests
             File.Delete(path);
         }
     }
+
     /// <summary>
     /// Verifies stream load buffers archive and does not require source lifetime.
     /// </summary>
@@ -82,9 +109,14 @@ public sealed class AssetsFileRegistrationTests
     public void StreamLoadBuffersArchiveAndDoesNotRequireSourceLifetime()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".gaf");
+
         try
         {
-            using (var source = AssetsFile.LoadOrCreate(path, null, false, register: false))
+            using (var source = AssetsFile.LoadOrCreate(
+                       path,
+                       null,
+                       false,
+                       register: false))
             {
                 source.Add(AssetTypes.Image, "sprite.bin", new MemoryStream([1, 2, 3, 4]));
                 source.Save();
@@ -93,6 +125,7 @@ public sealed class AssetsFileRegistrationTests
             var archiveBytes = File.ReadAllBytes(path);
 
             AssetsFile loaded;
+
             using (var stream = new NonSeekableReadOnlyStream(archiveBytes))
                 loaded = AssetsFile.Load(stream, register: false);
 
@@ -122,7 +155,6 @@ public sealed class AssetsFileRegistrationTests
 
         Assert.Equal(before, AssetsFile.AllAssetsFiles);
     }
-
 }
 
 file sealed class NonSeekableReadOnlyStream(byte[] bytes) : Stream
@@ -131,10 +163,13 @@ file sealed class NonSeekableReadOnlyStream(byte[] bytes) : Stream
 
     /// <inheritdoc/>
     public override bool CanRead => true;
+
     /// <inheritdoc/>
     public override bool CanSeek => false;
+
     /// <inheritdoc/>
     public override bool CanWrite => false;
+
     /// <inheritdoc/>
     public override long Length => throw new NotSupportedException();
 
@@ -163,8 +198,16 @@ file sealed class NonSeekableReadOnlyStream(byte[] bytes) : Stream
         => _inner.ReadAsync(buffer, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        => _inner.ReadAsync(buffer, offset, count, cancellationToken);
+    public override Task<int> ReadAsync(
+        byte[] buffer,
+        int offset,
+        int count,
+        CancellationToken cancellationToken)
+        => _inner.ReadAsync(
+            buffer,
+            offset,
+            count,
+            cancellationToken);
 
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)

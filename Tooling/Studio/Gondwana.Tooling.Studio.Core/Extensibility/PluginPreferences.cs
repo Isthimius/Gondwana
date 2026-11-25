@@ -32,6 +32,7 @@ public sealed class PluginPreferences
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         error = null;
+
         // Never silently overwrite an unreadable or newer settings file; it may contain
         // preferences for absent plugins. A repaired file can be loaded after restarting.
         if (_readError is not null)
@@ -43,26 +44,45 @@ public sealed class PluginPreferences
 
         if (IsEnabled(id) == enabled)
             return true;
+
         var next = new HashSet<string>(_disabled, StringComparer.Ordinal);
+
         if (enabled)
             next.Remove(id);
         else
             next.Add(id);
+
         var temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(FilePath))!);
+
             // Keep the lock file in place: deleting it could let another process lock
             // a different file while a waiting writer still holds the original handle.
-            using var saveLock = new FileStream(FilePath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            using var saveLock = new FileStream(
+                FilePath + ".lock",
+                FileMode.OpenOrCreate,
+                FileAccess.ReadWrite,
+                FileShare.None);
+
             if (!ReadSettings().SetEquals(_disabled))
-                throw new IOException("Plugin preferences changed in another Studio instance or outside Studio. Restart Studio to load the latest choices before editing them.");
-            var bytes = JsonSerializer.SerializeToUtf8Bytes(new Settings
-            {
-                SchemaVersion = 1,
-                DisabledPluginIds = next.Order(StringComparer.Ordinal).ToArray()
-            }, new JsonSerializerOptions { WriteIndented = true });
-            using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                throw new IOException(
+                    "Plugin preferences changed in another Studio instance or outside Studio. Restart Studio to load the latest choices before editing them.");
+
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(
+                new Settings
+                {
+                    SchemaVersion = 1,
+                    DisabledPluginIds = next.Order(StringComparer.Ordinal).ToArray()
+                },
+                new JsonSerializerOptions { WriteIndented = true });
+
+            using (var stream = new FileStream(
+                       temporary,
+                       FileMode.CreateNew,
+                       FileAccess.Write,
+                       FileShare.None))
             {
                 stream.Write(bytes);
                 stream.Flush(flushToDisk: true);
@@ -74,7 +94,9 @@ public sealed class PluginPreferences
         }
         catch (Exception ex)
         {
-            error = $"Could not save plugin preferences to '{FilePath}'. Close other Studio instances, then retry; check folder permissions and available disk space. {ex.Message}";
+            error =
+                $"Could not save plugin preferences to '{FilePath}'. Close other Studio instances, then retry; check folder permissions and available disk space. {ex.Message}";
+
             _log($"Error: [Plugin preferences] {error}");
             return false;
         }
@@ -101,7 +123,10 @@ public sealed class PluginPreferences
         catch (Exception ex)
         {
             _readError = ex.Message;
-            _log($"Warning: [Plugin preferences] Could not read '{FilePath}'; plugins default to enabled. {ex.Message}");
+
+            _log(
+                $"Warning: [Plugin preferences] Could not read '{FilePath}'; plugins default to enabled. {ex.Message}");
+
             return new(StringComparer.Ordinal);
         }
     }
@@ -112,8 +137,12 @@ public sealed class PluginPreferences
         {
             using var stream = File.OpenRead(FilePath);
             var settings = JsonSerializer.Deserialize<Settings>(stream);
-            if (settings?.SchemaVersion != 1 || settings.DisabledPluginIds is null || settings.DisabledPluginIds.Any(string.IsNullOrWhiteSpace))
-                throw new InvalidDataException("Expected schema version 1 and a disabledPluginIds array of nonblank IDs.");
+
+            if (settings?.SchemaVersion != 1 || settings.DisabledPluginIds is null ||
+                settings.DisabledPluginIds.Any(string.IsNullOrWhiteSpace))
+                throw new InvalidDataException(
+                    "Expected schema version 1 and a disabledPluginIds array of nonblank IDs.");
+
             return new(settings.DisabledPluginIds, StringComparer.Ordinal);
         }
         catch (FileNotFoundException)
@@ -130,6 +159,7 @@ public sealed class PluginPreferences
     {
         [System.Text.Json.Serialization.JsonPropertyName("schemaVersion")]
         public int SchemaVersion { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("disabledPluginIds")]
         public string[]? DisabledPluginIds { get; set; }
     }

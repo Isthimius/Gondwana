@@ -23,6 +23,10 @@ public static class DrawingExtensions
         int right = (int)Math.Ceiling(rectF.Right);
         int bottom = (int)Math.Ceiling(rectF.Bottom);
 
-        return Rectangle.FromLTRB(x, y, right, bottom);
+        return Rectangle.FromLTRB(
+            x,
+            y,
+            right,
+            bottom);
     }
 }

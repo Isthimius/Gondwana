@@ -8,7 +8,11 @@ namespace Gondwana.Tooling.Importers.Tests;
 
 public sealed partial class ImportPipelineTests
 {
-    private static void Native(ImportPlan plan, string file, string kind, string key)
+    private static void Native(
+        ImportPlan plan,
+        string file,
+        string kind,
+        string key)
     {
         switch (kind)
         {
@@ -53,11 +57,22 @@ public sealed partial class ImportPipelineTests
     public void TypedGroupsRoundTripAndReportAllMembers(string kind)
     {
         string file = "group." + kind.ToLowerInvariant();
+
         var provider = new Provider(plan =>
         {
-            Native(plan, file, kind, "one");
-            Native(plan, file, kind, "two");
+            Native(
+                plan,
+                file,
+                kind,
+                "one");
+
+            Native(
+                plan,
+                file,
+                kind,
+                "two");
         });
+
         var analysis = provider.Analyze(request);
         Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
         var artifact = Assert.Single(analysis.Artifacts);
@@ -69,12 +84,19 @@ public sealed partial class ImportPipelineTests
         Assert.Equal(new[] { "one", "two" }, ReadKeys(kind, path));
         var root = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path));
         Assert.Equal(2, root["Definitions"]!.Count());
+
         if (kind is "GSPR" or "GSND")
             Assert.All(root["Definitions"]!, member => Assert.Null(member["Source"]));
         else
             Assert.All(root["Definitions"]!, member => Assert.Equal(3, (int)member["Source"]!["Kind"]!));
+
         // Overwrite replaces the full document; it does not append to its prior members.
-        var replacement = new Provider(plan => Native(plan, file, kind, "replacement"));
+        var replacement = new Provider(plan => Native(
+            plan,
+            file,
+            kind,
+            "replacement"));
+
         Assert.Empty(replacement.Import(request).WrittenFiles);
         Assert.Single(replacement.Import(request with { Overwrite = true }).WrittenFiles);
         Assert.Equal(new[] { "replacement" }, ReadKeys(kind, path));
@@ -91,29 +113,68 @@ public sealed partial class ImportPipelineTests
     public void AllMembersParticipateInIdentityChecks(string kind)
     {
         string file = "group." + kind.ToLowerInvariant();
+
         foreach (bool sameFile in new[] { true, false })
         {
             var provider = new Provider(plan =>
             {
-                Native(plan, file, kind, "one");
-                Native(plan, file, kind, "two");
-                Native(plan, sameFile ? file : "other." + kind.ToLowerInvariant(), kind, "two");
+                Native(
+                    plan,
+                    file,
+                    kind,
+                    "one");
+
+                Native(
+                    plan,
+                    file,
+                    kind,
+                    "two");
+
+                Native(
+                    plan,
+                    sameFile ? file : "other." + kind.ToLowerInvariant(),
+                    kind,
+                    "two");
             });
+
             var result = provider.Import(request);
             Assert.False(result.Analysis.CanImport);
-            Assert.Contains(result.Analysis.Diagnostics, diagnostic => diagnostic.Code == "key.duplicate" && diagnostic.Message.Contains("two"));
+
+            Assert.Contains(
+                result.Analysis.Diagnostics,
+                diagnostic => diagnostic.Code == "key.duplicate" && diagnostic.Message.Contains("two"));
+
             Assert.False(Directory.Exists(request.OutputDirectory));
         }
 
         new Provider(plan =>
         {
-            Native(plan, file, kind, "one");
-            Native(plan, file, kind, "two");
+            Native(
+                plan,
+                file,
+                kind,
+                "one");
+
+            Native(
+                plan,
+                file,
+                kind,
+                "two");
         }).Import(request);
+
         var bytes = File.ReadAllBytes(Path.Combine(request.OutputDirectory, file));
-        var conflict = new Provider(plan => Native(plan, "other." + kind.ToLowerInvariant(), kind, "two"))
+
+        var conflict = new Provider(plan => Native(
+                plan,
+                "other." + kind.ToLowerInvariant(),
+                kind,
+                "two"))
             .Import(request with { Overwrite = true });
-        Assert.Contains(conflict.Analysis.Diagnostics, diagnostic => diagnostic.Code == "key.exists" && diagnostic.Message.Contains("two"));
+
+        Assert.Contains(
+            conflict.Analysis.Diagnostics,
+            diagnostic => diagnostic.Code == "key.exists" && diagnostic.Message.Contains("two"));
+
         Assert.Empty(conflict.WrittenFiles);
         Assert.Equal(bytes, File.ReadAllBytes(Path.Combine(request.OutputDirectory, file)));
     }
@@ -130,29 +191,64 @@ public sealed partial class ImportPipelineTests
     {
         string file = "group." + kind.ToLowerInvariant();
         using var cancellation = new CancellationTokenSource();
+
         var canceled = new Provider(plan =>
         {
-            Native(plan, file, kind, "one");
-            Native(plan, file, kind, "two");
+            Native(
+                plan,
+                file,
+                kind,
+                "one");
+
+            Native(
+                plan,
+                file,
+                kind,
+                "two");
+
             cancellation.Cancel();
         });
+
         Assert.Throws<OperationCanceledException>(() => canceled.Import(request, cancellation.Token));
         Assert.False(Directory.Exists(request.OutputDirectory));
+
         if (!OperatingSystem.IsWindows())
             return;
+
         Directory.CreateDirectory(request.OutputDirectory);
         var first = Path.Combine(request.OutputDirectory, file);
         var second = Path.Combine(request.OutputDirectory, "image.png");
         File.WriteAllText(first, "original definition");
         File.WriteAllText(second, "original image");
+
         var provider = new Provider(plan =>
         {
-            Native(plan, file, kind, "one");
-            Native(plan, file, kind, "two");
-            plan.Add("image.png", "PNG", null, [1, 2, 3]);
+            Native(
+                plan,
+                file,
+                kind,
+                "one");
+
+            Native(
+                plan,
+                file,
+                kind,
+                "two");
+
+            plan.Add(
+                "image.png",
+                "PNG",
+                null,
+                [1, 2, 3]);
         });
-        using (var locked = new FileStream(second, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+        using (var locked = new FileStream(
+                   second,
+                   FileMode.Open,
+                   FileAccess.Read,
+                   FileShare.Read))
             Assert.ThrowsAny<IOException>(() => provider.Import(request with { Overwrite = true }));
+
         Assert.Equal("original definition", File.ReadAllText(first));
         Assert.Equal("original image", File.ReadAllText(second));
         Assert.Empty(Directory.GetDirectories(request.OutputDirectory));
@@ -169,19 +265,36 @@ public sealed partial class ImportPipelineTests
         Assert.True(new Provider(plan => plan.Add("audio.gsnd", audio)).Analyze(request).CanImport);
         Assert.Equal(AudioDefinitionSourceKind.Generated, audio.Source.Kind);
         var definition = new AnimationDefinition { Key = "walk" };
+
         var provider = new Provider(plan =>
         {
             plan.Add("animations.gani", definition);
             definition.Frames = [new() { Tilesheet = "terrain" }];
-            Native(plan, "animations.gani", "GANI", "run");
+
+            Native(
+                plan,
+                "animations.gani",
+                "GANI",
+                "run");
         });
+
         Assert.True(provider.Analyze(request).CanImport);
+
         var invalid = new Provider(plan =>
         {
-            Native(plan, "animations.gani", "GANI", "walk");
+            Native(
+                plan,
+                "animations.gani",
+                "GANI",
+                "walk");
+
             plan.Add("animations.gani", new AnimationDefinition { Key = "broken" });
         }).Import(request);
-        Assert.Contains(invalid.Analysis.Diagnostics, diagnostic => diagnostic.Code == "native.validation" && diagnostic.Message.Contains("broken"));
+
+        Assert.Contains(
+            invalid.Analysis.Diagnostics,
+            diagnostic => diagnostic.Code == "native.validation" && diagnostic.Message.Contains("broken"));
+
         Assert.Empty(invalid.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -192,33 +305,55 @@ public sealed partial class ImportPipelineTests
     {
         var provider = new Provider(plan =>
         {
-            Native(plan, "tiles.gts", "GTS", "terrain");
-            Native(plan, "tiles.gts", "GTS", "actors");
+            Native(
+                plan,
+                "tiles.gts",
+                "GTS",
+                "terrain");
+
+            Native(
+                plan,
+                "tiles.gts",
+                "GTS",
+                "actors");
+
             foreach (string key in new[] { "walk", "run" })
-                plan.Add("animations.gani", new AnimationDefinition
+                plan.Add(
+                    "animations.gani",
+                    new AnimationDefinition
+                    {
+                        Key = key,
+                        NextCycleKey = key == "walk" ? "run" : "walk",
+                        Frames = [new() { Tilesheet = "actors" }],
+                        TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("actors", "tiles.gts")]
+                    });
+
+            plan.Add(
+                "scenes.gscn",
+                new SceneDefinition
                 {
-                    Key = key,
-                    NextCycleKey = key == "walk" ? "run" : "walk",
-                    Frames = [new() { Tilesheet = "actors" }],
-                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("actors", "tiles.gts")]
+                    ID = "level",
+                    AnimationSources = [SceneAnimationSourceDefinition.Loose("run", "animations.gani")]
                 });
-            plan.Add("scenes.gscn", new SceneDefinition
-            {
-                ID = "level",
-                AnimationSources = [SceneAnimationSourceDefinition.Loose("run", "animations.gani")]
-            });
-            plan.Add("sprites.gspr", new SpriteDefinition
-            {
-                Key = "player",
-                TilesheetSources = [new() { Tilesheet = "actors", GtsPath = "tiles.gts" }],
-                SceneSources = [new() { SceneId = "level", GscnPath = "scenes.gscn" }]
-            });
-            plan.Add("audio.gsnd", new AudioDefinition
-            {
-                Key = "music",
-                Resources = [new() { Key = "theme", FilePath = "../theme.ogg" }]
-            });
+
+            plan.Add(
+                "sprites.gspr",
+                new SpriteDefinition
+                {
+                    Key = "player",
+                    TilesheetSources = [new() { Tilesheet = "actors", GtsPath = "tiles.gts" }],
+                    SceneSources = [new() { SceneId = "level", GscnPath = "scenes.gscn" }]
+                });
+
+            plan.Add(
+                "audio.gsnd",
+                new AudioDefinition
+                {
+                    Key = "music",
+                    Resources = [new() { Key = "theme", FilePath = "../theme.ogg" }]
+                });
         });
+
         var result = provider.Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         string Output(string filename) => Path.Combine(request.OutputDirectory, filename);
@@ -245,9 +380,19 @@ public sealed partial class ImportPipelineTests
     {
         var result = new Provider(plan =>
         {
-            Native(plan, "one.gts", "GTS", "terrain");
-            Native(plan, "two.gts", "GTS", "Terrain");
+            Native(
+                plan,
+                "one.gts",
+                "GTS",
+                "terrain");
+
+            Native(
+                plan,
+                "two.gts",
+                "GTS",
+                "Terrain");
         }).Import(request);
+
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         Assert.Equal(2, result.WrittenFiles.Count);
         Assert.All(result.Analysis.Artifacts, artifact => Assert.Single(artifact.LogicalKeys));
@@ -261,17 +406,44 @@ public sealed partial class ImportPipelineTests
     {
         var mixed = new Provider(plan =>
         {
-            Native(plan, "same.gts", "GTS", "one");
-            plan.Add("same.gts", "GTS", "two", [1, 2]);
+            Native(
+                plan,
+                "same.gts",
+                "GTS",
+                "one");
+
+            plan.Add(
+                "same.gts",
+                "GTS",
+                "two",
+                [1, 2]);
         }).Import(request);
+
         Assert.Contains(mixed.Analysis.Diagnostics, diagnostic => diagnostic.Code == "output.duplicate");
+
         var types = new Provider(plan =>
         {
-            Native(plan, "same.gts", "GTS", "one");
-            Native(plan, "same.gts", "GSND", "two");
+            Native(
+                plan,
+                "same.gts",
+                "GTS",
+                "one");
+
+            Native(
+                plan,
+                "same.gts",
+                "GSND",
+                "two");
         }).Import(request);
+
         Assert.Contains(types.Analysis.Diagnostics, diagnostic => diagnostic.Code == "output.duplicate");
-        var raw = new Provider(plan => plan.Add("image.png", "PNG", null, [1, 2, 3])).Import(request);
+
+        var raw = new Provider(plan => plan.Add(
+            "image.png",
+            "PNG",
+            null,
+            [1, 2, 3])).Import(request);
+
         Assert.Equal(new byte[] { 1, 2, 3 }, File.ReadAllBytes(Assert.Single(raw.WrittenFiles)));
         Assert.Empty(Assert.Single(raw.Analysis.Artifacts).LogicalKeys);
         Assert.Equal(new[] { "legacy" }, new ExternalImportArtifact("GTS", "old.gts", "legacy").LogicalKeys);

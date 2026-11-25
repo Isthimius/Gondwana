@@ -28,6 +28,7 @@ internal static class ProjectHelper
         if (Directory.Exists(projectPath))
         {
             var found = Directory.GetFiles(projectPath, "*.csproj");
+
             if (found.Length == 0)
             {
                 csprojPath = null;
@@ -62,9 +63,16 @@ internal static class ProjectHelper
         try
         {
             var document = XDocument.Load(csprojPath);
-            var targetFramework = document.Descendants().FirstOrDefault(e => e.Name.LocalName == "TargetFramework")?.Value;
-            var targetFrameworks = document.Descendants().FirstOrDefault(e => e.Name.LocalName == "TargetFrameworks")?.Value;
-            var combined = string.Join(";", new[] { targetFramework, targetFrameworks }.Where(v => !string.IsNullOrWhiteSpace(v)));
+
+            var targetFramework = document.Descendants().FirstOrDefault(e => e.Name.LocalName == "TargetFramework")
+                ?.Value;
+
+            var targetFrameworks = document.Descendants().FirstOrDefault(e => e.Name.LocalName == "TargetFrameworks")
+                ?.Value;
+
+            var combined = string.Join(
+                ";",
+                new[] { targetFramework, targetFrameworks }.Where(v => !string.IsNullOrWhiteSpace(v)));
 
             return combined.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         }
@@ -85,6 +93,7 @@ internal static class ProjectHelper
         {
             var document = XDocument.Load(csprojPath);
             var sdk = document.Root?.Attribute("Sdk")?.Value ?? string.Empty;
+
             if (sdk.Contains("BlazorWebAssembly", StringComparison.OrdinalIgnoreCase))
                 return true;
 
@@ -135,7 +144,11 @@ internal static class ProjectHelper
     /// <param name="framework">When this method returns, contains the framework.</param>
     /// <param name="error">When this method returns, contains the error.</param>
     /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
-    public static bool TryResolveBrowserFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
+    public static bool TryResolveBrowserFramework(
+        string csprojPath,
+        string? requestedFramework,
+        out string? framework,
+        out string? error)
     {
         var frameworks = GetTargetFrameworks(csprojPath);
 
@@ -179,7 +192,10 @@ internal static class ProjectHelper
         }
 
         framework = null;
-        error = "No browser target framework found. Use a Blazor WebAssembly project or pass -f|--framework explicitly.";
+
+        error =
+            "No browser target framework found. Use a Blazor WebAssembly project or pass -f|--framework explicitly.";
+
         return false;
     }
 
@@ -191,7 +207,11 @@ internal static class ProjectHelper
     /// <param name="framework">When this method returns, contains the framework.</param>
     /// <param name="error">When this method returns, contains the error.</param>
     /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
-    public static bool TryResolveDesktopFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
+    public static bool TryResolveDesktopFramework(
+        string csprojPath,
+        string? requestedFramework,
+        out string? framework,
+        out string? error)
     {
         if (!string.IsNullOrWhiteSpace(requestedFramework))
         {
@@ -238,24 +258,47 @@ internal static class ProjectHelper
     /// <param name="framework">The target framework to build or publish.</param>
     /// <param name="runtime">The runtime.</param>
     /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
-    public static string? TryLocatePublishDirectory(string csprojPath, string configuration, string framework, string? runtime)
+    public static string? TryLocatePublishDirectory(
+        string csprojPath,
+        string configuration,
+        string framework,
+        string? runtime)
     {
         var projectDir = Path.GetDirectoryName(csprojPath)!;
+
         var directPath = string.IsNullOrWhiteSpace(runtime)
-            ? Path.Combine(projectDir, "bin", configuration, framework, "publish")
-            : Path.Combine(projectDir, "bin", configuration, framework, runtime, "publish");
+            ? Path.Combine(
+                projectDir,
+                "bin",
+                configuration,
+                framework,
+                "publish")
+            : Path.Combine(
+                projectDir,
+                "bin",
+                configuration,
+                framework,
+                runtime,
+                "publish");
 
         if (Directory.Exists(directPath))
             return directPath;
 
         var binDir = Path.Combine(projectDir, "bin");
+
         if (!Directory.Exists(binDir))
             return null;
 
         return Directory.GetDirectories(binDir, "publish", SearchOption.AllDirectories)
-            .Where(path => path.Contains($"{Path.DirectorySeparatorChar}{configuration}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
-            .Where(path => path.Contains($"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
-            .Where(path => string.IsNullOrWhiteSpace(runtime) || path.Contains($"{Path.DirectorySeparatorChar}{runtime}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => path.Contains(
+                $"{Path.DirectorySeparatorChar}{configuration}{Path.DirectorySeparatorChar}",
+                StringComparison.OrdinalIgnoreCase))
+            .Where(path => path.Contains(
+                $"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}",
+                StringComparison.OrdinalIgnoreCase))
+            .Where(path => string.IsNullOrWhiteSpace(runtime) || path.Contains(
+                $"{Path.DirectorySeparatorChar}{runtime}{Path.DirectorySeparatorChar}",
+                StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(path => Directory.GetLastWriteTimeUtc(path))
             .FirstOrDefault();
     }
@@ -276,6 +319,7 @@ internal static class ProjectHelper
             File.Delete(fullZip);
 
         using var archive = ZipFile.Open(fullZip, ZipArchiveMode.Create);
+
         foreach (var file in Directory.GetFiles(fullSource, "*", SearchOption.AllDirectories))
         {
             var entryName = Path.GetRelativePath(fullSource, file).Replace('\\', '/');
@@ -293,9 +337,18 @@ internal static class ProjectHelper
     /// <param name="error">When this method returns, contains the error.</param>
     /// <param name="workingDirectory">Optional SDK selection directory for the workload query.</param>
     /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetInstalledWorkloadVersion(string workloadId, out string? version, out string? error, string? workingDirectory = null)
+    public static bool TryGetInstalledWorkloadVersion(
+        string workloadId,
+        out string? version,
+        out string? error,
+        string? workingDirectory = null)
     {
-        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode, workingDirectory);
+        var output = ProcessHelper.Run(
+            "dotnet",
+            "workload list",
+            out int exitCode,
+            workingDirectory);
+
         if (exitCode != 0)
         {
             version = null;
@@ -332,8 +385,10 @@ internal static class ProjectHelper
 
         if (!string.IsNullOrWhiteSpace(version))
             AnsiConsole.MarkupLine($"[yellow]wasm-tools {Markup.Escape(version)} is incompatible with .NET 10.[/]");
+
         AnsiConsole.MarkupLine("[dim]Installing the .NET 10 wasm-tools workload...[/]");
         var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
+
         if (workloadExit != 0)
         {
             AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
@@ -343,7 +398,9 @@ internal static class ProjectHelper
         if (!TryGetInstalledWorkloadVersion("wasm-tools", out var installedVersion, out var verifyError) ||
             !New.BlazorScaffoldPrerequisites.IsCompatibleWorkload(installedVersion))
         {
-            AnsiConsole.MarkupLine($"[red]{Markup.Escape(verifyError ?? "A compatible .NET 10 wasm-tools workload was not detected after installation.")}[/]");
+            AnsiConsole.MarkupLine(
+                $"[red]{Markup.Escape(verifyError ?? "A compatible .NET 10 wasm-tools workload was not detected after installation.")}[/]");
+
             return 1;
         }
 
@@ -371,11 +428,16 @@ internal static class ProjectHelper
         wwwroot = null;
 
         var workloadExit = EnsureBlazorWasmToolsInstalled(skipWorkload);
+
         if (workloadExit != 0)
             return workloadExit;
 
         AnsiConsole.MarkupLine($"[dim]Publishing {framework} in {configuration} configuration...[/]");
-        var publishExit = ProcessHelper.RunLive("dotnet", ["publish", csprojPath, "-c", configuration, "-f", framework]);
+
+        var publishExit = ProcessHelper.RunLive(
+            "dotnet",
+            ["publish", csprojPath, "-c", configuration, "-f", framework]);
+
         if (publishExit != 0)
         {
             AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
@@ -383,6 +445,7 @@ internal static class ProjectHelper
         }
 
         wwwroot = TryLocateBlazorPublishRoot(csprojPath, configuration, framework);
+
         if (wwwroot is not null && !TryApplyBlazorBaseHref(wwwroot, baseHref, out var baseHrefError))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(baseHrefError!)}[/]");
@@ -416,12 +479,20 @@ internal static class ProjectHelper
 
         if (!skipBuild)
         {
-            var publishExit = PublishBlazorProject(csprojPath, configuration, framework, skipWorkload, baseHref, out var wwwroot);
+            var publishExit = PublishBlazorProject(
+                csprojPath,
+                configuration,
+                framework,
+                skipWorkload,
+                baseHref,
+                out var wwwroot);
+
             exitCode = publishExit;
             return publishExit == 0 ? wwwroot : null;
         }
 
         var existing = TryLocateBlazorPublishRoot(csprojPath, configuration, framework);
+
         if (existing is not null && !TryApplyBlazorBaseHref(existing, baseHref, out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
@@ -465,6 +536,7 @@ internal static class ProjectHelper
             skipWorkload,
             baseHref: null,
             out exitCode);
+
         if (exitCode != 0)
             return null;
 
@@ -475,7 +547,11 @@ internal static class ProjectHelper
         var defaultZipPath = Path.Combine(Path.GetDirectoryName(wwwroot)!, $"{projectName}-itch.zip");
         var zipPath = outputPath ?? defaultZipPath;
 
-        if (!TryCreateBlazorPackageArchive(wwwroot, zipPath, baseHref, out var error))
+        if (!TryCreateBlazorPackageArchive(
+                wwwroot,
+                zipPath,
+                baseHref,
+                out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
             exitCode = 1;
@@ -493,6 +569,7 @@ internal static class ProjectHelper
     public static string NormalizeBaseHref(string baseHref)
     {
         var normalized = baseHref.Trim();
+
         if (normalized.Length == 0)
             return normalized;
 
@@ -511,10 +588,12 @@ internal static class ProjectHelper
     public static bool TryApplyBlazorBaseHref(string wwwroot, string? baseHref, out string? error)
     {
         error = null;
+
         if (string.IsNullOrWhiteSpace(baseHref))
             return true;
 
         var indexPath = Path.Combine(wwwroot, "index.html");
+
         if (!File.Exists(indexPath))
         {
             error = $"Cannot apply --base-href because index.html was not found in '{wwwroot}'.";
@@ -522,7 +601,12 @@ internal static class ProjectHelper
         }
 
         var html = File.ReadAllText(indexPath);
-        if (!TryRewriteBlazorBaseHref(html, baseHref, out var rewrittenHtml, out error))
+
+        if (!TryRewriteBlazorBaseHref(
+                html,
+                baseHref,
+                out var rewrittenHtml,
+                out error))
             return false;
 
         File.WriteAllText(indexPath, rewrittenHtml);
@@ -546,14 +630,17 @@ internal static class ProjectHelper
         {
             var relative = Path.GetRelativePath(destination, destFile);
             var sourceFile = Path.Combine(source, relative);
+
             if (!File.Exists(sourceFile))
                 File.Delete(destFile);
         }
 
-        foreach (var destDir in Directory.GetDirectories(destination, "*", SearchOption.AllDirectories).OrderByDescending(d => d.Length))
+        foreach (var destDir in Directory.GetDirectories(destination, "*", SearchOption.AllDirectories)
+                     .OrderByDescending(d => d.Length))
         {
             var relative = Path.GetRelativePath(destination, destDir);
             var sourceDir = Path.Combine(source, relative);
+
             if (!Directory.Exists(sourceDir))
                 Directory.Delete(destDir, recursive: true);
         }
@@ -573,28 +660,51 @@ internal static class ProjectHelper
         }
     }
 
-    internal static string? TryLocateBlazorPublishRoot(string csprojPath, string configuration, string? framework = null)
+    internal static string? TryLocateBlazorPublishRoot(
+        string csprojPath,
+        string configuration,
+        string? framework = null)
     {
         if (string.IsNullOrWhiteSpace(framework) &&
-            !TryResolveBrowserFramework(csprojPath, null, out framework, out _))
+            !TryResolveBrowserFramework(
+                csprojPath,
+                null,
+                out framework,
+                out _))
         {
             return null;
         }
 
         var projectDir = Path.GetDirectoryName(csprojPath)!;
-        var wwwroot = Path.Combine(projectDir, "bin", configuration, framework!, "publish", "wwwroot");
+
+        var wwwroot = Path.Combine(
+            projectDir,
+            "bin",
+            configuration,
+            framework!,
+            "publish",
+            "wwwroot");
+
         if (Directory.Exists(wwwroot) && File.Exists(Path.Combine(wwwroot, "index.html")))
             return wwwroot;
 
         var binDir = Path.Combine(projectDir, "bin");
+
         if (!Directory.Exists(binDir))
             return null;
 
         return Directory.GetDirectories(binDir, "wwwroot", SearchOption.AllDirectories)
             .Where(d => File.Exists(Path.Combine(d, "index.html")))
-            .Where(d => string.Equals(Path.GetFileName(Path.GetDirectoryName(d)), "publish", StringComparison.OrdinalIgnoreCase))
-            .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{configuration}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
-            .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(d => string.Equals(
+                Path.GetFileName(Path.GetDirectoryName(d)),
+                "publish",
+                StringComparison.OrdinalIgnoreCase))
+            .Where(d => d.Contains(
+                $"{Path.DirectorySeparatorChar}{configuration}{Path.DirectorySeparatorChar}",
+                StringComparison.OrdinalIgnoreCase))
+            .Where(d => d.Contains(
+                $"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}",
+                StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(Directory.GetLastWriteTimeUtc)
             .FirstOrDefault();
     }
@@ -613,6 +723,7 @@ internal static class ProjectHelper
         if (!string.IsNullOrWhiteSpace(baseHref))
         {
             var indexPath = Path.Combine(fullSource, "index.html");
+
             if (!File.Exists(indexPath))
             {
                 error = $"Cannot apply --base-href because index.html was not found in '{sourceDirectory}'.";
@@ -620,21 +731,32 @@ internal static class ProjectHelper
             }
 
             var html = File.ReadAllText(indexPath);
-            if (!TryRewriteBlazorBaseHref(html, baseHref, out rewrittenIndex, out error))
+
+            if (!TryRewriteBlazorBaseHref(
+                    html,
+                    baseHref,
+                    out rewrittenIndex,
+                    out error))
                 return false;
         }
 
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(fullZip)!);
+
             if (File.Exists(fullZip))
                 File.Delete(fullZip);
 
             using var archive = ZipFile.Open(fullZip, ZipArchiveMode.Create);
+
             foreach (var file in Directory.GetFiles(fullSource, "*", SearchOption.AllDirectories))
             {
                 var entryName = Path.GetRelativePath(fullSource, file).Replace('\\', '/');
-                if (rewrittenIndex is not null && string.Equals(entryName, "index.html", StringComparison.OrdinalIgnoreCase))
+
+                if (rewrittenIndex is not null && string.Equals(
+                        entryName,
+                        "index.html",
+                        StringComparison.OrdinalIgnoreCase))
                 {
                     var entry = archive.CreateEntry(entryName, CompressionLevel.Optimal);
                     using var writer = new StreamWriter(entry.Open());
@@ -677,16 +799,22 @@ internal static class ProjectHelper
         error = null;
 
         var normalized = NormalizeBaseHref(baseHref);
+
         if (normalized.Contains('"') || normalized.Contains('\''))
         {
             error = "--base-href cannot contain quote characters.";
             return false;
         }
 
-        var basePattern = new Regex("(<base\\s+href\\s*=\\s*[\\\"'])([^\\\"']*)([\\\"'])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var basePattern = new Regex(
+            "(<base\\s+href\\s*=\\s*[\\\"'])([^\\\"']*)([\\\"'])",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
         if (!basePattern.IsMatch(html))
         {
-            error = "Cannot apply --base-href because the published index.html does not contain a <base href=...> element.";
+            error =
+                "Cannot apply --base-href because the published index.html does not contain a <base href=...> element.";
+
             return false;
         }
 
@@ -694,6 +822,7 @@ internal static class ProjectHelper
             html,
             match => $"{match.Groups[1].Value}{normalized}{match.Groups[3].Value}",
             1);
+
         return true;
     }
 
@@ -702,10 +831,12 @@ internal static class ProjectHelper
         foreach (var rawLine in workloadListOutput.Replace("\r", string.Empty).Split('\n'))
         {
             var line = rawLine.Trim();
+
             if (line.Length == 0)
                 continue;
 
             var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
             if (parts.Length < 2)
                 continue;
 

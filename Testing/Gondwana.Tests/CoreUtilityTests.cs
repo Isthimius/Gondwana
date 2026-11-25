@@ -15,7 +15,13 @@ public sealed class CoreUtilityTests
     [Fact]
     public void CyclesPerSecondCalculatedEventArgs_StoresConstructorValues()
     {
-        var args = new CyclesPerSecondCalculatedEventArgs(100, 90, 60.5, 54.25, 1.5, 58.75);
+        var args = new CyclesPerSecondCalculatedEventArgs(
+            100,
+            90,
+            60.5,
+            54.25,
+            1.5,
+            58.75);
 
         Assert.Equal(100, args.TotalGrossCycles);
         Assert.Equal(90, args.TotalNetCycles);
@@ -31,7 +37,14 @@ public sealed class CoreUtilityTests
     [Fact]
     public void CyclesPerSecondCalculatedEventArgs_ToString_FormatsWithGpuFps()
     {
-        var args = new CyclesPerSecondCalculatedEventArgs(1000, 900, 60, 54, 2, 58.5);
+        var args = new CyclesPerSecondCalculatedEventArgs(
+            1000,
+            900,
+            60,
+            54,
+            2,
+            58.5);
+
         var culture = CultureInfo.CurrentCulture;
 
         var text = args.ToString();
@@ -50,7 +63,12 @@ public sealed class CoreUtilityTests
     [Fact]
     public void CyclesPerSecondCalculatedEventArgs_ToString_OmitsGpuFpsWhenNull()
     {
-        var args = new CyclesPerSecondCalculatedEventArgs(10, 9, 6, 5.4, 1);
+        var args = new CyclesPerSecondCalculatedEventArgs(
+            10,
+            9,
+            6,
+            5.4,
+            1);
 
         var text = args.ToString();
 
@@ -68,8 +86,10 @@ public sealed class CoreUtilityTests
             typeof(Engine).GetProperty(nameof(Engine.CyclesPerSecond))!,
             typeof(Engine).GetProperty(nameof(Engine.FramesPerSecond))!,
             typeof(Engine).GetEvent(nameof(Engine.CPSCalculated))!,
-            typeof(Configuration.EngineConfiguration).GetProperty(nameof(Configuration.EngineConfiguration.SamplingTimeForCPS))!,
-            typeof(Configuration.EngineConfiguration).GetProperty(nameof(Configuration.EngineConfiguration.SamplingTimeForCPSTicks))!
+            typeof(Configuration.EngineConfiguration).GetProperty(
+                nameof(Configuration.EngineConfiguration.SamplingTimeForCPS))!,
+            typeof(Configuration.EngineConfiguration).GetProperty(
+                nameof(Configuration.EngineConfiguration.SamplingTimeForCPSTicks))!
         };
 
         foreach (MemberInfo member in members)

@@ -47,7 +47,12 @@ public class RenderSurfaceAdapterResizedEventArgs
     /// <param name="oldHeight">The previous height of the render surface adapter in pixels.</param>
     /// <param name="newWidth">The new width of the render surface adapter in pixels.</param>
     /// <param name="newHeight">The new height of the render surface adapter in pixels.</param>
-    public RenderSurfaceAdapterResizedEventArgs(RenderSurfaceAdapterBase renderSurfaceAdapter, int oldWidth, int oldHeight, int newWidth, int newHeight)
+    public RenderSurfaceAdapterResizedEventArgs(
+        RenderSurfaceAdapterBase renderSurfaceAdapter,
+        int oldWidth,
+        int oldHeight,
+        int newWidth,
+        int newHeight)
     {
         RenderSurfaceAdapter = renderSurfaceAdapter;
         OldWidth = oldWidth;

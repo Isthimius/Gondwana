@@ -16,14 +16,17 @@ public sealed class GondwanaMcpOptions
     /// The repository owner.
     /// </summary>
     public const string RepositoryOwner = "Isthimius";
+
     /// <summary>
     /// The repository name.
     /// </summary>
     public const string RepositoryName = "Gondwana";
+
     /// <summary>
     /// The repository full name.
     /// </summary>
     public const string RepositoryFullName = RepositoryOwner + "/" + RepositoryName;
+
     /// <summary>
     /// The default ref.
     /// </summary>

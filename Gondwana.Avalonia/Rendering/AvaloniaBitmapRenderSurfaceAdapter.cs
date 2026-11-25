@@ -38,7 +38,10 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     /// <param name="control">The <see cref="AvaloniaBitmapRenderSurfaceControl"/> to target.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is null.</exception>
     public AvaloniaBitmapRenderSurfaceAdapter(AvaloniaBitmapRenderSurfaceControl control)
-        : base(Math.Max(1, (int)control.Bounds.Width), Math.Max(1, (int)control.Bounds.Height), initialSizeAvailable: false)
+        : base(
+            Math.Max(1, (int)control.Bounds.Width),
+            Math.Max(1, (int)control.Bounds.Height),
+            initialSizeAvailable: false)
     {
         _control = control ?? throw new ArgumentNullException(nameof(control));
         _control.SizeChanged += OnSizeChanged;
@@ -56,8 +59,10 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     {
         if (_disposed)
             return;
+
         var w = (int)_control.Bounds.Width;
         var h = (int)_control.Bounds.Height;
+
         if (w > 0 && h > 0)
             SetDestinationSize(w, h);
     }
@@ -73,7 +78,11 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     {
         var sourceRect = SKRectI.Intersect(
             bufferRect,
-            new SKRectI(0, 0, bufferImage.Width, bufferImage.Height));
+            new SKRectI(
+                0,
+                0,
+                bufferImage.Width,
+                bufferImage.Height));
 
         if (sourceRect.IsEmpty)
         {
@@ -82,6 +91,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
         }
 
         bool scheduleBlit;
+
         lock (_presentSync)
         {
             if (_disposed)
@@ -92,6 +102,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
             var old = _currentImage;
             _currentImage = bufferImage;
+
             if (!ReferenceEquals(old, _currentImage) && old is not null)
                 _toDispose.Enqueue(old);
 
@@ -132,19 +143,28 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
         {
             var w = img.Width;
             var h = img.Height;
+
             if (w <= 0 || h <= 0)
                 return;
 
-            var imageBounds = new SKRectI(0, 0, w, h);
+            var imageBounds = new SKRectI(
+                0,
+                0,
+                w,
+                h);
+
             sourceRect = SKRectI.Intersect(sourceRect, imageBounds);
+
             if (sourceRect.IsEmpty)
                 return;
 
             // A new bitmap has no retained pixels, so its first copy must cover the full image.
             var bitmap = _bitmap;
+
             if (bitmap == null || bitmap.PixelSize.Width != w || bitmap.PixelSize.Height != h)
             {
                 bitmap?.Dispose();
+
                 bitmap = new WriteableBitmap(
                     new PixelSize(w, h),
                     new Vector(96, 96),
@@ -157,6 +177,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
             // Copy only the accumulated dirty patch into its matching location in the bitmap.
             bool copied;
+
             using (var fb = bitmap.Lock())
             {
                 var info = new SKImageInfo(
@@ -192,6 +213,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     {
         if (left.IsEmpty)
             return right;
+
         if (right.IsEmpty)
             return left;
 
@@ -214,10 +236,12 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     public void Dispose()
     {
         SKImage? currentImage;
+
         lock (_presentSync)
         {
             if (_disposed)
                 return;
+
             _disposed = true;
 
             currentImage = _currentImage;

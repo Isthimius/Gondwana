@@ -6,6 +6,7 @@ internal enum PlayerType
     /// Specifies human.
     /// </summary>
     Human,
+
     /// <summary>
     /// Specifies computer.
     /// </summary>

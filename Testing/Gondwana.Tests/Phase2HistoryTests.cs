@@ -62,7 +62,10 @@ public sealed class Phase2HistoryTests : IDisposable
         history.Redo();
         Assert.Same(added, (object)d.Definition);
         d.SelectDefinition((dynamic)first);
-        Assert.Equal("Add " + (format == "gani" ? "animation" : format == "gspr" ? "sprite" : "audio") + " definition", history.UndoDescription);
+
+        Assert.Equal(
+            "Add " + (format == "gani" ? "animation" : format == "gspr" ? "sprite" : "audio") + " definition",
+            history.UndoDescription);
     }
 
     [Theory]
@@ -130,21 +133,34 @@ public sealed class Phase2HistoryTests : IDisposable
         history.Redo();
         Assert.Same(imported, (object)d.Definition);
         string archivePath = Path.Combine(_root, "content.gaf");
-        using (var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   archivePath,
+                   null,
+                   false,
+                   register: false))
         {
-            var type = format == "gani" ? AssetTypes.AnimationDefinition : format == "gspr" ? AssetTypes.SpriteDefinition : AssetTypes.AudioDefinition;
+            var type = format == "gani" ? AssetTypes.AnimationDefinition :
+                format == "gspr" ? AssetTypes.SpriteDefinition : AssetTypes.AudioDefinition;
+
             var bytes = (byte[])d.SerializePacked();
             archive.Add(type, "typed/member", () => new MemoryStream(bytes));
             archive.Save();
         }
 
-        using var packed = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
+        using var packed = AssetsFile.LoadOrCreate(
+            archivePath,
+            null,
+            false,
+            register: false);
+
         dynamic opened = format switch
         {
             "gani" => (object)AnimationDocument.Open(packed, "typed/member"),
             "gspr" => SpriteDocument.Open(packed, "typed/member"),
             _ => AudioDocument.Open(packed, "typed/member")
         };
+
         using var packedOwner = (IDisposable)opened;
         EditHistory packedHistory = opened.History;
         Assert.False((bool)opened.IsDirty);
@@ -161,7 +177,10 @@ public sealed class Phase2HistoryTests : IDisposable
     public void AnimationFramesAndPropertiesRetainInstancesAndSuppressNoOps()
     {
         using var d = AnimationDocument.Create(_root);
-        var first = new AnimationFrameDefinition { Tilesheet = "tiles", RegionName = "body", XTile = 2, YTile = 3, DurationSeconds = .2 };
+
+        var first = new AnimationFrameDefinition
+            { Tilesheet = "tiles", RegionName = "body", XTile = 2, YTile = 3, DurationSeconds = .2 };
+
         var second = new AnimationFrameDefinition { Tilesheet = "tiles", RegionName = "other", XTile = 4, YTile = 5 };
         d.AddFrame(first);
         d.AddFrame(second);
@@ -228,11 +247,16 @@ public sealed class Phase2HistoryTests : IDisposable
         Assert.Null(first.Frame);
         d.History.Redo();
         Assert.Same(frame, first.Frame);
-        d.Edit(first, "Assign scene layer", () =>
-        {
-            first.SceneId = "scene";
-            first.SceneLayerId = "layer";
-        });
+
+        d.Edit(
+            first,
+            "Assign scene layer",
+            () =>
+            {
+                first.SceneId = "scene";
+                first.SceneLayerId = "layer";
+            });
+
         d.History.Undo();
         Assert.Equal("", first.SceneId);
         Assert.Equal("", first.SceneLayerId);
@@ -241,11 +265,16 @@ public sealed class Phase2HistoryTests : IDisposable
         Assert.Equal("layer", first.SceneLayerId);
         properties.AnimationKey = "walk";
         properties.StartAnimation = true;
-        d.Edit(first, "Clear animation", () =>
-        {
-            first.AnimationKey = null;
-            first.StartAnimation = false;
-        });
+
+        d.Edit(
+            first,
+            "Clear animation",
+            () =>
+            {
+                first.AnimationKey = null;
+                first.StartAnimation = false;
+            });
+
         d.History.Undo();
         Assert.Equal("walk", first.AnimationKey);
         Assert.True(first.StartAnimation);
@@ -333,19 +362,24 @@ public sealed class Phase2HistoryTests : IDisposable
         using var document = SpriteDocument.Create(_root);
         var sprite = document.AddSprite();
         var adapter = new SpriteProperties(sprite, document);
+
         foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(adapter))
         {
             if (property.IsReadOnly)
                 continue;
+
             object? before = property.GetValue(adapter);
+
             object next = property.PropertyType == typeof(string) ? "edited-" + property.Name :
                 property.PropertyType == typeof(bool) ? !(bool)before! :
                 property.PropertyType == typeof(int) ? (int)before! + 1 :
                 property.PropertyType == typeof(float) ? (float)before! + 1f :
                 property.PropertyType == typeof(PointF) ? new PointF(4, 5) :
                 property.PropertyType == typeof(Size) ? new Size(10, 11) :
-                property.PropertyType.IsEnum ? Enum.GetValues(property.PropertyType).Cast<object>().First(value => !Equals(value, before)) :
+                property.PropertyType.IsEnum ? Enum.GetValues(property.PropertyType).Cast<object>()
+                    .First(value => !Equals(value, before)) :
                 throw new InvalidOperationException("Add regression coverage for " + property.Name);
+
             document.History.Clear();
             property.SetValue(adapter, next);
             Assert.True(document.History.CanUndo, property.Name);
@@ -397,31 +431,50 @@ public sealed class Phase2HistoryTests : IDisposable
         string archivePath = Path.Combine(_root, "implicit.gaf");
         dynamic seed = Create(format);
         using var seedOwner = (IDisposable)seed;
+
         if (format == "gsnd")
             seed.AddPackedAudio(archivePath, "typed/dependency", ".ogg");
         else
             seed.AddPackedTilesheetSource("tiles", archivePath, "typed/dependency");
+
         if (format == "gsnd")
             seed.Definition.Resources[0].AssetsFilePath = null;
         else
             seed.Definition.TilesheetSources[0].AssetsFilePath = null;
-        using var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            archivePath,
+            null,
+            false,
+            register: false);
+
         var bytes = (byte[])seed.SerializePacked();
-        archive.Add(format == "gani" ? AssetTypes.AnimationDefinition : format == "gspr" ? AssetTypes.SpriteDefinition : AssetTypes.AudioDefinition,
-            "typed/document", () => new MemoryStream(bytes));
+
+        archive.Add(
+            format == "gani" ? AssetTypes.AnimationDefinition :
+            format == "gspr" ? AssetTypes.SpriteDefinition : AssetTypes.AudioDefinition,
+            "typed/document",
+            () => new MemoryStream(bytes));
+
         archive.Save();
+
         dynamic document = format switch
         {
             "gani" => (object)AnimationDocument.Open(archive, "typed/document"),
             "gspr" => SpriteDocument.Open(archive, "typed/document"),
             _ => AudioDocument.Open(archive, "typed/document")
         };
+
         using var owner = (IDisposable)document;
-        dynamic reference = format == "gsnd" ? document.Definition.Resources[0] : document.Definition.TilesheetSources[0];
+
+        dynamic reference =
+            format == "gsnd" ? document.Definition.Resources[0] : document.Definition.TilesheetSources[0];
+
         if (format == "gsnd")
             document.Remove(reference);
         else
             document.RemoveTilesheetSource("tiles");
+
         string destination = Path.Combine(_root, "elsewhere", "loose." + format);
         document.Save(destination, true);
         EditHistory history = document.History;
@@ -430,6 +483,11 @@ public sealed class Phase2HistoryTests : IDisposable
         Assert.Equal("typed/dependency", (string)reference.AssetEntryName);
         Assert.Equal(destination, (string)document.FilePath);
         Assert.Null((object?)document.PackedLocation);
-        Assert.Same((object)reference, format == "gsnd" ? (object)document.Definition.Resources[0] : (object)document.Definition.TilesheetSources[0]);
+
+        Assert.Same(
+            (object)reference,
+            format == "gsnd"
+                ? (object)document.Definition.Resources[0]
+                : (object)document.Definition.TilesheetSources[0]);
     }
 }

@@ -44,9 +44,16 @@ internal sealed class SceneViewerForm : Form
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+
         try
         {
-            _host = new SceneViewerGameHost(_surface, _scenePath, _stress, _sceneId, _contentRoot);
+            _host = new SceneViewerGameHost(
+                _surface,
+                _scenePath,
+                _stress,
+                _sceneId,
+                _contentRoot);
+
             _host.CloseRequested += OnCloseRequested;
             _host.InitializeWithConfigurationStore(new SceneViewerGameHost.ViewerConfiguration());
             _surface.Focus();

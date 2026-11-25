@@ -49,8 +49,10 @@ public class TextBlock : DirectDrawingMovableBase
     {
         /// <summary>Align text to the top of the inner content area.</summary>
         Top,
+
         /// <summary>Center text vertically within the inner content area.</summary>
         Center,
+
         /// <summary>Align text to the bottom of the inner content area.</summary>
         Bottom
     }
@@ -111,14 +113,14 @@ public class TextBlock : DirectDrawingMovableBase
     // --- Text reveal animation ---
     private long _revealLastTick;
     private TextRevealMode _textRevealMode = TextRevealMode.None;
-    private int _revealCharCount;        // how many chars currently visible
-    private int _revealTargetCharCount;  // cap (usually Text.Length)
-    private float _revealRate;             // cps or wps (depending on mode)
-    private float _revealAccum;            // accumulator for dt-based stepping
+    private int _revealCharCount; // how many chars currently visible
+    private int _revealTargetCharCount; // cap (usually Text.Length)
+    private float _revealRate; // cps or wps (depending on mode)
+    private float _revealAccum; // accumulator for dt-based stepping
 
     // precomputed for word-based reveal
-    private int[]? _wordEndCharIndexes;    // end indexes (exclusive) per word
-    private int _wordIndex;             // words shown so far
+    private int[]? _wordEndCharIndexes; // end indexes (exclusive) per word
+    private int _wordIndex; // words shown so far
 
     // Punctuation pause tuning
     private bool _pauseEnabled = true;
@@ -138,14 +140,22 @@ public class TextBlock : DirectDrawingMovableBase
     /// <param name="screenBounds">The bounds in view-local pixels for view drawing.</param>
     /// <param name="worldBounds">The bounds in world pixels for scene-layer drawing.</param>
     /// <param name="nickname">An optional name identifying the text block.</param>
-    private TextBlock(RenderSurfaceHostBase renderSurfaceHost,
-                     DirectDrawingMode mode,
-                     SceneLayer? sceneLayer,
-                     View? view,
-                     Rectangle? screenBounds,
-                     Rectangle? worldBounds,
-                     string? nickname = null)
-        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
+    private TextBlock(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        SceneLayer? sceneLayer,
+        View? view,
+        Rectangle? screenBounds,
+        Rectangle? worldBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            sceneLayer,
+            view,
+            screenBounds,
+            worldBounds,
+            nickname)
     {
         _resolvedForeColor = _foreColor;
     }
@@ -158,19 +168,22 @@ public class TextBlock : DirectDrawingMovableBase
     /// <param name="view">The optional view associated with the text block.</param>
     /// <param name="worldBounds">The text block bounds in world coordinates.</param>
     /// <param name="nickname">An optional nickname used to identify the text block.</param>
-    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
-                     SceneLayer sceneLayer,
-                     View? view,
-                     Rectangle worldBounds,
-                     string? nickname = null)
-        : this(renderSurfaceHost,
-               DirectDrawingMode.SceneLayer,
-               sceneLayer,
-               view,
-               screenBounds: null,
-               worldBounds: worldBounds,
-               nickname: nickname)
-    { }
+    public TextBlock(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        View? view,
+        Rectangle worldBounds,
+        string? nickname = null)
+        : this(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            view,
+            screenBounds: null,
+            worldBounds: worldBounds,
+            nickname: nickname)
+    {
+    }
 
     /// <summary>
     /// Creates a new <see cref="TextBlock"/> that draws in screen space relative to a view.
@@ -179,18 +192,21 @@ public class TextBlock : DirectDrawingMovableBase
     /// <param name="view">The view the text block is associated with.</param>
     /// <param name="screenBounds">The text block bounds in screen coordinates.</param>
     /// <param name="nickname">An optional nickname used to identify the text block.</param>
-    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
-                     View view,
-                     Rectangle screenBounds,
-                     string? nickname = null)
-        : this(renderSurfaceHost,
-               DirectDrawingMode.View,
-               sceneLayer: null,
-               view: view,
-               screenBounds: screenBounds,
-               worldBounds: null,
-               nickname: nickname)
-    { }
+    public TextBlock(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle screenBounds,
+        string? nickname = null)
+        : this(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            sceneLayer: null,
+            view: view,
+            screenBounds: screenBounds,
+            worldBounds: null,
+            nickname: nickname)
+    {
+    }
 
     /// <summary>
     /// Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing).
@@ -267,6 +283,7 @@ public class TextBlock : DirectDrawingMovableBase
         float innerHeight = Math.Max(0f, bounds.Height - VerticalPadding * 2f);
 
         _typeface ??= SKTypeface.Default;
+
         using var paint = new SKPaint
         {
             Typeface = _typeface,
@@ -285,6 +302,7 @@ public class TextBlock : DirectDrawingMovableBase
             int drawableLines = _maxLines.HasValue
                 ? Math.Min(_lines.Count, _maxLines.Value)
                 : _lines.Count;
+
             float contentHeight = drawableLines * _lineHeight;
             bool exceedsHeight = contentHeight > innerHeight;
             bool exceedsWidth = _lines.Any(line => paint.MeasureText(line) > innerWidth);
@@ -298,6 +316,7 @@ public class TextBlock : DirectDrawingMovableBase
             }
 
             float maximumOffset = Math.Max(0f, contentHeight - innerHeight);
+
             if (maximumOffset > 0f)
                 maximumOffset += VerticalScrollEndPaddingPx;
 
@@ -318,6 +337,7 @@ public class TextBlock : DirectDrawingMovableBase
     {
         if (!float.IsFinite(horizontal) || horizontal < 0f)
             throw new ArgumentOutOfRangeException(nameof(horizontal));
+
         if (!float.IsFinite(vertical) || vertical < 0f)
             throw new ArgumentOutOfRangeException(nameof(vertical));
 
@@ -377,7 +397,7 @@ public class TextBlock : DirectDrawingMovableBase
             // optional: smooth start after text swap
             _revealAccum = 0f;
             // if you added a dedicated reveal timer, warm it so first frame doesn't "time-warp"
-            _revealLastTick = 0;   // keep this if you're using the separate reveal timer
+            _revealLastTick = 0; // keep this if you're using the separate reveal timer
         }
 
         ForceRefresh();
@@ -473,7 +493,11 @@ public class TextBlock : DirectDrawingMovableBase
     /// </para>
     /// </remarks>
     /// <returns>The current <see cref="TextBlock"/> instance for method chaining.</returns>
-    public TextBlock SetShadow(float dx, float dy, byte alpha = 128, float blurSigma = 1.5f)
+    public TextBlock SetShadow(
+        float dx,
+        float dy,
+        byte alpha = 128,
+        float blurSigma = 1.5f)
     {
         _shadowDx = dx;
         _shadowDy = dy;
@@ -529,7 +553,12 @@ public class TextBlock : DirectDrawingMovableBase
     /// <param name="enabled">True to enable pulsing; false to disable.</param>
     /// <param name="triangle">True to use a triangle waveform; otherwise a sine wave is used.</param>
     /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
-    public TextBlock PulseColor(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
+    public TextBlock PulseColor(
+        Color from,
+        Color to,
+        float periodSec,
+        bool enabled = true,
+        bool triangle = false)
     {
         _pulseTextEnabled = enabled;
         _pulseFrom = from.ToSKColor();
@@ -564,11 +593,12 @@ public class TextBlock : DirectDrawingMovableBase
     /// <param name="longPauseSec">Pause added after '.', '!', or '?' characters (seconds).</param>
     /// <param name="shortPauseSec">Pause added after ',', ';', or ':' characters (seconds).</param>
     /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
-    public TextBlock StartTypewriter(float charsPerSecond,
-                                     int? maxChars = null,
-                                     bool enablePauses = true,
-                                     float longPauseSec = 0.25f,
-                                     float shortPauseSec = 0.10f)
+    public TextBlock StartTypewriter(
+        float charsPerSecond,
+        int? maxChars = null,
+        bool enablePauses = true,
+        float longPauseSec = 0.25f,
+        float shortPauseSec = 0.10f)
     {
         _textRevealMode = TextRevealMode.CharactersPerSecond;
         _revealRate = MathF.Max(0f, charsPerSecond);
@@ -596,10 +626,11 @@ public class TextBlock : DirectDrawingMovableBase
     /// <param name="longPauseSec">Pause added after '.', '!', or '?' characters (seconds).</param>
     /// <param name="shortPauseSec">Pause added after ',', ';', or ':' characters (seconds).</param>
     /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
-    public TextBlock StartWordReveal(float wordsPerSecond,
-                                     bool enablePauses = true,
-                                     float longPauseSec = 0.25f,
-                                     float shortPauseSec = 0.10f)
+    public TextBlock StartWordReveal(
+        float wordsPerSecond,
+        bool enablePauses = true,
+        float longPauseSec = 0.25f,
+        float shortPauseSec = 0.10f)
     {
         _textRevealMode = TextRevealMode.WordsPerSecond;
         _revealRate = MathF.Max(0f, wordsPerSecond);
@@ -611,8 +642,8 @@ public class TextBlock : DirectDrawingMovableBase
         // split words once; keep trailing punctuation with the word so it reveals naturally
         // You can refine this regex to match your localization needs.
         _wordEndCharIndexes = Regex.Matches(_text, @"\S+\s*")
-                                   .Select(m => m.Index + m.Length)
-                                   .ToArray();
+            .Select(m => m.Index + m.Length)
+            .ToArray();
 
         _revealLastTick = 0;
 
@@ -695,6 +726,7 @@ public class TextBlock : DirectDrawingMovableBase
 
         // --- PULSE TIMING (independent) ---
         float dtPulse = 0f;
+
         if (_pulseLastTick.HasValue)
             dtPulse = HighResTimer.GetDuration(_pulseLastTick.Value, tick);
 
@@ -707,6 +739,7 @@ public class TextBlock : DirectDrawingMovableBase
         {
             float t = PulseT(_timeSec, _pulsePeriodSec, _pulseWave);
             var c = LerpColor(_pulseFrom, _pulseTo, t);
+
             if (c != _resolvedForeColor)
             {
                 _resolvedForeColor = c;
@@ -725,9 +758,10 @@ public class TextBlock : DirectDrawingMovableBase
 
         // --- REVEAL TIMING (independent and clamped) ---
         float dtReveal = 0f;
+
         if (_revealLastTick == 0)
         {
-            _revealLastTick = tick;           // warm up: first frame uses 0 dt
+            _revealLastTick = tick; // warm up: first frame uses 0 dt
         }
         else
         {
@@ -736,7 +770,8 @@ public class TextBlock : DirectDrawingMovableBase
 
             // Clamp to avoid first-frame "time warp" completing the whole text
             if (dtReveal > 0.1f)
-                dtReveal = 0.1f;   // ~100ms/frame cap
+                dtReveal = 0.1f; // ~100ms/frame cap
+
             if (dtReveal < 0f)
                 dtReveal = 0f;
         }
@@ -745,9 +780,11 @@ public class TextBlock : DirectDrawingMovableBase
         if (_textRevealMode == TextRevealMode.CharactersPerSecond)
         {
             _revealAccum += dtReveal;
+
             if (_revealRate > 0f)
             {
                 int step = (int)(_revealAccum * _revealRate);
+
                 if (step > 0)
                 {
                     _revealAccum -= step / _revealRate;
@@ -782,9 +819,11 @@ public class TextBlock : DirectDrawingMovableBase
         else if (_textRevealMode == TextRevealMode.WordsPerSecond && _wordEndCharIndexes is not null)
         {
             _revealAccum += dtReveal;
+
             if (_revealRate > 0f)
             {
                 int step = (int)(_revealAccum * _revealRate);
+
                 if (step > 0)
                 {
                     _revealAccum -= step / _revealRate;
@@ -906,6 +945,7 @@ public class TextBlock : DirectDrawingMovableBase
         // Build the set of lines to draw from the already-laid-out _lines,
         // truncating at 'visibleChars' so wrapping and alignment still work.
         List<string> drawLines = new(_lines.Count);
+
         if (visibleChars <= 0)
         {
             // nothing to show
@@ -917,6 +957,7 @@ public class TextBlock : DirectDrawingMovableBase
         else
         {
             int remaining = visibleChars;
+
             foreach (var ln in _lines)
             {
                 if (remaining <= 0)
@@ -951,8 +992,10 @@ public class TextBlock : DirectDrawingMovableBase
 
         float contentH = linesToDraw * _lineHeight;
         float maximumScrollOffset = Math.Max(0f, contentH - innerH);
+
         if (maximumScrollOffset > 0f)
             maximumScrollOffset += VerticalScrollEndPaddingPx;
+
         float yStart = maximumScrollOffset > 0f
             ? rect.Top + vPad
             : _vAlign switch
@@ -974,9 +1017,11 @@ public class TextBlock : DirectDrawingMovableBase
         canvas.ClipRect(rect);
 
         float y = yStart;
+
         for (int i = 0; i < linesToDraw; i++)
         {
             var line = drawLines[i];
+
             float x = _hAlign switch
             {
                 SKTextAlign.Center => xAnchorCenter,
@@ -988,13 +1033,23 @@ public class TextBlock : DirectDrawingMovableBase
             {
                 using var shadow = paint.Clone();
                 shadow.IsStroke = false;
+
                 shadow.MaskFilter = shadowBlur > 0f
                     ? SKMaskFilter.CreateBlur(SKBlurStyle.Normal, shadowBlur)
                     : null;
-                shadow.Color = new SKColor(0, 0, 0, _shadowAlpha);
+
+                shadow.Color = new SKColor(
+                    0,
+                    0,
+                    0,
+                    _shadowAlpha);
 
                 // manually offset
-                canvas.DrawText(line, x + shadowDx, y + baselineShift + shadowDy, shadow);
+                canvas.DrawText(
+                    line,
+                    x + shadowDx,
+                    y + baselineShift + shadowDy,
+                    shadow);
             }
 
             if (_useOutline)
@@ -1003,10 +1058,20 @@ public class TextBlock : DirectDrawingMovableBase
                 outline.IsStroke = true;
                 outline.StrokeWidth = outlineWidth;
                 outline.Color = SKColors.Black;
-                canvas.DrawText(line, x, y + baselineShift, outline);
+
+                canvas.DrawText(
+                    line,
+                    x,
+                    y + baselineShift,
+                    outline);
             }
 
-            canvas.DrawText(line, x, y + baselineShift, paint);
+            canvas.DrawText(
+                line,
+                x,
+                y + baselineShift,
+                paint);
+
             y += _lineHeight;
 
             // safety clip
@@ -1078,9 +1143,11 @@ public class TextBlock : DirectDrawingMovableBase
 
                 // Fallback: hard-break an overlong word by character.
                 var chunk = string.Empty;
+
                 foreach (char ch in word)
                 {
                     string next = chunk + ch;
+
                     if (paint.MeasureText(next) <= maxWidth || string.IsNullOrEmpty(chunk))
                     {
                         chunk = next;
@@ -1107,9 +1174,10 @@ public class TextBlock : DirectDrawingMovableBase
     private static float PulseT(float timeSec, float periodSec, PulseWave wave)
     {
         float phase = (timeSec / periodSec) % 1f;
+
         return wave == PulseWave.Sine
-            ? 0.5f * (1f + MathF.Sin(phase * MathF.PI * 2f))             // [0..1]
-            : (phase < 0.5f ? phase * 2f : 1f - (phase - 0.5f) * 2f);    // triangle
+            ? 0.5f * (1f + MathF.Sin(phase * MathF.PI * 2f)) // [0..1]
+            : (phase < 0.5f ? phase * 2f : 1f - (phase - 0.5f) * 2f); // triangle
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1120,7 +1188,12 @@ public class TextBlock : DirectDrawingMovableBase
         byte g = (byte)(a.Green + (b.Green - a.Green) * t01);
         byte bl = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte al = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
-        return new SKColor(r, g, bl, al);
+
+        return new SKColor(
+            r,
+            g,
+            bl,
+            al);
     }
 
     private static string FitLineWithEllipsis(SKPaint paint, string text, float maxWidth)
@@ -1134,13 +1207,16 @@ public class TextBlock : DirectDrawingMovableBase
             return text;
 
         float ellipsisWidth = paint.MeasureText(ellipsis);
+
         if (ellipsisWidth > maxWidth)
             return string.Empty;
 
         int length = text.Length;
+
         while (length > 0)
         {
             string candidate = text.Substring(0, length).TrimEnd() + ellipsis;
+
             if (paint.MeasureText(candidate) <= maxWidth)
                 return candidate;
 
@@ -1248,6 +1324,7 @@ public class TextBlock : DirectDrawingMovableBase
     {
         /// <summary>Sine wave: smooth continuous pulse between colors.</summary>
         Sine,
+
         /// <summary>Triangle wave: linear fade-in/out between colors.</summary>
         Triangle
     }
@@ -1259,10 +1336,13 @@ public class TextBlock : DirectDrawingMovableBase
     {
         /// <summary>No reveal is active; all text is shown.</summary>
         None,
+
         /// <summary>Reveal advances by characters per second.</summary>
         CharactersPerSecond,
+
         /// <summary>Reveal advances by words per second.</summary>
         WordsPerSecond,
+
         /// <summary>Reveal amount is controlled directly via <see cref="RevealSetCount(int)"/>.</summary>
         ManualCount
     }

@@ -18,7 +18,10 @@ internal sealed class TemplatesInstallCommand : AsyncCommand<TemplatesInstallCom
     }
 
     /// <inheritdoc/>
-    public override Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override Task<int> ExecuteAsync(
+        CommandContext context,
+        Settings settings,
+        CancellationToken cancellationToken)
     {
         if (settings.Prerelease && settings.Version is not null)
         {
@@ -28,10 +31,15 @@ internal sealed class TemplatesInstallCommand : AsyncCommand<TemplatesInstallCom
 
         if (settings.Version is not null && !TemplatePackageHelper.IsValidVersion(settings.Version))
         {
-            AnsiConsole.MarkupLine("[red]Invalid --version. Specify an exact NuGet package version, such as 2.6.2-beta.1.[/]");
+            AnsiConsole.MarkupLine(
+                "[red]Invalid --version. Specify an exact NuGet package version, such as 2.6.2-beta.1.[/]");
+
             return Task.FromResult(1);
         }
 
-        return TemplatePackageHelper.EnsureInstalledOrUpdatedAsync(settings.Prerelease, settings.Version, cancellationToken);
+        return TemplatePackageHelper.EnsureInstalledOrUpdatedAsync(
+            settings.Prerelease,
+            settings.Version,
+            cancellationToken);
     }
 }

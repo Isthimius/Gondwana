@@ -62,14 +62,24 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
         try
         {
             AssetTypes? type = null;
+
             if (settings.TypeFilter is not null)
             {
                 if (!Enum.TryParse<AssetTypes>(settings.TypeFilter, true, out var parsed) || !Enum.IsDefined(parsed))
                     throw new ArgumentException("Unknown asset type: " + settings.TypeFilter);
+
                 type = parsed;
             }
 
-            var count = SemanticUnpackPlan.Create(settings.File, settings.Output, settings.Password, type, settings.Entry, settings.Overwrite, cancellationToken).Commit();
+            var count = SemanticUnpackPlan.Create(
+                settings.File,
+                settings.Output,
+                settings.Password,
+                type,
+                settings.Entry,
+                settings.Overwrite,
+                cancellationToken).Commit();
+
             AnsiConsole.WriteLine($"Extracted {count} asset(s) to {Path.GetFullPath(settings.Output)}.");
             return 0;
         }

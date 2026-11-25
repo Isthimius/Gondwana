@@ -33,6 +33,7 @@ public sealed class OutputPanelTests
         var previousCulture = CultureInfo.CurrentCulture;
         var culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
         culture.DateTimeFormat.TimeSeparator = separator;
+
         try
         {
             CultureInfo.CurrentCulture = culture;
@@ -60,6 +61,7 @@ public sealed class OutputPanelTests
     {
         var palette = ToolingPalette.For(theme);
         Assert.Equal(palette.Foreground, OutputPanel.ColorFor(OutputSeverity.Normal, theme));
+
         foreach (var severity in new[] { OutputSeverity.Warning, OutputSeverity.Error, OutputSeverity.Important })
         {
             var color = OutputPanel.ColorFor(severity, theme);
@@ -121,12 +123,14 @@ public sealed class OutputPanelTests
             vm.Log("Warning: First queued line");
             vm.Log("Error: Second queued line");
         }).GetAwaiter().GetResult();
+
         Application.DoEvents();
 
         // Compare entire line sequences, not just occurrence counts: stale callbacks used
         // to append the second line twice after the first callback rebuilt the full view.
         var displayed = box.Text.Replace("\r\n", "\n", StringComparison.Ordinal)
             .TrimEnd('\n').Split('\n');
+
         Assert.Equal(vm.Lines, displayed);
         int warning = box.Text.IndexOf("Warning:", StringComparison.Ordinal);
         int error = box.Text.IndexOf("Error:", StringComparison.Ordinal);
@@ -157,16 +161,23 @@ public sealed class OutputPanelTests
     private static void Sta(Action action)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
         {
             try
             {
-                action(); } catch (Exception ex) {
-                error = ex; }
+                action();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "UI test timed out.");
+
         if (error is not null)
             ExceptionDispatchInfo.Capture(error).Throw();
     }

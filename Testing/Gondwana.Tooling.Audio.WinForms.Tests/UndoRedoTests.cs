@@ -14,7 +14,10 @@ public sealed partial class AudioEditorTests
         host.Controls.Add(editor);
         host.Show();
         Application.DoEvents();
-        editor.AddLooseFiles([Path.Combine(Path.GetTempPath(), "one.wav"), Path.Combine(Path.GetTempPath(), "two.ogg")]);
+
+        editor.AddLooseFiles(
+            [Path.Combine(Path.GetTempPath(), "one.wav"), Path.Combine(Path.GetTempPath(), "two.ogg")]);
+
         Application.DoEvents();
         var list = Descendants(editor).OfType<ListView>().Single();
         var grid = Descendants(editor).OfType<PropertyGrid>().Single();

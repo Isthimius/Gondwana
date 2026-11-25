@@ -37,13 +37,18 @@ public sealed class ConversationBox : WidgetBase
     /// <param name="speaker">The speaker.</param>
     /// <param name="text">The text to display.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ConversationBox(RenderSurfaceHostBase renderSurfaceHost,
-                           View view,
-                           Rectangle bounds,
-                           string speaker,
-                           string text,
-                           string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public ConversationBox(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string speaker,
+        string text,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -51,8 +56,19 @@ public sealed class ConversationBox : WidgetBase
         _text = text ?? string.Empty;
 
         Panel = CreatePanel(renderSurfaceHost, view, bounds);
-        SpeakerText = CreateSpeakerText(renderSurfaceHost, view, GetSpeakerBounds(bounds), _speaker);
-        BodyText = CreateBodyText(renderSurfaceHost, view, GetBodyBounds(bounds), _text);
+
+        SpeakerText = CreateSpeakerText(
+            renderSurfaceHost,
+            view,
+            GetSpeakerBounds(bounds),
+            _speaker);
+
+        BodyText = CreateBodyText(
+            renderSurfaceHost,
+            view,
+            GetBodyBounds(bounds),
+            _text);
+
         ContinueIndicator = CreateContinueIndicator(renderSurfaceHost, view, GetContinueBounds(bounds));
 
         Add(Panel);
@@ -72,13 +88,18 @@ public sealed class ConversationBox : WidgetBase
     /// <param name="speaker">The speaker.</param>
     /// <param name="text">The text to display.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public ConversationBox(RenderSurfaceHostBase renderSurfaceHost,
-                           SceneLayer sceneLayer,
-                           Rectangle bounds,
-                           string speaker,
-                           string text,
-                           string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public ConversationBox(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string speaker,
+        string text,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -86,8 +107,19 @@ public sealed class ConversationBox : WidgetBase
         _text = text ?? string.Empty;
 
         Panel = CreatePanel(renderSurfaceHost, sceneLayer, bounds);
-        SpeakerText = CreateSpeakerText(renderSurfaceHost, sceneLayer, GetSpeakerBounds(bounds), _speaker);
-        BodyText = CreateBodyText(renderSurfaceHost, sceneLayer, GetBodyBounds(bounds), _text);
+
+        SpeakerText = CreateSpeakerText(
+            renderSurfaceHost,
+            sceneLayer,
+            GetSpeakerBounds(bounds),
+            _speaker);
+
+        BodyText = CreateBodyText(
+            renderSurfaceHost,
+            sceneLayer,
+            GetBodyBounds(bounds),
+            _text);
+
         ContinueIndicator = CreateContinueIndicator(renderSurfaceHost, sceneLayer, GetContinueBounds(bounds));
 
         Add(Panel);
@@ -218,7 +250,8 @@ public sealed class ConversationBox : WidgetBase
     public ConversationBox SetPanelColors(Color fill, Color border)
     {
         Panel.SetColor(fill)
-             .SetBorderColor(border);
+            .SetBorderColor(border);
+
         Panel.SetPosition(Panel.GetPosition());
         return this;
     }
@@ -289,127 +322,179 @@ public sealed class ConversationBox : WidgetBase
         SetConversationZOrder(0);
     }
 
-    private static DirectRectangle CreatePanel(RenderSurfaceHostBase host,
-                                               View view,
-                                               Rectangle bounds)
+    private static DirectRectangle CreatePanel(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigurePanel(new DirectRectangle(Color.FromArgb(238, 24, 25, 32), host, view, bounds));
+        return ConfigurePanel(
+            new DirectRectangle(
+                Color.FromArgb(
+                    238,
+                    24,
+                    25,
+                    32),
+                host,
+                view,
+                bounds));
     }
 
-    private static DirectRectangle CreatePanel(RenderSurfaceHostBase host,
-                                               SceneLayer layer,
-                                               Rectangle bounds)
+    private static DirectRectangle CreatePanel(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigurePanel(new DirectRectangle(Color.FromArgb(238, 24, 25, 32), host, layer, bounds));
+        return ConfigurePanel(
+            new DirectRectangle(
+                Color.FromArgb(
+                    238,
+                    24,
+                    25,
+                    32),
+                host,
+                layer,
+                bounds));
     }
 
     private static DirectRectangle ConfigurePanel(DirectRectangle panel)
     {
         return panel.SetFilled(true)
-                    .SetBorderColor(Color.FromArgb(245, 205, 205, 215))
-                    .SetStrokeWidth(2f)
-                    .SetCornerRadius(7f);
+            .SetBorderColor(
+                Color.FromArgb(
+                    245,
+                    205,
+                    205,
+                    215))
+            .SetStrokeWidth(2f)
+            .SetCornerRadius(7f);
     }
 
-    private static TextBlock CreateSpeakerText(RenderSurfaceHostBase host,
-                                               View view,
-                                               Rectangle bounds,
-                                               string speaker)
+    private static TextBlock CreateSpeakerText(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string speaker)
     {
         return ConfigureSpeakerText(new TextBlock(host, view, bounds), speaker);
     }
 
-    private static TextBlock CreateSpeakerText(RenderSurfaceHostBase host,
-                                               SceneLayer layer,
-                                               Rectangle bounds,
-                                               string speaker)
+    private static TextBlock CreateSpeakerText(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string speaker)
     {
-        return ConfigureSpeakerText(new TextBlock(host, layer, view: null, worldBounds: bounds), speaker);
+        return ConfigureSpeakerText(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds),
+            speaker);
     }
 
     private static TextBlock ConfigureSpeakerText(TextBlock textBlock, string speaker)
     {
         return textBlock.SetText(speaker)
-                        .SetFont(SKTypeface.Default, 17f, minSize: 11f)
-                        .SetColors(new SKColor(255, 224, 145), SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                        .SetPadding(2f, 0f)
-                        .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 17f, minSize: 11f)
+            .SetColors(new SKColor(255, 224, 145), SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .SetPadding(2f, 0f)
+            .EnableWrapping(false);
     }
 
-    private static TextBlock CreateBodyText(RenderSurfaceHostBase host,
-                                            View view,
-                                            Rectangle bounds,
-                                            string text)
+    private static TextBlock CreateBodyText(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string text)
     {
         return ConfigureBodyText(new TextBlock(host, view, bounds), text);
     }
 
-    private static TextBlock CreateBodyText(RenderSurfaceHostBase host,
-                                            SceneLayer layer,
-                                            Rectangle bounds,
-                                            string text)
+    private static TextBlock CreateBodyText(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string text)
     {
-        return ConfigureBodyText(new TextBlock(host, layer, view: null, worldBounds: bounds), text);
+        return ConfigureBodyText(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds),
+            text);
     }
 
     private static TextBlock ConfigureBodyText(TextBlock textBlock, string text)
     {
         return textBlock.SetText(text)
-                        .SetFont(SKTypeface.Default, 16f, minSize: 10f)
-                        .SetColors(SKColors.White, SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
-                        .SetPadding(2f, 2f)
-                        .EnableWrapping(true);
+            .SetFont(SKTypeface.Default, 16f, minSize: 10f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
+            .SetPadding(2f, 2f)
+            .EnableWrapping(true);
     }
 
-    private static TextBlock CreateContinueIndicator(RenderSurfaceHostBase host,
-                                                     View view,
-                                                     Rectangle bounds)
+    private static TextBlock CreateContinueIndicator(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
         return ConfigureContinueIndicator(new TextBlock(host, view, bounds));
     }
 
-    private static TextBlock CreateContinueIndicator(RenderSurfaceHostBase host,
-                                                     SceneLayer layer,
-                                                     Rectangle bounds)
+    private static TextBlock CreateContinueIndicator(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureContinueIndicator(new TextBlock(host, layer, view: null, worldBounds: bounds));
+        return ConfigureContinueIndicator(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds));
     }
 
     private static TextBlock ConfigureContinueIndicator(TextBlock textBlock)
     {
         return textBlock.SetText("▼")
-                        .SetFont(SKTypeface.Default, 14f, minSize: 9f)
-                        .SetColors(SKColors.White, SKColors.Transparent)
-                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                        .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 14f, minSize: 9f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
     }
 
     private static Rectangle GetSpeakerBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.X + ContentInset,
-                             bounds.Y + 4,
-                             Math.Max(1, bounds.Width - ContentInset * 2),
-                             SpeakerHeight);
+        return new Rectangle(
+            bounds.X + ContentInset,
+            bounds.Y + 4,
+            Math.Max(1, bounds.Width - ContentInset * 2),
+            SpeakerHeight);
     }
 
     private static Rectangle GetBodyBounds(Rectangle bounds)
     {
         int top = bounds.Y + SpeakerHeight + 4;
         int bottom = bounds.Bottom - ContinueIndicatorHeight - 4;
-        return new Rectangle(bounds.X + ContentInset,
-                             top,
-                             Math.Max(1, bounds.Width - ContentInset * 2),
-                             Math.Max(1, bottom - top));
+
+        return new Rectangle(
+            bounds.X + ContentInset,
+            top,
+            Math.Max(1, bounds.Width - ContentInset * 2),
+            Math.Max(1, bottom - top));
     }
 
     private static Rectangle GetContinueBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.Right - ContentInset - ContinueIndicatorWidth,
-                             bounds.Bottom - ContinueIndicatorHeight - 4,
-                             ContinueIndicatorWidth,
-                             ContinueIndicatorHeight);
+        return new Rectangle(
+            bounds.Right - ContentInset - ContinueIndicatorWidth,
+            bounds.Bottom - ContinueIndicatorHeight - 4,
+            ContinueIndicatorWidth,
+            ContinueIndicatorHeight);
     }
 
     private static Rectangle ValidateBounds(Rectangle bounds)

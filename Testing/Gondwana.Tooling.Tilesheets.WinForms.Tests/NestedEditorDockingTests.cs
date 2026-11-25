@@ -28,17 +28,20 @@ public sealed class NestedEditorDockingTests
     {
         string directory = Path.Combine(Path.GetTempPath(), "GondwanaDocking-" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
+
         try
         {
             using var assets = AssetsFile.LoadOrCreate(Path.Combine(directory, "test.gaf"));
             var tilesheet = TilesheetDocument.Create(directory);
             var animation = AnimationDocument.Create(directory);
+
             UserControl CreateEditor() => kind switch
             {
                 "GTS" => new TilesheetEditorControl(tilesheet),
                 "GAF" => new AssetEditorControl(assets),
                 _ => new AnimationEditorControl(animation)
             };
+
             string[] expected = kind switch
             {
                 "GTS" => ["Image", "Definition", "Region", "Frame", "Validation"],
@@ -52,12 +55,14 @@ public sealed class NestedEditorDockingTests
 
             using var theme = new VS2015DarkTheme();
             using var host = new Form { Size = new Size(1400, 900), Opacity = 0, ShowInTaskbar = false };
+
             using var outer = new DockPanel
             {
                 Dock = DockStyle.Fill,
                 Theme = theme,
                 DocumentStyle = DocumentStyle.DockingWindow
             };
+
             host.Controls.Add(outer);
             using var browser = new DockContent { Text = "Working directory" };
             browser.Show(outer, DockState.DockLeft);
@@ -83,20 +88,25 @@ public sealed class NestedEditorDockingTests
                 Assert.NotSame(outer, inner);
                 Assert.NotSame(InnerDock(siblingEditor), inner);
                 Assert.Equal(3, outer.Contents.Count);
-                Assert.All(panes, pane =>
-                {
-                    Assert.Same(inner, pane.DockPanel);
-                    Assert.DoesNotContain(pane, outer.Contents.Cast<IDockContent>());
-                    Assert.True(pane.Visible);
-                    Assert.True(pane.HideOnClose);
-                    Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
-                    Assert.True(pane.AllowEndUserDocking);
-                    Assert.True(pane.ClientSize.Width > 0 && pane.ClientSize.Height > 0);
-                });
+
+                Assert.All(
+                    panes,
+                    pane =>
+                    {
+                        Assert.Same(inner, pane.DockPanel);
+                        Assert.DoesNotContain(pane, outer.Contents.Cast<IDockContent>());
+                        Assert.True(pane.Visible);
+                        Assert.True(pane.HideOnClose);
+                        Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
+                        Assert.True(pane.AllowEndUserDocking);
+                        Assert.True(pane.ClientSize.Width > 0 && pane.ClientSize.Height > 0);
+                    });
+
                 Assert.Empty(inner.FloatWindows);
                 AssertDefaultPlacement(kind, panes);
 
                 var children = panes.SelectMany(pane => Descendants(pane)).ToArray();
+
                 // Exercise the same fill-drop path as dragging onto each pane,
                 // including GANI sources, GTS inspectors, and GAF status.
                 foreach (var target in panes.Reverse())
@@ -129,7 +139,11 @@ public sealed class NestedEditorDockingTests
                 Assert.NotSame(first.Pane, last.Pane);
                 Assert.All(panes, pane => Assert.Same(inner, pane.DockPanel));
                 Assert.Throws<ArgumentException>(() => last.DockHandler.DockTo(outer, DockStyle.Right));
-                Assert.Throws<ArgumentException>(() => last.DockHandler.DockTo(InnerDock(siblingEditor), DockStyle.Right));
+
+                Assert.Throws<ArgumentException>(() => last.DockHandler.DockTo(
+                    InnerDock(siblingEditor),
+                    DockStyle.Right));
+
                 last.Activate();
                 Application.DoEvents();
                 Assert.Same(document, outer.ActiveDocument);
@@ -217,9 +231,11 @@ public sealed class NestedEditorDockingTests
     {
         string directory = Path.Combine(Path.GetTempPath(), "GondwanaDocking-" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
+
         try
         {
             string path = Path.Combine(directory, "test.gaf");
+
             using (var assets = AssetsFile.LoadOrCreate(path))
             {
                 assets.Add(AssetTypes.Misc, "notes", new MemoryStream([1, 2, 3]));
@@ -230,7 +246,10 @@ public sealed class NestedEditorDockingTests
                 host.Show();
                 Application.DoEvents();
                 var grid = Assert.Single(Descendants(editor).OfType<DataGridView>());
-                var items = Descendants(editor).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+
+                var items = Descendants(editor).OfType<ToolStrip>()
+                    .SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+
                 var type = Assert.Single(items.OfType<ToolStripComboBox>());
                 var search = Assert.Single(items.OfType<ToolStripTextBox>());
                 Assert.Equal(2, grid.Rows.Count);
@@ -270,6 +289,7 @@ public sealed class NestedEditorDockingTests
     private static void AssertDefaultPlacement(string kind, DockContent[] panes)
     {
         Point At(string name) => panes.Single(pane => pane.Text == name).PointToScreen(Point.Empty);
+
         if (kind == "GTS")
         {
             Assert.True(At("Definition").X > At("Image").X);
@@ -295,6 +315,7 @@ public sealed class NestedEditorDockingTests
         foreach (Control child in parent.Controls)
         {
             yield return child;
+
             foreach (var descendant in Descendants(child))
                 yield return descendant;
         }
@@ -303,22 +324,25 @@ public sealed class NestedEditorDockingTests
     private static void RunSta(Action test)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
-        {
-            try
             {
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
-                test();
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-        })
-        { IsBackground = true };
+                try
+                {
+                    Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
+                    test();
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            })
+            { IsBackground = true };
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Nested docking test timed out.");
+
         if (error is not null)
             ExceptionDispatchInfo.Capture(error).Throw();
     }

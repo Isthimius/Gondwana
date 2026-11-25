@@ -38,14 +38,18 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
         get
         {
             var osButtons = Control.MouseButtons;
+
             lock (_pressedLock)
             {
                 if (!osButtons.HasFlag(MouseButtons.Left))
                     _pressed.Remove(MouseButton.Left);
+
                 if (!osButtons.HasFlag(MouseButtons.Right))
                     _pressed.Remove(MouseButton.Right);
+
                 if (!osButtons.HasFlag(MouseButtons.Middle))
                     _pressed.Remove(MouseButton.Middle);
+
                 return new HashSet<MouseButton>(_pressed);
             }
         }
@@ -83,6 +87,7 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
 
         lock (_pressedLock)
             _pressed.Add(MapButton(e.Button));
+
         UpdatePosition(e);
     }
 
@@ -93,6 +98,7 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
 
         lock (_pressedLock)
             _pressed.Remove(MapButton(e.Button));
+
         UpdatePosition(e);
     }
 
@@ -109,10 +115,13 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
         _currentPosition = e.Location;
 
         _modifiers = KeyboardModifierState.None;
+
         if (Control.ModifierKeys.HasFlag(Keys.Shift))
             _modifiers |= KeyboardModifierState.Shift;
+
         if (Control.ModifierKeys.HasFlag(Keys.Control))
             _modifiers |= KeyboardModifierState.Ctrl;
+
         if (Control.ModifierKeys.HasFlag(Keys.Alt))
             _modifiers |= KeyboardModifierState.Alt;
     }

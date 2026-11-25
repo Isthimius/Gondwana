@@ -21,15 +21,16 @@ public sealed class GitHubRepositoryServiceTests
         const string source = "one\ntwo\nthree\nfour\nfive";
         string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(source));
 
-        string responseJson = JsonSerializer.Serialize(new
-        {
-            type = "file",
-            size = Encoding.UTF8.GetByteCount(source),
-            encoding = "base64",
-            content = encoded,
-            sha = "abc123",
-            html_url = "https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Engine.cs"
-        });
+        string responseJson = JsonSerializer.Serialize(
+            new
+            {
+                type = "file",
+                size = Encoding.UTF8.GetByteCount(source),
+                encoding = "base64",
+                content = encoded,
+                sha = "abc123",
+                html_url = "https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Engine.cs"
+            });
 
         using var httpClient = new HttpClient(
             new TestHttpMessageHandler(_ =>
@@ -37,10 +38,11 @@ public sealed class GitHubRepositoryServiceTests
 
         var service = new GitHubRepositoryService(
             httpClient,
-            Options.Create(new GondwanaMcpOptions
-            {
-                MaxLinesPerRead = 2
-            }));
+            Options.Create(
+                new GondwanaMcpOptions
+                {
+                    MaxLinesPerRead = 2
+                }));
 
         var result = await service.ReadFileAsync(
             "Gondwana/Engine.cs",
@@ -90,32 +92,33 @@ public sealed class GitHubRepositoryServiceTests
     [Fact]
     public async Task SearchCode_FiltersUnexpectedRepositoryFromGitHubResponse()
     {
-        string responseJson = JsonSerializer.Serialize(new
-        {
-            total_count = 2,
-            items = new object[]
+        string responseJson = JsonSerializer.Serialize(
+            new
             {
-                new
+                total_count = 2,
+                items = new object[]
                 {
-                    path = "Gondwana/Engine.cs",
-                    sha = "gondwana-sha",
-                    html_url = "https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Engine.cs",
-                    repository = new { full_name = "Isthimius/Gondwana" },
-                    text_matches = new[]
+                    new
                     {
-                        new { fragment = "public static class Engine" }
+                        path = "Gondwana/Engine.cs",
+                        sha = "gondwana-sha",
+                        html_url = "https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Engine.cs",
+                        repository = new { full_name = "Isthimius/Gondwana" },
+                        text_matches = new[]
+                        {
+                            new { fragment = "public static class Engine" }
+                        }
+                    },
+                    new
+                    {
+                        path = "Elsewhere/Engine.cs",
+                        sha = "other-sha",
+                        html_url = "https://github.com/example/other/blob/master/Elsewhere/Engine.cs",
+                        repository = new { full_name = "example/other" },
+                        text_matches = Array.Empty<object>()
                     }
-                },
-                new
-                {
-                    path = "Elsewhere/Engine.cs",
-                    sha = "other-sha",
-                    html_url = "https://github.com/example/other/blob/master/Elsewhere/Engine.cs",
-                    repository = new { full_name = "example/other" },
-                    text_matches = Array.Empty<object>()
                 }
-            }
-        });
+            });
 
         using var httpClient = new HttpClient(
             new TestHttpMessageHandler(request =>
@@ -127,10 +130,11 @@ public sealed class GitHubRepositoryServiceTests
 
         var service = new GitHubRepositoryService(
             httpClient,
-            Options.Create(new GondwanaMcpOptions
-            {
-                GitHubToken = "server-token"
-            }));
+            Options.Create(
+                new GondwanaMcpOptions
+                {
+                    GitHubToken = "server-token"
+                }));
 
         var result = await service.SearchCodeAsync("Engine");
 

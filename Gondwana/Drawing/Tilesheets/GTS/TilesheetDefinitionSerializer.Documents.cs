@@ -11,7 +11,10 @@ public static partial class TilesheetDefinitionSerializer
     /// <returns>The complete definition document.</returns>
     public static TilesheetDefinitionDocument FromDocumentJson(string json, string? sourceIdentity = null) => new()
     {
-        Definitions = DefinitionDocumentJson.Read<TilesheetDefinition>(json, json => ParseDefinition(json, null), definition => definition.Name)
+        Definitions = DefinitionDocumentJson.Read<TilesheetDefinition>(
+            json,
+            json => ParseDefinition(json, null),
+            definition => definition.Name)
     };
 
     /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
@@ -32,10 +35,12 @@ public static partial class TilesheetDefinitionSerializer
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         var path = Path.GetFullPath(filePath);
         var document = FromDocumentJson(File.ReadAllText(path), path);
+
         foreach (var definition in document.Definitions)
         {
             if (definition.Source.Kind != TilesheetDefinitionSourceKind.Generated)
                 definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(path);
+
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Name);
         }
 
@@ -48,8 +53,10 @@ public static partial class TilesheetDefinitionSerializer
     public static TilesheetDefinitionDocument LoadDocument(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
+
         if (!stream.CanRead)
             throw new ArgumentException("Stream must be readable.", nameof(stream));
+
         using var reader = new StreamReader(stream, leaveOpen: true);
         return FromDocumentJson(reader.ReadToEnd());
     }
@@ -62,16 +69,24 @@ public static partial class TilesheetDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+
         using var stream = assetsFile.Get(AssetTypes.TilesheetDefinition, entryName)
-            ?? throw new FileNotFoundException($"GTS asset entry not found: {entryName}", entryName);
+                           ?? throw new FileNotFoundException($"GTS asset entry not found: {entryName}", entryName);
+
         using var reader = new StreamReader(stream);
         var document = FromDocumentJson(reader.ReadToEnd(), entryName);
+
         foreach (var definition in document.Definitions)
         {
             definition.Source = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
                 ? TilesheetDefinitionSource.None()
                 : TilesheetDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
-            definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName, definitionIdentity: definition.Name);
+
+            definition.LoadStamp = new(
+                definition,
+                assetsFilePath: assetsFile.SourcePath,
+                entryName: entryName,
+                definitionIdentity: definition.Name);
         }
 
         return document;
@@ -84,6 +99,7 @@ public static partial class TilesheetDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
+
         try
         {
             DefinitionDocumentJson.Check(document.Definitions, definition => definition.Name);
@@ -95,7 +111,10 @@ public static partial class TilesheetDefinitionSerializer
 
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
-                errors.AddRange(TilesheetDefinitionValidator.Validate(definition).Select(error => $"Tilesheet '{definition.Name}': {error}"));
+                errors.AddRange(
+                    TilesheetDefinitionValidator.Validate(definition)
+                        .Select(error => $"Tilesheet '{definition.Name}': {error}"));
+
         return errors;
     }
 
@@ -111,13 +130,17 @@ public static partial class TilesheetDefinitionSerializer
     /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
-    public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions) => SaveAll(filePath, definitions, null);
+    public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions) =>
+        SaveAll(filePath, definitions, null);
 
     /// <summary>Saves with a pre-install check after preparation and staging. Throw to abort; the callback must not alter the staging file.</summary>
     /// <param name="filePath">Final destination used for reference rebasing.</param>
     /// <param name="definitions">All members to persist.</param>
     /// <param name="beforeInstall">Receives the sibling staging path immediately before atomic installation.</param>
-    public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions, Action<string>? beforeInstall)
+    public static void SaveAll(
+        string filePath,
+        IEnumerable<TilesheetDefinition> definitions,
+        Action<string>? beforeInstall)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         ArgumentNullException.ThrowIfNull(definitions);
@@ -133,16 +156,27 @@ public static partial class TilesheetDefinitionSerializer
     {
         var clone = ParseDefinition(ToJson(definition), null);
         var origin = definition.Source.GtsFilePath ?? definition.Source.AssetsFilePath;
+
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
+                           (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin)
+                               ? null
+                               : Path.GetDirectoryName(origin));
+
         var newDirectory = Path.GetDirectoryName(path)!;
-        string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
-            Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
+        string? RebasePath(string? value) =>
+            string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value))
+                ? value
+                : Path.GetRelativePath(
+                    newDirectory,
+                    oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
+
         if (clone.Image is { } image)
         {
             if (string.IsNullOrWhiteSpace(image.FilePath) && string.IsNullOrWhiteSpace(image.AssetsFilePath) &&
                 !string.IsNullOrWhiteSpace(image.AssetEntryName))
                 image.AssetsFilePath = definition.LoadStamp?.AssetsFilePath ?? definition.Source.AssetsFilePath;
+
             image.FilePath = RebasePath(image.FilePath);
             image.AssetsFilePath = RebasePath(image.AssetsFilePath);
         }
@@ -179,7 +213,8 @@ public static partial class TilesheetDefinitionSerializer
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry name.</param>
     /// <returns>All definitions.</returns>
-    public static IReadOnlyList<TilesheetDefinition> LoadAll(AssetsFile assetsFile, string entryName) => LoadDocument(assetsFile, entryName).Definitions;
+    public static IReadOnlyList<TilesheetDefinition> LoadAll(AssetsFile assetsFile, string entryName) =>
+        LoadDocument(assetsFile, entryName).Definitions;
 
     /// <summary>Loads a logical member by its case-sensitive Name.</summary>
     /// <param name="assetsFile">The archive.</param>
@@ -193,5 +228,6 @@ public static partial class TilesheetDefinitionSerializer
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The physical document entry.</param>
     /// <returns>The singleton definition.</returns>
-    public static TilesheetDefinition Load(AssetsFile assetsFile, string entryName) => Load(assetsFile, entryName, null);
+    public static TilesheetDefinition Load(AssetsFile assetsFile, string entryName) =>
+        Load(assetsFile, entryName, null);
 }

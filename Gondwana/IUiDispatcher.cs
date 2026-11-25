@@ -55,7 +55,7 @@ public interface IUiDispatcher
     /// This method is thread-safe and can be called from any thread.
     /// </para>
     /// </remarks>
-    void Post(Action action);        // async, preferred
+    void Post(Action action); // async, preferred
 
     /// <summary>
     /// Synchronously sends an action to be executed on the UI thread, blocking the calling thread
@@ -86,5 +86,5 @@ public interface IUiDispatcher
     /// avoid deadlock scenarios.
     /// </para>
     /// </remarks>
-    void Send(Action action);        // sync; avoid on web platforms
+    void Send(Action action); // sync; avoid on web platforms
 }

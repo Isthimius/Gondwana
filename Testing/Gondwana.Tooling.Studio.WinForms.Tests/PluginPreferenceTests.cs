@@ -117,7 +117,12 @@ public sealed class PluginPreferenceTests : IDisposable
     {
         var preferences = new PluginPreferences(FilePath, _ => { });
         Directory.CreateDirectory(_root);
-        using (var saveLock = new FileStream(FilePath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+
+        using (var saveLock = new FileStream(
+                   FilePath + ".lock",
+                   FileMode.OpenOrCreate,
+                   FileAccess.ReadWrite,
+                   FileShare.None))
         {
             Assert.False(preferences.TrySetEnabled("sample.plugin", false, out var error));
             Assert.NotNull(error);

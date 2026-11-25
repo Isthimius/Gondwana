@@ -20,10 +20,18 @@ public sealed class HostShutdownTests
         var originalCycle = cycleField.GetValue(Engine.Instance);
         var cycle = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var host = new ShutdownHost();
-        typeof(GameHostBase).GetField("_engineStarted", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(host, true);
-        typeof(GameHostBase).GetField("_engineInitialized", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(host, true);
+
+        typeof(GameHostBase).GetField("_engineStarted", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(
+            host,
+            true);
+
+        typeof(GameHostBase).GetField("_engineInitialized", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(
+            host,
+            true);
+
         cycleField.SetValue(Engine.Instance, cycle.Task);
         var disposing = Task.Run(() => Assert.Throws<CleanupReachedException>(() => host.Dispose()));
+
         try
         {
             await host.SchedulingStopped.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -41,22 +49,29 @@ public sealed class HostShutdownTests
         }
     }
 
-    private sealed class CleanupReachedException : Exception { }
+    private sealed class CleanupReachedException : Exception
+    {
+    }
 
     private sealed class ShutdownHost : GameHostBase
     {
         /// <summary>
         /// Gets the scheduling stopped.
         /// </summary>
-        public TaskCompletionSource SchedulingStopped { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource SchedulingStopped { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         /// <summary>
         /// Gets whether cleanup reached is enabled.
         /// </summary>
         public bool CleanupReached { get; private set; }
+
         /// <inheritdoc/>
         protected override void ConfigurePlatform() { }
+
         /// <inheritdoc/>
         protected override void StopEngineCore() => SchedulingStopped.SetResult();
+
         /// <inheritdoc/>
         protected override void OnDisposing()
         {

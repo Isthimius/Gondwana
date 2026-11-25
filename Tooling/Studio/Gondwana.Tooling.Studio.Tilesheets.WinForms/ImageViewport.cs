@@ -74,14 +74,16 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     /// <param name="zoom">Pixels per source pixel, clamped to the range 0.05 through 16.</param>
     public void SetZoom(float zoom)
     {
-        var center = new PointF((ClientSize.Width / 2f - AutoScrollPosition.X) / Zoom,
+        var center = new PointF(
+            (ClientSize.Width / 2f - AutoScrollPosition.X) / Zoom,
             (ClientSize.Height / 2f - AutoScrollPosition.Y) / Zoom);
 
         _fitSelected = false;
         Zoom = Math.Clamp(zoom, .05f, 16f);
         UpdateExtent();
 
-        AutoScrollPosition = new Point(Math.Max(0, (int)(center.X * Zoom - ClientSize.Width / 2f)),
+        AutoScrollPosition = new Point(
+            Math.Max(0, (int)(center.X * Zoom - ClientSize.Width / 2f)),
             Math.Max(0, (int)(center.Y * Zoom - ClientSize.Height / 2f)));
 
         Invalidate();
@@ -115,6 +117,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             return false;
 
         long buttonsAndDelta = message.WParam.ToInt64();
+
         if ((buttonsAndDelta & ControlKey) == 0)
         {
             _zoomWheelDelta = 0;
@@ -145,6 +148,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 
         _zoomWheelDelta += delta;
         const int WheelNotch = 120;
+
         while (_zoomWheelDelta >= WheelNotch)
         {
             ZoomIn();
@@ -182,7 +186,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     /// </summary>
     public void UpdateExtent()
     {
-        AutoScrollMinSize = Image is null ? Size.Empty : new Size((int)Math.Ceiling(Image.Width * Zoom), (int)Math.Ceiling(Image.Height * Zoom));
+        AutoScrollMinSize = Image is null
+            ? Size.Empty
+            : new Size((int)Math.Ceiling(Image.Width * Zoom), (int)Math.Ceiling(Image.Height * Zoom));
+
         Invalidate();
     }
 
@@ -214,7 +221,9 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         if (top < currentY || top + bounds.Height * Zoom > currentY + ClientSize.Height)
             currentY = top;
 
-        AutoScrollPosition = new Point((int)Math.Clamp(currentX, 0, int.MaxValue), (int)Math.Clamp(currentY, 0, int.MaxValue));
+        AutoScrollPosition = new Point(
+            (int)Math.Clamp(currentX, 0, int.MaxValue),
+            (int)Math.Clamp(currentY, 0, int.MaxValue));
     }
 
     /// <inheritdoc/>
@@ -235,22 +244,29 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             return;
 
         var point = new PointF((e.X - AutoScrollPosition.X) / Zoom, (e.Y - AutoScrollPosition.Y) / Zoom);
+
         if (FrameGeometry.HitTest(Definition, SelectedRegion, point) is not { } hit)
             return;
 
         FrameSelected?.Invoke(hit.Region, hit.Frame);
+
         if (Image is null)
             return;
 
         _pendingFrameDrag = CreateFrameDrag?.Invoke(hit.Region, hit.Frame);
         Size threshold = SystemInformation.DragSize;
-        _dragThreshold = new Rectangle(e.X - threshold.Width / 2, e.Y - threshold.Height / 2,
-            threshold.Width, threshold.Height);
+
+        _dragThreshold = new Rectangle(
+            e.X - threshold.Width / 2,
+            e.Y - threshold.Height / 2,
+            threshold.Width,
+            threshold.Height);
     }
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
         base.OnMouseMove(e);
+
         if (e.Button == MouseButtons.Left && TakeFrameDrag(e.Location) is { } frame)
             DoDragDrop(new ResourceDragData<TilesheetFrameDrag>(frame), DragDropEffects.Copy);
     }
@@ -285,12 +301,21 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 
         if (Image is null)
         {
-            TextRenderer.DrawText(g, Message, Font, ClientRectangle, Color.Silver,
+            TextRenderer.DrawText(
+                g,
+                Message,
+                Font,
+                ClientRectangle,
+                Color.Silver,
                 TextFormatFlags.WordBreak | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+
             return;
         }
 
-        using (var checker = new HatchBrush(HatchStyle.LargeCheckerBoard, Color.FromArgb(52, 52, 52), Color.FromArgb(40, 40, 40)))
+        using (var checker = new HatchBrush(
+                   HatchStyle.LargeCheckerBoard,
+                   Color.FromArgb(52, 52, 52),
+                   Color.FromArgb(40, 40, 40)))
             g.FillRectangle(checker, ClientRectangle);
 
         g.TranslateTransform(AutoScrollPosition.X, AutoScrollPosition.Y);
@@ -298,7 +323,14 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         g.InterpolationMode = InterpolationMode.NearestNeighbor;
         g.PixelOffsetMode = PixelOffsetMode.Half;
         g.SmoothingMode = SmoothingMode.None;
-        g.DrawImage(Image, new Rectangle(0, 0, Image.Width, Image.Height));
+
+        g.DrawImage(
+            Image,
+            new Rectangle(
+                0,
+                0,
+                Image.Width,
+                Image.Height));
 
         if (Definition is null)
             return;
@@ -306,14 +338,26 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         if (Overlays.Contains("Regions") || Overlays.Contains("SelectedRegion"))
             foreach (var region in Definition.Regions)
                 if (Overlays.Contains(region == SelectedRegion ? "SelectedRegion" : "Regions"))
-                    Outline(g, region.Area, Colors[region == SelectedRegion ? OverlayKind.SelectedRegion : OverlayKind.Regions], region == SelectedRegion ? 2 : 1);
+                    Outline(
+                        g,
+                        region.Area,
+                        Colors[region == SelectedRegion ? OverlayKind.SelectedRegion : OverlayKind.Regions],
+                        region == SelectedRegion ? 2 : 1);
 
         if (SelectedRegion is not { } r)
             return;
 
         if (Overlays.Contains("Margin"))
-            Outline(g, RectangleF.FromLTRB((float)r.Area.X + r.RegionMargin.Left, (float)r.Area.Y + r.RegionMargin.Top,
-                (float)r.Area.X + r.Area.Width - r.RegionMargin.Right, (float)r.Area.Y + r.Area.Height - r.RegionMargin.Bottom), Colors[OverlayKind.Margin], 1, DashStyle.Dash);
+            Outline(
+                g,
+                RectangleF.FromLTRB(
+                    (float)r.Area.X + r.RegionMargin.Left,
+                    (float)r.Area.Y + r.RegionMargin.Top,
+                    (float)r.Area.X + r.Area.Width - r.RegionMargin.Right,
+                    (float)r.Area.Y + r.Area.Height - r.RegionMargin.Bottom),
+                Colors[OverlayKind.Margin],
+                1,
+                DashStyle.Dash);
 
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(r);
         long pitchX = (long)r.TileSize.Width + r.TilePadding.Left + r.TilePadding.Right;
@@ -328,14 +372,27 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         var top = -AutoScrollPosition.Y / Zoom;
         int firstX = (int)Math.Clamp(Math.Floor((left - r.Area.X - r.RegionMargin.Left) / pitchX) - 1, 0, columns - 1);
         int firstY = (int)Math.Clamp(Math.Floor((top - r.Area.Y - r.RegionMargin.Top) / pitchY) - 1, 0, rows - 1);
-        int lastX = (int)Math.Clamp(Math.Ceiling((left + ClientSize.Width / Zoom - r.Area.X - r.RegionMargin.Left) / pitchX) + 1, 0, columns - 1);
-        int lastY = (int)Math.Clamp(Math.Ceiling((top + ClientSize.Height / Zoom - r.Area.Y - r.RegionMargin.Top) / pitchY) + 1, 0, rows - 1);
-        int step = Math.Max(1, (int)Math.Ceiling(Math.Sqrt((long)(lastX - firstX + 1) * (lastY - firstY + 1) / 10000d)));
-        var metadata = r.Frames.Where(f => f is not null).GroupBy(f => (f.XTile, f.YTile)).ToDictionary(f => f.Key, f => f.First());
+
+        int lastX = (int)Math.Clamp(
+            Math.Ceiling((left + ClientSize.Width / Zoom - r.Area.X - r.RegionMargin.Left) / pitchX) + 1,
+            0,
+            columns - 1);
+
+        int lastY = (int)Math.Clamp(
+            Math.Ceiling((top + ClientSize.Height / Zoom - r.Area.Y - r.RegionMargin.Top) / pitchY) + 1,
+            0,
+            rows - 1);
+
+        int step = Math.Max(
+            1,
+            (int)Math.Ceiling(Math.Sqrt((long)(lastX - firstX + 1) * (lastY - firstY + 1) / 10000d)));
+
+        var metadata = r.Frames.Where(f => f is not null).GroupBy(f => (f.XTile, f.YTile))
+            .ToDictionary(f => f.Key, f => f.First());
 
         for (long y = firstY; y <= lastY; y += step)
-            for (long x = firstX; x <= lastX; x += step)
-                DrawFrame((int)x, (int)y, false);
+        for (long x = firstX; x <= lastX; x += step)
+            DrawFrame((int)x, (int)y, false);
 
         if (SelectedFrame is { } selected && selected.X < columns && selected.Y < rows)
             DrawFrame(selected.X, selected.Y, true);
@@ -343,6 +400,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         void DrawFrame(int x, int y, bool selected)
         {
             Rectangle bounds;
+
             try
             {
                 bounds = FrameGeometry.Bounds(r, x, y);
@@ -353,12 +411,28 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             }
 
             if (Overlays.Contains("Padding"))
-                Outline(g, RectangleF.FromLTRB((float)bounds.X - r.TilePadding.Left, (float)bounds.Y - r.TilePadding.Top,
-                    (float)bounds.X + bounds.Width + r.TilePadding.Right, (float)bounds.Y + bounds.Height + r.TilePadding.Bottom), Colors[OverlayKind.Padding], 1, DashStyle.Dot);
+                Outline(
+                    g,
+                    RectangleF.FromLTRB(
+                        (float)bounds.X - r.TilePadding.Left,
+                        (float)bounds.Y - r.TilePadding.Top,
+                        (float)bounds.X + bounds.Width + r.TilePadding.Right,
+                        (float)bounds.Y + bounds.Height + r.TilePadding.Bottom),
+                    Colors[OverlayKind.Padding],
+                    1,
+                    DashStyle.Dot);
 
             if (Overlays.Contains("Overhang"))
-                Outline(g, RectangleF.FromLTRB((float)bounds.X - r.Overhang.Left, (float)bounds.Y - r.Overhang.Top,
-                    (float)bounds.X + bounds.Width + r.Overhang.Right, (float)bounds.Y + bounds.Height + r.Overhang.Bottom), Colors[OverlayKind.Overhang], 1, DashStyle.Dash);
+                Outline(
+                    g,
+                    RectangleF.FromLTRB(
+                        (float)bounds.X - r.Overhang.Left,
+                        (float)bounds.Y - r.Overhang.Top,
+                        (float)bounds.X + bounds.Width + r.Overhang.Right,
+                        (float)bounds.Y + bounds.Height + r.Overhang.Bottom),
+                    Colors[OverlayKind.Overhang],
+                    1,
+                    DashStyle.Dash);
 
             if (Overlays.Contains("Frames"))
                 Outline(g, bounds, Colors[OverlayKind.Frames]);
@@ -366,20 +440,41 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             if (Overlays.Contains("Collision"))
             {
                 metadata.TryGetValue((x, y), out var frame);
-                Outline(g, (frame?.CollisionAdjust ?? r.CollisionAdjust).ApplyTo(bounds), Colors[OverlayKind.Collision], 1, DashStyle.DashDot);
+
+                Outline(
+                    g,
+                    (frame?.CollisionAdjust ?? r.CollisionAdjust).ApplyTo(bounds),
+                    Colors[OverlayKind.Collision],
+                    1,
+                    DashStyle.DashDot);
             }
 
             if (selected && Overlays.Contains("SelectedFrame"))
-                Outline(g, bounds, Colors[OverlayKind.SelectedFrame], 3);
+                Outline(
+                    g,
+                    bounds,
+                    Colors[OverlayKind.SelectedFrame],
+                    3);
         }
     }
 
-    private void Outline(Graphics graphics, RectangleF rectangle, Color color, float width = 1, DashStyle style = DashStyle.Solid)
+    private void Outline(
+        Graphics graphics,
+        RectangleF rectangle,
+        Color color,
+        float width = 1,
+        DashStyle style = DashStyle.Solid)
     {
         if (rectangle.Width < 0 || rectangle.Height < 0)
             return;
 
         using var pen = new Pen(color, width / Zoom) { DashStyle = style };
-        graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+
+        graphics.DrawRectangle(
+            pen,
+            rectangle.X,
+            rectangle.Y,
+            rectangle.Width,
+            rectangle.Height);
     }
 }

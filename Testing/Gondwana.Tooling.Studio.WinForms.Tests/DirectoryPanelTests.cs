@@ -12,10 +12,14 @@ public sealed partial class CompositionTests
     [Fact]
     public void BrowserDisplaysTypedPackedEntriesAfterLooseFilesWithoutChangingContent() => RunSta(directory =>
     {
-        var types = new[] { AssetTypes.TilesheetDefinition, AssetTypes.AnimationDefinition,
+        var types = new[]
+        {
+            AssetTypes.TilesheetDefinition, AssetTypes.AnimationDefinition,
             AssetTypes.SceneDefinition, AssetTypes.SpriteDefinition, AssetTypes.AudioDefinition,
             AssetTypes.Image, AssetTypes.Audio, AssetTypes.Video, AssetTypes.Cursor, AssetTypes.Font,
-            AssetTypes.Svg, AssetTypes.Misc, (AssetTypes)999 };
+            AssetTypes.Svg, AssetTypes.Misc, (AssetTypes)999
+        };
+
         foreach (var extension in new[] { "gts", "gani", "gscn", "gspr", "gsnd", "txt" })
         {
             File.WriteAllText(Path.Combine(directory, "z." + extension), "unchanged");
@@ -24,9 +28,15 @@ public sealed partial class CompositionTests
 
         foreach (var name in new[] { "b.GAF", "a.gaf" })
         {
-            using var archive = AssetsFile.LoadOrCreate(Path.Combine(directory, name), null, false, register: false);
+            using var archive = AssetsFile.LoadOrCreate(
+                Path.Combine(directory, name),
+                null,
+                false,
+                register: false);
+
             foreach (var type in types)
                 archive.Add(type, "nested/same.gts", new MemoryStream([1, 2, 3]));
+
             archive.Add(AssetTypes.TilesheetDefinition, "z.gts", new MemoryStream([4]));
             archive.Save();
         }
@@ -38,48 +48,67 @@ public sealed partial class CompositionTests
         WaitForArchives(panel);
         var groups = panel.Tree.Nodes[0].Nodes;
         Assert.Equal(2, groups[0].Nodes.Count);
+
         for (int group = 1; group < 7; group++)
         {
             Assert.Equal(new[] { "A.", "z." }, groups[group].Nodes.Cast<TreeNode>().Take(2).Select(n => n.Text[..2]));
             Assert.All(groups[group].Nodes.Cast<TreeNode>().Take(2), n => Assert.IsType<string>(n.Tag));
             var archives = groups[group].Nodes.Cast<TreeNode>().Skip(2).ToArray();
             Assert.Equal(new[] { "a.gaf", "b.GAF" }, archives.Select(n => n.Text));
-            Assert.All(archives, node =>
-            {
-                Assert.Null(node.Tag);
-                Assert.False(panel.PrepareFileMenu(node));
-                Assert.Equal("gaf", node.ImageKey);
-                Assert.Equal(Path.Combine(directory, node.Text), node.ToolTipText);
-                Assert.Equal(node.Nodes.Cast<TreeNode>().Select(n => n.Text).Order(StringComparer.OrdinalIgnoreCase),
-                    node.Nodes.Cast<TreeNode>().Select(n => n.Text));
-            });
-            Assert.All(archives.SelectMany(n => n.Nodes.Cast<TreeNode>()), node =>
-            {
-                var identity = Assert.IsType<PackedAssetNodeIdentity>(node.Tag);
-                Assert.True(Path.IsPathFullyQualified(identity.ArchivePath));
-                if (group < 6)
-                    Assert.Equal(types[group - 1], identity.AssetType);
-                else
-                    Assert.DoesNotContain(identity.AssetType, types.Take(5));
-                Assert.Equal(identity.EntryName, node.Text);
-                Assert.Equal($"Archive: {identity.ArchivePath}\nEntry: {identity.EntryName}\nAsset type: {identity.AssetType}", node.ToolTipText);
-                Assert.Equal(groups[group].Name, node.ImageKey);
-                Assert.Equal(node.ImageKey, node.SelectedImageKey);
-                Assert.True(panel.PrepareFileMenu(node)); // All packed resources support Find References.
-                Assert.Equal(group < 6, panel.FileMenu.Items[0].Available);
-            });
+
+            Assert.All(
+                archives,
+                node =>
+                {
+                    Assert.Null(node.Tag);
+                    Assert.False(panel.PrepareFileMenu(node));
+                    Assert.Equal("gaf", node.ImageKey);
+                    Assert.Equal(Path.Combine(directory, node.Text), node.ToolTipText);
+
+                    Assert.Equal(
+                        node.Nodes.Cast<TreeNode>().Select(n => n.Text).Order(StringComparer.OrdinalIgnoreCase),
+                        node.Nodes.Cast<TreeNode>().Select(n => n.Text));
+                });
+
+            Assert.All(
+                archives.SelectMany(n => n.Nodes.Cast<TreeNode>()),
+                node =>
+                {
+                    var identity = Assert.IsType<PackedAssetNodeIdentity>(node.Tag);
+                    Assert.True(Path.IsPathFullyQualified(identity.ArchivePath));
+
+                    if (group < 6)
+                        Assert.Equal(types[group - 1], identity.AssetType);
+                    else
+                        Assert.DoesNotContain(identity.AssetType, types.Take(5));
+
+                    Assert.Equal(identity.EntryName, node.Text);
+
+                    Assert.Equal(
+                        $"Archive: {identity.ArchivePath}\nEntry: {identity.EntryName}\nAsset type: {identity.AssetType}",
+                        node.ToolTipText);
+
+                    Assert.Equal(groups[group].Name, node.ImageKey);
+                    Assert.Equal(node.ImageKey, node.SelectedImageKey);
+                    Assert.True(panel.PrepareFileMenu(node)); // All packed resources support Find References.
+                    Assert.Equal(group < 6, panel.FileMenu.Items[0].Available);
+                });
         }
 
         Assert.Equal(4, groups[1].Nodes.Count);
         Assert.Equal(2, groups[1].Nodes[2].Nodes.Count);
         Assert.Equal(4, groups[6].Nodes.Count);
         Assert.Equal(8, groups[6].Nodes[2].Nodes.Count);
+
         var sameNames = groups[1].Nodes.Cast<TreeNode>().Skip(2).SelectMany(n => n.Nodes.Cast<TreeNode>())
-            .Select(node => (PackedAssetNodeIdentity)node.Tag!).Where(entry => entry.EntryName == "nested/same.gts").ToArray();
+            .Select(node => (PackedAssetNodeIdentity)node.Tag!).Where(entry => entry.EntryName == "nested/same.gts")
+            .ToArray();
+
         Assert.Equal(2, sameNames.Length);
         Assert.NotEqual(sameNames[0], sameNames[1]);
         Assert.Equal(registered, AssetsFile.AllAssetsFiles);
         Assert.Equal(before.Keys.Order(), Directory.GetFiles(directory).Order());
+
         foreach (var file in before)
             Assert.Equal(file.Value, File.ReadAllBytes(file.Key));
     });
@@ -96,14 +125,18 @@ public sealed partial class CompositionTests
         var nested = Directory.CreateDirectory(Path.Combine(directory, "nested")).FullName;
         using var panel = new DirectoryPanel(_ => { });
         var requests = new List<(string Format, string Directory)>();
+
         panel.NewFileRequested += (requestedFormat, requestedDirectory) =>
             requests.Add((requestedFormat, requestedDirectory));
+
         panel.SetDirectory(directory);
 
         var root = panel.Tree.Nodes[0];
         var category = root.Nodes.Cast<TreeNode>().Single(node => node.Name == format && node.Tag is null);
+
         string expectedCategoryIcon = format == "misc" ? "misc"
             : category.IsExpanded ? "directory-open" : "directory";
+
         Assert.Equal(expectedCategoryIcon, category.ImageKey);
         Assert.Equal(expectedCategoryIcon, category.SelectedImageKey);
         Assert.True(panel.PrepareCategoryMenu(category));
@@ -167,7 +200,12 @@ public sealed partial class CompositionTests
         var locked = Path.Combine(directory, "locked.gaf");
         WriteBrowserArchive(locked, "locked.gts");
         var encrypted = Path.Combine(directory, "encrypted.gaf");
-        using (var archive = AssetsFile.LoadOrCreate(encrypted, "secret", true, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   encrypted,
+                   "secret",
+                   true,
+                   register: false))
         {
             archive.Add(AssetTypes.TilesheetDefinition, "secret.gts", new MemoryStream([1]));
             archive.Save();
@@ -176,18 +214,31 @@ public sealed partial class CompositionTests
         File.WriteAllText(Path.Combine(directory, "loose.gts"), "{}");
         var logs = new List<string>();
         using var panel = new DirectoryPanel(logs.Add);
-        using (File.Open(locked, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+
+        using (File.Open(
+                   locked,
+                   FileMode.Open,
+                   FileAccess.ReadWrite,
+                   FileShare.None))
         {
             panel.SetDirectory(directory);
             WaitForArchives(panel);
         }
 
-        Assert.Equal(new[] { "loose.gts", "good.gaf" },
+        Assert.Equal(
+            new[] { "loose.gts", "good.gaf" },
             panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>().Select(node => node.Text));
+
         Assert.Equal("old.gts", panel.Tree.Nodes[0].Nodes[1].Nodes[1].Nodes[0].Text);
+
         foreach (var path in new[] { corrupt, locked, encrypted })
             Assert.Contains(logs, message => message.Contains(path));
-        using (var archive = AssetsFile.LoadOrCreate(good, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   good,
+                   null,
+                   false,
+                   register: false))
         {
             archive.Remove(AssetTypes.TilesheetDefinition, "old.gts");
             archive.Add(AssetTypes.SceneDefinition, "new.gts", new MemoryStream([2]));
@@ -196,13 +247,24 @@ public sealed partial class CompositionTests
 
         panel.RefreshDirectory();
         WaitForArchives(panel);
-        Assert.Equal("new.gts", Assert.Single(Assert.Single(panel.Tree.Nodes[0].Nodes[3].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>()).Text);
-        Assert.DoesNotContain(panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>(), node => node.Text.Contains("old.gts"));
+
+        Assert.Equal(
+            "new.gts",
+            Assert.Single(Assert.Single(panel.Tree.Nodes[0].Nodes[3].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>())
+                .Text);
+
+        Assert.DoesNotContain(
+            panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>(),
+            node => node.Text.Contains("old.gts"));
+
         panel.KnownArchivePassword = path => path == encrypted ? "secret" : null;
         panel.RefreshDirectory();
         WaitForArchives(panel);
-        Assert.Contains(panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>(),
+
+        Assert.Contains(
+            panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>(),
             node => node.Text == "encrypted.gaf" && node.Nodes[0].Text == "secret.gts");
+
         File.Delete(good);
         panel.RefreshDirectory();
         WaitForArchives(panel);
@@ -225,7 +287,11 @@ public sealed partial class CompositionTests
         _ = panel.Tree.Handle;
         folder.Expand();
         WaitForArchives(panel);
-        Assert.Equal("entry.gts", Assert.Single(Assert.Single(folder.Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>()).Text);
+
+        Assert.Equal(
+            "entry.gts",
+            Assert.Single(Assert.Single(folder.Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>()).Text);
+
         string? activated = null;
         panel.FileActivated += path => activated = path;
         var loose = root.Nodes[1].Nodes[0];
@@ -269,7 +335,11 @@ public sealed partial class CompositionTests
         panel.SetDirectory(child);
         WaitForArchives(panel);
         Assert.Equal(child, panel.Tree.Nodes[0].Text);
-        Assert.Equal("entry.gts", Assert.Single(Assert.Single(panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>()).Text);
+
+        Assert.Equal(
+            "entry.gts",
+            Assert.Single(Assert.Single(panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>())
+                .Text);
     });
 
     [Fact]
@@ -285,14 +355,24 @@ public sealed partial class CompositionTests
         panel.Dispose();
         WaitForArchives(panel);
         Assert.Empty(logs);
-        using var exclusive = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        using var exclusive = File.Open(
+            path,
+            FileMode.Open,
+            FileAccess.ReadWrite,
+            FileShare.None);
     });
 
     [Fact]
     public void BrowserOmitsEmptyArchiveGroupsAndKeepsPhysicalArchives() => RunSta(directory =>
     {
-        using (var empty = AssetsFile.LoadOrCreate(Path.Combine(directory, "empty.gaf"), null, false, register: false))
+        using (var empty = AssetsFile.LoadOrCreate(
+                   Path.Combine(directory, "empty.gaf"),
+                   null,
+                   false,
+                   register: false))
             empty.Save();
+
         WriteBrowserArchive(Path.Combine(directory, "tiles.gaf"), "entry.gts");
         using var panel = new DirectoryPanel(_ => { });
         panel.SetDirectory(directory);
@@ -300,6 +380,7 @@ public sealed partial class CompositionTests
         var groups = panel.Tree.Nodes[0].Nodes;
         Assert.Equal(new[] { "empty.gaf", "tiles.gaf" }, groups[0].Nodes.Cast<TreeNode>().Select(n => n.Text));
         Assert.Equal("tiles.gaf", Assert.Single(groups[1].Nodes.Cast<TreeNode>()).Text);
+
         foreach (var group in groups.Cast<TreeNode>().Skip(2))
             Assert.Empty(group.Nodes.Cast<TreeNode>());
     });
@@ -317,9 +398,12 @@ public sealed partial class CompositionTests
         var root = panel.Tree.Nodes[0];
         Assert.Equal("application", root.ImageKey);
         Assert.Equal("application", root.SelectedImageKey);
+
         // The application icon is compiled into Studio, not loaded from a loose asset.
-        using (var logoStream = typeof(DirectoryPanel).Assembly.GetManifestResourceStream("Gondwana.Tooling.BrandingIcon"))
+        using (var logoStream =
+               typeof(DirectoryPanel).Assembly.GetManifestResourceStream("Gondwana.Tooling.BrandingIcon"))
             Assert.NotNull(logoStream);
+
         Assert.True(panel.Tree.ImageList!.Images.ContainsKey("application"));
 
         var category = root.Nodes.Cast<TreeNode>().Single(node => node.Name == "gts");
@@ -389,6 +473,7 @@ public sealed partial class CompositionTests
         panel.Tree.TopNode = root;
         var pending = panel.PendingArchiveLoads;
         panel.ArchiveOpened = _ => throw new InvalidOperationException("Resizing must not read archives.");
+
         foreach (var size in new[] { NavigationIconSize.Medium, NavigationIconSize.Large, NavigationIconSize.Small })
         {
             var previous = panel.Tree.ImageList!;
@@ -401,22 +486,34 @@ public sealed partial class CompositionTests
             Assert.Same(selected, panel.Tree.SelectedNode);
             Assert.Same(root, panel.Tree.TopNode);
             Assert.True(archive.IsExpanded);
-            Assert.Equal((int)Math.Round((int)size * panel.Tree.DeviceDpi / 96d), panel.Tree.ImageList!.ImageSize.Width);
-            Assert.Equal(size == NavigationIconSize.Small ? 9f : size == NavigationIconSize.Medium ? 11f : 13f, panel.Tree.Font.SizeInPoints);
+
+            Assert.Equal(
+                (int)Math.Round((int)size * panel.Tree.DeviceDpi / 96d),
+                panel.Tree.ImageList!.ImageSize.Width);
+
+            Assert.Equal(
+                size == NavigationIconSize.Small ? 9f : size == NavigationIconSize.Medium ? 11f : 13f,
+                panel.Tree.Font.SizeInPoints);
+
             Assert.True(panel.Tree.ItemHeight > panel.Tree.ImageList.ImageSize.Height);
             Assert.Equal(10, panel.Tree.ImageList.Images.Count);
             Assert.Equal("application", root.ImageKey);
             Assert.Equal("application", root.SelectedImageKey);
-            Assert.All(root.Nodes.Cast<TreeNode>().Where(node => node.Tag is null && node.Name.Length > 0),
+
+            Assert.All(
+                root.Nodes.Cast<TreeNode>().Where(node => node.Tag is null && node.Name.Length > 0),
                 node =>
                 {
                     string expectedKey = node.Name == "misc" ? "misc"
                         : node.IsExpanded ? "directory-open" : "directory";
+
                     Assert.Equal(expectedKey, node.ImageKey);
                     Assert.Equal(expectedKey, node.SelectedImageKey);
                 });
+
             Assert.True(panel.Tree.ImageList.Images.ContainsKey("directory"));
             Assert.True(panel.Tree.ImageList.Images.ContainsKey("directory-open"));
+
             foreach (var key in panel.Tree.ImageList.Images.Keys.Cast<string>())
                 Assert.Equal(panel.Tree.ImageList.ImageSize, panel.Tree.ImageList.Images[key]!.Size);
         }
@@ -441,26 +538,41 @@ public sealed partial class CompositionTests
     {
         var size = (NavigationIconSize)pixels;
         var store = new NavigationPreferenceStore();
+
         using (var first = Host(directory))
         {
             Assert.Equal(NavigationIconSize.Small, first.Browser.IconSize);
             first.RebuildViewMenu();
             var view = (ToolStripMenuItem)first.MainMenuStrip!.Items[1];
             var menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
-            Assert.Equal(new[] { "Small", "Medium", "Large" }, menu.DropDownItems.Cast<ToolStripMenuItem>().Select(i => i.Text));
+
+            Assert.Equal(
+                new[] { "Small", "Medium", "Large" },
+                menu.DropDownItems.Cast<ToolStripMenuItem>().Select(i => i.Text));
+
             menu.DropDownItems.Cast<ToolStripMenuItem>().Single(i => i.Text == size.ToString()).PerformClick();
             Assert.Equal(size, first.Browser.IconSize);
             Assert.Equal(size, store.Read());
             Assert.Equal(size.ToString(), File.ReadAllText(store.FilePath));
-            Assert.Equal(size.ToString(), Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Text);
+
+            Assert.Equal(
+                size.ToString(),
+                Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Text);
+
             // A fresh instance reads the immediately saved preference before the first closes.
             using (var second = Host(Directory.CreateDirectory(Path.Combine(directory, "other-project")).FullName))
                 Assert.Equal(size, second.Browser.IconSize);
-            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout").PerformClick();
+
+            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout")
+                .PerformClick();
+
             Assert.Equal(size, store.Read());
             first.RebuildViewMenu();
             menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
-            Assert.Equal(size.ToString(), Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Text);
+
+            Assert.Equal(
+                size.ToString(),
+                Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Text);
         }
 
         using var restored = Host(directory);
@@ -477,17 +589,22 @@ public sealed partial class CompositionTests
     {
         var store = new NavigationPreferenceStore();
         Directory.CreateDirectory(Path.GetDirectoryName(store.FilePath)!);
+
         if (fault is "invalid" or "undefined")
             File.WriteAllText(store.FilePath, fault == "invalid" ? "broken" : "128");
+
         if (fault == "unreadable")
             Directory.CreateDirectory(store.FilePath);
+
         using var studio = Host(directory);
         Assert.Equal(NavigationIconSize.Small, studio.Browser.IconSize);
         studio.RebuildViewMenu();
         var view = (ToolStripMenuItem)studio.MainMenuStrip!.Items[1];
         var menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
+
         if (fault == "unreadable")
             Directory.Delete(store.FilePath);
+
         menu.DropDownItems.Cast<ToolStripMenuItem>().Single(i => i.Text == "Large").PerformClick();
         Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(store.FilePath)!, "*.tmp"));
@@ -548,8 +665,10 @@ public sealed partial class CompositionTests
         host.Controls.Add(panel);
         host.Show();
         panel.SetDirectory(directory);
+
         var untouched = panel.Tree.Nodes[0].Nodes.Cast<TreeNode>()
             .Single(node => node.Tag is DirectoryInfo info && info.Name == "other");
+
         Assert.Null(Assert.Single(untouched.Nodes.Cast<TreeNode>()).Tag);
 
         panel.SelectActiveDocument(new AssetLocation(AssetTypes.SceneDefinition, beach));
@@ -563,7 +682,9 @@ public sealed partial class CompositionTests
         Assert.Equal(beach, panel.Tree.SelectedNode?.Tag);
 
         // Outside the current root and untitled documents must not leave stale highlights.
-        panel.SelectActiveDocument(new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(Path.GetTempPath(), "outside.gscn")));
+        panel.SelectActiveDocument(
+            new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(Path.GetTempPath(), "outside.gscn")));
+
         Assert.Null(panel.Tree.SelectedNode);
         panel.SelectActiveDocument(null);
         Assert.Null(panel.Tree.SelectedNode);
@@ -575,9 +696,15 @@ public sealed partial class CompositionTests
     {
         string first = Path.Combine(directory, "first.gaf");
         string second = Path.Combine(directory, "second.gaf");
+
         foreach (var path in new[] { first, second })
         {
-            using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+            using var archive = AssetsFile.LoadOrCreate(
+                path,
+                null,
+                false,
+                register: false);
+
             archive.Add(AssetTypes.SceneDefinition, "beach.gscn", new MemoryStream([1]));
             archive.Add(AssetTypes.TilesheetDefinition, "beach.gscn", new MemoryStream([2]));
             archive.Save();
@@ -612,7 +739,12 @@ public sealed partial class CompositionTests
 
     private static void WriteBrowserArchive(string path, string entry)
     {
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         archive.Add(AssetTypes.TilesheetDefinition, entry, new MemoryStream([1]));
         archive.Save();
     }
@@ -621,6 +753,7 @@ public sealed partial class CompositionTests
     {
         var context = SynchronizationContext.Current;
         var timeout = Stopwatch.StartNew();
+
         while (!task.IsCompleted && timeout.Elapsed < TimeSpan.FromSeconds(20))
         {
             Application.DoEvents();
@@ -640,7 +773,12 @@ public sealed partial class CompositionTests
     public void GafSaveWaitsAsynchronouslyForActiveArchiveReader(string command) => RunSta(directory =>
     {
         var path = Path.Combine(directory, "active.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var initial = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
         {
             initial.Add(AssetTypes.Misc, "existing.bin", new MemoryStream([1]));
             initial.Save();
@@ -649,28 +787,42 @@ public sealed partial class CompositionTests
         using var studio = Host(directory);
         WaitForArchives(studio.Browser);
         var document = studio.OpenDocument(path);
-        var editor = Assert.IsType<Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl>(document.Document.Editor);
+
+        var editor =
+            Assert.IsType<Gondwana.Tooling.Studio.Assets.WinForms.AssetEditorControl>(document.Document.Editor);
+
         editor.AssetsFile.Add(AssetTypes.Misc, "changed.bin", new MemoryStream([2, 3]));
         editor.MarkChanged();
         using var opened = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
+
         studio.Browser.ArchiveOpened = _ =>
         {
             opened.Set();
             Assert.True(release.Wait(TimeSpan.FromSeconds(15)), "Test did not release the archive reader.");
         };
+
         studio.Browser.RefreshDirectory();
         Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
+
         try
         {
             // Prove the live read handle conflicts with the exact sharing mode used by Save.
-            Assert.Throws<IOException>(() => File.Open(path, FileMode.Open, FileAccess.Write, FileShare.None));
+            Assert.Throws<IOException>(() => File.Open(
+                path,
+                FileMode.Open,
+                FileAccess.Write,
+                FileShare.None));
+
             var destination = command == "saveAs" ? Path.Combine(directory, "copy.gaf") : path;
             studio.AskSave = _ => DialogResult.Yes;
+
             if (command == "close")
                 document.Close();
+
             if (command == "shutdown")
                 studio.Close();
+
             var save = studio.SaveDocument(document, command == "saveAs", destination);
             Assert.False(save.IsCompleted);
             bool uiResponded = false;
@@ -684,12 +836,16 @@ public sealed partial class CompositionTests
             studio.Browser.ArchiveOpened = null;
             release.Set();
             Assert.True(AwaitUi(save));
+
             if (command is "close" or "shutdown")
             {
                 var timeout = Stopwatch.StartNew();
+
                 while (!document.IsDisposed && timeout.Elapsed < TimeSpan.FromSeconds(10))
                     Application.DoEvents();
+
                 Assert.True(document.IsDisposed);
+
                 if (command == "shutdown")
                     Assert.True(studio.IsDisposed);
             }
@@ -700,10 +856,16 @@ public sealed partial class CompositionTests
                 Assert.Equal(destination, document.Document.Path());
             }
 
-            using var saved = AssetsFile.LoadOrCreate(destination, null, false, register: false);
+            using var saved = AssetsFile.LoadOrCreate(
+                destination,
+                null,
+                false,
+                register: false);
+
             Assert.Equal(2, saved.GetAllEntries().Count());
             using var changed = saved[AssetTypes.Misc, "changed.bin"];
             Assert.Equal(2, changed!.ReadByte());
+
             if (!studio.IsDisposed)
                 WaitForArchives(studio.Browser);
         }
@@ -716,11 +878,21 @@ public sealed partial class CompositionTests
 
     private static void DoubleClickNode(DirectoryPanel panel, TreeNode node) =>
         typeof(TreeView).GetMethod("OnNodeMouseDoubleClick", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(panel.Tree, [new TreeNodeMouseClickEventArgs(node, MouseButtons.Left, 2, 0, 0)]);
+            .Invoke(
+                panel.Tree,
+                [
+                    new TreeNodeMouseClickEventArgs(
+                        node,
+                        MouseButtons.Left,
+                        2,
+                        0,
+                        0)
+                ]);
 
     private static void WaitForArchives(DirectoryPanel panel)
     {
         var timeout = Stopwatch.StartNew();
+
         while (!panel.PendingArchiveLoads.IsCompleted && timeout.Elapsed < TimeSpan.FromSeconds(20))
         {
             Application.DoEvents();

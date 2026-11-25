@@ -53,9 +53,14 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         TemporaryFilePath = temporaryFilePath;
         _volume = Math.Clamp(volume, 0f, 1f);
         _pan = Math.Clamp(pan, -1f, 1f);
-        _playbackSpeed = Math.Clamp(playbackSpeed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
+
+        _playbackSpeed = Math.Clamp(
+            playbackSpeed,
+            AudioResource.MinimumPlaybackSpeed,
+            AudioResource.MaximumPlaybackSpeed);
 
         var source = _waveStream.ToSampleProvider();
+
         _speedProvider = new VariableSpeedSampleProvider(source)
         {
             PlaybackSpeed = _playbackSpeed
@@ -135,6 +140,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         set
         {
             _volume = Math.Clamp(value, 0f, 1f);
+
             if (_volumeProvider is not null)
                 _volumeProvider.Volume = _volume;
         }
@@ -150,6 +156,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         set
         {
             _pan = Math.Clamp(value, -1f, 1f);
+
             if (_monoPanProvider is not null)
                 _monoPanProvider.Pan = _pan;
             else if (_stereoPanProvider is not null)
@@ -202,6 +209,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
             }
 
             _stopRequested = false;
+
             if (State != AudioPlaybackState.Playing)
                 _outputDevice.Play();
         }
@@ -215,6 +223,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         lock (_controlLock)
         {
             ThrowIfDisposed();
+
             if (State == AudioPlaybackState.Playing)
                 _outputDevice.Pause();
         }
@@ -228,6 +237,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         lock (_controlLock)
         {
             ThrowIfDisposed();
+
             if (State == AudioPlaybackState.Paused)
                 _outputDevice.Play();
         }
@@ -242,9 +252,12 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         lock (_controlLock)
         {
             ThrowIfDisposed();
+
             var clamped = position < TimeSpan.Zero
                 ? TimeSpan.Zero
-                : position > Duration ? Duration : position;
+                : position > Duration
+                    ? Duration
+                    : position;
 
             if (_stopRequested)
             {
@@ -253,6 +266,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
             }
 
             var wasPlaying = State == AudioPlaybackState.Playing;
+
             if (wasPlaying)
                 _outputDevice.Pause();
 
@@ -273,6 +287,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         {
             ThrowIfDisposed();
             _pendingPlay = null;
+
             if (_stopRequested)
             {
                 _pendingPosition = TimeSpan.Zero;
@@ -298,7 +313,11 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         switch (channels)
         {
             case <= 0:
-                Engine.Logger.LogWarning("AudioResource {Key} has invalid channel count: {ChannelCount}", _key, channels);
+                Engine.Logger.LogWarning(
+                    "AudioResource {Key} has invalid channel count: {ChannelCount}",
+                    _key,
+                    channels);
+
                 break;
 
             case 1:
@@ -330,6 +349,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
         var completed = false;
+
         lock (_controlLock)
         {
             if (_disposed)
@@ -345,7 +365,12 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
             {
                 _stopRequested = false;
                 _pendingPlay = null;
-                Engine.Logger.LogError(e.Exception, "NAudio playback stopped due to an error for audio resource {Key}", _key);
+
+                Engine.Logger.LogError(
+                    e.Exception,
+                    "NAudio playback stopped due to an error for audio resource {Key}",
+                    _key);
+
                 return;
             }
 
@@ -354,12 +379,15 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
                 _stopRequested = false;
                 var pendingPlay = _pendingPlay;
                 _pendingPlay = null;
+
                 if (pendingPlay.HasValue)
                     Play(pendingPlay.Value);
+
                 return;
             }
 
             var reachedEnd = _waveStream.Position >= _waveStream.Length;
+
             if (_isLooping && reachedEnd)
             {
                 Play(true);
@@ -400,6 +428,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
                 return;
 
             _outputDevice.PlaybackStopped -= OnPlaybackStopped;
+
             try
             {
                 _stopRequested = true;

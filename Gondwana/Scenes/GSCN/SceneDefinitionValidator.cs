@@ -11,7 +11,10 @@ public static class SceneDefinitionValidator
         ["WorldStatic", "Actors", "Projectiles", "Triggers"];
 
     private static readonly string[] StandardProfiles =
-        [CollisionProfileNames.World, CollisionProfileNames.Actor, CollisionProfileNames.Projectile, CollisionProfileNames.Sensor];
+    [
+        CollisionProfileNames.World, CollisionProfileNames.Actor, CollisionProfileNames.Projectile,
+        CollisionProfileNames.Sensor
+    ];
 
     /// <summary>
     /// Validates structural scene, layer, tile, frame, and collision-profile metadata.
@@ -60,6 +63,7 @@ public static class SceneDefinitionValidator
             {
                 if (!definedProfiles.Add(profile.Name))
                     errors.Add($"Collision profile '{profile.Name}' is duplicated.");
+
                 knownProfiles.Add(profile.Name);
             }
 
@@ -77,6 +81,7 @@ public static class SceneDefinitionValidator
 
         var layerIds = new HashSet<string>(StringComparer.Ordinal);
         int layerIndex = 0;
+
         foreach (var layer in definition.Layers ?? [])
         {
             if (layer is null)
@@ -110,6 +115,7 @@ public static class SceneDefinitionValidator
                 errors.Add($"{label}: unknown default collision profile '{layer.DefaultTileCollisionProfile}'.");
 
             var coordinates = new HashSet<(int X, int Y)>();
+
             foreach (var tile in layer.Tiles ?? [])
             {
                 if (tile is null)
@@ -119,6 +125,7 @@ public static class SceneDefinitionValidator
                 }
 
                 var tileLabel = $"{label}, tile ({tile.X}, {tile.Y})";
+
                 if (!coordinates.Add((tile.X, tile.Y)))
                     errors.Add($"{tileLabel}: duplicate tile entry.");
 
@@ -199,13 +206,16 @@ public static class SceneDefinitionValidator
                 case SceneTilesheetSourceKind.LooseDefinitionFile:
                     if (string.IsNullOrWhiteSpace(source.GtsPath))
                         errors.Add($"{label}: loose GTS source path is empty.");
+
                     break;
 
                 case SceneTilesheetSourceKind.PackedDefinitionFile:
                     if (string.IsNullOrWhiteSpace(source.AssetsFilePath))
                         errors.Add($"{label}: assets file path is empty.");
+
                     if (string.IsNullOrWhiteSpace(source.AssetEntryName))
                         errors.Add($"{label}: packed GTS entry name is empty.");
+
                     break;
             }
         }
@@ -245,13 +255,16 @@ public static class SceneDefinitionValidator
                 case SceneAnimationSourceKind.LooseDefinitionFile:
                     if (string.IsNullOrWhiteSpace(source.GaniPath))
                         errors.Add($"{label}: loose GANI source path is empty.");
+
                     break;
 
                 case SceneAnimationSourceKind.PackedDefinitionFile:
                     if (string.IsNullOrWhiteSpace(source.AssetsFilePath))
                         errors.Add($"{label}: assets file path is empty.");
+
                     if (string.IsNullOrWhiteSpace(source.AssetEntryName))
                         errors.Add($"{label}: packed GANI entry name is empty.");
+
                     break;
             }
         }

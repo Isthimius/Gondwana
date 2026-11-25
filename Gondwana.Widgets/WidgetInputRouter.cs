@@ -52,10 +52,11 @@ public sealed class WidgetInputRouter : IDisposable
     /// <param name="keyboardEventPoller">The keyboard event poller that supplies keyboard input, or <see langword="null"/>.</param>
     /// <param name="mouseEventPoller">The mouse event poller that supplies mouse input, or <see langword="null"/>.</param>
     /// <param name="touchEventPoller">The touch event poller that supplies touch input, or <see langword="null"/>.</param>
-    public WidgetInputRouter(RenderSurfaceHostBase renderSurfaceHost,
-                             KeyboardEventPoller? keyboardEventPoller,
-                             MouseEventPoller? mouseEventPoller,
-                             TouchEventPoller? touchEventPoller)
+    public WidgetInputRouter(
+        RenderSurfaceHostBase renderSurfaceHost,
+        KeyboardEventPoller? keyboardEventPoller,
+        MouseEventPoller? mouseEventPoller,
+        TouchEventPoller? touchEventPoller)
     {
         _renderSurfaceHost = renderSurfaceHost ?? throw new ArgumentNullException(nameof(renderSurfaceHost));
 
@@ -298,6 +299,7 @@ public sealed class WidgetInputRouter : IDisposable
     internal void RouteKeyboardInput(int key, KeyAction action, KeyboardModifierState modifiers)
     {
         WidgetBase? target = _focusedWidget;
+
         if (target is not null && !CanReceiveKeyboardInput(target))
         {
             ClearFocus();
@@ -306,13 +308,20 @@ public sealed class WidgetInputRouter : IDisposable
 
         if (target is not null)
         {
-            var focusedArgs = new WidgetKeyboardEventArgs(target, key, action, modifiers);
+            var focusedArgs = new WidgetKeyboardEventArgs(
+                target,
+                key,
+                action,
+                modifiers);
+
             target.DispatchKeyboardInput(focusedArgs);
+
             if (focusedArgs.Handled)
                 return;
         }
 
         WidgetBase[] snapshot;
+
         lock (_syncRoot)
             snapshot = [.. _widgets];
 
@@ -320,13 +329,20 @@ public sealed class WidgetInputRouter : IDisposable
         for (int index = snapshot.Length - 1; index >= 0; index--)
         {
             WidgetBase widget = snapshot[index];
+
             if (widget is not IWidgetKeyboardFallback fallback || !IsRegistered(widget) ||
                 !HasValidTarget(widget) || !widget.Visible ||
                 !widget.IsInputEnabled || !widget.IsKeyboardInputEnabled)
                 continue;
 
-            var fallbackArgs = new WidgetKeyboardEventArgs(widget, key, action, modifiers);
+            var fallbackArgs = new WidgetKeyboardEventArgs(
+                widget,
+                key,
+                action,
+                modifiers);
+
             fallback.HandleUnhandledKeyboardInput(fallbackArgs);
+
             if (fallbackArgs.Handled)
                 return;
         }
@@ -346,7 +362,11 @@ public sealed class WidgetInputRouter : IDisposable
         {
             if (args.IsButtonJustPressed(mouseButton))
             {
-                ProcessMouseDown(initialHit, currentPosition, mouseButton, args.Tick);
+                ProcessMouseDown(
+                    initialHit,
+                    currentPosition,
+                    mouseButton,
+                    args.Tick);
             }
         }
 
@@ -354,8 +374,12 @@ public sealed class WidgetInputRouter : IDisposable
         if (args.LeftButtonJustPressed && initialHit is null && _mouseCapture is null &&
             GetTopmostViewAt(currentPosition) is View gameplayView)
         {
-            UnhandledPrimaryAction?.Invoke(new PrimaryPointerActionEventArgs(
-                gameplayView, currentPosition, isTouch: false, MousePointerId));
+            UnhandledPrimaryAction?.Invoke(
+                new PrimaryPointerActionEventArgs(
+                    gameplayView,
+                    currentPosition,
+                    isTouch: false,
+                    MousePointerId));
         }
 
         if (args.PreviousPosition != currentPosition)
@@ -365,12 +389,13 @@ public sealed class WidgetInputRouter : IDisposable
 
         if (args.ScrollDelta != 0 && initialHit is not null && IsPointerRoutable(initialHit.Widget, initialHit.View))
         {
-            initialHit.Widget.DispatchMouseWheel(new WidgetMouseWheelEventArgs(
-                initialHit.Widget,
-                initialHit.View,
-                new PointF(currentPosition.X, currentPosition.Y),
-                args.ScrollDelta,
-                args.Tick));
+            initialHit.Widget.DispatchMouseWheel(
+                new WidgetMouseWheelEventArgs(
+                    initialHit.Widget,
+                    initialHit.View,
+                    new PointF(currentPosition.X, currentPosition.Y),
+                    args.ScrollDelta,
+                    args.Tick));
         }
 
         foreach (MouseButton mouseButton in _mouseButtons)
@@ -384,10 +409,11 @@ public sealed class WidgetInputRouter : IDisposable
         UpdateMouseHover(HitTest(currentPosition), currentPosition, args.Tick);
     }
 
-    private void ProcessMouseDown(WidgetHit? hit,
-                                  Point position,
-                                  MouseButton mouseButton,
-                                  long tick)
+    private void ProcessMouseDown(
+        WidgetHit? hit,
+        Point position,
+        MouseButton mouseButton,
+        long tick)
     {
         if (_mouseCapture is not null || hit is null)
             return;
@@ -396,23 +422,27 @@ public sealed class WidgetInputRouter : IDisposable
 
         WidgetPointerButtonEnum widgetButton = MapMouseButton(mouseButton);
 
-        hit.Widget.DispatchPointerDown(CreatePointerArgs(hit.Widget,
-                                                         hit.View,
-                                                         position,
-                                                         widgetButton,
-                                                         tick,
-                                                         MousePointerId));
+        hit.Widget.DispatchPointerDown(
+            CreatePointerArgs(
+                hit.Widget,
+                hit.View,
+                position,
+                widgetButton,
+                tick,
+                MousePointerId));
 
-        _mouseCapture = new PointerCapture(hit.Widget,
-                                           hit.View,
-                                           widgetButton,
-                                           position,
-                                           hit.InstanceOffset);
+        _mouseCapture = new PointerCapture(
+            hit.Widget,
+            hit.View,
+            widgetButton,
+            position,
+            hit.InstanceOffset);
     }
 
-    private void ProcessMouseMove(Point previousPosition,
-                                  Point currentPosition,
-                                  long tick)
+    private void ProcessMouseMove(
+        Point previousPosition,
+        Point currentPosition,
+        long tick)
     {
         PointerCapture? capture = GetValidMouseCapture(tick);
         WidgetHit? hit = capture is null ? HitTest(currentPosition) : null;
@@ -422,26 +452,30 @@ public sealed class WidgetInputRouter : IDisposable
         if (recipient is null || view is null)
             return;
 
-        var delta = new Vector2(currentPosition.X - previousPosition.X,
-                                currentPosition.Y - previousPosition.Y);
+        var delta = new Vector2(
+            currentPosition.X - previousPosition.X,
+            currentPosition.Y - previousPosition.Y);
 
         WidgetPointerButtonEnum button = capture?.Button ?? WidgetPointerButtonEnum.None;
 
-        recipient.DispatchPointerMove(CreatePointerArgs(recipient,
-                                                        view,
-                                                        currentPosition,
-                                                        button,
-                                                        tick,
-                                                        MousePointerId,
-                                                        deltaPx: delta));
+        recipient.DispatchPointerMove(
+            CreatePointerArgs(
+                recipient,
+                view,
+                currentPosition,
+                button,
+                tick,
+                MousePointerId,
+                deltaPx: delta));
 
         if (capture is not null)
             capture.LastPosition = currentPosition;
     }
 
-    private void ProcessMouseUp(Point position,
-                                MouseButton mouseButton,
-                                long tick)
+    private void ProcessMouseUp(
+        Point position,
+        MouseButton mouseButton,
+        long tick)
     {
         WidgetPointerButtonEnum releasedButton = MapMouseButton(mouseButton);
         PointerCapture? capture = GetValidMouseCapture(tick);
@@ -451,32 +485,38 @@ public sealed class WidgetInputRouter : IDisposable
 
         WidgetBase recipient = capture.Widget;
 
-        recipient.DispatchPointerUp(CreatePointerArgs(recipient,
-                                                      capture.View,
-                                                      position,
-                                                      releasedButton,
-                                                      tick,
-                                                      MousePointerId));
+        recipient.DispatchPointerUp(
+            CreatePointerArgs(
+                recipient,
+                capture.View,
+                position,
+                releasedButton,
+                tick,
+                MousePointerId));
 
         WidgetHit? releaseHit = HitTest(position);
 
-        if (IsSameHit(releaseHit, recipient, capture.View) && recipient.GetWrappedHitOffset(capture.View, position) == capture.InstanceOffset)
+        if (IsSameHit(releaseHit, recipient, capture.View) &&
+            recipient.GetWrappedHitOffset(capture.View, position) == capture.InstanceOffset)
         {
-            recipient.DispatchPointerClick(CreatePointerArgs(recipient,
-                                                             capture.View,
-                                                             position,
-                                                             releasedButton,
-                                                             tick,
-                                                             MousePointerId,
-                                                             clickCount: 1));
+            recipient.DispatchPointerClick(
+                CreatePointerArgs(
+                    recipient,
+                    capture.View,
+                    position,
+                    releasedButton,
+                    tick,
+                    MousePointerId,
+                    clickCount: 1));
         }
 
         _mouseCapture = null;
     }
 
-    private void UpdateMouseHover(WidgetHit? hit,
-                                  Point position,
-                                  long tick)
+    private void UpdateMouseHover(
+        WidgetHit? hit,
+        Point position,
+        long tick)
     {
         if (IsSameHit(_hoveredHit, hit))
             return;
@@ -486,22 +526,26 @@ public sealed class WidgetInputRouter : IDisposable
 
         if (previous is not null)
         {
-            previous.Widget.DispatchPointerLeave(CreatePointerArgs(previous.Widget,
-                                                                   previous.View,
-                                                                   position,
-                                                                   WidgetPointerButtonEnum.None,
-                                                                   tick,
-                                                                   MousePointerId));
+            previous.Widget.DispatchPointerLeave(
+                CreatePointerArgs(
+                    previous.Widget,
+                    previous.View,
+                    position,
+                    WidgetPointerButtonEnum.None,
+                    tick,
+                    MousePointerId));
         }
 
         if (hit is not null)
         {
-            hit.Widget.DispatchPointerEnter(CreatePointerArgs(hit.Widget,
-                                                              hit.View,
-                                                              position,
-                                                              WidgetPointerButtonEnum.None,
-                                                              tick,
-                                                              MousePointerId));
+            hit.Widget.DispatchPointerEnter(
+                CreatePointerArgs(
+                    hit.Widget,
+                    hit.View,
+                    position,
+                    WidgetPointerButtonEnum.None,
+                    tick,
+                    MousePointerId));
         }
     }
 
@@ -513,12 +557,14 @@ public sealed class WidgetInputRouter : IDisposable
         if (IsPointerRoutable(_mouseCapture.Widget, _mouseCapture.View))
             return _mouseCapture;
 
-        _mouseCapture.Widget.DispatchPointerUp(CreatePointerArgs(_mouseCapture.Widget,
-                                                                 _mouseCapture.View,
-                                                                 _mouseCapture.LastPosition,
-                                                                 _mouseCapture.Button,
-                                                                 tick,
-                                                                 MousePointerId));
+        _mouseCapture.Widget.DispatchPointerUp(
+            CreatePointerArgs(
+                _mouseCapture.Widget,
+                _mouseCapture.View,
+                _mouseCapture.LastPosition,
+                _mouseCapture.Button,
+                tick,
+                MousePointerId));
 
         _mouseCapture = null;
         return null;
@@ -544,23 +590,27 @@ public sealed class WidgetInputRouter : IDisposable
         {
             if (GetTopmostViewAt(touch.Position) is not null)
                 _unhandledTouchContacts.Add(touch.Id);
+
             return;
         }
 
         FocusFromPointer(hit.Widget);
 
-        hit.Widget.DispatchPointerDown(CreatePointerArgs(hit.Widget,
-                                                         hit.View,
-                                                         touch.Position,
-                                                         WidgetPointerButtonEnum.Touch,
-                                                         args.Tick,
-                                                         touch.Id));
+        hit.Widget.DispatchPointerDown(
+            CreatePointerArgs(
+                hit.Widget,
+                hit.View,
+                touch.Position,
+                WidgetPointerButtonEnum.Touch,
+                args.Tick,
+                touch.Id));
 
-        _touchCaptures[touch.Id] = new PointerCapture(hit.Widget,
-                                                      hit.View,
-                                                      WidgetPointerButtonEnum.Touch,
-                                                      touch.Position,
-                                                      hit.InstanceOffset);
+        _touchCaptures[touch.Id] = new PointerCapture(
+            hit.Widget,
+            hit.View,
+            WidgetPointerButtonEnum.Touch,
+            touch.Position,
+            hit.InstanceOffset);
     }
 
     private void OnTouchMoved(object? sender, TouchEventArgs args)
@@ -575,27 +625,32 @@ public sealed class WidgetInputRouter : IDisposable
 
         if (!IsPointerRoutable(capture.Widget, capture.View))
         {
-            capture.Widget.DispatchPointerUp(CreatePointerArgs(capture.Widget,
-                                                               capture.View,
-                                                               capture.LastPosition,
-                                                               WidgetPointerButtonEnum.Touch,
-                                                               args.Tick,
-                                                               touch.Id));
+            capture.Widget.DispatchPointerUp(
+                CreatePointerArgs(
+                    capture.Widget,
+                    capture.View,
+                    capture.LastPosition,
+                    WidgetPointerButtonEnum.Touch,
+                    args.Tick,
+                    touch.Id));
 
             _touchCaptures.Remove(touch.Id);
             return;
         }
 
-        var delta = new Vector2(touch.Position.X - capture.LastPosition.X,
-                                touch.Position.Y - capture.LastPosition.Y);
+        var delta = new Vector2(
+            touch.Position.X - capture.LastPosition.X,
+            touch.Position.Y - capture.LastPosition.Y);
 
-        capture.Widget.DispatchPointerMove(CreatePointerArgs(capture.Widget,
-                                                             capture.View,
-                                                             touch.Position,
-                                                             WidgetPointerButtonEnum.Touch,
-                                                             args.Tick,
-                                                             touch.Id,
-                                                             deltaPx: delta));
+        capture.Widget.DispatchPointerMove(
+            CreatePointerArgs(
+                capture.Widget,
+                capture.View,
+                touch.Position,
+                WidgetPointerButtonEnum.Touch,
+                args.Tick,
+                touch.Id,
+                deltaPx: delta));
 
         capture.LastPosition = touch.Position;
     }
@@ -622,8 +677,12 @@ public sealed class WidgetInputRouter : IDisposable
                 HitTest(touch.Position) is null &&
                 HitTest(tap.Position) is null)
             {
-                UnhandledPrimaryAction?.Invoke(new PrimaryPointerActionEventArgs(
-                    releaseView, tap.Position, isTouch: true, tap.TouchId));
+                UnhandledPrimaryAction?.Invoke(
+                    new PrimaryPointerActionEventArgs(
+                        releaseView,
+                        tap.Position,
+                        isTouch: true,
+                        tap.TouchId));
             }
         }
 
@@ -632,24 +691,31 @@ public sealed class WidgetInputRouter : IDisposable
 
         WidgetBase recipient = capture.Widget;
 
-        recipient.DispatchPointerUp(CreatePointerArgs(recipient,
-                                                      capture.View,
-                                                      touch.Position,
-                                                      WidgetPointerButtonEnum.Touch,
-                                                      args.Tick,
-                                                      touch.Id, instanceOffset: capture.InstanceOffset));
+        recipient.DispatchPointerUp(
+            CreatePointerArgs(
+                recipient,
+                capture.View,
+                touch.Position,
+                WidgetPointerButtonEnum.Touch,
+                args.Tick,
+                touch.Id,
+                instanceOffset: capture.InstanceOffset));
 
         WidgetHit? releaseHit = HitTest(touch.Position);
 
-        if (touch.Phase != TouchPhase.Cancelled && IsSameHit(releaseHit, recipient, capture.View) && recipient.GetWrappedHitOffset(capture.View, touch.Position) == capture.InstanceOffset)
+        if (touch.Phase != TouchPhase.Cancelled && IsSameHit(releaseHit, recipient, capture.View) &&
+            recipient.GetWrappedHitOffset(capture.View, touch.Position) == capture.InstanceOffset)
         {
-            recipient.DispatchPointerClick(CreatePointerArgs(recipient,
-                                                             capture.View,
-                                                             touch.Position,
-                                                             WidgetPointerButtonEnum.Touch,
-                                                             args.Tick,
-                                                             touch.Id,
-                                                             clickCount: 1, instanceOffset: capture.InstanceOffset));
+            recipient.DispatchPointerClick(
+                CreatePointerArgs(
+                    recipient,
+                    capture.View,
+                    touch.Position,
+                    WidgetPointerButtonEnum.Touch,
+                    args.Tick,
+                    touch.Id,
+                    clickCount: 1,
+                    instanceOffset: capture.InstanceOffset));
         }
     }
 
@@ -659,6 +725,7 @@ public sealed class WidgetInputRouter : IDisposable
             return;
 
         var tap = args.Tap;
+
         if (!_unhandledTouchContacts.Contains(tap.TouchId))
             return;
 
@@ -720,8 +787,9 @@ public sealed class WidgetInputRouter : IDisposable
         return _renderSurfaceHost.ViewManager.Views.Contains(view);
     }
 
-    private bool HasValidTarget(WidgetBase widget,
-                                View? routedView = null)
+    private bool HasValidTarget(
+        WidgetBase widget,
+        View? routedView = null)
     {
         if (widget.Mode == DirectDrawingMode.SceneLayer)
             return widget.SceneLayer is not null;
@@ -732,8 +800,9 @@ public sealed class WidgetInputRouter : IDisposable
         return routedView is null || ReferenceEquals(widget.View, routedView);
     }
 
-    private bool IsPointerRoutable(WidgetBase widget,
-                                   View view)
+    private bool IsPointerRoutable(
+        WidgetBase widget,
+        View view)
     {
         return IsRegistered(widget) &&
                IsManagedView(view) &&
@@ -776,8 +845,9 @@ public sealed class WidgetInputRouter : IDisposable
         ReleaseKeyboardFocus(widget);
     }
 
-    private void ReleasePointerState(WidgetBase widget,
-                                     bool dispatchPointerUp)
+    private void ReleasePointerState(
+        WidgetBase widget,
+        bool dispatchPointerUp)
     {
         if (ReferenceEquals(_hoveredHit?.Widget, widget))
             _hoveredHit = null;
@@ -788,20 +858,22 @@ public sealed class WidgetInputRouter : IDisposable
 
             if (dispatchPointerUp)
             {
-                widget.DispatchPointerUp(CreatePointerArgs(widget,
-                                                           capture.View,
-                                                           capture.LastPosition,
-                                                           capture.Button,
-                                                           tick: 0,
-                                                           pointerId: MousePointerId));
+                widget.DispatchPointerUp(
+                    CreatePointerArgs(
+                        widget,
+                        capture.View,
+                        capture.LastPosition,
+                        capture.Button,
+                        tick: 0,
+                        pointerId: MousePointerId));
             }
 
             _mouseCapture = null;
         }
 
         int[] touchIds = _touchCaptures.Where(x => ReferenceEquals(x.Value.Widget, widget))
-                                       .Select(x => x.Key)
-                                       .ToArray();
+            .Select(x => x.Key)
+            .ToArray();
 
         foreach (int touchId in touchIds)
         {
@@ -809,12 +881,14 @@ public sealed class WidgetInputRouter : IDisposable
 
             if (dispatchPointerUp)
             {
-                widget.DispatchPointerUp(CreatePointerArgs(widget,
-                                                           capture.View,
-                                                           capture.LastPosition,
-                                                           WidgetPointerButtonEnum.Touch,
-                                                           tick: 0,
-                                                           pointerId: touchId));
+                widget.DispatchPointerUp(
+                    CreatePointerArgs(
+                        widget,
+                        capture.View,
+                        capture.LastPosition,
+                        WidgetPointerButtonEnum.Touch,
+                        tick: 0,
+                        pointerId: touchId));
             }
 
             _touchCaptures.Remove(touchId);
@@ -827,45 +901,50 @@ public sealed class WidgetInputRouter : IDisposable
             Focus(null);
     }
 
-    private static bool IsSameHit(WidgetHit? left,
-                                  WidgetHit? right)
+    private static bool IsSameHit(
+        WidgetHit? left,
+        WidgetHit? right)
     {
         if (left is null || right is null)
             return left is null && right is null;
 
         return ReferenceEquals(left.Widget, right.Widget)
-            && ReferenceEquals(left.View, right.View);
+               && ReferenceEquals(left.View, right.View);
     }
 
-    private static bool IsSameHit(WidgetHit? hit,
-                                  WidgetBase widget,
-                                  View view)
+    private static bool IsSameHit(
+        WidgetHit? hit,
+        WidgetBase widget,
+        View view)
     {
         return hit is not null
-            && ReferenceEquals(hit.Widget, widget)
-            && ReferenceEquals(hit.View, view);
+               && ReferenceEquals(hit.Widget, widget)
+               && ReferenceEquals(hit.View, view);
     }
 
-    private WidgetPointerEventArgs CreatePointerArgs(WidgetBase widget,
-                                                            View view,
-                                                            Point position,
-                                                            WidgetPointerButtonEnum button,
-                                                            long tick,
-                                                            int pointerId,
-                                                            int clickCount = 0,
-                                                            Vector2 deltaPx = default,
-                                                            PointF? instanceOffset = null)
+    private WidgetPointerEventArgs CreatePointerArgs(
+        WidgetBase widget,
+        View view,
+        Point position,
+        WidgetPointerButtonEnum button,
+        long tick,
+        int pointerId,
+        int clickCount = 0,
+        Vector2 deltaPx = default,
+        PointF? instanceOffset = null)
     {
-        return new WidgetPointerEventArgs(widget,
-                                          view,
-                                          new PointF(position.X, position.Y),
-                                          button,
-                                          clickCount,
-                                          deltaPx,
-                                          tick,
-                                          pointerId)
+        return new WidgetPointerEventArgs(
+            widget,
+            view,
+            new PointF(position.X, position.Y),
+            button,
+            clickCount,
+            deltaPx,
+            tick,
+            pointerId)
         {
-            WrappedOffsetWorldPx = instanceOffset ?? (pointerId == MousePointerId && _mouseCapture is { } mouse && ReferenceEquals(mouse.Widget, widget)
+            WrappedOffsetWorldPx = instanceOffset ?? (pointerId == MousePointerId && _mouseCapture is { } mouse &&
+                                                      ReferenceEquals(mouse.Widget, widget)
                 ? mouse.InstanceOffset
                 : _touchCaptures.TryGetValue(pointerId, out var touch) && ReferenceEquals(touch.Widget, widget)
                     ? touch.InstanceOffset
@@ -892,8 +971,9 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    private void Unregister(WidgetBase widget,
-                            bool dispatchPointerUp)
+    private void Unregister(
+        WidgetBase widget,
+        bool dispatchPointerUp)
     {
         bool removed;
 
@@ -916,9 +996,10 @@ public sealed class WidgetInputRouter : IDisposable
         /// <param name="widget">The widget that was hit.</param>
         /// <param name="view">The view in which the widget was hit.</param>
         /// <param name="instanceOffset">The instance offset.</param>
-        public WidgetHit(WidgetBase widget,
-                         View view,
-                         PointF instanceOffset)
+        public WidgetHit(
+            WidgetBase widget,
+            View view,
+            PointF instanceOffset)
         {
             Widget = widget;
             View = view;
@@ -951,11 +1032,12 @@ public sealed class WidgetInputRouter : IDisposable
         /// <param name="button">The button associated with the captured pointer.</param>
         /// <param name="lastPosition">The last known pointer position.</param>
         /// <param name="instanceOffset">The instance offset.</param>
-        public PointerCapture(WidgetBase widget,
-                              View view,
-                              WidgetPointerButtonEnum button,
-                              Point lastPosition,
-                              PointF instanceOffset)
+        public PointerCapture(
+            WidgetBase widget,
+            View view,
+            WidgetPointerButtonEnum button,
+            Point lastPosition,
+            PointF instanceOffset)
         {
             Widget = widget;
             View = view;
@@ -986,6 +1068,7 @@ public sealed class WidgetInputRouter : IDisposable
         /// The last known pointer position, in pixels.
         /// </value>
         public Point LastPosition { get; set; }
+
         /// <summary>
         /// Gets or sets the wrapped-instance offset in world pixels.
         /// </summary>

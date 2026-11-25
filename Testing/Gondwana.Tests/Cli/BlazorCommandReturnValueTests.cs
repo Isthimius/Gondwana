@@ -22,11 +22,15 @@ public sealed class BlazorCommandReturnValueTests
         using var fixture = CliCommandFixture.Create();
         var projectPath = fixture.CreateBuildableBlazorProject();
 
-        var exitCode = fixture.Run(config => config.AddCommand<PublishBlazorCommand>("publish-blazor"),
+        var exitCode = fixture.Run(
+            config => config.AddCommand<PublishBlazorCommand>("publish-blazor"),
             "publish-blazor",
-            "--project", projectPath,
-            "--configuration", "Release",
-            "--framework", "net10.0-browser",
+            "--project",
+            projectPath,
+            "--configuration",
+            "Release",
+            "--framework",
+            "net10.0-browser",
             "--skip-workload");
 
         Assert.Equal(0, exitCode);
@@ -44,7 +48,11 @@ public sealed class BlazorCommandReturnValueTests
         using var fixture = CliCommandFixture.Create();
         var projectPath = fixture.CreatePublishedBlazorProject();
 
-        var resolved = ProjectHelper.TryResolveBrowserFramework(projectPath, null, out var framework, out var error);
+        var resolved = ProjectHelper.TryResolveBrowserFramework(
+            projectPath,
+            null,
+            out var framework,
+            out var error);
 
         Assert.True(resolved, error);
         Assert.Equal("net10.0-browser", framework);
@@ -77,14 +85,20 @@ public sealed class BlazorCommandReturnValueTests
         var projectPath = fixture.CreatePublishedBlazorProject();
         var zipPath = Path.Combine(fixture.RootDirectory, "publish", "game.zip");
 
-        var exitCode = fixture.Run(config => config.AddCommand<PublishItchCommand>("publish-itch"),
+        var exitCode = fixture.Run(
+            config => config.AddCommand<PublishItchCommand>("publish-itch"),
             "publish-itch",
-            "--project", projectPath,
-            "--configuration", "Release",
-            "--framework", "net10.0-browser",
+            "--project",
+            projectPath,
+            "--configuration",
+            "Release",
+            "--framework",
+            "net10.0-browser",
             "--skip-build",
-            "--base-href", "./",
-            "--output", zipPath);
+            "--base-href",
+            "./",
+            "--output",
+            zipPath);
 
         Assert.Equal(0, exitCode);
         Assert.True(File.Exists(zipPath));
@@ -106,14 +120,20 @@ public sealed class BlazorCommandReturnValueTests
         var projectPath = fixture.CreatePublishedBlazorProject();
         var webRoot = Path.Combine(fixture.RootDirectory, "webroot");
 
-        var exitCode = fixture.Run(config => config.AddCommand<DeployBlazorCommand>("deploy-blazor"),
+        var exitCode = fixture.Run(
+            config => config.AddCommand<DeployBlazorCommand>("deploy-blazor"),
             "deploy-blazor",
-            "--project", projectPath,
-            "--configuration", "Release",
-            "--framework", "net10.0-browser",
+            "--project",
+            projectPath,
+            "--configuration",
+            "Release",
+            "--framework",
+            "net10.0-browser",
             "--skip-build",
-            "--base-href", "/mygame/",
-            "--web-root", webRoot);
+            "--base-href",
+            "/mygame/",
+            "--web-root",
+            webRoot);
 
         Assert.Equal(0, exitCode);
         Assert.True(File.Exists(Path.Combine(webRoot, "index.html")));
@@ -243,7 +263,6 @@ public sealed class BlazorCommandReturnValueTests
     //        AnsiConsole.Console = originalConsole;
     //    }
     //}
-
     private sealed class CliCommandFixture : IDisposable
     {
         private readonly string _originalPath;
@@ -301,7 +320,9 @@ public sealed class BlazorCommandReturnValueTests
             Directory.CreateDirectory(projectDirectory);
 
             var projectPath = Path.Combine(projectDirectory, "Game.csproj");
-            File.WriteAllText(projectPath,
+
+            File.WriteAllText(
+                projectPath,
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
@@ -313,9 +334,19 @@ public sealed class BlazorCommandReturnValueTests
                 </Project>
                 """);
 
-            var publishDirectory = Path.Combine(projectDirectory, "bin", "Release", "net10.0-browser", "publish", "wwwroot");
+            var publishDirectory = Path.Combine(
+                projectDirectory,
+                "bin",
+                "Release",
+                "net10.0-browser",
+                "publish",
+                "wwwroot");
+
             Directory.CreateDirectory(publishDirectory);
-            File.WriteAllText(Path.Combine(publishDirectory, "index.html"), "<html><head><base href=\"/\" /></head><body>ok</body></html>");
+
+            File.WriteAllText(
+                Path.Combine(publishDirectory, "index.html"),
+                "<html><head><base href=\"/\" /></head><body>ok</body></html>");
 
             return projectPath;
         }
@@ -332,7 +363,9 @@ public sealed class BlazorCommandReturnValueTests
             Directory.CreateDirectory(Path.Combine(projectDirectory, "wwwroot"));
 
             var projectPath = Path.Combine(projectDirectory, "BuildableGame.csproj");
-            File.WriteAllText(projectPath,
+
+            File.WriteAllText(
+                projectPath,
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
@@ -347,7 +380,8 @@ public sealed class BlazorCommandReturnValueTests
                 </Project>
                 """);
 
-            File.WriteAllText(Path.Combine(projectDirectory, "Program.cs"),
+            File.WriteAllText(
+                Path.Combine(projectDirectory, "Program.cs"),
                 """
                 using BuildableGame;
                 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -357,7 +391,8 @@ public sealed class BlazorCommandReturnValueTests
                 await builder.Build().RunAsync();
                 """);
 
-            File.WriteAllText(Path.Combine(projectDirectory, "App.razor"),
+            File.WriteAllText(
+                Path.Combine(projectDirectory, "App.razor"),
                 """
                 <Router AppAssembly="@typeof(App).Assembly">
                     <Found Context="routeData">
@@ -366,19 +401,22 @@ public sealed class BlazorCommandReturnValueTests
                 </Router>
                 """);
 
-            File.WriteAllText(Path.Combine(projectDirectory, "_Imports.razor"),
+            File.WriteAllText(
+                Path.Combine(projectDirectory, "_Imports.razor"),
                 """
                 @using Microsoft.AspNetCore.Components.Routing
                 """);
 
-            File.WriteAllText(Path.Combine(projectDirectory, "Pages", "Index.razor"),
+            File.WriteAllText(
+                Path.Combine(projectDirectory, "Pages", "Index.razor"),
                 """
                 @page "/"
 
                 <h1>Hello</h1>
                 """);
 
-            File.WriteAllText(Path.Combine(projectDirectory, "wwwroot", "index.html"),
+            File.WriteAllText(
+                Path.Combine(projectDirectory, "wwwroot", "index.html"),
                 """
                 <!DOCTYPE html>
                 <html lang="en">
@@ -437,7 +475,9 @@ public sealed class BlazorCommandReturnValueTests
             if (OperatingSystem.IsWindows())
             {
                 var cmdPath = Path.Combine(_toolsDirectory, "butler.cmd");
-                File.WriteAllText(cmdPath,
+
+                File.WriteAllText(
+                    cmdPath,
                     """
                     @echo off
                     if "%1"=="--version" (
@@ -455,7 +495,9 @@ public sealed class BlazorCommandReturnValueTests
             else
             {
                 var scriptPath = Path.Combine(_toolsDirectory, "butler");
-                File.WriteAllText(scriptPath,
+
+                File.WriteAllText(
+                    scriptPath,
                     """
                     #!/usr/bin/env bash
                     set -e
@@ -473,7 +515,8 @@ public sealed class BlazorCommandReturnValueTests
                     exit 0
                     """);
 
-                File.SetUnixFileMode(scriptPath,
+                File.SetUnixFileMode(
+                    scriptPath,
                     UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
                     UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
                     UnixFileMode.OtherRead | UnixFileMode.OtherExecute);

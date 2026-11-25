@@ -16,6 +16,7 @@ public sealed class ViewAnchoredZoomTests
     public void ZoomAroundScreenPoint_WhenAnimated_PreservesWorldAnchorEveryUpdate()
     {
         using var scene = new Scene();
+
         var layer = scene.AddLayer(
             100,
             100,
@@ -23,7 +24,11 @@ public sealed class ViewAnchoredZoomTests
 
         var viewport = new Viewport
         {
-            TargetRectPx = new Rectangle(100, 50, 800, 600),
+            TargetRectPx = new Rectangle(
+                100,
+                50,
+                800,
+                600),
             ScreenOffsetPx = new PointF(20f, 10f),
             Zoom = 1f
         };
@@ -66,7 +71,11 @@ public sealed class ViewAnchoredZoomTests
 
         var viewport = new Viewport
         {
-            TargetRectPx = new Rectangle(0, 0, 800, 600),
+            TargetRectPx = new Rectangle(
+                0,
+                0,
+                800,
+                600),
             Zoom = 1f
         };
 
@@ -84,6 +93,7 @@ public sealed class ViewAnchoredZoomTests
             durationSeconds: 0.75f);
 
         view.Update(0.20f);
+
         AssertClose(
             worldAnchor,
             view.ScreenPxToWorldPx(layer, screenAnchor));
@@ -97,6 +107,7 @@ public sealed class ViewAnchoredZoomTests
         for (int i = 0; i < 5; i++)
         {
             view.Update(0.15f);
+
             AssertClose(
                 worldAnchor,
                 view.ScreenPxToWorldPx(layer, screenAnchor));

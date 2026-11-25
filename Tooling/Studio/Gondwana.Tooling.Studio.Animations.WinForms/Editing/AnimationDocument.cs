@@ -18,26 +18,42 @@ public sealed partial class AnimationDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
         ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
-        if (Definition.TilesheetSources.Any(source => string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)))
-            throw new InvalidOperationException($"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+
+        if (Definition.TilesheetSources.Any(source => string.Equals(
+                source.Tilesheet,
+                tilesheet,
+                StringComparison.Ordinal)))
+            throw new InvalidOperationException(
+                $"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+
         var before = new ModelSnapshot(Definition.TilesheetSources);
-        Definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Packed(tilesheet,
-            Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
+
+        Definition.TilesheetSources.Add(
+            AnimationTilesheetSourceDefinition.Packed(
+                tilesheet,
+                Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)),
+                entryName));
+
         before.Record(History, "Change tilesheet sources");
     }
 
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public AnimationDefinition Definition { get; private set; }
+
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
+
     /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
+
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty => History.IsDirty;
+
     /// <summary>Document-local reversible edits and saved checkpoints.</summary>
     public EditHistory History { get; }
+
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -67,9 +83,16 @@ public sealed partial class AnimationDocument
         var version = DocumentSourceVersion.Read(location);
         var definitions = AnimationDefinitionSerializer.LoadAll(path).ToList();
         DocumentSourceSave.Verify(location, version);
+
         if (definitions.Count == 0)
             throw new InvalidDataException("Document contains no definitions.");
-        var document = new AnimationDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
+
+        var document = new AnimationDocument(
+            definitions[0],
+            path,
+            Path.GetDirectoryName(path)!,
+            false);
+
         document._definitions = definitions;
         document.SourceVersion = version;
         document.RememberReferenceOrigins();
@@ -134,6 +157,7 @@ public sealed partial class AnimationDocument
             !string.IsNullOrWhiteSpace(existing.GtsPath))
         {
             string existingFullPath = ResolveReferencePath(existing.GtsPath);
+
             if (string.Equals(
                     existingFullPath,
                     fullPath,
@@ -144,6 +168,7 @@ public sealed partial class AnimationDocument
         }
 
         var before = new ModelSnapshot(Definition.TilesheetSources);
+
         Definition.TilesheetSources.RemoveAll(source =>
             string.Equals(
                 source.Tilesheet,
@@ -165,6 +190,7 @@ public sealed partial class AnimationDocument
     public bool RemoveTilesheetSource(string tilesheet)
     {
         var before = new ModelSnapshot(Definition.TilesheetSources);
+
         int removed = Definition.TilesheetSources.RemoveAll(source =>
             string.Equals(
                 source.Tilesheet,
@@ -203,34 +229,53 @@ public sealed partial class AnimationDocument
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = AnimationDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
+
         if (!allowInvalid && errors.Count > 0)
             throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Key)) ||
             _definitions.Select(member => member.Key).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
             throw new InvalidDataException("Every definition needs a unique, non-empty logical identity.");
+
         path = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
         var location = new AssetLocation(AssetTypes.AnimationDefinition, path);
-        var expected = FilePath is not null && string.Equals(path, FilePath,
+
+        var expected = FilePath is not null && string.Equals(
+            path,
+            FilePath,
             OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)
-            ? SourceVersion ?? DocumentSourceVersion.Read(location) : DocumentSourceVersion.Read(location);
+            ? SourceVersion ?? DocumentSourceVersion.Read(location)
+            : DocumentSourceVersion.Read(location);
+
         var snapshots = _definitions.Select(member =>
         {
             var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is { } packed ? AnimationDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
+
+            clone.Source = PackedLocation is { } packed
+                ? AnimationDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!)
+                : AnimationDefinitionSource.LooseDefinitionFile(
+                    FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
+
             return clone;
         }).ToList();
-        var installed = DocumentSourceSave.Save(location, expected,
+
+        var installed = DocumentSourceSave.Save(
+            location,
+            expected,
             check => AnimationDefinitionSerializer.SaveAll(path, snapshots, check));
+
         var saved = AnimationDefinitionSerializer.LoadAll(path);
         DocumentSourceSave.Verify(location, installed);
         SourceVersion = installed;
+
         for (int i = 0; i < _definitions.Count; i++)
         {
             var member = _definitions[i];
             var persisted = saved[i];
+
             for (int j = 0; j < member.TilesheetSources.Count; j++)
             {
                 member.TilesheetSources[j].GtsPath = persisted.TilesheetSources[j].GtsPath;
@@ -285,6 +330,7 @@ public sealed partial class AnimationDocument
     {
         if (!_definitions.Contains(definition))
             throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -316,19 +362,27 @@ public sealed partial class AnimationDocument
     public bool RemoveDefinition(AnimationDefinition definition)
     {
         int index = _definitions.IndexOf(definition);
+
         if (_definitions.Count == 1 || index < 0)
             return false;
+
         var selected = Definition;
-        History.Execute("Remove definition", () =>
-        {
-            _definitions.RemoveAt(index);
-            if (ReferenceEquals(Definition, definition))
-                Definition = _definitions[0];
-        }, () =>
-        {
-            _definitions.Insert(index, definition);
-            Definition = selected;
-        });
+
+        History.Execute(
+            "Remove definition",
+            () =>
+            {
+                _definitions.RemoveAt(index);
+
+                if (ReferenceEquals(Definition, definition))
+                    Definition = _definitions[0];
+            },
+            () =>
+            {
+                _definitions.Insert(index, definition);
+                Definition = selected;
+            });
+
         return true;
     }
 
@@ -340,10 +394,17 @@ public sealed partial class AnimationDocument
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
+
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Key == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
+
         var member = Definition;
-        History.Set("Rename animation definition", () => member.Key, value => member.Key = value, identity);
+
+        History.Set(
+            "Rename animation definition",
+            () => member.Key,
+            value => member.Key = value,
+            identity);
     }
 
     /// <summary>Imports selected GANI members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -352,26 +413,42 @@ public sealed partial class AnimationDocument
     /// <returns>The number imported in source order; zero leaves the document unchanged.</returns>
     /// <remarks>Conflicting logical identities receive unique suffixes. The first imported member becomes selected and the document is marked dirty.</remarks>
     /// <exception cref="ArgumentException">The file extension is not .gani, or selection contains duplicate or out-of-range indices.</exception>
-    public int ImportDefinitions(string path, Func<IReadOnlyList<AnimationDefinition>, IReadOnlyList<int>?>? select = null)
+    public int ImportDefinitions(
+        string path,
+        Func<IReadOnlyList<AnimationDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);
+
         if (!string.Equals(Path.GetExtension(path), ".gani", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Choose a .gani definition document.", nameof(path));
+
         var sourceDirectory = Path.GetDirectoryName(path)!;
         string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
-        var imported = DefinitionImport.Prepare(path, Definitions, AnimationDefinitionSerializer.LoadAll, select, member =>
-        {
-            var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
-            foreach (var source in clone.TilesheetSources ?? [])
-            {
-                source.GtsPath = Rebase(source.GtsPath);
-                source.AssetsFilePath = Rebase(source.AssetsFilePath);
-            }
 
-            return clone;
-        }, member => member.Key, (member, identity) => member.Key = identity, "animation");
+        var imported = DefinitionImport.Prepare(
+            path,
+            Definitions,
+            AnimationDefinitionSerializer.LoadAll,
+            select,
+            member =>
+            {
+                var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
+
+                foreach (var source in clone.TilesheetSources ?? [])
+                {
+                    source.GtsPath = Rebase(source.GtsPath);
+                    source.AssetsFilePath = Rebase(source.AssetsFilePath);
+                }
+
+                return clone;
+            },
+            member => member.Key,
+            (member, identity) => member.Key = identity,
+            "animation");
+
         if (imported.Count == 0)
             return 0;
+
         AddMembers(imported, "Import animation definitions");
         return imported.Count;
     }
@@ -379,8 +456,10 @@ public sealed partial class AnimationDocument
     private string UniqueDefinitionIdentity(string basis)
     {
         var candidate = basis;
+
         for (int i = 2; _definitions.Any(member => member.Key == candidate); i++)
             candidate = basis + "-" + i;
+
         return candidate;
     }
 }

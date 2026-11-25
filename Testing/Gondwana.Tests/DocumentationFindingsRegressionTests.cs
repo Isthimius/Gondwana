@@ -86,6 +86,7 @@ public sealed class LoggingIntegrationRegressionTests
             ExternalFactoryField.SetValue(null, _originalExternalFactory);
 
             var cache = LoggerCacheField.GetValue(null)!;
+
             cache.GetType()
                 .GetMethod(nameof(System.Collections.IDictionary.Clear))!
                 .Invoke(cache, null);
@@ -165,14 +166,34 @@ public sealed class RenderSurfacePresentationRegressionTests
     /// <param name="destWidth">The dest width value for this test case.</param>
     /// <param name="destHeight">The dest height value for this test case.</param>
     [Theory]
-    [InlineData(100, 80, 70, 50, 30, 30)]
-    [InlineData(200, 200, 140, 120, 60, 60)]
-    public void PresentBackbufferRect_ClampsDirtyRectangleToBackbufferBounds(int width, int height, int left, int top, int destWidth, int destHeight)
+    [InlineData(
+        100,
+        80,
+        70,
+        50,
+        30,
+        30)]
+    [InlineData(
+        200,
+        200,
+        140,
+        120,
+        60,
+        60)]
+    public void PresentBackbufferRect_ClampsDirtyRectangleToBackbufferBounds(
+        int width,
+        int height,
+        int left,
+        int top,
+        int destWidth,
+        int destHeight)
     {
         var engine = Engine.Instance;
+
         var uiDispatcherProperty = typeof(Engine).GetProperty(
             nameof(Engine.UiDispatcher),
             BindingFlags.Instance | BindingFlags.Public)!;
+
         var uiDispatcherSetter = uiDispatcherProperty.GetSetMethod(nonPublic: true)!;
         var originalDispatcher = (IUiDispatcher?)uiDispatcherProperty.GetValue(engine);
 
@@ -192,16 +213,30 @@ public sealed class RenderSurfacePresentationRegressionTests
             // Dirty tracking inflates by the supplied rectangle's dimensions,
             // producing (70, 50, 60, 60), which extends beyond the 100x80 backbuffer.
             host.Backbuffer.AddToBackbufferDirtyRectangle(
-                new Rectangle(90, 70, 20, 20));
+                new Rectangle(
+                    90,
+                    70,
+                    20,
+                    20));
 
             host.PresentBackbufferToAdapter();
 
             Assert.Equal(2, adapter.PresentCount);
+
             Assert.Equal(
-                new SKRectI(70, 50, 100, 80),
+                new SKRectI(
+                    70,
+                    50,
+                    100,
+                    80),
                 adapter.BufferRect!.Value);
+
             Assert.Equal(
-                SKRect.Create(left, top, destWidth, destHeight),
+                SKRect.Create(
+                    left,
+                    top,
+                    destWidth,
+                    destHeight),
                 adapter.DestinationRect!.Value);
         }
         finally
@@ -216,14 +251,17 @@ public sealed class RenderSurfacePresentationRegressionTests
         : RenderSurfaceAdapterBase(width, height)
     {
         internal void Resize(int width, int height) => SetDestinationSize(width, height);
+
         /// <summary>
         /// Gets the present count.
         /// </summary>
         public int PresentCount { get; private set; }
+
         /// <summary>
         /// Gets the buffer rect.
         /// </summary>
         public SKRectI? BufferRect { get; private set; }
+
         /// <summary>
         /// Gets the destination rect.
         /// </summary>

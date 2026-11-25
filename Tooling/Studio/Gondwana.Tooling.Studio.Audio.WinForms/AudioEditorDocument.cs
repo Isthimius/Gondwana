@@ -13,8 +13,10 @@ internal sealed class AudioEditorDocument : DockContent
 
     /// <summary>Gets the mutable document hosted in this dock tab.</summary>
     public AudioDocument Document { get; }
+
     /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public AudioEditorControl Editor { get; }
+
     /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool CloseApproved { get; set; }
@@ -34,6 +36,7 @@ internal sealed class AudioEditorDocument : DockContent
         Controls.Add(Editor);
 
         Document.Changed += DocumentChanged;
+
         FormClosing += (_, e) =>
         {
             if (!CloseApproved)
@@ -116,9 +119,9 @@ internal sealed class AudioEditorDocument : DockContent
     private void UpdateCaption()
     {
         Text = (Document.FilePath is null
-                ? "Untitled.gsnd"
-                : Path.GetFileName(Document.FilePath)) +
-            (Document.IsDirty ? " *" : string.Empty);
+                   ? "Untitled.gsnd"
+                   : Path.GetFileName(Document.FilePath)) +
+               (Document.IsDirty ? " *" : string.Empty);
 
         ToolTipText =
             Document.FilePath ??
@@ -132,6 +135,7 @@ internal sealed class AudioEditorDocument : DockContent
             Document.Changed -= DocumentChanged;
 
         base.Dispose(disposing);
+
         if (disposing)
             Document.Dispose();
     }

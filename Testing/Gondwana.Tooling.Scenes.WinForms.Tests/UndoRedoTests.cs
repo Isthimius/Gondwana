@@ -15,11 +15,21 @@ public sealed partial class SceneEditorTests
         using var document = SceneDocument.Create(Path.GetTempPath());
         var groups = document.Definition.CollisionGroups;
         var property = TypeDescriptor.GetProperties(document.Definition)["CollisionGroups"]!;
-        var wrapperType = typeof(ScenePropertyView).GetNestedType("TrackedEditor", System.Reflection.BindingFlags.NonPublic)!;
-        var wrapper = (System.Drawing.Design.UITypeEditor)Activator.CreateInstance(wrapperType,
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic,
-            null, [document, document.Definition, property, new MutatingCollectionEditor()], null)!;
+
+        var wrapperType = typeof(ScenePropertyView).GetNestedType(
+            "TrackedEditor",
+            System.Reflection.BindingFlags.NonPublic)!;
+
+        var wrapper = (System.Drawing.Design.UITypeEditor)Activator.CreateInstance(
+            wrapperType,
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.NonPublic,
+            null,
+            [document, document.Definition, property, new MutatingCollectionEditor()],
+            null)!;
+
         wrapper.EditValue(null, new DialogService(result), groups);
+
         if (result == DialogResult.Cancel)
         {
             Assert.Empty(groups);
@@ -43,21 +53,29 @@ public sealed partial class SceneEditorTests
         {
             ((List<string>)value!).Add("new group");
             using var dialog = new Form();
-            ((System.Windows.Forms.Design.IWindowsFormsEditorService)provider.GetService(typeof(System.Windows.Forms.Design.IWindowsFormsEditorService))!).ShowDialog(dialog);
+
+            ((System.Windows.Forms.Design.IWindowsFormsEditorService)provider.GetService(
+                typeof(System.Windows.Forms.Design.IWindowsFormsEditorService))!).ShowDialog(dialog);
+
             return value;
         }
     }
 
-    private sealed class DialogService(DialogResult result) : IServiceProvider, System.Windows.Forms.Design.IWindowsFormsEditorService
+    private sealed class DialogService(DialogResult result)
+        : IServiceProvider, System.Windows.Forms.Design.IWindowsFormsEditorService
     {
-        public object? GetService(Type serviceType) => serviceType == typeof(System.Windows.Forms.Design.IWindowsFormsEditorService) ? this : null;
+        public object? GetService(Type serviceType) =>
+            serviceType == typeof(System.Windows.Forms.Design.IWindowsFormsEditorService) ? this : null;
+
         public void CloseDropDown() { }
         public void DropDownControl(Control? control) { }
         public DialogResult ShowDialog(Form dialog) => result;
     }
 
     private static bool InvokeHistoryShortcut(Control editor, Keys keys) =>
-        (bool)editor.GetType().GetMethod("ProcessCmdKey", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+        (bool)editor.GetType().GetMethod(
+                "ProcessCmdKey",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
             .Invoke(editor, [new Message(), keys])!;
 
     [Fact]
@@ -70,7 +88,10 @@ public sealed partial class SceneEditorTests
         host.Controls.Add(editor);
         host.Show();
         Application.DoEvents();
-        var adapter = Descendants(editor).OfType<PropertyGrid>().Select(g => g.SelectedObject).OfType<TilePropertyAdapter>().Single();
+
+        var adapter = Descendants(editor).OfType<PropertyGrid>().Select(g => g.SelectedObject)
+            .OfType<TilePropertyAdapter>().Single();
+
         adapter.Transform = TileTransform.Rotate90;
         Descendants(editor).OfType<ScenePreviewControl>().Single().Focus();
         Assert.True(InvokeHistoryShortcut(editor, Keys.Control | Keys.Z));
@@ -91,7 +112,14 @@ public sealed partial class SceneEditorTests
         host.Controls.Add(input);
         input.BringToFront();
         input.Focus();
-        Assert.False(UndoRedoMenu.TryShortcut(editor, Keys.Control | Keys.Z, document.History, editor.CommitEdits));
+
+        Assert.False(
+            UndoRedoMenu.TryShortcut(
+                editor,
+                Keys.Control | Keys.Z,
+                document.History,
+                editor.CommitEdits));
+
         Assert.Single(layer.Tiles);
         using var menu = new UndoRedoMenu(() => document.History, editor.CommitEdits);
         Assert.True(menu.Menu.DropDownItems[1].Enabled);

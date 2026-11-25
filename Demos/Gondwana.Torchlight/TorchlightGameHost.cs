@@ -31,6 +31,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private const float ZoomStep = 1.2f;
 
     private static readonly Vector2 Spawn = new(8f, 12f);
+
     private static readonly Point[] WallTorches =
     [
         new(6, 5),
@@ -76,16 +77,30 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     {
         var scene = new Scene();
 
-        _floorLayer = scene.AddLayer(Columns, Rows, DungeonArt.TileSize, DungeonArt.TileSize,
-            zOrder: 0, parallax: 1f, coordinateSystem: CoordinateSystemTypes.Orthogonal);
+        _floorLayer = scene.AddLayer(
+            Columns,
+            Rows,
+            DungeonArt.TileSize,
+            DungeonArt.TileSize,
+            zOrder: 0,
+            parallax: 1f,
+            coordinateSystem: CoordinateSystemTypes.Orthogonal);
 
-        _actorLayer = scene.AddLayer(Columns, Rows, DungeonArt.TileSize, DungeonArt.TileSize,
-            zOrder: 10, parallax: 1f, coordinateSystem: CoordinateSystemTypes.Orthogonal);
+        _actorLayer = scene.AddLayer(
+            Columns,
+            Rows,
+            DungeonArt.TileSize,
+            DungeonArt.TileSize,
+            zOrder: 10,
+            parallax: 1f,
+            coordinateSystem: CoordinateSystemTypes.Orthogonal);
 
         for (int y = 0; y < Rows; y++)
-            for (int x = 0; x < Columns; x++)
-                _floorLayer[x, y]!.CurrentFrame = DungeonArt.Get((x * 17 + y * 13) % 9 == 0
-                    ? DungeonArt.FloorCracked : DungeonArt.Floor);
+        for (int x = 0; x < Columns; x++)
+            _floorLayer[x, y]!.CurrentFrame = DungeonArt.Get(
+                (x * 17 + y * 13) % 9 == 0
+                    ? DungeonArt.FloorCracked
+                    : DungeonArt.Floor);
 
         // Dividing walls deliberately have gaps to walk through, so moving lights
         // exercise screen projection and camera-follow across multiple rooms.
@@ -113,8 +128,11 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
             if (y is < 17 or > 20)
                 AddWall(29, y);
 
-        foreach (Point point in new[] { new Point(5, 9), new Point(11, 16),
-                                        new Point(20, 19), new Point(34, 12) })
+        foreach (Point point in new[]
+                 {
+                     new Point(5, 9), new Point(11, 16),
+                     new Point(20, 19), new Point(34, 12)
+                 })
             AddWall(point.X, point.Y, DungeonArt.Pillar);
 
         foreach (Point point in WallTorches)
@@ -146,7 +164,10 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     protected override void CreateSprites()
     {
         _player = Engine.Managers.Sprites.CreateSprite(
-            _actorLayer, DungeonArt.Get(_playerFrame), "dungeon-explorer");
+            _actorLayer,
+            DungeonArt.Get(_playerFrame),
+            "dungeon-explorer");
+
         _player.RenderSize = new Size(30, 32);
         _player.HorizAlign = SpriteHorizontalAlignment.Center;
         _player.VertAlign = SpriteVerticalAlignment.Middle;
@@ -165,7 +186,12 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         var view = host.ViewManager.Views[0];
 
         _lights = new DirectLightLayer(host, _actorLayer);
-        _darkness = new DirectDarknessOverlay(host, view, _actorLayer, "dungeon-darkness")
+
+        _darkness = new DirectDarknessOverlay(
+                host,
+                view,
+                _actorLayer,
+                "dungeon-darkness")
             .SetDarknessColor(Color.Black)
             .SetDarknessOpacity(214)
             .SetInnerClearRadiusRatio(0.18f)
@@ -177,19 +203,34 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
 
         // Switchable comparison of the view-space and scene-layer-space render paths.
         // Both overlays track the same lights, but only one is drawn at a time.
-        _layerDarkness = new DirectSceneLayerDarknessOverlay(host, _actorLayer,
-                new Rectangle(0, 0, Columns * DungeonArt.TileSize, Rows * DungeonArt.TileSize),
+        _layerDarkness = new DirectSceneLayerDarknessOverlay(
+                host,
+                _actorLayer,
+                new Rectangle(
+                    0,
+                    0,
+                    Columns * DungeonArt.TileSize,
+                    Rows * DungeonArt.TileSize),
                 "dungeon-world-darkness")
             .SetDarknessColor(Color.Black)
             .SetDarknessOpacity(214)
             .SetInnerClearRadiusRatio(0.18f)
             .SetMidpointRadiusRatio(0.62f)
             .SetMidpointStrength(0.48f);
+
         _layerDarkness.TrackLightLayer(_lights, radiusScale: 1.16f);
         _layerDarkness.Visible = false;
 
-        _playerTorch = _lights.AddTorchLight(TileCenter(Spawn), _radius,
-            Color.FromArgb(210, 255, 178, 68), "explorer-torch");
+        _playerTorch = _lights.AddTorchLight(
+            TileCenter(Spawn),
+            _radius,
+            Color.FromArgb(
+                210,
+                255,
+                178,
+                68),
+            "explorer-torch");
+
         _playerTorch.Intensity = 0.95f;
         _playerTorch.FlickerEnabled = true;
         _playerTorch.FlickerAmount = 0.12f;
@@ -199,7 +240,14 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         {
             var wall = _lights.AddTorchLight(
                 TileCenter(new Vector2(WallTorches[i].X, WallTorches[i].Y)),
-                112f, Color.FromArgb(170, 255, 146, 50), $"sconce-{i + 1}");
+                112f,
+                Color.FromArgb(
+                    170,
+                    255,
+                    146,
+                    50),
+                $"sconce-{i + 1}");
+
             wall.Intensity = 0.82f;
             wall.FlickerEnabled = true;
             wall.FlickerAmount = 0.15f;
@@ -208,12 +256,27 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         }
 
         // View-space UI must be ordered above the view-space darkness overlay.
-        _hud = new TextBlock(host, view, new Rectangle(14, 10, 930, 102), "torchlight-hud")
+        _hud = new TextBlock(
+                host,
+                view,
+                new Rectangle(
+                    14,
+                    10,
+                    930,
+                    102),
+                "torchlight-hud")
             .SetFont(SKTypeface.Default, 16f)
-            .SetColors(new SKColor(255, 227, 185), new SKColor(21, 23, 30, 222))
+            .SetColors(
+                new SKColor(255, 227, 185),
+                new SKColor(
+                    21,
+                    23,
+                    30,
+                    222))
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
             .SetMaxLines(3)
             .UseShadow();
+
         _hud.HorizontalPadding = 12;
         _hud.ZOrder = 30_000;
         RefreshHud();
@@ -227,14 +290,15 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
         keyboard.KeyDown += OnKeyDown;
+
         foreach (Keys key in new[]
-        {
-            Keys.W, Keys.A, Keys.S, Keys.D,
-            Keys.Up, Keys.Left, Keys.Down, Keys.Right,
-            Keys.V, Keys.B, Keys.F, Keys.T, Keys.L, Keys.R,
-            Keys.Z, Keys.X, Keys.C,
-            Keys.Oemplus, Keys.Add, Keys.OemMinus, Keys.Subtract
-        })
+                 {
+                     Keys.W, Keys.A, Keys.S, Keys.D,
+                     Keys.Up, Keys.Left, Keys.Down, Keys.Right,
+                     Keys.V, Keys.B, Keys.F, Keys.T, Keys.L, Keys.R,
+                     Keys.Z, Keys.X, Keys.C,
+                     Keys.Oemplus, Keys.Add, Keys.OemMinus, Keys.Subtract
+                 })
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
@@ -261,6 +325,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
         float clamped = Math.Clamp(zoom, MinimumZoom, MaximumZoom);
+
         if (MathF.Abs(view.Viewport.Zoom - clamped) < 0.001f)
             return;
 
@@ -305,8 +370,10 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
                 break;
             case Keys.F:
                 _flicker = !_flicker;
+
                 foreach (DirectRadialLight light in _lights.Lights)
                     light.FlickerEnabled = _flicker;
+
                 break;
             case Keys.T:
                 _playerTorchEnabled = !_playerTorchEnabled;
@@ -314,8 +381,10 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
                 break;
             case Keys.L:
                 _wallTorchesEnabled = !_wallTorchesEnabled;
+
                 foreach (DirectRadialLight wall in _wallLights)
                     wall.Intensity = _wallTorchesEnabled ? 0.82f : 0f;
+
                 break;
             case Keys.Oemplus:
             case Keys.Add:
@@ -351,6 +420,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
 
         string fps = _gpuFps?.ToString("0.0") ?? "--";
         float zoom = RenderSurface.Host.ViewManager.Views[0].Viewport.Zoom;
+
         _hud.SetText(
             "TORCHLIGHT   WASD / Arrows move   Wheel or Z/X zoom   C reset   ESC exit\n" +
             "B overlay mode   V darkness   F flicker   T torch   L sconces   R respawn\n" +
@@ -361,6 +431,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     private void UpdateFps()
     {
         var snapshot = Engine.Profiler.GetLatestSnapshot();
+
         if (snapshot is null || snapshot.ElapsedSeconds <= 0d)
             return;
 
@@ -405,7 +476,9 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         {
             int nextFrame = MathF.Abs(movement.X) > MathF.Abs(movement.Y)
                 ? movement.X < 0 ? DungeonArt.HeroLeft : DungeonArt.HeroRight
-                : movement.Y < 0 ? DungeonArt.HeroUp : DungeonArt.HeroDown;
+                : movement.Y < 0
+                    ? DungeonArt.HeroUp
+                    : DungeonArt.HeroDown;
 
             if (_playerFrame != nextFrame)
             {
@@ -432,6 +505,7 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
         _playerTorch.MoveTo(TileCenter(_player.GetPosition()));
 
         _fpsRefreshElapsed += dt;
+
         if (_fpsRefreshElapsed >= 0.25f)
         {
             _fpsRefreshElapsed = 0f;
@@ -443,15 +517,17 @@ internal sealed class TorchlightGameHost : WinFormsGpuGameHost
     {
         float centerX = position.X + 0.5f;
         float centerY = position.Y + 0.5f;
+
         foreach (float dx in new[] { -PlayerRadiusTiles, PlayerRadiusTiles })
-            foreach (float dy in new[] { -PlayerRadiusTiles, PlayerRadiusTiles })
-            {
-                int tileX = (int)MathF.Floor(centerX + dx);
-                int tileY = (int)MathF.Floor(centerY + dy);
-                if (tileX < 0 || tileX >= Columns || tileY < 0 || tileY >= Rows ||
-                    _blocked[tileX, tileY])
-                    return false;
-            }
+        foreach (float dy in new[] { -PlayerRadiusTiles, PlayerRadiusTiles })
+        {
+            int tileX = (int)MathF.Floor(centerX + dx);
+            int tileY = (int)MathF.Floor(centerY + dy);
+
+            if (tileX < 0 || tileX >= Columns || tileY < 0 || tileY >= Rows ||
+                _blocked[tileX, tileY])
+                return false;
+        }
 
         return true;
     }

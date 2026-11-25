@@ -20,21 +20,34 @@ public sealed partial class CompositionTests
     public void GafKeyboardMenuGridFiltersAndNativeSearchUndo(bool standalone) => RunSta(root =>
     {
         var path = Path.Combine(root, "keys.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var initial = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
             initial.Save();
+
         using var studio = standalone ? null : Host(root);
         using var shell = standalone ? new Gondwana.Tooling.Studio.Assets.WinForms.MainForm() : null;
         AssetEditorControl editor;
+
         if (shell is not null)
         {
             shell.Show();
             Application.DoEvents();
-            shell.GetType().GetMethod("OpenDocument", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.Invoke(shell, [path]);
+
+            shell.GetType().GetMethod(
+                    "OpenDocument",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                .Invoke(shell, [path]);
+
             Application.DoEvents();
             editor = Descendants(shell).OfType<AssetEditorControl>().Single();
         }
         else
             editor = (AssetEditorControl)studio!.OpenDocument(path).Document.Editor;
+
         var host = (Form?)shell ?? studio!;
         var menu = host.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&Edit");
         var grid = Descendants(editor).OfType<DataGridView>().Single();
@@ -73,7 +86,13 @@ public sealed partial class CompositionTests
         search.Text = "nested";
         search.TextBox.Focus();
         search.TextBox.SelectAll();
-        ReplaceText(search.TextBox.Handle, 0xC2, 1, "other");
+
+        ReplaceText(
+            search.TextBox.Handle,
+            0xC2,
+            1,
+            "other");
+
         Assert.True(search.TextBox.CanUndo);
         Assert.Empty(grid.Rows.Cast<DataGridViewRow>());
         RouteKey(Keys.Control | Keys.Z);
@@ -84,6 +103,7 @@ public sealed partial class CompositionTests
         Assert.Equal("nested", search.Text);
         Assert.Equal(AssetTypes.Misc, types.SelectedItem);
         Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+
         if (studio is not null)
             Assert.True(AwaitUi(studio.SaveDocument(studio.Documents.Single())));
         else
@@ -94,7 +114,12 @@ public sealed partial class CompositionTests
     public void GafStudioSaveAsUndoUsesAdoptedArchiveAndFailedSaveKeepsHistory() => RunSta(root =>
     {
         var path = Path.Combine(root, "source.gaf");
-        using (var archive = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   "secret",
+                   true,
+                   register: false))
         {
             using var seed = new MemoryStream(new byte[] { 7 });
             archive.Add(AssetTypes.Misc, "seed", seed);
@@ -148,7 +173,13 @@ public sealed partial class CompositionTests
     public void GafStandaloneSaveCopyAndFailedSaveKeepCheckpoint() => RunSta(root =>
     {
         var path = Path.Combine(root, "source.gaf");
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         archive.Save();
         using var editor = new AssetEditorControl(archive);
         editor.ApplyImport(HistoryImport(editor, root));
@@ -157,8 +188,14 @@ public sealed partial class CompositionTests
         Assert.Equal(path, editor.FilePath);
         Assert.True(editor.IsDirty);
         Assert.True(editor.History.CanUndo);
-        using (var saved = AssetsFile.LoadOrCreate(copy, "secret", true, register: false))
+
+        using (var saved = AssetsFile.LoadOrCreate(
+                   copy,
+                   "secret",
+                   true,
+                   register: false))
             Assert.Single(saved.GetAllEntries());
+
         Assert.Throws<IOException>(() => editor.SaveTo(copy));
         Assert.True(editor.IsDirty);
         editor.History.Undo();
@@ -225,14 +262,17 @@ public sealed partial class CompositionTests
         editor.ApplyImport(HistoryImport(editor, root));
         using var opened = new ManualResetEventSlim();
         using var release = new ManualResetEventSlim();
+
         studio.Browser.ArchiveOpened = _ =>
         {
             opened.Set();
             Assert.True(release.Wait(TimeSpan.FromSeconds(15)));
         };
+
         studio.Browser.RefreshDirectory();
         Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
         Task<bool>? save = null;
+
         try
         {
             save = studio.SaveDocument(document);
@@ -250,6 +290,7 @@ public sealed partial class CompositionTests
         finally
         {
             release.Set();
+
             if (save is not null)
                 Assert.True(AwaitUi(save));
         }
@@ -263,9 +304,16 @@ public sealed partial class CompositionTests
     public void CommittedDiskRefreshFailureInvalidatesHistoryAndBlocksStaleSaves() => RunSta(root =>
     {
         var path = Path.Combine(root, "refresh.gaf");
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         using (var bytes = new MemoryStream(new byte[] { 1 }))
             archive.Add(AssetTypes.Misc, "entry", bytes);
+
         archive.Save();
         using var editor = new AssetEditorControl(archive);
         editor.ReplaceAsset(AssetTypes.Misc, "entry", [2]);
@@ -274,9 +322,13 @@ public sealed partial class CompositionTests
         var plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Misc, path, "entry")]);
         plan.Commit(); // committed disk changes are never compensated by document history
         File.WriteAllText(path, "invalid zip after commit"); // simulate failed refresh read
+
         var failure = Assert.Throws<System.Reflection.TargetInvocationException>(() =>
-            editor.GetType().GetMethod("RefreshAfterDiskOperation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+            editor.GetType().GetMethod(
+                    "RefreshAfterDiskOperation",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
                 .Invoke(editor, ["Deletion committed."]));
+
         Assert.IsType<IOException>(failure.InnerException);
         Assert.False(editor.History.CanUndo);
         Assert.False(editor.History.CanRedo);
@@ -291,12 +343,24 @@ public sealed partial class CompositionTests
     public void FailedArchiveAdoptionPreservesCheckpointAndCommands() => RunSta(root =>
     {
         var path = Path.Combine(root, "source.gaf");
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         archive.Save();
         using var editor = new AssetEditorControl(archive);
         editor.ApplyImport(HistoryImport(editor, root));
         var replacementPath = Path.Combine(root, "broken.gaf");
-        using var replacement = AssetsFile.LoadOrCreate(replacementPath, null, false, register: false);
+
+        using var replacement = AssetsFile.LoadOrCreate(
+            replacementPath,
+            null,
+            false,
+            register: false);
+
         replacement.Save();
         replacement.Dispose();
         File.WriteAllText(replacementPath, "broken zip");
@@ -315,15 +379,27 @@ public sealed partial class CompositionTests
     public void FailedStandaloneSamePathSaveKeepsBothImportsAndSavedBaseline(bool encrypted) => RunSta(root =>
     {
         var path = Path.Combine(root, "locked.gaf");
-        using var archive = AssetsFile.LoadOrCreate(path, encrypted ? "secret" : null, encrypted, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            encrypted ? "secret" : null,
+            encrypted,
+            register: false);
+
         archive.Save();
         using var editor = new AssetEditorControl(archive);
         editor.ApplyImport(HistoryImport(editor, root, "first.bin"));
         editor.ApplyImport(HistoryImport(editor, root, "second.bin"));
         var disk = File.ReadAllBytes(path);
+
         // Read-sharing permits version checks, but denies in-place writes and atomic installation.
-        using (var locked = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (var locked = new FileStream(
+                   path,
+                   FileMode.Open,
+                   FileAccess.Read,
+                   FileShare.Read))
             Assert.ThrowsAny<IOException>(() => editor.SaveTo(path));
+
         Assert.Equal(disk, File.ReadAllBytes(path));
         Assert.Same(archive, editor.AssetsFile);
         editor.History.Undo();
@@ -338,7 +414,13 @@ public sealed partial class CompositionTests
         Assert.Equal(2, archive.GetAllEntries().Count());
         editor.SaveTo(path);
         Assert.False(editor.IsDirty);
-        using var persisted = AssetsFile.LoadOrCreate(path, encrypted ? "secret" : null, encrypted, register: false);
+
+        using var persisted = AssetsFile.LoadOrCreate(
+            path,
+            encrypted ? "secret" : null,
+            encrypted,
+            register: false);
+
         Assert.Equal(2, persisted.GetAllEntries().Count());
         Assert.Equal(encrypted, persisted.UseEncryption);
         Assert.Empty(Directory.GetFiles(root, ".gondwana-save-*"));
@@ -351,8 +433,14 @@ public sealed partial class CompositionTests
     public void StudioFailedRefreshCanBeDiscardedClosedReloadedOrShutDown(string action) => RunSta(root =>
     {
         var path = Path.Combine(root, "recovery.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var initial = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
             initial.Save();
+
         using var studio = Host(root);
         var document = studio.OpenDocument(path);
         var editor = (AssetEditorControl)document.Document.Editor;
@@ -361,9 +449,13 @@ public sealed partial class CompositionTests
         AssetDeletionPlan.Create(path, [new(AssetTypes.Misc, path, "nested/new.bin")]).Commit();
         var committed = File.ReadAllBytes(path);
         File.WriteAllText(path, "refresh read failure");
+
         var failure = Assert.Throws<System.Reflection.TargetInvocationException>(() =>
-            editor.GetType().GetMethod("RefreshAfterDiskOperation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+            editor.GetType().GetMethod(
+                    "RefreshAfterDiskOperation",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
                 .Invoke(editor, ["Deletion committed."]));
+
         Assert.IsType<IOException>(failure.InnerException);
         File.WriteAllBytes(path, committed); // a subsequent reload can read the committed archive
         Assert.False(editor.CanSave);
@@ -374,6 +466,7 @@ public sealed partial class CompositionTests
         studio.AskSave = _ => DialogResult.Yes;
         Assert.False(AwaitUi(studio.ConfirmClose(document))); // stale buffers cannot be saved through Close
         studio.AskSave = _ => DialogResult.No;
+
         if (action == "reload")
         {
             studio.ConfirmReload = _ => true;
@@ -403,7 +496,13 @@ public sealed partial class CompositionTests
     public void GafUnsavedArchiveAndDisposedControlReleaseHistory() => RunSta(root =>
     {
         var path = Path.Combine(root, "unsaved.gaf");
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         var editor = new AssetEditorControl(archive);
         Assert.True(editor.IsDirty);
         editor.ApplyImport(HistoryImport(editor, root));

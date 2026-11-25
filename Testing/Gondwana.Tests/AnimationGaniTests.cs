@@ -38,11 +38,12 @@ public sealed class AnimationGaniTests : IDisposable
     public void RuntimeCycle_RoundTripsPersistentDefinition()
     {
         var sheet = CreateTilesheet();
+
         var sequence = new FrameSequence(
-            [
-                sheet.GetFrame(0, 0),
-                sheet.GetFrame(1, 0)
-            ])
+        [
+            sheet.GetFrame(0, 0),
+            sheet.GetFrame(1, 0)
+        ])
         {
             SequenceCycleType = CycleType.PingPong
         };
@@ -90,8 +91,10 @@ public sealed class AnimationGaniTests : IDisposable
     public void MixedDurationsRoundTripAndFollowDisplayedFrame(CycleType type, double total)
     {
         var sheet = CreateTilesheet();
+
         var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)])
-        { SequenceCycleType = type };
+            { SequenceCycleType = type };
+
         sequence.SetDurationSeconds(0, 0.1);
         sequence.SetDurationSeconds(2, 0.3);
         var original = new Cycle(sequence, 0.2, "mixed");
@@ -106,8 +109,11 @@ public sealed class AnimationGaniTests : IDisposable
         cycle.Sequence.AdvanceFrame();
         Assert.Equal(0.3, cycle.CurrentFrameDurationSeconds);
         cycle.Sequence.AdvanceFrame();
-        Assert.Equal(type == CycleType.PingPong ? 0.2 : type == CycleType.Repeating ? 0.1 : 0.3,
+
+        Assert.Equal(
+            type == CycleType.PingPong ? 0.2 : type == CycleType.Repeating ? 0.1 : 0.3,
             cycle.CurrentFrameDurationSeconds);
+
         var clone = (Cycle)cycle.Clone();
         Assert.Equal(0.2, clone.ThrottleTime);
         clone.Sequence.SetDurationSeconds(0, 0.9);
@@ -125,7 +131,9 @@ public sealed class AnimationGaniTests : IDisposable
     [InlineData(double.PositiveInfinity)]
     public void InvalidFrameDurationsAreRejected(double duration)
     {
-        var definition = new AnimationDefinition { Key = "invalid", Frames = [new() { Tilesheet = "test", DurationSeconds = duration }] };
+        var definition = new AnimationDefinition
+            { Key = "invalid", Frames = [new() { Tilesheet = "test", DurationSeconds = duration }] };
+
         Assert.Contains(AnimationDefinitionValidator.Validate(definition), e => e.Contains("DurationSeconds"));
     }
 
@@ -140,15 +148,25 @@ public sealed class AnimationGaniTests : IDisposable
     public void AnimatorConsumesCurrentFrameDelayIncludingCatchUp(CycleType type)
     {
         Gondwana.Timers.EngineSimulationClock.BeginTimerDriven(0);
+
         try
         {
             var sheet = CreateTilesheet();
-            var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)]) { SequenceCycleType = type };
+
+            var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)])
+                { SequenceCycleType = type };
+
             sequence.SetDurationSeconds(0, 0.1);
             sequence.SetDurationSeconds(2, 0.3);
             using var cycle = new Cycle(sequence, 0.2, "animator.mixed");
             using var scene = new Gondwana.Scenes.Scene();
-            var tile = scene.AddLayer(1, 1, 16, 16)[0, 0]!;
+
+            var tile = scene.AddLayer(
+                1,
+                1,
+                16,
+                16)[0, 0]!;
+
             tile.CurrentFrame = sheet.GetFrame(0, 0);
             tile.EnableAnimator = true;
             var animator = tile.TileAnimator;
@@ -163,7 +181,11 @@ public sealed class AnimationGaniTests : IDisposable
             animator.CycleAnimation(Tick(0.59));
             Assert.Equal(2, animator.CurrentCycle.Sequence.CurrentFrameIdx);
             animator.CycleAnimation(Tick(0.61));
-            Assert.Equal(type == CycleType.Repeating ? 0 : type == CycleType.PingPong ? 1 : 2, animator.CurrentCycle.Sequence.CurrentFrameIdx);
+
+            Assert.Equal(
+                type == CycleType.Repeating ? 0 : type == CycleType.PingPong ? 1 : 2,
+                animator.CurrentCycle.Sequence.CurrentFrameIdx);
+
             Assert.Equal(type != CycleType.Simple, animator.IsCycling);
             animator.StopAnimation();
         }
@@ -219,10 +241,12 @@ public sealed class AnimationGaniTests : IDisposable
 
         Assert.Throws<InvalidDataException>(() => AnimationDefinitionSerializer.ToDocumentJson(document));
 
-        var json = AnimationDefinitionSerializer.ToDocumentJson(new AnimationDefinitionDocument
-        {
-            Definitions = [new() { Key = "idle" }]
-        });
+        var json = AnimationDefinitionSerializer.ToDocumentJson(
+            new AnimationDefinitionDocument
+            {
+                Definitions = [new() { Key = "idle" }]
+            });
+
         using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
         Assert.Equal("idle", AnimationDefinitionSerializer.Load(stream, "IDLE").Key);
 
@@ -240,11 +264,13 @@ public sealed class AnimationGaniTests : IDisposable
         var directory = Path.Combine(
             Path.GetTempPath(),
             $"GondwanaGani_{Guid.NewGuid():N}");
+
         Directory.CreateDirectory(directory);
 
         try
         {
             var path = Path.Combine(directory, "walk.gani");
+
             var definition = new AnimationDefinition
             {
                 Key = "actor.walk",
@@ -313,15 +339,19 @@ public sealed class AnimationGaniTests : IDisposable
 
         var loose = restored.TilesheetSources[0];
         Assert.Equal(sheet.Name, loose.Tilesheet);
+
         Assert.Equal(
             AnimationTilesheetSourceKind.LooseDefinitionFile,
             loose.Kind);
+
         Assert.Equal("tilesheets/actor.gts", loose.GtsPath);
 
         var packed = restored.TilesheetSources[1];
+
         Assert.Equal(
             AnimationTilesheetSourceKind.PackedDefinitionFile,
             packed.Kind);
+
         Assert.Equal("content.gaf", packed.AssetsFilePath);
         Assert.Equal("tilesheets/unused.gts", packed.AssetEntryName);
 
@@ -370,11 +400,13 @@ public sealed class AnimationGaniTests : IDisposable
             error => error.Contains(
                 "loose GTS source path is empty",
                 StringComparison.OrdinalIgnoreCase));
+
         Assert.Contains(
             errors,
             error => error.Contains(
                 "duplicate source",
                 StringComparison.OrdinalIgnoreCase));
+
         Assert.Contains(
             errors,
             error => error.Contains(

@@ -17,25 +17,46 @@ public sealed partial class CompositionTests
         const string entry = "sheets/nested/characters.gts";
         const string imageEntry = "images/characters.png";
         string path = Path.Combine(root, "characters.gaf");
-        using (var archive = AssetsFile.LoadOrCreate(path, password: null, encrypt: false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   password: null,
+                   encrypt: false,
+                   register: false))
         {
             using var image = new Bitmap(32, 32);
             using var png = new MemoryStream();
             image.Save(png, System.Drawing.Imaging.ImageFormat.Png);
             png.Position = 0;
             archive.Add(AssetTypes.Image, imageEntry, png);
-            using var gts = new MemoryStream(Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToDocumentJson(new()
-            {
-                Definitions =
-                [
-                    new() { Name = "first" },
-                    new()
-                    {
-                        Name = "characters", Image = new() { AssetEntryName = imageEntry },
-                        Regions = [new() { Name = "idle", Area = new(0, 0, 32, 32), TileSize = new(16, 16) }]
-                    }
-                ]
-            })));
+
+            using var gts = new MemoryStream(
+                Encoding.UTF8.GetBytes(
+                    TilesheetDefinitionSerializer.ToDocumentJson(
+                        new()
+                        {
+                            Definitions =
+                            [
+                                new() { Name = "first" },
+                                new()
+                                {
+                                    Name = "characters", Image = new() { AssetEntryName = imageEntry },
+                                    Regions =
+                                    [
+                                        new()
+                                        {
+                                            Name = "idle", Area = new(
+                                                0,
+                                                0,
+                                                32,
+                                                32),
+                                            TileSize = new(16, 16)
+                                        }
+                                    ]
+                                }
+                            ]
+                        })));
+
             archive.Add(AssetTypes.TilesheetDefinition, entry, gts);
             archive.Save();
         }
@@ -48,19 +69,34 @@ public sealed partial class CompositionTests
         var tilesheetEditor = Assert.IsType<TilesheetEditorControl>(tilesheet.Document.Editor);
         var region = Assert.Single(tilesheetEditor.Document.Definition.Regions);
         const BindingFlags NonPublicInstance = BindingFlags.Instance | BindingFlags.NonPublic;
-        var drag = Assert.IsType<TilesheetFrameDrag>(typeof(TilesheetEditorControl)
-            .GetMethod("CreateFrameDrag", NonPublicInstance)!.Invoke(tilesheetEditor, [region, new Point(1, 1)]));
-        Assert.Equal(new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, path, entry), "characters"), drag.Address);
+
+        var drag = Assert.IsType<TilesheetFrameDrag>(
+            typeof(TilesheetEditorControl)
+                .GetMethod("CreateFrameDrag", NonPublicInstance)!.Invoke(tilesheetEditor, [region, new Point(1, 1)]));
+
+        Assert.Equal(
+            new ResourceAddress(new AssetLocation(AssetTypes.TilesheetDefinition, path, entry), "characters"),
+            drag.Address);
 
         var target = studio.OpenDocument(gani);
         Assert.True(target.Document.SelectMember("sibling"));
         Application.DoEvents();
         var animation = Assert.IsType<AnimationEditorControl>(target.Document.Editor);
-        var frames = (ListView)typeof(AnimationEditorControl).GetField("_frames", NonPublicInstance)!.GetValue(animation)!;
+
+        var frames =
+            (ListView)typeof(AnimationEditorControl).GetField("_frames", NonPublicInstance)!.GetValue(animation)!;
+
         Assert.True(frames.Visible && frames.AllowDrop);
         var point = frames.PointToScreen(new Point(10, 40));
-        var args = new DragEventArgs(new ResourceDragData<TilesheetFrameDrag>(drag),
-            0, point.X, point.Y, DragDropEffects.Copy, DragDropEffects.None);
+
+        var args = new DragEventArgs(
+            new ResourceDragData<TilesheetFrameDrag>(drag),
+            0,
+            point.X,
+            point.Y,
+            DragDropEffects.Copy,
+            DragDropEffects.None);
+
         typeof(Control).GetMethod("OnDragEnter", NonPublicInstance)!.Invoke(frames, [args]);
         Assert.Equal(DragDropEffects.Copy, args.Effect);
         typeof(Control).GetMethod("OnDragDrop", NonPublicInstance)!.Invoke(frames, [args]);

@@ -13,6 +13,7 @@ internal sealed class SlidingPuzzle
     {
         if (columns is < 3 or > 20)
             throw new ArgumentOutOfRangeException(nameof(columns));
+
         if (rows is < 3 or > 20)
             throw new ArgumentOutOfRangeException(nameof(rows));
 
@@ -38,12 +39,18 @@ internal sealed class SlidingPuzzle
     {
         if (piece < 0 || piece >= TotalPieces)
             throw new ArgumentOutOfRangeException(nameof(piece));
+
         return (piece % Columns, piece / Columns);
     }
 
-    internal static SlidingPuzzle Restore(int columns, int rows, int[]? cells, int moves)
+    internal static SlidingPuzzle Restore(
+        int columns,
+        int rows,
+        int[]? cells,
+        int moves)
     {
         var board = new SlidingPuzzle(columns, rows);
+
         if (cells is null || cells.Length != columns * rows || moves < 0 ||
             cells.Count(value => value == -1) != 1 ||
             !cells.OrderBy(value => value).SequenceEqual(
@@ -64,10 +71,12 @@ internal sealed class SlidingPuzzle
     internal bool TryMove(int column, int row, out PuzzleMove move)
     {
         move = default;
+
         if (column < 0 || column >= Columns || row < 0 || row >= Rows)
             return false;
 
         int from = row * Columns + column;
+
         if (!IsAdjacent(from, _blank))
             return false;
 
@@ -83,6 +92,7 @@ internal sealed class SlidingPuzzle
     internal bool TryMovePiece(int piece, out PuzzleMove move)
     {
         int index = Array.IndexOf(_cells, piece);
+
         if (index >= 0)
             return TryMove(index % Columns, index / Columns, out move);
 
@@ -111,6 +121,7 @@ internal sealed class SlidingPuzzle
         for (int i = 0; i < moves; i++)
         {
             var candidates = Adjacent(_blank).Where(index => index != previousBlank).ToArray();
+
             if (candidates.Length == 0)
                 candidates = Adjacent(_blank).ToArray();
 
@@ -142,12 +153,16 @@ internal sealed class SlidingPuzzle
     {
         int col = index % Columns;
         int row = index / Columns;
+
         if (col > 0)
             yield return index - 1;
+
         if (col + 1 < Columns)
             yield return index + 1;
+
         if (row > 0)
             yield return index - Columns;
+
         if (row + 1 < Rows)
             yield return index + Columns;
     }

@@ -13,6 +13,7 @@ public static class ImportNaming
     {
         ArgumentNullException.ThrowIfNull(name);
         var result = new StringBuilder();
+
         foreach (char c in name.Normalize(NormalizationForm.FormC))
         {
             if (char.IsLetterOrDigit(c) || c is '-' or '_' or '.')
@@ -22,12 +23,18 @@ public static class ImportNaming
         }
 
         var value = result.ToString().Trim('.', '-', ' ');
+
         if (value.Length == 0)
             value = "asset";
+
         var stem = value.Split('.')[0];
+
         if (stem is "con" or "prn" or "aux" or "nul" ||
-            (stem.Length == 4 && (stem.StartsWith("com", StringComparison.Ordinal) || stem.StartsWith("lpt", StringComparison.Ordinal)) && stem[3] is >= '1' and <= '9'))
+            (stem.Length == 4 &&
+             (stem.StartsWith("com", StringComparison.Ordinal) || stem.StartsWith("lpt", StringComparison.Ordinal)) &&
+             stem[3] is >= '1' and <= '9'))
             value = "asset-" + value;
+
         return value;
     }
 

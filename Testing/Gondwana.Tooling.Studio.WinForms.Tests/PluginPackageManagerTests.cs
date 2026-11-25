@@ -57,6 +57,7 @@ public sealed partial class PluginPackageTests
         Assert.False(panel.UpdateButton.Enabled);
         Assert.False(panel.RemoveButton.Enabled);
         var reviewed = 0;
+
         panel.ConfirmPackage = preview =>
         {
             reviewed++;
@@ -64,6 +65,7 @@ public sealed partial class PluginPackageTests
             Assert.Contains("sample.package", PluginManagerPanel.PreviewText(preview));
             return reviewed > 1;
         };
+
         WaitForPackageTask(panel.RunPackageChange(source, null));
         Assert.Empty(operations.Operations);
         WaitForPackageTask(panel.RunPackageChange(source, null));
@@ -75,6 +77,7 @@ public sealed partial class PluginPackageTests
         preferences.TrySetEnabled("temporarily.missing", false, out _);
         var context = SynchronizationContext.Current;
         SynchronizationContext.SetSynchronizationContext(null);
+
         try
         {
             panel.CancelButton.PerformClick();
@@ -95,13 +98,22 @@ public sealed partial class PluginPackageTests
     public void ManagerProtectsBundledAndLegacyRowsAndAllowsManagedActions() => OnSta(() =>
     {
         InstallFixture();
-        PluginPackageInspection.CopyDirectory(SourcePackage("bundled", "gondwana.project-diagnostics"), Path.Combine(InstallRoot, "ProjectDiagnostics"));
+
+        PluginPackageInspection.CopyDirectory(
+            SourcePackage("bundled", "gondwana.project-diagnostics"),
+            Path.Combine(InstallRoot, "ProjectDiagnostics"));
+
         Compile(Path.Combine(InstallRoot, "Legacy.dll"), PluginSource("Legacy"));
         using var operations = Operations();
         operations.StartSession();
         var host = new Host(_ => { });
         host.DiscoverAndLoad(InstallRoot);
-        using var panel = new PluginManagerPanel(host, new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { }), operations);
+
+        using var panel = new PluginManagerPanel(
+            host,
+            new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { }),
+            operations);
+
         using var form = new Form();
         form.Controls.Add(panel);
         form.Show();
@@ -136,14 +148,21 @@ public sealed partial class PluginPackageTests
     public void ManagerDisplaysFailedOperationDiagnostics() => OnSta(() =>
     {
         var target = InstallFixture();
+
         using (var queue = Operations())
             queue.Queue(queue.PreviewRemoval("sample.package"), true);
+
         File.WriteAllText(Path.Combine(target, "external.txt"), "changed");
         using var operations = Operations();
         operations.StartSession();
         var host = new Host(_ => { });
         host.DiscoverAndLoad(InstallRoot);
-        using var panel = new PluginManagerPanel(host, new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { }), operations);
+
+        using var panel = new PluginManagerPanel(
+            host,
+            new PluginPreferences(Path.Combine(_root, "preferences.json"), _ => { }),
+            operations);
+
         using var form = new Form();
         form.Controls.Add(panel);
         form.Show();
@@ -156,7 +175,9 @@ public sealed partial class PluginPackageTests
     [Fact]
     public void BundledDeploymentStillPassesStaticPackageValidation()
     {
-        var inspection = new PluginPackageInspection([typeof(IStudioPlugin).Assembly, typeof(Extensibility.IStudioPlugin).Assembly]);
+        var inspection = new PluginPackageInspection(
+            [typeof(IStudioPlugin).Assembly, typeof(Extensibility.IStudioPlugin).Assembly]);
+
         var root = Path.Combine(AppContext.BaseDirectory, "plugins");
         Assert.Equal("gondwana.project-diagnostics", inspection.Validate(Path.Combine(root, "ProjectDiagnostics")).Id);
         Assert.Equal("gondwana.external-import", inspection.Validate(Path.Combine(root, "ExternalImport")).Id);
@@ -167,9 +188,11 @@ public sealed partial class PluginPackageTests
         WaitForPackageCondition(() => task.IsCompleted);
         task.GetAwaiter().GetResult();
     }
+
     private static void WaitForPackageCondition(Func<bool> completed)
     {
         var deadline = DateTime.UtcNow.AddSeconds(20);
+
         while (!completed() && DateTime.UtcNow < deadline)
         {
             Application.DoEvents();

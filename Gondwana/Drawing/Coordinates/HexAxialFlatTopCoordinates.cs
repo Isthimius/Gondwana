@@ -76,7 +76,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         //   odd  col: originY + H/2 + H/2 = originY + H
         float baseCenterY =
             -originY + H * 0.5f
-            + ((approxCol & 1) == 0 ? 0f : H * 0.5f);
+                     + ((approxCol & 1) == 0 ? 0f : H * 0.5f);
 
         float dyFromRow0Center = pixelPt.Y - baseCenterY;
         float rowF = dyFromRow0Center / H;
@@ -89,16 +89,22 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
 
         foreach (var cand in NeighborsFlatTop(approxCol, approxRow, includeSelf: true))
         {
-            var poly = HexPolygonFlatTop(sceneLayer, cand.X, cand.Y, includeOverhang: false);
+            var poly = HexPolygonFlatTop(
+                sceneLayer,
+                cand.X,
+                cand.Y,
+                includeOverhang: false);
 
             var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
+
             if (PointInPolygon(poly, pInt))
                 return new PointF(cand.X, cand.Y);
 
             // Center of candidate hex
             float cx = -originX + cand.X * (W * 0.75f) + W / 2f;
+
             float cy = -originY + cand.Y * (float)H
-                       + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
+                                + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
 
             float dx = cx - pixelPt.X;
             float dy = cy - pixelPt.Y;
@@ -121,7 +127,10 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     /// <param name="worldPixelRange">The pixel range to search within.</param>
     /// <param name="includeOverhang">Whether to include tile overhang pixels in the intersection test.</param>
     /// <returns>A list of tiles that intersect with the specified pixel range.</returns>
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         int W = sceneLayer.TileWidth;
@@ -143,9 +152,12 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
             for (int row = minRow; row <= maxRow; row++)
             {
                 var gp = sceneLayer[col, row];
+
                 if (gp == null)
                     continue;
+
                 var r = GetPixelRangeForTile(gp, includeOverhang);
+
                 if (r.IntersectsWith(worldPixelRange))
                     result.Add(gp);
             }
@@ -165,7 +177,13 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth;
         int H = tile.SceneLayer.TileHeight;
-        var rect = new Rectangle(p.X, p.Y, W, H); // hex image fits W x H box
+
+        var rect = new Rectangle(
+            p.X,
+            p.Y,
+            W,
+            H); // hex image fits W x H box
+
         return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
@@ -178,6 +196,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
+
         foreach (var t in tileList)
         {
             var r = GetPixelRangeForTile(t, includeOverhang);
@@ -200,6 +219,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         int y = gp.GridCoordinatesAbs.Y;
         bool even = (x & 1) == 0;
         var m = gp.SceneLayer;
+
         return dir switch
         {
             CardinalDirections.E => m.ResolveWrappedTile(x + 1, y),
@@ -222,7 +242,11 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     /// <returns>An array of six points representing the hexagonal tile's vertices.</returns>
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        return HexPolygonFlatTop(tile.SceneLayer, (int)tile.SceneLayerCoordinates.X, (int)tile.SceneLayerCoordinates.Y, includeOverhang);
+        return HexPolygonFlatTop(
+            tile.SceneLayer,
+            (int)tile.SceneLayerCoordinates.X,
+            (int)tile.SceneLayerCoordinates.Y,
+            includeOverhang);
     }
 
     /// <summary>
@@ -237,10 +261,13 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         // wrap like square; hex maps are usually finite with wrap disabled, but keep parity sane
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);
+
         if (modX < 0)
             modX += xUpperBound + 1;
+
         if (modY < 0)
             modY += yUpperBound + 1;
+
         return new PointF(modX, modY);
     }
 
@@ -250,6 +277,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     {
         if (includeSelf)
             yield return new Point(col, row);
+
         bool even = (col & 1) == 0;
         yield return new Point(col + 1, row);
         yield return new Point(col - 1, row);
@@ -259,7 +287,11 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         yield return new Point(col - 1, row - (even ? 1 : 0));
     }
 
-    private static Point[] HexPolygonFlatTop(SceneLayer sceneLayer, int col, int row, bool includeOverhang)
+    private static Point[] HexPolygonFlatTop(
+        SceneLayer sceneLayer,
+        int col,
+        int row,
+        bool includeOverhang)
     {
         int W = sceneLayer.TileWidth;
         int H = sceneLayer.TileHeight;
@@ -271,10 +303,21 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
             -originX + (int)Math.Floor(col * (W * 0.75f)),
             -originY + row * H + ((col & 1) == 0 ? 0 : H / 2));
 
-        var rect = new Rectangle(p.X, p.Y, W, H);
+        var rect = new Rectangle(
+            p.X,
+            p.Y,
+            W,
+            H);
+
         var ohRect = TileBounds.ApplyOverhang(
             rect,
-            includeOverhang ? new Spacing(0, 0, 0, 0) : Spacing.None,
+            includeOverhang
+                ? new Spacing(
+                    0,
+                    0,
+                    0,
+                    0)
+                : Spacing.None,
             includeOverhang); // polygon uses base box; overhang impacts range, not shape
 
         int x = ohRect.X;
@@ -283,12 +326,12 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         // Flat-top vertices from bounding box
         return new[]
         {
-            new Point(x + W/4,    y),
-            new Point(x + 3*W/4,  y),
-            new Point(x + W,      y + H/2),
-            new Point(x + 3*W/4,  y + H),
-            new Point(x + W/4,    y + H),
-            new Point(x,          y + H/2)
+            new Point(x + W / 4, y),
+            new Point(x + 3 * W / 4, y),
+            new Point(x + W, y + H / 2),
+            new Point(x + 3 * W / 4, y + H),
+            new Point(x + W / 4, y + H),
+            new Point(x, y + H / 2)
         };
     }
 
@@ -296,12 +339,16 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     {
         bool inside = false;
         int j = poly.Length - 1;
+
         for (int i = 0; i < poly.Length; i++)
         {
             bool intersect = ((poly[i].Y > p.Y) != (poly[j].Y > p.Y)) &&
-                (p.X < (poly[j].X - poly[i].X) * (p.Y - poly[i].Y) / (float)(poly[j].Y - poly[i].Y) + poly[i].X);
+                             (p.X < (poly[j].X - poly[i].X) * (p.Y - poly[i].Y) / (float)(poly[j].Y - poly[i].Y) +
+                                 poly[i].X);
+
             if (intersect)
                 inside = !inside;
+
             j = i;
         }
 

@@ -23,7 +23,10 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     /// <param name="control">The SKControl to use as the render target.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is null.</exception>
     public WinFormBitmapRenderSurfaceAdapter(SKControl control)
-        : base(Math.Max(1, control.ClientSize.Width), Math.Max(1, control.ClientSize.Height), initialSizeAvailable: control.IsHandleCreated)
+        : base(
+            Math.Max(1, control.ClientSize.Width),
+            Math.Max(1, control.ClientSize.Height),
+            initialSizeAvailable: control.IsHandleCreated)
     {
         _control = control ?? throw new ArgumentNullException(nameof(control));
 
@@ -48,7 +51,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         if (_control.IsDisposed || !_control.IsHandleCreated)
             return;
 
-        var sz = _control.ClientSize;                     // ← ClientSize, not Width/Height
+        var sz = _control.ClientSize; // ← ClientSize, not Width/Height
         SetDestinationSize(sz.Width, sz.Height);
         _control.Invalidate();
     }
@@ -70,15 +73,30 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
 
         var sourceRect = SKRectI.Intersect(
             bufferRect,
-            new SKRectI(0, 0, bufferImage.Width, bufferImage.Height));
+            new SKRectI(
+                0,
+                0,
+                bufferImage.Width,
+                bufferImage.Height));
 
-        var dirty = global::System.Drawing.Rectangle.FromLTRB(sourceRect.Left, sourceRect.Top, sourceRect.Right, sourceRect.Bottom);
+        var dirty = global::System.Drawing.Rectangle.FromLTRB(
+            sourceRect.Left,
+            sourceRect.Top,
+            sourceRect.Right,
+            sourceRect.Bottom);
+
         // Expand for the adjacent texels sampled by linear filtering, then round physical edges outwards.
         dirty.Inflate(1, 1);
-        var invalidateRect = global::System.Drawing.Rectangle.Intersect(
-            Presentation.ScreenRectToAdapterRect(dirty), _control.ClientRectangle);
 
-        if (sourceRect == new SKRectI(0, 0, bufferImage.Width, bufferImage.Height))
+        var invalidateRect = global::System.Drawing.Rectangle.Intersect(
+            Presentation.ScreenRectToAdapterRect(dirty),
+            _control.ClientRectangle);
+
+        if (sourceRect == new SKRectI(
+                0,
+                0,
+                bufferImage.Width,
+                bufferImage.Height))
             invalidateRect = _control.ClientRectangle;
 
         if (sourceRect.IsEmpty || invalidateRect.IsEmpty)
@@ -99,9 +117,9 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             // complete snapshot. Windows coalesces physical invalidation rectangles.
             var old = _currentImage;
             _currentImage = bufferImage;
+
             if (!ReferenceEquals(old, _currentImage) && old is not null)
                 _toDispose.Enqueue(old);
-
         }
 
         _control.Invalidate(invalidateRect);
@@ -112,6 +130,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         var canvas = e.Surface.Canvas;
 
         SKImage? img;
+
         lock (_presentSync)
         {
             img = _currentImage;
@@ -143,10 +162,12 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     public void Dispose()
     {
         SKImage? currentImage;
+
         lock (_presentSync)
         {
             if (_disposed)
                 return;
+
             _disposed = true;
 
             currentImage = _currentImage;

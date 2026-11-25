@@ -32,26 +32,32 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// The z order.
     /// </summary>
     protected internal int zOrder = 0;
+
     /// <summary>
     /// The visible.
     /// </summary>
     protected internal bool visible;
+
     /// <summary>
     /// The frame.
     /// </summary>
     protected internal Frame frame;
+
     /// <summary>
     /// The enable fog.
     /// </summary>
     protected internal bool enableFog = false;
+
     /// <summary>
     /// The animator.
     /// </summary>
     protected internal Animator? animator;
+
     /// <summary>
     /// The pause animation.
     /// </summary>
     protected bool pauseAnimation;
+
     /// <summary>
     /// The collider.
     /// </summary>
@@ -77,14 +83,17 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// Gets whether the tile occupies a fixed position in its layer.
     /// </summary>
     public abstract bool IsPositionFixed { get; }
+
     /// <summary>
     /// Gets the tile drawing bounds in world pixels.
     /// </summary>
     public abstract Rectangle DrawLocationWorld { get; }
+
     /// <summary>
     /// Gets the position in scene-layer grid coordinates.
     /// </summary>
     public abstract PointF SceneLayerCoordinates { get; }
+
     /// <summary>
     /// Gets the scene layer that owns this tile.
     /// </summary>
@@ -189,6 +198,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
             frame = value;
 
             bool hasFrame = value.Tilesheet is not null;
+
             if (hasFrame &&
                 (_adjustCollisionAreaByFrame ||
                  (!_hasAssignedFrame && !_collisionAdjustExplicitlySet)))
@@ -379,6 +389,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
             throw new ArgumentException("Collision profile name cannot be empty.", nameof(profileName));
 
         var scene = SceneLayer.Scene;
+
         if (scene is not null)
         {
             var profile = scene.CollisionProfiles.Get(profileName);
@@ -475,6 +486,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
             return;
 
         var scene = SceneLayer.Scene;
+
         if (scene is null)
             return;
 
@@ -562,6 +574,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
             return CaptureSortKey();
 
         long renderPassId = renderContext.PassId;
+
         if (_sortKeyRenderPassId != renderPassId)
         {
             _sortKey = CaptureSortKey();
@@ -576,6 +589,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         bool isPositionFixed = IsPositionFixed;
         Rectangle drawLocationWorld = DrawLocationWorld;
         Spacing overhang = Overhang;
+
         float location = isPositionFixed
             ? drawLocationWorld.Top + overhang.Top
             : drawLocationWorld.Bottom - overhang.Bottom - 1;

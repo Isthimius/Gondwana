@@ -54,17 +54,19 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     /// <param name="sceneLayer">The layer this darkness/fog belongs to.</param>
     /// <param name="worldBounds">The world-space region affected by the darkness/fog.</param>
     /// <param name="nickname">Optional friendly name for debugging and lookup.</param>
-    public DirectSceneLayerDarknessOverlay(RenderSurfaceHostBase renderSurfaceHost,
-                                           SceneLayer sceneLayer,
-                                           Rectangle worldBounds,
-                                           string? nickname = null)
-        : base(renderSurfaceHost,
-               DirectDrawingMode.SceneLayer,
-               sceneLayer,
-               view: null,
-               screenBounds: null,
-               worldBounds: worldBounds,
-               nickname: nickname)
+    public DirectSceneLayerDarknessOverlay(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle worldBounds,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            sceneLayer,
+            view: null,
+            screenBounds: null,
+            worldBounds: worldBounds,
+            nickname: nickname)
     {
         ZOrder = 20_000;
         RebuildDarknessPaint();
@@ -127,10 +129,12 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         set
         {
             float clamped = Math.Clamp(value, 0f, 1f);
+
             if (Math.Abs(_innerClearRadiusRatio - clamped) < 0.0001f)
                 return;
 
             _innerClearRadiusRatio = clamped;
+
             if (_midpointRadiusRatio < _innerClearRadiusRatio)
                 _midpointRadiusRatio = _innerClearRadiusRatio;
 
@@ -166,6 +170,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         set
         {
             float clamped = Math.Clamp(value, 0f, 1f);
+
             if (Math.Abs(_midpointStrength - clamped) < 0.0001f)
                 return;
 
@@ -183,7 +188,12 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     /// <returns>The reveal source added to this overlay.</returns>
     public RevealSource AddRevealSource(PointF centerWorldPx, float radiusWorldPx, string? nickname = null)
     {
-        var source = new RevealSource(this, centerWorldPx, radiusWorldPx, nickname);
+        var source = new RevealSource(
+            this,
+            centerWorldPx,
+            radiusWorldPx,
+            nickname);
+
         _revealSources.Add(source);
         ForceRefresh();
         return source;
@@ -204,11 +214,12 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     /// <param name="trackIntensity">Whether reveal intensity follows the light intensity.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
     /// <returns>The reveal source linked to the supplied light.</returns>
-    public RevealSource TrackLight(DirectRadialLight light,
-                                   float radiusScale = 1f,
-                                   float intensityScale = 1f,
-                                   bool trackIntensity = true,
-                                   string? nickname = null)
+    public RevealSource TrackLight(
+        DirectRadialLight light,
+        float radiusScale = 1f,
+        float intensityScale = 1f,
+        bool trackIntensity = true,
+        string? nickname = null)
     {
         if (light is null)
             throw new ArgumentNullException(nameof(light));
@@ -218,10 +229,21 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         if (_trackedLightReveals.Any(t => ReferenceEquals(t.Light, light)))
             return _trackedLightReveals.First(t => ReferenceEquals(t.Light, light)).Source;
 
-        var source = new RevealSource(this, light.CenterWorldPx, light.RadiusWorldPx * Math.Max(0f, radiusScale), nickname ?? light.Nickname);
+        var source = new RevealSource(
+            this,
+            light.CenterWorldPx,
+            light.RadiusWorldPx * Math.Max(0f, radiusScale),
+            nickname ?? light.Nickname);
+
         _revealSources.Add(source);
 
-        var tracked = new TrackedLightReveal(light, source, Math.Max(0f, radiusScale), Math.Max(0f, intensityScale), trackIntensity);
+        var tracked = new TrackedLightReveal(
+            light,
+            source,
+            Math.Max(0f, radiusScale),
+            Math.Max(0f, intensityScale),
+            trackIntensity);
+
         _trackedLightReveals.Add(tracked);
 
         light.Changed += OnTrackedLightChanged;
@@ -243,16 +265,19 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     /// <param name="radiusScale">The multiplier applied to the reveal radius.</param>
     /// <param name="intensityScale">The multiplier applied to the reveal intensity.</param>
     /// <param name="trackIntensity">Whether reveal intensity follows the light intensity.</param>
-    public void TrackLightLayer(DirectLightLayer lightLayer,
-                                float radiusScale = 1f,
-                                float intensityScale = 1f,
-                                bool trackIntensity = true)
+    public void TrackLightLayer(
+        DirectLightLayer lightLayer,
+        float radiusScale = 1f,
+        float intensityScale = 1f,
+        bool trackIntensity = true)
     {
         if (lightLayer is null)
             throw new ArgumentNullException(nameof(lightLayer));
 
         if (!ReferenceEquals(lightLayer.SceneLayer, SceneLayer))
-            throw new ArgumentException("SceneLayer-bound darkness can only track a DirectLightLayer attached to the same SceneLayer.", nameof(lightLayer));
+            throw new ArgumentException(
+                "SceneLayer-bound darkness can only track a DirectLightLayer attached to the same SceneLayer.",
+                nameof(lightLayer));
 
         if (_trackedLightLayers.Any(t => ReferenceEquals(t.LightLayer, lightLayer)))
             return;
@@ -266,7 +291,11 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         _trackedLightLayers.Add(trackedLayer);
 
         foreach (var light in lightLayer.Lights)
-            TrackLight(light, trackedLayer.RadiusScale, trackedLayer.IntensityScale, trackedLayer.TrackIntensity);
+            TrackLight(
+                light,
+                trackedLayer.RadiusScale,
+                trackedLayer.IntensityScale,
+                trackedLayer.TrackIntensity);
 
         lightLayer.LightAdded += OnTrackedLayerLightAdded;
         lightLayer.LightRemoving += OnTrackedLayerLightRemoving;
@@ -280,6 +309,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     public bool UntrackLight(DirectRadialLight light)
     {
         var tracked = _trackedLightReveals.FirstOrDefault(t => ReferenceEquals(t.Light, light));
+
         if (tracked is null)
             return false;
 
@@ -298,10 +328,12 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
             return false;
 
         var tracked = _trackedLightReveals.FirstOrDefault(t => ReferenceEquals(t.Source, source));
+
         if (tracked is not null)
             UntrackLight(tracked, removeRevealSource: false);
 
         bool removed = _revealSources.Remove(source);
+
         if (removed)
             ForceRefresh();
 
@@ -400,7 +432,8 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     /// <inheritdoc />
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        if (destRectScreen.Width <= 0f || destRectScreen.Height <= 0f || WorldBounds.Width <= 0 || WorldBounds.Height <= 0)
+        if (destRectScreen.Width <= 0f || destRectScreen.Height <= 0f || WorldBounds.Width <= 0 ||
+            WorldBounds.Height <= 0)
             return;
 
         var canvas = backbuffer.Canvas;
@@ -415,6 +448,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         for (int i = 0; i < _revealSources.Count; i++)
         {
             var source = _revealSources[i];
+
             if (!source.Enabled || source.RadiusWorldPx <= 0.01f || source.Intensity <= 0.001f)
                 continue;
 
@@ -425,6 +459,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
                 continue;
 
             using var revealShader = BuildRevealShader(centerScreen, radiusScreen, source.Intensity);
+
             using var revealPaint = new SKPaint
             {
                 IsAntialias = true,
@@ -462,7 +497,11 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
             return;
 
         foreach (var trackedLayer in _trackedLightLayers.Where(t => t.LightLayer.Lights.Contains(light)).ToArray())
-            TrackLight(light, trackedLayer.RadiusScale, trackedLayer.IntensityScale, trackedLayer.TrackIntensity);
+            TrackLight(
+                light,
+                trackedLayer.RadiusScale,
+                trackedLayer.IntensityScale,
+                trackedLayer.TrackIntensity);
     }
 
     private void OnTrackedLayerLightRemoving(DirectRadialLight light)
@@ -473,6 +512,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     private void SyncTrackedLight(TrackedLightReveal tracked)
     {
         var light = tracked.Light;
+
         float intensity = tracked.TrackIntensity
             ? light.EffectiveIntensity * tracked.IntensityScale
             : tracked.IntensityScale;
@@ -498,7 +538,9 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     private void EnsureSameSceneLayer(DirectRadialLight light)
     {
         if (!ReferenceEquals(light.SceneLayer, SceneLayer))
-            throw new ArgumentException("SceneLayer-bound darkness can only track lights attached to the same SceneLayer.", nameof(light));
+            throw new ArgumentException(
+                "SceneLayer-bound darkness can only track lights attached to the same SceneLayer.",
+                nameof(light));
     }
 
     private PointF WorldPointToDrawRect(PointF worldPx, RectangleF destRectScreen)
@@ -527,17 +569,37 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
     private SKShader BuildRevealShader(PointF centerScreenPx, float radiusScreenPx, float intensity)
     {
         byte centerAlpha = (byte)Math.Clamp((int)Math.Round(255f * Math.Clamp(intensity, 0f, 1f)), 0, 255);
-        byte midAlpha = (byte)Math.Clamp((int)Math.Round(255f * Math.Clamp(intensity, 0f, 1f) * _midpointStrength), 0, 255);
+
+        byte midAlpha = (byte)Math.Clamp(
+            (int)Math.Round(255f * Math.Clamp(intensity, 0f, 1f) * _midpointStrength),
+            0,
+            255);
 
         return SKShader.CreateRadialGradient(
             new SKPoint(centerScreenPx.X, centerScreenPx.Y),
             radiusScreenPx,
             colors:
             [
-                new SKColor(255, 255, 255, centerAlpha),
-                new SKColor(255, 255, 255, centerAlpha),
-                new SKColor(255, 255, 255, midAlpha),
-                new SKColor(255, 255, 255, 0)
+                new SKColor(
+                    255,
+                    255,
+                    255,
+                    centerAlpha),
+                new SKColor(
+                    255,
+                    255,
+                    255,
+                    centerAlpha),
+                new SKColor(
+                    255,
+                    255,
+                    255,
+                    midAlpha),
+                new SKColor(
+                    255,
+                    255,
+                    255,
+                    0)
             ],
             colorPos:
             [
@@ -572,18 +634,22 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         /// Gets the light.
         /// </summary>
         public DirectRadialLight Light { get; } = light;
+
         /// <summary>
         /// Gets the source.
         /// </summary>
         public RevealSource Source { get; } = source;
+
         /// <summary>
         /// Gets the multiplier applied to the reveal radius.
         /// </summary>
         public float RadiusScale { get; } = radiusScale;
+
         /// <summary>
         /// Gets the multiplier applied to the reveal intensity.
         /// </summary>
         public float IntensityScale { get; } = intensityScale;
+
         /// <summary>
         /// Gets whether the reveal intensity follows the light intensity.
         /// </summary>
@@ -600,14 +666,17 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         /// Gets the light layer.
         /// </summary>
         public DirectLightLayer LightLayer { get; } = lightLayer;
+
         /// <summary>
         /// Gets the multiplier applied to the reveal radius.
         /// </summary>
         public float RadiusScale { get; } = radiusScale;
+
         /// <summary>
         /// Gets the multiplier applied to the reveal intensity.
         /// </summary>
         public float IntensityScale { get; } = intensityScale;
+
         /// <summary>
         /// Gets whether the reveal intensity follows the light intensity.
         /// </summary>
@@ -625,7 +694,11 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
         private float _intensity = 1f;
         private bool _enabled = true;
 
-        internal RevealSource(DirectSceneLayerDarknessOverlay owner, PointF centerWorldPx, float radiusWorldPx, string? nickname)
+        internal RevealSource(
+            DirectSceneLayerDarknessOverlay owner,
+            PointF centerWorldPx,
+            float radiusWorldPx,
+            string? nickname)
         {
             _owner = owner;
             _centerWorldPx = centerWorldPx;
@@ -679,6 +752,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
             set
             {
                 float clamped = Math.Max(0f, value);
+
                 if (Math.Abs(_radiusWorldPx - clamped) < 0.0001f)
                     return;
 
@@ -696,6 +770,7 @@ public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
             set
             {
                 float clamped = Math.Clamp(value, 0f, 1f);
+
                 if (Math.Abs(_intensity - clamped) < 0.0001f)
                     return;
 

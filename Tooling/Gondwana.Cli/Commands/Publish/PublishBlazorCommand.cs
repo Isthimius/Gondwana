@@ -15,7 +15,8 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
         /// Gets or sets the project.
         /// </summary>
         [CommandOption("-p|--project")]
-        [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
+        [Description(
+            "Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
         /// <summary>
@@ -37,7 +38,8 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
         /// Gets or sets the base href.
         /// </summary>
         [CommandOption("--base-href")]
-        [Description("Override the published <base href> for subdirectory/static hosting, for example /games/mygame/ or ./.")]
+        [Description(
+            "Override the published <base href> for subdirectory/static hosting, for example /games/mygame/ or ./.")]
         public string? BaseHref { get; init; }
 
         /// <summary>
@@ -54,25 +56,36 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+
             if (error!.Contains("No .csproj found", StringComparison.Ordinal))
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
+
             return 1;
         }
 
         if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine(
+                "[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        if (!ProjectHelper.TryResolveBrowserFramework(
+                csprojPath!,
+                settings.Framework,
+                out var framework,
+                out error))
         {
             AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
             return 1;
         }
 
         var projectName = Path.GetFileNameWithoutExtension(csprojPath);
-        AnsiConsole.MarkupLine($"Publishing [bold]{Markup.Escape(projectName!)}[/] for Blazor WebAssembly/WebGL ({Markup.Escape(framework!)})...");
+
+        AnsiConsole.MarkupLine(
+            $"Publishing [bold]{Markup.Escape(projectName!)}[/] for Blazor WebAssembly/WebGL ({Markup.Escape(framework!)})...");
 
         var publishExit = ProjectHelper.PublishBlazorProject(
             csprojPath!,
@@ -81,6 +94,7 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
             settings.SkipWorkload,
             settings.BaseHref,
             out var wwwroot);
+
         if (publishExit != 0)
             return publishExit;
 
@@ -92,7 +106,9 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
         else
         {
             AnsiConsole.MarkupLine("[yellow]Warning:[/] Publish succeeded but wwwroot output could not be located.");
-            AnsiConsole.MarkupLine($"[dim]Expected output at: bin/{Markup.Escape(settings.Configuration)}/{Markup.Escape(framework!)}/publish/wwwroot/[/]");
+
+            AnsiConsole.MarkupLine(
+                $"[dim]Expected output at: bin/{Markup.Escape(settings.Configuration)}/{Markup.Escape(framework!)}/publish/wwwroot/[/]");
         }
 
         return 0;

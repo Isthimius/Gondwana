@@ -35,6 +35,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
     public WinFormsTouchAdapter(Control surface)
     {
         _surface = surface ?? throw new ArgumentNullException(nameof(surface));
+
         if (_surface.InvokeRequired)
             throw new InvalidOperationException("Initialize WinForms touch on the control's UI thread.");
 
@@ -54,8 +55,8 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 
     /// <summary>Whether a native window has successfully registered for touch.</summary>
     public bool IsRegistered => !_disposed &&
-        (_hooks.Values.Any(static hook => hook.IsRegistered) ||
-         _nativeChildren.Values.Any(static hook => hook.IsRegistered));
+                                (_hooks.Values.Any(static hook => hook.IsRegistered) ||
+                                 _nativeChildren.Values.Any(static hook => hook.IsRegistered));
 
     /// <summary>
     /// Reports whether the WinForms mouse adapter should ignore a touch-origin
@@ -79,6 +80,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
         _hooks.Add(control, hook);
         control.ControlAdded += OnControlAdded;
         control.ControlRemoved += OnControlRemoved;
+
         foreach (Control child in control.Controls)
             Watch(child);
     }
@@ -90,6 +92,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 
         control.ControlAdded -= OnControlAdded;
         control.ControlRemoved -= OnControlRemoved;
+
         if (_hooks.Remove(control, out TouchWindowHook? hook))
             hook.Dispose();
     }
@@ -124,14 +127,19 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             return;
 
         _refreshingNativeChildren = true;
+
         try
         {
             var descendants = new HashSet<IntPtr>();
-            EnumChildWindows(_surface.Handle, (hwnd, _) =>
-            {
-                descendants.Add(hwnd);
-                return true;
-            }, IntPtr.Zero);
+
+            EnumChildWindows(
+                _surface.Handle,
+                (hwnd, _) =>
+                {
+                    descendants.Add(hwnd);
+                    return true;
+                },
+                IntPtr.Zero);
 
             var managedHandles = _hooks.Values
                 .Where(static hook => hook.Handle != IntPtr.Zero)
@@ -172,13 +180,18 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
     private bool HandleTouchMessage(IntPtr wParam, IntPtr lParam)
     {
         int count = unchecked((ushort)(wParam.ToInt64() & 0xFFFF));
+
         try
         {
             if (count == 0)
                 return true;
 
             var inputs = new TouchInput[count];
-            if (!GetTouchInputInfo(lParam, (uint)count, inputs,
+
+            if (!GetTouchInputInfo(
+                    lParam,
+                    (uint)count,
+                    inputs,
                     Marshal.SizeOf<TouchInput>()))
                 return true;
 
@@ -190,7 +203,9 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
                 var physical = new Point(
                     (int)Math.Round(input.X / 100d),
                     (int)Math.Round(input.Y / 100d));
+
                 Point local = _surface.PointToClient(physical);
+
                 Point position = _surface switch
                 {
                     WinFormGpuRenderSurfaceControl gpu when gpu.Host is not null =>
@@ -201,6 +216,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
                 };
 
                 int id = unchecked((int)input.Id);
+
                 if ((input.Flags & TouchDown) != 0)
                     _state.Begin(id, position);
                 else if ((input.Flags & TouchUp) != 0)
@@ -227,8 +243,10 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
         _disposed = true;
         _surface.SizeChanged -= OnSurfaceSizeChanged;
         Unwatch(_surface);
+
         foreach (NativeChildHook hook in _nativeChildren.Values.ToArray())
             hook.Dispose();
+
         _nativeChildren.Clear();
         _state.CancelAll();
     }
@@ -246,6 +264,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
             _control = control;
             _control.HandleCreated += OnHandleCreated;
             _control.HandleDestroyed += OnHandleDestroyed;
+
             if (_control.IsHandleCreated)
                 Attach();
         }
@@ -279,6 +298,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 
             if (IsRegistered)
                 UnregisterTouchWindow(Handle);
+
             IsRegistered = false;
             ReleaseHandle();
         }
@@ -352,6 +372,7 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 
             if (IsRegistered)
                 UnregisterTouchWindow(Handle);
+
             IsRegistered = false;
             ReleaseHandle();
         }
@@ -377,8 +398,10 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool EnumChildWindows(IntPtr parent,
-        EnumWindowsCallback callback, IntPtr lParam);
+    private static extern bool EnumChildWindows(
+        IntPtr parent,
+        EnumWindowsCallback callback,
+        IntPtr lParam);
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -391,7 +414,10 @@ public sealed class WinFormsTouchAdapter : ITouchAdapter, IDisposable
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetTouchInputInfo(
-        IntPtr handle, uint count, [Out] TouchInput[] inputs, int size);
+        IntPtr handle,
+        uint count,
+        [Out] TouchInput[] inputs,
+        int size);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

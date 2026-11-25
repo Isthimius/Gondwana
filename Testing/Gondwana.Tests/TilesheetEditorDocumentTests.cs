@@ -13,23 +13,28 @@ namespace Gondwana.Tests;
 /// </summary>
 public sealed class TilesheetEditorDocumentTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), "GtsEditorTests_" + Guid.NewGuid().ToString("N"));
+    private readonly string _directory = Path.Combine(
+        Path.GetTempPath(),
+        "GtsEditorTests_" + Guid.NewGuid().ToString("N"));
 
     /// <summary>
     /// Initializes a new instance of the <c>TilesheetEditorDocumentTests</c> class.
     /// </summary>
     public TilesheetEditorDocumentTests() => Directory.CreateDirectory(_directory);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_directory, true);
 
     private string WriteDefinition(bool packed = false)
     {
         File.WriteAllBytes(Path.Combine(_directory, "different-image.png"), [1]);
+
         var definition = new TilesheetDefinition
         {
             Name = "Complete model",
             Source = TilesheetDefinitionSource.PackedDefinitionFile("provenance.gaf", "original.gts"),
-            Image = packed ? new() { AssetsFilePath = "images.gaf", AssetEntryName = "unrelated-name" }
+            Image = packed
+                ? new() { AssetsFilePath = "images.gaf", AssetEntryName = "unrelated-name" }
                 : new() { FilePath = "different-image.png" },
             PremultiplyAlpha = true,
             Mask = new() { Red = 12, Green = 34, Blue = 56, Alpha = 78, Tolerance = 9 },
@@ -37,20 +42,65 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
             [
                 new()
                 {
-                    Name = "first", Area = new(3, 4, 90, 70), TileSize = new(16, 12),
-                    RegionMargin = new(1, 2, 3, 4), TilePadding = new(2, 3, 4, 5), Overhang = new(1, 2, 3, 4),
-                    CollisionAdjust = new(1, -2, 3, -4), CollisionType = TileCollisionType.Blocking,
+                    Name = "first", Area = new(
+                        3,
+                        4,
+                        90,
+                        70),
+                    TileSize = new(16, 12),
+                    RegionMargin = new(
+                        1,
+                        2,
+                        3,
+                        4),
+                    TilePadding = new(
+                        2,
+                        3,
+                        4,
+                        5),
+                    Overhang = new(
+                        1,
+                        2,
+                        3,
+                        4),
+                    CollisionAdjust = new(
+                        1,
+                        -2,
+                        3,
+                        -4),
+                    CollisionType = TileCollisionType.Blocking,
                     Frames =
                     [
                         new() { XTile = 0, YTile = 0 },
-                        new() { XTile = 1, YTile = 0, CollisionAdjust = new(1, -2, 3, -4), CollisionType = TileCollisionType.Blocking },
-                        new() { XTile = 2, YTile = 0, CollisionAdjust = CollisionAdjust.None, CollisionType = TileCollisionType.None },
+                        new()
+                        {
+                            XTile = 1, YTile = 0, CollisionAdjust = new(
+                                1,
+                                -2,
+                                3,
+                                -4),
+                            CollisionType = TileCollisionType.Blocking
+                        },
+                        new()
+                        {
+                            XTile = 2, YTile = 0, CollisionAdjust = CollisionAdjust.None,
+                            CollisionType = TileCollisionType.None
+                        },
                         new() { XTile = 0, YTile = 1, CollisionType = TileCollisionType.Trigger }
                     ]
                 },
-                new() { Name = "second", Area = new(100, 80, 32, 32), TileSize = new(8, 8) }
+                new()
+                {
+                    Name = "second", Area = new(
+                        100,
+                        80,
+                        32,
+                        32),
+                    TileSize = new(8, 8)
+                }
             ]
         };
+
         string path = Path.Combine(_directory, "document.gts");
         TilesheetDefinitionSerializer.Save(path, definition);
         return path;
@@ -70,7 +120,14 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         string before = TilesheetDefinitionSerializer.ToJson(document.Definition);
         var region = document.Definition.Regions[0];
         Assert.Null(document.FindFrame(region, 2, 1));
-        _ = PropertyFields.Frame(document, region, 2, 1, document.MarkChanged).GetProperties();
+
+        _ = PropertyFields.Frame(
+            document,
+            region,
+            2,
+            1,
+            document.MarkChanged).GetProperties();
+
         _ = PropertyFields.Definition(document, document.MarkChanged).GetProperties();
         Assert.False(document.IsDirty);
         document.Save(path);
@@ -93,10 +150,14 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         string destination = Path.Combine(_directory, "nested", "new.gts");
         document.Save(destination);
         var loaded = TilesheetDocument.Open(destination);
+
         if (packed)
-            Assert.Equal(Path.Combine(_directory, "images.gaf"), Path.GetFullPath(loaded.Definition.Image.AssetsFilePath!, loaded.BaseDirectory));
+            Assert.Equal(
+                Path.Combine(_directory, "images.gaf"),
+                Path.GetFullPath(loaded.Definition.Image.AssetsFilePath!, loaded.BaseDirectory));
         else
             Assert.Equal(Path.Combine(_directory, "different-image.png"), loaded.ResolveImagePath());
+
         Assert.Equal(destination, loaded.Definition.Source.GtsFilePath);
         Assert.Null(loaded.Definition.Source.AssetsFilePath);
         Assert.Null(loaded.Definition.Source.AssetEntryName);
@@ -113,14 +174,26 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         var region = document.Definition.Regions[0];
         var frame = region.Frames[1];
         var originalArea = region.Area;
-        region.Area = new Rectangle(3, 4, 26, 26);
+
+        region.Area = new Rectangle(
+            3,
+            4,
+            26,
+            26);
+
         document.MarkChanged();
         Assert.Contains(document.Validate(), e => e.Contains("outside the frame grid"));
         Assert.Same(frame, document.FindFrame(region, 1, 0));
         region.Area = originalArea;
         Assert.Empty(document.Validate());
         Assert.Same(frame, document.FindFrame(region, 1, 0));
-        region.Area = new Rectangle(3, 4, 26, 26);
+
+        region.Area = new Rectangle(
+            3,
+            4,
+            26,
+            26);
+
         Assert.Equal(3, document.RemoveOutOfGridMetadata(region));
         Assert.Single(region.Frames);
         Assert.Empty(document.Validate());
@@ -138,18 +211,34 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         regionFields.AddModel(region, document.MarkChanged, "Frames");
         var padding = regionFields.GetProperties()["TilePadding"]!;
         object original = padding.GetValue(regionFields)!;
+
         var edges = padding.Converter.GetProperties(original)!.Cast<System.ComponentModel.PropertyDescriptor>()
             .ToDictionary(edge => edge.Name, edge => edge.GetValue(original)!);
+
         edges["Left"] = 7;
         padding.SetValue(regionFields, padding.Converter.CreateInstance(null, edges));
         Assert.Equal(7, region.TilePadding.Left);
         Assert.Equal(3, region.TilePadding.Top);
-        var fields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
+
+        var fields = PropertyFields.Frame(
+            document,
+            region,
+            0,
+            0,
+            document.MarkChanged);
+
         fields.GetProperties()["CollisionAdjust mode"]!.SetValue(fields, Inheritance.Override);
         fields.GetProperties()["CollisionType"]!.SetValue(fields, FrameCollisionChoice.Blocking);
         Assert.Equal(region.CollisionAdjust, region.Frames[0].CollisionAdjust);
         Assert.Equal(region.CollisionType, region.Frames[0].CollisionType);
-        fields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
+
+        fields = PropertyFields.Frame(
+            document,
+            region,
+            0,
+            0,
+            document.MarkChanged);
+
         fields.GetProperties()["Left"]!.SetValue(fields, -9);
         Assert.Equal(-9, region.Frames[0].CollisionAdjust!.Value.Left);
         fields.GetProperties()["CollisionAdjust mode"]!.SetValue(fields, Inheritance.InheritRegion);
@@ -168,7 +257,14 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         var document = TilesheetDocument.Open(WriteDefinition());
         var region = document.Definition.Regions[0];
         region.Frames[1].CollisionType = (TileCollisionType)99;
-        var fields = PropertyFields.Frame(document, region, 1, 0, document.MarkChanged);
+
+        var fields = PropertyFields.Frame(
+            document,
+            region,
+            1,
+            0,
+            document.MarkChanged);
+
         Assert.Equal((FrameCollisionChoice)99, fields.GetProperties()["CollisionType"]!.GetValue(fields));
         Assert.Equal((TileCollisionType)99, region.Frames[1].CollisionType);
         fields.GetProperties()["CollisionType"]!.SetValue(fields, FrameCollisionChoice.Trigger);
@@ -240,7 +336,16 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
     [Fact]
     public void FrameHitTest_PrefersSelectedRegionWhenGridsOverlap()
     {
-        var first = new TilesheetRegionDefinition { Area = new(0, 0, 64, 64), TileSize = new(16, 16) };
+        var first = new TilesheetRegionDefinition
+        {
+            Area = new(
+                0,
+                0,
+                64,
+                64),
+            TileSize = new(16, 16)
+        };
+
         var second = new TilesheetRegionDefinition { Area = first.Area, TileSize = new(32, 32) };
         var definition = new TilesheetDefinition { Regions = [first, second] };
         var hit = FrameGeometry.HitTest(definition, second, new PointF(40, 40));
@@ -261,12 +366,29 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         var region = document.Definition.Regions[0];
         using var bitmap = new SKBitmap(160, 128);
         using var runtime = TilesheetFactory.FromBitmap("Editor parity", bitmap);
-        var runtimeRegion = runtime.AddRegion(region.Name, region.Area, region.TileSize, region.TilePadding,
-            region.RegionMargin, region.Overhang, region.CollisionAdjust, region.CollisionType);
+
+        var runtimeRegion = runtime.AddRegion(
+            region.Name,
+            region.Area,
+            region.TileSize,
+            region.TilePadding,
+            region.RegionMargin,
+            region.Overhang,
+            region.CollisionAdjust,
+            region.CollisionType);
+
         var grid = TilesheetDefinitionValidator.GridSize(region);
         Assert.Equal(runtimeRegion.Columns, grid.Columns);
         Assert.Equal(runtimeRegion.Rows, grid.Rows);
-        Assert.Equal(new Rectangle(28, 9, 16, 12), FrameGeometry.Bounds(region, 1, 0));
+
+        Assert.Equal(
+            new Rectangle(
+                28,
+                9,
+                16,
+                12),
+            FrameGeometry.Bounds(region, 1, 0));
+
         var bounds = FrameGeometry.CollisionBounds(region, 1, 0);
         bounds.Offset(-28, -9);
         Assert.Equal(runtimeRegion.GetFrameCollisionArea(1, 0), bounds);

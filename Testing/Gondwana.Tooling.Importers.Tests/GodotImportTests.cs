@@ -9,11 +9,15 @@ namespace Gondwana.Tooling.Importers.Tests;
 /// </summary>
 public sealed class GodotImportTests : IDisposable
 {
-    private readonly string directory = Path.Combine(Path.GetTempPath(), "GondwanaGodotTests-" + Guid.NewGuid().ToString("N"));
+    private readonly string directory = Path.Combine(
+        Path.GetTempPath(),
+        "GondwanaGodotTests-" + Guid.NewGuid().ToString("N"));
+
     /// <summary>
     /// Initializes a new instance of the <c>GodotImportTests</c> class.
     /// </summary>
     public GodotImportTests() => Directory.CreateDirectory(directory);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(directory, true);
 
@@ -31,28 +35,35 @@ public sealed class GodotImportTests : IDisposable
         image.Erase(SKColors.Blue);
         using var png = image.Encode(SKEncodedImageFormat.Png, 100);
         File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
+
         string atlas = """
-            texture = ExtResource("1")
-            texture_region_size = Vector2i(2, 2)
-            margins = Vector2i(1, 1)
-            separation = Vector2i(1, 1)
-            0:0/0 = 0
-            0:0/animation_speed = 2.0
-            0:0/animation_frame_0/duration = 1.0
-            0:0/animation_frame_1/duration = 3.0
-            1:0/0 = 0
-            1:0/animation_speed = 2.0
-            1:0/animation_frame_0/duration = 1.0
-            1:0/animation_frame_1/duration = 3.0
-            metadata/new_field = {"unknown": [1, 2, 3]}
-            """;
-        string text = "[gd_resource type=\"TileSet\" format=3]\n[ext_resource type=\"Texture2D\" path=\"res://atlas.png\" id=\"1\"]\n" +
+                       texture = ExtResource("1")
+                       texture_region_size = Vector2i(2, 2)
+                       margins = Vector2i(1, 1)
+                       separation = Vector2i(1, 1)
+                       0:0/0 = 0
+                       0:0/animation_speed = 2.0
+                       0:0/animation_frame_0/duration = 1.0
+                       0:0/animation_frame_1/duration = 3.0
+                       1:0/0 = 0
+                       1:0/animation_speed = 2.0
+                       1:0/animation_frame_0/duration = 1.0
+                       1:0/animation_frame_1/duration = 3.0
+                       metadata/new_field = {"unknown": [1, 2, 3]}
+                       """;
+
+        string text =
+            "[gd_resource type=\"TileSet\" format=3]\n[ext_resource type=\"Texture2D\" path=\"res://atlas.png\" id=\"1\"]\n" +
             "[sub_resource type=\"TileSetAtlasSource\" id=\"a\"]\n" + atlas + "\n";
+
         if (multiple)
             text += "[sub_resource type=\"TileSetAtlasSource\" id=\"b\"]\n" + atlas + "\n";
+
         text += "[resource]\ntile_size = Vector2i(2, 2)\nsources/0 = SubResource(\"a\")\n";
+
         if (multiple)
             text += "sources/2 = SubResource(\"b\")\n";
+
         string source = Path.Combine(directory, "terrain.tres");
         File.WriteAllText(source, text);
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
@@ -62,14 +73,26 @@ public sealed class GodotImportTests : IDisposable
         string file = multiple ? "terrain-source-2-animations.gani" : "terrain-animations.gani";
         var members = AnimationDefinitionSerializer.LoadAll(Path.Combine(request.OutputDirectory, file));
         Assert.Equal(2, members.Count);
-        Assert.Equal(members.Select(member => member.Key), result.Analysis.Artifacts.Single(artifact => Path.GetFileName(artifact.OutputPath) == file).LogicalKeys);
+
+        Assert.Equal(
+            members.Select(member => member.Key),
+            result.Analysis.Artifacts.Single(artifact => Path.GetFileName(artifact.OutputPath) == file).LogicalKeys);
+
         var gani = members[0];
         Assert.Equal(new double?[] { 0.5, 1.5 }, gani.Frames.Select(f => f.DurationSeconds));
         Assert.Equal(new[] { 0, 1 }, gani.Frames.Select(f => f.XTile));
         Assert.Empty(AnimationDefinitionValidator.Validate(gani));
-        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"), multiple ? "terrain.source.2" : "terrain");
+
+        var gts = TilesheetDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "terrain.gts"),
+            multiple ? "terrain.source.2" : "terrain");
+
         Assert.Equal("terrain.gts", Assert.Single(gani.TilesheetSources).GtsPath);
-        Assert.Equal(multiple ? 2 : 1, TilesheetDefinitionSerializer.LoadAll(Path.Combine(request.OutputDirectory, "terrain.gts")).Count);
+
+        Assert.Equal(
+            multiple ? 2 : 1,
+            TilesheetDefinitionSerializer.LoadAll(Path.Combine(request.OutputDirectory, "terrain.gts")).Count);
+
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 10, 4));
         Assert.Equal((3L, 1L), TilesheetDefinitionValidator.GridSize(gts.Regions[0]));
         Assert.Equal(-1, gts.Regions[0].RegionMargin.Right);
@@ -83,7 +106,9 @@ public sealed class GodotImportTests : IDisposable
     [Fact]
     public void ParserPreservesUnknownMultilineValues()
     {
-        var parsed = GodotTextResource.Parse("[resource]\nmetadata = {\n\"x\": [true, 3]\n}\nname = \"semi;colon\" ; comment\n");
+        var parsed = GodotTextResource.Parse(
+            "[resource]\nmetadata = {\n\"x\": [true, 3]\n}\nname = \"semi;colon\" ; comment\n");
+
         Assert.Contains("true", parsed[0].Properties["metadata"]);
         Assert.Equal("\"semi;colon\"", parsed[0].Properties["name"]);
     }
@@ -118,40 +143,53 @@ public sealed class GodotImportTests : IDisposable
         File.WriteAllText(source, File.ReadAllText(source).Replace("duration = 3.0", "duration = 1.0"));
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"), true);
         Assert.True(new GodotTilesetImporter().Import(request).Analysis.CanImport);
-        Assert.All(AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"), "terrain.tile.0.0").Frames, f => Assert.Equal(0.5, f.DurationSeconds));
+
+        Assert.All(
+            AnimationDefinitionSerializer.Load(
+                Path.Combine(request.OutputDirectory, "terrain-animations.gani"),
+                "terrain.tile.0.0").Frames,
+            f => Assert.Equal(0.5, f.DurationSeconds));
+
         File.Delete(Path.Combine(directory, "project.godot"));
         var analysis = new GodotTilesetImporter().Analyze(request);
         Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
         Assert.Contains(analysis.Artifacts, a => Path.GetFileName(a.OutputPath) == "terrain.gts");
     }
 
-    private ExternalImportRequest Godot3Fixture(string properties, string texturePath = "atlas.png", string extraResources = "")
+    private ExternalImportRequest Godot3Fixture(
+        string properties,
+        string texturePath = "atlas.png",
+        string extraResources = "")
     {
         using var image = new SKBitmap(32, 24);
         image.Erase(SKColors.Green);
         using var png = image.Encode(SKEncodedImageFormat.Png, 100);
         File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
         string source = Path.Combine(directory, "terrain.tres");
-        File.WriteAllText(source, "[gd_resource type=\"TileSet\" format=2]\n" +
+
+        File.WriteAllText(
+            source,
+            "[gd_resource type=\"TileSet\" format=2]\n" +
             $"[ext_resource path=\"{texturePath}\" type=\"Texture\" id=1]\n" +
             extraResources + "\n[resource]\n" + properties);
+
         return new(source, Path.Combine(directory, "output"));
     }
 
     private const string SingleTile = """
-        0/name = "arbitrary display name"
-        0/texture = ExtResource( 1 )
-        0/region = Rect2( 3, 4, 8, 6 )
-        0/tile_mode = 0
-        """;
+                                      0/name = "arbitrary display name"
+                                      0/texture = ExtResource( 1 )
+                                      0/region = Rect2( 3, 4, 8, 6 )
+                                      0/tile_mode = 0
+                                      """;
 
     private const string AtlasTile = """
-        0/texture = ExtResource( 1 )
-        0/region = Rect2( 3, 4, 14, 9 )
-        0/tile_mode = 2
-        0/autotile/tile_size = Vector2( 4, 4 )
-        0/autotile/spacing = 1
-        """;
+                                     0/texture = ExtResource( 1 )
+                                     0/region = Rect2( 3, 4, 14, 9 )
+                                     0/tile_mode = 2
+                                     0/autotile/tile_size = Vector2( 4, 4 )
+                                     0/autotile/spacing = 1
+                                     """;
 
     /// <summary>
     /// Verifies godot3 single tile preserves region and integral float pixels.
@@ -169,7 +207,15 @@ public sealed class GodotImportTests : IDisposable
         var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"));
         Assert.Equal("terrain", gts.Name);
         var region = Assert.Single(gts.Regions);
-        Assert.Equal(new System.Drawing.Rectangle(3, 4, 8, 6), region.Area);
+
+        Assert.Equal(
+            new System.Drawing.Rectangle(
+                3,
+                4,
+                8,
+                6),
+            region.Area);
+
         Assert.Equal(new System.Drawing.Size(8, 6), region.TileSize);
         Assert.Equal((1L, 1L), TilesheetDefinitionValidator.GridSize(region));
         Assert.Equal(0, region.TilePadding.Right);
@@ -187,13 +233,15 @@ public sealed class GodotImportTests : IDisposable
     [InlineData(2)]
     public void Godot3AtlasCompensatesTrailingSpacingAndWarnsAboutSelection(int mode)
     {
-        var request = Godot3Fixture(AtlasTile.Replace("tile_mode = 2", $"tile_mode = {mode}") + """
+        var request = Godot3Fixture(
+            AtlasTile.Replace("tile_mode = 2", $"tile_mode = {mode}") + """
 
-            0/autotile/bitmask_flags = [Vector2(0, 0), 511]
-            0/autotile/priority_map = [Vector3(0, 0, 2)]
-            0/autotile/icon_coordinate = Vector2(0, 0)
-            0/autotile/fallback_mode = 1
-            """);
+                                                                        0/autotile/bitmask_flags = [Vector2(0, 0), 511]
+                                                                        0/autotile/priority_map = [Vector3(0, 0, 2)]
+                                                                        0/autotile/icon_coordinate = Vector2(0, 0)
+                                                                        0/autotile/fallback_mode = 1
+                                                                        """);
+
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         Assert.Single(result.WrittenFiles); // Native Godot 3 TileSets do not produce GANI.
@@ -215,15 +263,20 @@ public sealed class GodotImportTests : IDisposable
     [Fact]
     public void Godot3MultipleTilesHaveStableNamesAndSeparateTextures()
     {
-        var request = Godot3Fixture(SingleTile.Replace("0/", "3/").Replace("ExtResource( 1 )", "ExtResource( 2 )") + "\n" + SingleTile,
+        var request = Godot3Fixture(
+            SingleTile.Replace("0/", "3/").Replace("ExtResource( 1 )", "ExtResource( 2 )") + "\n" + SingleTile,
             extraResources: "[ext_resource path=\"second.png\" type=\"Texture\" id=2]");
+
         File.Copy(Path.Combine(directory, "atlas.png"), Path.Combine(directory, "second.png"));
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         Assert.Equal("terrain.gts", Path.GetFileName(Assert.Single(result.WrittenFiles)));
         var definitions = TilesheetDefinitionSerializer.LoadAll(result.WrittenFiles.Single()).ToArray();
-        Assert.Equal(definitions.Select(d => d.Name),
+
+        Assert.Equal(
+            definitions.Select(d => d.Name),
             result.Analysis.Artifacts.Single().LogicalKeys);
+
         Assert.Equal(new[] { "terrain.tile.0", "terrain.tile.3" }, definitions.Select(d => d.Name));
         Assert.Equal(new[] { "../atlas.png", "../second.png" }, definitions.Select(d => d.Image.FilePath));
     }
@@ -247,7 +300,10 @@ public sealed class GodotImportTests : IDisposable
         request = new(source, request.OutputDirectory);
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        Assert.Equal("../nested/atlas.png", TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Image.FilePath);
+
+        Assert.Equal(
+            "../nested/atlas.png",
+            TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Image.FilePath);
     }
 
     /// <summary>
@@ -331,7 +387,10 @@ public sealed class GodotImportTests : IDisposable
     [InlineData("\"1\"")]
     public void GodotDuplicateResourceIdsAreRejected(string id)
     {
-        var request = Godot3Fixture(SingleTile, extraResources: $"[ext_resource path=\"atlas.png\" type=\"Texture\" id={id}]");
+        var request = Godot3Fixture(
+            SingleTile,
+            extraResources: $"[ext_resource path=\"atlas.png\" type=\"Texture\" id={id}]");
+
         var analysis = new GodotTilesetImporter().Analyze(request);
         Assert.False(analysis.CanImport);
         Assert.Contains(analysis.Diagnostics, d => d.Message.Contains("Duplicate"));
@@ -347,8 +406,10 @@ public sealed class GodotImportTests : IDisposable
     public void GodotMissingOrUndecodableTexturesFail(bool exists)
     {
         var request = Godot3Fixture(SingleTile, "bad.png");
+
         if (exists)
             File.WriteAllText(Path.Combine(directory, "bad.png"), "not an image");
+
         var analysis = new GodotTilesetImporter().Analyze(request);
         Assert.False(analysis.CanImport);
         Assert.Contains(analysis.Diagnostics, d => d.Message.Contains(exists ? "decode" : "Missing"));
@@ -360,25 +421,35 @@ public sealed class GodotImportTests : IDisposable
     [Fact]
     public void Godot3MetadataWarningsAreGroupedAndDoNotChangeGeometry()
     {
-        var request = Godot3Fixture(SingleTile + """
+        var request = Godot3Fixture(
+            SingleTile + """
 
-            0/shapes = [{"shape": SubResource( 2 ), "one_way": true}]
-            0/shape_offset = Vector2(2, 2)
-            0/shape_one_way = true
-            0/navigation = SubResource( 3 )
-            0/occluder = SubResource( 4 )
-            0/normal_map = ExtResource( 2 )
-            0/material = SubResource( 5 )
-            0/modulate = Color(0, 1, 0, 1)
-            0/tex_offset = Vector2(5, 5)
-            0/z_index = 2
-            0/custom/new_property = {"x": [true, 3]}
-            """);
+                         0/shapes = [{"shape": SubResource( 2 ), "one_way": true}]
+                         0/shape_offset = Vector2(2, 2)
+                         0/shape_one_way = true
+                         0/navigation = SubResource( 3 )
+                         0/occluder = SubResource( 4 )
+                         0/normal_map = ExtResource( 2 )
+                         0/material = SubResource( 5 )
+                         0/modulate = Color(0, 1, 0, 1)
+                         0/tex_offset = Vector2(5, 5)
+                         0/z_index = 2
+                         0/custom/new_property = {"x": [true, 3]}
+                         """);
+
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+
         foreach (string code in new[] { "collision", "navigation", "occlusion", "rendering", "metadata" })
             Assert.Single(result.Analysis.Diagnostics, d => d.Code == "godot." + code);
-        Assert.Equal(new System.Drawing.Rectangle(3, 4, 8, 6), TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Regions[0].Area);
+
+        Assert.Equal(
+            new System.Drawing.Rectangle(
+                3,
+                4,
+                8,
+                6),
+            TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Regions[0].Area);
     }
 
     /// <summary>
@@ -390,15 +461,17 @@ public sealed class GodotImportTests : IDisposable
         image.Erase(SKColors.Green);
         using var png = image.Encode(SKEncodedImageFormat.Png, 100);
         File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
+
         string text = """
-            [gd_resource type="TileSet" format=3]
-            [ext_resource type="Texture2D" path="res://atlas.png" id="1"]
-            [sub_resource type="TileSetAtlasSource" id="a"]
-            texture = ExtResource("1")
-            texture_region_size = Vector2i(2, 2)
-            margins = Vector2i(1, 1)
-            separation = Vector2i(1, 1)
-            """ + "\n" + tiles + "\n[resource]\ntile_size = Vector2i(2, 2)\nsources/0 = SubResource(\"a\")\n";
+                      [gd_resource type="TileSet" format=3]
+                      [ext_resource type="Texture2D" path="res://atlas.png" id="1"]
+                      [sub_resource type="TileSetAtlasSource" id="a"]
+                      texture = ExtResource("1")
+                      texture_region_size = Vector2i(2, 2)
+                      margins = Vector2i(1, 1)
+                      separation = Vector2i(1, 1)
+                      """ + "\n" + tiles + "\n[resource]\ntile_size = Vector2i(2, 2)\nsources/0 = SubResource(\"a\")\n";
+
         string source = Path.Combine(directory, "terrain.tres");
         File.WriteAllText(source, text);
         return new(source, Path.Combine(directory, "output"));
@@ -411,7 +484,8 @@ public sealed class GodotImportTests : IDisposable
     [Fact]
     public void Godot4MultiCellTilesPreserveGeometryAndAnimation()
     {
-        var request = Godot4MultiCellFixture("""
+        var request = Godot4MultiCellFixture(
+            """
             0:0/0 = 0
             0:0/size_in_atlas = Vector2i(2, 2)
             0:0/animation_frames_count = 3
@@ -422,37 +496,78 @@ public sealed class GodotImportTests : IDisposable
             4:0/0 = 0
             4:0/size_in_atlas = Vector2i(1, 2)
             """);
+
         Assert.False(File.Exists(Path.Combine(directory, "project.godot")));
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        Assert.Equal(new[] { "terrain-animations.gani", "terrain.gts" }.Order(),
+
+        Assert.Equal(
+            new[] { "terrain-animations.gani", "terrain.gts" }.Order(),
             result.WrittenFiles.Select(Path.GetFileName).Order());
+
         var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"));
         Assert.Equal(5, gts.Regions.Count); // Default atlas, three animation frames, one static tile.
-        Assert.Equal(new System.Drawing.Rectangle(1, 1, 5, 5),
+
+        Assert.Equal(
+            new System.Drawing.Rectangle(
+                1,
+                1,
+                5,
+                5),
             gts.Regions.Single(r => r.Name == "tile-0-0-frame-0").Area);
-        Assert.Equal(new System.Drawing.Rectangle(7, 1, 5, 5),
+
+        Assert.Equal(
+            new System.Drawing.Rectangle(
+                7,
+                1,
+                5,
+                5),
             gts.Regions.Single(r => r.Name == "tile-0-0-frame-1").Area);
-        Assert.Equal(new System.Drawing.Rectangle(1, 7, 5, 5),
+
+        Assert.Equal(
+            new System.Drawing.Rectangle(
+                1,
+                7,
+                5,
+                5),
             gts.Regions.Single(r => r.Name == "tile-0-0-frame-2").Area);
+
         var tall = gts.Regions.Single(r => r.Name == "tile-4-0");
-        Assert.Equal(new System.Drawing.Rectangle(13, 1, 2, 5), tall.Area);
+
+        Assert.Equal(
+            new System.Drawing.Rectangle(
+                13,
+                1,
+                2,
+                5),
+            tall.Area);
+
         Assert.Equal(new System.Drawing.Size(2, 5), tall.TileSize);
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 16, 16));
 
-        var animation = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+        var animation =
+            AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+
         Assert.Equal("terrain.gts", Assert.Single(animation.TilesheetSources).GtsPath);
         Assert.Equal(new double?[] { 1, 2, 3 }, animation.Frames.Select(f => f.DurationSeconds));
-        Assert.Equal(new[] { "tile-0-0-frame-0", "tile-0-0-frame-1", "tile-0-0-frame-2" },
+
+        Assert.Equal(
+            new[] { "tile-0-0-frame-0", "tile-0-0-frame-1", "tile-0-0-frame-2" },
             animation.Frames.Select(f => f.RegionName));
-        Assert.All(animation.Frames, frame =>
-        {
-            Assert.Equal("terrain", frame.Tilesheet);
-            Assert.Equal(0, frame.XTile);
-            Assert.Equal(0, frame.YTile);
-        });
-        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "godot.multicell"
-            && d.Message.Contains("source 0") && d.Message.Contains("0:0"));
+
+        Assert.All(
+            animation.Frames,
+            frame =>
+            {
+                Assert.Equal("terrain", frame.Tilesheet);
+                Assert.Equal(0, frame.XTile);
+                Assert.Equal(0, frame.YTile);
+            });
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d => d.Code == "godot.multicell"
+                 && d.Message.Contains("source 0") && d.Message.Contains("0:0"));
     }
 
     /// <summary>
@@ -461,16 +576,21 @@ public sealed class GodotImportTests : IDisposable
     [Fact]
     public void Godot4MultiCellOutOfBoundsHasActionableDiagnostics()
     {
-        var request = Godot4MultiCellFixture("""
+        var request = Godot4MultiCellFixture(
+            """
             4:0/0 = 0
             4:0/size_in_atlas = Vector2i(2, 2)
             """);
+
         var result = new GodotTilesetImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
         Assert.Empty(result.WrittenFiles);
-        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "godot.atlas.bounds"
-            && d.Message.Contains("source 0") && d.Message.Contains("tile 4:0")
-            && d.Message.Contains("frame 0"));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d => d.Code == "godot.atlas.bounds"
+                 && d.Message.Contains("source 0") && d.Message.Contains("tile 4:0")
+                 && d.Message.Contains("frame 0"));
     }
 
     /// <summary>
@@ -483,9 +603,12 @@ public sealed class GodotImportTests : IDisposable
         File.Delete(Path.Combine(directory, "atlas.png"));
         var analysis = new GodotTilesetImporter().Analyze(request);
         Assert.False(analysis.CanImport);
-        Assert.Contains(analysis.Diagnostics, d => d.Message.Contains("source 0")
-            && d.Message.Contains("missing Godot texture")
-            && d.Message.Contains(Path.Combine(directory, "atlas.png")));
+
+        Assert.Contains(
+            analysis.Diagnostics,
+            d => d.Message.Contains("source 0")
+                 && d.Message.Contains("missing Godot texture")
+                 && d.Message.Contains(Path.Combine(directory, "atlas.png")));
     }
 
     /// <summary>
@@ -500,7 +623,9 @@ public sealed class GodotImportTests : IDisposable
     [InlineData("Rect2( 0, 0, 256, 128 )")]
     public void ParserPreservesBothGodotDialects(string value)
     {
-        var sections = GodotTextResource.Parse("[gd_resource type=\"TileSet\" format=2]\n[resource]\n0/value = " + value);
+        var sections =
+            GodotTextResource.Parse("[gd_resource type=\"TileSet\" format=2]\n[resource]\n0/value = " + value);
+
         Assert.Equal(value, sections[1].Properties["0/value"]);
     }
 }

@@ -35,10 +35,13 @@ internal sealed partial class ZeldaGameHost
 
         if (_keysDown.Contains(Keys.A) || _keysDown.Contains(Keys.Left))
             x -= 1f;
+
         if (_keysDown.Contains(Keys.D) || _keysDown.Contains(Keys.Right))
             x += 1f;
+
         if (_keysDown.Contains(Keys.W) || _keysDown.Contains(Keys.Up))
             y -= 1f;
+
         if (_keysDown.Contains(Keys.S) || _keysDown.Contains(Keys.Down))
             y += 1f;
 
@@ -58,10 +61,13 @@ internal sealed partial class ZeldaGameHost
 
         if (_gamepadButtonsDown.Contains("DPadLeft"))
             movement.X = -1f;
+
         if (_gamepadButtonsDown.Contains("DPadRight"))
             movement.X = 1f;
+
         if (_gamepadButtonsDown.Contains("DPadUp"))
             movement.Y = -1f;
+
         if (_gamepadButtonsDown.Contains("DPadDown"))
             movement.Y = 1f;
 
@@ -72,7 +78,9 @@ internal sealed partial class ZeldaGameHost
     {
         Facing next = MathF.Abs(movement.X) > MathF.Abs(movement.Y)
             ? movement.X < 0f ? Facing.Left : Facing.Right
-            : movement.Y < 0f ? Facing.Up : Facing.Down;
+            : movement.Y < 0f
+                ? Facing.Up
+                : Facing.Down;
 
         if (_facing == next)
             return;
@@ -126,6 +134,7 @@ internal sealed partial class ZeldaGameHost
         };
 
         _sword.SetPosition(_player.GetPosition() + offset);
+
         _sword.ZOrder = _facing == Facing.Up
             ? _player.ZOrder - 1
             : _player.ZOrder + 1;
@@ -176,6 +185,7 @@ internal sealed partial class ZeldaGameHost
             enemy.HealthBar.Value = enemy.Health;
 
             Vector2 push = enemy.Sprite.GetPosition() - _player.GetPosition();
+
             if (push.LengthSquared() > 0.001f)
             {
                 push = Vector2.Normalize(push) * 12f;
@@ -227,6 +237,7 @@ internal sealed partial class ZeldaGameHost
         _playerHealthBar.Value = _playerHealth;
 
         Vector2 push = _player.GetPosition() - enemy.Sprite.GetPosition();
+
         if (push.LengthSquared() > 0.001f)
         {
             push = Vector2.Normalize(push) * 18f;
@@ -300,6 +311,7 @@ internal sealed partial class ZeldaGameHost
                     ? "The rusted key has already opened the gate."
                     : "A barred gate blocks the eastern crypt. Its lock is old, but stubborn.",
                 2.1d);
+
             return;
         }
 
@@ -340,6 +352,7 @@ internal sealed partial class ZeldaGameHost
         _sword.Visible = false;
         _swordTimer = 0f;
         _swingHitIds.Clear();
+
         RenderSurface.Host.ViewManager.Views[0].Camera.CenterOnGrid(
             _actorLayer,
             (int)destination.X,
@@ -380,6 +393,7 @@ internal sealed partial class ZeldaGameHost
         {
             if (_mode == GameMode.Playing)
                 ShowMessage("Your health is already full.", 1.1d);
+
             return;
         }
 
@@ -387,6 +401,7 @@ internal sealed partial class ZeldaGameHost
         {
             if (_mode == GameMode.Playing)
                 ShowMessage("You have no potion.", 1.1d);
+
             return;
         }
 
@@ -499,6 +514,7 @@ internal sealed partial class ZeldaGameHost
         SetPauseVisible(false);
         SetTitleVisible(true);
         _titleText.SetText("THE GREENWARD FALLS");
+
         _titleOptionsText.SetText(
             "Enter / A: return to title\n" +
             "L / F9 / Y: load saved game\n\n" +
@@ -515,6 +531,7 @@ internal sealed partial class ZeldaGameHost
         SetPauseVisible(false);
         SetTitleVisible(true);
         _titleText.SetText("THE GREENWARD RESTORED");
+
         _titleOptionsText.SetText(
             "The Hollow King is no more.\n" +
             "The sun relic answers the morning.\n\n" +
@@ -533,6 +550,7 @@ internal sealed partial class ZeldaGameHost
         SetTitleVisible(true);
 
         _titleText.SetText("THE GREENWARD KEY\nA GONDWANA PROTOTYPE");
+
         _titleOptionsText.SetText(
             "Enter / N / A: new game\n" +
             "L / F9 / Y: load game\n\n" +
@@ -550,6 +568,7 @@ internal sealed partial class ZeldaGameHost
         try
         {
             Vector2 position = _player.GetPosition();
+
             SaveGame save = SaveGameService.Create(
                 position.X,
                 position.Y,
@@ -603,6 +622,7 @@ internal sealed partial class ZeldaGameHost
     private void ApplySave(SaveGame save)
     {
         _inventory.Clear();
+
         foreach ((InventoryItem item, int count) in save.Inventory)
             _inventory[item] = Math.Max(0, count);
 
@@ -613,6 +633,7 @@ internal sealed partial class ZeldaGameHost
         _collectedPickups.UnionWith(save.CollectedPickups);
 
         var healthById = save.Enemies.ToDictionary(enemy => enemy.Id, StringComparer.Ordinal);
+
         foreach (EnemyState enemy in _enemies)
         {
             int health = healthById.TryGetValue(enemy.Id, out EnemySave? savedEnemy)
@@ -656,6 +677,7 @@ internal sealed partial class ZeldaGameHost
         UpdateHud(force: true);
 
         EnemyState boss = _enemies.Single(enemy => enemy.IsBoss);
+
         if (!boss.IsAlive)
             WinGame();
     }
@@ -683,6 +705,7 @@ internal sealed partial class ZeldaGameHost
         int enemiesRemaining = _enemies.Count(enemy => enemy.IsAlive);
         string area = _currentArea == WorldArea.Overworld ? "Greenward" : "Old Barrow";
         string key = HasItem(InventoryItem.RustedKey) ? "Key ✓" : "Key —";
+
         string hud =
             $"Health {_playerHealth}/{PlayerMaximumHealth}   {key}   Potions {GetItemCount(InventoryItem.Potion)}   Foes {enemiesRemaining}   {area}\n" +
             "WASD/Arrows move   Space sword   E talk/use   I inventory   F5/F9 save/load";

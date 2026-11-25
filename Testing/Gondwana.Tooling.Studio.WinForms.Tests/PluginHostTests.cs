@@ -21,8 +21,10 @@ public sealed class PluginHostTests
         // Keep mapped DLLs in build output; Windows releases them when the test process exits.
         var directory = Path.Combine(AppContext.BaseDirectory, "plugin-fixtures", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
+
         foreach (var assembly in new[] { GetType().Assembly, typeof(CorePlugin).Assembly, typeof(WinPlugin).Assembly })
             File.Copy(assembly.Location, Path.Combine(directory, Path.GetFileName(assembly.Location)));
+
         var dependencies = Path.ChangeExtension(GetType().Assembly.Location, ".deps.json");
         File.Copy(dependencies, Path.Combine(directory, Path.GetFileName(dependencies)));
         File.WriteAllText(Path.Combine(directory, "corrupt.dll"), "not a managed assembly");
@@ -31,8 +33,11 @@ public sealed class PluginHostTests
         host.DiscoverAndLoad(directory);
         var plugin = Assert.Single(host.Plugins);
         Assert.IsAssignableFrom<WinPlugin>(plugin);
-        Assert.NotSame(System.Runtime.Loader.AssemblyLoadContext.Default,
+
+        Assert.NotSame(
+            System.Runtime.Loader.AssemblyLoadContext.Default,
             System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(plugin.GetType().Assembly));
+
         Assert.Equal("Contract fixture", plugin.Name);
         host.NotifyProjectOpened(directory);
         Assert.Equal(directory, plugin.GetType().GetProperty("ProjectPath")!.GetValue(plugin));
@@ -44,12 +49,18 @@ public sealed class PluginHostTests
         Assert.Contains(messages, message => message.Contains("CreatePanel threw"));
         Assert.Contains(messages, message => message.Contains("CreateMenuItem threw"));
         host.NotifyProjectOpened(failOnClose ? "throw-on-close" : "throw");
+
         if (failOnClose)
             host.NotifyProjectClosed();
+
         Assert.Empty(host.Plugins);
         Assert.Contains(messages, message => message.Contains("Disabled 'Contract fixture'"));
         Assert.Contains(messages, message => message.Contains("Failed loading corrupt.dll"));
-        Assert.Contains(messages, message => message.Contains("Failed to instantiate") && message.Contains(nameof(ThrowingConstructorPlugin)));
+
+        Assert.Contains(
+            messages,
+            message => message.Contains("Failed to instantiate") &&
+                       message.Contains(nameof(ThrowingConstructorPlugin)));
     }
 
     /// <summary>
@@ -75,10 +86,12 @@ public sealed class ContractFixturePlugin : WinPlugin
     /// Gets the name.
     /// </summary>
     public string Name => "Contract fixture";
+
     /// <summary>
     /// Gets the project path.
     /// </summary>
     public string? ProjectPath { get; private set; }
+
     /// <summary>
     /// Updates the plugin for the newly opened project.
     /// </summary>
@@ -87,8 +100,10 @@ public sealed class ContractFixturePlugin : WinPlugin
     {
         if (projectPath == "throw")
             throw new InvalidOperationException("Expected fixture failure");
+
         ProjectPath = projectPath;
     }
+
     /// <summary>
     /// Clears plugin state associated with the closed project.
     /// </summary>
@@ -96,18 +111,25 @@ public sealed class ContractFixturePlugin : WinPlugin
     {
         if (ProjectPath == "throw-on-close")
             throw new InvalidOperationException("Expected close failure");
+
         ProjectPath = null;
     }
+
     /// <summary>
     /// Creates the plugin's dockable user interface.
     /// </summary>
     /// <returns>The resulting control, or <see langword="null"/> when unavailable.</returns>
-    public Control? CreatePanel() => ProjectPath == "throw-contribution" ? throw new InvalidOperationException("Expected panel failure") : null;
+    public Control? CreatePanel() => ProjectPath == "throw-contribution"
+        ? throw new InvalidOperationException("Expected panel failure")
+        : null;
+
     /// <summary>
     /// Creates the menu item that opens the plugin panel.
     /// </summary>
     /// <returns>The resulting tool strip menu item, or <see langword="null"/> when unavailable.</returns>
-    public ToolStripMenuItem? CreateMenuItem() => ProjectPath == "throw-contribution" ? throw new InvalidOperationException("Expected menu failure") : null;
+    public ToolStripMenuItem? CreateMenuItem() => ProjectPath == "throw-contribution"
+        ? throw new InvalidOperationException("Expected menu failure")
+        : null;
 }
 
 /// <summary>
@@ -119,15 +141,18 @@ public sealed class ThrowingConstructorPlugin : CorePlugin
     /// Initializes a new instance of the <c>ThrowingConstructorPlugin</c> class.
     /// </summary>
     public ThrowingConstructorPlugin() => throw new InvalidOperationException("Expected constructor failure");
+
     /// <summary>
     /// Gets the name.
     /// </summary>
     public string Name => "Constructor fixture";
+
     /// <summary>
     /// Updates the plugin for the newly opened project.
     /// </summary>
     /// <param name="projectPath">The project path value for this test case.</param>
     public void OnProjectOpened(string projectPath) { }
+
     /// <summary>
     /// Clears plugin state associated with the closed project.
     /// </summary>

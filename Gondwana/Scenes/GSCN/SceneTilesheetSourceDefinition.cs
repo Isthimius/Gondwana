@@ -14,6 +14,7 @@ public enum SceneTilesheetSourceKind
     /// The definition is stored in a loose file.
     /// </summary>
     LooseDefinitionFile,
+
     /// <summary>
     /// The definition is stored in an assets file.
     /// </summary>
@@ -30,18 +31,22 @@ public sealed class SceneTilesheetSourceDefinition
     /// Gets or sets the tilesheet.
     /// </summary>
     public string Tilesheet { get; set; } = string.Empty;
+
     /// <summary>
     /// Gets or sets the kind.
     /// </summary>
     public SceneTilesheetSourceKind Kind { get; set; } = SceneTilesheetSourceKind.LooseDefinitionFile;
+
     /// <summary>
     /// Gets or sets the path to the loose GTS tilesheet definition.
     /// </summary>
     public string? GtsPath { get; set; }
+
     /// <summary>
     /// Gets or sets the path to the containing assets file.
     /// </summary>
     public string? AssetsFilePath { get; set; }
+
     /// <summary>
     /// Gets or sets the entry name inside the assets file.
     /// </summary>
@@ -57,6 +62,7 @@ public sealed class SceneTilesheetSourceDefinition
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
         ArgumentException.ThrowIfNullOrWhiteSpace(gtsPath);
+
         return new()
         {
             Tilesheet = tilesheet,
@@ -80,6 +86,7 @@ public sealed class SceneTilesheetSourceDefinition
         ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetsFilePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
+
         return new()
         {
             Tilesheet = tilesheet,

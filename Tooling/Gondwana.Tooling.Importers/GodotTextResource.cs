@@ -7,7 +7,10 @@ namespace Gondwana.Tooling.Importers;
 /// <param name="Kind">Section header name, such as resource, ext_resource, or sub_resource.</param>
 /// <param name="Attributes">Case-sensitive header attribute names and unparsed values, including quotes.</param>
 /// <param name="Properties">Mutable, case-sensitive property assignments in the section.</param>
-public sealed record GodotResourceSection(string Kind, IReadOnlyDictionary<string, string> Attributes, Dictionary<string, string> Properties);
+public sealed record GodotResourceSection(
+    string Kind,
+    IReadOnlyDictionary<string, string> Attributes,
+    Dictionary<string, string> Properties);
 
 /// <summary>Parses the section and assignment structure needed by the Godot TileSet importer.</summary>
 public static class GodotTextResource
@@ -23,28 +26,38 @@ public static class GodotTextResource
         var statement = new StringBuilder();
         int depth = 0;
         bool quoted = false, escaped = false, comment = false;
+
         void Flush()
         {
             string line = statement.ToString().Trim();
             statement.Clear();
+
             if (line.Length == 0)
                 return;
+
             if (line[0] == '[')
             {
                 if (line[^1] != ']')
                     throw new InvalidDataException("Unterminated Godot section.");
+
                 string header = line[1..^1];
                 string kind = header.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)[0];
                 var attributes = new Dictionary<string, string>(StringComparer.Ordinal);
-                foreach (Match m in Regex.Matches(header[kind.Length..], "(\\w+)\\s*=\\s*(\"(?:\\\\.|[^\"])*\"|[^\\s]+)"))
+
+                foreach (Match m in Regex.Matches(
+                             header[kind.Length..],
+                             "(\\w+)\\s*=\\s*(\"(?:\\\\.|[^\"])*\"|[^\\s]+)"))
                     attributes.Add(m.Groups[1].Value, m.Groups[2].Value);
+
                 sections.Add(new(kind, attributes, new(StringComparer.Ordinal)));
             }
             else
             {
                 int equals = line.IndexOf('=');
+
                 if (sections.Count == 0 || equals <= 0)
                     throw new InvalidDataException("Invalid Godot property assignment.");
+
                 sections[^1].Properties.Add(line[..equals].Trim(), line[(equals + 1)..].Trim());
             }
         }
@@ -55,6 +68,7 @@ public static class GodotTextResource
             {
                 if (c != '\n')
                     continue;
+
                 comment = false;
             }
 
@@ -71,6 +85,7 @@ public static class GodotTextResource
             }
 
             statement.Append(c);
+
             if (quoted)
             {
                 if (escaped)
@@ -93,6 +108,7 @@ public static class GodotTextResource
 
         if (quoted || depth != 0)
             throw new InvalidDataException("Unterminated Godot value.");
+
         Flush();
         return sections;
     }
@@ -101,6 +117,7 @@ public static class GodotTextResource
     {
         if (value.Length < 2 || value[0] != '"' || value[^1] != '"')
             throw new InvalidDataException("Expected a Godot string.");
+
         return System.Text.Json.JsonSerializer.Deserialize<string>(value)!;
     }
 }

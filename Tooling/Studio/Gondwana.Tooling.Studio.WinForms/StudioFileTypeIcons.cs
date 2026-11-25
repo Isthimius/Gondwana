@@ -23,17 +23,42 @@ internal static class StudioFileTypeIcons
     {
         float scale = pixels / 16f;
         var bitmap = new Bitmap(pixels, pixels);
+
         try
         {
             using var graphics = Graphics.FromImage(bitmap);
             using var background = new SolidBrush(color);
+
             // Pixel units keep the glyph tied to the target bitmap, independent of monitor DPI.
-            using var font = new Font("Segoe UI", 8 * 96f / 72f * scale, FontStyle.Bold, GraphicsUnit.Pixel);
-            using var alignment = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            using var font = new Font(
+                "Segoe UI",
+                8 * 96f / 72f * scale,
+                FontStyle.Bold,
+                GraphicsUnit.Pixel);
+
+            using var alignment = new StringFormat
+                { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-            graphics.FillRectangle(background, scale, scale, pixels - 2 * scale, pixels - 2 * scale);
-            graphics.DrawString(glyph, font, Brushes.White, new RectangleF(0, 0, pixels, pixels), alignment);
+
+            graphics.FillRectangle(
+                background,
+                scale,
+                scale,
+                pixels - 2 * scale,
+                pixels - 2 * scale);
+
+            graphics.DrawString(
+                glyph,
+                font,
+                Brushes.White,
+                new RectangleF(
+                    0,
+                    0,
+                    pixels,
+                    pixels),
+                alignment);
+
             return bitmap;
         }
         catch
@@ -57,9 +82,14 @@ internal static class StudioFileTypeIcons
     };
 
     /// <summary>Uses embedded artwork for known formats, retaining glyphs as a fallback.</summary>
-    internal static Bitmap CreateFileTypeBitmap(int pixels, string key, string glyph, Color color)
+    internal static Bitmap CreateFileTypeBitmap(
+        int pixels,
+        string key,
+        string glyph,
+        Color color)
     {
         string? fileName = ResourceFileFor(key);
+
         return fileName is null
             ? CreateBitmap(pixels, glyph, color)
             : ToolingIconResources.CreateBitmap(fileName, pixels);
@@ -70,13 +100,20 @@ internal static class StudioFileTypeIcons
     {
         // Both .gaf and .zip documents use the assets icon.
         string key = extension.Equals("zip", StringComparison.OrdinalIgnoreCase) ? "gaf" : extension;
+
         foreach (var category in Categories)
         {
             if (!category.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            using var bitmap = CreateFileTypeBitmap(16, category.Key, category.Glyph, category.Color);
+            using var bitmap = CreateFileTypeBitmap(
+                16,
+                category.Key,
+                category.Glyph,
+                category.Color);
+
             IntPtr handle = bitmap.GetHicon();
+
             try
             {
                 // Clone so the returned icon owns its handle; release the temporary HICON.

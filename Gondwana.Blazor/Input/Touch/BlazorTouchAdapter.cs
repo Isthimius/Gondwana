@@ -70,6 +70,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         foreach (var t in e.ChangedTouches)
         {
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Began);
@@ -84,10 +85,12 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         foreach (var t in e.ChangedTouches)
         {
             if (!_activeTouches.ContainsKey(t.Identifier))
                 continue;
+
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Moved);
             _activeTouches[t.Identifier] = point;
         }
@@ -99,10 +102,12 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         foreach (var t in e.ChangedTouches)
         {
             if (!_activeTouches.ContainsKey(t.Identifier))
                 continue;
+
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Ended);
             _activeTouches.Remove(t.Identifier);
             _pendingEnds.Enqueue(point);
@@ -115,10 +120,12 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         foreach (var t in e.ChangedTouches)
         {
             if (!_activeTouches.TryGetValue(t.Identifier, out var existing))
                 continue;
+
             var point = new GondwanaTouchPoint(existing.Id, existing.Position, TouchPhase.Cancelled);
             _activeTouches.Remove(t.Identifier);
             _pendingEnds.Enqueue(point);
@@ -134,8 +141,10 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             return Array.Empty<GondwanaTouchPoint>();
 
         var snapshot = new List<GondwanaTouchPoint>(_pendingBegins.Count);
+
         while (_pendingBegins.TryDequeue(out var point))
             snapshot.Add(point);
+
         return snapshot;
     }
 
@@ -146,8 +155,10 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             return Array.Empty<GondwanaTouchPoint>();
 
         var snapshot = new List<GondwanaTouchPoint>(_pendingEnds.Count);
+
         while (_pendingEnds.TryDequeue(out var point))
             snapshot.Add(point);
+
         return snapshot;
     }
 
@@ -164,6 +175,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         _isDisposed = true;
 
         _component.TouchStart -= OnTouchStart;

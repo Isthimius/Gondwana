@@ -19,18 +19,32 @@ public sealed partial class AudioDocument
     public static AudioDocument Open(AssetsFile archive, string entryName)
     {
         if (!archive.GetAllEntries().Any(entry => entry.AssetType == AssetTypes.AudioDefinition &&
-            string.Equals(entry.AssetName, entryName, StringComparison.OrdinalIgnoreCase)))
-            throw new FileNotFoundException($"AudioDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
-        var path = Path.GetFullPath(archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+                                                  string.Equals(
+                                                      entry.AssetName,
+                                                      entryName,
+                                                      StringComparison.OrdinalIgnoreCase)))
+            throw new FileNotFoundException(
+                $"AudioDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
+
+        var path = Path.GetFullPath(
+            archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+
         var directory = Path.GetDirectoryName(path)!;
         var definitions = AudioDefinitionSerializer.LoadAll(archive, entryName).ToList();
+
         if (definitions.Count == 0)
             throw new InvalidDataException("Document contains no definitions.");
-        var document = new AudioDocument(definitions[0], null, directory, false)
+
+        var document = new AudioDocument(
+            definitions[0],
+            null,
+            directory,
+            false)
         {
             _definitions = definitions,
             PackedLocation = new(AssetTypes.AudioDefinition, path, entryName)
         };
+
         document.RememberReferenceOrigins();
         document.History.MarkSaved();
         return document;
@@ -48,6 +62,7 @@ public sealed partial class AudioDocument
     {
         if (PackedLocation is null)
             throw new InvalidOperationException("This document is not packed.");
+
         RememberReferenceOrigins();
         History.MarkSaved();
     }

@@ -25,8 +25,9 @@ public static class MidiFileReader
     private static readonly Lazy<SoundFont> _soundFont = new(() =>
     {
         var assembly = Assembly.GetExecutingAssembly();
+
         using var stream = assembly.GetManifestResourceStream("Gondwana.Audio.Midi.TimGM6mb.sf2")
-            ?? throw new InvalidOperationException("Embedded SoundFont 'TimGM6mb.sf2' not found.");
+                           ?? throw new InvalidOperationException("Embedded SoundFont 'TimGM6mb.sf2' not found.");
 
         return new SoundFont(stream);
     });
@@ -115,7 +116,12 @@ public static class MidiFileReader
         var sequencer = new MidiFileSequencer(synth);
         sequencer.Play(midi, loop: false);
 
-        var provider = new SynthesizerSampleProvider(sequencer, synth, midi, loop: false);
+        var provider = new SynthesizerSampleProvider(
+            sequencer,
+            synth,
+            midi,
+            loop: false);
+
         return new WaveProviderToWaveStream(provider.ToWaveProvider(), midi.Length.TotalSeconds, provider.Seek);
     }
 }

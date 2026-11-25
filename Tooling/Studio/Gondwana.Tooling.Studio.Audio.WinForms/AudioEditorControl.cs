@@ -17,6 +17,7 @@ public sealed class AudioEditorControl : UserControl
 
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
+
     /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Audio resources", "Properties", "Validation"]);
@@ -49,6 +50,7 @@ public sealed class AudioEditorControl : UserControl
 
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public AudioDocument Document { get; }
+
     /// <summary>Gets the mutable definition currently selected in the document.</summary>
     public AudioDefinition Definition => Document.Definition;
 
@@ -72,6 +74,7 @@ public sealed class AudioEditorControl : UserControl
         _resources.Columns.Add("Source", 110);
         _resources.Columns.Add("Location", 420);
         _resources.SelectedIndexChanged += (_, _) => BindSelectedResource();
+
         _properties.PropertyValueChanged += (_, _) =>
         {
             RefreshResourceList();
@@ -81,7 +84,13 @@ public sealed class AudioEditorControl : UserControl
         _workspace = new EditorDockWorkspace("gsnd");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var resources = _workspace.AddPane("resources", "Audio resources", _resources, BuildResourceToolbar());
+
+        var resources = _workspace.AddPane(
+            "resources",
+            "Audio resources",
+            _resources,
+            BuildResourceToolbar());
+
         var properties = _workspace.AddPane("properties", "Properties", _properties);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
 
@@ -91,9 +100,18 @@ public sealed class AudioEditorControl : UserControl
         _workspace.InitializeLayout();
 
         var definitionBar = new DefinitionSelectionBar<AudioDefinition>(
-            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
-            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gsnd", (path, select) => Document.ImportDefinitions(path, select));
+            () => Document.Definitions,
+            () => Document.SelectedDefinition,
+            definition => definition.Key,
+            Document.SelectDefinition,
+            () => Document.AddDefinition(),
+            () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition),
+            Document.RenameDefinition,
+            RefreshView,
+            "gsnd",
+            (path, select) => Document.ImportDefinitions(path, select));
+
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -112,11 +130,14 @@ public sealed class AudioEditorControl : UserControl
 
         using var transaction = Document.History.BeginTransaction("Add audio resources");
         AudioResourceDefinition? last = null;
+
         foreach (var path in paths)
             last = Document.AddLooseFile(path);
+
         transaction.Commit();
 
         RefreshView();
+
         if (last is not null)
             SelectResource(last);
     }
@@ -126,9 +147,11 @@ public sealed class AudioEditorControl : UserControl
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
+
         _validation.Text = errors.Count == 0
             ? "No validation errors."
             : string.Join(Environment.NewLine, errors.Select(error => "ERROR: " + error));
+
         return errors;
     }
 
@@ -174,8 +197,17 @@ public sealed class AudioEditorControl : UserControl
         };
 
         bar.Items.Add("Add file…", null, (_, _) => ChooseLooseFiles());
-        bar.Items.Add("Add from GAF…", null, (_, _) => PackedResourcePicker.PickAndApply(
-            this, _packages, Document.BaseDirectory, AssetTypes.Audio, AddPackedAudio));
+
+        bar.Items.Add(
+            "Add from GAF…",
+            null,
+            (_, _) => PackedResourcePicker.PickAndApply(
+                this,
+                _packages,
+                Document.BaseDirectory,
+                AssetTypes.Audio,
+                AddPackedAudio));
+
         bar.Items.Add("Add URI…", null, (_, _) => AddUri());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelected());
@@ -200,10 +232,10 @@ public sealed class AudioEditorControl : UserControl
         }
         catch (Exception ex) when (
             ex is IOException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
             ShowError(ex);
         }
@@ -213,7 +245,12 @@ public sealed class AudioEditorControl : UserControl
     public void AddPackedAudio(PackedResourceSelection selection)
     {
         selection.Validate(_packages, AssetTypes.Audio);
-        var resource = Document.AddPackedAudio(selection.Resource.Path, selection.Resource.EntryName!, selection.SourceExtension);
+
+        var resource = Document.AddPackedAudio(
+            selection.Resource.Path,
+            selection.Resource.EntryName!,
+            selection.SourceExtension);
+
         RefreshView();
         SelectResource(resource);
     }
@@ -223,14 +260,17 @@ public sealed class AudioEditorControl : UserControl
     {
         if (disposing)
             Document.Changed -= DocumentChanged;
+
         if (disposing && _ownsPackages)
             _packages.Dispose();
+
         base.Dispose(disposing);
     }
 
     private void AddUri()
     {
         using var dialog = new UriPrompt();
+
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
 
@@ -242,8 +282,8 @@ public sealed class AudioEditorControl : UserControl
         }
         catch (Exception ex) when (
             ex is ArgumentException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidOperationException or
+                NotSupportedException)
         {
             ShowError(ex);
         }
@@ -267,6 +307,7 @@ public sealed class AudioEditorControl : UserControl
     {
         if (ReferenceEquals(Document.SelectedDefinition, definition))
             return;
+
         Document.SelectDefinition(definition);
         RefreshView();
     }
@@ -286,6 +327,7 @@ public sealed class AudioEditorControl : UserControl
                 : null;
 
         _resources.BeginUpdate();
+
         try
         {
             _resources.Items.Clear();
@@ -296,6 +338,7 @@ public sealed class AudioEditorControl : UserControl
                 {
                     Tag = resource
                 };
+
                 item.SubItems.Add(resource.SourceKind.ToString());
                 item.SubItems.Add(SourceDescription(resource));
                 _resources.Items.Add(item);
@@ -351,18 +394,28 @@ public sealed class AudioEditorControl : UserControl
             "GSND editor",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
+
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            Document.History,
+            CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+
     private bool _historyRefreshPending;
+
     private void DocumentChanged(object? sender, EventArgs e)
     {
         if (_historyRefreshPending || !IsHandleCreated)
             return;
+
         _historyRefreshPending = true;
+
         BeginInvoke(() =>
         {
             _historyRefreshPending = false;
+
             if (!IsDisposed)
                 RefreshView();
         });

@@ -59,9 +59,12 @@ internal sealed partial class SliderGameRuntime
     private long _loadingFrameBarrier;
     private long _lastStatusTicks;
 
-    internal SliderGameRuntime(RenderSurfaceHostBase surface,
-        Func<WidgetInputRouter?> routerAccessor, ISliderScoreStore scoreStore,
-        Func<SKImage?> loadAboutLogo, IExternalUriLauncher uriLauncher,
+    internal SliderGameRuntime(
+        RenderSurfaceHostBase surface,
+        Func<WidgetInputRouter?> routerAccessor,
+        ISliderScoreStore scoreStore,
+        Func<SKImage?> loadAboutLogo,
+        IExternalUriLauncher uriLauncher,
         Action<int, int> requestLogicalResolution,
         SliderArrowKeys arrowKeys)
     {
@@ -70,7 +73,10 @@ internal sealed partial class SliderGameRuntime
         _scoreStore = scoreStore ?? throw new ArgumentNullException(nameof(scoreStore));
         _loadAboutLogo = loadAboutLogo ?? throw new ArgumentNullException(nameof(loadAboutLogo));
         _uriLauncher = uriLauncher ?? throw new ArgumentNullException(nameof(uriLauncher));
-        _requestLogicalResolution = requestLogicalResolution ?? throw new ArgumentNullException(nameof(requestLogicalResolution));
+
+        _requestLogicalResolution = requestLogicalResolution ??
+                                    throw new ArgumentNullException(nameof(requestLogicalResolution));
+
         _arrowKeys = arrowKeys;
         _highScores = scoreStore.LoadScores();
         _clientSize = new Size(surface.Backbuffer.Width, surface.Backbuffer.Height);
@@ -85,20 +91,34 @@ internal sealed partial class SliderGameRuntime
     internal void RequestPuzzle(byte[]? imageBytes, int columns, int rows)
     {
         lock (_requestGate)
-            _requests.Enqueue(new PuzzleRequest(imageBytes ?? _imagePng, columns, rows, null));
+            _requests.Enqueue(
+                new PuzzleRequest(
+                    imageBytes ?? _imagePng,
+                    columns,
+                    rows,
+                    null));
     }
 
     internal void RequestShuffle()
     {
         lock (_requestGate)
-            _requests.Enqueue(new PuzzleRequest(null, 0, 0, PuzzleCommand.Shuffle));
+            _requests.Enqueue(
+                new PuzzleRequest(
+                    null,
+                    0,
+                    0,
+                    PuzzleCommand.Shuffle));
     }
 
     internal void RequestGrid(bool show)
     {
         lock (_requestGate)
-            _requests.Enqueue(new PuzzleRequest(null, 0, 0,
-                show ? PuzzleCommand.ShowGrid : PuzzleCommand.HideGrid));
+            _requests.Enqueue(
+                new PuzzleRequest(
+                    null,
+                    0,
+                    0,
+                    show ? PuzzleCommand.ShowGrid : PuzzleCommand.HideGrid));
     }
 
     internal void RequestResize(Size size)
@@ -119,8 +139,16 @@ internal sealed partial class SliderGameRuntime
     internal Scene CreateInitialScene()
     {
         var scene = new Scene();
-        _layer = scene.AddLayer(WorldTiles, WorldTiles, WorldTileSize, WorldTileSize,
-            zOrder: 0, parallax: 1f, coordinateSystem: CoordinateSystemTypes.Orthogonal);
+
+        _layer = scene.AddLayer(
+            WorldTiles,
+            WorldTiles,
+            WorldTileSize,
+            WorldTileSize,
+            zOrder: 0,
+            parallax: 1f,
+            coordinateSystem: CoordinateSystemTypes.Orthogonal);
+
         return scene;
     }
 
@@ -134,11 +162,22 @@ internal sealed partial class SliderGameRuntime
         var views = host.ViewManager;
         _uiView = views.Views[0];
         Size logical = new(host.Backbuffer.Width, host.Backbuffer.Height);
-        _uiView.Viewport.TargetRectPx = new Rectangle(0, 0,
-            SliderSidebar.Width, logical.Height);
-        views.AddView(new Rectangle(SliderSidebar.Width, 0,
-            Math.Max(1, logical.Width - SliderSidebar.Width), logical.Height),
-            zOrder: 1, worldBoundsPx: RectangleF.Empty);
+
+        _uiView.Viewport.TargetRectPx = new Rectangle(
+            0,
+            0,
+            SliderSidebar.Width,
+            logical.Height);
+
+        views.AddView(
+            new Rectangle(
+                SliderSidebar.Width,
+                0,
+                Math.Max(1, logical.Width - SliderSidebar.Width),
+                logical.Height),
+            zOrder: 1,
+            worldBoundsPx: RectangleF.Empty);
+
         _gameView = views.Views[^1];
 
         // A camera clamped to world bounds would push a puzzle off-center when
@@ -157,12 +196,15 @@ internal sealed partial class SliderGameRuntime
 
     internal void CreateDirectDrawings()
     {
-        _sidebar = new SliderSidebar(_surface, _uiView,
+        _sidebar = new SliderSidebar(
+            _surface,
+            _uiView,
             _surface.Backbuffer.Height,
             onNewPuzzle: () => RequestPuzzle(null, _sidebar!.Columns, _sidebar.Rows),
             onOpenPicture: (columns, rows) => OpenPictureRequested?.Invoke(columns, rows),
             onShuffle: RequestShuffle,
             onGridChanged: RequestGrid);
+
         CreateMenu();
         WidgetInputRouter!.UnhandledPrimaryAction += OnPrimaryPointerAction;
     }
@@ -208,6 +250,7 @@ internal sealed partial class SliderGameRuntime
     private void OnTick()
     {
         long paintedFrames = Interlocked.Read(ref _presentedLoadingFrames);
+
         if (_hideLoadingOnNextTick)
         {
             if (paintedFrames > _loadingFrameBarrier)
@@ -216,6 +259,7 @@ internal sealed partial class SliderGameRuntime
         else if (paintedFrames > _loadingFrameBarrier && _pendingSavedLoad is { } saved)
         {
             _pendingSavedLoad = null;
+
             try
             {
                 RestoreSavedGame(saved);
@@ -230,6 +274,7 @@ internal sealed partial class SliderGameRuntime
         else if (paintedFrames > _loadingFrameBarrier && _pendingPictureLoad is { } picture)
         {
             _pendingPictureLoad = null;
+
             try
             {
                 LoadPicture(picture);
@@ -246,10 +291,12 @@ internal sealed partial class SliderGameRuntime
         List<PuzzleRequest> pending = [];
         bool resized;
         Size newSize;
+
         lock (_requestGate)
         {
             while (_requests.Count > 0)
                 pending.Add(_requests.Dequeue());
+
             resized = _fitRequested;
             newSize = _clientSize;
             _fitRequested = false;
@@ -280,8 +327,11 @@ internal sealed partial class SliderGameRuntime
                         // Use the previous demo's legal-move shuffle count. Animate
                         // each move, with a shorter duration than a player slide.
                         int shuffleCount = _board.Columns * _board.Rows * 3;
+
                         _shuffleSlideSeconds = Math.Min(
-                            MaxShuffleSlideSeconds, 15f / shuffleCount);
+                            MaxShuffleSlideSeconds,
+                            15f / shuffleCount);
+
                         _shuffleMoves = _board.ShuffleSteps(shuffleCount).GetEnumerator();
                         StartNextShuffleMove();
                         PublishStatus();
@@ -336,7 +386,7 @@ internal sealed partial class SliderGameRuntime
         // Decode first. An invalid file must not destroy the currently playable board.
         using SKBitmap image = request.ImagePng is not null
             ? SKBitmap.Decode(request.ImagePng)
-                ?? throw new InvalidDataException("Unsupported or corrupt picture.")
+              ?? throw new InvalidDataException("Unsupported or corrupt picture.")
             : CreateSampleImage();
 
         var replacement = new SlidingPuzzle(request.Columns, request.Rows);
@@ -363,6 +413,7 @@ internal sealed partial class SliderGameRuntime
         int y = _board.BlankRow + dy;
 
         int piece = _board.PieceAt(x, y);
+
         if (piece >= 0)
             TryMovePiece(piece);
     }
@@ -401,11 +452,17 @@ internal sealed partial class SliderGameRuntime
     private void AnimateMove(PuzzleMove move, float durationSeconds)
     {
         Sprite sprite = _renderer.GetPiece(move.PieceId)
-            ?? throw new InvalidOperationException("Shuffle references a missing puzzle piece.");
+                        ?? throw new InvalidOperationException("Shuffle references a missing puzzle piece.");
+
         _movingSprite = sprite;
         sprite.Movement.ScriptedMovementStopped += OnMoveStopped;
-        sprite.Movement.MoveTo(_renderer.PositionForIndex(move.DestinationIndex),
-            durationSeconds, null, 0.01f);
+
+        sprite.Movement.MoveTo(
+            _renderer.PositionForIndex(move.DestinationIndex),
+            durationSeconds,
+            null,
+            0.01f);
+
         _slideSound?.Play();
     }
 
@@ -421,6 +478,7 @@ internal sealed partial class SliderGameRuntime
         if (_shuffleMoves is not null)
         {
             StartNextShuffleMove();
+
             if (_shuffleMoves is not null)
                 return;
         }
@@ -458,11 +516,21 @@ internal sealed partial class SliderGameRuntime
         // View rectangles are automatically scaled with the logical Backbuffer,
         // so restore the sidebar's exact width after the GPU resize completes.
         var buffer = _surface.Backbuffer;
+
         _uiView.Viewport.TargetRectPx =
-            new Rectangle(0, 0, SliderSidebar.Width, buffer.Height);
+            new Rectangle(
+                0,
+                0,
+                SliderSidebar.Width,
+                buffer.Height);
+
         _gameView.Viewport.TargetRectPx =
-            new Rectangle(SliderSidebar.Width, 0,
-                Math.Max(1, buffer.Width - SliderSidebar.Width), buffer.Height);
+            new Rectangle(
+                SliderSidebar.Width,
+                0,
+                Math.Max(1, buffer.Width - SliderSidebar.Width),
+                buffer.Height);
+
         _sidebar?.Resize(buffer.Height);
         FitPuzzle();
     }
@@ -473,6 +541,7 @@ internal sealed partial class SliderGameRuntime
         // may resize before the GPU Backbuffer and Viewports catch up.
         View view = _gameView;
         Rectangle viewport = view.Viewport.TargetRectPx;
+
         if (_renderer.WidthPx <= 0 || _renderer.HeightPx <= 0 ||
             viewport.Width <= 0 || viewport.Height <= 0)
             return;
@@ -480,6 +549,7 @@ internal sealed partial class SliderGameRuntime
         float zoom = Math.Min(
             viewport.Width / (float)_renderer.WidthPx,
             viewport.Height / (float)_renderer.HeightPx) * 0.96f;
+
         view.Viewport.SnapZoom(Math.Max(0.05f, zoom));
         float center = WorldTiles * WorldTileSize / 2f;
         view.Camera.CenterOn(new PointF(center, center));
@@ -488,8 +558,11 @@ internal sealed partial class SliderGameRuntime
     private void PublishStatus()
     {
         _lastStatusTicks = Stopwatch.GetTimestamp();
+
         string result = _shuffleMoves is not null ? "Shuffling..." :
-            _won ? "Solved!" : _started ? "In progress" : "Ready";
+            _won ? "Solved!" :
+            _started ? "In progress" : "Ready";
+
         _sidebar?.SetStatus(
             result + Environment.NewLine +
             "Correct: " + _board.CorrectPieces + " / " + _board.TotalPieces + Environment.NewLine +
@@ -501,8 +574,10 @@ internal sealed partial class SliderGameRuntime
     {
         if (WidgetInputRouter is not null)
             WidgetInputRouter.UnhandledPrimaryAction -= OnPrimaryPointerAction;
+
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+
         Engine.BeforeBackgroundTasksExecute -= OnTick;
         StopLoadingIndicator();
         CancelAnimation();
@@ -517,17 +592,45 @@ internal sealed partial class SliderGameRuntime
     {
         const int width = 1200;
         const int height = 800;
-        var image = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+
+        var image = new SKBitmap(
+            width,
+            height,
+            SKColorType.Rgba8888,
+            SKAlphaType.Premul);
+
         using var canvas = new SKCanvas(image);
         canvas.Clear(new SKColor(132, 197, 231));
         using var paint = new SKPaint { IsAntialias = true };
 
         paint.Color = new SKColor(251, 216, 115);
-        canvas.DrawCircle(990, 150, 112, paint);
+
+        canvas.DrawCircle(
+            990,
+            150,
+            112,
+            paint);
+
         paint.Color = new SKColor(229, 238, 241);
-        canvas.DrawOval(new SKRect(115, 100, 380, 190), paint);
-        canvas.DrawOval(new SKRect(355, 175, 690, 255), paint);
+
+        canvas.DrawOval(
+            new SKRect(
+                115,
+                100,
+                380,
+                190),
+            paint);
+
+        canvas.DrawOval(
+            new SKRect(
+                355,
+                175,
+                690,
+                255),
+            paint);
+
         paint.Color = new SKColor(81, 131, 165);
+
         using (var mountain = new SKPath())
         {
             mountain.MoveTo(0, 505);
@@ -540,10 +643,25 @@ internal sealed partial class SliderGameRuntime
         }
 
         paint.Color = new SKColor(82, 155, 112);
-        canvas.DrawRect(0, 510, width, 290, paint);
+
+        canvas.DrawRect(
+            0,
+            510,
+            width,
+            290,
+            paint);
+
         paint.Color = new SKColor(235, 182, 124);
-        canvas.DrawRect(380, 425, 420, 285, paint);
+
+        canvas.DrawRect(
+            380,
+            425,
+            420,
+            285,
+            paint);
+
         paint.Color = new SKColor(126, 64, 67);
+
         using (var roof = new SKPath())
         {
             roof.MoveTo(330, 430);
@@ -554,23 +672,79 @@ internal sealed partial class SliderGameRuntime
         }
 
         paint.Color = new SKColor(70, 107, 143);
-        canvas.DrawRect(550, 550, 95, 160, paint);
+
+        canvas.DrawRect(
+            550,
+            550,
+            95,
+            160,
+            paint);
+
         paint.Color = new SKColor(245, 225, 166);
-        canvas.DrawRect(430, 475, 75, 80, paint);
-        canvas.DrawRect(695, 475, 75, 80, paint);
+
+        canvas.DrawRect(
+            430,
+            475,
+            75,
+            80,
+            paint);
+
+        canvas.DrawRect(
+            695,
+            475,
+            75,
+            80,
+            paint);
+
         paint.Color = new SKColor(86, 125, 83);
-        canvas.DrawRect(110, 460, 50, 250, paint);
-        canvas.DrawRect(1010, 450, 55, 270, paint);
+
+        canvas.DrawRect(
+            110,
+            460,
+            50,
+            250,
+            paint);
+
+        canvas.DrawRect(
+            1010,
+            450,
+            55,
+            270,
+            paint);
+
         paint.Color = new SKColor(39, 111, 68);
-        canvas.DrawCircle(133, 440, 115, paint);
-        canvas.DrawCircle(1040, 420, 130, paint);
+
+        canvas.DrawCircle(
+            133,
+            440,
+            115,
+            paint);
+
+        canvas.DrawCircle(
+            1040,
+            420,
+            130,
+            paint);
+
         paint.Color = new SKColor(238, 194, 104);
-        canvas.DrawRect(0, 740, width, 60, paint);
+
+        canvas.DrawRect(
+            0,
+            740,
+            width,
+            60,
+            paint);
+
         canvas.Flush();
         return image;
     }
 
     private enum PuzzleCommand { Shuffle, ShowGrid, HideGrid, Restore }
-    private sealed record PuzzleRequest(byte[]? ImagePng, int Columns, int Rows,
-        PuzzleCommand? Command, SliderSave? SavedGame = null);
+
+    private sealed record PuzzleRequest(
+        byte[]? ImagePng,
+        int Columns,
+        int Rows,
+        PuzzleCommand? Command,
+        SliderSave? SavedGame = null);
 }

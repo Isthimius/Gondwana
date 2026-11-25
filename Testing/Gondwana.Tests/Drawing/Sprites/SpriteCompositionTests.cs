@@ -100,6 +100,7 @@ public sealed class SpriteCompositionTests : IDisposable
             tileHeight: 32);
 
         Sprite source = CreateSprite(sourceLayer, Vector2.Zero);
+
         Sprite clone = Track(
             SpriteManager.Instance.CloneSprite(
                 source,
@@ -132,6 +133,7 @@ public sealed class SpriteCompositionTests : IDisposable
 
         void Fail(Sprite sprite) => throw new InvalidOperationException("Creation failed");
         SpriteManager.Instance.SpriteCreated += Fail;
+
         try
         {
             Assert.Throws<InvalidOperationException>(() => SpriteManager.Instance.CloneSprite(source, layer));

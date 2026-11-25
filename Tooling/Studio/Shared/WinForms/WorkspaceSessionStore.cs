@@ -3,7 +3,11 @@ using System.Text.Json;
 namespace Gondwana.Tooling.Studio.Shared.WinForms.Session;
 
 /// <summary>Only saved document identities belong here, never editor models or content.</summary>
-public sealed record WorkspaceSessionDocument(string Path, string Format, int? AssetType = null, string? EntryName = null)
+public sealed record WorkspaceSessionDocument(
+    string Path,
+    string Format,
+    int? AssetType = null,
+    string? EntryName = null)
 {
     public bool SameIdentity(WorkspaceSessionDocument other) =>
         string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase) && AssetType == other.AssetType &&
@@ -33,16 +37,22 @@ public sealed record WorkspaceSession
 {
     /// <summary>Gets the persisted session schema version; the reader currently accepts only version 1.</summary>
     public int Version { get; init; } = 1;
+
     /// <summary>Gets whether startup may restore the saved working directory and documents.</summary>
     public bool RestoreOnStartup { get; init; } = true;
+
     /// <summary>Gets whether to skip restoration on the next launch; the controller consumes and clears this flag.</summary>
     public bool StartEmptyOnce { get; init; }
+
     /// <summary>Gets the saved working-directory path, or null when none was captured.</summary>
     public string? WorkingDirectory { get; init; }
+
     /// <summary>Gets saved document identities in tab order; unsaved content and passwords are not stored.</summary>
     public WorkspaceSessionDocument[] Documents { get; init; } = [];
+
     /// <summary>Gets the active loose document path, or null when no loose document was active.</summary>
     public string? ActiveDocument { get; init; }
+
     /// <summary>Gets the active typed archive entry identity, or null when no packed document was active.</summary>
     public WorkspaceSessionDocument? ActivePackedDocument { get; init; }
 }
@@ -56,7 +66,10 @@ public sealed class WorkspaceSessionStore
     public WorkspaceSessionStore(Action<string> report, string? applicationId = null, string? settingsRoot = null)
     {
         _report = report;
-        FilePath = Path.Combine(DockLayoutStore.ApplicationDirectory(applicationId, settingsRoot), "workspace-session.json");
+
+        FilePath = Path.Combine(
+            DockLayoutStore.ApplicationDirectory(applicationId, settingsRoot),
+            "workspace-session.json");
     }
 
     public WorkspaceSession Read()
@@ -70,7 +83,7 @@ public sealed class WorkspaceSessionStore
                 throw new InvalidDataException("Session metadata is too large.");
 
             var session = JsonSerializer.Deserialize<WorkspaceSession>(File.ReadAllText(FilePath))
-                ?? throw new InvalidDataException("Session metadata is empty.");
+                          ?? throw new InvalidDataException("Session metadata is empty.");
 
             if (session.Version != 1)
                 throw new InvalidDataException("Unsupported session version.");
@@ -87,6 +100,7 @@ public sealed class WorkspaceSessionStore
     public bool Write(WorkspaceSession session)
     {
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
@@ -119,14 +133,15 @@ public sealed class WorkspaceSessionStore
 public static class WorkspaceSessionRestore
 {
 #pragma warning disable S107
-    public static void Restore(WorkspaceSession session,
-                                 IReadOnlyCollection<string> supportedFormats,
-                                 Action<string> setDirectory,
-                                 Action<WorkspaceSessionDocument> open,
-                                 Action<string> activate,
-                                 Action<string> report,
-                                 bool startEmpty = false,
-                                 Action<WorkspaceSessionDocument>? activatePacked = null)
+    public static void Restore(
+        WorkspaceSession session,
+        IReadOnlyCollection<string> supportedFormats,
+        Action<string> setDirectory,
+        Action<WorkspaceSessionDocument> open,
+        Action<string> activate,
+        Action<string> report,
+        bool startEmpty = false,
+        Action<WorkspaceSessionDocument>? activatePacked = null)
 #pragma warning restore S107
     {
         if (startEmpty || !session.RestoreOnStartup)
@@ -160,11 +175,12 @@ public static class WorkspaceSessionRestore
                 if (!Path.IsPathFullyQualified(document.Path))
                     throw new InvalidDataException("Expected an absolute document path.");
 
-                var identity = document.EntryName is null ?
-                               WorkspaceSessionDocument.FromPath(document.Path) :
-                               document with { Path = Path.GetFullPath(document.Path) };
+                var identity = document.EntryName is null
+                    ? WorkspaceSessionDocument.FromPath(document.Path)
+                    : document with { Path = Path.GetFullPath(document.Path) };
 
-                if (identity is null || identity.Format != document.Format || !supportedFormats.Contains(identity.Format))
+                if (identity is null || identity.Format != document.Format ||
+                    !supportedFormats.Contains(identity.Format))
                     throw new NotSupportedException($"Editor unavailable for {document.Path}.");
 
                 if (identity.EntryName is not null && (identity.AssetType is null || activatePacked is null))
@@ -203,8 +219,9 @@ public static class WorkspaceSessionRestore
             try
             {
                 active = Path.GetFullPath(active);
+
                 if (opened.Any(item => item.EntryName is null
-                                    && string.Equals(item.Path, active, StringComparison.OrdinalIgnoreCase)))
+                                       && string.Equals(item.Path, active, StringComparison.OrdinalIgnoreCase)))
                 {
                     activate(active);
                 }

@@ -8,6 +8,7 @@ namespace Gondwana.Tooling.Studio.Shared.WinForms;
 public sealed class PersistentDockContent(string persistenceId) : DockContent
 {
     public string PersistenceId { get; } = persistenceId;
+
     /// <inheritdoc/>
     protected override string GetPersistString() => PersistenceId;
 }
@@ -41,8 +42,11 @@ public sealed class DockLayoutPersistence : IDisposable
         if (_started)
             return;
 
-        _defaultPortions = [_panel.DockLeftPortion, _panel.DockRightPortion,
-            _panel.DockTopPortion, _panel.DockBottomPortion];
+        _defaultPortions =
+        [
+            _panel.DockLeftPortion, _panel.DockRightPortion,
+            _panel.DockTopPortion, _panel.DockBottomPortion
+        ];
 
         // Prevent DockPanelSuite from reactivating a focused child while reparenting.
         bool enabled = _panel.Enabled;
@@ -79,12 +83,14 @@ public sealed class DockLayoutPersistence : IDisposable
     private void Restore(byte[] bytes)
     {
         // Disallow DTDs before passing the XML to the library's older XML reader.
-        using (var reader = XmlReader.Create(new MemoryStream(bytes), new XmlReaderSettings
-        {
-            DtdProcessing = DtdProcessing.Prohibit,
-            XmlResolver = null,
-            MaxCharactersInDocument = 4 * 1024 * 1024
-        }))
+        using (var reader = XmlReader.Create(
+                   new MemoryStream(bytes),
+                   new XmlReaderSettings
+                   {
+                       DtdProcessing = DtdProcessing.Prohibit,
+                       XmlResolver = null,
+                       MaxCharactersInDocument = 4 * 1024 * 1024
+                   }))
         {
             XDocument.Load(reader);
         }
@@ -95,8 +101,11 @@ public sealed class DockLayoutPersistence : IDisposable
         try
         {
             using var stream = new MemoryStream(bytes);
-            _panel.LoadFromXml(stream, id =>
-                _panes.TryGetValue(id, out var entry) && resolved.Add(id) ? entry.Pane : null);
+
+            _panel.LoadFromXml(
+                stream,
+                id =>
+                    _panes.TryGetValue(id, out var entry) && resolved.Add(id) ? entry.Pane : null);
         }
         finally
         {
@@ -194,6 +203,7 @@ public sealed class DockLayoutPersistence : IDisposable
         try
         {
             var current = Capture();
+
             if (Equal(current, _observed) && !Equal(current, _saved) && _store.Write(current))
                 _saved = current;
 

@@ -30,10 +30,22 @@ public sealed class SpriteGsprPersistenceTests
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap("parity-" + Guid.NewGuid(), new SKBitmap(32, 16));
         sheet.DefaultRegion.TileSize = new Size(16, 16);
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
-        var original = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(1, 0), "parity", CollisionProfileNames.Sensor);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
+        var original = SpriteManager.Instance.CreateSprite(
+            layer,
+            sheet.GetFrame(1, 0),
+            "parity",
+            CollisionProfileNames.Sensor);
+
         var oldDefault = SpriteManager.Instance.SizeNewSpritesToSceneLayer;
         Sprite? restored = null;
+
         try
         {
             original.Visible = false;
@@ -45,7 +57,13 @@ public sealed class SpriteGsprPersistenceTests
             original.EnableFog = true;
             original.NudgeX = -3;
             original.NudgeY = 9;
-            original.AdjustCollisionArea = new CollisionAdjust(1, 2, -3, 4);
+
+            original.AdjustCollisionArea = new CollisionAdjust(
+                1,
+                2,
+                -3,
+                4);
+
             original.CollisionType = TileCollisionType.Trigger;
             original.AdjustCollisionAreaByFrame = byFrame;
             original.CollisionTypeByFrame = byFrame;
@@ -53,7 +71,9 @@ public sealed class SpriteGsprPersistenceTests
             var definition = SpriteDefinitionSerializer.FromSprite(original);
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = !oldDefault;
             restored = SpriteDefinitionSerializer.ToSprite(definition);
-            Assert.Equal(SpriteDefinitionSerializer.ToJson(new() { Sprites = [definition] }),
+
+            Assert.Equal(
+                SpriteDefinitionSerializer.ToJson(new() { Sprites = [definition] }),
                 SpriteDefinitionSerializer.ToJson(SpriteDefinitionSerializer.FromSprites([restored])));
         }
         finally
@@ -61,6 +81,7 @@ public sealed class SpriteGsprPersistenceTests
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = oldDefault;
             SpriteManager.Instance._spriteList.Remove(original);
             original.DisposeImmediate();
+
             if (restored is not null)
             {
                 SpriteManager.Instance._spriteList.Remove(restored);
@@ -78,25 +99,39 @@ public sealed class SpriteGsprPersistenceTests
     [InlineData(false)]
     public void EmptyRenderSizeUsesSpriteCreationDefault(bool sizeNewSpritesToSceneLayer)
     {
-        using var sheet = TilesheetRegistry.Instance.LoadFromBitmap("default-size-" + Guid.NewGuid(), new SKBitmap(32, 16));
+        using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
+            "default-size-" + Guid.NewGuid(),
+            new SKBitmap(32, 16));
+
         sheet.DefaultRegion.TileSize = new Size(16, 16);
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 24, 18);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            24,
+            18);
+
         var entry = Valid();
         entry.SceneId = scene.ID;
         entry.SceneLayerId = layer.ID;
         entry.Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name, XTile = 1, YTile = 0 };
         var original = SpriteManager.Instance.SizeNewSpritesToSceneLayer;
         Sprite? sprite = null;
+
         try
         {
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = sizeNewSpritesToSceneLayer;
             sprite = SpriteDefinitionSerializer.ToSprite(entry);
-            Assert.Equal(sizeNewSpritesToSceneLayer ? new Size(layer.TileWidth, layer.TileHeight) : new Size(16, 16), sprite.RenderSize);
+
+            Assert.Equal(
+                sizeNewSpritesToSceneLayer ? new Size(layer.TileWidth, layer.TileHeight) : new Size(16, 16),
+                sprite.RenderSize);
         }
         finally
         {
             SpriteManager.Instance.SizeNewSpritesToSceneLayer = original;
+
             if (sprite is not null)
             {
                 SpriteManager.Instance._spriteList.Remove(sprite);
@@ -120,11 +155,18 @@ public sealed class SpriteGsprPersistenceTests
     {
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap("missing-" + Guid.NewGuid(), new SKBitmap(16, 16));
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         var entry = Valid();
         entry.SceneId = scene.ID;
         entry.SceneLayerId = layer.ID;
         entry.Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name };
+
         switch (missing)
         {
             case "scene":
@@ -174,6 +216,7 @@ public sealed class SpriteGsprPersistenceTests
     {
         var entry = Valid();
         var definition = new SpriteDefinition { Sprites = [entry] };
+
         switch (invalid)
         {
             case "scene":
@@ -238,7 +281,8 @@ public sealed class SpriteGsprPersistenceTests
     [InlineData("{\"TilesheetSources\":[null]}")]
     [InlineData("{\"SceneSources\":[null]}")]
     [InlineData("{\"AnimationSources\":[null]}")]
-    public void MalformedJsonFailsCleanly(string json) => Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.FromJson(json));
+    public void MalformedJsonFailsCleanly(string json) =>
+        Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.FromJson(json));
 
     /// <summary>
     /// Verifies throwing creation callback rolls back whole incoming collection.
@@ -247,8 +291,15 @@ public sealed class SpriteGsprPersistenceTests
     public void ThrowingCreationCallbackRollsBackWholeIncomingCollection()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         var definition = new SpriteDefinition { Sprites = [Valid(), Valid()] };
+
         foreach (var entry in definition.Sprites)
         {
             entry.SceneId = scene.ID;
@@ -257,6 +308,7 @@ public sealed class SpriteGsprPersistenceTests
 
         var before = SpriteManager.Instance.AllSprites.ToArray();
         int calls = 0;
+
         void FailSecond(Sprite sprite)
         {
             if (++calls == 2)
@@ -264,6 +316,7 @@ public sealed class SpriteGsprPersistenceTests
         }
 
         SpriteManager.Instance.SpriteCreated += FailSecond;
+
         try
         {
             Assert.Throws<InvalidOperationException>(() => SpriteDefinitionSerializer.ToSprites(definition));
@@ -283,12 +336,16 @@ public sealed class SpriteGsprPersistenceTests
     {
         var directory = Path.Combine(Path.GetTempPath(), "GsprPersistence-" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
+
         try
         {
             var definition = new SpriteDefinition { Sprites = [Valid(), Valid()] };
             definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose("actors", "actors.gts"));
             definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed("level", "content.gaf", "level.gscn"));
-            definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose("player.idle", "animations/idle.gani"));
+
+            definition.AnimationSources.Add(
+                SpriteAnimationSourceDefinition.Loose("player.idle", "animations/idle.gani"));
+
             var path = Path.Combine(directory, "actors.gspr");
             SpriteDefinitionSerializer.Save(path, definition);
             var loaded = SpriteDefinitionSerializer.Load(path);
@@ -297,13 +354,26 @@ public sealed class SpriteGsprPersistenceTests
             var moved = Path.Combine(directory, "moved", "actors.gspr");
             SpriteDefinitionSerializer.Save(moved, loaded);
             var rebased = SpriteDefinitionSerializer.Load(moved);
-            Assert.Equal(Path.Combine(directory, "actors.gts"), Path.GetFullPath(Assert.Single(rebased.TilesheetSources).GtsPath!, Path.GetDirectoryName(moved)!));
+
+            Assert.Equal(
+                Path.Combine(directory, "actors.gts"),
+                Path.GetFullPath(Assert.Single(rebased.TilesheetSources).GtsPath!, Path.GetDirectoryName(moved)!));
+
             Assert.Equal("level.gscn", Assert.Single(rebased.SceneSources).AssetEntryName);
             Assert.Equal("actors.gts", loaded.TilesheetSources[0].GtsPath);
-            Assert.Equal(Path.Combine(directory, "animations", "idle.gani"),
+
+            Assert.Equal(
+                Path.Combine(directory, "animations", "idle.gani"),
                 Path.GetFullPath(Assert.Single(rebased.AnimationSources).GaniPath!, Path.GetDirectoryName(moved)!));
+
             Assert.Equal("animations/idle.gani", loaded.AnimationSources[0].GaniPath);
-            using var archive = AssetsFile.LoadOrCreate(Path.Combine(directory, "packed.gaf"), null, false, register: false);
+
+            using var archive = AssetsFile.LoadOrCreate(
+                Path.Combine(directory, "packed.gaf"),
+                null,
+                false,
+                register: false);
+
             using var input = File.OpenRead(path);
             archive.Add(AssetTypes.SpriteDefinition, "actors.gspr", input);
             var packed = SpriteDefinitionSerializer.Load(archive, "actors.gspr");
@@ -322,5 +392,6 @@ public sealed class SpriteGsprPersistenceTests
         }
     }
 
-    private static SpriteInstanceDefinition Valid() => new() { Id = Guid.NewGuid(), Nickname = Guid.NewGuid().ToString(), SceneId = "level", SceneLayerId = "actors" };
+    private static SpriteInstanceDefinition Valid() => new()
+        { Id = Guid.NewGuid(), Nickname = Guid.NewGuid().ToString(), SceneId = "level", SceneLayerId = "actors" };
 }

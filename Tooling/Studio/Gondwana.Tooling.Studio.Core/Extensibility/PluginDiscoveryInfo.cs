@@ -38,7 +38,9 @@ public sealed record PluginDiscoveryInfo(
 {
     public string? Description { get; init; }
     public string? Author { get; init; }
+
     /// <summary>Canonical activation key; redundant legacy copies share their packaged implementation's key.</summary>
     public string? PreferenceId { get; init; }
+
     public bool? EnabledAtStartup { get; init; }
 }

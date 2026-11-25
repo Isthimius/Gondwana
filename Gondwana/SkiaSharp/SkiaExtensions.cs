@@ -14,7 +14,11 @@ public static class SkiaExtensions
     /// <param name="rect">The SKRect to convert.</param>
     /// <returns>A Rectangle with integer coordinates created from the SKRect bounds.</returns>
     public static Rectangle ToRectangle(this SKRect rect)
-        => Rectangle.FromLTRB((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+        => Rectangle.FromLTRB(
+            (int)rect.Left,
+            (int)rect.Top,
+            (int)rect.Right,
+            (int)rect.Bottom);
 
     /// <summary>
     /// Converts a System.Drawing Color to a SkiaSharp SKColor.
@@ -22,7 +26,11 @@ public static class SkiaExtensions
     /// <param name="color">The Color to convert.</param>
     /// <returns>An SKColor with the same RGBA values as the original color.</returns>
     public static SKColor ToSKColor(this Color color)
-        => new(color.R, color.G, color.B, color.A);
+        => new(
+            color.R,
+            color.G,
+            color.B,
+            color.A);
 
     /// <summary>
     /// Converts a SkiaSharp SKColor to a System.Drawing Color.
@@ -30,7 +38,11 @@ public static class SkiaExtensions
     /// <param name="skcolor">The SKColor to convert.</param>
     /// <returns>A Color with the same RGBA values.</returns>
     public static Color ToColor(this SKColor skcolor)
-        => Color.FromArgb(skcolor.Alpha, skcolor.Red, skcolor.Green, skcolor.Blue);
+        => Color.FromArgb(
+            skcolor.Alpha,
+            skcolor.Red,
+            skcolor.Green,
+            skcolor.Blue);
 
     /// <summary>
     /// Converts a System.Drawing Rectangle to a SkiaSharp SKRect.
@@ -38,7 +50,11 @@ public static class SkiaExtensions
     /// <param name="rect">The Rectangle to convert.</param>
     /// <returns>An SKRect with floating-point coordinates created from the Rectangle.</returns>
     public static SKRect ToSKRect(this Rectangle rect)
-        => new(rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
+        => new(
+            rect.X,
+            rect.Y,
+            rect.X + rect.Width,
+            rect.Y + rect.Height);
 
     /// <summary>
     /// Converts a System.Drawing RectangleF to a SkiaSharp SKRect.
@@ -46,7 +62,11 @@ public static class SkiaExtensions
     /// <param name="rect">The RectangleF to convert.</param>
     /// <returns>An SKRect with the same floating-point coordinates as the original RectangleF.</returns>
     public static SKRect ToSKRect(this RectangleF rect)
-        => new(rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
+        => new(
+            rect.X,
+            rect.Y,
+            rect.X + rect.Width,
+            rect.Y + rect.Height);
 
     /// <summary>
     /// Converts a System.Drawing Rectangle to a SkiaSharp SKRectI (integer rectangle).
@@ -54,7 +74,11 @@ public static class SkiaExtensions
     /// <param name="rect">The Rectangle to convert.</param>
     /// <returns>An SKRectI with integer coordinates created from the Rectangle bounds.</returns>
     public static SKRectI ToSKRectI(this Rectangle rect)
-        => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
+        => new(
+            rect.Left,
+            rect.Top,
+            rect.Right,
+            rect.Bottom);
 
     /// <summary>
     /// Converts an array of System.Drawing Point to an array of SkiaSharp SKPoint.
@@ -66,6 +90,7 @@ public static class SkiaExtensions
     {
         if (!enclose)
             return points.Select(p => new SKPoint(p.X, p.Y)).ToArray();
+
         ;
 
         var len = points.Length + 1;
@@ -99,11 +124,12 @@ public static class SkiaExtensions
         if (!source.Info.Rect.Contains(skSourceRect))
             throw new ArgumentOutOfRangeException(nameof(sourceRect), "Source rectangle is outside the bitmap bounds.");
 
-        var copy = new SKBitmap(new SKImageInfo(
-            sourceRect.Width,
-            sourceRect.Height,
-            source.Info.ColorType,
-            source.Info.AlphaType));
+        var copy = new SKBitmap(
+            new SKImageInfo(
+                sourceRect.Width,
+                sourceRect.Height,
+                source.Info.ColorType,
+                source.Info.AlphaType));
 
         using var canvas = new SKCanvas(copy);
 
@@ -112,7 +138,11 @@ public static class SkiaExtensions
         canvas.DrawBitmap(
             source,
             skSourceRect,
-            new SKRect(0, 0, sourceRect.Width, sourceRect.Height));
+            new SKRect(
+                0,
+                0,
+                sourceRect.Width,
+                sourceRect.Height));
 
         return copy;
     }
@@ -151,7 +181,7 @@ public static class SkiaExtensions
             source.ColorSpace);
 
         using var surface = SKSurface.Create(imageInfo)
-            ?? throw new InvalidOperationException("Could not create SKSurface.");
+                            ?? throw new InvalidOperationException("Could not create SKSurface.");
 
         surface.Canvas.Clear(SKColors.Transparent);
 
@@ -170,8 +200,11 @@ public static class SkiaExtensions
     /// <param name="filePath">The full file path to save to.</param>
     /// <param name="format">Optional image format (default is PNG).</param>
     /// <param name="quality">Optional quality for formats like JPEG (0-100).</param>
-    public static void SaveBitmapToFile(this SKBitmap bitmap, string filePath,
-        SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    public static void SaveBitmapToFile(
+        this SKBitmap bitmap,
+        string filePath,
+        SKEncodedImageFormat format = SKEncodedImageFormat.Png,
+        int quality = 100)
     {
         if (bitmap == null || bitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
@@ -189,7 +222,10 @@ public static class SkiaExtensions
     /// <param name="format">The image format (PNG by default).</param>
     /// <param name="quality">Image quality (used only for lossy formats like JPEG).</param>
     /// <returns>Byte array representing the encoded image.</returns>
-    public static byte[] EncodeBitmapToBytes(this SKBitmap bitmap, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    public static byte[] EncodeBitmapToBytes(
+        this SKBitmap bitmap,
+        SKEncodedImageFormat format = SKEncodedImageFormat.Png,
+        int quality = 100)
     {
         if (bitmap == null || bitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
@@ -223,7 +259,14 @@ public static class SkiaExtensions
                 if (IsColorClose(color, targetColor, tolerance))
                 {
                     // Fully transparent should also have RGB = 0 for premul correctness.
-                    bitmap.SetPixel(x, y, new SKColor(0, 0, 0, 0));
+                    bitmap.SetPixel(
+                        x,
+                        y,
+                        new SKColor(
+                            0,
+                            0,
+                            0,
+                            0));
                 }
             }
         }
@@ -246,7 +289,12 @@ public static class SkiaExtensions
         if (bitmap.AlphaType == SKAlphaType.Premul)
             return bitmap;
 
-        var info = new SKImageInfo(bitmap.Width, bitmap.Height, bitmap.ColorType, SKAlphaType.Premul);
+        var info = new SKImageInfo(
+            bitmap.Width,
+            bitmap.Height,
+            bitmap.ColorType,
+            SKAlphaType.Premul);
+
         var premulBitmap = new SKBitmap(info);
 
         int width = bitmap.Width;
@@ -263,7 +311,14 @@ public static class SkiaExtensions
                 byte g = (byte)((c.Green * a + 127) / 255);
                 byte b = (byte)((c.Blue * a + 127) / 255);
 
-                premulBitmap.SetPixel(x, y, new SKColor(r, g, b, a));
+                premulBitmap.SetPixel(
+                    x,
+                    y,
+                    new SKColor(
+                        r,
+                        g,
+                        b,
+                        a));
             }
         }
 

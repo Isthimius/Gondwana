@@ -65,8 +65,11 @@ internal sealed class WinFormsTouchState : ITouchAdapter
             if (!_nativeActive.Remove(id))
                 return;
 
-            _pending.Enqueue(new TouchPoint(id, position,
-                cancelled ? TouchPhase.Cancelled : TouchPhase.Ended));
+            _pending.Enqueue(
+                new TouchPoint(
+                    id,
+                    position,
+                    cancelled ? TouchPhase.Cancelled : TouchPhase.Ended));
         }
     }
 
@@ -101,10 +104,12 @@ internal sealed class WinFormsTouchState : ITouchAdapter
             while (_pending.Count > 0)
             {
                 TouchPoint next = _pending.Peek();
+
                 if (reachedEnding && next.Phase == TouchPhase.Began)
                     break;
 
                 _pending.Dequeue();
+
                 switch (next.Phase)
                 {
                     case TouchPhase.Began:
@@ -120,6 +125,7 @@ internal sealed class WinFormsTouchState : ITouchAdapter
                     case TouchPhase.Moved:
                         if (_reportedActive.ContainsKey(next.Id))
                             _reportedActive[next.Id] = next;
+
                         break;
                 }
             }
@@ -154,6 +160,7 @@ internal sealed class WinFormsTouchState : ITouchAdapter
     internal static bool IsPromotedTouchMouseMessage(long extraInfo)
     {
         uint marker = unchecked((uint)extraInfo);
+
         return (marker & 0xFFFFFF00u) == 0xFF515700u &&
                (marker & 0x80u) != 0;
     }

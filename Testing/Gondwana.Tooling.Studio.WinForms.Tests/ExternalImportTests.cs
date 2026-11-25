@@ -15,22 +15,28 @@ public sealed class ExternalImportTests
     {
         /// <inheritdoc/>
         public string CurrentWorkingDirectory => directory;
+
         /// <summary>
         /// The refreshes.
         /// </summary>
         public int Refreshes;
+
         /// <summary>
         /// The opened.
         /// </summary>
         public List<string> Opened = [];
+
         /// <summary>
         /// The messages.
         /// </summary>
         public List<string> Messages = [];
+
         /// <inheritdoc/>
         public void Log(string message) => Messages.Add(message);
+
         /// <inheritdoc/>
         public void RefreshWorkingDirectory() => Refreshes++;
+
         /// <inheritdoc/>
         public void OpenDocument(string path) => Opened.Add(path);
     }
@@ -46,14 +52,18 @@ public sealed class ExternalImportTests
         Assert.Contains(host.Plugins, p => p.Name == "External Asset Importer");
         Assert.Contains(host.Plugins, p => p.Name == "Project Diagnostics");
         Assert.Equal(2, host.Discovery.Count);
-        Assert.All(host.Discovery, row =>
-        {
-            Assert.False(row.IsLegacy);
-            Assert.Equal(PluginCompatibility.Compatible, row.Compatibility);
-            Assert.Equal(PluginLoadStatus.Loaded, row.Status);
-            Assert.Equal("1.0.0", row.Version);
-            Assert.True(File.Exists(Path.Combine(row.SourceDirectory, "plugin.json")));
-        });
+
+        Assert.All(
+            host.Discovery,
+            row =>
+            {
+                Assert.False(row.IsLegacy);
+                Assert.Equal(PluginCompatibility.Compatible, row.Compatibility);
+                Assert.Equal(PluginLoadStatus.Loaded, row.Status);
+                Assert.Equal("1.0.0", row.Version);
+                Assert.True(File.Exists(Path.Combine(row.SourceDirectory, "plugin.json")));
+            });
+
         host.DiscoverAndLoad();
         Assert.Equal(2, host.Plugins.Count);
     }
@@ -66,6 +76,7 @@ public sealed class ExternalImportTests
     {
         string directory = Path.Combine(Path.GetTempPath(), "StudioImport-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
+
         try
         {
             using var image = new SKBitmap(2, 2);
@@ -73,7 +84,11 @@ public sealed class ExternalImportTests
             using var png = image.Encode(SKEncodedImageFormat.Png, 100);
             File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
             string source = Path.Combine(directory, "tiles.tsx");
-            File.WriteAllText(source, "<tileset name='tiles' tilewidth='2' tileheight='2' tilecount='1' columns='1'><image source='atlas.png'/></tileset>");
+
+            File.WriteAllText(
+                source,
+                "<tileset name='tiles' tilewidth='2' tileheight='2' tilecount='1' columns='1'><image source='atlas.png'/></tileset>");
+
             var services = new Host(directory);
             var plugin = new ExternalImportPlugin();
             plugin.AttachHostServices(services);
@@ -133,6 +148,7 @@ public sealed class ExternalImportTests
     {
         string directory = Path.Combine(Path.GetTempPath(), "StudioGodotImport-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
+
         try
         {
             using var image = new SKBitmap(2, 2);
@@ -140,26 +156,33 @@ public sealed class ExternalImportTests
             using var png = image.Encode(SKEncodedImageFormat.Png, 100);
             File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
             string source = Path.Combine(directory, "tiles.tres");
-            string resource = format == 2 ? """
-                [ext_resource path="atlas.png" type="Texture" id=1]
-                [resource]
-                0/texture = ExtResource( 1 )
-                0/region = Rect2(0, 0, 2, 2)
-                0/tile_mode = 0
-                """ : """
-                [ext_resource path="atlas.png" type="Texture2D" id="1"]
-                [sub_resource type="TileSetAtlasSource" id="atlas"]
-                texture = ExtResource("1")
-                texture_region_size = Vector2i(2, 2)
-                0:0/0 = 0
-                [resource]
-                tile_size = Vector2i(2, 2)
-                sources/0 = SubResource("atlas")
-                """;
+
+            string resource = format == 2
+                ? """
+                  [ext_resource path="atlas.png" type="Texture" id=1]
+                  [resource]
+                  0/texture = ExtResource( 1 )
+                  0/region = Rect2(0, 0, 2, 2)
+                  0/tile_mode = 0
+                  """
+                : """
+                  [ext_resource path="atlas.png" type="Texture2D" id="1"]
+                  [sub_resource type="TileSetAtlasSource" id="atlas"]
+                  texture = ExtResource("1")
+                  texture_region_size = Vector2i(2, 2)
+                  0:0/0 = 0
+                  [resource]
+                  tile_size = Vector2i(2, 2)
+                  sources/0 = SubResource("atlas")
+                  """;
+
             File.WriteAllText(source, $"[gd_resource type=\"TileSet\" format={format}]\n" + resource);
             var providers = ExternalImporterRegistry.CreateProviders();
             Assert.IsType<GodotTilesetImporter>(Assert.Single(providers, p => p.CanImport(source)));
-            using var panel = new ExternalImportPanel(providers) { SourcePath = source, OutputDirectory = Path.Combine(directory, "output") };
+
+            using var panel = new ExternalImportPanel(providers)
+                { SourcePath = source, OutputDirectory = Path.Combine(directory, "output") };
+
             Assert.Equal("Auto-detect", panel.Formats[0]);
             Assert.Equal(2, panel.Formats.Count(f => f.StartsWith("Godot", StringComparison.Ordinal)));
             Assert.Contains("Godot 3 / 4 TileSet (.tres)", panel.Formats);
@@ -183,10 +206,12 @@ public sealed class ExternalImportTests
     {
         string directory = Path.Combine(Path.GetTempPath(), "StudioGodotScene-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
+
         try
         {
             foreach (string file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Fixtures", "Godot4")))
                 File.Copy(file, Path.Combine(directory, Path.GetFileName(file)));
+
             var services = new Host(Path.Combine(directory, "output"));
             var plugin = new ExternalImportPlugin();
             plugin.AttachHostServices(services);
@@ -212,6 +237,7 @@ public sealed class ExternalImportTests
     private static void Wait(ExternalImportPanel panel)
     {
         var clock = System.Diagnostics.Stopwatch.StartNew();
+
         while (panel.IsBusy && clock.Elapsed < TimeSpan.FromSeconds(15))
         {
             panel.Poll();
@@ -225,33 +251,52 @@ public sealed class ExternalImportTests
     {
         /// <inheritdoc/>
         public string Id => "delayed";
+
         /// <inheritdoc/>
         public string DisplayName => "Delayed";
+
         /// <inheritdoc/>
         public IReadOnlyList<string> SupportedExtensions => [".test"];
+
         /// <summary>
         /// The started,release,finished.
         /// </summary>
         public readonly ManualResetEventSlim Started = new(), Release = new(), Finished = new();
+
         /// <summary>
         /// The token.
         /// </summary>
         public CancellationToken Token;
+
         /// <inheritdoc/>
         public bool CanImport(string path) => true;
+
         /// <inheritdoc/>
-        public ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default)
+        public ExternalImportAnalysis Analyze(
+            ExternalImportRequest request,
+            CancellationToken cancellationToken = default)
         {
             Token = cancellationToken;
             Started.Set();
+
             if (!Release.Wait(TimeSpan.FromSeconds(10), CancellationToken.None))
                 throw new TimeoutException();
+
             Finished.Set();
+
             // Deliberately return a stale success to exercise the panel's abandoned-result handling.
-            return new(Id, [], [new("GTS", "stale.gts", "stale") { LogicalKeys = ["stale", "second"] }], []);
+            return new(
+                Id,
+                [],
+                [new("GTS", "stale.gts", "stale") { LogicalKeys = ["stale", "second"] }],
+                []);
         }
+
         /// <inheritdoc/>
-        public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public ExternalImportResult Import(
+            ExternalImportRequest request,
+            CancellationToken cancellationToken = default) => throw new NotSupportedException();
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -271,13 +316,18 @@ public sealed class ExternalImportTests
     public void CancelOrDisposeDiscardsDelayedWorkerCompletion(bool dispose) => RunSta(() =>
     {
         using var provider = new DelayedProvider();
-        using var panel = new ExternalImportPanel([provider]) { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+
+        using var panel = new ExternalImportPanel([provider])
+            { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+
         panel.Analyze();
         Assert.True(provider.Started.Wait(TimeSpan.FromSeconds(5)));
+
         if (dispose)
             panel.Dispose();
         else
             panel.SourcePath = "changed.test";
+
         Assert.True(provider.Token.IsCancellationRequested);
         provider.Release.Set();
         Assert.True(provider.Finished.Wait(TimeSpan.FromSeconds(5)));
@@ -286,17 +336,23 @@ public sealed class ExternalImportTests
         Assert.False(panel.IsBusy);
         Assert.False(panel.CanImport);
     });
+
     /// <summary>Shows all logical identities beside a single physical document in the preview.</summary>
     [Fact]
     public void PreviewShowsEveryLogicalMember() => RunSta(() =>
     {
         using var provider = new DelayedProvider();
         provider.Release.Set();
-        using var panel = new ExternalImportPanel([provider]) { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+
+        using var panel = new ExternalImportPanel([provider])
+            { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+
         panel.Analyze();
         Wait(panel);
+
         static IEnumerable<Control> Descendants(Control parent) => parent.Controls.Cast<Control>()
             .SelectMany(child => new[] { child }.Concat(Descendants(child)));
+
         var list = Assert.Single(Descendants(panel).OfType<ListView>());
         Assert.Single(list.Items.Cast<ListViewItem>());
         Assert.Equal("stale.gts", list.Items[0].SubItems[1].Text);
@@ -306,16 +362,23 @@ public sealed class ExternalImportTests
     private static void RunSta(Action action)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
         {
             try
             {
-                action(); } catch (Exception ex) {
-                error = ex; }
+                action();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();
+
         if (error is not null)
             ExceptionDispatchInfo.Capture(error).Throw();
     }

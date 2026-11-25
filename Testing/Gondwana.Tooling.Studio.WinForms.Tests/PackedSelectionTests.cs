@@ -23,7 +23,12 @@ public sealed partial class CompositionTests
     public void StudioSelectionsShareCredentialsAcrossAllEditorsAndPackedDocumentOpens() => RunSta(root =>
     {
         var archive = CreatePreviewArchive(root, "encrypted.gaf", Color.LimeGreen);
-        using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   archive,
+                   "secret",
+                   true,
+                   register: false))
         {
             using var audio = new MemoryStream([82, 73, 70, 70]);
             package.Add(AssetTypes.Audio, "audio/chime.wav", audio);
@@ -40,16 +45,22 @@ public sealed partial class CompositionTests
         AudioDocument.Create(root).Save(audioPath, allowInvalid: true);
         using var studio = Host(root);
         int prompts = 0;
+
         studio.AssetPassword = _ =>
         {
             prompts++;
             return "secret";
         };
+
         var animation = (AnimationEditorControl)studio.OpenDocument(aniPath).Document.Editor;
         var scene = (SceneEditorControl)studio.OpenDocument(scenePath).Document.Editor;
         var sprite = (SpriteEditorControl)studio.OpenDocument(spritePath).Document.Editor;
         var audioEditor = (AudioEditorControl)studio.OpenDocument(audioPath).Document.Editor;
-        var gts = new PackedResourceSelection(new(archive, AssetTypes.TilesheetDefinition, "definitions/world.gts"), "terrain");
+
+        var gts = new PackedResourceSelection(
+            new(archive, AssetTypes.TilesheetDefinition, "definitions/world.gts"),
+            "terrain");
+
         animation.AddPackedTilesheetSource(gts);
         scene.AddPackedTilesheetSource(gts);
         sprite.AddPackedTilesheetSource(gts);
@@ -68,22 +79,32 @@ public sealed partial class CompositionTests
     public void StandalonePickerReusesVerifiedCredentialsAndRetriesAfterPasswordChange() => RunSta(root =>
     {
         var archive = CreatePreviewArchive(root, "encrypted.gaf", Color.Blue);
-        using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   archive,
+                   "secret",
+                   true,
+                   register: false))
             package.Save();
+
         using var owner = new Form();
         using var packages = PackedResourcePicker.CreateCatalog(owner);
         int prompts = 0;
         string password = "wrong";
         using var timer = new System.Windows.Forms.Timer { Interval = 20 };
+
         timer.Tick += (_, _) =>
         {
             var prompt = Application.OpenForms.Cast<Form>().FirstOrDefault(form => form.Text == "Asset password");
+
             if (prompt is null)
                 return;
+
             prompts++;
             prompt.Controls.OfType<TextBox>().Single().Text = password;
             ((Button)prompt.AcceptButton!).PerformClick();
         };
+
         timer.Start();
         Assert.Throws<InvalidDataException>(() => packages.GetResources(archive, AssetTypes.TilesheetDefinition));
         password = "secret";
@@ -92,9 +113,18 @@ public sealed partial class CompositionTests
         packages.Clear();
         Assert.Single(packages.GetResources(archive, AssetTypes.TilesheetDefinition));
         Assert.Equal(2, prompts);
+
         // Rewrite using a changed password; the cached old credential fails once, then retry prompts.
-        using (var original = AssetsFile.LoadOrCreate(archive, "secret", true, register: false))
-        using (var replacement = AssetsFile.LoadOrCreate(Path.Combine(root, "new.gaf"), "changed", true, register: false))
+        using (var original = AssetsFile.LoadOrCreate(
+                   archive,
+                   "secret",
+                   true,
+                   register: false))
+        using (var replacement = AssetsFile.LoadOrCreate(
+                   Path.Combine(root, "new.gaf"),
+                   "changed",
+                   true,
+                   register: false))
         {
             foreach (var entry in original.GetAllEntries())
             {
@@ -120,14 +150,26 @@ public sealed partial class CompositionTests
     public void PackedSelectionsPreviewNonFirstMembersAndSurviveSaveAs(bool sharedCatalog) => RunSta(root =>
     {
         var archive = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
+
         foreach (var file in Directory.GetFiles(root).Where(file => file != archive))
             File.Delete(file);
+
         var original = File.ReadAllBytes(archive);
         using var packages = new AssetPackageCatalog();
         var catalog = sharedCatalog ? packages : null;
-        var gts = new PackedResourceSelection(new(archive, AssetTypes.TilesheetDefinition, "definitions/world.gts"), "terrain");
-        var gani = new PackedResourceSelection(new(archive, AssetTypes.AnimationDefinition, "definitions/water.gani"), "water.flow");
-        var gscn = new PackedResourceSelection(new(archive, AssetTypes.SceneDefinition, "definitions/island.gscn"), "island");
+
+        var gts = new PackedResourceSelection(
+            new(archive, AssetTypes.TilesheetDefinition, "definitions/world.gts"),
+            "terrain");
+
+        var gani = new PackedResourceSelection(
+            new(archive, AssetTypes.AnimationDefinition, "definitions/water.gani"),
+            "water.flow");
+
+        var gscn = new PackedResourceSelection(
+            new(archive, AssetTypes.SceneDefinition, "definitions/island.gscn"),
+            "island");
+
         Assert.Equal(new[] { "unrelated", "terrain" }, PackedResourceSelection.GetMembers(packages, gts.Resource));
         using var animations = new AnimationEditorControl(AnimationDocument.Create(root), catalog);
         animations.AddPackedTilesheetSource(gts);
@@ -196,7 +238,12 @@ public sealed partial class CompositionTests
         AssertRenderedColor((Control)Private(scenes, "_preview"), Color.Blue);
         Assert.Equal("unsaved", animations.Document.Definition.Key);
         Assert.True(animations.Document.IsDirty);
-        using var exclusive = File.Open(archive, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        using var exclusive = File.Open(
+            archive,
+            FileMode.Open,
+            FileAccess.ReadWrite,
+            FileShare.None);
     });
 
     [Fact]
@@ -205,11 +252,17 @@ public sealed partial class CompositionTests
         var archive = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
         using var packages = new AssetPackageCatalog();
         using var editor = new AnimationEditorControl(AnimationDocument.Create(root), packages);
-        var selection = new PackedResourceSelection(new(archive, AssetTypes.TilesheetDefinition, "definitions/world.gts"), "terrain");
-        foreach (var invalid in new[] {
-            selection with { Member = "absent" }, selection with { Member = null },
-            selection with { Resource = selection.Resource with { EntryName = "world.gts" } },
-            selection with { Resource = selection.Resource with { AssetType = AssetTypes.Image } } })
+
+        var selection = new PackedResourceSelection(
+            new(archive, AssetTypes.TilesheetDefinition, "definitions/world.gts"),
+            "terrain");
+
+        foreach (var invalid in new[]
+                 {
+                     selection with { Member = "absent" }, selection with { Member = null },
+                     selection with { Resource = selection.Resource with { EntryName = "world.gts" } },
+                     selection with { Resource = selection.Resource with { AssetType = AssetTypes.Image } }
+                 })
         {
             Assert.Throws<InvalidDataException>(() => editor.AddPackedTilesheetSource(invalid));
             Assert.Empty(editor.Document.Definition.TilesheetSources);
@@ -217,28 +270,50 @@ public sealed partial class CompositionTests
 
         var invalidFile = Path.Combine(root, "invalid.gts");
         File.WriteAllText(invalidFile, "not JSON");
-        using (var package = AssetsFile.LoadOrCreate(archive, null, false, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   archive,
+                   null,
+                   false,
+                   register: false))
         {
             package.Add(AssetTypes.TilesheetDefinition, invalidFile, "invalid.gts");
             package.Save();
         }
 
         packages.Invalidate(archive);
-        Assert.Throws<InvalidDataException>(() => editor.AddPackedTilesheetSource(selection with { Resource = selection.Resource with { EntryName = "invalid.gts" } }));
+
+        Assert.Throws<InvalidDataException>(() =>
+            editor.AddPackedTilesheetSource(
+                selection with { Resource = selection.Resource with { EntryName = "invalid.gts" } }));
+
         File.WriteAllText(invalidFile, "{\"Definitions\":[]}");
-        using (var package = AssetsFile.LoadOrCreate(archive, null, false, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   archive,
+                   null,
+                   false,
+                   register: false))
         {
             package.Add(AssetTypes.TilesheetDefinition, invalidFile, "empty.gts");
             package.Save();
         }
 
         packages.Invalidate(archive);
-        Assert.Contains("no logical definitions", Assert.Throws<InvalidDataException>(() =>
-            PackedResourceSelection.GetMembers(packages, selection.Resource with { EntryName = "empty.gts" })).Message);
+
+        Assert.Contains(
+            "no logical definitions",
+            Assert.Throws<InvalidDataException>(() =>
+                    PackedResourceSelection.GetMembers(packages, selection.Resource with { EntryName = "empty.gts" }))
+                .Message);
+
         editor.AddPackedTilesheetSource(selection);
         var before = AnimationDefinitionSerializer.ToJson(editor.Definition);
         var other = CreatePreviewArchive(root, "other.gaf", Color.Red);
-        Assert.Throws<InvalidOperationException>(() => editor.AddPackedTilesheetSource(selection with { Resource = selection.Resource with { Path = other } }));
+
+        Assert.Throws<InvalidOperationException>(() =>
+            editor.AddPackedTilesheetSource(selection with { Resource = selection.Resource with { Path = other } }));
+
         TilesheetDefinitionSerializer.Save(Path.Combine(root, "world.gts"), PreviewSheet("terrain"));
         Assert.Throws<InvalidOperationException>(() => editor.AddTilesheetSource(Path.Combine(root, "world.gts")));
         Assert.Equal(before, AnimationDefinitionSerializer.ToJson(editor.Definition));
@@ -252,6 +327,7 @@ public sealed partial class CompositionTests
     {
         var archive = Path.Combine(root, "sound.zip");
         var wave = Path.Combine(root, "sound.wav");
+
         // Real PCM WAVE header and one silent sample.
         using (var writer = new BinaryWriter(File.Create(wave)))
         {
@@ -271,7 +347,12 @@ public sealed partial class CompositionTests
         }
 
         var entry = extensionless ? "sounds/alert" : "sounds/alert.wav";
-        using (var package = AssetsFile.LoadOrCreate(archive, null, false, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   archive,
+                   null,
+                   false,
+                   register: false))
         {
             package.Add(AssetTypes.Audio, wave, entry);
             package.Add(AssetTypes.Misc, wave, "wrong.wav");
@@ -283,10 +364,13 @@ public sealed partial class CompositionTests
         var resource = Assert.Single(packages.GetResources(archive, AssetTypes.Audio));
         Assert.Equal(entry, resource.EntryName);
         using var editor = new AudioEditorControl(AudioDocument.Create(root), packages);
+
         if (extensionless)
             Assert.Throws<InvalidDataException>(() => editor.AddPackedAudio(new(resource)));
+
         editor.AddPackedAudio(new(resource, SourceExtension: ".wav"));
         Assert.Empty(editor.Document.Validate());
+
         foreach (var directory in new[] { root, Path.Combine(root, "saved") })
         {
             var path = Path.Combine(directory, "audio.gsnd");
@@ -300,7 +384,11 @@ public sealed partial class CompositionTests
             Assert.Equal(archive, Path.GetFullPath(audio.AssetsFilePath!, directory));
         }
 
-        using var exclusive = File.Open(archive, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        using var exclusive = File.Open(
+            archive,
+            FileMode.Open,
+            FileAccess.ReadWrite,
+            FileShare.None);
     });
 
     [Fact]
@@ -308,7 +396,12 @@ public sealed partial class CompositionTests
     {
         var archive = CreatePreviewArchive(root, "assets.gaf", Color.LimeGreen);
         var locked = Path.Combine(root, "locked.gaf");
-        using (var package = AssetsFile.LoadOrCreate(locked, "secret", true, register: false))
+
+        using (var package = AssetsFile.LoadOrCreate(
+                   locked,
+                   "secret",
+                   true,
+                   register: false))
         {
             package.Add(AssetTypes.TilesheetDefinition, Path.Combine(root, "world.gts"), "nested/world.gts");
             package.Add(AssetTypes.Misc, Path.Combine(root, "world.gts"), "wrong.gts");
@@ -321,7 +414,13 @@ public sealed partial class CompositionTests
         packages.PasswordProvider = _ => ++prompts == 1 ? "wrong" : "secret";
         packages.PasswordAccepted += (_, _) => accepted++;
         PackedResourceSelection? result = null;
-        using var dialog = PackedResourcePicker.CreateDialog(packages, locked, AssetTypes.TilesheetDefinition, selected => result = selected);
+
+        using var dialog = PackedResourcePicker.CreateDialog(
+            packages,
+            locked,
+            AssetTypes.TilesheetDefinition,
+            selected => result = selected);
+
         dialog.Show();
         Application.DoEvents();
         T Find<T>(string name) where T : Control => (T)dialog.Controls.Find(name, true).Single();
@@ -340,6 +439,11 @@ public sealed partial class CompositionTests
         result.Validate(packages, AssetTypes.TilesheetDefinition);
         Assert.Equal(2, prompts);
         Assert.Equal(1, accepted);
-        using var exclusive = File.Open(locked, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        using var exclusive = File.Open(
+            locked,
+            FileMode.Open,
+            FileAccess.ReadWrite,
+            FileShare.None);
     });
 }

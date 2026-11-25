@@ -22,6 +22,7 @@ public sealed class CollisionProfileTests
         var groups = new CollisionGroupRegistry();
 
         Assert.Equal(CollisionMasks.None, groups.GetMask([]));
+
         Assert.Equal(
             groups.Actors | groups.Projectiles,
             groups.GetMask(["Actors", "Projectiles"]));
@@ -34,12 +35,18 @@ public sealed class CollisionProfileTests
     public void SceneLayer_DefaultProfileAppliesToEveryFixedTile()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            1,
+            16,
+            16);
 
         foreach (SceneLayerTile tile in layer)
         {
             Assert.Equal(CollisionProfileNames.World, tile.CollisionProfileName);
             Assert.Equal(scene.CollisionGroups.WorldStatic, tile.Collider!.CollisionGroup);
+
             Assert.Equal(
                 scene.CollisionGroups.Actors | scene.CollisionGroups.Projectiles,
                 tile.Collider.CollidesWith);
@@ -63,12 +70,14 @@ public sealed class CollisionProfileTests
     {
         using var scene = new Scene();
         int enemies = scene.CollisionGroups.Define("Enemies");
+
         var profile = scene.CollisionProfiles.Define(
             "Enemy",
             "Enemies",
             ["Actors", "Projectiles"]);
 
         Assert.Equal(enemies, profile.ResolveCollisionGroup(scene.CollisionGroups));
+
         Assert.Equal(
             scene.CollisionGroups.Actors | scene.CollisionGroups.Projectiles,
             profile.ResolveCollidesWith(scene.CollisionGroups));
@@ -81,7 +90,13 @@ public sealed class CollisionProfileTests
     public void AttachCollider_AppliesStateConfiguredBeforeColliderExists()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         using var tile = new DeferredColliderTile(layer);
 
         tile.SetCollisionProfile(CollisionProfileNames.Actor);
@@ -107,11 +122,18 @@ public sealed class CollisionProfileTests
     [Fact]
     public void SpriteProfile_ResolvesWhenExistingLayerIsAttachedToScene()
     {
-        var layer = new SceneLayer(1, 1, 16, 16);
+        var layer = new SceneLayer(
+            1,
+            1,
+            16,
+            16);
+
         var bitmap = new global::SkiaSharp.SKBitmap(16, 16);
+
         using var tilesheet = Gondwana.Drawing.Tilesheets.TilesheetFactory.FromBitmap(
             "DeferredProfile",
             bitmap);
+
         var sprite = SpriteManager.Instance.CreateSprite(
             layer,
             tilesheet.GetFrame(0, 0),
@@ -125,6 +147,7 @@ public sealed class CollisionProfileTests
             scene.AddLayer(layer);
 
             Assert.Equal(scene.CollisionGroups.Actors, sprite.Collider.CollisionGroup);
+
             Assert.Equal(
                 scene.CollisionGroups.WorldStatic |
                 scene.CollisionGroups.Actors |
@@ -150,7 +173,13 @@ public sealed class CollisionProfileTests
         try
         {
             using var scene = new Scene();
-            var layer = new SceneLayer(1, 1, 16, 16);
+
+            var layer = new SceneLayer(
+                1,
+                1,
+                16,
+                16);
+
             scene.AddLayer(layer);
         }
         finally
@@ -170,19 +199,27 @@ public sealed class CollisionProfileTests
 
         /// <inheritdoc/>
         public override bool IsPositionFixed => false;
+
         /// <inheritdoc/>
-        public override Rectangle DrawLocationWorld => new(0, 0, 16, 16);
+        public override Rectangle DrawLocationWorld => new(
+            0,
+            0,
+            16,
+            16);
+
         /// <inheritdoc/>
         public override PointF SceneLayerCoordinates => PointF.Empty;
+
         /// <inheritdoc/>
         public override SceneLayer SceneLayer => _sceneLayer;
 
         internal void AttachTestCollider()
         {
-            AttachCollider(new TileCollider(
-                this,
-                CollisionMasks.None,
-                CollisionMasks.None));
+            AttachCollider(
+                new TileCollider(
+                    this,
+                    CollisionMasks.None,
+                    CollisionMasks.None));
         }
     }
 }

@@ -47,6 +47,7 @@ internal sealed class StereoPanSampleProvider : ISampleProvider
     public int Read(float[] buffer, int offset, int count)
     {
         var read = _source.Read(buffer, offset, count);
+
         for (var index = 0; index + 1 < read; index += 2)
         {
             buffer[offset + index] *= LeftVolume;

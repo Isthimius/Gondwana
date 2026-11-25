@@ -10,7 +10,13 @@ internal static partial class BrowserAudioInterop
     private const string Module = "gondwana-audio";
 
     [JSImport("load", Module)]
-    internal static partial void Load(string key, string src, bool loop, float volume, float pan, float playbackSpeed,
+    internal static partial void Load(
+        string key,
+        string src,
+        bool loop,
+        float volume,
+        float pan,
+        float playbackSpeed,
         [JSMarshalAs<JSType.Function>] Action onEnded);
 
     [JSImport("loadBytes", Module)]

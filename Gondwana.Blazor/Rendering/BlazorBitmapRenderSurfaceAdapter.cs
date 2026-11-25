@@ -56,9 +56,17 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
             return;
         }
 
-        var srcRect = SKRectI.Intersect(bufferRect, new SKRectI(0, 0, bufferImage.Width, bufferImage.Height));
+        var srcRect = SKRectI.Intersect(
+            bufferRect,
+            new SKRectI(
+                0,
+                0,
+                bufferImage.Width,
+                bufferImage.Height));
+
         var w = srcRect.Width;
         var h = srcRect.Height;
+
         if (w <= 0 || h <= 0)
         {
             bufferImage.Dispose();
@@ -66,17 +74,28 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
         }
 
         var needed = w * h * 4;
+
         if (_pixelBuffer == null || _pixelBuffer.Length != needed)
             _pixelBuffer = new byte[needed];
 
-        var info = new SKImageInfo(w, h, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+        var info = new SKImageInfo(
+            w,
+            h,
+            SKColorType.Rgba8888,
+            SKAlphaType.Unpremul);
 
         // Pin the managed array so we can pass its address to native SkiaSharp code.
         var gcHandle = GCHandle.Alloc(_pixelBuffer, GCHandleType.Pinned);
         bool success;
+
         try
         {
-            success = bufferImage.ReadPixels(info, gcHandle.AddrOfPinnedObject(), w * 4, srcRect.Left, srcRect.Top);
+            success = bufferImage.ReadPixels(
+                info,
+                gcHandle.AddrOfPinnedObject(),
+                w * 4,
+                srcRect.Left,
+                srcRect.Top);
         }
         finally
         {
@@ -92,7 +111,14 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
         // In Blazor WASM (single-threaded) no copy is needed: the frame cannot be overwritten
         // before the queued InvokeAsync action consumes it. For Blazor Server the host is
         // expected to configure a separate loop, but the copy is omitted here for performance.
-        _component.EnqueueFrame(_pixelBuffer, w, h, srcRect.Left, srcRect.Top, bufferImage.Width, bufferImage.Height);
+        _component.EnqueueFrame(
+            _pixelBuffer,
+            w,
+            h,
+            srcRect.Left,
+            srcRect.Top,
+            bufferImage.Width,
+            bufferImage.Height);
 
         bufferImage.Dispose();
     }
@@ -102,6 +128,7 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
     {
         if (_disposed)
             return;
+
         _disposed = true;
         _pixelBuffer = null;
     }

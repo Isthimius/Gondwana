@@ -14,6 +14,7 @@ public enum SceneAnimationSourceKind
     /// The definition is stored in a loose file.
     /// </summary>
     LooseDefinitionFile,
+
     /// <summary>
     /// The definition is stored in an assets file.
     /// </summary>
@@ -30,18 +31,22 @@ public sealed class SceneAnimationSourceDefinition
     /// Gets or sets the lookup key of the referenced animation.
     /// </summary>
     public string AnimationKey { get; set; } = string.Empty;
+
     /// <summary>
     /// Gets or sets the kind.
     /// </summary>
     public SceneAnimationSourceKind Kind { get; set; } = SceneAnimationSourceKind.LooseDefinitionFile;
+
     /// <summary>
     /// Gets or sets the path to the loose GANI animation definition.
     /// </summary>
     public string? GaniPath { get; set; }
+
     /// <summary>
     /// Gets or sets the path to the containing assets file.
     /// </summary>
     public string? AssetsFilePath { get; set; }
+
     /// <summary>
     /// Gets or sets the entry name inside the assets file.
     /// </summary>
@@ -57,6 +62,7 @@ public sealed class SceneAnimationSourceDefinition
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(animationKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(ganiPath);
+
         return new()
         {
             AnimationKey = animationKey,
@@ -80,6 +86,7 @@ public sealed class SceneAnimationSourceDefinition
         ArgumentException.ThrowIfNullOrWhiteSpace(animationKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetsFilePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
+
         return new()
         {
             AnimationKey = animationKey,

@@ -16,7 +16,12 @@ internal sealed class OverlayLegendRow : UserControl
     /// <param name="settings">Borrowed settings observed until this row is disposed.</param>
     /// <param name="visibilityChanged">Callback receiving the toggle's new checked state.</param>
     /// <param name="chooseColor">Callback invoked by the color-selection button.</param>
-    public OverlayLegendRow(OverlayKind kind, string label, OverlaySettings settings, Action<bool> visibilityChanged, Action chooseColor)
+    public OverlayLegendRow(
+        OverlayKind kind,
+        string label,
+        OverlaySettings settings,
+        Action<bool> visibilityChanged,
+        Action chooseColor)
     {
         _kind = kind;
         _settings = settings;
@@ -41,12 +46,17 @@ internal sealed class OverlayLegendRow : UserControl
             Dock = DockStyle.Fill,
             AutoSize = false
         };
+
         toggle.CheckedChanged += (_, _) => visibilityChanged(toggle.Checked);
 
         _swatch = new Panel
         {
             Dock = DockStyle.Fill,
-            Margin = new Padding(4, 7, 4, 7),
+            Margin = new Padding(
+                4,
+                7,
+                4,
+                7),
             BorderStyle = BorderStyle.FixedSingle
         };
 
@@ -64,6 +74,7 @@ internal sealed class OverlayLegendRow : UserControl
             Margin = new Padding(2),
             AccessibleName = $"Choose {label} color"
         };
+
         button.Click += (_, _) => chooseColor();
 
         layout.Controls.Add(toggle, 0, 0);

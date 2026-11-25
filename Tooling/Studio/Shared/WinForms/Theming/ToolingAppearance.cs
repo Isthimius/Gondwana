@@ -84,16 +84,26 @@ public static class ToolingAppearance
         d.DockTarget.ButtonBorder = p.Accent;
     }
 
-    public static ToolStripMenuItem CreateThemeMenu(IWin32Window owner,
-        ThemePreferenceStore? store = null, Action<string>? notify = null)
+    public static ToolStripMenuItem CreateThemeMenu(
+        IWin32Window owner,
+        ThemePreferenceStore? store = null,
+        Action<string>? notify = null)
     {
         store ??= new ThemePreferenceStore();
-        notify ??= message => ThemedMessageBox.Show(owner, message, "Gondwana theme", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        notify ??= message => ThemedMessageBox.Show(
+            owner,
+            message,
+            "Gondwana theme",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+
         var menu = new ToolStripMenuItem("Theme");
 
         void RefreshChecks()
         {
             var selected = store.Read();
+
             foreach (ToolStripMenuItem item in menu.DropDownItems)
                 item.Checked = Equals(item.Tag, selected);
         }
@@ -115,8 +125,10 @@ public static class ToolingAppearance
 
                 RefreshChecks();
 
-                notify(theme == Current ? "The selected theme is already active in this application."
-                    : "Theme saved. Restart this application to apply it. Other Gondwana tools will use it on their next launch. Your open editors and unsaved changes have not been changed.");
+                notify(
+                    theme == Current
+                        ? "The selected theme is already active in this application."
+                        : "Theme saved. Restart this application to apply it. Other Gondwana tools will use it on their next launch. Your open editors and unsaved changes have not been changed.");
             };
 
             menu.DropDownItems.Add(item);
@@ -164,7 +176,9 @@ public static class ToolingAppearance
                 Apply(context);
         };
 
-        control.EnabledChanged += (_, _) => control.ForeColor = control.Enabled ? Palette.Foreground : Palette.DisabledForeground;
+        control.EnabledChanged += (_, _) =>
+            control.ForeColor = control.Enabled ? Palette.Foreground : Palette.DisabledForeground;
+
         control.BackColor = Palette.Background;
         control.ForeColor = control.Enabled ? Palette.Foreground : Palette.DisabledForeground;
 
@@ -197,8 +211,11 @@ public static class ToolingAppearance
                 grid.GridColor = Palette.Border;
                 grid.EnableHeadersVisualStyles = false;
 
-                foreach (var style in new[] { grid.DefaultCellStyle, grid.RowsDefaultCellStyle, grid.AlternatingRowsDefaultCellStyle,
-                    grid.ColumnHeadersDefaultCellStyle, grid.RowHeadersDefaultCellStyle })
+                foreach (var style in new[]
+                         {
+                             grid.DefaultCellStyle, grid.RowsDefaultCellStyle, grid.AlternatingRowsDefaultCellStyle,
+                             grid.ColumnHeadersDefaultCellStyle, grid.RowHeadersDefaultCellStyle
+                         })
                 {
                     style.BackColor = Palette.Background;
                     style.ForeColor = Palette.Foreground;
@@ -291,6 +308,7 @@ public static class ToolingAppearance
                 if (tree.DrawMode == TreeViewDrawMode.Normal)
                 {
                     tree.DrawMode = TreeViewDrawMode.OwnerDrawText;
+
                     tree.DrawNode += (_, e) =>
                     {
                         if (e.Node is null)
@@ -300,11 +318,21 @@ public static class ToolingAppearance
                         using var brush = new SolidBrush(selected ? Palette.Selection : Palette.Background);
 
                         e.Graphics.FillRectangle(brush, e.Bounds);
-                        TextRenderer.DrawText(e.Graphics, e.Node.Text, tree.Font, e.Bounds,
-                            selected ? Palette.SelectionForeground : tree.ForeColor, TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
+
+                        TextRenderer.DrawText(
+                            e.Graphics,
+                            e.Node.Text,
+                            tree.Font,
+                            e.Bounds,
+                            selected ? Palette.SelectionForeground : tree.ForeColor,
+                            TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
 
                         if (selected && tree.Focused)
-                            ControlPaint.DrawFocusRectangle(e.Graphics, e.Bounds, Palette.SelectionForeground, Palette.Selection);
+                            ControlPaint.DrawFocusRectangle(
+                                e.Graphics,
+                                e.Bounds,
+                                Palette.SelectionForeground,
+                                Palette.Selection);
                     };
                 }
 
@@ -318,7 +346,13 @@ public static class ToolingAppearance
                 {
                     using var brush = new SolidBrush(Palette.Surface);
                     e.Graphics.FillRectangle(brush, e.Bounds);
-                    TextRenderer.DrawText(e.Graphics, e.Header?.Text, list.Font, e.Bounds, Palette.Foreground);
+
+                    TextRenderer.DrawText(
+                        e.Graphics,
+                        e.Header?.Text,
+                        list.Font,
+                        e.Bounds,
+                        Palette.Foreground);
                 };
 
                 list.DrawItem += (_, e) =>
@@ -326,17 +360,31 @@ public static class ToolingAppearance
                     if (list.View == View.Details)
                         return;
 
-                    DrawListCell(e.Graphics, e.Bounds, e.Item.Text, list, e.Item.Selected, e.Item);
+                    DrawListCell(
+                        e.Graphics,
+                        e.Bounds,
+                        e.Item.Text,
+                        list,
+                        e.Item.Selected,
+                        e.Item);
+
                     e.DrawFocusRectangle();
                 };
 
                 list.DrawSubItem += (_, e) =>
                 {
-                    DrawListCell(e.Graphics, e.Bounds, e.SubItem?.Text, list,
-                        e.Item?.Selected == true, e.ColumnIndex == 0 ? e.Item : null);
+                    DrawListCell(
+                        e.Graphics,
+                        e.Bounds,
+                        e.SubItem?.Text,
+                        list,
+                        e.Item?.Selected == true,
+                        e.ColumnIndex == 0 ? e.Item : null);
 
                     if (e.ColumnIndex == 0 && list.Focused && e.Item is { Focused: true } focusedItem)
-                        ControlPaint.DrawFocusRectangle(e.Graphics, e.Bounds,
+                        ControlPaint.DrawFocusRectangle(
+                            e.Graphics,
+                            e.Bounds,
                             focusedItem.Selected ? Palette.SelectionForeground : Palette.Foreground,
                             focusedItem.Selected ? Palette.Selection : Palette.Background);
                 };
@@ -346,7 +394,11 @@ public static class ToolingAppearance
             case ListBox list when list is not CheckedListBox && list.DrawMode == DrawMode.Normal:
                 list.BorderStyle = BorderStyle.FixedSingle;
                 list.DrawMode = DrawMode.OwnerDrawFixed;
-                list.DrawItem += (_, e) => DrawTextItem(e, e.Index < 0 ? "" : list.GetItemText(list.Items[e.Index]), list.Enabled);
+
+                list.DrawItem += (_, e) => DrawTextItem(
+                    e,
+                    e.Index < 0 ? "" : list.GetItemText(list.Items[e.Index]),
+                    list.Enabled);
 
                 break;
 
@@ -391,7 +443,13 @@ public static class ToolingAppearance
         DrawTextItem(e, e.Index < 0 ? combo.Text : combo.GetItemText(combo.Items[e.Index]), combo.Enabled);
     }
 
-    private static void DrawListCell(Graphics graphics, Rectangle bounds, string? text, ListView list, bool selected, ListViewItem? item)
+    private static void DrawListCell(
+        Graphics graphics,
+        Rectangle bounds,
+        string? text,
+        ListView list,
+        bool selected,
+        ListViewItem? item)
     {
         selected &= list.Focused || !list.HideSelection;
         using var brush = new SolidBrush(selected ? Palette.Selection : Palette.Background);
@@ -401,25 +459,44 @@ public static class ToolingAppearance
         {
             if (list.CheckBoxes)
             {
-                var check = new Rectangle(bounds.X + 2, bounds.Y + (bounds.Height - 14) / 2, 14, 14);
+                var check = new Rectangle(
+                    bounds.X + 2,
+                    bounds.Y + (bounds.Height - 14) / 2,
+                    14,
+                    14);
+
                 ControlPaint.DrawCheckBox(graphics, check, item.Checked ? ButtonState.Checked : ButtonState.Normal);
                 bounds.X += 18;
                 bounds.Width -= 18;
             }
 
             var images = list.View == View.LargeIcon ? list.LargeImageList : list.SmallImageList;
-            int index = string.IsNullOrEmpty(item.ImageKey) ? item.ImageIndex : images?.Images.IndexOfKey(item.ImageKey) ?? -1;
+
+            int index = string.IsNullOrEmpty(item.ImageKey)
+                ? item.ImageIndex
+                : images?.Images.IndexOfKey(item.ImageKey) ?? -1;
 
             if (images is not null && index >= 0 && index < images.Images.Count)
             {
-                images.Draw(graphics, bounds.X, bounds.Y, index);
+                images.Draw(
+                    graphics,
+                    bounds.X,
+                    bounds.Y,
+                    index);
+
                 bounds.X += images.ImageSize.Width + 4;
                 bounds.Width -= images.ImageSize.Width + 4;
             }
         }
 
-        TextRenderer.DrawText(graphics, text, list.Font, bounds, !list.Enabled ? Palette.DisabledForeground
-            : selected ? Palette.SelectionForeground : Palette.Foreground, TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+        TextRenderer.DrawText(
+            graphics,
+            text,
+            list.Font,
+            bounds,
+            !list.Enabled ? Palette.DisabledForeground
+            : selected ? Palette.SelectionForeground : Palette.Foreground,
+            TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
     }
 
     public static void Apply(ToolTip tooltip)
@@ -434,9 +511,20 @@ public static class ToolingAppearance
             using var border = new Pen(Palette.Border);
 
             e.Graphics.FillRectangle(brush, e.Bounds);
-            e.Graphics.DrawRectangle(border, 0, 0, e.Bounds.Width - 1, e.Bounds.Height - 1);
 
-            TextRenderer.DrawText(e.Graphics, e.ToolTipText, e.Font, Rectangle.Inflate(e.Bounds, -3, -2), Palette.Foreground,
+            e.Graphics.DrawRectangle(
+                border,
+                0,
+                0,
+                e.Bounds.Width - 1,
+                e.Bounds.Height - 1);
+
+            TextRenderer.DrawText(
+                e.Graphics,
+                e.ToolTipText,
+                e.Font,
+                Rectangle.Inflate(e.Bounds, -3, -2),
+                Palette.Foreground,
                 TextFormatFlags.NoPrefix);
         };
     }
@@ -450,6 +538,7 @@ public static class ToolingAppearance
         control.MouseMove += (_, e) =>
         {
             string? text = textAt(e.Location);
+
             if (text == previous)
                 return;
 
@@ -462,6 +551,7 @@ public static class ToolingAppearance
             previous = null;
             tooltip.SetToolTip(control, null);
         };
+
         control.Disposed += (_, _) => tooltip.Dispose();
     }
 
@@ -471,7 +561,11 @@ public static class ToolingAppearance
         using var brush = new SolidBrush(selected ? Palette.Selection : Palette.Surface);
         e.Graphics.FillRectangle(brush, e.Bounds);
 
-        TextRenderer.DrawText(e.Graphics, text, e.Font, e.Bounds,
+        TextRenderer.DrawText(
+            e.Graphics,
+            text,
+            e.Font,
+            e.Bounds,
             !enabled ? Palette.DisabledForeground : selected ? Palette.SelectionForeground : Palette.Foreground,
             TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
 

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+
 namespace Gondwana.Tooling.Studio.Animations.WinForms;
 
 internal sealed class FrameSequenceListView : ListView
@@ -28,9 +29,11 @@ internal sealed class FrameSequenceListView : ListView
             return 0;
 
         int first = TopItem?.Index ?? 0;
+
         for (int index = first; index < Items.Count; index++)
         {
             Rectangle row = GetItemRect(index);
+
             if (point.Y < row.Top + row.Height / 2)
                 return index;
         }
@@ -50,12 +53,19 @@ internal sealed class FrameSequenceListView : ListView
         int y = Items.Count == 0 ? Font.Height * 2
             : _insertionIndex == Items.Count ? GetItemRect(Items.Count - 1).Bottom
             : GetItemRect(_insertionIndex).Top;
+
         if (y < 0 || ClientSize.Height < 2)
             return;
 
         y = Math.Min(y, ClientSize.Height - 2);
         using var graphics = Graphics.FromHwnd(Handle);
         using var pen = new Pen(ToolingAppearance.Palette.Accent, 2);
-        graphics.DrawLine(pen, 0, y, ClientSize.Width, y);
+
+        graphics.DrawLine(
+            pen,
+            0,
+            y,
+            ClientSize.Width,
+            y);
     }
 }

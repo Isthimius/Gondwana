@@ -53,9 +53,24 @@ public sealed class RadioButtonWidget : WidgetBase
     private const int DefaultLabelGap = 8;
     private const int DotInset = 6;
 
-    private Color _normalColor = Color.FromArgb(255, 48, 48, 56);
-    private Color _hoverColor = Color.FromArgb(255, 66, 66, 76);
-    private Color _dotColor = Color.FromArgb(255, 235, 235, 242);
+    private Color _normalColor = Color.FromArgb(
+        255,
+        48,
+        48,
+        56);
+
+    private Color _hoverColor = Color.FromArgb(
+        255,
+        66,
+        66,
+        76);
+
+    private Color _dotColor = Color.FromArgb(
+        255,
+        235,
+        235,
+        242);
+
     private RadioButtonGroup? _group;
     private bool _isSelected;
     private bool _disposed;
@@ -75,14 +90,19 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <param name="group">The group.</param>
     /// <param name="isSelected">Whether the item is selected.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public RadioButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
-                             View view,
-                             Rectangle bounds,
-                             string text,
-                             RadioButtonGroup? group = null,
-                             bool isSelected = false,
-                             string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
+    public RadioButtonWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        Rectangle bounds,
+        string text,
+        RadioButtonGroup? group = null,
+        bool isSelected = false,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -92,7 +112,12 @@ public sealed class RadioButtonWidget : WidgetBase
 
         Ring = CreateRing(renderSurfaceHost, view, indicatorBounds);
         Dot = CreateDot(renderSurfaceHost, view, dotBounds);
-        Label = CreateLabel(renderSurfaceHost, view, labelBounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            view,
+            labelBounds,
+            text);
 
         Add(Ring);
         Add(Dot);
@@ -111,14 +136,19 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <param name="group">The group.</param>
     /// <param name="isSelected">Whether the item is selected.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    public RadioButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
-                             SceneLayer sceneLayer,
-                             Rectangle bounds,
-                             string text,
-                             RadioButtonGroup? group = null,
-                             bool isSelected = false,
-                             string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
+    public RadioButtonWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        SceneLayer sceneLayer,
+        Rectangle bounds,
+        string text,
+        RadioButtonGroup? group = null,
+        bool isSelected = false,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.SceneLayer,
+            ValidateBounds(bounds).Location,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
@@ -128,7 +158,12 @@ public sealed class RadioButtonWidget : WidgetBase
 
         Ring = CreateRing(renderSurfaceHost, sceneLayer, indicatorBounds);
         Dot = CreateDot(renderSurfaceHost, sceneLayer, dotBounds);
-        Label = CreateLabel(renderSurfaceHost, sceneLayer, labelBounds, text);
+
+        Label = CreateLabel(
+            renderSurfaceHost,
+            sceneLayer,
+            labelBounds,
+            text);
 
         Add(Ring);
         Add(Dot);
@@ -222,9 +257,10 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <param name="hover">The color used while the pointer is over the control.</param>
     /// <param name="dot">The dot.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public RadioButtonWidget SetColors(Color normal,
-                                       Color hover,
-                                       Color dot)
+    public RadioButtonWidget SetColors(
+        Color normal,
+        Color hover,
+        Color dot)
     {
         _normalColor = normal;
         _hoverColor = hover;
@@ -349,81 +385,128 @@ public sealed class RadioButtonWidget : WidgetBase
         rectangle.SetPosition(rectangle.GetPosition());
     }
 
-    private DirectRectangle CreateRing(RenderSurfaceHostBase host,
-                                       View view,
-                                       Rectangle bounds)
+    private DirectRectangle CreateRing(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureRing(new DirectRectangle(_normalColor, host, view, bounds, $"{Nickname}.ring"), bounds.Width);
+        return ConfigureRing(
+            new DirectRectangle(
+                _normalColor,
+                host,
+                view,
+                bounds,
+                $"{Nickname}.ring"),
+            bounds.Width);
     }
 
-    private DirectRectangle CreateRing(RenderSurfaceHostBase host,
-                                       SceneLayer layer,
-                                       Rectangle bounds)
+    private DirectRectangle CreateRing(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureRing(new DirectRectangle(_normalColor, host, layer, bounds, $"{Nickname}.ring"), bounds.Width);
+        return ConfigureRing(
+            new DirectRectangle(
+                _normalColor,
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.ring"),
+            bounds.Width);
     }
 
     private static DirectRectangle ConfigureRing(DirectRectangle ring, int size)
     {
         return ring.SetFilled(true)
-                   .SetBorderColor(Color.FromArgb(255, 150, 150, 160))
-                   .SetStrokeWidth(1.5f)
-                   .SetCornerRadius(size / 2f);
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    150,
+                    150,
+                    160))
+            .SetStrokeWidth(1.5f)
+            .SetCornerRadius(size / 2f);
     }
 
-    private DirectRectangle CreateDot(RenderSurfaceHostBase host,
-                                      View view,
-                                      Rectangle bounds)
+    private DirectRectangle CreateDot(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds)
     {
-        return ConfigureDot(new DirectRectangle(_dotColor, host, view, bounds, $"{Nickname}.dot"), bounds.Width);
+        return ConfigureDot(
+            new DirectRectangle(
+                _dotColor,
+                host,
+                view,
+                bounds,
+                $"{Nickname}.dot"),
+            bounds.Width);
     }
 
-    private DirectRectangle CreateDot(RenderSurfaceHostBase host,
-                                      SceneLayer layer,
-                                      Rectangle bounds)
+    private DirectRectangle CreateDot(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds)
     {
-        return ConfigureDot(new DirectRectangle(_dotColor, host, layer, bounds, $"{Nickname}.dot"), bounds.Width);
+        return ConfigureDot(
+            new DirectRectangle(
+                _dotColor,
+                host,
+                layer,
+                bounds,
+                $"{Nickname}.dot"),
+            bounds.Width);
     }
 
     private static DirectRectangle ConfigureDot(DirectRectangle dot, int size)
     {
         return dot.SetFilled(true)
-                  .SetStrokeWidth(0f)
-                  .SetCornerRadius(size / 2f);
+            .SetStrokeWidth(0f)
+            .SetCornerRadius(size / 2f);
     }
 
-    private static TextBlock CreateLabel(RenderSurfaceHostBase host,
-                                         View view,
-                                         Rectangle bounds,
-                                         string text)
+    private static TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        View view,
+        Rectangle bounds,
+        string text)
     {
         return ConfigureLabel(new TextBlock(host, view, bounds), text);
     }
 
-    private static TextBlock CreateLabel(RenderSurfaceHostBase host,
-                                         SceneLayer layer,
-                                         Rectangle bounds,
-                                         string text)
+    private static TextBlock CreateLabel(
+        RenderSurfaceHostBase host,
+        SceneLayer layer,
+        Rectangle bounds,
+        string text)
     {
-        return ConfigureLabel(new TextBlock(host, layer, view: null, worldBounds: bounds), text);
+        return ConfigureLabel(
+            new TextBlock(
+                host,
+                layer,
+                view: null,
+                worldBounds: bounds),
+            text);
     }
 
     private static TextBlock ConfigureLabel(TextBlock label, string text)
     {
         return label.SetText(text ?? string.Empty)
-                    .SetFont(SKTypeface.Default, 16f, minSize: 10f)
-                    .SetColors(SKColors.White, SKColors.Transparent)
-                    .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                    .EnableWrapping(false);
+            .SetFont(SKTypeface.Default, 16f, minSize: 10f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
     }
 
     private static Rectangle GetIndicatorBounds(Rectangle bounds)
     {
         int size = Math.Min(DefaultIndicatorSize, Math.Max(10, bounds.Height - 2));
-        return new Rectangle(bounds.X,
-                             bounds.Y + (bounds.Height - size) / 2,
-                             size,
-                             size);
+
+        return new Rectangle(
+            bounds.X,
+            bounds.Y + (bounds.Height - size) / 2,
+            size,
+            size);
     }
 
     private static Rectangle GetDotBounds(Rectangle indicatorBounds)
@@ -435,10 +518,12 @@ public sealed class RadioButtonWidget : WidgetBase
     private static Rectangle GetLabelBounds(Rectangle bounds, int indicatorWidth)
     {
         int left = bounds.X + indicatorWidth + DefaultLabelGap;
-        return new Rectangle(left,
-                             bounds.Y,
-                             Math.Max(1, bounds.Right - left),
-                             bounds.Height);
+
+        return new Rectangle(
+            left,
+            bounds.Y,
+            Math.Max(1, bounds.Right - left),
+            bounds.Height);
     }
 
     private static Rectangle ValidateBounds(Rectangle bounds)

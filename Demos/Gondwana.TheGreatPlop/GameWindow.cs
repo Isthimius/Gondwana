@@ -18,6 +18,7 @@ internal sealed class GameWindow : Form
         KeyPreview = true;
         _renderSurface.Dock = DockStyle.Fill;
         Controls.Add(_renderSurface);
+
         KeyDown += (_, args) =>
         {
             if (args.KeyCode == Keys.Escape)
@@ -36,6 +37,7 @@ internal sealed class GameWindow : Form
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+
         try
         {
             _host!.Initialize(logLevel: LogLevel.Warning);
@@ -43,8 +45,13 @@ internal sealed class GameWindow : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"The pasture refused to load.\n\n{ex.Message}",
-                "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                $"The pasture refused to load.\n\n{ex.Message}",
+                "Startup Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
             Close();
         }
     }

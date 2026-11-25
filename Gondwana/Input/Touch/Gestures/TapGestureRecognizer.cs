@@ -109,8 +109,10 @@ public sealed class TapGestureRecognizer : IDisposable
         if (_isMultiTouchSequence)
         {
             _activeTaps.Remove(e.Touch.Id);
+
             if (_activeContacts.Count == 0)
                 _isMultiTouchSequence = false;
+
             return;
         }
 
@@ -144,6 +146,7 @@ public sealed class TapGestureRecognizer : IDisposable
     {
         if (_isDisposed)
             return;
+
         _isDisposed = true;
 
         _touchInput.TouchBegan -= OnTouchBegan;

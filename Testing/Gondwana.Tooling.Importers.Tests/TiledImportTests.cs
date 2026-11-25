@@ -16,11 +16,15 @@ namespace Gondwana.Tooling.Importers.Tests;
 /// </summary>
 public sealed class TiledImportTests : IDisposable
 {
-    private readonly string directory = Path.Combine(Path.GetTempPath(), "GondwanaImportTests-" + Guid.NewGuid().ToString("N"));
+    private readonly string directory = Path.Combine(
+        Path.GetTempPath(),
+        "GondwanaImportTests-" + Guid.NewGuid().ToString("N"));
+
     /// <summary>
     /// Initializes a new instance of the <c>TiledImportTests</c> class.
     /// </summary>
     public TiledImportTests() => Directory.CreateDirectory(directory);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(directory, true);
 
@@ -31,12 +35,16 @@ public sealed class TiledImportTests : IDisposable
         using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
         File.WriteAllBytes(Path.Combine(directory, "atlas.png"), data.ToArray());
         string path = Path.Combine(directory, "terrain.tsx");
-        File.WriteAllText(path, """
+
+        File.WriteAllText(
+            path,
+            """
             <tileset name="terrain" tilewidth="2" tileheight="2" tilecount="2" columns="2" margin="1" spacing="1">
               <image source="atlas.png" width="7" height="4" trans="ff00ff"/>
               <tile id="0"><animation><frame tileid="1" duration="100"/><frame tileid="0" duration="250"/></animation></tile>
             </tileset>
             """);
+
         return path;
     }
 
@@ -44,18 +52,24 @@ public sealed class TiledImportTests : IDisposable
     private void EmbedAtlasInTileset(string tsx, string compression = "")
     {
         byte[] pixels = File.ReadAllBytes(Path.Combine(directory, "atlas.png"));
+
         if (compression.Length != 0)
         {
             using var stream = new MemoryStream();
+
             using (Stream compressor = compression == "zlib"
-                ? new ZLibStream(stream, CompressionLevel.Optimal, true)
-                : new GZipStream(stream, CompressionLevel.Optimal, true))
+                       ? new ZLibStream(stream, CompressionLevel.Optimal, true)
+                       : new GZipStream(stream, CompressionLevel.Optimal, true))
                 compressor.Write(pixels);
+
             pixels = stream.ToArray();
         }
 
         const string external = "<image source=\"atlas.png\" width=\"7\" height=\"4\" trans=\"ff00ff\"/>";
-        string embedded = $"<image format=\"png\" width=\"7\" height=\"4\" trans=\"ff00ff\"><data encoding=\"base64\"{(compression.Length == 0 ? "" : $" compression=\"{compression}\"")}>{Convert.ToBase64String(pixels)}</data></image>";
+
+        string embedded =
+            $"<image format=\"png\" width=\"7\" height=\"4\" trans=\"ff00ff\"><data encoding=\"base64\"{(compression.Length == 0 ? "" : $" compression=\"{compression}\"")}>{Convert.ToBase64String(pixels)}</data></image>";
+
         string contents = File.ReadAllText(tsx);
         Assert.Contains(external, contents);
         File.WriteAllText(tsx, contents.Replace(external, embedded));
@@ -65,39 +79,55 @@ public sealed class TiledImportTests : IDisposable
     {
         if (encoding == "xml")
             return string.Concat(gids.Select(gid => $"<tile gid='{gid}'/>"));
+
         if (encoding == "csv")
             return string.Join(",", gids);
 
         var bytes = new byte[gids.Length * 4];
+
         for (int i = 0; i < gids.Length; i++)
             System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(i * 4), gids[i]);
+
         if (compression.Length != 0)
         {
             using var output = new MemoryStream();
+
             using (Stream compressor = compression == "zlib"
-                ? new ZLibStream(output, CompressionLevel.Optimal, true)
-                : new GZipStream(output, CompressionLevel.Optimal, true))
+                       ? new ZLibStream(output, CompressionLevel.Optimal, true)
+                       : new GZipStream(output, CompressionLevel.Optimal, true))
                 compressor.Write(bytes);
+
             bytes = output.ToArray();
         }
 
         return Convert.ToBase64String(bytes);
     }
 
-    private string ChunkedMap(string chunks, string encoding = "csv", string compression = "",
-        string orientation = "orthogonal", int tileWidth = 2, int tileHeight = 2,
-        string layerAttributes = "", string mapAttributes = "")
+    private string ChunkedMap(
+        string chunks,
+        string encoding = "csv",
+        string compression = "",
+        string orientation = "orthogonal",
+        int tileWidth = 2,
+        int tileHeight = 2,
+        string layerAttributes = "",
+        string mapAttributes = "")
     {
         string source = Path.Combine(directory, "chunked.tmx");
         string attributes = encoding == "xml" ? "" : $" encoding='{encoding}'";
+
         if (compression.Length != 0)
             attributes += $" compression='{compression}'";
-        File.WriteAllText(source, $"""
-            <map orientation='{orientation}' infinite='1' width='0' height='0' tilewidth='{tileWidth}' tileheight='{tileHeight}' {mapAttributes}>
-              <tileset firstgid='1' source='{(tileWidth == 2 ? "terrain.tsx" : "oversized.tsx")}'/>
-              <layer width='0' height='0' {layerAttributes}><data{attributes}>{chunks}</data></layer>
-            </map>
-            """);
+
+        File.WriteAllText(
+            source,
+            $"""
+             <map orientation='{orientation}' infinite='1' width='0' height='0' tilewidth='{tileWidth}' tileheight='{tileHeight}' {mapAttributes}>
+               <tileset firstgid='1' source='{(tileWidth == 2 ? "terrain.tsx" : "oversized.tsx")}'/>
+               <layer width='0' height='0' {layerAttributes}><data{attributes}>{chunks}</data></layer>
+             </map>
+             """);
+
         return source;
     }
 
@@ -111,11 +141,19 @@ public sealed class TiledImportTests : IDisposable
     public void ChunkedLayersBecomeFiniteScenesWithoutImplicitWrapping(string encoding, string compression)
     {
         Tileset();
-        string chunks = $"<chunk x='-2' y='1' width='2' height='2'>{ChunkPayload(encoding, compression, 1, 0, 0, 0)}</chunk>" +
+
+        string chunks =
+            $"<chunk x='-2' y='1' width='2' height='2'>{ChunkPayload(encoding, compression, 1, 0, 0, 0)}</chunk>" +
             $"<chunk x='2' y='-1' width='2' height='2'>{ChunkPayload(encoding, compression, 0, 0, 0, 2)}</chunk>";
+
         var request = new ExternalImportRequest(
-            ChunkedMap(chunks, encoding, compression, layerAttributes: "offsetx='6' offsety='-4'"),
+            ChunkedMap(
+                chunks,
+                encoding,
+                compression,
+                layerAttributes: "offsetx='6' offsety='-4'"),
             Path.Combine(directory, "output"));
+
         var importer = new TiledMapImporter();
         var analysis = importer.Analyze(request);
         Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
@@ -141,14 +179,31 @@ public sealed class TiledImportTests : IDisposable
 
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "terrain");
+
         var cycles = AnimationDefinitionSerializer.LoadAllCycles(
             Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+
         try
         {
             using var runtime = SceneDefinitionSerializer.ToScene(scene);
             var loaded = Assert.Single(runtime.SceneLayers);
-            Assert.Equal(new Rectangle(2, -2, 2, 2), loaded[0, 2]!.DrawLocationWorld);
-            Assert.Equal(new Rectangle(12, -4, 2, 2), loaded[5, 1]!.DrawLocationWorld);
+
+            Assert.Equal(
+                new Rectangle(
+                    2,
+                    -2,
+                    2,
+                    2),
+                loaded[0, 2]!.DrawLocationWorld);
+
+            Assert.Equal(
+                new Rectangle(
+                    12,
+                    -4,
+                    2,
+                    2),
+                loaded[5, 1]!.DrawLocationWorld);
+
             Assert.DoesNotContain(layer.Tiles, tile => tile.X == 1 && tile.Y == 1);
         }
         finally
@@ -164,12 +219,18 @@ public sealed class TiledImportTests : IDisposable
     {
         Tileset();
         var chunks = "<chunk x='-3' y='-2' width='2' height='2'>1,0,0,2</chunk>";
+
         var request = new ExternalImportRequest(
-            ChunkedMap(chunks, orientation: "isometric"), Path.Combine(directory, "output"));
+            ChunkedMap(chunks, orientation: "isometric"),
+            Path.Combine(directory, "output"));
+
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        var layer = Assert.Single(SceneDefinitionSerializer.Load(
-            Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+
+        var layer = Assert.Single(
+            SceneDefinitionSerializer.Load(
+                Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+
         Assert.Equal(new Point(1, 5), layer.OriginPx);
         Assert.Equal(2, layer.Columns);
         Assert.Equal(2, layer.Rows);
@@ -184,13 +245,22 @@ public sealed class TiledImportTests : IDisposable
     {
         OversizedTileset(3, 3);
         var chunks = "<chunk x='-2' y='1' width='1' height='1'>1</chunk>";
+
         var request = new ExternalImportRequest(
-            ChunkedMap(chunks, orientation: "isometric", tileWidth: 3, tileHeight: 3),
+            ChunkedMap(
+                chunks,
+                orientation: "isometric",
+                tileWidth: 3,
+                tileHeight: 3),
             Path.Combine(directory, "output"));
+
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        var layer = Assert.Single(SceneDefinitionSerializer.Load(
-            Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+
+        var layer = Assert.Single(
+            SceneDefinitionSerializer.Load(
+                Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+
         Assert.Equal(2, layer.Columns);
         Assert.Equal(1, layer.Rows);
         Assert.Equal(new Point(6, 3), layer.OriginPx);
@@ -198,11 +268,20 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(1, tile.X);
         Assert.Equal(0, tile.Y);
         Assert.False(layer.WrapHorizontally || layer.WrapVertically);
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "chunked.gts"), "oversized");
+
         using var runtime = SceneDefinitionSerializer.ToScene(
             SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "chunked.gscn")));
-        Assert.Equal(new Rectangle(-6, -2, 3, 3), runtime.SceneLayers[0][1, 0]!.DrawLocationWorld);
+
+        Assert.Equal(
+            new Rectangle(
+                -6,
+                -2,
+                3,
+                3),
+            runtime.SceneLayers[0][1, 0]!.DrawLocationWorld);
     }
 
     /// <summary>Each chunked layer has independent finite bounds and world-space origin.</summary>
@@ -212,7 +291,10 @@ public sealed class TiledImportTests : IDisposable
         Tileset();
         var source = ChunkedMap("<chunk x='-1' y='-1' width='1' height='1'>1</chunk>");
         string xml = File.ReadAllText(source);
-        xml = xml.Replace("</map>", """
+
+        xml = xml.Replace(
+            "</map>",
+            """
             <group offsetx='4' offsety='2' visible='0'>
               <layer width='0' height='0'>
                 <data encoding='csv'><chunk x='8' y='7' width='1' height='1'>2</chunk></data>
@@ -220,6 +302,7 @@ public sealed class TiledImportTests : IDisposable
             </group>
             </map>
             """);
+
         File.WriteAllText(source, xml);
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
@@ -242,8 +325,11 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(ChunkedMap(""), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        var layer = Assert.Single(SceneDefinitionSerializer.Load(
-            Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+
+        var layer = Assert.Single(
+            SceneDefinitionSerializer.Load(
+                Path.Combine(request.OutputDirectory, "chunked.gscn")).Layers);
+
         Assert.Equal(1, layer.Columns);
         Assert.Equal(1, layer.Rows);
         Assert.Empty(layer.Tiles);
@@ -253,8 +339,12 @@ public sealed class TiledImportTests : IDisposable
     /// <summary>Invalid chunks fail before installing any generated GTS/GANI/GSCN outputs.</summary>
     [Theory]
     [InlineData("<chunk x='0' y='0' width='2' height='2'>1,0,0</chunk>", "length")]
-    [InlineData("<chunk x='0' y='0' width='1' height='1'>1</chunk><chunk x='0' y='0' width='1' height='1'>2</chunk>", "Overlapping")]
-    [InlineData("<chunk x='-10000000' y='0' width='1' height='1'>1</chunk><chunk x='10000000' y='0' width='1' height='1'>1</chunk>", "bounds exceed")]
+    [InlineData(
+        "<chunk x='0' y='0' width='1' height='1'>1</chunk><chunk x='0' y='0' width='1' height='1'>2</chunk>",
+        "Overlapping")]
+    [InlineData(
+        "<chunk x='-10000000' y='0' width='1' height='1'>1</chunk><chunk x='10000000' y='0' width='1' height='1'>1</chunk>",
+        "bounds exceed")]
     [InlineData("<chunk x='0' y='0' width='0' height='2'></chunk>", "sizes exceed")]
     [InlineData("<chunk x='2147483647' y='0' width='2' height='1'>1,1</chunk>", "integer grid range")]
     [InlineData("<chunk x='0' y='0' width='1' height='1'><tile gid='1'/></chunk><tile gid='1'/>", "cannot mix")]
@@ -270,30 +360,48 @@ public sealed class TiledImportTests : IDisposable
     }
 
     /// <summary>Computes logical cell coordinates without relying on internal engine geometry APIs.</summary>
-    private static Rectangle LogicalCellBounds(SceneLayer layer, string orientation, int x = 0, int y = 0)
+    private static Rectangle LogicalCellBounds(
+        SceneLayer layer,
+        string orientation,
+        int x = 0,
+        int y = 0)
     {
         int cellX = orientation == "isometric"
             ? (int)Math.Floor((x - y) * (layer.TileWidth / 2f)) - layer.OriginPx.X - layer.TileWidth / 2
             : x * layer.TileWidth - layer.OriginPx.X;
+
         int cellY = orientation == "isometric"
             ? (int)Math.Floor((x + y) * (layer.TileHeight / 2f)) - layer.OriginPx.Y
             : y * layer.TileHeight - layer.OriginPx.Y;
-        return new Rectangle(cellX, cellY, layer.TileWidth, layer.TileHeight);
+
+        return new Rectangle(
+            cellX,
+            cellY,
+            layer.TileWidth,
+            layer.TileHeight);
     }
 
-    private string OversizedTileset(int frameWidth, int frameHeight, string attributes = "", string tileOffset = "")
+    private string OversizedTileset(
+        int frameWidth,
+        int frameHeight,
+        string attributes = "",
+        string tileOffset = "")
     {
         using var bitmap = new SKBitmap(frameWidth, frameHeight);
         bitmap.Erase(SKColors.ForestGreen);
         using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
         File.WriteAllBytes(Path.Combine(directory, "oversized.png"), data.ToArray());
         string path = Path.Combine(directory, "oversized.tsx");
-        File.WriteAllText(path, $"""
-            <tileset name="oversized" tilewidth="{frameWidth}" tileheight="{frameHeight}" tilecount="1" columns="1" {attributes}>
-              <image source="oversized.png" width="{frameWidth}" height="{frameHeight}"/>
-              {tileOffset}
-            </tileset>
-            """);
+
+        File.WriteAllText(
+            path,
+            $"""
+             <tileset name="oversized" tilewidth="{frameWidth}" tileheight="{frameHeight}" tilecount="1" columns="1" {attributes}>
+               <image source="oversized.png" width="{frameWidth}" height="{frameHeight}"/>
+               {tileOffset}
+             </tileset>
+             """);
+
         return path;
     }
 
@@ -302,20 +410,29 @@ public sealed class TiledImportTests : IDisposable
         string path = OversizedTileset(40, 40, attributes: tilesetAttributes);
         string source = File.ReadAllText(path);
         Assert.Contains("</tileset>", source);
-        File.WriteAllText(path, source.Replace("</tileset>",
-            $"<tile id='0'><objectgroup {groupAttributes}>{objects}</objectgroup></tile></tileset>"));
+
+        File.WriteAllText(
+            path,
+            source.Replace(
+                "</tileset>",
+                $"<tile id='0'><objectgroup {groupAttributes}>{objects}</objectgroup></tile></tileset>"));
+
         return path;
     }
 
     private string OversizedMap(string orientation = "orthogonal", uint gid = 1)
     {
         string path = Path.Combine(directory, "oversized.tmx");
-        File.WriteAllText(path, $"""
-            <map orientation="{orientation}" width="2" height="2" tilewidth="32" tileheight="24">
-              <tileset firstgid="1" source="oversized.tsx"/>
-              <layer width="2" height="2"><data encoding="csv">{gid},0,0,{gid}</data></layer>
-            </map>
-            """);
+
+        File.WriteAllText(
+            path,
+            $"""
+             <map orientation="{orientation}" width="2" height="2" tilewidth="32" tileheight="24">
+               <tileset firstgid="1" source="oversized.tsx"/>
+               <layer width="2" height="2"><data encoding="csv">{gid},0,0,{gid}</data></layer>
+             </map>
+             """);
+
         return path;
     }
 
@@ -324,13 +441,41 @@ public sealed class TiledImportTests : IDisposable
     /// overhang. Orthogonal and isometric tile layers both anchor bottom-left.
     /// </summary>
     [Theory]
-    [InlineData("orthogonal", 32, 32, 0, 8, 0)]
-    [InlineData("orthogonal", 40, 40, 0, 16, 8)]
-    [InlineData("isometric", 32, 32, 0, 8, 0)]
-    [InlineData("isometric", 40, 40, 0, 16, 8)]
+    [InlineData(
+        "orthogonal",
+        32,
+        32,
+        0,
+        8,
+        0)]
+    [InlineData(
+        "orthogonal",
+        40,
+        40,
+        0,
+        16,
+        8)]
+    [InlineData(
+        "isometric",
+        32,
+        32,
+        0,
+        8,
+        0)]
+    [InlineData(
+        "isometric",
+        40,
+        40,
+        0,
+        16,
+        8)]
     public void MapImportsOversizedAtlasTilesAsOverhang(
-        string orientation, int frameWidth, int frameHeight,
-        int left, int top, int right)
+        string orientation,
+        int frameWidth,
+        int frameHeight,
+        int left,
+        int top,
+        int right)
     {
         OversizedTileset(frameWidth, frameHeight);
         var request = new ExternalImportRequest(OversizedMap(orientation), Path.Combine(directory, "output"));
@@ -342,16 +487,27 @@ public sealed class TiledImportTests : IDisposable
         var gts = TilesheetDefinitionSerializer.Load(gtsPath);
         var region = Assert.Single(gts.Regions);
         Assert.Equal(new Size(frameWidth, frameHeight), region.TileSize);
-        Assert.Equal(new Spacing(left, top, right, 0), region.Overhang);
+
+        Assert.Equal(
+            new Spacing(
+                left,
+                top,
+                right,
+                0),
+            region.Overhang);
+
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, frameWidth, frameHeight));
 
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
         Assert.Empty(SceneDefinitionValidator.Validate(scene));
-        Assert.Equal(new Size(32, 24),
+
+        Assert.Equal(
+            new Size(32, 24),
             new Size(Assert.Single(scene.Layers).TileWidth, scene.Layers[0].TileHeight));
 
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(gtsPath, "oversized");
+
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var runtimeLayer = Assert.Single(runtime.SceneLayers);
         var tile = runtimeLayer[0, 0]!;
@@ -373,12 +529,18 @@ public sealed class TiledImportTests : IDisposable
     public void MapRejectsDiagonalGridRenderedOversizedTile()
     {
         OversizedTileset(40, 40, "tilerendersize='grid'");
+
         var request = new ExternalImportRequest(
-            OversizedMap(gid: 0x20000001u), Path.Combine(directory, "output"));
+            OversizedMap(gid: 0x20000001u),
+            Path.Combine(directory, "output"));
+
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics,
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
             d => d.Message.Contains("transformed oversized tile cannot preserve Tiled artwork anchoring"));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -388,12 +550,17 @@ public sealed class TiledImportTests : IDisposable
     public void MapAllowsHorizontalFlipOfGridRenderedOversizedTile()
     {
         OversizedTileset(40, 40, "tilerendersize='grid'");
+
         var request = new ExternalImportRequest(
-            OversizedMap(gid: 0x80000001u), Path.Combine(directory, "output"));
+            OversizedMap(gid: 0x80000001u),
+            Path.Combine(directory, "output"));
+
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
-        Assert.All(Assert.Single(scene.Layers).Tiles,
+
+        Assert.All(
+            Assert.Single(scene.Layers).Tiles,
             tile => Assert.Equal(TileTransform.FlipHorizontal, tile.Transform));
     }
 
@@ -406,15 +573,23 @@ public sealed class TiledImportTests : IDisposable
     [InlineData("isometric", 32, 128)]
     [InlineData("isometric", 96, 24)]
     public void MapRejectsOverhangOutsideRuntimeCullingFringe(
-        string orientation, int frameWidth, int frameHeight)
+        string orientation,
+        int frameWidth,
+        int frameHeight)
     {
         OversizedTileset(frameWidth, frameHeight);
+
         var request = new ExternalImportRequest(
-            OversizedMap(orientation), Path.Combine(directory, "output"));
+            OversizedMap(orientation),
+            Path.Combine(directory, "output"));
+
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics,
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
             d => d.Message.Contains("overhang exceeds the runtime render-culling fringe"));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -426,37 +601,68 @@ public sealed class TiledImportTests : IDisposable
     public void MapAllowsHorizontalFlipOfTopOnlyOverhang(string orientation)
     {
         OversizedTileset(32, 32);
+
         var request = new ExternalImportRequest(
-            OversizedMap(orientation, 0x80000001u), Path.Combine(directory, "output"));
+            OversizedMap(orientation, 0x80000001u),
+            Path.Combine(directory, "output"));
+
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
 
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
-        Assert.All(Assert.Single(scene.Layers).Tiles,
+
+        Assert.All(
+            Assert.Single(scene.Layers).Tiles,
             tile => Assert.Equal(TileTransform.FlipHorizontal, tile.Transform));
 
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "oversized.gts"), "oversized");
+
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var layer = Assert.Single(runtime.SceneLayers);
         var cell = LogicalCellBounds(layer, orientation);
-        Assert.Equal(new Rectangle(cell.X, cell.Y - 8, 32, 32), layer[0, 0]!.DrawLocationWorld);
+
+        Assert.Equal(
+            new Rectangle(
+                cell.X,
+                cell.Y - 8,
+                32,
+                32),
+            layer[0, 0]!.DrawLocationWorld);
     }
 
     /// <summary>Reject flips which would rotate or shift oversized artwork relative to Tiled.</summary>
     [Theory]
-    [InlineData("orthogonal", 40, 40, 0x80000001u)] // H flip relocates right overhang.
-    [InlineData("orthogonal", 32, 32, 0x40000001u)] // V flip relocates top overhang.
-    [InlineData("isometric", 32, 32, 0x20000001u)] // Diagonal flip swaps a rectangular cell's axes.
+    [InlineData(
+        "orthogonal",
+        40,
+        40,
+        0x80000001u)] // H flip relocates right overhang.
+    [InlineData(
+        "orthogonal",
+        32,
+        32,
+        0x40000001u)] // V flip relocates top overhang.
+    [InlineData(
+        "isometric",
+        32,
+        32,
+        0x20000001u)] // Diagonal flip swaps a rectangular cell's axes.
     public void MapRejectsFlippedOversizedTileWhoseAnchorWouldMove(
-        string orientation, int width, int height, uint gid)
+        string orientation,
+        int width,
+        int height,
+        uint gid)
     {
         OversizedTileset(width, height);
         var request = new ExternalImportRequest(OversizedMap(orientation, gid), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics,
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
             d => d.Message.Contains("transformed oversized tile cannot preserve Tiled artwork anchoring"));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -469,8 +675,11 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics,
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
             d => d.Message.Contains("Tileset frame is smaller than the map cell"));
+
         Assert.Empty(result.WrittenFiles);
     }
 
@@ -482,8 +691,10 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+
         var gts = TilesheetDefinitionSerializer.Load(
             Path.Combine(request.OutputDirectory, "oversized.gts"));
+
         var region = Assert.Single(gts.Regions);
         Assert.Equal(new Size(40, 40), region.TileSize);
         Assert.Equal(Spacing.None, region.Overhang);
@@ -498,8 +709,12 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Message.Contains("negative overhang", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Message.Contains("negative overhang", StringComparison.OrdinalIgnoreCase));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -507,11 +722,30 @@ public sealed class TiledImportTests : IDisposable
 
     /// <summary>Representable Tiled tile drawing offsets redistribute overhang across edges.</summary>
     [Theory]
-    [InlineData("orthogonal", -3, 2, 3, 14, 5, 2)]
-    [InlineData("isometric", 0, 6, 0, 10, 8, 6)]
+    [InlineData(
+        "orthogonal",
+        -3,
+        2,
+        3,
+        14,
+        5,
+        2)]
+    [InlineData(
+        "isometric",
+        0,
+        6,
+        0,
+        10,
+        8,
+        6)]
     public void MapImportsRepresentableTileOffsetsAsOverhang(
-        string orientation, int offsetX, int offsetY,
-        int left, int top, int right, int bottom)
+        string orientation,
+        int offsetX,
+        int offsetY,
+        int left,
+        int top,
+        int right,
+        int bottom)
     {
         OversizedTileset(40, 40, tileOffset: $"<tileoffset x='{offsetX}' y='{offsetY}'/>");
         var request = new ExternalImportRequest(OversizedMap(orientation), Path.Combine(directory, "output"));
@@ -519,18 +753,33 @@ public sealed class TiledImportTests : IDisposable
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         var gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
         var gts = TilesheetDefinitionSerializer.Load(gtsPath);
-        Assert.Equal(new Spacing(left, top, right, bottom), Assert.Single(gts.Regions).Overhang);
+
+        Assert.Equal(
+            new Spacing(
+                left,
+                top,
+                right,
+                bottom),
+            Assert.Single(gts.Regions).Overhang);
+
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 40, 40));
 
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(gtsPath, "oversized");
+
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var layer = Assert.Single(runtime.SceneLayers);
         var tile = layer[0, 0]!;
         Rectangle cell = LogicalCellBounds(layer, orientation);
+
         Assert.Equal(
-            new Rectangle(cell.Left + offsetX, cell.Bottom - 40 + offsetY, 40, 40),
+            new Rectangle(
+                cell.Left + offsetX,
+                cell.Bottom - 40 + offsetY,
+                40,
+                40),
             tile.DrawLocationWorld);
     }
 
@@ -545,8 +794,11 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(OversizedMap("isometric"), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics,
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
             d => d.Message.Contains("overhang exceeds the runtime render-culling fringe"));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -559,8 +811,12 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Message.Contains("cannot be represented"));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Message.Contains("cannot be represented"));
+
         Assert.Empty(result.WrittenFiles);
     }
 
@@ -572,8 +828,12 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledTilesetImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Message.Contains("tile offsets are unsupported"));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Message.Contains("tile offsets are unsupported"));
+
         Assert.Empty(result.WrittenFiles);
     }
 
@@ -612,10 +872,19 @@ public sealed class TiledImportTests : IDisposable
     public void MultipleTileAnimationsShareOneDocument()
     {
         string tileset = Tileset();
-        File.WriteAllText(tileset, File.ReadAllText(tileset).Replace("</tileset>",
-            "<tile id='1'><animation><frame tileid='0' duration='100'/><frame tileid='1' duration='200'/></animation></tile></tileset>"));
+
+        File.WriteAllText(
+            tileset,
+            File.ReadAllText(tileset).Replace(
+                "</tileset>",
+                "<tile id='1'><animation><frame tileid='0' duration='100'/><frame tileid='1' duration='200'/></animation></tile></tileset>"));
+
         string map = Path.Combine(directory, "level.tmx");
-        File.WriteAllText(map, "<map orientation='orthogonal' width='2' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>1,2</data></layer></map>");
+
+        File.WriteAllText(
+            map,
+            "<map orientation='orthogonal' width='2' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>1,2</data></layer></map>");
+
         var request = new ExternalImportRequest(map, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
@@ -627,13 +896,17 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(2, AnimationDefinitionSerializer.LoadAll(artifact.OutputPath).Count);
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "level.gscn"));
         Assert.Equal(2, scene.AnimationSources.Count);
-        Assert.All(scene.AnimationSources, source =>
-        {
-            Assert.Equal("terrain-animations.gani", source.GaniPath);
-            var animation = AnimationDefinitionSerializer.Load(artifact.OutputPath, source.AnimationKey);
-            Assert.Equal(source.AnimationKey, animation.Key);
-            Assert.Equal("level.gts", Assert.Single(animation.TilesheetSources).GtsPath);
-        });
+
+        Assert.All(
+            scene.AnimationSources,
+            source =>
+            {
+                Assert.Equal("terrain-animations.gani", source.GaniPath);
+                var animation = AnimationDefinitionSerializer.Load(artifact.OutputPath, source.AnimationKey);
+                Assert.Equal(source.AnimationKey, animation.Key);
+                Assert.Equal("level.gts", Assert.Single(animation.TilesheetSources).GtsPath);
+            });
+
         Assert.Equal("level.gts", Assert.Single(scene.TilesheetSources).GtsPath);
     }
 
@@ -643,12 +916,16 @@ public sealed class TiledImportTests : IDisposable
     {
         string tileset = Tileset();
         string map = Path.Combine(directory, "level.tmx");
-        File.WriteAllText(map, """
+
+        File.WriteAllText(
+            map,
+            """
             <map orientation="orthogonal" width="1" height="1" tilewidth="2" tileheight="2">
               <tileset firstgid="1" source="terrain.tsx"/>
               <layer><data encoding="csv">1</data></layer>
             </map>
             """);
+
         string output = Path.Combine(directory, "output");
         Assert.True(new TiledTilesetImporter().Import(new(tileset, output)).Analysis.CanImport);
         string legacyGts = Path.Combine(output, "terrain.gts");
@@ -659,8 +936,11 @@ public sealed class TiledImportTests : IDisposable
         var importer = new TiledMapImporter();
         var blocked = importer.Import(new ExternalImportRequest(map, output) { Overwrite = true });
         Assert.False(blocked.Analysis.CanImport);
-        Assert.Contains(blocked.Analysis.Diagnostics,
+
+        Assert.Contains(
+            blocked.Analysis.Diagnostics,
             diagnostic => diagnostic.Code == "key.exists" && diagnostic.Message.Contains("terrain.gts"));
+
         Assert.Empty(blocked.WrittenFiles);
         Assert.Equal(originalGts, File.ReadAllBytes(legacyGts));
         Assert.Equal(originalGani, File.ReadAllBytes(legacyGani));
@@ -669,26 +949,61 @@ public sealed class TiledImportTests : IDisposable
         File.Delete(legacyGts);
         var migrated = importer.Import(new ExternalImportRequest(map, output) { Overwrite = true });
         Assert.True(migrated.Analysis.CanImport, string.Join(";", migrated.Analysis.Diagnostics));
-        Assert.Equal("level.gts", Assert.Single(SceneDefinitionSerializer.Load(
-            Path.Combine(output, "level.gscn")).TilesheetSources).GtsPath);
-        Assert.Equal("level.gts", Assert.Single(AnimationDefinitionSerializer.Load(legacyGani).TilesheetSources).GtsPath);
+
+        Assert.Equal(
+            "level.gts",
+            Assert.Single(
+                SceneDefinitionSerializer.Load(
+                    Path.Combine(output, "level.gscn")).TilesheetSources).GtsPath);
+
+        Assert.Equal(
+            "level.gts",
+            Assert.Single(AnimationDefinitionSerializer.Load(legacyGani).TilesheetSources).GtsPath);
     }
 
     /// <summary>Tiled's single tile-local rectangle becomes a blocking GTS frame with exact signed insets.</summary>
     [Theory]
-    [InlineData(5, 6, 20, 15, 6, 19, 5, 15)]
-    [InlineData(-2, -3, 44, 46, -3, -3, -2, -2)]
+    [InlineData(
+        5,
+        6,
+        20,
+        15,
+        6,
+        19,
+        5,
+        15)]
+    [InlineData(
+        -2,
+        -3,
+        44,
+        46,
+        -3,
+        -3,
+        -2,
+        -2)]
     public void TiledTileRectangleBecomesFrameCollisionAdjust(
-        int x, int y, int width, int height, int top, int bottom, int left, int right)
+        int x,
+        int y,
+        int width,
+        int height,
+        int top,
+        int bottom,
+        int left,
+        int right)
     {
         string source = CollisionTileset(
             $"<object id='1' x='{x}' y='{y}' width='{width}' height='{height}'/>");
+
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var importer = new TiledTilesetImporter();
         var analysis = importer.Analyze(request);
         Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
-        Assert.DoesNotContain(analysis.Diagnostics, d => d.Code == "tiled.metadata" &&
-            d.Message.Contains("objectgroup", StringComparison.OrdinalIgnoreCase));
+
+        Assert.DoesNotContain(
+            analysis.Diagnostics,
+            d => d.Code == "tiled.metadata" &&
+                 d.Message.Contains("objectgroup", StringComparison.OrdinalIgnoreCase));
+
         Assert.False(Directory.Exists(request.OutputDirectory));
         var result = importer.Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
@@ -699,12 +1014,28 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(0, frame.XTile);
         Assert.Equal(0, frame.YTile);
         Assert.Equal(TileCollisionType.Blocking, frame.CollisionType);
-        Assert.Equal(new CollisionAdjust(top, bottom, left, right), frame.CollisionAdjust);
+
+        Assert.Equal(
+            new CollisionAdjust(
+                top,
+                bottom,
+                left,
+                right),
+            frame.CollisionAdjust);
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "oversized.gts"), "oversized");
+
         var runtimeFrame = sheet.GetFrame(0, 0);
         Assert.Equal(TileCollisionType.Blocking, runtimeFrame.CollisionType);
-        Assert.Equal(new Rectangle(x, y, width, height), runtimeFrame.CollisionArea);
+
+        Assert.Equal(
+            new Rectangle(
+                x,
+                y,
+                width,
+                height),
+            runtimeFrame.CollisionArea);
     }
 
     /// <summary>A tile's authored rectangle survives the map-to-GSCN path and runtime collision activation.</summary>
@@ -717,22 +1048,54 @@ public sealed class TiledImportTests : IDisposable
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         var gtsPath = Path.Combine(request.OutputDirectory, "oversized.gts");
         var region = Assert.Single(TilesheetDefinitionSerializer.Load(gtsPath).Regions);
-        Assert.Equal(new Spacing(0, 16, 8, 0), region.Overhang);
+
+        Assert.Equal(
+            new Spacing(
+                0,
+                16,
+                8,
+                0),
+            region.Overhang);
+
         Assert.Equal(TileCollisionType.Blocking, Assert.Single(region.Frames).CollisionType);
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gscn"));
         var nativeTile = Assert.Single(scene.Layers[0].Tiles.Where(t => t.X == 0 && t.Y == 0));
         Assert.Equal(TileCollisionType.Blocking, nativeTile.CollisionType);
-        Assert.Equal(new CollisionAdjust(6, 19, 5, 15), nativeTile.AdjustCollisionArea);
+
+        Assert.Equal(
+            new CollisionAdjust(
+                6,
+                19,
+                5,
+                15),
+            nativeTile.AdjustCollisionArea);
+
         Assert.False(nativeTile.AdjustCollisionAreaByFrame);
         Assert.False(nativeTile.CollisionTypeByFrame);
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(gtsPath, "oversized");
+
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var tile = runtime.SceneLayers[0][0, 0]!;
         Assert.True(tile.CollisionsEnabled);
         Assert.Equal(TileCollisionType.Blocking, tile.CollisionType);
-        Assert.Equal(new Rectangle(0, -16, 40, 40), tile.DrawLocationWorld);
-        Assert.Equal(new Rectangle(5, -10, 20, 15), tile.CollisionArea);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                -16,
+                40,
+                40),
+            tile.DrawLocationWorld);
+
+        Assert.Equal(
+            new Rectangle(
+                5,
+                -10,
+                20,
+                15),
+            tile.CollisionArea);
     }
 
     /// <summary>Native tile transforms also transform the rectangle collision metadata.</summary>
@@ -741,22 +1104,35 @@ public sealed class TiledImportTests : IDisposable
     {
         CollisionTileset("<object id='1' x='5' y='6' width='20' height='15'/>");
         string source = Path.Combine(directory, "flipped.tmx");
-        File.WriteAllText(source, """
+
+        File.WriteAllText(
+            source,
+            """
             <map orientation='orthogonal' width='1' height='1' tilewidth='40' tileheight='40'>
               <tileset firstgid='1' source='oversized.tsx'/>
               <layer width='1' height='1'><data encoding='csv'>2147483649</data></layer>
             </map>
             """);
+
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "flipped.gscn"));
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "flipped.gts"), "oversized");
+
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         var tile = runtime.SceneLayers[0][0, 0]!;
         Assert.True(tile.CollisionsEnabled);
-        Assert.Equal(new Rectangle(15, 6, 20, 15), tile.CollisionArea);
+
+        Assert.Equal(
+            new Rectangle(
+                15,
+                6,
+                20,
+                15),
+            tile.CollisionArea);
     }
 
     /// <summary>Animated TMX tiles retain collisions attached to their logical source tile ID.</summary>
@@ -764,15 +1140,24 @@ public sealed class TiledImportTests : IDisposable
     public void AnimatedTiledTileRetainsOwningTileCollisionAcrossInitialFrame()
     {
         string tsx = Tileset();
-        File.WriteAllText(tsx, File.ReadAllText(tsx).Replace("<tile id=\"0\">",
-            "<tile id=\"0\"><objectgroup><object id='1' x='1' y='0' width='1' height='2'/></objectgroup>"));
+
+        File.WriteAllText(
+            tsx,
+            File.ReadAllText(tsx).Replace(
+                "<tile id=\"0\">",
+                "<tile id=\"0\"><objectgroup><object id='1' x='1' y='0' width='1' height='2'/></objectgroup>"));
+
         string source = Path.Combine(directory, "animated-collision.tmx");
-        File.WriteAllText(source, """
+
+        File.WriteAllText(
+            source,
+            """
             <map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'>
               <tileset firstgid='1' source='terrain.tsx'/>
               <layer width='1' height='1'><data encoding='csv'>1</data></layer>
             </map>
             """);
+
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
@@ -785,17 +1170,34 @@ public sealed class TiledImportTests : IDisposable
         Assert.True(tile.StartAnimation);
         Assert.Equal(1, tile.Frame!.XTile);
         Assert.Equal(TileCollisionType.Blocking, tile.CollisionType);
-        Assert.Equal(new CollisionAdjust(0, 0, 1, 0), tile.AdjustCollisionArea);
+
+        Assert.Equal(
+            new CollisionAdjust(
+                0,
+                0,
+                1,
+                0),
+            tile.AdjustCollisionArea);
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance
             .LoadFromDefinitionFile(Path.Combine(request.OutputDirectory, "animated-collision.gts"), "terrain");
+
         var cycles = AnimationDefinitionSerializer.LoadAllCycles(
             Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+
         try
         {
             using var runtime = SceneDefinitionSerializer.ToScene(scene);
             var placed = runtime.SceneLayers[0][0, 0]!;
             Assert.True(placed.CollisionsEnabled);
-            Assert.Equal(new Rectangle(1, 0, 1, 2), placed.CollisionArea);
+
+            Assert.Equal(
+                new Rectangle(
+                    1,
+                    0,
+                    1,
+                    2),
+                placed.CollisionArea);
         }
         finally
         {
@@ -806,22 +1208,32 @@ public sealed class TiledImportTests : IDisposable
 
     /// <summary>Unrepresentable shapes produce explicit warnings, never partial collision geometry.</summary>
     [Theory]
-    [InlineData("<object id='1' x='1' y='1' width='4' height='4'/><object id='2' x='2' y='2' width='5' height='5'/>", "one rectangle")]
+    [InlineData(
+        "<object id='1' x='1' y='1' width='4' height='4'/><object id='2' x='2' y='2' width='5' height='5'/>",
+        "one rectangle")]
     [InlineData("<object id='1' x='1' y='1' width='4' height='4' rotation='30'/>", "rotated")]
     [InlineData("<object id='1' x='1' y='1' width='4' height='4'><ellipse/></object>", "non-rectangular")]
-    [InlineData("<object id='1' x='1' y='1' width='4' height='4'><polygon points='0,0 4,0 4,4'/></object>", "non-rectangular")]
+    [InlineData(
+        "<object id='1' x='1' y='1' width='4' height='4'><polygon points='0,0 4,0 4,4'/></object>",
+        "non-rectangular")]
     [InlineData("<object id='1' x='1.5' y='1' width='4' height='4'/>", "integral")]
     [InlineData("<object id='1' x='1' y='1' width='0' height='4'/>", "positive")]
-    [InlineData("<object id='1' x='1' y='1' width='4' height='4'><properties><property name='trigger' type='bool' value='true'/></properties></object>", "custom")]
+    [InlineData(
+        "<object id='1' x='1' y='1' width='4' height='4'><properties><property name='trigger' type='bool' value='true'/></properties></object>",
+        "custom")]
     public void UnsupportedTileCollisionsAreWarnedAndOmitted(string objects, string reason)
     {
         var source = CollisionTileset(objects);
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Severity == ExternalImportSeverity.Warning &&
-            d.Code == "tiled.collision.unsupported" && d.Message.Contains(reason));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Severity == ExternalImportSeverity.Warning &&
+                d.Code == "tiled.collision.unsupported" && d.Message.Contains(reason));
+
         var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gts"));
         Assert.Empty(Assert.Single(gts.Regions).Frames);
     }
@@ -830,17 +1242,26 @@ public sealed class TiledImportTests : IDisposable
     [Fact]
     public void GridRenderedCollisionRectangleWithDifferentDrawSizeWarns()
     {
-        CollisionTileset("<object id='1' x='5' y='6' width='20' height='15'/>",
+        CollisionTileset(
+            "<object id='1' x='5' y='6' width='20' height='15'/>",
             tilesetAttributes: "tilerendersize='grid'");
+
         var request = new ExternalImportRequest(OversizedMap(), Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Code == "tiled.collision.unsupported" && d.Message.Contains("scaling"));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Code == "tiled.collision.unsupported" && d.Message.Contains("scaling"));
+
         var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "oversized.gts"));
         Assert.Empty(Assert.Single(gts.Regions).Frames);
-        Assert.All(Assert.Single(SceneDefinitionSerializer.Load(
-            Path.Combine(request.OutputDirectory, "oversized.gscn")).Layers).Tiles,
+
+        Assert.All(
+            Assert.Single(
+                SceneDefinitionSerializer.Load(
+                    Path.Combine(request.OutputDirectory, "oversized.gscn")).Layers).Tiles,
             tile => Assert.Equal(TileCollisionType.None, tile.CollisionType));
     }
 
@@ -878,6 +1299,7 @@ public sealed class TiledImportTests : IDisposable
         var result = importer.Import(request);
         Assert.Equal(3, result.WrittenFiles.Count);
         string imagePath = Path.Combine(request.OutputDirectory, "terrain-atlas.png");
+
         using (var atlas = SKBitmap.Decode(imagePath))
         {
             Assert.Equal(7, atlas.Width);
@@ -903,23 +1325,32 @@ public sealed class TiledImportTests : IDisposable
         EmbedAtlasInTileset(tsx);
         string inline = File.ReadAllText(tsx).Replace("<tileset name=", "<tileset firstgid=\"1\" name=");
         string tmx = Path.Combine(directory, "world.tmx");
-        File.WriteAllText(tmx, $"<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'>{inline}<layer width='1' height='1'><data encoding='csv'>1</data></layer></map>");
+
+        File.WriteAllText(
+            tmx,
+            $"<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'>{inline}<layer width='1' height='1'><data encoding='csv'>1</data></layer></map>");
+
         File.Delete(Path.Combine(directory, "atlas.png"));
         var request = new ExternalImportRequest(tmx, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         string imagePath = Path.Combine(request.OutputDirectory, "world-tileset-1-atlas.png");
         Assert.True(File.Exists(imagePath));
+
         using (var atlas = SKBitmap.Decode(imagePath))
             Assert.Equal(SKColors.Red, atlas.GetPixel(0, 0));
+
         var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "world.gts"), "terrain");
         Assert.Equal("world-tileset-1-atlas.png", gts.Image.FilePath);
         var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "world.gscn"));
         Assert.Empty(SceneDefinitionValidator.Validate(scene));
         Assert.Equal("world.gts", Assert.Single(scene.TilesheetSources).GtsPath);
         Assert.True(Assert.Single(Assert.Single(scene.Layers).Tiles).StartAnimation);
+
         var animation = AnimationDefinitionSerializer.Load(
-            Path.Combine(request.OutputDirectory, "world-tileset-1-animations.gani"), "terrain.tile.0");
+            Path.Combine(request.OutputDirectory, "world-tileset-1-animations.gani"),
+            "terrain.tile.0");
+
         Assert.Equal("world.gts", Assert.Single(animation.TilesheetSources).GtsPath);
         Assert.Equal("world-tileset-1-animations.gani", Assert.Single(scene.AnimationSources).GaniPath);
     }
@@ -954,8 +1385,12 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
         var result = new TiledTilesetImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Message.Contains("either a source path or embedded data"));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Message.Contains("either a source path or embedded data"));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -968,8 +1403,13 @@ public sealed class TiledImportTests : IDisposable
         EmbedAtlasInTileset(tsx);
         var xml = System.Xml.Linq.XDocument.Load(tsx);
         var image = xml.Root!.Element("image")!;
-        image.Add(new System.Xml.Linq.XElement("data", new System.Xml.Linq.XAttribute("encoding", "base64"),
-            Convert.ToBase64String([1, 2, 3, 4])));
+
+        image.Add(
+            new System.Xml.Linq.XElement(
+                "data",
+                new System.Xml.Linq.XAttribute("encoding", "base64"),
+                Convert.ToBase64String([1, 2, 3, 4])));
+
         xml.Save(tsx);
         var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
         var result = new TiledTilesetImporter().Import(request);
@@ -992,9 +1432,11 @@ public sealed class TiledImportTests : IDisposable
         System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(16, 4), 9000);
         System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(20, 4), 9000);
         uint crc = 0xffffffff;
+
         foreach (byte value in png.AsSpan(12, 17))
         {
             crc ^= value;
+
             for (int bit = 0; bit < 8; bit++)
                 crc = (crc >> 1) ^ ((crc & 1) != 0 ? 0xedb88320u : 0u);
         }
@@ -1005,8 +1447,12 @@ public sealed class TiledImportTests : IDisposable
         var request = new ExternalImportRequest(tsx, Path.Combine(directory, "output"));
         var result = new TiledTilesetImporter().Import(request);
         Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d =>
-            d.Message.Contains("64-million-pixel limit"));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d =>
+                d.Message.Contains("64-million-pixel limit"));
+
         Assert.Empty(result.WrittenFiles);
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -1054,13 +1500,24 @@ public sealed class TiledImportTests : IDisposable
         var importer = new TiledTilesetImporter();
         var first = importer.Import(request).WrittenFiles.ToDictionary(p => p, File.ReadAllBytes);
         importer.Import(request with { Overwrite = true });
+
         foreach (var (path, bytes) in first)
             Assert.Equal(bytes, File.ReadAllBytes(path));
-        File.WriteAllText(source, File.ReadAllText(source).Replace("<frame tileid=\"1\" duration=\"100\"/><frame tileid=\"0\" duration=\"250\"/>", ""));
+
+        File.WriteAllText(
+            source,
+            File.ReadAllText(source).Replace(
+                "<frame tileid=\"1\" duration=\"100\"/><frame tileid=\"0\" duration=\"250\"/>",
+                ""));
+
         var result = importer.Import(request with { Overwrite = true });
         Assert.False(result.Analysis.CanImport);
         Assert.Empty(result.WrittenFiles);
-        Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains("animation", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d => d.Message.Contains("animation", StringComparison.OrdinalIgnoreCase));
+
         foreach (var (path, bytes) in first)
             Assert.Equal(bytes, File.ReadAllBytes(path));
     }
@@ -1075,15 +1532,23 @@ public sealed class TiledImportTests : IDisposable
     public void MapImportsMixedTilesetsEmptyCellsAndAnimation(string orientation)
     {
         Tileset();
-        File.WriteAllText(Path.Combine(directory, "second.tsx"), File.ReadAllText(Path.Combine(directory, "terrain.tsx")).Replace("name=\"terrain\"", "name=\"second\""));
+
+        File.WriteAllText(
+            Path.Combine(directory, "second.tsx"),
+            File.ReadAllText(Path.Combine(directory, "terrain.tsx")).Replace("name=\"terrain\"", "name=\"second\""));
+
         var source = Path.Combine(directory, "level.tmx");
-        File.WriteAllText(source, $"""
-            <map orientation="{orientation}" width="3" height="1" tilewidth="2" tileheight="2">
-              <tileset firstgid="1" source="terrain.tsx"/><tileset firstgid="5" source="second.tsx"/>
-              <group visible="0" offsetx="4"><layer width="3" height="1"><data encoding="csv">1,0,6</data></layer></group>
-              <objectgroup name="objects"/>
-            </map>
-            """);
+
+        File.WriteAllText(
+            source,
+            $"""
+             <map orientation="{orientation}" width="3" height="1" tilewidth="2" tileheight="2">
+               <tileset firstgid="1" source="terrain.tsx"/><tileset firstgid="5" source="second.tsx"/>
+               <group visible="0" offsetx="4"><layer width="3" height="1"><data encoding="csv">1,0,6</data></layer></group>
+               <objectgroup name="objects"/>
+             </map>
+             """);
+
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
@@ -1091,18 +1556,32 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal("level.gts", Path.GetFileName(gtsArtifact.OutputPath));
         Assert.Equal(new[] { "terrain", "second" }, gtsArtifact.LogicalKeys);
         Assert.DoesNotContain(result.WrittenFiles, f => Path.GetFileName(f) is "terrain.gts" or "second.gts");
-        Assert.Equal(new[] { "terrain", "second" },
+
+        Assert.Equal(
+            new[] { "terrain", "second" },
             TilesheetDefinitionSerializer.LoadAll(gtsArtifact.OutputPath).Select(d => d.Name));
-        Assert.Equal("../atlas.png", TilesheetDefinitionSerializer.Load(gtsArtifact.OutputPath, "terrain").Image.FilePath);
-        Assert.Equal("../atlas.png", TilesheetDefinitionSerializer.Load(gtsArtifact.OutputPath, "second").Image.FilePath);
-        var scene = Gondwana.Scenes.GSCN.SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "level.gscn"));
+
+        Assert.Equal(
+            "../atlas.png",
+            TilesheetDefinitionSerializer.Load(gtsArtifact.OutputPath, "terrain").Image.FilePath);
+
+        Assert.Equal(
+            "../atlas.png",
+            TilesheetDefinitionSerializer.Load(gtsArtifact.OutputPath, "second").Image.FilePath);
+
+        var scene = Gondwana.Scenes.GSCN.SceneDefinitionSerializer.Load(
+            Path.Combine(request.OutputDirectory, "level.gscn"));
+
         Assert.Empty(Gondwana.Scenes.GSCN.SceneDefinitionValidator.Validate(scene));
         Assert.Equal(new[] { "terrain", "second" }, scene.TilesheetSources.Select(source => source.Tilesheet));
         Assert.All(scene.TilesheetSources, source => Assert.Equal("level.gts", source.GtsPath));
+
         foreach (var animationSource in scene.AnimationSources)
         {
             var animation = AnimationDefinitionSerializer.Load(
-                Path.Combine(request.OutputDirectory, animationSource.GaniPath!), animationSource.AnimationKey);
+                Path.Combine(request.OutputDirectory, animationSource.GaniPath!),
+                animationSource.AnimationKey);
+
             Assert.Equal("level.gts", Assert.Single(animation.TilesheetSources).GtsPath);
         }
 
@@ -1128,7 +1607,10 @@ public sealed class TiledImportTests : IDisposable
     {
         string standaloneTileset = Tileset();
         string source = Path.Combine(directory, "mixed.tmx");
-        File.WriteAllText(source, """
+
+        File.WriteAllText(
+            source,
+            """
             <map orientation="orthogonal" width="2" height="1" tilewidth="2" tileheight="2">
               <tileset firstgid="1" source="terrain.tsx"/>
               <tileset firstgid="5" name="decor" tilewidth="2" tileheight="2" tilecount="2" columns="2" margin="1" spacing="1">
@@ -1140,6 +1622,7 @@ public sealed class TiledImportTests : IDisposable
               <layer width="2" height="1"><data encoding="csv">1,5</data></layer>
             </map>
             """);
+
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
@@ -1152,27 +1635,45 @@ public sealed class TiledImportTests : IDisposable
         Assert.Empty(SceneDefinitionValidator.Validate(scene));
         Assert.Equal(new[] { "terrain", "decor" }, scene.TilesheetSources.Select(x => x.Tilesheet));
         Assert.All(scene.TilesheetSources, x => Assert.Equal("mixed.gts", x.GtsPath));
-        Assert.Equal(new[] { "terrain", "decor" },
+
+        Assert.Equal(
+            new[] { "terrain", "decor" },
             scene.Layers.Single().Tiles.Select(tile => tile.Frame!.Tilesheet));
+
         Assert.All(scene.Layers.Single().Tiles, tile => Assert.True(tile.StartAnimation));
         Assert.Equal(2, scene.AnimationSources.Count);
+
         foreach (var animationSource in scene.AnimationSources)
         {
             var animation = AnimationDefinitionSerializer.Load(
-                Path.Combine(request.OutputDirectory, animationSource.GaniPath!), animationSource.AnimationKey);
+                Path.Combine(request.OutputDirectory, animationSource.GaniPath!),
+                animationSource.AnimationKey);
+
             Assert.Equal("mixed.gts", Assert.Single(animation.TilesheetSources).GtsPath);
-            Assert.All(animation.Frames, frame => Assert.Equal(
-                animationSource.AnimationKey.Split(".tile.")[0], frame.Tilesheet));
+
+            Assert.All(
+                animation.Frames,
+                frame => Assert.Equal(
+                    animationSource.AnimationKey.Split(".tile.")[0],
+                    frame.Tilesheet));
         }
 
         // Importing the original TSX independently still produces its own single-member GTS.
         var standaloneRequest = new ExternalImportRequest(standaloneTileset, Path.Combine(directory, "tsx-output"));
         var tsxResult = new TiledTilesetImporter().Import(standaloneRequest);
         Assert.True(tsxResult.Analysis.CanImport);
-        Assert.Equal("terrain.gts", Path.GetFileName(
-            Assert.Single(tsxResult.Analysis.Artifacts, artifact => artifact.Kind == "GTS").OutputPath));
-        Assert.Equal("terrain.gts", Assert.Single(AnimationDefinitionSerializer.Load(
-            Path.Combine(standaloneRequest.OutputDirectory, "terrain-animations.gani")).TilesheetSources).GtsPath);
+
+        Assert.Equal(
+            "terrain.gts",
+            Path.GetFileName(
+                Assert.Single(tsxResult.Analysis.Artifacts, artifact => artifact.Kind == "GTS").OutputPath));
+
+        Assert.Equal(
+            "terrain.gts",
+            Assert.Single(
+                    AnimationDefinitionSerializer.Load(
+                        Path.Combine(standaloneRequest.OutputDirectory, "terrain-animations.gani")).TilesheetSources)
+                .GtsPath);
     }
 
     /// <summary>
@@ -1187,6 +1688,7 @@ public sealed class TiledImportTests : IDisposable
     {
         byte[] raw = [1, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0];
         using var memory = new MemoryStream();
+
         if (compression.Length == 0)
             memory.Write(raw);
         else
@@ -1194,10 +1696,13 @@ public sealed class TiledImportTests : IDisposable
             using Stream compressed = compression == "zlib"
                 ? new System.IO.Compression.ZLibStream(memory, System.IO.Compression.CompressionLevel.Optimal, true)
                 : new System.IO.Compression.GZipStream(memory, System.IO.Compression.CompressionLevel.Optimal, true);
+
             compressed.Write(raw);
         }
 
-        var data = System.Xml.Linq.XElement.Parse($"<data encoding='base64' compression='{compression}'>{Convert.ToBase64String(memory.ToArray())}</data>");
+        var data = System.Xml.Linq.XElement.Parse(
+            $"<data encoding='base64' compression='{compression}'>{Convert.ToBase64String(memory.ToArray())}</data>");
+
         Assert.Equal(new uint[] { 1, 0, 6 }, TiledMapImporter.DecodeLayer(data, 3));
     }
 
@@ -1207,14 +1712,27 @@ public sealed class TiledImportTests : IDisposable
     [Fact]
     public void XmlDataAndTransformDiagnostics()
     {
-        Assert.Equal(new uint[] { 1, 0 }, TiledMapImporter.DecodeLayer(System.Xml.Linq.XElement.Parse("<data><tile gid='1'/><tile gid='0'/></data>"), 2));
+        Assert.Equal(
+            new uint[] { 1, 0 },
+            TiledMapImporter.DecodeLayer(
+                System.Xml.Linq.XElement.Parse("<data><tile gid='1'/><tile gid='0'/></data>"),
+                2));
+
         Tileset();
         string source = Path.Combine(directory, "flipped.tmx");
-        File.WriteAllText(source, "<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>268435457</data></layer></map>");
+
+        File.WriteAllText(
+            source,
+            "<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>268435457</data></layer></map>");
+
         var result = new TiledMapImporter().Import(new(source, Path.Combine(directory, "output")));
         Assert.True(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.transform.hex" && d.Severity == ExternalImportSeverity.Warning);
+
+        Assert.Contains(
+            result.Analysis.Diagnostics,
+            d => d.Code == "tiled.transform.hex" && d.Severity == ExternalImportSeverity.Warning);
     }
+
     /// <summary>
     /// Verifies all eight gid combinations import and round trip.
     /// </summary>
@@ -1226,15 +1744,24 @@ public sealed class TiledImportTests : IDisposable
     {
         Tileset();
         uint[] flags = [0, 0x80000000, 0x40000000, 0xc0000000, 0x20000000, 0xa0000000, 0x60000000, 0xe0000000];
-        TileTransform[] expected = [TileTransform.Identity, TileTransform.FlipHorizontal, TileTransform.FlipVertical, TileTransform.Rotate180,
-            TileTransform.FlipDiagonal, TileTransform.Rotate90, TileTransform.Rotate270, TileTransform.FlipAntiDiagonal];
+
+        TileTransform[] expected =
+        [
+            TileTransform.Identity, TileTransform.FlipHorizontal, TileTransform.FlipVertical, TileTransform.Rotate180,
+            TileTransform.FlipDiagonal, TileTransform.Rotate90, TileTransform.Rotate270, TileTransform.FlipAntiDiagonal
+        ];
+
         string source = Path.Combine(directory, "transforms.tmx");
-        File.WriteAllText(source, $"""
-            <map orientation="{orientation}" width="8" height="1" tilewidth="2" tileheight="2">
-              <tileset firstgid="1" source="terrain.tsx"/>
-              <layer><data encoding="csv">{string.Join(",", flags.Select(flag => flag | 2u))}</data></layer>
-            </map>
-            """);
+
+        File.WriteAllText(
+            source,
+            $"""
+             <map orientation="{orientation}" width="8" height="1" tilewidth="2" tileheight="2">
+               <tileset firstgid="1" source="terrain.tsx"/>
+               <layer><data encoding="csv">{string.Join(",", flags.Select(flag => flag | 2u))}</data></layer>
+             </map>
+             """);
+
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new TiledMapImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
@@ -1244,11 +1771,18 @@ public sealed class TiledImportTests : IDisposable
         scene = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(scene));
         var tiles = scene.Layers.Single().Tiles;
         Assert.Equal(expected, tiles.Select(tile => tile.Transform));
+
         using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance.LoadFromDefinitionFile(
-            Path.Combine(request.OutputDirectory, "transforms.gts"), "terrain");
+            Path.Combine(request.OutputDirectory, "transforms.gts"),
+            "terrain");
+
         using var runtime = SceneDefinitionSerializer.ToScene(scene);
         Assert.Equal(expected, Enumerable.Range(0, 8).Select(x => runtime.SceneLayers.Single()[x, 0]!.Transform));
-        Assert.Equal(expected, SceneDefinitionSerializer.FromScene(runtime).Layers[0].Tiles.Select(tile => tile.Transform));
+
+        Assert.Equal(
+            expected,
+            SceneDefinitionSerializer.FromScene(runtime).Layers[0].Tiles.Select(tile => tile.Transform));
+
         for (int i = 0; i < flags.Length; i++)
         {
             var decoded = TiledTileTransform.Decode(flags[i] | 2u);

@@ -27,17 +27,18 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// Occurs when the sprite position changes.
     /// </summary>
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
+
     /// <summary>
     /// Occurs when the sprite visual bounds change.
     /// </summary>
     public event Action<Sprite>? VisualBoundsChanged;
+
     /// <summary>
     /// Occurs when disposal begins.
     /// </summary>
     public event Action<Sprite>? Disposing;
 
-    [JsonIgnore]
-    internal SceneLayer _sceneLayer;
+    [JsonIgnore] internal SceneLayer _sceneLayer;
 
     private string? _serializedSceneId;
     private string? _serializedSceneLayerId;
@@ -133,9 +134,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         string collisionProfileName)
     {
         _sceneLayer = sceneLayer
-            ?? throw new ArgumentNullException(
-                nameof(sceneLayer),
-                "Sprite must be attached to a SceneLayer.");
+                      ?? throw new ArgumentNullException(
+                          nameof(sceneLayer),
+                          "Sprite must be attached to a SceneLayer.");
 
         animator = new Animator(this);
         pauseAnimation = false;
@@ -149,10 +150,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             MovementState.ForSceneLayer(),
             SceneLayer);
 
-        AttachCollider(new TileCollider(
-            this,
-            collisionGroup: CollisionMasks.None,
-            collidesWith: CollisionMasks.None));
+        AttachCollider(
+            new TileCollider(
+                this,
+                collisionGroup: CollisionMasks.None,
+                collidesWith: CollisionMasks.None));
 
         SetCollisionProfile(collisionProfileName);
         CurrentFrame = frame;
@@ -177,9 +179,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         ArgumentNullException.ThrowIfNull(sprite);
 
         _sceneLayer = sceneLayer
-            ?? throw new ArgumentNullException(
-                nameof(sceneLayer),
-                "Sprite must be attached to a SceneLayer.");
+                      ?? throw new ArgumentNullException(
+                          nameof(sceneLayer),
+                          "Sprite must be attached to a SceneLayer.");
 
         animator = new Animator(this);
 
@@ -200,10 +202,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             MovementState.ForSceneLayer(),
             SceneLayer);
 
-        AttachCollider(new TileCollider(
-            this,
-            collisionGroup: CollisionMasks.None,
-            collidesWith: CollisionMasks.None));
+        AttachCollider(
+            new TileCollider(
+                this,
+                collisionGroup: CollisionMasks.None,
+                collidesWith: CollisionMasks.None));
 
         if (string.IsNullOrWhiteSpace(CollisionProfileName))
             SetCollisionProfile(SpriteManager.Instance.DefaultCollisionProfile);
@@ -279,10 +282,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             MovementState.ForSceneLayer(),
             SceneLayer);
 
-        AttachCollider(new TileCollider(
-            this,
-            collisionGroup: CollisionMasks.None,
-            collidesWith: CollisionMasks.None));
+        AttachCollider(
+            new TileCollider(
+                this,
+                collisionGroup: CollisionMasks.None,
+                collidesWith: CollisionMasks.None));
 
         if (string.IsNullOrWhiteSpace(CollisionProfileName))
             SetCollisionProfile(SpriteManager.Instance.DefaultCollisionProfile);
@@ -320,6 +324,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         movementWorldRect.Inflate(5, 5);
 
         _sceneLayer.RefreshQueue.AddWorldRect(movementWorldRect);
+
         SpriteMoved?.Invoke(
             new SpriteMovedEventArgs(this, oldCoord, _sceneLayerCoordinates));
     }
@@ -342,6 +347,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
                 throw new ArgumentOutOfRangeException(nameof(value), "Rotation must be a finite number of degrees.");
 
             float normalized = value % 360f;
+
             if (normalized < 0f)
                 normalized += 360f;
 
@@ -388,6 +394,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         var canvas = backbuffer.Canvas;
 
         canvas.Save();
+
         try
         {
             canvas.RotateDegrees(Rotation, centerX, centerY);
@@ -417,6 +424,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
         var originalSceneCoord =
             GetSceneLayerCoordsFromSpriteWorldRect(originalRect);
+
         var translatedSceneCoord =
             GetSceneLayerCoordsFromSpriteWorldRect(translatedRect);
 
@@ -581,26 +589,44 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <inheritdoc/>
     [JsonIgnore]
     public override Rectangle DrawLocationWorld =>
-        GetPlacementBounds(_sceneLayer, SceneLayerCoordinates, _renderSize, HorizAlign, VertAlign, new(NudgeX, NudgeY));
+        GetPlacementBounds(
+            _sceneLayer,
+            SceneLayerCoordinates,
+            _renderSize,
+            HorizAlign,
+            VertAlign,
+            new(NudgeX, NudgeY));
 
     /// <summary>Computes the unrotated drawable bounds for a sprite position without materializing a sprite.</summary>
-    public static Rectangle GetPlacementBounds(SceneLayer layer, PointF position, Size size,
-        HorizontalAlignment horizontal, VerticalAlignment vertical, Point nudge)
+    public static Rectangle GetPlacementBounds(
+        SceneLayer layer,
+        PointF position,
+        Size size,
+        HorizontalAlignment horizontal,
+        VerticalAlignment vertical,
+        Point nudge)
     {
         var anchor = layer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(layer, position);
+
         int x = horizontal switch
         {
             HorizontalAlignment.Center => (layer.TileWidth - size.Width) / 2,
             HorizontalAlignment.Right => layer.TileWidth - size.Width,
             _ => 0
         };
+
         int y = vertical switch
         {
             VerticalAlignment.Middle => (layer.TileHeight - size.Height) / 2,
             VerticalAlignment.Bottom => layer.TileHeight - size.Height,
             _ => 0
         };
-        return new Rectangle(anchor.X + x + nudge.X, anchor.Y + y + nudge.Y, size.Width, size.Height);
+
+        return new Rectangle(
+            anchor.X + x + nudge.X,
+            anchor.Y + y + nudge.Y,
+            size.Width,
+            size.Height);
     }
 
     /// <inheritdoc/>
@@ -689,7 +715,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private static Rectangle GetRotatedBounds(Rectangle rect, float degrees)
     {
         RectangleF bounds = GetRotatedBounds(
-            new RectangleF(rect.X, rect.Y, rect.Width, rect.Height),
+            new RectangleF(
+                rect.X,
+                rect.Y,
+                rect.Width,
+                rect.Height),
             degrees);
 
         return Rectangle.FromLTRB(

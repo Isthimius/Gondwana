@@ -33,11 +33,9 @@ namespace Gondwana.Scenes;
 [JsonObject(IsReference = true)]
 public class Scene : IEnumerable<SceneLayer>, IDisposable
 {
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionProvenance? DefinitionProvenance { get; set; }
 
-    [JsonProperty("SceneLayers")]
-    private readonly List<SceneLayer> _sceneLayers = [];
+    [JsonProperty("SceneLayers")] private readonly List<SceneLayer> _sceneLayers = [];
 
     // Read legacy state files that used the private field name without
     // continuing to emit that implementation detail in new JSON.
@@ -60,11 +58,9 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
 #pragma warning restore IDE0051
 
-    [JsonIgnore]
-    private readonly object _renderSurfaceHostSync = new();
+    [JsonIgnore] private readonly object _renderSurfaceHostSync = new();
 
-    [JsonIgnore]
-    private RenderSurfaceHostBase? _boundRenderSurfaceHost;
+    [JsonIgnore] private RenderSurfaceHostBase? _boundRenderSurfaceHost;
 
     #region Scene events
 
@@ -124,10 +120,11 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// <param name="collisionGroups">The collision group registry to use for the scene, or <see langword="null"/> to create a new registry.</param>
     /// <param name="collisionProfiles">The collision profile registry to use for the scene, or <see langword="null"/> to create the standard profiles.</param>
     [JsonConstructor]
-    protected Scene(List<SceneLayer>? sceneLayers,
-                    string? id,
-                    CollisionGroupRegistry? collisionGroups,
-                    CollisionProfileRegistry? collisionProfiles)
+    protected Scene(
+        List<SceneLayer>? sceneLayers,
+        string? id,
+        CollisionGroupRegistry? collisionGroups,
+        CollisionProfileRegistry? collisionProfiles)
     {
         _sceneLayers = sceneLayers ?? new List<SceneLayer>();
         ID = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id;
@@ -301,6 +298,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
                     .OrderBy(sl => sl.ZOrder)
                     .ToList()
                     .AsReadOnly();
+
                 _visibleSortedDirty = false;
             }
 
@@ -465,15 +463,23 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// tiles, adding sprites, or adjusting visual properties.
     /// </para>
     /// </remarks>
-    public SceneLayer AddLayer(int columnCount,
-                               int rowCount,
-                               int width = 32,
-                               int height = 32,
-                               int zOrder = 0,
-                               float parallax = 1f,
-                               CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
+    public SceneLayer AddLayer(
+        int columnCount,
+        int rowCount,
+        int width = 32,
+        int height = 32,
+        int zOrder = 0,
+        float parallax = 1f,
+        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
     {
-        var sceneLayer = new SceneLayer(columnCount, rowCount, width, height, parallax, coordinateSystem);
+        var sceneLayer = new SceneLayer(
+            columnCount,
+            rowCount,
+            width,
+            height,
+            parallax,
+            coordinateSystem);
+
         sceneLayer.ZOrder = zOrder;
 
         _sceneLayers.Add(sceneLayer);
@@ -599,6 +605,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         foreach (var layer in _sceneLayers)
         {
             var lb = layer.GetLayerBoundsPx();
+
             if (lb.IsEmpty)
                 continue;
 
@@ -923,6 +930,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public static void ClearAllScenes()
     {
         var tmp = new List<Scene>(_allScenes);
+
         foreach (var scene in tmp)
             scene.Dispose();
     }

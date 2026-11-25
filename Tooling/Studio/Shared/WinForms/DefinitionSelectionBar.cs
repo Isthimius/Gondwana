@@ -30,17 +30,18 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
     /// <param name="extension">The accepted native definition extension.</param>
     /// <param name="import">Imports a file using the shared member picker.</param>
 #pragma warning disable S107
-    public DefinitionSelectionBar(Func<IReadOnlyList<T>> definitions,
-                                    Func<T> selected,
-                                    Func<T, string> name,
-                                    Action<T> select,
-                                    Action add,
-                                    Action duplicate,
-                                    Action remove,
-                                    Action<string> rename,
-                                    Action refresh,
-                                    string extension,
-                                    Func<string, Func<IReadOnlyList<T>, IReadOnlyList<int>?>, int> import)
+    public DefinitionSelectionBar(
+        Func<IReadOnlyList<T>> definitions,
+        Func<T> selected,
+        Func<T, string> name,
+        Action<T> select,
+        Action add,
+        Action duplicate,
+        Action remove,
+        Action<string> rename,
+        Action refresh,
+        string extension,
+        Func<string, Func<IReadOnlyList<T>, IReadOnlyList<int>?>, int> import)
 #pragma warning restore S107
         : base(32, 32)
     {
@@ -58,36 +59,58 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         Items.Add(new ToolStripLabel("Definition"));
         Items.Add(_members);
 
-        AddIconButton("Add definition", "AddDefinition", DefinitionCommand.Add, () => Execute(add));
+        AddIconButton(
+            "Add definition",
+            "AddDefinition",
+            DefinitionCommand.Add,
+            () => Execute(add));
 
-        AddIconButton("Import definition…", "ImportDefinition", DefinitionCommand.Import, () =>
-        {
-            try
+        AddIconButton(
+            "Import definition…",
+            "ImportDefinition",
+            DefinitionCommand.Import,
+            () =>
             {
-                using var file = new OpenFileDialog
+                try
                 {
-                    Filter = $"{extension.ToUpperInvariant()} definitions|*.{extension}",
-                    CheckFileExists = true,
-                    Multiselect = false
-                };
+                    using var file = new OpenFileDialog
+                    {
+                        Filter = $"{extension.ToUpperInvariant()} definitions|*.{extension}",
+                        CheckFileExists = true,
+                        Multiselect = false
+                    };
 
-                if (file.ShowDialog(FindForm()) != DialogResult.OK)
-                    return;
+                    if (file.ShowDialog(FindForm()) != DialogResult.OK)
+                        return;
 
-                if (import(file.FileName, ChooseMembers) == 0)
-                    return;
+                    if (import(file.FileName, ChooseMembers) == 0)
+                        return;
 
-                _refresh();
-                RefreshMembers(this, EventArgs.Empty);
-            }
-            catch (Exception ex)
-            {
-                ThemedMessageBox.Show(FindForm(), ex.Message, "Import definition", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        });
+                    _refresh();
+                    RefreshMembers(this, EventArgs.Empty);
+                }
+                catch (Exception ex)
+                {
+                    ThemedMessageBox.Show(
+                        FindForm(),
+                        ex.Message,
+                        "Import definition",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            });
 
-        AddIconButton("Duplicate definition", "DuplicateDefinition", DefinitionCommand.Duplicate, () => Execute(duplicate));
-        AddIconButton("Remove definition", "RemoveDefinition", DefinitionCommand.Remove, () => Execute(remove));
+        AddIconButton(
+            "Duplicate definition",
+            "DuplicateDefinition",
+            DefinitionCommand.Duplicate,
+            () => Execute(duplicate));
+
+        AddIconButton(
+            "Remove definition",
+            "RemoveDefinition",
+            DefinitionCommand.Remove,
+            () => Execute(remove));
 
         Items.Add(new ToolStripSeparator());
         Items.Add(_identity);
@@ -95,20 +118,28 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         SetLogicalWidth(_members, 230);
         SetLogicalWidth(_identity, 180);
 
-        AddIconButton("Rename", "RenameDefinition", DefinitionCommand.Rename, () =>
-        {
-            if (!_modalRename)
+        AddIconButton(
+            "Rename",
+            "RenameDefinition",
+            DefinitionCommand.Rename,
+            () =>
             {
-                Execute(() => rename(_identity.Text));
-                return;
-            }
+                if (!_modalRename)
+                {
+                    Execute(() => rename(_identity.Text));
+                    return;
+                }
 
-            if (DefinitionRenameDialog.Show(FindForm(), "Rename definition", _name(_selected()), rename))
-            {
-                _refresh();
-                RefreshMembers(this, EventArgs.Empty);
-            }
-        });
+                if (DefinitionRenameDialog.Show(
+                        FindForm(),
+                        "Rename definition",
+                        _name(_selected()),
+                        rename))
+                {
+                    _refresh();
+                    RefreshMembers(this, EventArgs.Empty);
+                }
+            });
 
         _members.SelectedIndexChanged += (_, _) =>
         {
@@ -132,6 +163,7 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         Items.Remove(_identity);
         Items.Remove(renameButton);
         var trailingSeparator = Items.OfType<ToolStripSeparator>().LastOrDefault();
+
         if (trailingSeparator is not null)
             Items.Remove(trailingSeparator);
 
@@ -144,6 +176,7 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
     public void RefreshMembers(object? sender, EventArgs e)
     {
         _binding = true;
+
         try
         {
             _members.Items.Clear();
@@ -165,7 +198,11 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
     }
 
 
-    private void AddIconButton(string label, string name, DefinitionCommand command, Action action)
+    private void AddIconButton(
+        string label,
+        string name,
+        DefinitionCommand command,
+        Action action)
     {
         var button = new ToolStripButton
         {
@@ -206,7 +243,9 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         foreach (var member in definitions)
             list.Items.Add(_name(member), true);
 
-        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.LeftToRight };
+        var buttons = new FlowLayoutPanel
+            { Dock = DockStyle.Bottom, Height = 42, FlowDirection = FlowDirection.LeftToRight };
+
         var all = new Button { Text = "Select all", AutoSize = true };
         var none = new Button { Text = "Select none", AutoSize = true };
         var accept = new Button { Text = "Import", DialogResult = DialogResult.OK, AutoSize = true };
@@ -217,6 +256,7 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
             for (int i = 0; i < list.Items.Count; i++)
                 list.SetItemChecked(i, true);
         };
+
         none.Click += (_, _) =>
         {
             for (int i = 0; i < list.Items.Count; i++)
@@ -244,24 +284,42 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         }
         catch (Exception ex)
         {
-            ThemedMessageBox.Show(FindForm(), ex.Message, "Definition", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            ThemedMessageBox.Show(
+                FindForm(),
+                ex.Message,
+                "Definition",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
         }
     }
 }
 
-
 /// <summary>A compact, themed rename prompt that applies a validated edit only on confirmation.</summary>
 public static class DefinitionRenameDialog
 {
-    public static bool Show(IWin32Window? owner, string title, string currentName, Action<string> rename)
+    public static bool Show(
+        IWin32Window? owner,
+        string title,
+        string currentName,
+        Action<string> rename)
     {
         // The toolbar can be hosted by Studio or a standalone editor at different DPI scales.
         // Scale layout dimensions once against the owner; point-based fonts scale with DPI.
         int dpi = owner is Control parent ? parent.DeviceDpi : 96;
         int Px(int logical) => (int)Math.Round(logical * dpi / 96d, MidpointRounding.AwayFromZero);
 
-        using var dialogFont = new Font("Segoe UI", 10.5f, FontStyle.Regular, GraphicsUnit.Point);
-        using var inputFont = new Font("Segoe UI", 11.5f, FontStyle.Regular, GraphicsUnit.Point);
+        using var dialogFont = new Font(
+            "Segoe UI",
+            10.5f,
+            FontStyle.Regular,
+            GraphicsUnit.Point);
+
+        using var inputFont = new Font(
+            "Segoe UI",
+            11.5f,
+            FontStyle.Regular,
+            GraphicsUnit.Point);
+
         using var dialog = new Form
         {
             Icon = ToolingBranding.CreateIcon(),
@@ -282,8 +340,13 @@ public static class DefinitionRenameDialog
             Dock = DockStyle.Fill,
             ColumnCount = 3,
             RowCount = 3,
-            Padding = new Padding(Px(18), Px(12), Px(18), Px(18))
+            Padding = new Padding(
+                Px(18),
+                Px(12),
+                Px(18),
+                Px(18))
         };
+
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(116)));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(116)));
@@ -298,14 +361,20 @@ public static class DefinitionRenameDialog
             Dock = DockStyle.Fill,
             Margin = Padding.Empty
         };
+
         var nameBox = new TextBox
         {
             Name = "DefinitionRenameName",
             Text = currentName,
             Font = inputFont,
             Dock = DockStyle.Top,
-            Margin = new Padding(0, Px(3), 0, 0)
+            Margin = new Padding(
+                0,
+                Px(3),
+                0,
+                0)
         };
+
         var accept = new Button
         {
             Name = "ConfirmRename",
@@ -313,8 +382,13 @@ public static class DefinitionRenameDialog
             AutoSize = false,
             Size = new Size(Px(108), Px(40)),
             Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
-            Margin = new Padding(0, 0, Px(6), 0)
+            Margin = new Padding(
+                0,
+                0,
+                Px(6),
+                0)
         };
+
         var cancel = new Button
         {
             Text = "Cancel",
@@ -331,9 +405,11 @@ public static class DefinitionRenameDialog
         layout.SetColumnSpan(nameBox, 3);
         layout.Controls.Add(accept, 1, 2);
         layout.Controls.Add(cancel, 2, 2);
+
         accept.Click += (_, _) =>
         {
             string requested = nameBox.Text;
+
             if (requested == currentName)
             {
                 dialog.DialogResult = DialogResult.Cancel;
@@ -350,7 +426,13 @@ public static class DefinitionRenameDialog
             }
             catch (Exception ex)
             {
-                ThemedMessageBox.Show(dialog, ex.Message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ThemedMessageBox.Show(
+                    dialog,
+                    ex.Message,
+                    title,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
                 nameBox.Focus();
                 nameBox.SelectAll();
             }
@@ -359,11 +441,13 @@ public static class DefinitionRenameDialog
         dialog.Controls.Add(layout);
         dialog.AcceptButton = accept;
         dialog.CancelButton = cancel;
+
         dialog.Shown += (_, _) =>
         {
             nameBox.Focus();
             nameBox.SelectAll();
         };
+
         ToolingAppearance.Apply(dialog);
         return dialog.ShowDialog(owner) == DialogResult.OK;
     }

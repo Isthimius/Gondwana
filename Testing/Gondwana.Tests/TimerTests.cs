@@ -25,7 +25,11 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void AddAndGet_WithExplicitId_RegistersTimer()
     {
-        var timer = EngineTimer.Add("explicit", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
+        var timer = EngineTimer.Add(
+            "explicit",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
 
         Assert.Equal("explicit", timer.TimerID);
         Assert.Same(timer, EngineTimer.Get("explicit"));
@@ -59,7 +63,11 @@ public sealed class TimerTests : IDisposable
     public void Add_WithInvalidLength_Throws(double length)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            EngineTimer.Add("invalid", TimerType.PreCycle, TimerCycles.Repeating, length));
+            EngineTimer.Add(
+                "invalid",
+                TimerType.PreCycle,
+                TimerCycles.Repeating,
+                length));
 
         Assert.Equal(0, EngineTimer.Count);
     }
@@ -73,7 +81,11 @@ public sealed class TimerTests : IDisposable
         double length = 0.5 / HighResTimer.TicksPerSecond;
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            EngineTimer.Add("sub-tick", TimerType.PreCycle, TimerCycles.Repeating, length));
+            EngineTimer.Add(
+                "sub-tick",
+                TimerType.PreCycle,
+                TimerCycles.Repeating,
+                length));
 
         Assert.Equal(0, EngineTimer.Count);
     }
@@ -84,7 +96,11 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void Remove_ExistingAndMissingId_AreSafe()
     {
-        EngineTimer.Add("to-remove", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
+        EngineTimer.Add(
+            "to-remove",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
 
         EngineTimer.Remove("to-remove");
         EngineTimer.Remove("missing");
@@ -98,8 +114,17 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void ClearAll_RemovesAllTimers()
     {
-        EngineTimer.Add("a", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
-        EngineTimer.Add("b", TimerType.PostCycle, TimerCycles.Once, 0.01);
+        EngineTimer.Add(
+            "a",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
+
+        EngineTimer.Add(
+            "b",
+            TimerType.PostCycle,
+            TimerCycles.Once,
+            0.01);
 
         EngineTimer.ClearAll();
 
@@ -113,7 +138,11 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void Dispose_RemovesTimer()
     {
-        var timer = EngineTimer.Add("disposable", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
+        var timer = EngineTimer.Add(
+            "disposable",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
 
         timer.Dispose();
         timer.Dispose();
@@ -128,7 +157,12 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void RaiseTimerEvents_InvokesTickForMatchingType()
     {
-        var timer = EngineTimer.Add("pre", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
+        var timer = EngineTimer.Add(
+            "pre",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
+
         var ticks = 0;
         timer.Tick += () => ticks++;
 
@@ -144,7 +178,12 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void RaiseTimerEvents_DoesNotInvokeWhenTypeDiffers()
     {
-        var timer = EngineTimer.Add("post", TimerType.PostCycle, TimerCycles.Repeating, 0.01);
+        var timer = EngineTimer.Add(
+            "post",
+            TimerType.PostCycle,
+            TimerCycles.Repeating,
+            0.01);
+
         var ticks = 0;
         timer.Tick += () => ticks++;
 
@@ -160,7 +199,12 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void RaiseTimerEvents_OnceTimerIsRemovedAfterTick()
     {
-        var timer = EngineTimer.Add("once", TimerType.PreCycle, TimerCycles.Once, 0.01);
+        var timer = EngineTimer.Add(
+            "once",
+            TimerType.PreCycle,
+            TimerCycles.Once,
+            0.01);
+
         var ticks = 0;
         timer.Tick += () => ticks++;
 
@@ -177,7 +221,12 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void RaiseTimerEvents_OverdueOnceTimerRaisesOnlyOneTick()
     {
-        var timer = EngineTimer.Add("overdue-once", TimerType.PreCycle, TimerCycles.Once, 0.01);
+        var timer = EngineTimer.Add(
+            "overdue-once",
+            TimerType.PreCycle,
+            TimerCycles.Once,
+            0.01);
+
         var ticks = 0;
         timer.Tick += () => ticks++;
 
@@ -194,7 +243,12 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void RaiseTimerEvents_PausedAll_PreventsTick()
     {
-        var timer = EngineTimer.Add("paused", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
+        var timer = EngineTimer.Add(
+            "paused",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
+
         var ticks = 0;
         timer.Tick += () => ticks++;
         EngineTimer.PausedAll = true;
@@ -211,7 +265,12 @@ public sealed class TimerTests : IDisposable
     [Fact]
     public void RaiseTimerEvents_RepeatingTimerCatchesUp()
     {
-        var timer = EngineTimer.Add("repeat", TimerType.PreCycle, TimerCycles.Repeating, 0.01);
+        var timer = EngineTimer.Add(
+            "repeat",
+            TimerType.PreCycle,
+            TimerCycles.Repeating,
+            0.01);
+
         var ticks = 0;
         timer.Tick += () => ticks++;
 
@@ -233,14 +292,16 @@ public sealed class TimerTests : IDisposable
     private static void InvokeRaiseTimerEvents(TimerType type, long engineTick)
     {
         var method = typeof(EngineTimer).GetMethod("RaiseTimerEvents", BindingFlags.NonPublic | BindingFlags.Static)
-            ?? throw new InvalidOperationException("Could not find Timer.RaiseTimerEvents via reflection.");
+                     ?? throw new InvalidOperationException("Could not find Timer.RaiseTimerEvents via reflection.");
+
         method.Invoke(null, [type, engineTick]);
     }
 
     private static long GetLastEventTick(EngineTimer timer)
     {
         var property = typeof(EngineTimer).GetProperty("_lastEventTick", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("Could not find Timer._lastEventTick via reflection.");
+                       ?? throw new InvalidOperationException("Could not find Timer._lastEventTick via reflection.");
+
         return (long)(property.GetValue(timer) ?? throw new InvalidOperationException("Timer._lastEventTick is null."));
     }
 }

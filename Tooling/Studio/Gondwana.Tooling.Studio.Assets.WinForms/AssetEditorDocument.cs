@@ -12,13 +12,16 @@ internal sealed class AssetEditorDocument : DockContent
 {
     internal Gondwana.Tooling.Studio.Shared.WinForms.EditorSourceMonitorController.Document? Sources;
     private readonly AssetsFile _assetsFile;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool CloseApproved { get; set; }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<DialogResult> AskSave { get; set; }
 
     /// <summary>Gets the editor control owned by this dock tab.</summary>
     public AssetEditorControl Editor { get; }
+
     /// <summary>Gets the full path of the archive currently displayed by the editor.</summary>
     public string FilePath => Editor.FilePath;
 
@@ -34,17 +37,22 @@ internal sealed class AssetEditorDocument : DockContent
         Gondwana.Tooling.Assets.DocumentSourceVersion? acceptedSource = null)
     {
         _assetsFile = assetsFile ??
-            throw new ArgumentNullException(nameof(assetsFile));
+                      throw new ArgumentNullException(nameof(assetsFile));
 
         Editor = new AssetEditorControl(assetsFile, acceptedSource)
         {
             WorkspaceChanged = workspaceChanged ??
-                throw new ArgumentNullException(nameof(workspaceChanged)),
+                               throw new ArgumentNullException(nameof(workspaceChanged)),
             IsDocumentOpen = isDocumentOpen ??
-                throw new ArgumentNullException(nameof(isDocumentOpen))
+                             throw new ArgumentNullException(nameof(isDocumentOpen))
         };
-        AskSave = () => ThemedMessageBox.Show(this, $"Save changes to {Path.GetFileName(FilePath)}?",
-            "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+        AskSave = () => ThemedMessageBox.Show(
+            this,
+            $"Save changes to {Path.GetFileName(FilePath)}?",
+            "Unsaved changes",
+            MessageBoxButtons.YesNoCancel,
+            MessageBoxIcon.Question);
 
         Editor.Changed += (_, _) => UpdateCaption();
         UpdateCaption();
@@ -65,22 +73,27 @@ internal sealed class AssetEditorDocument : DockContent
     /// Saves the current content to the destination file.
     /// </summary>
     public void Save() => Editor.Save();
+
     /// <summary>Prompts to save an archive copy without changing the current document path or dirty state.</summary>
     public void SaveAs() => Editor.SaveAs();
+
     /// <summary>Refreshes the filtered entry list from the editor's in-memory archive.</summary>
     public void RefreshEntries() => Editor.RefreshEntries();
+
     /// <summary>
     /// Shows the named editor pane.
     /// </summary>
     /// <param name="paneName">The name of the editor pane.</param>
     /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
     public bool ShowPane(string paneName) => Editor.ShowPane(paneName);
+
     /// <summary>
     /// Determines whether the named editor pane is visible.
     /// </summary>
     /// <param name="paneName">The name of the editor pane.</param>
     /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
     public bool IsPaneVisible(string paneName) => Editor.IsPaneVisible(paneName);
+
     /// <summary>
     /// Shows every editor pane.
     /// </summary>
@@ -90,6 +103,7 @@ internal sealed class AssetEditorDocument : DockContent
     {
         if (!Editor.IsDirty)
             return true;
+
         switch (AskSave())
         {
             case DialogResult.No:
@@ -106,6 +120,7 @@ internal sealed class AssetEditorDocument : DockContent
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
+
         if (!e.Cancel && !CloseApproved)
             e.Cancel = !ConfirmClose();
     }
@@ -114,6 +129,7 @@ internal sealed class AssetEditorDocument : DockContent
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
+
         if (disposing)
             _assetsFile.Dispose();
     }

@@ -23,40 +23,69 @@ internal sealed class SliderMenu : IDisposable
     internal bool HasOpenDialog => _dialog is { IsClosed: false };
     internal bool HasOpenMenu => _menu.OpenMenuIndex >= 0;
 
-    internal SliderMenu(RenderSurfaceHostBase host, View uiView, View gameView,
-        Func<SKImage?> loadGondwanaLogo, IExternalUriLauncher uriLauncher,
-        Action newPuzzle, Action openPicture, Action shuffle,
-        Action save, Action load, Action highScores, Action exit)
+    internal SliderMenu(
+        RenderSurfaceHostBase host,
+        View uiView,
+        View gameView,
+        Func<SKImage?> loadGondwanaLogo,
+        IExternalUriLauncher uriLauncher,
+        Action newPuzzle,
+        Action openPicture,
+        Action shuffle,
+        Action save,
+        Action load,
+        Action highScores,
+        Action exit)
     {
         _host = host;
         _gameView = gameView;
         _loadGondwanaLogo = loadGondwanaLogo ?? throw new ArgumentNullException(nameof(loadGondwanaLogo));
         _uriLauncher = uriLauncher;
 
-        _menu = new MenuBarWidget(host, uiView, new Rectangle(0, 0, SliderSidebar.Width, 32));
+        _menu = new MenuBarWidget(
+            host,
+            uiView,
+            new Rectangle(
+                0,
+                0,
+                SliderSidebar.Width,
+                32));
+
         _menu
-            .AddMenu("Game", game => game
-                .AddItem("New Puzzle", newPuzzle, mnemonic: 'N')
-                .AddItem("Open Picture...", openPicture, mnemonic: 'O')
-                .AddItem("Shuffle", shuffle, mnemonic: 'U')
-                .AddSeparator()
-                .AddItem("Save Puzzle...", save, mnemonic: 'S')
-                .AddItem("Load Puzzle...", load, mnemonic: 'L')
-                .AddSeparator()
-                .AddItem("Exit", exit, mnemonic: 'X'), mnemonic: 'G')
-            .AddMenu("Scores", scores => scores
-                .AddItem("High Scores", highScores, mnemonic: 'H'), mnemonic: 'S')
-            .AddMenu("Help", help => help
-                .AddItem("How to Play", ShowHowToPlay, mnemonic: 'P')
-                .AddSeparator()
-                .AddItem("About", ShowAbout, mnemonic: 'A'), mnemonic: 'H');
+            .AddMenu(
+                "Game",
+                game => game
+                    .AddItem("New Puzzle", newPuzzle, mnemonic: 'N')
+                    .AddItem("Open Picture...", openPicture, mnemonic: 'O')
+                    .AddItem("Shuffle", shuffle, mnemonic: 'U')
+                    .AddSeparator()
+                    .AddItem("Save Puzzle...", save, mnemonic: 'S')
+                    .AddItem("Load Puzzle...", load, mnemonic: 'L')
+                    .AddSeparator()
+                    .AddItem("Exit", exit, mnemonic: 'X'),
+                mnemonic: 'G')
+            .AddMenu(
+                "Scores",
+                scores => scores
+                    .AddItem("High Scores", highScores, mnemonic: 'H'),
+                mnemonic: 'S')
+            .AddMenu(
+                "Help",
+                help => help
+                    .AddItem("How to Play", ShowHowToPlay, mnemonic: 'P')
+                    .AddSeparator()
+                    .AddItem("About", ShowAbout, mnemonic: 'A'),
+                mnemonic: 'H');
+
         _menu.Show();
     }
 
     internal void ShowHighScores(IReadOnlyList<SliderScore> scores)
         => ShowText("High Scores", SliderPersistence.FormatScores(scores));
 
-    private void ShowHowToPlay() => ShowText("How to Play", """
+    private void ShowHowToPlay() => ShowText(
+        "How to Play",
+        """
         SLIDER — HOW TO PLAY
 
         Make the picture whole again by moving tiles into the blank square.
@@ -89,8 +118,12 @@ internal sealed class SliderMenu : IDisposable
         Rectangle area = _gameView.Viewport.TargetRectPx;
         width = Math.Min(width, Math.Max(240, area.Width - 16));
         height = Math.Min(height, Math.Max(180, area.Height - 16));
-        return new Rectangle(area.Left + (area.Width - width) / 2,
-            area.Top + (area.Height - height) / 2, width, height);
+
+        return new Rectangle(
+            area.Left + (area.Width - width) / 2,
+            area.Top + (area.Height - height) / 2,
+            width,
+            height);
     }
 
     private void ShowText(string title, string content)
@@ -102,14 +135,44 @@ internal sealed class SliderMenu : IDisposable
         }
 
         Rectangle bounds = DialogBounds(530, 530);
-        var dialog = new SliderTextDialog(_host, _gameView, bounds, title);
-        dialog.Panel.SetColor(Color.FromArgb(255, 24, 30, 42))
-            .SetBorderColor(Color.FromArgb(255, 95, 110, 135));
-        dialog.TitleBar.SetColor(Color.FromArgb(255, 46, 63, 85));
 
-        var labelBounds = new Rectangle(bounds.X + 18, bounds.Y + 48,
-            bounds.Width - 36, bounds.Height - 106);
-        var text = new LabelWidget(_host, _gameView, labelBounds, content,
+        var dialog = new SliderTextDialog(
+            _host,
+            _gameView,
+            bounds,
+            title);
+
+        dialog.Panel.SetColor(
+                Color.FromArgb(
+                    255,
+                    24,
+                    30,
+                    42))
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    95,
+                    110,
+                    135));
+
+        dialog.TitleBar.SetColor(
+            Color.FromArgb(
+                255,
+                46,
+                63,
+                85));
+
+        var labelBounds = new Rectangle(
+            bounds.X + 18,
+            bounds.Y + 48,
+            bounds.Width - 36,
+            bounds.Height - 106);
+
+        var text = new LabelWidget(
+                _host,
+                _gameView,
+                labelBounds,
+                content,
                 "slider.dialog.content")
             .SetFont(SKTypeface.Default, 16f)
             .SetColors(SKColors.White, SKColors.Transparent)
@@ -117,19 +180,45 @@ internal sealed class SliderMenu : IDisposable
             .EnableWrapping()
             .SetPadding(5f, 5f)
             .SetLabelZOrder(10_020);
+
         text.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         text.MouseWheelScrollPixels = 52;
         dialog.Add(text, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(18, 48));
 
-        var close = new ButtonWidget(_host, _gameView,
-            new Rectangle(bounds.X + (bounds.Width - 110) / 2, bounds.Bottom - 48, 110, 32),
-            "Close", "slider.dialog.close")
-            .SetBackgroundColors(Color.FromArgb(255, 52, 71, 94),
-                Color.FromArgb(255, 71, 92, 119), Color.FromArgb(255, 38, 54, 75))
+        var close = new ButtonWidget(
+                _host,
+                _gameView,
+                new Rectangle(
+                    bounds.X + (bounds.Width - 110) / 2,
+                    bounds.Bottom - 48,
+                    110,
+                    32),
+                "Close",
+                "slider.dialog.close")
+            .SetBackgroundColors(
+                Color.FromArgb(
+                    255,
+                    52,
+                    71,
+                    94),
+                Color.FromArgb(
+                    255,
+                    71,
+                    92,
+                    119),
+                Color.FromArgb(
+                    255,
+                    38,
+                    54,
+                    75))
             .SetTextColor(Color.White)
             .SetButtonZOrder(10_030);
+
         close.Clicked += () => dialog.Close(Gondwana.Widgets.Dialogs.DialogResult.Close);
-        dialog.Add(close, keepCurrentOffset: false,
+
+        dialog.Add(
+            close,
+            keepCurrentOffset: false,
             explicitLocalOffsetPx: new Vector2((bounds.Width - 110) / 2, bounds.Height - 48));
 
         OpenDialog(dialog);
@@ -146,7 +235,9 @@ internal sealed class SliderMenu : IDisposable
         // Resolve only after the engine has initialized SkiaSharp, not during WASM startup.
         _gondwanaLogo ??= _loadGondwanaLogo();
 
-        var about = new AboutBox(_host, _gameView,
+        var about = new AboutBox(
+            _host,
+            _gameView,
             applicationName: "Slider",
             version: "Gondwana Demo",
             description: "A sliding-picture puzzle built with the Gondwana Game Engine.",
@@ -156,9 +247,27 @@ internal sealed class SliderMenu : IDisposable
             uriLauncher: _uriLauncher,
             hyperlinkUri: new Uri("https://github.com/Isthimius/Gondwana"),
             hyperlinkText: "View Gondwana on GitHub");
-        about.Panel.SetColor(Color.FromArgb(255, 23, 30, 42))
-            .SetBorderColor(Color.FromArgb(255, 95, 110, 135));
-        about.TitleBar.SetColor(Color.FromArgb(255, 46, 63, 85));
+
+        about.Panel.SetColor(
+                Color.FromArgb(
+                    255,
+                    23,
+                    30,
+                    42))
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    95,
+                    110,
+                    135));
+
+        about.TitleBar.SetColor(
+            Color.FromArgb(
+                255,
+                46,
+                63,
+                85));
+
         OpenDialog(about);
     }
 
@@ -173,8 +282,18 @@ internal sealed class SliderMenu : IDisposable
     // DialogBox is an abstract base class; use a concrete dialog for text content.
     private sealed class SliderTextDialog : DialogBox
     {
-        internal SliderTextDialog(RenderSurfaceHostBase host, View view, Rectangle bounds, string title)
-            : base(host, view, bounds, title, showCloseButton: true, nickname: "slider.dialog")
+        internal SliderTextDialog(
+            RenderSurfaceHostBase host,
+            View view,
+            Rectangle bounds,
+            string title)
+            : base(
+                host,
+                view,
+                bounds,
+                title,
+                showCloseButton: true,
+                nickname: "slider.dialog")
         {
         }
     }

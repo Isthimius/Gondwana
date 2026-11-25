@@ -28,8 +28,10 @@ public sealed class DirectoryPanel : UserControl
     private readonly SemaphoreSlim _archiveGate = new(1, 1);
     private readonly SynchronizationContext _uiContext = new WindowsFormsSynchronizationContext();
     internal Task PendingArchiveLoads { get; private set; } = Task.CompletedTask;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string> OpenExternal { get; set; }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Action<string>? ArchiveOpened { get; set; }
 
@@ -37,7 +39,8 @@ public sealed class DirectoryPanel : UserControl
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<string, string?> KnownArchivePassword { get; set; } = _ => null;
 
-    private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories = StudioFileTypeIcons.Categories;
+    private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories =
+        StudioFileTypeIcons.Categories;
 
     internal TreeView Tree { get; } = new()
     {
@@ -72,50 +75,73 @@ public sealed class DirectoryPanel : UserControl
         OpenExternal = ShowOpenWithDialog;
         _sizing = NavigationSizing.Attach(Tree, CreateImages, NavigationIconSize.Small);
 
-        _fileMenu.Items.Add("Open", null, (_, _) =>
-        {
-            if (_menuPacked is { } packed)
-                PackedFileActivated?.Invoke(packed);
-
-            if (_menuPath is { } path)
-                FileActivated?.Invoke(path);
-        });
-
-        _fileMenu.Items.Add("Open External", null, (_, _) =>
-        {
-            if (_menuPath is not { } path)
-                return;
-
-            try
-            {
-                OpenExternal(path);
-            }
-            catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException)
-            {
-                _log($"Error: Cannot open {path} externally: {ex.Message}");
-                ThemedMessageBox.Show(this, ex.Message, "Open External", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        });
-
-        foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
-            _fileMenu.Items.Add(title, null, (_, _) =>
+        _fileMenu.Items.Add(
+            "Open",
+            null,
+            (_, _) =>
             {
                 if (_menuPacked is { } packed)
-                    ReferencesRequested?.Invoke(new(packed.AssetType, packed.ArchivePath, packed.EntryName), title != "Show Dependencies");
-                else if (_menuPath is { } path)
-                    ReferencesRequested?.Invoke(new(Gondwana.Tooling.Assets.AssetImportPlan.InferType(path), Path.GetFullPath(path)), title != "Show Dependencies");
+                    PackedFileActivated?.Invoke(packed);
+
+                if (_menuPath is { } path)
+                    FileActivated?.Invoke(path);
             });
 
-        _categoryMenu.Items.Add("Add New", null, (_, _) =>
-        {
-            if (_menuCategoryFormat is { } format && _menuCategoryDirectory is { } directory)
-                NewFileRequested?.Invoke(format, directory);
-        });
+        _fileMenu.Items.Add(
+            "Open External",
+            null,
+            (_, _) =>
+            {
+                if (_menuPath is not { } path)
+                    return;
+
+                try
+                {
+                    OpenExternal(path);
+                }
+                catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException)
+                {
+                    _log($"Error: Cannot open {path} externally: {ex.Message}");
+
+                    ThemedMessageBox.Show(
+                        this,
+                        ex.Message,
+                        "Open External",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            });
+
+        foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
+            _fileMenu.Items.Add(
+                title,
+                null,
+                (_, _) =>
+                {
+                    if (_menuPacked is { } packed)
+                        ReferencesRequested?.Invoke(
+                            new(packed.AssetType, packed.ArchivePath, packed.EntryName),
+                            title != "Show Dependencies");
+                    else if (_menuPath is { } path)
+                        ReferencesRequested?.Invoke(
+                            new(Gondwana.Tooling.Assets.AssetImportPlan.InferType(path), Path.GetFullPath(path)),
+                            title != "Show Dependencies");
+                });
+
+        _categoryMenu.Items.Add(
+            "Add New",
+            null,
+            (_, _) =>
+            {
+                if (_menuCategoryFormat is { } format && _menuCategoryDirectory is { } directory)
+                    NewFileRequested?.Invoke(format, directory);
+            });
 
         Tree.NodeMouseClick += (_, e) =>
         {
             if (e.Button != MouseButtons.Right)
                 return;
+
             if (PrepareCategoryMenu(e.Node))
                 _categoryMenu.Show(Tree, e.Location);
             else if (PrepareFileMenu(e.Node))
@@ -214,6 +240,7 @@ public sealed class DirectoryPanel : UserControl
     private void SelectActiveDocumentNode()
     {
         var node = FindActiveDocumentNode();
+
         if (!ReferenceEquals(Tree.SelectedNode, node))
             Tree.SelectedNode = node;
 
@@ -227,6 +254,7 @@ public sealed class DirectoryPanel : UserControl
             return null;
 
         string relative = Path.GetRelativePath(WorkingDirectory, location.Path);
+
         if (relative is "." or ".." ||
             Path.IsPathRooted(relative) ||
             relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal))
@@ -239,6 +267,7 @@ public sealed class DirectoryPanel : UserControl
         for (int i = 0; i < segments.Length - 1; i++)
         {
             parentPath = Path.Combine(parentPath, segments[i]);
+
             var directory = parent.Nodes.Cast<TreeNode>().FirstOrDefault(node =>
                 node.Tag is DirectoryInfo info &&
                 string.Equals(info.FullName, parentPath, StringComparison.OrdinalIgnoreCase));
@@ -272,7 +301,10 @@ public sealed class DirectoryPanel : UserControl
                         if (entry.Tag is PackedAssetNodeIdentity packed &&
                             packed.AssetType == location.AssetType &&
                             string.Equals(packed.ArchivePath, location.Path, StringComparison.OrdinalIgnoreCase) &&
-                            string.Equals(packed.EntryName, location.AssetEntryName, StringComparison.OrdinalIgnoreCase))
+                            string.Equals(
+                                packed.EntryName,
+                                location.AssetEntryName,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             return entry;
                         }
@@ -290,7 +322,8 @@ public sealed class DirectoryPanel : UserControl
 
         try
         {
-            var groups = Categories.ToDictionary(category => category.Key,
+            var groups = Categories.ToDictionary(
+                category => category.Key,
                 category => new TreeNode(category.Label)
                 {
                     // Keep the format identity separate from the shared folder artwork.
@@ -298,6 +331,7 @@ public sealed class DirectoryPanel : UserControl
                     ImageKey = category.Key == "misc" ? "misc" : "directory",
                     SelectedImageKey = category.Key == "misc" ? "misc" : "directory"
                 });
+
             parent.Nodes.AddRange(Categories.Select(category => groups[category.Key]).ToArray());
 
             foreach (var directory in new DirectoryInfo(path).EnumerateDirectories().OrderBy(item => item.Name))
@@ -305,22 +339,28 @@ public sealed class DirectoryPanel : UserControl
                 if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
                     continue;
 
-                var node = new TreeNode(directory.Name) { Tag = directory, ImageKey = "directory", SelectedImageKey = "directory" };
+                var node = new TreeNode(directory.Name)
+                    { Tag = directory, ImageKey = "directory", SelectedImageKey = "directory" };
+
                 node.Nodes.Add("Expand to load…");
                 parent.Nodes.Add(node);
             }
 
-            var files = Directory.EnumerateFiles(path).OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase).ToArray();
+            var files = Directory.EnumerateFiles(path).OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
             foreach (var file in files)
             {
                 var key = StudioDocument.FormatFor(file) ?? "misc";
-                groups[key].Nodes.Add(new TreeNode(Path.GetFileName(file))
-                {
-                    Tag = file,
-                    ToolTipText = file,
-                    ImageKey = key,
-                    SelectedImageKey = key
-                });
+
+                groups[key].Nodes.Add(
+                    new TreeNode(Path.GetFileName(file))
+                    {
+                        Tag = file,
+                        ToolTipText = file,
+                        ImageKey = key,
+                        SelectedImageKey = key
+                    });
             }
 
             foreach (var group in groups.Values)
@@ -330,7 +370,8 @@ public sealed class DirectoryPanel : UserControl
                 SetFolderIcon(group, group.IsExpanded);
             }
 
-            var scan = FillPackedEntriesAsync(groups,
+            var scan = FillPackedEntriesAsync(
+                groups,
                 files.Where(file => Path.GetExtension(file).Equals(".gaf", StringComparison.OrdinalIgnoreCase))
                     .Select(file => (Path: file, Password: KnownArchivePassword(file))).ToArray(),
                 _archiveRefresh.Token);
@@ -345,88 +386,113 @@ public sealed class DirectoryPanel : UserControl
         }
     }
 
-    private async Task FillPackedEntriesAsync(Dictionary<string, TreeNode> groups, (string Path, string? Password)[] archives, CancellationToken cancellationToken)
+    private async Task FillPackedEntriesAsync(
+        Dictionary<string, TreeNode> groups,
+        (string Path, string? Password)[] archives,
+        CancellationToken cancellationToken)
     {
         try
         {
             // Serialize scans across expanded folders and refreshes. AssetsFile buffers payloads;
             // only one archive is loaded at a time, off the UI thread, without runtime registration.
             await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
             try
             {
                 foreach (var (archivePath, password) in archives)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+
                     try
                     {
-                        var entries = await Task.Run(() =>
-                        {
-                            // Sharing flags alone cannot coexist with an exclusive writer on Windows.
-                            // Studio saves use RunWithoutArchiveReadsAsync to drain this handle first.
-                            using var stream = new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-
-                            ArchiveOpened?.Invoke(archivePath);
-
-                            using var archive = AssetsFile.Load(stream, password, register: false);
-
-                            return archive.GetAllEntries()
-                                .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
-                                .ThenBy(entry => entry.AssetType)
-                                .Select(entry => new PackedAssetNodeIdentity(Path.GetFullPath(archivePath), entry.AssetType, entry.AssetName))
-                                .ToArray();
-                        }, cancellationToken).ConfigureAwait(false);
-
-                        await OnUiAsync(() =>
-                        {
-                            Tree.BeginUpdate();
-
-                            try
+                        var entries = await Task.Run(
+                            () =>
                             {
-                                foreach (var group in entries.GroupBy(entry => entry.AssetType switch
-                                    {
-                                        AssetTypes.TilesheetDefinition => "gts",
-                                        AssetTypes.AnimationDefinition => "gani",
-                                        AssetTypes.SceneDefinition => "gscn",
-                                        AssetTypes.SpriteDefinition => "gspr",
-                                        AssetTypes.AudioDefinition => "gsnd",
-                                        _ => "misc"
-                                    }))
+                                // Sharing flags alone cannot coexist with an exclusive writer on Windows.
+                                // Studio saves use RunWithoutArchiveReadsAsync to drain this handle first.
+                                using var stream = new FileStream(
+                                    archivePath,
+                                    FileMode.Open,
+                                    FileAccess.Read,
+                                    FileShare.ReadWrite | FileShare.Delete);
+
+                                ArchiveOpened?.Invoke(archivePath);
+
+                                using var archive = AssetsFile.Load(stream, password, register: false);
+
+                                return archive.GetAllEntries()
+                                    .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
+                                    .ThenBy(entry => entry.AssetType)
+                                    .Select(entry => new PackedAssetNodeIdentity(
+                                        Path.GetFullPath(archivePath),
+                                        entry.AssetType,
+                                        entry.AssetName))
+                                    .ToArray();
+                            },
+                            cancellationToken).ConfigureAwait(false);
+
+                        await OnUiAsync(
+                            () =>
+                            {
+                                Tree.BeginUpdate();
+
+                                try
                                 {
-                                    // A grouping node has no file/packed identity: only its children activate.
-                                    var archiveNode = new TreeNode(Path.GetFileName(archivePath))
+                                    foreach (var group in entries.GroupBy(entry => entry.AssetType switch
+                                             {
+                                                 AssetTypes.TilesheetDefinition => "gts",
+                                                 AssetTypes.AnimationDefinition => "gani",
+                                                 AssetTypes.SceneDefinition => "gscn",
+                                                 AssetTypes.SpriteDefinition => "gspr",
+                                                 AssetTypes.AudioDefinition => "gsnd",
+                                                 _ => "misc"
+                                             }))
                                     {
-                                        ToolTipText = archivePath,
-                                        ImageKey = "gaf",
-                                        SelectedImageKey = "gaf"
-                                    };
-                                    foreach (var entry in group)
-                                        archiveNode.Nodes.Add(new TreeNode(entry.EntryName)
+                                        // A grouping node has no file/packed identity: only its children activate.
+                                        var archiveNode = new TreeNode(Path.GetFileName(archivePath))
                                         {
-                                            Tag = entry,
-                                            ToolTipText = $"Archive: {entry.ArchivePath}\nEntry: {entry.EntryName}\nAsset type: {entry.AssetType}",
-                                            ImageKey = group.Key,
-                                            SelectedImageKey = group.Key
-                                        });
+                                            ToolTipText = archivePath,
+                                            ImageKey = "gaf",
+                                            SelectedImageKey = "gaf"
+                                        };
 
-                                    groups[group.Key].Nodes.Add(archiveNode);
-                                    groups[group.Key].Expand();
+                                        foreach (var entry in group)
+                                            archiveNode.Nodes.Add(
+                                                new TreeNode(entry.EntryName)
+                                                {
+                                                    Tag = entry,
+                                                    ToolTipText =
+                                                        $"Archive: {entry.ArchivePath}\nEntry: {entry.EntryName}\nAsset type: {entry.AssetType}",
+                                                    ImageKey = group.Key,
+                                                    SelectedImageKey = group.Key
+                                                });
+
+                                        groups[group.Key].Nodes.Add(archiveNode);
+                                        groups[group.Key].Expand();
+                                    }
                                 }
-                            }
-                            finally
-                            {
-                                Tree.EndUpdate();
-                            }
+                                finally
+                                {
+                                    Tree.EndUpdate();
+                                }
 
-                            // A packed tab may have become active before this archive finished loading.
-                            if (_activeDocumentLocation?.AssetEntryName is not null &&
-                                string.Equals(_activeDocumentLocation.Path, archivePath, StringComparison.OrdinalIgnoreCase))
-                                SelectActiveDocumentNode();
-                        }, cancellationToken).ConfigureAwait(false);
+                                // A packed tab may have become active before this archive finished loading.
+                                if (_activeDocumentLocation?.AssetEntryName is not null &&
+                                    string.Equals(
+                                        _activeDocumentLocation.Path,
+                                        archivePath,
+                                        StringComparison.OrdinalIgnoreCase))
+                                    SelectActiveDocumentNode();
+                            },
+                            cancellationToken).ConfigureAwait(false);
                     }
-                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SharpZipBaseException)
+                    catch (Exception ex) when
+                        (ex is IOException or UnauthorizedAccessException or SharpZipBaseException)
                     {
                         if (!cancellationToken.IsCancellationRequested)
-                            await OnUiAsync(() => _log($"Warning: Cannot browse archive {archivePath}: {ex.Message}"), cancellationToken).ConfigureAwait(false);
+                            await OnUiAsync(
+                                () => _log($"Warning: Cannot browse archive {archivePath}: {ex.Message}"),
+                                cancellationToken).ConfigureAwait(false);
                     }
                 }
             }
@@ -435,7 +501,9 @@ public sealed class DirectoryPanel : UserControl
                 _archiveGate.Release();
             }
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
     }
 
     private async Task OnUiAsync(Action action, CancellationToken cancellationToken)
@@ -444,21 +512,23 @@ public sealed class DirectoryPanel : UserControl
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var registration = cancellationToken.Register(() => completion.TrySetCanceled(cancellationToken));
 
-        _uiContext.Post(_ =>
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return;
+        _uiContext.Post(
+            _ =>
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
-            try
-            {
-                action();
-                completion.TrySetResult();
-            }
-            catch (Exception ex)
-            {
-                completion.TrySetException(ex);
-            }
-        }, null);
+                try
+                {
+                    action();
+                    completion.TrySetResult();
+                }
+                catch (Exception ex)
+                {
+                    completion.TrySetException(ex);
+                }
+            },
+            null);
 
         await completion.Task.ConfigureAwait(false);
     }
@@ -466,6 +536,7 @@ public sealed class DirectoryPanel : UserControl
     internal async Task<T> RunArchiveReadAsync<T>(Func<Task<T>> read, CancellationToken cancellationToken)
     {
         await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
         try
         {
             return await read().ConfigureAwait(false);
@@ -486,17 +557,19 @@ public sealed class DirectoryPanel : UserControl
 
         try
         {
-            await OnUiAsync(() =>
-            {
-                try
+            await OnUiAsync(
+                () =>
                 {
-                    action();
-                }
-                finally
-                {
-                    RefreshDirectory();
-                }
-            }, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        action();
+                    }
+                    finally
+                    {
+                        RefreshDirectory();
+                    }
+                },
+                cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -515,6 +588,7 @@ public sealed class DirectoryPanel : UserControl
             return false;
 
         var category = Categories.FirstOrDefault(item => item.Key == node.Name);
+
         if (category.Key is null || !string.Equals(category.Label, node.Text, StringComparison.Ordinal))
             return false;
 
@@ -528,6 +602,7 @@ public sealed class DirectoryPanel : UserControl
             "gsnd" => "Sound",
             _ => null
         };
+
         if (label is null)
             return false;
 
@@ -597,6 +672,7 @@ public sealed class DirectoryPanel : UserControl
     private static ImageList CreateImages(int pixels)
     {
         var images = new ImageList { ImageSize = new Size(pixels, pixels), ColorDepth = ColorDepth.Depth32Bit };
+
         try
         {
             // The same embedded .ico is also used for Studio's window/taskbar icon.
@@ -613,7 +689,11 @@ public sealed class DirectoryPanel : UserControl
             AddEmbeddedIcon(images, "directory-open", "icons8-opened-folder-96.png");
 
             foreach (var category in Categories)
-                AddIcon(images, category.Key, category.Glyph, category.Color);
+                AddIcon(
+                    images,
+                    category.Key,
+                    category.Glyph,
+                    category.Color);
 
             return images;
         }
@@ -633,9 +713,18 @@ public sealed class DirectoryPanel : UserControl
         _ = images.Handle;
     }
 
-    private static void AddIcon(ImageList images, string key, string glyph, Color color)
+    private static void AddIcon(
+        ImageList images,
+        string key,
+        string glyph,
+        Color color)
     {
-        using var bitmap = StudioFileTypeIcons.CreateFileTypeBitmap(images.ImageSize.Width, key, glyph, color);
+        using var bitmap = StudioFileTypeIcons.CreateFileTypeBitmap(
+            images.ImageSize.Width,
+            key,
+            glyph,
+            color);
+
         images.Images.Add(key, bitmap);
 
         // Materialize the native copy before disposing the source bitmap.
@@ -659,8 +748,10 @@ public sealed class DirectoryPanel : UserControl
     {
         /// <summary>Full file path passed to the Windows Open With dialog.</summary>
         [MarshalAs(UnmanagedType.LPWStr)] public string File;
+
         /// <summary>Optional file-class name for the Windows Open With dialog; null uses the file path.</summary>
         [MarshalAs(UnmanagedType.LPWStr)] public string? Class;
+
         /// <summary>Native Open With behavior flags passed to the shell.</summary>
         public uint Flags;
     }

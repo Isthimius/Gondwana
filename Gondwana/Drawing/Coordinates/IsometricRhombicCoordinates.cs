@@ -64,7 +64,10 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     /// <param name="worldPixelRange">The rectangular pixel range to check for intersections.</param>
     /// <param name="includeOverhang">Whether to include tile overhang in intersection calculations.</param>
     /// <returns>A list of <see cref="SceneLayerTile"/> objects that intersect with the pixel range.</returns>
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
@@ -83,9 +86,12 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
             for (int x = minX; x <= maxX; x++)
             {
                 var gp = sceneLayer[x, y];
+
                 if (gp == null)
                     continue;
+
                 var r = GetPixelRangeForTile(gp, includeOverhang);
+
                 if (r.IntersectsWith(worldPixelRange))
                     result.Add(gp);
             }
@@ -105,7 +111,13 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth;
         int H = tile.SceneLayer.TileHeight;
-        var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
+
+        var rect = new Rectangle(
+            top.X - W / 2,
+            top.Y,
+            W,
+            H);
+
         return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
@@ -118,6 +130,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
+
         foreach (var t in tileList)
         {
             var r = GetPixelRangeForTile(t, includeOverhang);
@@ -138,6 +151,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         var m = gp.SceneLayer;
         int x = gp.GridCoordinatesAbs.X;
         int y = gp.GridCoordinatesAbs.Y;
+
         return dir switch
         {
             CardinalDirections.N => m.ResolveWrappedTile(x, y - 1),
@@ -167,11 +181,11 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
 
         return new[]
         {
-                new Point(top.X, top.Y - oh.Top),
-                new Point(top.X + W/2 + oh.Right, top.Y + H/2),
-                new Point(top.X, top.Y + H + oh.Bottom),
-                new Point(top.X - W/2 - oh.Left, top.Y + H/2)
-            };
+            new Point(top.X, top.Y - oh.Top),
+            new Point(top.X + W / 2 + oh.Right, top.Y + H / 2),
+            new Point(top.X, top.Y + H + oh.Bottom),
+            new Point(top.X - W / 2 - oh.Left, top.Y + H / 2)
+        };
     }
 
     /// <summary>
@@ -185,10 +199,13 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     {
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);
+
         if (modX < 0)
             modX += xUpperBound + 1;
+
         if (modY < 0)
             modY += yUpperBound + 1;
+
         return new PointF(modX, modY);
     }
 }

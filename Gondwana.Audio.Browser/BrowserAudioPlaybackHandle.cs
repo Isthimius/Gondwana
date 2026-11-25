@@ -20,14 +20,31 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
     /// <param name="volume">The playback volume.</param>
     /// <param name="pan">The stereo pan, from -1 (left) to 1 (right).</param>
     /// <param name="playbackSpeed">The playback speed multiplier.</param>
-    public BrowserAudioPlaybackHandle(string key, string uri, float volume, float pan, float playbackSpeed)
+    public BrowserAudioPlaybackHandle(
+        string key,
+        string uri,
+        float volume,
+        float pan,
+        float playbackSpeed)
     {
         // Each handle owns its JS entry, including during replacement of a manager key.
         _key = Guid.NewGuid().ToString("N");
         _volume = Math.Clamp(volume, 0f, 1f);
         _pan = Math.Clamp(pan, -1f, 1f);
-        _playbackSpeed = Math.Clamp(playbackSpeed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
-        BrowserAudioInterop.Load(_key, uri, loop: false, _volume, _pan, _playbackSpeed, OnEnded);
+
+        _playbackSpeed = Math.Clamp(
+            playbackSpeed,
+            AudioResource.MinimumPlaybackSpeed,
+            AudioResource.MaximumPlaybackSpeed);
+
+        BrowserAudioInterop.Load(
+            _key,
+            uri,
+            loop: false,
+            _volume,
+            _pan,
+            _playbackSpeed,
+            OnEnded);
     }
 
     /// <summary>
@@ -39,7 +56,13 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
     /// <param name="volume">The playback volume.</param>
     /// <param name="pan">The stereo pan, from -1 (left) to 1 (right).</param>
     /// <param name="playbackSpeed">The playback speed multiplier.</param>
-    public BrowserAudioPlaybackHandle(string key, byte[] data, string mimeType, float volume, float pan, float playbackSpeed)
+    public BrowserAudioPlaybackHandle(
+        string key,
+        byte[] data,
+        string mimeType,
+        float volume,
+        float pan,
+        float playbackSpeed)
     {
         ArgumentNullException.ThrowIfNull(data);
 
@@ -48,7 +71,12 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         _key = Guid.NewGuid().ToString("N");
         _volume = Math.Clamp(volume, 0f, 1f);
         _pan = Math.Clamp(pan, -1f, 1f);
-        _playbackSpeed = Math.Clamp(playbackSpeed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
+
+        _playbackSpeed = Math.Clamp(
+            playbackSpeed,
+            AudioResource.MinimumPlaybackSpeed,
+            AudioResource.MaximumPlaybackSpeed);
+
         BrowserAudioInterop.LoadBytes(
             _key,
             Convert.ToBase64String(data),
@@ -148,6 +176,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
     public void Resume()
     {
         ThrowIfDisposed();
+
         if (State == AudioPlaybackState.Paused)
             BrowserAudioInterop.Play(_key, fromStart: false);
     }

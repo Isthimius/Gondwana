@@ -70,7 +70,13 @@ public sealed partial class CompositionTests
         using var studio = Host(root);
         var tab = studio.OpenDocument(path);
         var editor = (TilesheetEditorControl)tab.Document.Editor;
-        editor.Document.History.Set("Rename", () => editor.Document.Definition.Name, value => editor.Document.Definition.Name = value!, "local");
+
+        editor.Document.History.Set(
+            "Rename",
+            () => editor.Document.Definition.Name,
+            value => editor.Document.Definition.Name = value!,
+            "local");
+
         var history = editor.Document.History;
         var accepted = tab.Document.AcceptedSource;
         WriteMonitored(path, "gts", "external");
@@ -78,11 +84,13 @@ public sealed partial class CompositionTests
         Assert.Contains("[conflict]", tab.Text);
         Assert.Equal("local", tab.Document.SelectedMember);
         int prompts = 0;
+
         studio.AskSourceConflict = _ =>
         {
             prompts++;
             return MainForm.SourceConflictChoice.KeepEdits;
         };
+
         Assert.False(AwaitUi(studio.SaveDocument(tab)));
         Application.DoEvents();
         Assert.False(AwaitUi(studio.SaveDocument(tab)));
@@ -112,7 +120,13 @@ public sealed partial class CompositionTests
         Assert.True(tab.Document.SelectMember("selected"));
         var editor = (TilesheetEditorControl)tab.Document.Editor;
         editor.PreviewZoom = 2f;
-        editor.Document.History.Set("Alpha", () => editor.Document.Definition.PremultiplyAlpha, value => editor.Document.Definition.PremultiplyAlpha = value, true);
+
+        editor.Document.History.Set(
+            "Alpha",
+            () => editor.Document.Definition.PremultiplyAlpha,
+            value => editor.Document.Definition.PremultiplyAlpha = value,
+            true);
+
         var history = tab.Document.History;
         File.WriteAllText(path, "incomplete {");
         studio.ConfirmReload = _ => false;
@@ -157,6 +171,7 @@ public sealed partial class CompositionTests
     {
         var image = Path.Combine(root, "one.png");
         var other = Path.Combine(root, "two.png");
+
         using (var bitmap = new Bitmap(8, 8))
         {
             bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
@@ -171,8 +186,10 @@ public sealed partial class CompositionTests
         Assert.True(AwaitUi(CompleteDependencyTask(studio.DependencyRefresh)));
         Assert.NotNull(studio.DependencyScan);
         tab.Document.History!.MarkUntracked();
+
         using (var bitmap = new Bitmap(9, 9))
             bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+
         VerifySources(studio);
         Assert.Null(studio.DependencyScan);
         Assert.True(tab.Document.PreviewStale);
@@ -195,8 +212,10 @@ public sealed partial class CompositionTests
     public void SourceMonitoringMalformedReferenceKeepsLastValidDependencyWatchers() => RunSta(root =>
     {
         var image = Path.Combine(root, "image.png");
+
         using (var bitmap = new Bitmap(8, 8))
             bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+
         var path = Path.Combine(root, "sheet.gts");
         TilesheetDefinitionSerializer.SaveAll(path, [new() { Name = "sheet", Image = new() { FilePath = image } }]);
         using var studio = Host(root);
@@ -207,8 +226,10 @@ public sealed partial class CompositionTests
         editor.Document.MarkChanged();
         Application.DoEvents();
         Assert.Contains(tab.Document.Sources.Keys, source => source.Path == image);
+
         using (var bitmap = new Bitmap(9, 9))
             bitmap.Save(image, System.Drawing.Imaging.ImageFormat.Png);
+
         VerifySources(studio);
         Assert.True(tab.Document.PreviewStale);
         Assert.Contains("[preview]", tab.Text);
@@ -243,16 +264,27 @@ public sealed partial class CompositionTests
         var sheet = Path.Combine(root, "sheet.gts");
         WriteMonitored(sheet, "gts", "sheet");
         var animation = Path.Combine(root, "animation.gani");
-        AnimationDefinitionSerializer.SaveAll(animation, [new() { Key = "animation",
-            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)] }]);
+
+        AnimationDefinitionSerializer.SaveAll(
+            animation,
+            [
+                new()
+                {
+                    Key = "animation",
+                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)]
+                }
+            ]);
+
         using var studio = Host(root);
         var tab = studio.OpenDocument(animation);
         var dependency = Assert.Single(tab.Document.Sources, pair => pair.Key.Path == sheet);
         var accepted = dependency.Value.Accepted;
+
         if (missing)
             File.Delete(sheet);
         else
             File.WriteAllText(sheet, "invalid {");
+
         VerifySources(studio);
         Assert.True(tab.Document.PreviewStale);
         studio.ReloadPreviews(tab);
@@ -290,19 +322,33 @@ public sealed partial class CompositionTests
         var sheet = Path.Combine(root, "sheet.gts");
         WriteMonitored(sheet, "gts", "sheet");
         var path = Path.Combine(root, "animation.gani");
-        AnimationDefinitionSerializer.SaveAll(path, [new() { Key = "animation",
-            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)] }]);
+
+        AnimationDefinitionSerializer.SaveAll(
+            path,
+            [
+                new()
+                {
+                    Key = "animation",
+                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", sheet)]
+                }
+            ]);
+
         using var studio = Host(root);
         var tab = studio.OpenDocument(path);
         Assert.Contains(tab.Document.Sources.Keys, s => s.Path == sheet);
         var scan = DefinitionReferenceDiscovery.Inspect(root);
-        var completion = new TaskCompletionSource<DefinitionReferenceDiscovery>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var completion =
+            new TaskCompletionSource<DefinitionReferenceDiscovery>(TaskCreationOptions.RunContinuationsAsynchronously);
+
         CancellationToken token = default;
+
         studio.InspectDependencies = (_, _, cancellation) =>
         {
             token = cancellation;
             return completion.Task;
         };
+
         studio.ShowDependencies();
         tab.Document.History!.MarkUntracked();
         WriteMonitored(sheet, "gts", "changed");
@@ -343,7 +389,12 @@ public sealed partial class CompositionTests
         WriteMonitored(path, "gts", "source");
         using var studio = Host(root);
         var tab = studio.OpenDocument(path);
-        using (var locked = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+
+        using (var locked = new FileStream(
+                   path,
+                   FileMode.Open,
+                   FileAccess.ReadWrite,
+                   FileShare.None))
         {
             VerifySources(studio);
             Assert.Contains("inaccessible", tab.Document.SourceProblem);
@@ -369,6 +420,7 @@ public sealed partial class CompositionTests
         var tab = studio.OpenDocument(path);
         tab.Document.History!.MarkUntracked();
         bool written = false;
+
         tab.Document.Changed += (_, _) =>
         {
             if (!written && !tab.Document.Dirty())
@@ -377,6 +429,7 @@ public sealed partial class CompositionTests
                 WriteMonitored(path, "gts", "external");
             }
         };
+
         Assert.True(AwaitUi(studio.SaveDocument(tab)));
         Assert.True(written);
         VerifySources(studio);
@@ -392,7 +445,12 @@ public sealed partial class CompositionTests
     {
         var path = Path.Combine(root, "assets.gaf");
         var password = encrypted ? "secret" : null;
-        using (var archive = AssetsFile.LoadOrCreate(path, password, encrypted, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   password,
+                   encrypted,
+                   register: false))
         {
             using var source = new MemoryStream(Encoding.UTF8.GetBytes("{\"Name\":\"sheet\"}"));
             archive.Add(AssetTypes.TilesheetDefinition, "sheet.gts", source);
@@ -402,7 +460,12 @@ public sealed partial class CompositionTests
         using var studio = Host(root);
         var tab = studio.OpenDocument(new AssetLocation(AssetTypes.TilesheetDefinition, path, "sheet.gts"), password);
         tab.Document.History!.MarkUntracked();
-        using (var archive = AssetsFile.LoadOrCreate(path, password, encrypted, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   path,
+                   password,
+                   encrypted,
+                   register: false))
         {
             using var payload = new MemoryStream([1, 2, 3]);
             archive.Add(AssetTypes.Misc, "external.bin", payload);
@@ -414,7 +477,13 @@ public sealed partial class CompositionTests
         Assert.True(AwaitUi(studio.SaveDocument(tab)));
         VerifySources(studio);
         Assert.False(tab.Document.ContentStale);
-        using var saved = AssetsFile.LoadOrCreate(path, password, encrypted, register: false);
+
+        using var saved = AssetsFile.LoadOrCreate(
+            path,
+            password,
+            encrypted,
+            register: false);
+
         Assert.Contains(saved.GetAllEntries(), e => e.AssetName == "external.bin");
     });
 }

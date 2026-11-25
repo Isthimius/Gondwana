@@ -23,9 +23,17 @@ public sealed class MenuFeaturesTests
     public void Keys_AreStableRecursiveAndOptional()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("File", menu => menu.AddItem("Same").AddItem("Same")
-            .AddSubMenu("Export", export => export.AddSubMenu("Image", image => image
-                .AddCheckItem("PNG", key: "file.png"))));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu.AddItem("Same").AddItem("Same")
+                .AddSubMenu(
+                    "Export",
+                    export => export.AddSubMenu(
+                        "Image",
+                        image => image
+                            .AddCheckItem("PNG", key: "file.png"))));
+
         var item = context.Bar["file.png"];
         item.SetChecked(true).SetEnabled(false);
         Assert.Same(item, context.Bar.GetItem("file.png"));
@@ -45,13 +53,20 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         context.Bar.AddMenu("File", menu => menu.AddItem("Save", key: "save", shortcut: KeyGesture.Ctrl('S')));
-        Assert.Throws<ArgumentException>(() => context.Bar.AddMenu("Bad", menu => menu
-            .AddItem("Temporary", key: "temp", shortcut: KeyGesture.Ctrl('T'))
-            .AddSubMenu("Nested", nested => nested.AddItem("Duplicate", key: "save"))));
+
+        Assert.Throws<ArgumentException>(() => context.Bar.AddMenu(
+            "Bad",
+            menu => menu
+                .AddItem("Temporary", key: "temp", shortcut: KeyGesture.Ctrl('T'))
+                .AddSubMenu("Nested", nested => nested.AddItem("Duplicate", key: "save"))));
+
         Assert.Single(context.Bar.Menus);
         Assert.False(context.Bar.TryGetItem("temp", out _));
         context.Bar.AddMenu("Good", menu => menu.AddItem("Temporary", key: "temp", shortcut: KeyGesture.Ctrl('T')));
-        Assert.Throws<ArgumentException>(() => context.Bar.Menus[0].DropDown.AddItem("Conflict", shortcut: KeyGesture.Ctrl('S')));
+
+        Assert.Throws<ArgumentException>(() =>
+            context.Bar.Menus[0].DropDown.AddItem("Conflict", shortcut: KeyGesture.Ctrl('S')));
+
         Assert.Throws<ArgumentException>(() => context.Bar.Menus[0].DropDown.AddItem("Empty", key: " "));
     }
 
@@ -63,7 +78,15 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         int count = 0;
-        context.Bar.AddMenu("File", menu => menu.AddItem("Save", () => count++, key: "save", shortcut: KeyGesture.Ctrl('S')));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu.AddItem(
+                "Save",
+                () => count++,
+                key: "save",
+                shortcut: KeyGesture.Ctrl('S')));
+
         var item = context.Bar["save"];
         item.Dispose();
         Assert.False(context.Bar.TryGetItem("save", out _));
@@ -80,9 +103,12 @@ public sealed class MenuFeaturesTests
     public void ReplacingDisposedItem_DoesNotDisposeRemainingSibling()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("File", menu => menu
-            .AddItem("One", key: "one")
-            .AddItem("Two", key: "two"));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu
+                .AddItem("One", key: "one")
+                .AddItem("Two", key: "two"));
 
         var dropDown = context.Bar.Menus[0].DropDown;
         var first = context.Bar["one"];
@@ -111,25 +137,38 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         var observations = new List<string>();
-        context.Bar.AddMenu("View", menu => menu.AddCheckItem("Grid", value =>
-        {
-            Assert.True(value);
-            Assert.True(context.Bar["grid"].IsChecked);
-            Assert.Equal(-1, context.Bar.OpenMenuIndex);
-            observations.Add("callback");
-        }, key: "grid", shortcut: KeyGesture.Ctrl('G')));
+
+        context.Bar.AddMenu(
+            "View",
+            menu => menu.AddCheckItem(
+                "Grid",
+                value =>
+                {
+                    Assert.True(value);
+                    Assert.True(context.Bar["grid"].IsChecked);
+                    Assert.Equal(-1, context.Bar.OpenMenuIndex);
+                    observations.Add("callback");
+                },
+                key: "grid",
+                shortcut: KeyGesture.Ctrl('G')));
+
         var item = context.Bar["grid"];
         context.Bar.ItemInvoked += _ => observations.Add("bar");
         item.Invoked += _ => observations.Add("item");
         context.Bar.OpenMenuAt(0);
+
         if (path == 0)
             item.PerformClick();
+
         if (path == 1)
             context.Key(13);
+
         if (path == 2)
             context.Key('G', KeyboardModifierState.Ctrl);
+
         if (path == 3)
             Pointer(item, context.View, "DispatchPointerClick");
+
         Assert.Equal(new[] { "bar", "item", "callback" }, observations);
         Assert.True(item.IsChecked);
     }
@@ -142,7 +181,15 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         int count = 0;
-        context.Bar.AddMenu("View", menu => menu.AddCheckItem("Grid", _ => count++, isChecked: true, key: "grid"));
+
+        context.Bar.AddMenu(
+            "View",
+            menu => menu.AddCheckItem(
+                "Grid",
+                _ => count++,
+                isChecked: true,
+                key: "grid"));
+
         var item = context.Bar["grid"];
         Assert.True(item.IsChecked);
         item.SetChecked(false);
@@ -164,11 +211,36 @@ public sealed class MenuFeaturesTests
     public void RadioGroups_AreLocalExclusiveAndProgrammaticallySettable()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("View", menu => menu
-            .AddRadioItem("Pixels", null, "units", isChecked: true, key: "pixels")
-            .AddRadioItem("Tiles", null, "units", key: "tiles")
-            .AddRadioItem("Other", null, "other", isChecked: true, key: "other")
-            .AddSubMenu("Child", child => child.AddRadioItem("Child", null, "units", isChecked: true, key: "child")));
+
+        context.Bar.AddMenu(
+            "View",
+            menu => menu
+                .AddRadioItem(
+                    "Pixels",
+                    null,
+                    "units",
+                    isChecked: true,
+                    key: "pixels")
+                .AddRadioItem(
+                    "Tiles",
+                    null,
+                    "units",
+                    key: "tiles")
+                .AddRadioItem(
+                    "Other",
+                    null,
+                    "other",
+                    isChecked: true,
+                    key: "other")
+                .AddSubMenu(
+                    "Child",
+                    child => child.AddRadioItem(
+                        "Child",
+                        null,
+                        "units",
+                        isChecked: true,
+                        key: "child")));
+
         var pixels = context.Bar["pixels"];
         var tiles = context.Bar["tiles"];
         tiles.SetChecked(true);
@@ -219,11 +291,15 @@ public sealed class MenuFeaturesTests
         context.Key(39);
         context.Key(13);
         Assert.Equal(1, count);
-        Assert.All(new[] { root, export, image }, menu =>
-        {
-            Assert.False(menu.Visible);
-            Assert.False(menu.IsOpen);
-        });
+
+        Assert.All(
+            new[] { root, export, image },
+            menu =>
+            {
+                Assert.False(menu.Visible);
+                Assert.False(menu.IsOpen);
+            });
+
         context.Bar.OpenMenuAt(0);
         context.Key(39);
         context.Key(39);
@@ -231,11 +307,15 @@ public sealed class MenuFeaturesTests
         context.Bar["png"].Disposing += (_, _) => disposed++;
         context.Bar.Dispose();
         Assert.Equal(1, disposed);
-        Assert.All(new[] { root, export, image }, menu =>
-        {
-            Assert.False(menu.Visible);
-            Assert.False(menu.IsOpen);
-        });
+
+        Assert.All(
+            new[] { root, export, image },
+            menu =>
+            {
+                Assert.False(menu.Visible);
+                Assert.False(menu.IsOpen);
+            });
+
         context.Key('P', KeyboardModifierState.Ctrl);
         Assert.Equal(1, count);
     }
@@ -247,10 +327,14 @@ public sealed class MenuFeaturesTests
     public void Hover_OpensSubmenuAndClosesSiblingAndParentSwitchClosesHierarchy()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("File", menu => menu
-            .AddSubMenu("One", child => child.AddItem("A"), key: "one")
-            .AddSubMenu("Two", child => child.AddItem("B"), key: "two"))
+
+        context.Bar.AddMenu(
+                "File",
+                menu => menu
+                    .AddSubMenu("One", child => child.AddItem("A"), key: "one")
+                    .AddSubMenu("Two", child => child.AddItem("B"), key: "two"))
             .AddMenu("Help", menu => menu.AddItem("About"));
+
         context.Bar.OpenMenuAt(0);
         Pointer(context.Bar["one"], context.View, "DispatchPointerEnter");
         Assert.True(context.Bar["one"].SubMenu!.IsOpen);
@@ -268,7 +352,13 @@ public sealed class MenuFeaturesTests
     [Fact]
     public void Placement_FlipsLeftAndClampsVerticallyAtEveryDepth()
     {
-        using var context = new MenuContext(new Rectangle(520, 420, 120, 30));
+        using var context = new MenuContext(
+            new Rectangle(
+                520,
+                420,
+                120,
+                30));
+
         BuildDeep(context, () => { });
         context.Bar.OpenMenuAt(0);
         context.Key(39);
@@ -277,7 +367,10 @@ public sealed class MenuFeaturesTests
         var child = context.Bar["export"].SubMenu!;
         var deep = context.Bar["image"].SubMenu!;
         Assert.True(child.Panel.ScreenBounds.Left < root.Panel.ScreenBounds.Left);
-        Assert.All(new[] { root, child, deep }, menu => Assert.True(context.View.Viewport.TargetRectPx.Contains(menu.Panel.ScreenBounds)));
+
+        Assert.All(
+            new[] { root, child, deep },
+            menu => Assert.True(context.View.Viewport.TargetRectPx.Contains(menu.Panel.ScreenBounds)));
     }
 
     /// <summary>
@@ -321,9 +414,22 @@ public sealed class MenuFeaturesTests
         using var bitmap = new SKBitmap(8, 8);
         using var icon = SKImage.FromBitmap(bitmap);
         using var context = new MenuContext();
-        context.Bar.AddMenu("View", menu => menu.AddItem("Plain", key: "plain")
-            .AddCheckItem("Grid", key: "grid", icon: icon, isChecked: true)
-            .AddRadioItem("Pixels", null, "units", key: "pixels", isChecked: true));
+
+        context.Bar.AddMenu(
+            "View",
+            menu => menu.AddItem("Plain", key: "plain")
+                .AddCheckItem(
+                    "Grid",
+                    key: "grid",
+                    icon: icon,
+                    isChecked: true)
+                .AddRadioItem(
+                    "Pixels",
+                    null,
+                    "units",
+                    key: "pixels",
+                    isChecked: true));
+
         var plain = context.Bar["plain"];
         var grid = context.Bar["grid"];
         Assert.Null(plain.IconDrawing);
@@ -348,7 +454,16 @@ public sealed class MenuFeaturesTests
         using var context = new MenuContext();
         int count = 0;
         BuildDeep(context, () => count++);
-        using var textBox = new TextBoxWidget(context.Host, context.View, new Rectangle(20, 250, 300, 30));
+
+        using var textBox = new TextBoxWidget(
+            context.Host,
+            context.View,
+            new Rectangle(
+                20,
+                250,
+                300,
+                30));
+
         textBox.Show();
         context.Router.Focus(textBox);
         context.Key('P', KeyboardModifierState.Ctrl | KeyboardModifierState.Shift);
@@ -382,21 +497,37 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         var sequence = new List<string>();
-        context.Bar.AddMenu("File", menu => menu.AddItem("Open", () => sequence.Add("command"), shortcut: KeyGesture.Ctrl('F')), mnemonic: 'f');
-        using var textBox = new TextBoxWidget(context.Host, context.View, new Rectangle(10, 250, 200, 30));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu.AddItem("Open", () => sequence.Add("command"), shortcut: KeyGesture.Ctrl('F')),
+            mnemonic: 'f');
+
+        using var textBox = new TextBoxWidget(
+            context.Host,
+            context.View,
+            new Rectangle(
+                10,
+                250,
+                200,
+                30));
+
         textBox.Show();
         bool consume = true;
+
         textBox.KeyboardInput += args =>
         {
             sequence.Add("focused");
             args.Handled = consume;
         };
+
         context.Router.Focus(textBox);
         context.Key('F', mnemonic ? KeyboardModifierState.Alt : KeyboardModifierState.Ctrl);
         Assert.Equal(new[] { "focused" }, sequence);
         Assert.Equal(-1, context.Bar.OpenMenuIndex);
         consume = false;
         context.Key('F', mnemonic ? KeyboardModifierState.Alt : KeyboardModifierState.Ctrl);
+
         if (mnemonic)
         {
             Assert.Equal(0, context.Bar.OpenMenuIndex);
@@ -416,8 +547,17 @@ public sealed class MenuFeaturesTests
         using var context = new MenuContext();
         int first = 0, second = 0;
         context.Bar.AddMenu("First", menu => menu.AddItem("Go", () => first++, shortcut: KeyGesture.Ctrl('G')));
-        using var other = new MenuBarWidget(context.Host, context.View, new Rectangle(0, 40, 640, 30))
+
+        using var other = new MenuBarWidget(
+                context.Host,
+                context.View,
+                new Rectangle(
+                    0,
+                    40,
+                    640,
+                    30))
             .AddMenu("Second", menu => menu.AddItem("Go", () => second++, shortcut: KeyGesture.Ctrl('G')));
+
         other.Show();
         context.Key('G', KeyboardModifierState.Ctrl);
         Assert.Equal(0, first);
@@ -437,8 +577,17 @@ public sealed class MenuFeaturesTests
         using var context = new MenuContext();
         int first = 0, second = 0;
         context.Bar.AddMenu("First", menu => menu.AddItem("Go", () => first++, shortcut: KeyGesture.Ctrl('G')));
-        using var other = new MenuBarWidget(context.Host, context.View, new Rectangle(0, 40, 640, 30))
+
+        using var other = new MenuBarWidget(
+                context.Host,
+                context.View,
+                new Rectangle(
+                    0,
+                    40,
+                    640,
+                    30))
             .AddMenu("Second", menu => menu.AddItem("Go", () => second++, shortcut: KeyGesture.Ctrl('G')));
+
         other.Show();
         context.Bar.OpenMenuAt(0);
         var item = context.Bar.Menus[0].DropDown.Items[0];
@@ -460,9 +609,13 @@ public sealed class MenuFeaturesTests
     public void DisposingLongestRow_RecalculatesWidthHeightAndRemainingPositions()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("File", menu => menu
-            .AddItem(new string('W', 50), key: "long")
-            .AddItem("Keep", key: "keep"));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu
+                .AddItem(new string('W', 50), key: "long")
+                .AddItem("Keep", key: "keep"));
+
         context.Bar.OpenMenuAt(0);
         var dropdown = context.Bar.Menus[0].DropDown;
         int oldWidth = dropdown.Width;
@@ -490,8 +643,17 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         int count = 0;
-        context.Bar.AddMenu("File", menu => menu.AddItem("Disabled", () => count++, enabled: false, mnemonic: 'D')
-            .AddSubMenu("Export", child => child.AddItem("PNG", () => count++, mnemonic: 'p'), mnemonic: 'e'), mnemonic: 'f');
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu.AddItem(
+                    "Disabled",
+                    () => count++,
+                    enabled: false,
+                    mnemonic: 'D')
+                .AddSubMenu("Export", child => child.AddItem("PNG", () => count++, mnemonic: 'p'), mnemonic: 'e'),
+            mnemonic: 'f');
+
         Assert.Equal("File", context.Bar.Menus[0].Header.Label.Text);
         Assert.Throws<ArgumentException>(() => context.Bar.AddMenu("Conflict", mnemonic: 'F'));
         Assert.Throws<ArgumentException>(() => context.Bar.Menus[0].DropDown.AddItem("Conflict", mnemonic: 'E'));
@@ -513,9 +675,13 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         int count = 0;
-        context.Bar.AddMenu("File", menu => menu.AddItem("Disabled", enabled: false).AddSeparator()
-            .AddCheckItem("Grid", _ => count++).AddItem("Last"))
+
+        context.Bar.AddMenu(
+                "File",
+                menu => menu.AddItem("Disabled", enabled: false).AddSeparator()
+                    .AddCheckItem("Grid", _ => count++).AddItem("Last"))
             .AddMenu("Help", menu => menu.AddItem("About"));
+
         context.Bar.OpenMenuAt(0);
         Assert.Equal(1, context.Bar.Menus[0].DropDown.SelectedIndex);
         context.Key(38);
@@ -556,11 +722,17 @@ public sealed class MenuFeaturesTests
     public void Callback_CanDisposeBarAfterHierarchyIsStable()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("File", menu => menu.AddItem("Exit", () =>
-        {
-            Assert.Equal(-1, context.Bar.OpenMenuIndex);
-            context.Bar.Dispose();
-        }));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu.AddItem(
+                "Exit",
+                () =>
+                {
+                    Assert.Equal(-1, context.Bar.OpenMenuIndex);
+                    context.Bar.Dispose();
+                }));
+
         context.Bar.OpenMenuAt(0);
         context.Key(13);
         Assert.Empty(context.Bar.Children);
@@ -602,7 +774,11 @@ public sealed class MenuFeaturesTests
         panel.Update(long.MaxValue);
         Assert.False(context.Bar.Menus[0].DropDown.Visible);
         Assert.False(context.Bar.HitTest(context.View, new Point(600, 450)));
-        var revealAnimating = typeof(DirectDrawingBase).GetField("_revealAnimating", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        var revealAnimating = typeof(DirectDrawingBase).GetField(
+            "_revealAnimating",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+
         Assert.False((bool)revealAnimating.GetValue(panel)!);
         Assert.False((bool)revealAnimating.GetValue(child.Panel)!);
     }
@@ -655,8 +831,17 @@ public sealed class MenuFeaturesTests
     {
         using var context = new MenuContext();
         int count = 0;
-        context.Bar.AddMenu("File", menu => menu.AddItem("Legacy", () => count++, shortcutText: "Ctrl+O")
-            .AddItem("Typed", () => count++, shortcutText: "custom", shortcut: KeyGesture.Ctrl('S'), key: "typed"));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu.AddItem("Legacy", () => count++, shortcutText: "Ctrl+O")
+                .AddItem(
+                    "Typed",
+                    () => count++,
+                    shortcutText: "custom",
+                    shortcut: KeyGesture.Ctrl('S'),
+                    key: "typed"));
+
         context.Key('O', KeyboardModifierState.Ctrl);
         Assert.Equal(0, count);
         Assert.Equal("Ctrl+S", context.Bar["typed"].ShortcutText);
@@ -673,7 +858,16 @@ public sealed class MenuFeaturesTests
         using var context = new MenuContext();
         int count = 0;
         context.Bar.AddMenu("File", menu => menu.AddItem("A", () => count++, shortcut: new KeyGesture('A')));
-        using var textBox = new TextBoxWidget(context.Host, context.View, new Rectangle(10, 250, 200, 30));
+
+        using var textBox = new TextBoxWidget(
+            context.Host,
+            context.View,
+            new Rectangle(
+                10,
+                250,
+                200,
+                30));
+
         textBox.Show();
         context.Router.Focus(textBox);
         context.Key('A');
@@ -688,12 +882,17 @@ public sealed class MenuFeaturesTests
     public void Columns_DoNotOverlapForLongLabelsShortcutsAndSubmenuArrows()
     {
         using var context = new MenuContext();
-        context.Bar.AddMenu("File", menu => menu
-            .AddItem("A substantially longer command label", key: "label")
-            .AddItem("Save", shortcut: KeyGesture.CtrlShift('S'), key: "shortcut")
-            .AddSubMenu("Export", child => child.AddItem("PNG")));
+
+        context.Bar.AddMenu(
+            "File",
+            menu => menu
+                .AddItem("A substantially longer command label", key: "label")
+                .AddItem("Save", shortcut: KeyGesture.CtrlShift('S'), key: "shortcut")
+                .AddSubMenu("Export", child => child.AddItem("PNG")));
+
         var dropdown = context.Bar.Menus[0].DropDown;
         dropdown.SetWidth(MenuBarTheme.Default.MinimumDropDownWidth);
+
         foreach (var item in dropdown.Items)
         {
             Assert.True(item.Label.ScreenBounds.Right < item.ShortcutLabel.ScreenBounds.Left);
@@ -711,16 +910,32 @@ public sealed class MenuFeaturesTests
         bitmap.Erase(SKColors.Gold);
         using var icon = SKImage.FromBitmap(bitmap);
         using var context = new MenuContext();
-        context.Bar.AddMenu("View", menu => menu
-            .AddCheckItem("Show Grid", isChecked: true, icon: icon, key: "grid", shortcut: KeyGesture.Ctrl('G'))
-            .AddRadioItem("Pixels", null, "units", isChecked: true)
-            .AddRadioItem("Tiles", null, "units")
-            .AddSeparator()
-            .AddSubMenu("Export", child => child.AddItem("PNG")));
+
+        context.Bar.AddMenu(
+            "View",
+            menu => menu
+                .AddCheckItem(
+                    "Show Grid",
+                    isChecked: true,
+                    icon: icon,
+                    key: "grid",
+                    shortcut: KeyGesture.Ctrl('G'))
+                .AddRadioItem(
+                    "Pixels",
+                    null,
+                    "units",
+                    isChecked: true)
+                .AddRadioItem("Tiles", null, "units")
+                .AddSeparator()
+                .AddSubMenu("Export", child => child.AddItem("PNG")));
+
         context.Bar.OpenMenuAt(0);
         using var backbuffer = new Gondwana.Rendering.Backbuffers.BitmapBackbuffer(640, 480);
-        foreach (var drawing in Visuals(context.Bar).Where(drawing => drawing.Visible).OrderBy(drawing => drawing.ZOrder))
+
+        foreach (var drawing in Visuals(context.Bar).Where(drawing => drawing.Visible)
+                     .OrderBy(drawing => drawing.ZOrder))
             drawing.Draw(backbuffer, drawing.ScreenBounds);
+
         using var snapshot = backbuffer.Snapshot();
         using var rendered = SKBitmap.FromImage(snapshot);
         var grid = context.Bar["grid"];
@@ -728,11 +943,12 @@ public sealed class MenuFeaturesTests
         Assert.Equal(SKColors.Gold, rendered.GetPixel(iconBounds.Left + 4, iconBounds.Top + 4));
         var marker = grid.Marker.ScreenBounds;
         bool hasMarkerInk = false;
-        for (int y = marker.Top; y < marker.Bottom; y++)
-            for (int x = marker.Left; x < marker.Right; x++)
-                hasMarkerInk |= rendered.GetPixel(x, y).Red > 180;
-        Assert.True(hasMarkerInk);
 
+        for (int y = marker.Top; y < marker.Bottom; y++)
+        for (int x = marker.Left; x < marker.Right; x++)
+            hasMarkerInk |= rendered.GetPixel(x, y).Red > 180;
+
+        Assert.True(hasMarkerInk);
     }
 
     private static IEnumerable<DirectDrawingBase> Visuals(IDirectCompositeContainer container)
@@ -741,21 +957,45 @@ public sealed class MenuFeaturesTests
         {
             if (child is DirectDrawingBase drawing)
                 yield return drawing;
+
             if (child is IDirectCompositeContainer nested)
                 foreach (var visual in Visuals(nested))
                     yield return visual;
         }
     }
 
-    private static void BuildDeep(MenuContext context, Action callback) => context.Bar.AddMenu("File", file => file
-        .AddSubMenu("Export", export => export.AddSubMenu("Image", image => image
-            .AddItem("PNG", callback, key: "png", shortcut: KeyGesture.Ctrl('P')),
-            key: "image"), key: "export"));
+    private static void BuildDeep(MenuContext context, Action callback) => context.Bar.AddMenu(
+        "File",
+        file => file
+            .AddSubMenu(
+                "Export",
+                export => export.AddSubMenu(
+                    "Image",
+                    image => image
+                        .AddItem(
+                            "PNG",
+                            callback,
+                            key: "png",
+                            shortcut: KeyGesture.Ctrl('P')),
+                    key: "image"),
+                key: "export"));
 
     private static void Pointer(WidgetBase widget, View view, string method) => typeof(WidgetBase)
         .GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!
-        .Invoke(widget, new object[] { new WidgetPointerEventArgs(widget, view, PointF.Empty,
-            WidgetPointerButtonEnum.Left, 1, Vector2.Zero, 0, WidgetInputRouter.MousePointerId) });
+        .Invoke(
+            widget,
+            new object[]
+            {
+                new WidgetPointerEventArgs(
+                    widget,
+                    view,
+                    PointF.Empty,
+                    WidgetPointerButtonEnum.Left,
+                    1,
+                    Vector2.Zero,
+                    0,
+                    WidgetInputRouter.MousePointerId)
+            });
 
     private sealed class MenuContext : IDisposable
     {
@@ -763,40 +1003,74 @@ public sealed class MenuFeaturesTests
         /// Gets the host.
         /// </summary>
         public TestRenderSurfaceHost Host { get; } = new();
+
         /// <summary>
         /// Gets the view.
         /// </summary>
         public View View { get; }
+
         /// <summary>
         /// Gets the router.
         /// </summary>
         public WidgetInputRouter Router { get; }
+
         /// <summary>
         /// Gets the bar.
         /// </summary>
         public MenuBarWidget Bar { get; }
+
         /// <summary>
         /// Initializes a new instance of the <c>MenuContext</c> class.
         /// </summary>
         /// <param name="bounds">The bounds value for this test case.</param>
         public MenuContext(Rectangle? bounds = null)
         {
-            Host.ViewManager.AddView(new Rectangle(0, 0, 640, 480), zOrder: 0);
+            Host.ViewManager.AddView(
+                new Rectangle(
+                    0,
+                    0,
+                    640,
+                    480),
+                zOrder: 0);
+
             View = Host.ViewManager.Views.Single(v => v.ZOrder == 0 && v.Viewport.TargetRectPx.Width == 640);
-            Router = new WidgetInputRouter(Host, null, null, null);
+
+            Router = new WidgetInputRouter(
+                Host,
+                null,
+                null,
+                null);
+
             Router.Start();
-            Bar = new MenuBarWidget(Host, View, bounds ?? new Rectangle(0, 0, 640, 30))
-            { DropDownAnimation = MenuDropDownAnimation.None };
+
+            Bar = new MenuBarWidget(
+                    Host,
+                    View,
+                    bounds ?? new Rectangle(
+                        0,
+                        0,
+                        640,
+                        30))
+                { DropDownAnimation = MenuDropDownAnimation.None };
+
             Bar.Show();
         }
+
         /// <summary>
         /// Constructs a keyboard event for a widget input test.
         /// </summary>
         /// <param name="key">The key value for this test case.</param>
         /// <param name="modifiers">The modifiers value for this test case.</param>
-        public void Key(int key, KeyboardModifierState modifiers = KeyboardModifierState.None) => typeof(WidgetInputRouter)
-            .GetMethod("OnKeyDown", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(Router, new object[] { new KeyDownEventArgs(new KeyEventConfiguration(key.ToString()), modifiers, KeyAction.Pressed) });
+        public void Key(int key, KeyboardModifierState modifiers = KeyboardModifierState.None) =>
+            typeof(WidgetInputRouter)
+                .GetMethod("OnKeyDown", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(
+                    Router,
+                    new object[]
+                    {
+                        new KeyDownEventArgs(new KeyEventConfiguration(key.ToString()), modifiers, KeyAction.Pressed)
+                    });
+
         /// <summary>
         /// Performs a pointer hit test against the test widget.
         /// </summary>
@@ -804,9 +1078,12 @@ public sealed class MenuFeaturesTests
         /// <returns>The requested widget base, or <see langword="null"/> when unavailable.</returns>
         public WidgetBase? Hit(Point point)
         {
-            var hit = typeof(WidgetInputRouter).GetMethod("HitTest", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(Router, new object[] { point });
+            var hit = typeof(WidgetInputRouter).GetMethod("HitTest", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(Router, new object[] { point });
+
             return hit?.GetType().GetProperty("Widget")!.GetValue(hit) as WidgetBase;
         }
+
         /// <inheritdoc/>
         public void Dispose()
         {

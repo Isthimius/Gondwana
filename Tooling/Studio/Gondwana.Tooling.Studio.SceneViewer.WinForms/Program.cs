@@ -10,6 +10,7 @@ internal static class Program
         ApplicationConfiguration.Initialize();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
         SceneViewerSceneOptions? options = null;
+
         try
         {
             var stress = SceneViewerArguments.ParseStress(args);
@@ -23,6 +24,7 @@ internal static class Program
             {
                 options = SceneViewerArguments.ParseScene(args, Environment.CurrentDirectory);
                 var path = options?.ScenePath;
+
                 if (path is null)
                 {
                     using var dialog = new OpenFileDialog
@@ -30,8 +32,10 @@ internal static class Program
                         Filter = "Gondwana scenes (*.gscn)|*.gscn",
                         CheckFileExists = true
                     };
+
                     if (dialog.ShowDialog() != DialogResult.OK)
                         return 0;
+
                     path = SceneViewerArguments.Normalize(
                         dialog.FileName,
                         Environment.CurrentDirectory);
@@ -42,6 +46,7 @@ internal static class Program
 
             using (form)
                 Application.Run(form);
+
             return Environment.ExitCode;
         }
         catch (Exception ex)
@@ -53,6 +58,7 @@ internal static class Program
         {
             // Also covers a render-control failure before the host was constructed.
             Engine.Instance.Dispose();
+
             if (options?.TemporaryScene == true)
             {
                 // The viewer owns cleanup even if the Studio process exits first.
@@ -60,8 +66,14 @@ internal static class Program
                 {
                     File.Delete(options.ScenePath);
                 }
-                catch (IOException) { /* Best effort; abnormal exits may leave snapshots. */ }
-                catch (UnauthorizedAccessException) { /* Best effort; abnormal exits may leave snapshots. */ }
+                catch (IOException)
+                {
+                    /* Best effort; abnormal exits may leave snapshots. */
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    /* Best effort; abnormal exits may leave snapshots. */
+                }
             }
         }
     }
@@ -70,7 +82,11 @@ internal static class Program
     {
         Environment.ExitCode = 1;
         Trace.TraceError(exception.ToString());
-        MessageBox.Show($"Unable to view scene.\n\n{exception.Message}", "Gondwana Scene Viewer",
-            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+        MessageBox.Show(
+            $"Unable to view scene.\n\n{exception.Message}",
+            "Gondwana Scene Viewer",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error);
     }
 }

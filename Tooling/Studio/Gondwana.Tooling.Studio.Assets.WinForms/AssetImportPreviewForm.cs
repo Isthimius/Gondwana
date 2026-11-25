@@ -16,6 +16,7 @@ internal sealed class AssetImportPreviewForm : Form
         Size = new Size(900, 500);
         StartPosition = FormStartPosition.CenterParent;
         ShowInTaskbar = false;
+
         var summary = new TextBox
         {
             Dock = DockStyle.Fill,
@@ -23,9 +24,13 @@ internal sealed class AssetImportPreviewForm : Form
             ReadOnly = true,
             ScrollBars = ScrollBars.Both,
             WordWrap = false,
-            Text = $"Add {plan.AdditionCount} entries. Changes remain unsaved until Save.\r\n\r\n" + string.Join("\r\n", plan.Preview)
+            Text = $"Add {plan.AdditionCount} entries. Changes remain unsaved until Save.\r\n\r\n" +
+                   string.Join("\r\n", plan.Preview)
         };
-        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
+
+        var buttons = new FlowLayoutPanel
+            { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
+
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var apply = new Button { Text = "Import", DialogResult = DialogResult.OK, AutoSize = true };
         buttons.Controls.AddRange([cancel, apply]);

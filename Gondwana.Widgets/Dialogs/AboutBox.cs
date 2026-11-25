@@ -43,24 +43,26 @@ public sealed class AboutBox : DialogBox
     /// <param name="hyperlinkText">
     /// The optional hyperlink display text. When omitted, the URI is displayed.
     /// </param>
-    public AboutBox(RenderSurfaceHostBase renderSurfaceHost,
-                    View view,
-                    string applicationName,
-                    string version,
-                    string? description = null,
-                    string? copyright = null,
-                    SKImage? logo = null,
-                    Rectangle? bounds = null,
-                    string? nickname = null,
-                    IExternalUriLauncher? uriLauncher = null,
-                    Uri? hyperlinkUri = null,
-                    string? hyperlinkText = null)
-        : base(renderSurfaceHost,
-               view,
-               ResolveBounds(view, bounds),
-               $"About {applicationName}",
-               showCloseButton: true,
-               nickname: nickname ?? "__gondwana_about__")
+    public AboutBox(
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view,
+        string applicationName,
+        string version,
+        string? description = null,
+        string? copyright = null,
+        SKImage? logo = null,
+        Rectangle? bounds = null,
+        string? nickname = null,
+        IExternalUriLauncher? uriLauncher = null,
+        Uri? hyperlinkUri = null,
+        string? hyperlinkText = null)
+        : base(
+            renderSurfaceHost,
+            view,
+            ResolveBounds(view, bounds),
+            $"About {applicationName}",
+            showCloseButton: true,
+            nickname: nickname ?? "__gondwana_about__")
     {
         ApplicationName = applicationName;
         Version = version;
@@ -75,12 +77,16 @@ public sealed class AboutBox : DialogBox
         {
             if (uriLauncher is null)
             {
-                throw new ArgumentNullException(nameof(uriLauncher), "A URI launcher is required when configuring the hyperlink.");
+                throw new ArgumentNullException(
+                    nameof(uriLauncher),
+                    "A URI launcher is required when configuring the hyperlink.");
             }
 
             if (hyperlinkUri is null)
             {
-                throw new ArgumentNullException(nameof(hyperlinkUri), "A hyperlink URI is required when configuring the hyperlink.");
+                throw new ArgumentNullException(
+                    nameof(hyperlinkUri),
+                    "A hyperlink URI is required when configuring the hyperlink.");
             }
 
             if (!hyperlinkUri.IsAbsoluteUri)
@@ -98,12 +104,18 @@ public sealed class AboutBox : DialogBox
 
         if (logo is not null)
         {
-            var logoScreenBounds = new Rectangle(contentLeft, contentTop, 112, 112);
-            Logo = new DirectImage(logo,
-                                   renderSurfaceHost,
-                                   view,
-                                   logoScreenBounds,
-                                   $"{Nickname}.logo").SetScaleMode(DirectImage.ScaleMode.Fit);
+            var logoScreenBounds = new Rectangle(
+                contentLeft,
+                contentTop,
+                112,
+                112);
+
+            Logo = new DirectImage(
+                logo,
+                renderSurfaceHost,
+                view,
+                logoScreenBounds,
+                $"{Nickname}.logo").SetScaleMode(DirectImage.ScaleMode.Fit);
 
             Logo.ZOrder = 10_002;
             Add(Logo);
@@ -111,71 +123,106 @@ public sealed class AboutBox : DialogBox
             contentLeft += 132;
         }
 
-        var headerTextScreenBounds = new Rectangle(contentLeft, contentTop, resolvedBounds.Right - contentRightPadding - contentLeft, 44);
-        HeaderText = new TextBlock(renderSurfaceHost,
-                                   view,
-                                   headerTextScreenBounds,
-                                   $"{Nickname}.header").SetText(applicationName)
-                                                        .SetFont(SKTypeface.Default, 26f, minSize: 16f)
-                                                        .SetColors(SKColors.White, SKColors.Transparent)
-                                                        .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                                                        .EnableWrapping(false);
+        var headerTextScreenBounds = new Rectangle(
+            contentLeft,
+            contentTop,
+            resolvedBounds.Right - contentRightPadding - contentLeft,
+            44);
+
+        HeaderText = new TextBlock(
+                renderSurfaceHost,
+                view,
+                headerTextScreenBounds,
+                $"{Nickname}.header").SetText(applicationName)
+            .SetFont(SKTypeface.Default, 26f, minSize: 16f)
+            .SetColors(SKColors.White, SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
 
         HeaderText.ZOrder = 10_002;
         Add(HeaderText);
 
-        var versionTextScreenBounds = new Rectangle(contentLeft, contentTop + 44, resolvedBounds.Right - contentRightPadding - contentLeft, 30);
-        VersionText = new TextBlock(renderSurfaceHost,
-                                    view,
-                                    versionTextScreenBounds,
-                                    $"{Nickname}.version").SetText($"Version {version}")
-                                                          .SetFont(SKTypeface.Default, 15f, minSize: 11f)
-                                                          .SetColors(new SKColor(205, 205, 215), SKColors.Transparent)
-                                                          .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
-                                                          .EnableWrapping(false);
+        var versionTextScreenBounds = new Rectangle(
+            contentLeft,
+            contentTop + 44,
+            resolvedBounds.Right - contentRightPadding - contentLeft,
+            30);
+
+        VersionText = new TextBlock(
+                renderSurfaceHost,
+                view,
+                versionTextScreenBounds,
+                $"{Nickname}.version").SetText($"Version {version}")
+            .SetFont(SKTypeface.Default, 15f, minSize: 11f)
+            .SetColors(new SKColor(205, 205, 215), SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false);
 
         VersionText.ZOrder = 10_002;
         Add(VersionText);
 
         if (uriLauncher is not null && hyperlinkUri is not null)
         {
-            Rectangle hyperlinkBounds = new(contentLeft,
-                                            contentTop + 74,
-                                            resolvedBounds.Right - contentRightPadding - contentLeft,
-                                            28);
+            Rectangle hyperlinkBounds = new(
+                contentLeft,
+                contentTop + 74,
+                resolvedBounds.Right - contentRightPadding - contentLeft,
+                28);
 
-            Hyperlink = new HyperlinkWidget(uriLauncher,
-                                            renderSurfaceHost,
-                                            view,
-                                            hyperlinkBounds,
-                                            hyperlinkText ?? hyperlinkUri.ToString(),
-                                            hyperlinkUri,
-                                            $"{Nickname}.hyperlink");
+            Hyperlink = new HyperlinkWidget(
+                uriLauncher,
+                renderSurfaceHost,
+                view,
+                hyperlinkBounds,
+                hyperlinkText ?? hyperlinkUri.ToString(),
+                hyperlinkUri,
+                $"{Nickname}.hyperlink");
 
             Hyperlink.Label.ZOrder = 10_002;
-            Add(Hyperlink, new Vector2(hyperlinkBounds.Left - resolvedBounds.Left,
-                                                   hyperlinkBounds.Top - resolvedBounds.Top));
+
+            Add(
+                Hyperlink,
+                new Vector2(
+                    hyperlinkBounds.Left - resolvedBounds.Left,
+                    hyperlinkBounds.Top - resolvedBounds.Top));
         }
 
-        var detailsTextScreenBounds = new Rectangle(resolvedBounds.Left + 24, contentTop + 126, resolvedBounds.Width - 48, resolvedBounds.Height - 222);
-        string detailText = string.Join(Environment.NewLine + Environment.NewLine,
-                                        new[] { description, copyright }
-                                    .Where(static value => !string.IsNullOrWhiteSpace(value)));
+        var detailsTextScreenBounds = new Rectangle(
+            resolvedBounds.Left + 24,
+            contentTop + 126,
+            resolvedBounds.Width - 48,
+            resolvedBounds.Height - 222);
 
-        DetailsText = new TextBlock(renderSurfaceHost,
-                                    view,
-                                    detailsTextScreenBounds,
-                                    $"{Nickname}.details").SetText(detailText)
-                                                          .SetFont(SKTypeface.Default, 14f, minSize: 10f)
-                                                          .SetColors(new SKColor(225, 225, 232), SKColors.Transparent)
-                                                          .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
-                                                          .EnableWrapping(true);
+        string detailText = string.Join(
+            Environment.NewLine + Environment.NewLine,
+            new[] { description, copyright }
+                .Where(static value => !string.IsNullOrWhiteSpace(value)));
+
+        DetailsText = new TextBlock(
+                renderSurfaceHost,
+                view,
+                detailsTextScreenBounds,
+                $"{Nickname}.details").SetText(detailText)
+            .SetFont(SKTypeface.Default, 14f, minSize: 10f)
+            .SetColors(new SKColor(225, 225, 232), SKColors.Transparent)
+            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
+            .EnableWrapping(true);
 
         DetailsText.ZOrder = 10_002;
         Add(DetailsText);
 
-        Rectangle okBounds = new(resolvedBounds.Right - 116, resolvedBounds.Bottom - 54, 92, 34);
-        OkButton = new ButtonWidget(renderSurfaceHost, view, okBounds, "OK", $"{Nickname}.ok");
+        Rectangle okBounds = new(
+            resolvedBounds.Right - 116,
+            resolvedBounds.Bottom - 54,
+            92,
+            34);
+
+        OkButton = new ButtonWidget(
+            renderSurfaceHost,
+            view,
+            okBounds,
+            "OK",
+            $"{Nickname}.ok");
 
         Add(OkButton, new Vector2(resolvedBounds.Width - 116, resolvedBounds.Height - 54));
 
@@ -282,10 +329,11 @@ public sealed class AboutBox : DialogBox
         int width = Math.Min(DefaultWidth, availableWidth);
         int height = Math.Min(DefaultHeight, availableHeight);
 
-        return new Rectangle(viewport.Left + (viewport.Width - width) / 2,
-                             viewport.Top + (viewport.Height - height) / 2,
-                             width,
-                             height);
+        return new Rectangle(
+            viewport.Left + (viewport.Width - width) / 2,
+            viewport.Top + (viewport.Height - height) / 2,
+            width,
+            height);
     }
 
     #endregion private methods

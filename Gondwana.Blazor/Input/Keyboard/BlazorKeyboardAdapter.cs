@@ -70,6 +70,7 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         if ((uint)keyCode >= (uint)_down.Length)
             return false;
+
         return Volatile.Read(ref _down[keyCode]) != 0;
     }
 
@@ -92,6 +93,7 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         SetDown(e.Code, true);
         UpdateMods(e);
     }
@@ -100,6 +102,7 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         SetDown(e.Code, false);
         UpdateMods(e);
     }
@@ -109,9 +112,12 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         if (!Enum.TryParse<BlazorKey>(code, false, out var key) || key == BlazorKey.None)
             return;
+
         var index = (int)key;
+
         if ((uint)index >= (uint)_down.Length)
             return;
+
         Volatile.Write(ref _down[index], down ? 1 : 0);
     }
 
@@ -119,12 +125,16 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     private void UpdateMods(KeyboardEventArgs e)
     {
         int mods = 0;
+
         if (e.ShiftKey)
             mods |= (int)KeyboardModifierState.Shift;
+
         if (e.CtrlKey)
             mods |= (int)KeyboardModifierState.Ctrl;
+
         if (e.AltKey)
             mods |= (int)KeyboardModifierState.Alt;
+
         Volatile.Write(ref _modsBits, mods);
     }
 
@@ -133,6 +143,7 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         if (_isDisposed)
             return;
+
         _isDisposed = true;
 
         _component.KeyDown -= OnKeyDown;

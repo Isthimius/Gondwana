@@ -24,13 +24,24 @@ public sealed class CoreHudWidgetTests
         using var label = new LabelWidget(
             host,
             view,
-            new Rectangle(10, 20, 120, 30),
+            new Rectangle(
+                10,
+                20,
+                120,
+                30),
             "Ready");
 
         label.SetText("Go");
 
         Assert.Equal("Go", label.Text);
-        Assert.Equal(new Rectangle(10, 20, 120, 30), label.Bounds);
+
+        Assert.Equal(
+            new Rectangle(
+                10,
+                20,
+                120,
+                30),
+            label.Bounds);
     }
 
     /// <summary>
@@ -45,7 +56,11 @@ public sealed class CoreHudWidgetTests
         using var progress = new ProgressBarWidget(
             host,
             view,
-            new Rectangle(10, 20, 104, 24),
+            new Rectangle(
+                10,
+                20,
+                104,
+                24),
             value: 0.25f);
 
         Assert.Equal(25, progress.FillBounds.Width);
@@ -75,8 +90,25 @@ public sealed class CoreHudWidgetTests
             WidgetOrientation.Vertical,
             spacing: 5f);
 
-        var first = new LabelWidget(host, view, new Rectangle(0, 0, 100, 10), "One");
-        var second = new LabelWidget(host, view, new Rectangle(0, 0, 80, 20), "Two");
+        var first = new LabelWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                100,
+                10),
+            "One");
+
+        var second = new LabelWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                80,
+                20),
+            "Two");
 
         stack.AddWidget(first).AddWidget(second);
 
@@ -103,10 +135,23 @@ public sealed class CoreHudWidgetTests
         using var panel = new PanelWidget(
             host,
             view,
-            new Rectangle(40, 50, 200, 100),
+            new Rectangle(
+                40,
+                50,
+                200,
+                100),
             Color.Black);
 
-        var label = new LabelWidget(host, view, new Rectangle(0, 0, 80, 20), "Child");
+        var label = new LabelWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                80,
+                20),
+            "Child");
+
         panel.AddWidget(label, new Point(10, 12));
 
         Assert.Equal(new Vector2(50, 62), label.GetPosition());
@@ -129,13 +174,24 @@ public sealed class CoreHudWidgetTests
         using var label = new LabelWidget(
             host,
             view,
-            new Rectangle(10, 20, 120, 30),
+            new Rectangle(
+                10,
+                20,
+                120,
+                30),
             "Ready");
 
         label.Size = new Size(140, 35);
         label.SetPadding(6f, 4f);
 
-        Assert.Equal(new Rectangle(10, 20, 140, 35), label.Bounds);
+        Assert.Equal(
+            new Rectangle(
+                10,
+                20,
+                140,
+                35),
+            label.Bounds);
+
         Assert.Equal(6f, label.TextBlock.HorizontalPadding);
         Assert.Equal(4f, label.TextBlock.VerticalPadding);
     }
@@ -152,13 +208,21 @@ public sealed class CoreHudWidgetTests
         using var panel = new PanelWidget(
             host,
             view,
-            new Rectangle(40, 50, 200, 100),
+            new Rectangle(
+                40,
+                50,
+                200,
+                100),
             Color.Black);
 
         using var progress = new ProgressBarWidget(
             host,
             view,
-            new Rectangle(0, 0, 120, 20),
+            new Rectangle(
+                0,
+                0,
+                120,
+                20),
             value: 0.5f);
 
         panel.AddWidget(progress, new Point(10, 12));
@@ -171,7 +235,12 @@ public sealed class CoreHudWidgetTests
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        var bounds = new Rectangle(0, 0, 640, 480);
+        var bounds = new Rectangle(
+            0,
+            0,
+            640,
+            480);
+
         int zOrder = host.ViewManager.Views.Count;
 
         host.ViewManager.AddView(bounds, zOrder: zOrder);

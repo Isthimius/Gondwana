@@ -204,6 +204,7 @@ public partial class Sprite
                 (0.35f * MathF.Sin((t * 3.17f) + (_jigglePhaseScale * 0.5f)));
 
             _jiggleScale = 1f + (scaleWave * 0.7407f * scaleIntensity);
+
             if (_jiggleScale < 0.01f)
                 _jiggleScale = 0.01f;
         }

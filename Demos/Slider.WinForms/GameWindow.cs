@@ -23,12 +23,15 @@ internal sealed class GameWindow : Form
 
         // This is the only child control on the WinForms form.
         Controls.Add(_surface);
+
         KeyDown += (_, args) =>
         {
             _host?.SetShiftHeld(args.Shift);
+
             if (args.KeyCode == Keys.Escape && _host?.HasMenuOrDialogOpen != true)
                 Close();
         };
+
         KeyUp += (_, args) => _host?.SetShiftHeld(args.Shift);
     }
 
@@ -58,6 +61,7 @@ internal sealed class GameWindow : Form
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+
         try
         {
             _host!.Initialize(logLevel: LogLevel.Warning);
@@ -66,8 +70,13 @@ internal sealed class GameWindow : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, "Slider could not start." + Environment.NewLine + ex.Message,
-                "Startup error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                "Slider could not start." + Environment.NewLine + ex.Message,
+                "Startup error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
             Close();
         }
     }
@@ -81,34 +90,39 @@ internal sealed class GameWindow : Form
 
         try
         {
-            BeginInvoke((Action)(() =>
-            {
-                if (Disposing || IsDisposed || _host is null)
-                    return;
-
-                using var picker = new OpenFileDialog
+            BeginInvoke(
+                (Action)(() =>
                 {
-                    Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp|All files|*.*",
-                    CheckFileExists = true,
-                    Multiselect = false,
-                    Title = "Choose a sliding-puzzle picture"
-                };
+                    if (Disposing || IsDisposed || _host is null)
+                        return;
 
-                if (picker.ShowDialog(this) == DialogResult.OK)
-                {
-                    try
+                    using var picker = new OpenFileDialog
                     {
-                        _host.RequestPuzzle(File.ReadAllBytes(picker.FileName), columns, rows);
-                    }
-                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                    {
-                        MessageBox.Show(this, ex.Message, "Could not open picture",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                        Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp|All files|*.*",
+                        CheckFileExists = true,
+                        Multiselect = false,
+                        Title = "Choose a sliding-puzzle picture"
+                    };
 
-                _surface.Focus();
-            }));
+                    if (picker.ShowDialog(this) == DialogResult.OK)
+                    {
+                        try
+                        {
+                            _host.RequestPuzzle(File.ReadAllBytes(picker.FileName), columns, rows);
+                        }
+                        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                        {
+                            MessageBox.Show(
+                                this,
+                                ex.Message,
+                                "Could not open picture",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+
+                    _surface.Focus();
+                }));
         }
         catch (InvalidOperationException) when (Disposing || IsDisposed || !IsHandleCreated)
         {
@@ -124,11 +138,12 @@ internal sealed class GameWindow : Form
 
         try
         {
-            BeginInvoke((Action)(() =>
-            {
-                if (!Disposing && !IsDisposed)
-                    callback();
-            }));
+            BeginInvoke(
+                (Action)(() =>
+                {
+                    if (!Disposing && !IsDisposed)
+                        callback();
+                }));
         }
         catch (InvalidOperationException) when (Disposing || IsDisposed || !IsHandleCreated)
         {
@@ -148,6 +163,7 @@ internal sealed class GameWindow : Form
                 FileName = "My Puzzle.slider.json",
                 Title = "Save Slider puzzle"
             };
+
             if (dialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
@@ -157,8 +173,12 @@ internal sealed class GameWindow : Form
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
             {
-                MessageBox.Show(this, ex.Message, "Could not save puzzle",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "Could not save puzzle",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
 
             _surface.Focus();
@@ -175,6 +195,7 @@ internal sealed class GameWindow : Form
                 CheckFileExists = true,
                 Title = "Load Slider puzzle"
             };
+
             if (dialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
@@ -182,10 +203,15 @@ internal sealed class GameWindow : Form
             {
                 _host?.RequestRestore(SliderFileStorage.LoadGame(dialog.FileName));
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or System.Text.Json.JsonException)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException
+                                           or System.Text.Json.JsonException)
             {
-                MessageBox.Show(this, ex.Message, "Could not load puzzle",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "Could not load puzzle",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
 
             _surface.Focus();

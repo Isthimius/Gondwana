@@ -53,6 +53,7 @@ public sealed class EffectsManager : IDisposable
         ArgumentNullException.ThrowIfNull(effect);
 
         bool removed;
+
         lock (_sync)
             removed = _activeEffects.Remove(effect);
 
@@ -150,9 +151,8 @@ public sealed class EffectsManager : IDisposable
             if (effect.Status != EffectStatus.Pending)
                 throw new InvalidOperationException("An effect instance can only be run once.");
 
-            replaced = _activeEffects.FirstOrDefault(
-                active => ReferenceEquals(active.Target, target)
-                          && active.Channel == effect.Channel);
+            replaced = _activeEffects.FirstOrDefault(active => ReferenceEquals(active.Target, target)
+                                                               && active.Channel == effect.Channel);
 
             if (replaced is not null)
                 _activeEffects.Remove(replaced);

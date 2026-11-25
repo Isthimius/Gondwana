@@ -28,13 +28,22 @@ internal sealed class StudioArchiveSnapshot : IDisposable
         var bytes = File.ReadAllBytes(path);
         using var stream = new MemoryStream(bytes, writable: false);
 
-        return new(AssetsFile.Load(stream, password, register: false, sourcePath: path), SHA256.HashData(bytes));
+        return new(
+            AssetsFile.Load(
+                stream,
+                password,
+                register: false,
+                sourcePath: path),
+            SHA256.HashData(bytes));
     }
 
     internal static byte[] Entry(AssetsFile archive, AssetLocation location)
     {
         if (!archive.GetAllEntries().Any(entry => entry.AssetType == location.AssetType &&
-            string.Equals(entry.AssetName, location.AssetEntryName, StringComparison.OrdinalIgnoreCase)))
+                                                  string.Equals(
+                                                      entry.AssetName,
+                                                      location.AssetEntryName,
+                                                      StringComparison.OrdinalIgnoreCase)))
         {
             throw new FileNotFoundException($"Archive entry not found: {location}");
         }
@@ -46,11 +55,20 @@ internal sealed class StudioArchiveSnapshot : IDisposable
         return bytes.ToArray();
     }
 
-    internal static void CheckVersion(string path, byte[]? expected) => AssetArchivePersistence.CheckVersion(path, expected);
+    internal static void CheckVersion(string path, byte[]? expected) =>
+        AssetArchivePersistence.CheckVersion(path, expected);
 
     /// <summary>Uses the shared staged persistence path without changing the editor's loaded buffers.</summary>
-    internal static byte[] Commit(AssetsFile contents, string destination, byte[]? expected, Action? beforeInstall = null) =>
-        AssetArchivePersistence.Commit(contents, destination, expected, beforeInstall);
+    internal static byte[] Commit(
+        AssetsFile contents,
+        string destination,
+        byte[]? expected,
+        Action? beforeInstall = null) =>
+        AssetArchivePersistence.Commit(
+            contents,
+            destination,
+            expected,
+            beforeInstall);
 
     /// <summary>Disposes the snapshot archive unless ownership has been transferred by <see cref="Detach"/>.</summary>
     public void Dispose()

@@ -33,6 +33,7 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
         new(ReferenceEqualityComparer.Instance);
 
     private readonly List<IDirectCompositeChild> _children = [];
+
     private readonly Dictionary<IDirectCompositeChild, Vector2> _localOffsetPx =
         new(ReferenceEqualityComparer.Instance);
 
@@ -60,10 +61,11 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// <param name="mode">The coordinate mode used by the composite and all of its children.</param>
     /// <param name="anchor">The composite anchor, in mode-appropriate pixels.</param>
     /// <param name="nickname">An optional diagnostic nickname.</param>
-    public DirectComposite(RenderSurfaceHostBase renderSurfaceHost,
-                           DirectDrawingMode mode,
-                           PointF anchor = default,
-                           string? nickname = null)
+    public DirectComposite(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        string? nickname = null)
     {
         RenderSurfaceHost = renderSurfaceHost ?? throw new ArgumentNullException(nameof(renderSurfaceHost));
 
@@ -231,9 +233,10 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// <exception cref="InvalidOperationException">
     /// Thrown when the child already has another parent or would create a cycle.
     /// </exception>
-    public virtual DirectComposite Add(IDirectCompositeChild child,
-                                       bool keepCurrentOffset = true,
-                                       Vector2? explicitLocalOffsetPx = null)
+    public virtual DirectComposite Add(
+        IDirectCompositeChild child,
+        bool keepCurrentOffset = true,
+        Vector2? explicitLocalOffsetPx = null)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -245,7 +248,9 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
         ValidateParentRelationship(child);
         ValidateAndAssignTarget(child);
 
-        Vector2 offset = keepCurrentOffset ? child.GetPosition() - new Vector2(_anchor.X, _anchor.Y) : explicitLocalOffsetPx ?? Vector2.Zero;
+        Vector2 offset = keepCurrentOffset
+            ? child.GetPosition() - new Vector2(_anchor.X, _anchor.Y)
+            : explicitLocalOffsetPx ?? Vector2.Zero;
 
         RegisterParent(child);
 
@@ -327,8 +332,9 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// <param name="child">The child whose offset should change.</param>
     /// <param name="newLocalOffsetPx">The new offset from the composite anchor.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite SetLocalOffset(IDirectCompositeChild child,
-                                          Vector2 newLocalOffsetPx)
+    public DirectComposite SetLocalOffset(
+        IDirectCompositeChild child,
+        Vector2 newLocalOffsetPx)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -528,7 +534,10 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
 
     IReadOnlyCollection<IDirectCompositeChild> IDirectCompositeContainer.Children => Children;
 
-    IDirectCompositeContainer IDirectCompositeContainer.Add(IDirectCompositeChild child, bool keepCurrentOffset, Vector2? explicitLocalOffsetPx)
+    IDirectCompositeContainer IDirectCompositeContainer.Add(
+        IDirectCompositeChild child,
+        bool keepCurrentOffset,
+        Vector2? explicitLocalOffsetPx)
     {
         return Add(child, keepCurrentOffset, explicitLocalOffsetPx);
     }
@@ -610,12 +619,16 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     {
         if (!ReferenceEquals(child.RenderSurfaceHost, RenderSurfaceHost))
         {
-            throw new ArgumentException("The child must belong to the same RenderSurfaceHost as the composite.", nameof(child));
+            throw new ArgumentException(
+                "The child must belong to the same RenderSurfaceHost as the composite.",
+                nameof(child));
         }
 
         if (child.Mode != Mode)
         {
-            throw new ArgumentException($"The child drawing mode '{child.Mode}' does not match the composite drawing mode '{Mode}'.", nameof(child));
+            throw new ArgumentException(
+                $"The child drawing mode '{child.Mode}' does not match the composite drawing mode '{Mode}'.",
+                nameof(child));
         }
     }
 
@@ -623,7 +636,9 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     {
         if (Mode == DirectDrawingMode.SceneLayer)
         {
-            SceneLayer childLayer = child.SceneLayer ?? throw new ArgumentException("A scene-layer child must reference a SceneLayer.", nameof(child));
+            SceneLayer childLayer = child.SceneLayer ?? throw new ArgumentException(
+                "A scene-layer child must reference a SceneLayer.",
+                nameof(child));
 
             if (SceneLayer is null)
             {
@@ -631,7 +646,9 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
             }
             else if (!ReferenceEquals(SceneLayer, childLayer))
             {
-                throw new ArgumentException("All scene-layer children in a composite must reference the same SceneLayer.", nameof(child));
+                throw new ArgumentException(
+                    "All scene-layer children in a composite must reference the same SceneLayer.",
+                    nameof(child));
             }
 
             return;
@@ -651,13 +668,16 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
         }
 
         View childView = child.View;
+
         if (View is null)
         {
             View = childView;
         }
         else if (!ReferenceEquals(View, childView))
         {
-            throw new ArgumentException("All view children in a composite must reference the same View.", nameof(child));
+            throw new ArgumentException(
+                "All view children in a composite must reference the same View.",
+                nameof(child));
         }
     }
 
@@ -667,7 +687,8 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
         {
             if (_parents.TryGetValue(child, out DirectComposite? existingParent))
             {
-                throw new InvalidOperationException($"The child already belongs to composite '{existingParent.Nickname}'.");
+                throw new InvalidOperationException(
+                    $"The child already belongs to composite '{existingParent.Nickname}'.");
             }
 
             if (child is not DirectComposite childComposite)

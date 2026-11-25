@@ -21,9 +21,14 @@ public sealed class TransientOverlayWidgetTests
     public void Toast_AnchorsInsideViewAndSlidesFromConfiguredEdge()
     {
         using var host = new TestRenderSurfaceHost();
+
         View view = AddView(
             host,
-            new Rectangle(100, 50, 400, 300));
+            new Rectangle(
+                100,
+                50,
+                400,
+                300));
 
         using var toast = new ToastWidget(
             host,
@@ -42,7 +47,14 @@ public sealed class TransientOverlayWidgetTests
 
         toast.ShowToast();
 
-        Assert.Equal(new Rectangle(370, 60, 120, 60), toast.TargetBounds);
+        Assert.Equal(
+            new Rectangle(
+                370,
+                60,
+                120,
+                60),
+            toast.TargetBounds);
+
         Assert.Equal(new Vector2(508, 60), toast.GetPosition());
         Assert.Equal(ToastState.Entering, toast.CurrentState);
 
@@ -69,12 +81,23 @@ public sealed class TransientOverlayWidgetTests
     public void Toast_FadeCanRemainUntilManuallyDismissed()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 640, 480));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                640,
+                480));
 
         using var toast = new ToastWidget(
             host,
             view,
-            new Rectangle(20, 30, 240, 64),
+            new Rectangle(
+                20,
+                30,
+                240,
+                64),
             "Waiting")
         {
             Transition = ToastTransition.Fade,
@@ -118,7 +141,11 @@ public sealed class TransientOverlayWidgetTests
         using var popup = new PopupWidget(
                 host,
                 layer,
-                new Rectangle(0, 0, 80, 30),
+                new Rectangle(
+                    0,
+                    0,
+                    80,
+                    30),
                 "+100")
             .BindTo(
                 layer,
@@ -149,12 +176,23 @@ public sealed class TransientOverlayWidgetTests
     public void Popup_AppliesMovementAndCompletesAfterLifetime()
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 640, 480));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                640,
+                480));
 
         using var popup = new PopupWidget(
             host,
             view,
-            new Rectangle(100, 100, 80, 30),
+            new Rectangle(
+                100,
+                100,
+                80,
+                30),
             "-12")
         {
             LifetimeSec = 0.5f,

@@ -12,7 +12,12 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 public sealed class DockLayoutTests
 {
     private static string Root => (string)AppContext.GetData("Gondwana.Tooling.SettingsRoot")!;
-    private static string Layout(string profile, string app = "test-host") => Path.Combine(Root, app, "Docking", profile + ".xml");
+
+    private static string Layout(string profile, string app = "test-host") => Path.Combine(
+        Root,
+        app,
+        "Docking",
+        profile + ".xml");
 
     /// <summary>
     /// Verifies standalone shell restores hidden tool and view resets it.
@@ -61,7 +66,10 @@ public sealed class DockLayoutTests
             item.PerformClick();
             Assert.False(tool.IsHidden);
             Assert.Equal(DockState.DockRight, tool.DockState);
-            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout").PerformClick();
+
+            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout")
+                .PerformClick();
+
             view.HideDropDown();
             Assert.Equal(DockState.DockLeft, tool.DockState);
             Assert.False(File.Exists(Layout("shell")));
@@ -69,7 +77,9 @@ public sealed class DockLayoutTests
 
         using (var third = Open())
         {
-            var tool = third.Controls.OfType<DockPanel>().Single().Contents.OfType<DockContent>().Single(p => p.HideOnClose);
+            var tool = third.Controls.OfType<DockPanel>().Single().Contents.OfType<DockContent>()
+                .Single(p => p.HideOnClose);
+
             Assert.False(tool.IsHidden);
             Assert.Equal(DockState.DockLeft, tool.DockState);
         }
@@ -107,6 +117,7 @@ public sealed class DockLayoutTests
         string[] names;
         DockContent[] owned;
         int splitWidth;
+
         using (var editor = Editor(kind))
         {
             var panes = Panes(editor.Model);
@@ -122,6 +133,7 @@ public sealed class DockLayoutTests
 
         Assert.All(owned, pane => Assert.True(pane.IsDisposed));
         Assert.True(File.Exists(Layout(kind)));
+
         using (var editor = Editor(kind))
         {
             var panes = names.Select(name => Panes(editor.Model).Single(p => p.Text == name)).ToArray();
@@ -135,11 +147,15 @@ public sealed class DockLayoutTests
             Application.DoEvents();
             Assert.False(panes[1].IsHidden);
             Assert.InRange(panes[1].Width, splitWidth - 10, splitWidth + 10);
-            Assert.All(panes, pane =>
-            {
-                Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
-                Assert.False(pane.DockHandler.IsDockStateValid(DockState.DockLeftAutoHide));
-            });
+
+            Assert.All(
+                panes,
+                pane =>
+                {
+                    Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
+                    Assert.False(pane.DockHandler.IsDockStateValid(DockState.DockLeftAutoHide));
+                });
+
             panes[1].DockHandler.DockTo(panes[0].Pane, DockStyle.Fill, -1);
             panes[1].Hide();
         }
@@ -173,23 +189,35 @@ public sealed class DockLayoutTests
         {
             using var changed = Editor("gts");
             Panes(changed.Model).Single(p => p.Text == "Validation").Hide();
+
             // The timer persists while the editor is still open, after the layout settles.
-            PumpUntil(() => File.Exists(Layout("gts")) && XDocument.Load(Layout("gts")).Root!.Element("Contents")!.Elements().Any(e => (string?)e.Attribute("PersistString") == "gts.validation" && (string?)e.Attribute("IsHidden") == "True"));
+            PumpUntil(() => File.Exists(Layout("gts")) && XDocument.Load(Layout("gts")).Root!.Element("Contents")!
+                .Elements().Any(e =>
+                    (string?)e.Attribute("PersistString") == "gts.validation" &&
+                    (string?)e.Attribute("IsHidden") == "True"));
+
             using var next = Editor("gts");
             Assert.False(next.Model.IsPaneVisible("Validation"));
         }
 
         using (var next = Editor("gts"))
             Assert.False(next.Model.IsPaneVisible("Validation"));
+
         using (var other = Editor("gani"))
             Assert.True(other.Model.IsPaneVisible("Validation"));
+
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gscn");
+
         using (var editor = Editor("gscn"))
             Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
+
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "studio");
+
         using (var editor = Editor("gscn"))
             Assert.True(editor.Model.IsPaneVisible("Validation"));
+
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "standalone-gscn");
+
         using (var editor = Editor("gscn"))
             Assert.False(editor.Model.IsPaneVisible("Validation"));
     });
@@ -210,16 +238,21 @@ public sealed class DockLayoutTests
     {
         using (var editor = Editor(kind))
             Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
+
         if (fault == "malformed")
             File.WriteAllText(Layout(kind), "<broken");
         else
         {
             var xml = XDocument.Load(Layout(kind));
+
             if (fault == "unknown")
-                xml.Root!.Element("Contents")!.Elements().Single(e => (string?)e.Attribute("PersistString") == (kind == "gspr" ? "gspr.scene-sources" : "gscn.gani-animations"))
+                xml.Root!.Element("Contents")!.Elements().Single(e =>
+                        (string?)e.Attribute("PersistString") ==
+                        (kind == "gspr" ? "gspr.scene-sources" : "gscn.gani-animations"))
                     .SetAttributeValue("PersistString", "plugin.removed");
             else
                 xml.Root!.Element("Panes")!.Elements().First().SetAttributeValue("ActiveContent", "9999");
+
             xml.Save(Layout(kind));
         }
 
@@ -251,6 +284,7 @@ public sealed class DockLayoutTests
         var persisted = File.ReadAllText(Layout("shell"));
         Assert.DoesNotContain(Root, persisted);
         Assert.Contains("ignored-document", persisted);
+
         using (var studio = Studio())
         {
             Assert.Empty(studio.Documents);
@@ -268,7 +302,10 @@ public sealed class DockLayoutTests
             item.PerformClick();
             Assert.False(working.IsHidden);
             var document = studio.NewDocument("gscn");
-            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout").PerformClick();
+
+            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout")
+                .PerformClick();
+
             Assert.False(document.IsDisposed);
             Assert.True(document.Document.Dirty());
             Assert.Equal(DockState.DockLeft, working.DockState);
@@ -294,10 +331,14 @@ public sealed class DockLayoutTests
     {
         using (var studio = Studio())
             Tool(studio, "Output").Hide();
+
         if (corrupt)
             File.WriteAllText(Layout("shell"), "not XML");
         else
-            File.WriteAllText(Layout("shell"), File.ReadAllText(Layout("shell")).Replace("shell.working-directory", "plugin.uninstalled"));
+            File.WriteAllText(
+                Layout("shell"),
+                File.ReadAllText(Layout("shell")).Replace("shell.working-directory", "plugin.uninstalled"));
+
         using var restored = Studio();
         Assert.Equal(4, restored.Workspace.Contents.Count);
         Assert.False(Tool(restored, "Working directory").IsHidden);
@@ -308,13 +349,19 @@ public sealed class DockLayoutTests
     {
         internal StudioDocument Model { get; }
         private readonly Form _host = new() { Size = new Size(1400, 900), Opacity = 0, ShowInTaskbar = false };
+
         internal EditorHost(string kind)
         {
-            Model = StudioDocument.Create(kind, Root, kind == "gaf" ? Path.Combine(Root, Guid.NewGuid() + ".gaf") : null);
+            Model = StudioDocument.Create(
+                kind,
+                Root,
+                kind == "gaf" ? Path.Combine(Root, Guid.NewGuid() + ".gaf") : null);
+
             _host.Controls.Add(Model.Editor);
             _host.Show();
             Application.DoEvents();
         }
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -322,9 +369,15 @@ public sealed class DockLayoutTests
             _host.Dispose();
         }
     }
+
     private static EditorHost Editor(string kind) => new(kind);
-    private static DockContent[] Panes(StudioDocument editor) => Descendants(editor.Editor).OfType<DockPanel>().Single().Contents.Cast<DockContent>().ToArray();
-    private static DockContent Tool(MainForm studio, string name) => studio.Workspace.Contents.OfType<DockContent>().Single(p => p.Text == name);
+
+    private static DockContent[] Panes(StudioDocument editor) => Descendants(editor.Editor).OfType<DockPanel>().Single()
+        .Contents.Cast<DockContent>().ToArray();
+
+    private static DockContent Tool(MainForm studio, string name) =>
+        studio.Workspace.Contents.OfType<DockContent>().Single(p => p.Text == name);
+
     private static MainForm Studio()
     {
         var studio = new MainForm(loadPlugins: false) { Opacity = 0, ShowInTaskbar = false };
@@ -333,18 +386,22 @@ public sealed class DockLayoutTests
         Application.DoEvents();
         return studio;
     }
+
     private static IEnumerable<Control> Descendants(Control parent)
     {
         foreach (Control child in parent.Controls)
         {
             yield return child;
+
             foreach (var nested in Descendants(child))
                 yield return nested;
         }
     }
+
     private static void PumpUntil(Func<bool> done)
     {
         var elapsed = Stopwatch.StartNew();
+
         while (!done() && elapsed.Elapsed < TimeSpan.FromSeconds(5))
         {
             Application.DoEvents();
@@ -353,25 +410,29 @@ public sealed class DockLayoutTests
 
         Assert.True(done(), "Debounced layout save did not complete.");
     }
+
     private static void Sta(Action action)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
-        {
-            try
             {
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
-                action();
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-        })
-        { IsBackground = true };
+                try
+                {
+                    Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            })
+            { IsBackground = true };
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Layout interaction timed out.");
+
         if (error is not null)
             ExceptionDispatchInfo.Capture(error).Throw();
     }

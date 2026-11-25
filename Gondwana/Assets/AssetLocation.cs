@@ -23,15 +23,23 @@ public sealed class AssetLocation
     {
         if (!Enum.IsDefined(assetType))
             throw new ArgumentOutOfRangeException(nameof(assetType));
+
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
         if (!System.IO.Path.IsPathFullyQualified(path))
             throw new ArgumentException("A physical location requires an absolute path.", nameof(path));
+
         if (assetEntryName is not null)
             ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
+
         AssetType = assetType;
         Path = System.IO.Path.GetFullPath(path);
+
         if (string.IsNullOrEmpty(System.IO.Path.GetFileName(Path)))
-            throw new ArgumentException("A physical location must name a file, not a filesystem root or directory path.", nameof(path));
+            throw new ArgumentException(
+                "A physical location must name a file, not a filesystem root or directory path.",
+                nameof(path));
+
         AssetEntryName = assetEntryName;
     }
 
@@ -39,10 +47,19 @@ public sealed class AssetLocation
     /// <param name="other">The endpoint to compare.</param>
     /// <returns>Whether both endpoints identify the same typed physical resource.</returns>
     internal bool Matches(AssetLocation other) => AssetType == other.AssetType &&
-        string.Equals(Path, other.Path, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) &&
-        string.Equals(AssetEntryName, other.AssetEntryName, StringComparison.OrdinalIgnoreCase);
+                                                  string.Equals(
+                                                      Path,
+                                                      other.Path,
+                                                      OperatingSystem.IsWindows()
+                                                          ? StringComparison.OrdinalIgnoreCase
+                                                          : StringComparison.Ordinal) &&
+                                                  string.Equals(
+                                                      AssetEntryName,
+                                                      other.AssetEntryName,
+                                                      StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Formats the typed physical location for diagnostics.</summary>
     /// <returns>The path and optional entry name.</returns>
-    public override string ToString() => $"{AssetType}: {Path}" + (AssetEntryName is null ? "" : $" :: {AssetEntryName}");
+    public override string ToString() =>
+        $"{AssetType}: {Path}" + (AssetEntryName is null ? "" : $" :: {AssetEntryName}");
 }

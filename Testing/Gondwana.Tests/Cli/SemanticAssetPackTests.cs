@@ -51,6 +51,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     private static int Run(params string[] args)
     {
         var app = new CommandApp();
+
         app.Configure(config =>
         {
             config.AddCommand<AssetsExtractCommand>("unpack");
@@ -58,6 +59,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             config.AddCommand<AssetsPackCommand>("pack");
             config.AddBranch("assets", branch => branch.AddCommand<AssetsPackCommand>("pack"));
         });
+
         return app.Run(args);
     }
 
@@ -73,7 +75,18 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         Name = name,
         Image = new() { FilePath = image },
-        Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 16, 16), TileSize = new Size(16, 16) }]
+        Regions =
+        [
+            new()
+            {
+                Name = "default", Area = new Rectangle(
+                    0,
+                    0,
+                    16,
+                    16),
+                TileSize = new Size(16, 16)
+            }
+        ]
     };
 
     private void Content(bool explicitSources, bool legacy)
@@ -84,34 +97,59 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         var scenes = new List<SceneDefinition>();
         var sprites = new List<SpriteDefinition>();
         var sounds = new List<AudioDefinition>();
+
         for (int i = 0; i < count; i++)
         {
             Image($"art{i}.png");
             File.WriteAllBytes(Path.Combine(Source, $"sound{i}.wav"), [(byte)i, 2, 3]);
             sheets.Add(Sheet($"terrain{i}", $"art{i}.png"));
-            animations.Add(new()
-            {
-                Key = $"walk{i}",
-                NextCycleKey = $"walk{(i + 1) % count}",
-                ThrottleTime = .2,
-                Frames = [new() { Tilesheet = $"terrain{i}" }]
-            });
-            scenes.Add(new()
-            {
-                ID = $"world{i}",
-                Layers = [new() { ID = "ground", Columns = 1, Rows = 1,
-                Tiles = [new() { Frame = new() { Tilesheet = $"terrain{i}" }, AnimationKey = $"walk{i}" }] }]
-            });
-            sprites.Add(new()
-            {
-                Key = $"actors{i}",
-                Sprites = [new() { Nickname = $"actor{i}", SceneId = $"world{i}",
-                SceneLayerId = "ground", Frame = new() { Tilesheet = $"terrain{i}" }, AnimationKey = $"walk{i}" }]
-            });
-            sounds.Add(new() { Key = $"sounds{i}", Resources = [new() { Key = $"sound{i}", FilePath = $"sound{i}.wav" }] });
+
+            animations.Add(
+                new()
+                {
+                    Key = $"walk{i}",
+                    NextCycleKey = $"walk{(i + 1) % count}",
+                    ThrottleTime = .2,
+                    Frames = [new() { Tilesheet = $"terrain{i}" }]
+                });
+
+            scenes.Add(
+                new()
+                {
+                    ID = $"world{i}",
+                    Layers =
+                    [
+                        new()
+                        {
+                            ID = "ground", Columns = 1, Rows = 1,
+                            Tiles = [new() { Frame = new() { Tilesheet = $"terrain{i}" }, AnimationKey = $"walk{i}" }]
+                        }
+                    ]
+                });
+
+            sprites.Add(
+                new()
+                {
+                    Key = $"actors{i}",
+                    Sprites =
+                    [
+                        new()
+                        {
+                            Nickname = $"actor{i}", SceneId = $"world{i}",
+                            SceneLayerId = "ground", Frame = new() { Tilesheet = $"terrain{i}" },
+                            AnimationKey = $"walk{i}"
+                        }
+                    ]
+                });
+
+            sounds.Add(
+                new() { Key = $"sounds{i}", Resources = [new() { Key = $"sound{i}", FilePath = $"sound{i}.wav" }] });
+
             if (explicitSources)
             {
-                animations[i].TilesheetSources.Add(AnimationTilesheetSourceDefinition.Loose($"terrain{i}", "tiles.gts"));
+                animations[i].TilesheetSources
+                    .Add(AnimationTilesheetSourceDefinition.Loose($"terrain{i}", "tiles.gts"));
+
                 scenes[i].TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose($"terrain{i}", "tiles.gts"));
                 scenes[i].AnimationSources.Add(SceneAnimationSourceDefinition.Loose($"walk{i}", "cycles.gani"));
                 sprites[i].TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose($"terrain{i}", "tiles.gts"));
@@ -120,11 +158,35 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             }
         }
 
-        File.WriteAllText(Path.Combine(Source, "tiles.gts"), legacy ? TilesheetDefinitionSerializer.ToJson(sheets[0]) : TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets }));
-        File.WriteAllText(Path.Combine(Source, "cycles.gani"), legacy ? AnimationDefinitionSerializer.ToJson(animations[0]) : AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = animations }));
-        File.WriteAllText(Path.Combine(Source, "worlds.gscn"), legacy ? SceneDefinitionSerializer.ToJson(scenes[0]) : SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = scenes }));
-        File.WriteAllText(Path.Combine(Source, "actors.gspr"), legacy ? SpriteDefinitionSerializer.ToJson(sprites[0]) : SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = sprites }));
-        File.WriteAllText(Path.Combine(Source, "sounds.gsnd"), legacy ? AudioDefinitionSerializer.ToJson(sounds[0]) : AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = sounds }));
+        File.WriteAllText(
+            Path.Combine(Source, "tiles.gts"),
+            legacy
+                ? TilesheetDefinitionSerializer.ToJson(sheets[0])
+                : TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets }));
+
+        File.WriteAllText(
+            Path.Combine(Source, "cycles.gani"),
+            legacy
+                ? AnimationDefinitionSerializer.ToJson(animations[0])
+                : AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = animations }));
+
+        File.WriteAllText(
+            Path.Combine(Source, "worlds.gscn"),
+            legacy
+                ? SceneDefinitionSerializer.ToJson(scenes[0])
+                : SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = scenes }));
+
+        File.WriteAllText(
+            Path.Combine(Source, "actors.gspr"),
+            legacy
+                ? SpriteDefinitionSerializer.ToJson(sprites[0])
+                : SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = sprites }));
+
+        File.WriteAllText(
+            Path.Combine(Source, "sounds.gsnd"),
+            legacy
+                ? AudioDefinitionSerializer.ToJson(sounds[0])
+                : AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = sounds }));
     }
 
     /// <summary>All five formats and every member materialize from the package without loose inputs.</summary>
@@ -141,28 +203,42 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         Content(explicitSources, legacy);
         var args = new List<string> { "assets", "pack", Source, Output };
+
         if (protection != 0)
             args.AddRange(["--password", "test-password"]);
+
         if (protection == 2)
             args.Add("--encrypt");
+
         Assert.Equal(0, Run(args.ToArray()));
         Directory.Delete(Source, true);
         var archive = AssetsFile.LoadOrCreate(Output, protection == 0 ? null : "test-password");
         int count = legacy ? 1 : 2;
         var groups = SpriteDefinitionSerializer.LoadAll(archive, "actors.gspr");
         Assert.Equal(count, groups.Count);
+
         foreach (var group in groups)
         {
             var sheetSource = Assert.Single(group.TilesheetSources);
             Assert.Equal(SpriteTilesheetSourceKind.PackedDefinitionFile, sheetSource.Kind);
             Assert.Equal(Output, Path.GetFullPath(sheetSource.AssetsFilePath!, Path.GetDirectoryName(Output)!));
-            Assert.NotNull(TilesheetDefinitionSerializer.Load(archive, sheetSource.AssetEntryName!, sheetSource.Tilesheet));
+
+            Assert.NotNull(
+                TilesheetDefinitionSerializer.Load(archive, sheetSource.AssetEntryName!, sheetSource.Tilesheet));
+
             var sceneSource = Assert.Single(group.SceneSources);
             var scene = SceneDefinitionSerializer.Load(archive, sceneSource.AssetEntryName!, sceneSource.SceneId);
             Assert.Equal(SceneAnimationSourceKind.PackedDefinitionFile, Assert.Single(scene.AnimationSources).Kind);
             var animationSource = Assert.Single(group.AnimationSources);
-            var animation = AnimationDefinitionSerializer.Load(archive, animationSource.AssetEntryName!, animationSource.AnimationKey);
-            Assert.Equal(AnimationTilesheetSourceKind.PackedDefinitionFile, Assert.Single(animation.TilesheetSources).Kind);
+
+            var animation = AnimationDefinitionSerializer.Load(
+                archive,
+                animationSource.AssetEntryName!,
+                animationSource.AnimationKey);
+
+            Assert.Equal(
+                AnimationTilesheetSourceKind.PackedDefinitionFile,
+                Assert.Single(animation.TilesheetSources).Kind);
         }
 
         Assert.Equal(count, TilesheetRegistry.Instance.LoadAllFromDefinitionAsset(archive, "tiles.gts").Count);
@@ -174,6 +250,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Assert.Equal(count, AudioDefinitionSerializer.LoadAllIntoManager(archive, "sounds.gsnd").Count);
         Assert.Equal(count, backend.Loaded.Count);
         Assert.All(backend.Loaded, data => Assert.Equal(new byte[] { data[0], 2, 3 }, data));
+
         foreach (var entry in archive.GetAllEntries().Where(entry => (int)entry.AssetType >= 7))
         {
             using var reader = new StreamReader(archive.Get(entry.AssetType, entry.AssetName)!);
@@ -192,13 +269,23 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         File.WriteAllText(path, "{\"Misc\":[\"png\"],\"Image\":[\"custom\"]}");
         var custom = AssetTypeMap.Load(path, out var error)!;
         Assert.Null(error);
-        var shipped = AssetTypeMap.Load(Path.Combine(Path.GetDirectoryName(typeof(AssetTypeMap).Assembly.Location)!, "gondwana-asset-types.json"), out error)!;
+
+        var shipped = AssetTypeMap.Load(
+            Path.Combine(Path.GetDirectoryName(typeof(AssetTypeMap).Assembly.Location)!, "gondwana-asset-types.json"),
+            out error)!;
+
         Assert.Null(error);
+
         foreach (var map in new[] { AssetTypeMap.BuildDefault(), shipped, custom })
         {
-            foreach (var (extension, type) in new[] { ("gts", AssetTypes.TilesheetDefinition), ("gani", AssetTypes.AnimationDefinition),
-                ("gscn", AssetTypes.SceneDefinition), ("gspr", AssetTypes.SpriteDefinition), ("gsnd", AssetTypes.AudioDefinition) })
+            foreach (var (extension, type) in new[]
+                     {
+                         ("gts", AssetTypes.TilesheetDefinition), ("gani", AssetTypes.AnimationDefinition),
+                         ("gscn", AssetTypes.SceneDefinition), ("gspr", AssetTypes.SpriteDefinition),
+                         ("gsnd", AssetTypes.AudioDefinition)
+                     })
                 Assert.Equal(type, map.Infer("test." + extension.ToUpperInvariant(), AssetTypes.Misc));
+
             Assert.Equal(AssetTypes.Font, map.Infer("font.ttf", AssetTypes.Misc));
             Assert.Equal(AssetTypes.Video, map.Infer("movie.mp4", AssetTypes.Misc));
             Assert.Equal(AssetTypes.Audio, map.Infer("sound.wav", AssetTypes.Misc));
@@ -235,12 +322,39 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         Image("art.png");
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "unchanged");
-        Assert.Equal(0, Run("pack", Source, Output, "--password", "secret", "--encrypt"));
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--password",
+                "secret",
+                "--encrypt"));
+
         File.Delete(Path.Combine(Source, "art.png"));
         File.Delete(Path.Combine(Source, "keep.txt"));
-        File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "art.png")));
-        Assert.Equal(0, Run("pack", Source, Output, "--append", "--password", "secret"));
-        using (var archive = AssetsFile.LoadOrCreate(Output, "secret", false, register: false))
+
+        File.WriteAllText(
+            Path.Combine(Source, "tiles.gts"),
+            TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "art.png")));
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--append",
+                "--password",
+                "secret"));
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   Output,
+                   "secret",
+                   false,
+                   register: false))
         {
             using var reader = new StreamReader(archive.Get(AssetTypes.Misc, "keep.txt")!);
             Assert.Equal("unchanged", reader.ReadToEnd());
@@ -256,7 +370,12 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     public void AppendInferredRetainedSourcesRemainRelativeAfterMovingArchive()
     {
         Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
-        using (var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   Output,
+                   null,
+                   false,
+                   register: false))
         {
             var sheet = Sheet("terrain", "unused");
             sheet.Image.FilePath = null;
@@ -267,16 +386,20 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             using var image = File.OpenRead(Path.Combine(Source, "art.png"));
             archive.Add(AssetTypes.Image, "art.png", image);
 
-            using var tiles = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+            using var tiles = new MemoryStream(
+                System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+
             archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", tiles);
 
-            using var animation = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(
-                AnimationDefinitionSerializer.ToJson(new AnimationDefinition
-                {
-                    Key = "walk",
-                    ThrottleTime = .2,
-                    Frames = [new() { Tilesheet = "terrain" }]
-                })));
+            using var animation = new MemoryStream(
+                System.Text.Encoding.UTF8.GetBytes(
+                    AnimationDefinitionSerializer.ToJson(
+                        new AnimationDefinition
+                        {
+                            Key = "walk",
+                            ThrottleTime = .2,
+                            Frames = [new() { Tilesheet = "terrain" }]
+                        })));
 
             archive.Add(AssetTypes.AnimationDefinition, "walk.gani", animation);
             archive.Save();
@@ -284,8 +407,20 @@ public sealed partial class SemanticAssetPackTests : IDisposable
 
         File.Delete(Path.Combine(Source, "art.png"));
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "first append");
-        Assert.Equal(0, Run("pack", Source, Output, "--append"));
-        using (var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false))
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--append"));
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   Output,
+                   null,
+                   false,
+                   register: false))
         {
             var source = Assert.Single(AnimationDefinitionSerializer.Load(archive, "walk.gani").TilesheetSources);
             Assert.Equal("game.gaf", source.AssetsFilePath);
@@ -295,8 +430,21 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         var moved = Path.Combine(Directory.CreateDirectory(Path.Combine(_root, "moved")).FullName, "game.gaf");
         File.Move(Output, moved);
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "second append");
-        Assert.Equal(0, Run("pack", Source, moved, "--append"));
-        using var movedArchive = AssetsFile.LoadOrCreate(moved, null, false, register: false);
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                Source,
+                moved,
+                "--append"));
+
+        using var movedArchive = AssetsFile.LoadOrCreate(
+            moved,
+            null,
+            false,
+            register: false);
+
         var movedSource = Assert.Single(AnimationDefinitionSerializer.Load(movedArchive, "walk.gani").TilesheetSources);
         Assert.Equal("game.gaf", movedSource.AssetsFilePath);
         Assert.Equal("terrain", TilesheetDefinitionSerializer.Load(movedArchive, movedSource.AssetEntryName!).Name);
@@ -309,14 +457,37 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "original");
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
-        File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "missing.png")));
-        Assert.NotEqual(0, Run("pack", Source, Output, "--allow-external"));
+
+        File.WriteAllText(
+            Path.Combine(Source, "tiles.gts"),
+            TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "missing.png")));
+
+        Assert.NotEqual(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--allow-external"));
+
         Assert.Equal(original, File.ReadAllBytes(Output));
         Image("missing.png");
         File.Copy(Path.Combine(Source, "tiles.gts"), Path.Combine(Source, "other.gts"));
-        File.WriteAllText(Path.Combine(Source, "walk.gani"), AnimationDefinitionSerializer.ToJson(new AnimationDefinition() { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] }));
+
+        File.WriteAllText(
+            Path.Combine(Source, "walk.gani"),
+            AnimationDefinitionSerializer.ToJson(
+                new AnimationDefinition()
+                    { Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }] }));
+
         var settings = new AssetsPackCommand.Settings { Source = Source, Output = Output };
-        var error = Assert.Throws<InvalidDataException>(() => SemanticPackPlan.Create(settings, AssetTypeMap.BuildDefault(), AssetTypes.Misc, default));
+
+        var error = Assert.Throws<InvalidDataException>(() => SemanticPackPlan.Create(
+            settings,
+            AssetTypeMap.BuildDefault(),
+            AssetTypes.Misc,
+            default));
+
         Assert.Contains("terrain", error.Message);
         Assert.Contains("walk", error.Message);
         Assert.Contains("2 matching", error.Message);
@@ -330,11 +501,28 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Image("art.png");
         var external = Path.Combine(_root, "art.png");
         File.Move(Path.Combine(Source, "art.png"), external);
-        File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "../art.png")));
+
+        File.WriteAllText(
+            Path.Combine(Source, "tiles.gts"),
+            TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "../art.png")));
+
         Assert.NotEqual(0, Run("pack", Source, Output));
         Assert.False(File.Exists(Output));
-        Assert.Equal(0, Run("pack", Source, Output, "--allow-external"));
-        using var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false);
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--allow-external"));
+
+        using var archive = AssetsFile.LoadOrCreate(
+            Output,
+            null,
+            false,
+            register: false);
+
         var sheet = TilesheetDefinitionSerializer.Load(archive, "tiles.gts");
         Assert.Equal(external, Path.GetFullPath(sheet.Image.FilePath!, Path.GetDirectoryName(Output)!));
         Assert.Null(sheet.Image.AssetEntryName);
@@ -350,7 +538,13 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         File.Delete(Path.Combine(Source, "old.txt"));
         File.WriteAllText(Path.Combine(Source, "new.txt"), "new");
         Assert.Equal(0, Run("pack", Source, output));
-        using var archive = AssetsFile.LoadOrCreate(output, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            output,
+            null,
+            false,
+            register: false);
+
         Assert.Equal("new.txt", Assert.Single(archive.GetAllEntries()).AssetName);
     }
 
@@ -362,7 +556,13 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
         using var cancellation = new CancellationTokenSource();
-        var plan = SemanticPackPlan.Create(new AssetsPackCommand.Settings() { Source = Source, Output = Output }, AssetTypeMap.BuildDefault(), AssetTypes.Misc, cancellation.Token);
+
+        var plan = SemanticPackPlan.Create(
+            new AssetsPackCommand.Settings() { Source = Source, Output = Output },
+            AssetTypeMap.BuildDefault(),
+            AssetTypes.Misc,
+            cancellation.Token);
+
         cancellation.Cancel();
         Assert.Throws<OperationCanceledException>(() => plan.Commit());
         Assert.Equal(original, File.ReadAllBytes(Output));
@@ -376,10 +576,22 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Content(true, false);
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
+
         foreach (var file in Directory.GetFiles(Source))
             File.Delete(file);
-        File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(Sheet("terrain0", "art0.png")));
-        Assert.NotEqual(0, Run("pack", Source, Output, "--append"));
+
+        File.WriteAllText(
+            Path.Combine(Source, "tiles.gts"),
+            TilesheetDefinitionSerializer.ToJson(Sheet("terrain0", "art0.png")));
+
+        Assert.NotEqual(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--append"));
+
         Assert.Equal(original, File.ReadAllBytes(Output));
     }
 
@@ -389,12 +601,24 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         if (!OperatingSystem.IsWindows())
             return; // Windows sharing rules provide a deterministic replacement failure.
+
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "original");
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
-        var plan = SemanticPackPlan.Create(new AssetsPackCommand.Settings() { Source = Source, Output = Output }, AssetTypeMap.BuildDefault(), AssetTypes.Misc, default);
-        using (var locked = File.Open(Output, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+        var plan = SemanticPackPlan.Create(
+            new AssetsPackCommand.Settings() { Source = Source, Output = Output },
+            AssetTypeMap.BuildDefault(),
+            AssetTypes.Misc,
+            default);
+
+        using (var locked = File.Open(
+                   Output,
+                   FileMode.Open,
+                   FileAccess.Read,
+                   FileShare.Read))
             Assert.True(Record.Exception(() => plan.Commit()) is IOException or UnauthorizedAccessException);
+
         Assert.Equal(original, File.ReadAllBytes(Output));
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(Output)!, "*.tmp"));
     }
@@ -412,21 +636,59 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         sheet.Image.AssetsFilePath = "../external.gaf";
         sheet.Image.AssetEntryName = "art.png";
         File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(sheet));
-        File.WriteAllText(Path.Combine(Source, "sounds.gsnd"), AudioDefinitionSerializer.ToJson(new AudioDefinition
-        { Key = "stream", Resources = [new() { Key = "radio", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "https://example.invalid/radio" }] }));
+
+        File.WriteAllText(
+            Path.Combine(Source, "sounds.gsnd"),
+            AudioDefinitionSerializer.ToJson(
+                new AudioDefinition
+                {
+                    Key = "stream",
+                    Resources =
+                    [
+                        new()
+                        {
+                            Key = "radio", SourceKind = AudioResourceSourceKind.Uri,
+                            SourceUri = "https://example.invalid/radio"
+                        }
+                    ]
+                }));
+
         Assert.NotEqual(0, Run("pack", Source, Output));
-        Assert.Equal(0, Run("pack", Source, Output, "--allow-external"));
-        using (var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false))
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--allow-external"));
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   Output,
+                   null,
+                   false,
+                   register: false))
         {
             var packed = TilesheetDefinitionSerializer.Load(archive, "tiles.gts");
             Assert.Equal(external, Path.GetFullPath(packed.Image.AssetsFilePath!, Path.GetDirectoryName(Output)!));
-            Assert.Equal("https://example.invalid/radio", Assert.Single(AudioDefinitionSerializer.Load(archive, "sounds.gsnd").Resources).SourceUri);
+
+            Assert.Equal(
+                "https://example.invalid/radio",
+                Assert.Single(AudioDefinitionSerializer.Load(archive, "sounds.gsnd").Resources).SourceUri);
         }
 
         sheet.Image.AssetEntryName = "missing.png";
         File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(sheet));
         var before = File.ReadAllBytes(Output);
-        Assert.NotEqual(0, Run("pack", Source, Output, "--allow-external"));
+
+        Assert.NotEqual(
+            0,
+            Run(
+                "pack",
+                Source,
+                Output,
+                "--allow-external"));
+
         Assert.Equal(before, File.ReadAllBytes(Output));
     }
 
@@ -440,9 +702,18 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         var external = Path.Combine(_root, "external.gaf");
         var password = protection == 0 ? null : "test-password";
-        using (var archive = AssetsFile.LoadOrCreate(external, password, protection == 2, register: false))
+
+        using (var archive = AssetsFile.LoadOrCreate(
+                   external,
+                   password,
+                   protection == 2,
+                   register: false))
         {
-            foreach (var (type, name) in new[] { (AssetTypes.Image, "first.png"), (AssetTypes.Image, "second.png"), (AssetTypes.Audio, "first.png") })
+            foreach (var (type, name) in new[]
+                     {
+                         (AssetTypes.Image, "first.png"), (AssetTypes.Image, "second.png"),
+                         (AssetTypes.Audio, "first.png")
+                     })
             {
                 using var stream = new MemoryStream([(byte)type, 2, 3]);
                 archive.Add(type, name, stream);
@@ -452,6 +723,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         }
 
         var sheets = new[] { Sheet("first", "unused"), Sheet("second", "unused") };
+
         for (int i = 0; i < sheets.Length; i++)
         {
             sheets[i].Image.FilePath = null;
@@ -459,24 +731,60 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             sheets[i].Image.AssetEntryName = i == 0 ? "FIRST.PNG" : "second.png";
         }
 
-        File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets.ToList() }));
-        File.WriteAllText(Path.Combine(Source, "sounds.gsnd"), AudioDefinitionSerializer.ToJson(new AudioDefinition
-        {
-            Key = "sounds",
-            Resources = [new() { Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset, AssetsFilePath = "../external.gaf", AssetEntryName = "first.png" }]
-        }));
+        File.WriteAllText(
+            Path.Combine(Source, "tiles.gts"),
+            TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets.ToList() }));
 
-        var plan = SemanticPackPlan.Create(new AssetsPackCommand.Settings() { Source = Source, Output = Output, Password = password, AllowExternal = true },
-            AssetTypeMap.BuildDefault(), AssetTypes.Misc, default);
-        var cache = Assert.IsType<Dictionary<string, Dictionary<AssetsFileEntry, byte[]>>>(typeof(SemanticPackPlan)
-            .GetField("_externalArchives", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(plan));
+        File.WriteAllText(
+            Path.Combine(Source, "sounds.gsnd"),
+            AudioDefinitionSerializer.ToJson(
+                new AudioDefinition
+                {
+                    Key = "sounds",
+                    Resources =
+                    [
+                        new()
+                        {
+                            Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset,
+                            AssetsFilePath = "../external.gaf", AssetEntryName = "first.png"
+                        }
+                    ]
+                }));
+
+        var plan = SemanticPackPlan.Create(
+            new AssetsPackCommand.Settings()
+                { Source = Source, Output = Output, Password = password, AllowExternal = true },
+            AssetTypeMap.BuildDefault(),
+            AssetTypes.Misc,
+            default);
+
+        var cache = Assert.IsType<Dictionary<string, Dictionary<AssetsFileEntry, byte[]>>>(
+            typeof(SemanticPackPlan)
+                .GetField(
+                    "_externalArchives",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(plan));
+
         var contents = Assert.Single(cache);
         Assert.Equal(external, contents.Key);
         Assert.Equal(3, contents.Value.Count);
-        Assert.Equal(new byte[] { (byte)AssetTypes.Image, 2, 3 }, contents.Value[new() { AssetType = AssetTypes.Image, AssetName = "FIRST.PNG" }]);
-        Assert.Equal(new byte[] { (byte)AssetTypes.Audio, 2, 3 }, contents.Value[new() { AssetType = AssetTypes.Audio, AssetName = "first.png" }]);
+
+        Assert.Equal(
+            new byte[] { (byte)AssetTypes.Image, 2, 3 },
+            contents.Value[new() { AssetType = AssetTypes.Image, AssetName = "FIRST.PNG" }]);
+
+        Assert.Equal(
+            new byte[] { (byte)AssetTypes.Audio, 2, 3 },
+            contents.Value[new() { AssetType = AssetTypes.Audio, AssetName = "first.png" }]);
+
         Assert.Equal(2, plan.Commit());
-        using var packed = AssetsFile.LoadOrCreate(Output, password, false, register: false);
+
+        using var packed = AssetsFile.LoadOrCreate(
+            Output,
+            password,
+            false,
+            register: false);
+
         Assert.Equal(2, TilesheetDefinitionSerializer.LoadAll(packed, "tiles.gts").Count);
         Assert.Single(AudioDefinitionSerializer.Load(packed, "sounds.gsnd").Resources);
         Assert.Equal(2, packed.GetAllEntries().Count());
@@ -488,11 +796,18 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         Image("art.png");
         var definitions = Directory.CreateDirectory(Path.Combine(Source, "definitions")).FullName;
-        File.WriteAllText(Path.Combine(definitions, "tiles.gts"), TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "../art.png")));
+
+        File.WriteAllText(
+            Path.Combine(definitions, "tiles.gts"),
+            TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "../art.png")));
+
         Assert.Equal(0, Run("pack", Source, Output));
         Directory.Delete(Source, true);
         var archive = AssetsFile.LoadOrCreate(Output);
-        Assert.Equal("terrain", TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "definitions/tiles.gts").Name);
+
+        Assert.Equal(
+            "terrain",
+            TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "definitions/tiles.gts").Name);
     }
 
     /// <inheritdoc/>
@@ -501,18 +816,34 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Clear();
         Directory.Delete(_root, true);
     }
+
     private sealed class Backend : IAudioBackend
     {
         /// <inheritdoc/>
         public string Name => "Semantic pack test";
+
         /// <summary>Gets the media bytes supplied by Core.</summary>
         public List<byte[]> Loaded { get; } = [];
+
         /// <summary>Gets the format hints passed to the backend.</summary>
         public List<string> Formats { get; } = [];
+
         /// <inheritdoc/>
-        public IAudioPlaybackHandle CreateFromUri(string key, string uri, float volume, float pan, float playbackSpeed) => new Handle();
+        public IAudioPlaybackHandle CreateFromUri(
+            string key,
+            string uri,
+            float volume,
+            float pan,
+            float playbackSpeed) => new Handle();
+
         /// <inheritdoc/>
-        public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed)
+        public IAudioPlaybackHandle CreateFromBytes(
+            string key,
+            byte[] data,
+            string fileNameOrExtension,
+            float volume,
+            float pan,
+            float playbackSpeed)
         {
             Loaded.Add(data);
             Formats.Add(fileNameOrExtension);
@@ -524,32 +855,46 @@ public sealed partial class SemanticAssetPackTests : IDisposable
     {
         /// <inheritdoc/>
         public event EventHandler? PlaybackCompleted { add { } remove { } }
+
         /// <inheritdoc/>
         public AudioPlaybackState State => AudioPlaybackState.Stopped;
+
         /// <inheritdoc/>
         public TimeSpan CurrentTime => TimeSpan.Zero;
+
         /// <inheritdoc/>
         public TimeSpan Duration => TimeSpan.Zero;
+
         /// <inheritdoc/>
         public bool IsLooping { get; set; }
+
         /// <inheritdoc/>
         public float Volume { get; set; }
+
         /// <inheritdoc/>
         public float Pan { get; set; }
+
         /// <inheritdoc/>
         public float PlaybackSpeed { get; set; }
+
         /// <inheritdoc/>
         public string? TemporaryFilePath => null;
+
         /// <inheritdoc/>
         public void Play(bool fromStart = true) { }
+
         /// <inheritdoc/>
         public void Pause() { }
+
         /// <inheritdoc/>
         public void Resume() { }
+
         /// <inheritdoc/>
         public void Stop() { }
+
         /// <inheritdoc/>
         public void Seek(TimeSpan position) { }
+
         /// <summary>
         /// Releases the resources owned by this instance.
         /// </summary>

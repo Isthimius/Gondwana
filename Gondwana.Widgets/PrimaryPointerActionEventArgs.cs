@@ -13,7 +13,11 @@ public sealed class PrimaryPointerActionEventArgs : EventArgs
     /// <param name="screenPositionPx">The position in logical screen pixels.</param>
     /// <param name="isTouch">True for a recognized single-finger tap; false for a left mouse press.</param>
     /// <param name="pointerId">The touch ID or <see cref="WidgetInputRouter.MousePointerId"/>.</param>
-    public PrimaryPointerActionEventArgs(View view, Point screenPositionPx, bool isTouch, int pointerId)
+    public PrimaryPointerActionEventArgs(
+        View view,
+        Point screenPositionPx,
+        bool isTouch,
+        int pointerId)
     {
         View = view ?? throw new ArgumentNullException(nameof(view));
         ScreenPositionPx = screenPositionPx;

@@ -12,6 +12,7 @@ internal sealed class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.MainWindow = new GameWindow();
+
         base.OnFrameworkInitializationCompleted();
     }
 }

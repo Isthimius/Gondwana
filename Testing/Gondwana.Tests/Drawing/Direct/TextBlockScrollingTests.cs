@@ -12,12 +12,12 @@ namespace Gondwana.Tests.Drawing.Direct;
 public sealed class TextBlockScrollingTests
 {
     private const string OverflowText = """
-        First line of scrollable text.
-        Second line of scrollable text.
-        Third line of scrollable text.
-        Fourth line of scrollable text.
-        Fifth line of scrollable text.
-        """;
+                                        First line of scrollable text.
+                                        Second line of scrollable text.
+                                        Third line of scrollable text.
+                                        Fourth line of scrollable text.
+                                        Fifth line of scrollable text.
+                                        """;
 
     /// <summary>
     /// Verifies overflowing content uses top origin at zero scroll.
@@ -31,6 +31,7 @@ public sealed class TextBlockScrollingTests
         var (expectedPixels, expectedMaximumScrollOffset) = RenderPixels(
             TextBlock.VerticalAlign.Top,
             scrollOffsetPx: 0f);
+
         var (actualPixels, actualMaximumScrollOffset) = RenderPixels(
             verticalAlign,
             scrollOffsetPx: 0f);
@@ -52,9 +53,11 @@ public sealed class TextBlockScrollingTests
         var (_, maximumScrollOffset) = RenderPixels(
             TextBlock.VerticalAlign.Top,
             scrollOffsetPx: 0f);
+
         var (expectedPixels, expectedMaximumScrollOffset) = RenderPixels(
             TextBlock.VerticalAlign.Top,
             scrollOffsetPx: maximumScrollOffset);
+
         var (actualPixels, actualMaximumScrollOffset) = RenderPixels(
             verticalAlign,
             scrollOffsetPx: maximumScrollOffset);
@@ -69,9 +72,25 @@ public sealed class TextBlockScrollingTests
         float scrollOffsetPx)
     {
         using var host = new TestRenderSurfaceHost();
-        View view = AddView(host, new Rectangle(0, 0, 140, 52));
+
+        View view = AddView(
+            host,
+            new Rectangle(
+                0,
+                0,
+                140,
+                52));
+
         using var backbuffer = new BitmapBackbuffer(140, 52);
-        using var textBlock = new TextBlock(host, view, new Rectangle(0, 0, 140, 52))
+
+        using var textBlock = new TextBlock(
+                host,
+                view,
+                new Rectangle(
+                    0,
+                    0,
+                    140,
+                    52))
             .SetText(OverflowText)
             .SetFont(SKTypeface.Default, 16f)
             .SetColors(SKColors.White, SKColors.Transparent)
@@ -80,7 +99,14 @@ public sealed class TextBlockScrollingTests
 
         float maximumScrollOffsetPx = textBlock.MeasureMaximumVerticalScrollOffsetPx();
         textBlock.VerticalScrollOffsetPx = Math.Min(scrollOffsetPx, maximumScrollOffsetPx);
-        textBlock.Draw(backbuffer, new RectangleF(0, 0, 140, 52));
+
+        textBlock.Draw(
+            backbuffer,
+            new RectangleF(
+                0,
+                0,
+                140,
+                52));
 
         using SKImage snapshot = backbuffer.Snapshot();
         using SKBitmap bitmap = SKBitmap.FromImage(snapshot);

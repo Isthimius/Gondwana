@@ -33,7 +33,11 @@ public sealed class TooltipWidget : WidgetBase
         View view,
         Size size,
         string? nickname = null)
-        : base(renderSurfaceHost, DirectDrawingMode.View, PointF.Empty, nickname)
+        : base(
+            renderSurfaceHost,
+            DirectDrawingMode.View,
+            PointF.Empty,
+            nickname)
     {
         ArgumentNullException.ThrowIfNull(view);
         ValidateSize(size);
@@ -43,13 +47,22 @@ public sealed class TooltipWidget : WidgetBase
         Rectangle bounds = new(Point.Empty, size);
 
         Background = new DirectRectangle(
-                Color.FromArgb(238, 30, 30, 36),
+                Color.FromArgb(
+                    238,
+                    30,
+                    30,
+                    36),
                 renderSurfaceHost,
                 view,
                 bounds,
                 $"{Nickname}.background")
             .SetFilled(true)
-            .SetBorderColor(Color.FromArgb(255, 168, 168, 180))
+            .SetBorderColor(
+                Color.FromArgb(
+                    255,
+                    168,
+                    168,
+                    180))
             .SetStrokeWidth(1f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
             .SetCornerRadius(4f);
@@ -89,6 +102,7 @@ public sealed class TooltipWidget : WidgetBase
         get
         {
             Vector2 position = GetPosition();
+
             return new Rectangle(
                 (int)MathF.Round(position.X),
                 (int)MathF.Round(position.Y),
@@ -166,6 +180,7 @@ public sealed class TooltipWidget : WidgetBase
 
         if (x + _size.Width > viewport.Right)
             x = pointer.X - PointerOffsetPx - _size.Width;
+
         if (y + _size.Height > viewport.Bottom)
             y = pointer.Y - PointerOffsetPx - _size.Height;
 
@@ -173,12 +188,17 @@ public sealed class TooltipWidget : WidgetBase
             x,
             viewport.Left,
             Math.Max(viewport.Left, viewport.Right - _size.Width));
+
         y = Math.Clamp(
             y,
             viewport.Top,
             Math.Max(viewport.Top, viewport.Bottom - _size.Height));
 
-        return new Rectangle(x, y, _size.Width, _size.Height);
+        return new Rectangle(
+            x,
+            y,
+            _size.Width,
+            _size.Height);
     }
 
     private void ApplyBounds(Rectangle bounds)

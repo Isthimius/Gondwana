@@ -105,8 +105,11 @@ public sealed class Camera
     public void CenterOn(PointF worldCenterPx)
     {
         var vis = GetVisibleWorldSizePx();
-        SnapTo(new PointF(worldCenterPx.X - vis.Width * 0.5f,
-                          worldCenterPx.Y - vis.Height * 0.5f));
+
+        SnapTo(
+            new PointF(
+                worldCenterPx.X - vis.Width * 0.5f,
+                worldCenterPx.Y - vis.Height * 0.5f));
     }
 
     /// <summary>
@@ -162,7 +165,11 @@ public sealed class Camera
     /// <param name="col">The col.</param>
     /// <param name="row">The row.</param>
     /// <param name="speed">The speed.</param>
-    public void AnimateCenterOnGrid(SceneLayer layer, int col, int row, float speed)
+    public void AnimateCenterOnGrid(
+        SceneLayer layer,
+        int col,
+        int row,
+        float speed)
     {
         // Compute world center of the tile and reuse PanCenterTo.
         var anchor = layer.GridToWorldPx(new PointF(col, row));
@@ -314,7 +321,11 @@ public sealed class Camera
     /// Approximate time (in seconds) for the camera to reach the target cell.
     /// Values &lt;= 0 cause an immediate snap to the destination.
     /// </param>
-    public void PanToGridOverDuration(SceneLayer layer, int col, int row, float durationSeconds)
+    public void PanToGridOverDuration(
+        SceneLayer layer,
+        int col,
+        int row,
+        float durationSeconds)
     {
         if (layer is null)
             throw new ArgumentNullException(nameof(layer));
@@ -338,8 +349,10 @@ public sealed class Camera
     /// <param name="deltaPx">The delta px.</param>
     public void PanBy(PointF deltaPx)
     {
-        SnapTo(new PointF(PositionPx.X + deltaPx.X,
-                          PositionPx.Y + deltaPx.Y));
+        SnapTo(
+            new PointF(
+                PositionPx.X + deltaPx.X,
+                PositionPx.Y + deltaPx.Y));
     }
 
     /// <summary>
@@ -430,7 +443,11 @@ public sealed class Camera
     /// <param name="hard">Whether the light uses a hard edge.</param>
     public void FollowCentered(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
-        FollowAt(target, new PointF(0.5f, 0.5f), speed, hard);
+        FollowAt(
+            target,
+            new PointF(0.5f, 0.5f),
+            speed,
+            hard);
     }
 
     /// <summary>
@@ -448,7 +465,11 @@ public sealed class Camera
     /// the current setting unchanged.
     /// </param>
     /// <param name="hard">If true, the camera snaps to the desired position each update.</param>
-    public void FollowAt(IMovableOnSceneLayer target, PointF viewportAnchor, float speed = -1f, bool hard = false)
+    public void FollowAt(
+        IMovableOnSceneLayer target,
+        PointF viewportAnchor,
+        float speed = -1f,
+        bool hard = false)
     {
         ArgumentNullException.ThrowIfNull(target);
         ValidateViewportAnchor(viewportAnchor, nameof(viewportAnchor));
@@ -456,17 +477,19 @@ public sealed class Camera
         if (speed > 0f)
             FollowLerpPerSecond = speed;
 
-        FollowAt(() =>
-        {
-            var layer = target.SceneLayer;
-            var pos = target.GetPosition();
+        FollowAt(
+            () =>
+            {
+                var layer = target.SceneLayer;
+                var pos = target.GetPosition();
 
-            return target.PositionSpace == MovementSpace.Grid
-                ? GetCenteredTile(layer, pos)
-                : new PointF(pos.X, pos.Y);
-        },
-        viewportAnchor,
-        hard);
+                return target.PositionSpace == MovementSpace.Grid
+                    ? GetCenteredTile(layer, pos)
+                    : new PointF(pos.X, pos.Y);
+            },
+            viewportAnchor,
+            hard);
+
         _followLayer = target.SceneLayer;
     }
 
@@ -479,7 +502,11 @@ public sealed class Camera
     /// <param name="hard">Whether the light uses a hard edge.</param>
     public void FollowCenteredX(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
-        FollowAtX(target, 0.5f, speed, hard);
+        FollowAtX(
+            target,
+            0.5f,
+            speed,
+            hard);
     }
 
     /// <summary>
@@ -497,7 +524,11 @@ public sealed class Camera
     /// <see cref="FollowLerpPerSecond"/>.
     /// </param>
     /// <param name="hard">If true, the camera snaps to the desired horizontal position each update.</param>
-    public void FollowAtX(IMovableOnSceneLayer target, float horizontalAnchor, float speed = -1f, bool hard = false)
+    public void FollowAtX(
+        IMovableOnSceneLayer target,
+        float horizontalAnchor,
+        float speed = -1f,
+        bool hard = false)
     {
         ArgumentNullException.ThrowIfNull(target);
         ValidateNormalizedAnchor(horizontalAnchor, nameof(horizontalAnchor));
@@ -505,29 +536,33 @@ public sealed class Camera
         if (speed > 0f)
             FollowLerpPerSecond = speed;
 
-        FollowAt(() =>
-        {
-            var layer = target.SceneLayer;
-            var pos = target.GetPosition();
-
-            float worldCenterX;
-            if (target.PositionSpace == MovementSpace.Grid)
+        FollowAt(
+            () =>
             {
-                var anchor = layer.GridToWorldPx(new PointF(pos.X, pos.Y));
-                worldCenterX = anchor.X + layer.TileWidth * 0.5f;
-            }
-            else
-            {
-                worldCenterX = pos.X;
-            }
+                var layer = target.SceneLayer;
+                var pos = target.GetPosition();
 
-            var vis = GetVisibleWorldSizePx();
-            return new PointF(
-                worldCenterX,
-                PositionPx.Y + vis.Height * 0.5f);
-        },
-        new PointF(horizontalAnchor, 0.5f),
-        hard);
+                float worldCenterX;
+
+                if (target.PositionSpace == MovementSpace.Grid)
+                {
+                    var anchor = layer.GridToWorldPx(new PointF(pos.X, pos.Y));
+                    worldCenterX = anchor.X + layer.TileWidth * 0.5f;
+                }
+                else
+                {
+                    worldCenterX = pos.X;
+                }
+
+                var vis = GetVisibleWorldSizePx();
+
+                return new PointF(
+                    worldCenterX,
+                    PositionPx.Y + vis.Height * 0.5f);
+            },
+            new PointF(horizontalAnchor, 0.5f),
+            hard);
+
         _followLayer = target.SceneLayer;
         _followAxis = 1;
     }
@@ -541,7 +576,11 @@ public sealed class Camera
     /// <param name="hard">Whether the light uses a hard edge.</param>
     public void FollowCenteredY(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
-        FollowAtY(target, 0.5f, speed, hard);
+        FollowAtY(
+            target,
+            0.5f,
+            speed,
+            hard);
     }
 
     /// <summary>
@@ -559,7 +598,11 @@ public sealed class Camera
     /// <see cref="FollowLerpPerSecond"/>.
     /// </param>
     /// <param name="hard">If true, the camera snaps to the desired vertical position each update.</param>
-    public void FollowAtY(IMovableOnSceneLayer target, float verticalAnchor, float speed = -1f, bool hard = false)
+    public void FollowAtY(
+        IMovableOnSceneLayer target,
+        float verticalAnchor,
+        float speed = -1f,
+        bool hard = false)
     {
         ArgumentNullException.ThrowIfNull(target);
         ValidateNormalizedAnchor(verticalAnchor, nameof(verticalAnchor));
@@ -567,29 +610,33 @@ public sealed class Camera
         if (speed > 0f)
             FollowLerpPerSecond = speed;
 
-        FollowAt(() =>
-        {
-            var layer = target.SceneLayer;
-            var pos = target.GetPosition();
-
-            float worldCenterY;
-            if (target.PositionSpace == MovementSpace.Grid)
+        FollowAt(
+            () =>
             {
-                var anchor = layer.GridToWorldPx(new PointF(pos.X, pos.Y));
-                worldCenterY = anchor.Y + layer.TileHeight * 0.5f;
-            }
-            else
-            {
-                worldCenterY = pos.Y;
-            }
+                var layer = target.SceneLayer;
+                var pos = target.GetPosition();
 
-            var vis = GetVisibleWorldSizePx();
-            return new PointF(
-                PositionPx.X + vis.Width * 0.5f,
-                worldCenterY);
-        },
-        new PointF(0.5f, verticalAnchor),
-        hard);
+                float worldCenterY;
+
+                if (target.PositionSpace == MovementSpace.Grid)
+                {
+                    var anchor = layer.GridToWorldPx(new PointF(pos.X, pos.Y));
+                    worldCenterY = anchor.Y + layer.TileHeight * 0.5f;
+                }
+                else
+                {
+                    worldCenterY = pos.Y;
+                }
+
+                var vis = GetVisibleWorldSizePx();
+
+                return new PointF(
+                    PositionPx.X + vis.Width * 0.5f,
+                    worldCenterY);
+            },
+            new PointF(0.5f, verticalAnchor),
+            hard);
+
         _followLayer = target.SceneLayer;
         _followAxis = 2;
     }
@@ -625,6 +672,7 @@ public sealed class Camera
             else
             {
                 float t = 1f - (float)Math.Exp(-_panLerpPerSecond * Math.Max(0f, dtSeconds));
+
                 var newPos = new PointF(
                     PositionPx.X + (clamped.X - PositionPx.X) * t,
                     PositionPx.Y + (clamped.Y - PositionPx.Y) * t);
@@ -650,21 +698,35 @@ public sealed class Camera
             return;
 
         var target = _followWorldPx();
+
         if (TopologyLayer is { } layer && (layer.WrapHorizontally || layer.WrapVertically))
         {
             var visible = GetVisibleWorldSizePx();
+
             var followReference = new PointF(
                 PositionPx.X + visible.Width * _followAnchor.X,
                 PositionPx.Y + visible.Height * _followAnchor.Y);
+
             var period = layer.GetPeriod();
+
             if (_followAxis == 1)
             {
-                target = NearestWrappedByAxis(period, target, followReference, followX: true);
+                target = NearestWrappedByAxis(
+                    period,
+                    target,
+                    followReference,
+                    followX: true);
+
                 target.Y = followReference.Y;
             }
             else if (_followAxis == 2)
             {
-                target = NearestWrappedByAxis(period, target, followReference, followX: false);
+                target = NearestWrappedByAxis(
+                    period,
+                    target,
+                    followReference,
+                    followX: false);
+
                 target.X = followReference.X;
             }
             else
@@ -674,6 +736,7 @@ public sealed class Camera
         }
 
         var desiredUL = DesiredUpperLeftToContainTarget(target);
+
         if (_hardFollow || FollowLerpPerSecond <= 0f)
         {
             PositionPx = ClampToWorldBounds(desiredUL);
@@ -682,6 +745,7 @@ public sealed class Camera
         {
             float t = 1f - (float)Math.Exp(-FollowLerpPerSecond * Math.Max(0f, dtSeconds));
             var clamped = ClampToWorldBounds(desiredUL);
+
             PositionPx = new PointF(
                 PositionPx.X + (clamped.X - PositionPx.X) * t,
                 PositionPx.Y + (clamped.Y - PositionPx.Y) * t);
@@ -693,15 +757,23 @@ public sealed class Camera
     private PointF DesiredUpperLeftToContainTarget(PointF targetWorldPx)
     {
         var vis = GetVisibleWorldSizePx();
+
         if (DeadZonePx == Rectangle.Empty)
             return new PointF(
                 targetWorldPx.X - vis.Width * _followAnchor.X,
                 targetWorldPx.Y - vis.Height * _followAnchor.Y);
 
-        var viewWorld = new RectangleF(PositionPx.X, PositionPx.Y, vis.Width, vis.Height);
-        var dzWorld = new RectangleF(viewWorld.X + DeadZonePx.X,
-                                     viewWorld.Y + DeadZonePx.Y,
-                                     DeadZonePx.Width, DeadZonePx.Height);
+        var viewWorld = new RectangleF(
+            PositionPx.X,
+            PositionPx.Y,
+            vis.Width,
+            vis.Height);
+
+        var dzWorld = new RectangleF(
+            viewWorld.X + DeadZonePx.X,
+            viewWorld.Y + DeadZonePx.Y,
+            DeadZonePx.Width,
+            DeadZonePx.Height);
 
         if (dzWorld.Contains(targetWorldPx))
             return PositionPx;
@@ -724,7 +796,11 @@ public sealed class Camera
         return new PointF(newX, newY);
     }
 
-    private static PointF NearestWrappedByAxis(LayerPeriod period, PointF point, PointF reference, bool followX)
+    private static PointF NearestWrappedByAxis(
+        LayerPeriod period,
+        PointF point,
+        PointF reference,
+        bool followX)
     {
         var delta = new PointF(reference.X - point.X, reference.Y - point.Y);
         var coefficients = period.Coefficients(delta);
@@ -738,24 +814,28 @@ public sealed class Camera
 
         var best = period.Nearest(point, reference);
         float bestAxisDistance = followX ? Math.Abs(best.X - reference.X) : Math.Abs(best.Y - reference.Y);
-        float bestDistanceSquared = (best.X - reference.X) * (best.X - reference.X) + (best.Y - reference.Y) * (best.Y - reference.Y);
+
+        float bestDistanceSquared = (best.X - reference.X) * (best.X - reference.X) +
+                                    (best.Y - reference.Y) * (best.Y - reference.Y);
 
         for (int c = minColumn; c <= maxColumn; c++)
-            for (int r = minRow; r <= maxRow; r++)
+        for (int r = minRow; r <= maxRow; r++)
+        {
+            var offset = period.Offset(c, r);
+            var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
+            float axisDistance = followX ? Math.Abs(candidate.X - reference.X) : Math.Abs(candidate.Y - reference.Y);
+
+            float distanceSquared = (candidate.X - reference.X) * (candidate.X - reference.X) +
+                                    (candidate.Y - reference.Y) * (candidate.Y - reference.Y);
+
+            if (axisDistance < bestAxisDistance ||
+                (axisDistance == bestAxisDistance && distanceSquared < bestDistanceSquared))
             {
-                var offset = period.Offset(c, r);
-                var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
-                float axisDistance = followX ? Math.Abs(candidate.X - reference.X) : Math.Abs(candidate.Y - reference.Y);
-                float distanceSquared = (candidate.X - reference.X) * (candidate.X - reference.X) +
-                                        (candidate.Y - reference.Y) * (candidate.Y - reference.Y);
-                if (axisDistance < bestAxisDistance ||
-                    (axisDistance == bestAxisDistance && distanceSquared < bestDistanceSquared))
-                {
-                    best = candidate;
-                    bestAxisDistance = axisDistance;
-                    bestDistanceSquared = distanceSquared;
-                }
+                best = candidate;
+                bestAxisDistance = axisDistance;
+                bestDistanceSquared = distanceSquared;
             }
+        }
 
         return best;
     }
@@ -766,20 +846,34 @@ public sealed class Camera
             return ul;
 
         var vis = GetVisibleWorldSizePx();
+
         if (TopologyLayer is { } layer && (layer.WrapHorizontally || layer.WrapVertically))
         {
             var period = layer.GetPeriod();
             var position = period.Coefficients(ul);
-            PointF[] Corners(RectangleF rect) => new[] {
+
+            PointF[] Corners(RectangleF rect) => new[]
+            {
                 period.Coefficients(new(rect.Left, rect.Top)), period.Coefficients(new(rect.Right, rect.Top)),
-                period.Coefficients(new(rect.Left, rect.Bottom)), period.Coefficients(new(rect.Right, rect.Bottom)) };
+                period.Coefficients(new(rect.Left, rect.Bottom)), period.Coefficients(new(rect.Right, rect.Bottom))
+            };
+
             var bounds = Corners(WorldBoundsPx);
-            var viewport = Corners(new(0, 0, vis.Width, vis.Height));
+
+            var viewport = Corners(
+                new(
+                    0,
+                    0,
+                    vis.Width,
+                    vis.Height));
+
             float lowX = bounds.Min(p => p.X) - viewport.Min(p => p.X);
             float lowY = bounds.Min(p => p.Y) - viewport.Min(p => p.Y);
             float highX = Math.Max(lowX, bounds.Max(p => p.X) - viewport.Max(p => p.X));
             float highY = Math.Max(lowY, bounds.Max(p => p.Y) - viewport.Max(p => p.Y));
-            return period.Offset(layer.WrapHorizontally ? position.X : Math.Clamp(position.X, lowX, highX),
+
+            return period.Offset(
+                layer.WrapHorizontally ? position.X : Math.Clamp(position.X, lowX, highX),
                 layer.WrapVertically ? position.Y : Math.Clamp(position.Y, lowY, highY));
         }
 
@@ -808,7 +902,10 @@ public sealed class Camera
     private static void ValidateNormalizedAnchor(float value, string paramName)
     {
         if (!float.IsFinite(value) || value < 0f || value > 1f)
-            throw new ArgumentOutOfRangeException(paramName, value, "Camera follow anchors must be finite values from 0 through 1.");
+            throw new ArgumentOutOfRangeException(
+                paramName,
+                value,
+                "Camera follow anchors must be finite values from 0 through 1.");
     }
 
     /// <summary>
@@ -821,6 +918,7 @@ public sealed class Camera
     private static PointF GetCenteredTile(SceneLayer layer, Vector2 gridPos)
     {
         var anchor = layer.GridToWorldPx(new PointF(gridPos.X, gridPos.Y));
+
         return new PointF(
             anchor.X + layer.TileWidth * 0.5f,
             anchor.Y + layer.TileHeight * 0.5f);

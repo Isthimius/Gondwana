@@ -27,55 +27,54 @@ builder.Services
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHttpClient<GitHubRepositoryService>(client =>
-{
-    client.Timeout = TimeSpan.FromSeconds(30);
-});
+builder.Services.AddHttpClient<GitHubRepositoryService>(client => { client.Timeout = TimeSpan.FromSeconds(30); });
 
-builder.Services.AddHttpClient<GondwanaWikiService>(client =>
-{
-    client.Timeout = TimeSpan.FromSeconds(30);
-});
+builder.Services.AddHttpClient<GondwanaWikiService>(client => { client.Timeout = TimeSpan.FromSeconds(30); });
 
 builder.Services.AddMcpServer()
-    .WithHttpTransport(options =>
-    {
-        options.SessionMode = HttpServerSessionMode.Stateless;
-    })
+    .WithHttpTransport(options => { options.SessionMode = HttpServerSessionMode.Stateless; })
     .WithTools<GondwanaRepositoryTools>()
     .WithTools<GondwanaWikiTools>();
 
 var app = builder.Build();
 
-app.MapGet("/", (GitHubRepositoryService repository) => Results.Ok(new
-{
-    name = "Gondwana MCP",
-    repository = GondwanaMcpOptions.RepositoryFullName,
-    defaultRef = GondwanaMcpOptions.DefaultRef,
-    access = "read-only",
-    codeSearchAuthenticated = repository.HasAuthenticatedSearch,
-    mcpEndpoint = "/mcp",
-    healthEndpoint = "/health"
-}));
+app.MapGet(
+    "/",
+    (GitHubRepositoryService repository) => Results.Ok(
+        new
+        {
+            name = "Gondwana MCP",
+            repository = GondwanaMcpOptions.RepositoryFullName,
+            defaultRef = GondwanaMcpOptions.DefaultRef,
+            access = "read-only",
+            codeSearchAuthenticated = repository.HasAuthenticatedSearch,
+            mcpEndpoint = "/mcp",
+            healthEndpoint = "/health"
+        }));
 
-app.MapGet("/health", () => Results.Ok(new
-{
-    status = "ok",
-    repository = GondwanaMcpOptions.RepositoryFullName,
-    access = "read-only"
-}));
+app.MapGet(
+    "/health",
+    () => Results.Ok(
+        new
+        {
+            status = "ok",
+            repository = GondwanaMcpOptions.RepositoryFullName,
+            access = "read-only"
+        }));
 
-app.MapGet("/.well-known/openai-apps-challenge", (
-    Microsoft.Extensions.Options.IOptions<GondwanaMcpOptions> options) =>
-{
-    string? token = options.Value.OpenAiAppsChallengeToken;
+app.MapGet(
+    "/.well-known/openai-apps-challenge",
+    (
+        Microsoft.Extensions.Options.IOptions<GondwanaMcpOptions> options) =>
+    {
+        string? token = options.Value.OpenAiAppsChallengeToken;
 
-    if (string.IsNullOrWhiteSpace(token))
-        return Results.NotFound();
+        if (string.IsNullOrWhiteSpace(token))
+            return Results.NotFound();
 
-    // OpenAI requires the challenge endpoint to return only the exact token.
-    return Results.Text(token, "text/plain; charset=utf-8");
-});
+        // OpenAI requires the challenge endpoint to return only the exact token.
+        return Results.Text(token, "text/plain; charset=utf-8");
+    });
 
 app.MapMcp("/mcp");
 

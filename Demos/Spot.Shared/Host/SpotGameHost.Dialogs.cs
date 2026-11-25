@@ -1,4 +1,3 @@
-
 namespace Gondwana.Demos.Spot;
 
 internal sealed partial class SpotGameRuntime
@@ -21,8 +20,10 @@ internal sealed partial class SpotGameRuntime
         if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0)
         {
             _newGameDialog?.Activate();
+
             if (_newGameDialog is not null)
                 WidgetInputRouter?.Focus(_newGameDialog.InitialFocusTarget);
+
             return;
         }
 
@@ -54,5 +55,4 @@ internal sealed partial class SpotGameRuntime
         dialog.Activate();
         WidgetInputRouter?.Focus(dialog.InitialFocusTarget);
     }
-
 }

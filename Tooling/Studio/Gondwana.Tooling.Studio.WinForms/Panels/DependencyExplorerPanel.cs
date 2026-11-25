@@ -10,23 +10,28 @@ internal sealed class DependencyExplorerPanel : UserControl
     private readonly TreeView _tree = new() { Dock = DockStyle.Fill, HideSelection = false, ShowNodeToolTips = true };
     private readonly ToolTip _tips = new();
     private readonly ContextMenuStrip _menu = new();
+
     private readonly ToolStripButton _memberScope = new("Selected Member")
     {
         Name = "DependencyScopeMember",
         ToolTipText = "Show references for the selected logical definition."
     };
+
     private readonly ToolStripButton _documentScope = new("Whole Document")
     {
         Name = "DependencyScopeDocument",
         ToolTipText = "Show references for every logical definition in this document."
     };
+
     internal event Action? RefreshRequested;
     internal event Action<bool>? ScopeRequested;
     internal event Action<ResourceAddress>? NavigateRequested;
     internal event Action<Control, ResourceAddress>? ResourceDragRequested;
     internal event Action<ResourceAddress, bool>? InspectRequested;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool? RequestedSection { get; set; }
+
     internal string Status => _status.Text;
 
     internal DependencyExplorerPanel()
@@ -41,32 +46,43 @@ internal sealed class DependencyExplorerPanel : UserControl
         _documentScope.Click += (_, _) => ScopeRequested?.Invoke(true);
         SetScope(wholeDocument: true, memberAvailable: false, hasTarget: false);
         _menu.Items.Add("Open Referenced Definition", null, (_, _) => OpenSelection());
+
         foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
-            _menu.Items.Add(title, null, (_, _) =>
-            {
-                if (_tree.SelectedNode?.Tag is ResourceAddress address)
-                    InspectRequested?.Invoke(address with { FieldPath = null }, title != "Show Dependencies");
-            });
+            _menu.Items.Add(
+                title,
+                null,
+                (_, _) =>
+                {
+                    if (_tree.SelectedNode?.Tag is ResourceAddress address)
+                        InspectRequested?.Invoke(address with { FieldPath = null }, title != "Show Dependencies");
+                });
+
         _menu.Opening += (_, e) => e.Cancel = _tree.SelectedNode?.Tag is not ResourceAddress;
         _tree.ContextMenuStrip = _menu;
+
         _tree.NodeMouseClick += (_, e) =>
         {
             if (e.Button == MouseButtons.Right)
                 _tree.SelectedNode = e.Node;
         };
+
         _tree.ItemDrag += (_, e) =>
         {
             if (e.Button == MouseButtons.Left && e.Item is TreeNode { Tag: ResourceAddress address })
                 ResourceDragRequested?.Invoke(_tree, address);
         };
+
         _tree.NodeMouseDoubleClick += (_, _) => OpenSelection();
+
         _tree.KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Enter)
             {
                 OpenSelection();
-                e.Handled = true; }
+                e.Handled = true;
+            }
         };
+
         Controls.Add(_tree);
         Controls.Add(_status);
         Controls.Add(bar);
@@ -106,6 +122,7 @@ internal sealed class DependencyExplorerPanel : UserControl
 
         // Measure at the actual docked width so wrapped lines stay above the results tree.
         var height = _status.GetPreferredSize(new Size(_status.ClientSize.Width, 0)).Height + 2;
+
         if (_status.Height != height)
             _status.Height = height;
     }
@@ -114,6 +131,7 @@ internal sealed class DependencyExplorerPanel : UserControl
     {
         var selected = _tree.SelectedNode?.Tag as ResourceAddress;
         _tree.BeginUpdate();
+
         try
         {
             _tree.Nodes.Clear();
@@ -122,26 +140,36 @@ internal sealed class DependencyExplorerPanel : UserControl
             Add("Referenced By / Dependents", query.Dependents(target), outbound: false);
             var unresolvedDependencies = query.UnresolvedDependencies(target);
             var unresolvedDependents = query.UnresolvedDependents(target);
+
             if (unresolvedDependencies.Count > 0)
                 Add("Unresolved dependencies — see scan diagnostics", unresolvedDependencies, outbound: true);
+
             if (unresolvedDependents.Count > 0)
                 Add("Unresolved inbound references — see scan diagnostics", unresolvedDependents, outbound: false);
+
             var unknown = query.UnspecifiedDependents(target);
+
             if (unknown.Count > 0)
                 Add("Physical references — logical member unspecified", unknown, outbound: false);
+
             var remote = _tree.Nodes.Add("External URI references (not fetched or navigable)");
+
             foreach (var item in query.ExternalDependencies(target))
                 remote.Nodes.Add($"{item.Uri} — {item.Source}");
+
             var problems = _tree.Nodes.Add($"Scan diagnostics ({scan.Problems.Count})");
+
             foreach (var problem in scan.Problems)
             {
                 var node = problems.Nodes.Add($"{problem.Kind}: {problem.Source}: {problem.Message}");
                 node.ToolTipText = node.Text;
+
                 if (problem.Reference is { } reference)
                     node.Tag = new ResourceAddress(reference.Document, reference.Member, reference.ReferencePath);
             }
 
             _tree.ExpandAll();
+
             if (RequestedSection is { } dependents)
             {
                 _tree.SelectedNode = _tree.Nodes[dependents ? 1 : 0];
@@ -149,11 +177,16 @@ internal sealed class DependencyExplorerPanel : UserControl
                 RequestedSection = null;
             }
 
-            SetStatus($"Query: {(target.Member is null ? "Whole document" : $"Selected member '{target.Member}'")}\n" +
+            SetStatus(
+                $"Query: {(target.Member is null ? "Whole document" : $"Selected member '{target.Member}'")}\n" +
                 $"Target: {target.Location}\nScan scope: {scan.Scope}\n" +
-                (scan.IsCancelled ? "Cancelled — partial results." : scan.IsComplete ? "Completed scan." : "Incomplete scan — see diagnostics; absence is not proof of no references.") +
+                (scan.IsCancelled ? "Cancelled — partial results." :
+                    scan.IsComplete ? "Completed scan." :
+                    "Incomplete scan — see diagnostics; absence is not proof of no references.") +
                 " Saved content only; arbitrary C# references are not discovered. Remote URIs are not fetched." +
-                (!scan.IsWithinScope(target.Location) ? " Query target is outside this scope; its outbound references were not inspected." : "") +
+                (!scan.IsWithinScope(target.Location)
+                    ? " Query target is outside this scope; its outbound references were not inspected."
+                    : "") +
                 (dirty ? " Open editors have unsaved changes not represented here." : ""));
         }
         finally
@@ -164,19 +197,25 @@ internal sealed class DependencyExplorerPanel : UserControl
         void Add(string title, IReadOnlyList<DefinitionReference> references, bool outbound)
         {
             var root = _tree.Nodes.Add($"{title} ({references.Count})");
+
             foreach (var group in references.GroupBy(r => new ResourceAddress(outbound ? r.Target : r.Document)))
             {
                 var parent = root.Nodes.Add(group.Key.ToString());
                 parent.ToolTipText = parent.Text;
+
                 foreach (var reference in group)
                 {
-                    var address = outbound ? new ResourceAddress(reference.Target, reference.Selector)
+                    var address = outbound
+                        ? new ResourceAddress(reference.Target, reference.Selector)
                         : new ResourceAddress(reference.Document, reference.Member, reference.ReferencePath);
+
                     var text = $"{address} — {reference.ReferencePath}" +
-                        (outbound && !scan.IsWithinScope(reference.Target) ? " [outside inspected scope]" : "");
+                               (outbound && !scan.IsWithinScope(reference.Target) ? " [outside inspected scope]" : "");
+
                     var node = parent.Nodes.Add(text);
                     node.Tag = address;
                     node.ToolTipText = text;
+
                     if (address == selected)
                         _tree.SelectedNode = node;
                 }

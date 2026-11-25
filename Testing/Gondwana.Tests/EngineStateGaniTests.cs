@@ -90,6 +90,7 @@ public sealed class EngineStateGaniTests : IDisposable
 
         var ganiPath = Path.GetFullPath(Path.Combine(_tempDir, relativePath!));
         Assert.True(File.Exists(ganiPath));
+
         Assert.Equal(
             Path.Combine(_tempDir, "external.animations"),
             Path.GetDirectoryName(ganiPath));
@@ -111,7 +112,13 @@ public sealed class EngineStateGaniTests : IDisposable
     public void LoadFromFile_RestoresGaniAfterItsTilesheets(bool separateGaniFiles)
     {
         var sheet = CreateTilesheet("restore-sheet");
-        _ = CreateCycle(sheet, "effects.spark", 0.075, CycleType.PingPong);
+
+        _ = CreateCycle(
+            sheet,
+            "effects.spark",
+            0.075,
+            CycleType.PingPong);
+
         var path = Path.Combine(
             _tempDir,
             separateGaniFiles ? "restore-external.state" : "restore-inline.state");
@@ -131,6 +138,7 @@ public sealed class EngineStateGaniTests : IDisposable
             parts: EngineStateParts.Cycles);
 
         var restoredSheet = TilesheetRegistry.Instance["restore-sheet"];
+
         var restored = Assert.Single(
             Cycle.GetAnimationCycles(),
             cycle => cycle.CycleKey == "effects.spark");
@@ -153,7 +161,13 @@ public sealed class EngineStateGaniTests : IDisposable
     {
         var sheet = CreateTilesheet("chain-sheet");
         var idle = CreateCycle(sheet, "actor.idle", 0.4);
-        var blink = CreateCycle(sheet, "actor.blink", 0.08, CycleType.Simple);
+
+        var blink = CreateCycle(
+            sheet,
+            "actor.blink",
+            0.08,
+            CycleType.Simple);
+
         idle.NextCycle = blink;
         blink.NextCycle = idle;
 
@@ -192,6 +206,7 @@ public sealed class EngineStateGaniTests : IDisposable
     {
         var sheet = CreateTilesheet("merge-sheet");
         _ = CreateCycle(sheet, "shared.animation", 0.15);
+
         var path = Path.Combine(
             _tempDir,
             separateGaniFiles ? "merge-external.state" : "merge-inline.state");
@@ -212,6 +227,7 @@ public sealed class EngineStateGaniTests : IDisposable
         var preserved = Assert.Single(
             Cycle.GetAnimationCycles(),
             cycle => cycle.CycleKey == "shared.animation");
+
         Assert.Same(existing, preserved);
         Assert.Equal(0.9, preserved.ThrottleTime);
 
@@ -223,6 +239,7 @@ public sealed class EngineStateGaniTests : IDisposable
         var replaced = Assert.Single(
             Cycle.GetAnimationCycles(),
             cycle => cycle.CycleKey == "shared.animation");
+
         Assert.NotSame(existing, replaced);
         Assert.Equal(0.15, replaced.ThrottleTime);
     }
@@ -230,6 +247,7 @@ public sealed class EngineStateGaniTests : IDisposable
     private Tilesheet CreateTilesheet(string name)
     {
         var imagePath = Path.Combine(_tempDir, $"{name}.png");
+
         using (var bitmap = new SKBitmap(32, 16))
         {
             bitmap.Erase(SKColors.White);
@@ -250,10 +268,10 @@ public sealed class EngineStateGaniTests : IDisposable
         CycleType cycleType = CycleType.Repeating)
     {
         var sequence = new FrameSequence(
-            [
-                sheet.GetFrame(0, 0),
-                sheet.GetFrame(1, 0)
-            ])
+        [
+            sheet.GetFrame(0, 0),
+            sheet.GetFrame(1, 0)
+        ])
         {
             SequenceCycleType = cycleType
         };
@@ -275,6 +293,7 @@ public sealed class EngineStateGaniTests : IDisposable
     private static void AssertJsonNullOrMissing(JObject obj, string propertyName)
     {
         var token = obj[propertyName];
+
         Assert.True(
             token is null || token.Type == JTokenType.Null,
             $"Expected '{propertyName}' to be absent or JSON null, but found {token?.Type}.");

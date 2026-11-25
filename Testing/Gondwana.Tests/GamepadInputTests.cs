@@ -58,6 +58,7 @@ public sealed class GamepadInputTests
     {
         var input = new EngineInputSystems();
         var manager = new TestGamepadManager();
+
         var configuration = new EngineConfiguration
         {
             TargetFPS = 0,
@@ -98,6 +99,7 @@ public sealed class GamepadInputTests
     {
         var input = new EngineInputSystems();
         var manager = new TestGamepadManager();
+
         var configuration = new EngineConfiguration
         {
             GamepadConnectionUpdateFrequencyHz = 1d,
@@ -121,6 +123,7 @@ public sealed class GamepadInputTests
             Assert.Equal(1, manager.ConnectionUpdateCount);
             Assert.Same(poller, input.GamepadEventPoller);
             Assert.Contains(secondAdapter, poller.Adapters!);
+
             Assert.True(
                 poller.AllButtonConfigsByGamepadId[manager.Adapter.GamepadId].ContainsKey("A"));
         }
@@ -196,6 +199,7 @@ public sealed class GamepadInputTests
                 order.Add("poll");
                 manager.Adapter.SetPressedButtons("A");
             };
+
             engine.BeforeBackgroundTasksExecute += () => order.Add("game");
             poller.ButtonDown += _ => order.Add("event");
 
@@ -219,12 +223,13 @@ public sealed class GamepadInputTests
     {
         var adapter = new XInputGamepadAdapter();
 
-        adapter.ApplyState(new XINPUT_GAMEPAD
-        {
-            wButtons = (ushort)XInputButtons.A,
-            bLeftTrigger = 200,
-            bRightTrigger = 32
-        });
+        adapter.ApplyState(
+            new XINPUT_GAMEPAD
+            {
+                wButtons = (ushort)XInputButtons.A,
+                bLeftTrigger = 200,
+                bRightTrigger = 32
+            });
 
         Assert.Contains("A", adapter.PressedButtons);
         Assert.Contains("LeftTrigger", adapter.PressedButtons);
@@ -232,11 +237,12 @@ public sealed class GamepadInputTests
         Assert.Equal(200f / 255f, adapter.LeftTrigger);
         Assert.Equal(32f / 255f, adapter.RightTrigger);
 
-        adapter.ApplyState(new XINPUT_GAMEPAD
-        {
-            bLeftTrigger = 0,
-            bRightTrigger = 220
-        });
+        adapter.ApplyState(
+            new XINPUT_GAMEPAD
+            {
+                bLeftTrigger = 0,
+                bRightTrigger = 220
+            });
 
         Assert.DoesNotContain("LeftTrigger", adapter.PressedButtons);
         Assert.Contains("RightTrigger", adapter.PressedButtons);
@@ -261,9 +267,9 @@ public sealed class GamepadInputTests
         long renderTick)
     {
         var method = typeof(Engine).GetMethod(
-            "RunSimulationCycle",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine.RunSimulationCycle via reflection.");
+                         "RunSimulationCycle",
+                         BindingFlags.Instance | BindingFlags.NonPublic)
+                     ?? throw new InvalidOperationException("Could not find Engine.RunSimulationCycle via reflection.");
 
         method.Invoke(
             engine,

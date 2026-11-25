@@ -10,12 +10,16 @@ internal static class AssetCommandCredentials
     /// <returns>A normalized map; credential values are never included in diagnostics.</returns>
     internal static Dictionary<string, string> Load(string? path)
     {
-        var credentials = new Dictionary<string, string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+        var credentials = new Dictionary<string, string>(
+            OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+
         if (path is not null)
-            foreach (var pair in JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(path)) ?? throw new InvalidDataException("Invalid credential map."))
+            foreach (var pair in JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(path)) ??
+                                 throw new InvalidDataException("Invalid credential map."))
             {
                 if (!Path.IsPathFullyQualified(pair.Key))
                     throw new InvalidDataException("Credential keys must be absolute archive paths.");
+
                 credentials.Add(Path.GetFullPath(pair.Key), pair.Value);
             }
 

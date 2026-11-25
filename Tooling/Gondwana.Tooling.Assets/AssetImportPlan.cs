@@ -16,8 +16,11 @@ public sealed class AssetImportPlan
     private readonly IReadOnlyDictionary<AssetsFileEntry, byte[]> _additions;
     private readonly string _path;
 
-    private AssetImportPlan(AssetsFile destination, Dictionary<AssetsFileEntry, byte[]> before,
-        IReadOnlyDictionary<AssetsFileEntry, byte[]> additions, IReadOnlyList<string> preview)
+    private AssetImportPlan(
+        AssetsFile destination,
+        Dictionary<AssetsFileEntry, byte[]> before,
+        IReadOnlyDictionary<AssetsFileEntry, byte[]> additions,
+        IReadOnlyList<string> preview)
     {
         _destination = destination;
         _path = destination.SourcePath!;
@@ -50,17 +53,34 @@ public sealed class AssetImportPlan
     /// <param name="importDependencies">Whether resolvable physical dependencies should also be copied.</param>
     /// <param name="cancellation">Cancellation token.</param>
     /// <returns>A prepared plan containing the reviewed additions and reference rewrites.</returns>
-    public static AssetImportPlan Create(AssetsFile destination, IEnumerable<AssetImportSource> sources,
-        bool importDependencies, CancellationToken cancellation = default)
+    public static AssetImportPlan Create(
+        AssetsFile destination,
+        IEnumerable<AssetImportSource> sources,
+        bool importDependencies,
+        CancellationToken cancellation = default)
     {
         ArgumentNullException.ThrowIfNull(destination);
         ArgumentNullException.ThrowIfNull(sources);
         cancellation.ThrowIfCancellationRequested();
+
         if (string.IsNullOrWhiteSpace(destination.SourcePath))
-            throw new InvalidOperationException("The destination archive requires a physical path before importing definitions.");
+            throw new InvalidOperationException(
+                "The destination archive requires a physical path before importing definitions.");
+
         var before = Snapshot(destination);
-        var (additions, preview) = SemanticPackPlan.PrepareImport(destination, before, sources.ToArray(), importDependencies, cancellation);
-        return new(destination, before, additions, preview);
+
+        var (additions, preview) = SemanticPackPlan.PrepareImport(
+            destination,
+            before,
+            sources.ToArray(),
+            importDependencies,
+            cancellation);
+
+        return new(
+            destination,
+            before,
+            additions,
+            preview);
     }
 
     /// <summary>Applies all prepared additions or rolls them back; never saves or disposes the borrowed archive.</summary>
@@ -77,12 +97,14 @@ public sealed class AssetImportPlan
         cancellation.ThrowIfCancellationRequested();
         ValidateCurrent();
         var attempted = new List<AssetsFileEntry>();
+
         try
         {
             foreach (var pair in _additions)
             {
                 cancellation.ThrowIfCancellationRequested();
                 attempted.Add(pair.Key);
+
                 if (write is not null)
                     write(pair.Key, pair.Value);
                 else
@@ -98,6 +120,7 @@ public sealed class AssetImportPlan
         {
             foreach (var key in attempted)
                 _destination.Remove(key.AssetType, key.AssetName);
+
             throw;
         }
 
@@ -107,8 +130,10 @@ public sealed class AssetImportPlan
     internal void ValidateCurrent()
     {
         var current = Snapshot(_destination);
+
         if (_path != _destination.SourcePath || current.Count != _before.Count ||
-            _before.Any(pair => !current.TryGetValue(pair.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(pair.Value)))
+            _before.Any(pair =>
+                !current.TryGetValue(pair.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(pair.Value)))
             throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
     }
 
@@ -118,6 +143,7 @@ public sealed class AssetImportPlan
     internal static Dictionary<AssetsFileEntry, byte[]> Snapshot(AssetsFile archive)
     {
         var result = new Dictionary<AssetsFileEntry, byte[]>();
+
         foreach (var entry in archive.GetAllEntries())
         {
             using var stream = archive.Get(entry.AssetType, entry.AssetName)!;

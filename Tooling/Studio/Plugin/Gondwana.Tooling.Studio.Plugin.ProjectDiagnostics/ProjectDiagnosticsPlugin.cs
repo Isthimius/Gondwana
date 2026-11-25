@@ -80,8 +80,11 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         if (_scan is { } previous)
         {
             // Observe unexpected faults even when the project closes before the UI polls.
-            _ = previous.ContinueWith(task => System.Diagnostics.Trace.TraceError(task.Exception!.ToString()),
-                CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
+            _ = previous.ContinueWith(
+                task => System.Diagnostics.Trace.TraceError(task.Exception!.ToString()),
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted,
+                TaskScheduler.Default);
         }
 
         _scan = null;

@@ -1,4 +1,3 @@
-
 namespace Gondwana.Diagnostics;
 
 /// <summary>Neutral fixed render measurement definitions shared by runtime and platform adapters.</summary>
@@ -11,7 +10,8 @@ internal static class RenderTelemetry
         "visible.drawables", "visible.tiles", "atlas.batches", "atlas.tiles",
         "replay.cpu.ms", "picture.cpu.ms", "backbuffer.flush.cpu.ms", "snapshot.cpu.ms", "snapshot.age.ms",
         "mailbox.published.lifetime", "mailbox.dropped.lifetime", "mailbox.slots", "snapshot.commands.approximate",
-        "gate.wait.cpu.ms", "gate.held.cpu.ms", "presentation.cpu.ms", "render.snapshot.cpu.ms", "blit.cpu.ms", "flush.cpu.ms"
+        "gate.wait.cpu.ms", "gate.held.cpu.ms", "presentation.cpu.ms", "render.snapshot.cpu.ms", "blit.cpu.ms",
+        "flush.cpu.ms"
     ];
 
     /// <summary>At most eight layer indices are retained; measurements count draw instances across views.</summary>
@@ -26,28 +26,39 @@ internal static class RenderTelemetry
     /// <returns>A neutral handle without references to the host, or null if source capacity is exhausted.</returns>
     internal static TelemetrySource? Register(bool gpu)
     {
-        var source = Engine.Instance.Profiler.TryRegisterSource("Render surface",
+        var source = Engine.Instance.Profiler.TryRegisterSource(
+            "Render surface",
             gpu ? (OperatingSystem.IsBrowser() ? "WebGL" : "Desktop GPU") : "Bitmap");
+
         if (source is null)
             return null;
+
         foreach (var name in Metrics)
         {
             var availability = TelemetryAvailability.NotYetSampled;
+
             if (!gpu)
                 availability = TelemetryAvailability.Unsupported;
             else if (name.StartsWith("gate.", StringComparison.Ordinal))
-                availability = OperatingSystem.IsBrowser() ? TelemetryAvailability.Unsupported : TelemetryAvailability.NotApplicable;
+                availability = OperatingSystem.IsBrowser()
+                    ? TelemetryAvailability.Unsupported
+                    : TelemetryAvailability.NotApplicable;
             else if (OperatingSystem.IsBrowser() && Array.IndexOf(Metrics, name) is >= 9 and <= 17)
                 availability = TelemetryAvailability.NotApplicable;
             else if (OperatingSystem.IsBrowser() && name.StartsWith("atlas.", StringComparison.Ordinal))
                 availability = TelemetryAvailability.Unsupported;
             else if (Array.IndexOf(Metrics, name) >= 20)
                 availability = TelemetryAvailability.Unsupported;
+
             source.Define(name, availability, GetMetricKind(name));
         }
 
-        source.Define("presentation.count", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
+        source.Define(
+            "presentation.count",
+            gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
+
         source.Define("layers.omitted", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
+
         foreach (var layer in Layers)
         {
             for (int index = 0; index < layer.Length; index++)

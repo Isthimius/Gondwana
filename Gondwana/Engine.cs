@@ -357,6 +357,7 @@ public sealed class Engine : IDisposable
         _initDone.Reset();
 
         _isInitializing = true;
+
         try
         {
             if (UiDispatcher == null)
@@ -374,6 +375,7 @@ public sealed class Engine : IDisposable
             }
 
             _configurationStore = configurationStore ?? EngineConfigurationFile.Load(configFileName, autoSaveConfig);
+
             if (configurationStore is not null && autoSaveConfig.HasValue)
                 _configurationStore.AutoSave = autoSaveConfig.Value;
 
@@ -385,7 +387,11 @@ public sealed class Engine : IDisposable
             {
                 foreach (var stateFile in Configuration.StateFiles)
                 {
-                    EngineState.MergeFromFile(stateFile.File, stateFile.IsCompressed, stateFile.OverwriteExisting, stateFile.EngineStateParts);
+                    EngineState.MergeFromFile(
+                        stateFile.File,
+                        stateFile.IsCompressed,
+                        stateFile.OverwriteExisting,
+                        stateFile.EngineStateParts);
                 }
             }
 
@@ -431,7 +437,7 @@ public sealed class Engine : IDisposable
     public void SaveConfiguration()
     {
         var store = _configurationStore
-            ?? throw new InvalidOperationException("The engine has no initialized configuration store.");
+                    ?? throw new InvalidOperationException("The engine has no initialized configuration store.");
 
         store.Save();
     }
@@ -520,6 +526,7 @@ public sealed class Engine : IDisposable
             {
                 var initializationWaitTimeoutSeconds = Configuration.StartInitializationWaitTimeout;
                 var initializationWaitTimeout = TimeSpan.FromSeconds(initializationWaitTimeoutSeconds);
+
                 if (!_initDone.Wait(initializationWaitTimeout))
                     throw new InvalidOperationException(
                         $"Engine initialization did not complete within {initializationWaitTimeoutSeconds:0.###} seconds.");
@@ -530,7 +537,7 @@ public sealed class Engine : IDisposable
             }
             else
             {
-                Initialize();            // we're the initializer—do it now
+                Initialize(); // we're the initializer—do it now
             }
 
             if (!IsInitialized)
@@ -662,6 +669,7 @@ public sealed class Engine : IDisposable
             EngineDispatcher.Drain();
 
             long driverTick = HighResTimer.GetCurrentTick();
+
             var batch = _timerDrivenSteps.Advance(
                 driverTick,
                 Configuration.TimerDrivenSimulationRate,
@@ -689,6 +697,7 @@ public sealed class Engine : IDisposable
                 EngineSimulationClock.SetTimerDrivenTick(simulationTick);
 
                 bool isLastStep = step == batch.StepCount - 1;
+
                 RunSimulationCycle(
                     simulationTick,
                     fixedDelta,
@@ -751,6 +760,7 @@ public sealed class Engine : IDisposable
     public void StopAndWait()
     {
         var cycleTask = _cycleTask;
+
         if (cycleTask is not null && !cycleTask.IsCompleted && EngineDispatcher.IsOnEngineThread)
             throw new InvalidOperationException("StopAndWait must be called outside the background engine thread.");
 
@@ -769,6 +779,7 @@ public sealed class Engine : IDisposable
                 System.Threading.CancellationToken.None,
                 System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,
                 System.Threading.Tasks.TaskScheduler.Default);
+
             return;
         }
 
@@ -1044,8 +1055,11 @@ public sealed class Engine : IDisposable
             CalculateCPS(renderTick);
 
         EnginePluginRegistry.InvokePostCycle(this, simulationDelta);
+
         if (telemetryGeneration != 0)
-            _engineTelemetry.Record(telemetryGeneration, "cycle.cpu.ms",
+            _engineTelemetry.Record(
+                telemetryGeneration,
+                "cycle.cpu.ms",
                 HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
@@ -1075,6 +1089,7 @@ public sealed class Engine : IDisposable
         _timerDrivenForegroundAccumulatedTicks += elapsedTicks;
 
         long frameIntervalTicks = Math.Max(1, HighResTimer.TicksPerSecond / targetFps);
+
         if (_timerDrivenForegroundAccumulatedTicks < frameIntervalTicks)
             return false;
 
@@ -1098,8 +1113,11 @@ public sealed class Engine : IDisposable
 
         _lastForegroundTick = tick;
         _netCyclesThisMeasure++;
+
         if (telemetryGeneration != 0)
-            _engineTelemetry.Record(telemetryGeneration, "foreground.cpu.ms",
+            _engineTelemetry.Record(
+                telemetryGeneration,
+                "foreground.cpu.ms",
                 HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
@@ -1148,8 +1166,11 @@ public sealed class Engine : IDisposable
         AfterBackgroundTasksExecute?.Invoke();
 
         _lastBackgroundTick = tick;
+
         if (telemetryGeneration != 0)
-            _engineTelemetry.Record(telemetryGeneration, "background.cpu.ms",
+            _engineTelemetry.Record(
+                telemetryGeneration,
+                "background.cpu.ms",
                 HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
@@ -1191,6 +1212,7 @@ public sealed class Engine : IDisposable
     {
         // Has the sampling interval elapsed?
         long elapsedTicks = tick - _lastCPSSamplingTick;
+
         if (elapsedTicks < Configuration.LegacyCpsSamplingTicks)
             return;
 
@@ -1206,6 +1228,7 @@ public sealed class Engine : IDisposable
         // Collect actual GPU FPS from all registered GPU-rendered backbuffers.
         long totalGpuFrames = 0;
         int gpuSurfaceCount = 0;
+
         foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
         {
             if (surface.Backbuffer is GpuBackbuffer gpuBb)
@@ -1286,11 +1309,13 @@ public sealed class Engine : IDisposable
                 try
                 {
                     var cycleTask = _cycleTask;
+
                     if (cycleTask is not null && EngineDispatcher.IsOnEngineThread && !cycleTask.IsCompleted)
                     {
                         if (!_deferredDisposeScheduled)
                         {
                             _deferredDisposeScheduled = true;
+
                             cycleTask.ContinueWith(
                                 _ => CompleteManagedDisposal(),
                                 System.Threading.CancellationToken.None,

@@ -135,28 +135,23 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region private fields
 
-    private int _tileWidth;     // rendered width
-    private int _tileHeight;    // rendered height
-    private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
+    private int _tileWidth; // rendered width
+    private int _tileHeight; // rendered height
+    private bool _visible; // is SceneLayer to be rendered; useful with multiple layers
     private string _defaultTileCollisionProfile = CollisionProfileNames.World;
     private bool _fixedGridRenderEligibilityDirty;
     private bool _fixedGridRenderEligible = true;
     private bool _sceneLayerTileArrayExternallyExposed;
 
-    [JsonIgnore]
-    internal float EffectOpacity { get; set; } = 1f;
+    [JsonIgnore] internal float EffectOpacity { get; set; } = 1f;
 
-    [JsonIgnore]
-    internal float EffectReveal { get; set; } = 1f;
+    [JsonIgnore] internal float EffectReveal { get; set; } = 1f;
 
-    [JsonIgnore]
-    internal EffectDirection EffectRevealDirection { get; set; } = EffectDirection.FromLeftToRight;
+    [JsonIgnore] internal EffectDirection EffectRevealDirection { get; set; } = EffectDirection.FromLeftToRight;
 
-    [JsonIgnore]
-    internal PointF EffectOffsetFactor { get; set; } = PointF.Empty;
+    [JsonIgnore] internal PointF EffectOffsetFactor { get; set; } = PointF.Empty;
 
-    [JsonIgnore]
-    internal PointF EffectOffsetPx { get; set; } = PointF.Empty;
+    [JsonIgnore] internal PointF EffectOffsetPx { get; set; } = PointF.Empty;
 
     #endregion private fields
 
@@ -172,16 +167,22 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <param name="height">The height of each tile in pixels.</param>
     /// <param name="parallax">The parallax factor applied when the layer scrolls relative to the camera.</param>
     /// <param name="coordinateSystem">The coordinate system used to translate between grid and world-space positions.</param>
-    protected internal SceneLayer(int columnCount,
-                                  int rowCount,
-                                  int width = 32,
-                                  int height = 32,
-                                  float parallax = 1,
-                                  CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
+    protected internal SceneLayer(
+        int columnCount,
+        int rowCount,
+        int width = 32,
+        int height = 32,
+        float parallax = 1,
+        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
     {
         var tileArray = new SceneLayerTile[columnCount, rowCount];
 
-        InitValues(tileArray, width, height, parallax, coordinateSystem);
+        InitValues(
+            tileArray,
+            width,
+            height,
+            parallax,
+            coordinateSystem);
     }
 
     [JsonConstructor]
@@ -196,22 +197,24 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         int? fixedZOrder = null;
 
         for (int x = 0; x < GridColumnCount; x++)
-            for (int y = 0; y < GridRowCount; y++)
-            {
-                var tile = _sceneLayerTileArray[x, y] ??= new SceneLayerTile(this);
-                tile.parentSceneLayer = this;
-                if (tile.Transform != TileTransform.Identity)
-                    TransformedTiles.Add(tile);
-                tile.sceneLayerCoordinates = new Point(x, y);
+        for (int y = 0; y < GridRowCount; y++)
+        {
+            var tile = _sceneLayerTileArray[x, y] ??= new SceneLayerTile(this);
+            tile.parentSceneLayer = this;
 
-                if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
-                    fastPathEligible = false;
+            if (tile.Transform != TileTransform.Identity)
+                TransformedTiles.Add(tile);
 
-                if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
-                    fastPathEligible = false;
-                else
-                    fixedZOrder ??= tile.ZOrder;
-            }
+            tile.sceneLayerCoordinates = new Point(x, y);
+
+            if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
+                fastPathEligible = false;
+
+            if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
+                fastPathEligible = false;
+            else
+                fixedZOrder ??= tile.ZOrder;
+        }
 
         _fixedGridRenderEligible = fastPathEligible;
         _fixedGridRenderEligibilityDirty = false;
@@ -251,8 +254,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
-    [JsonIgnore]
-    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthogonalCoordinates();
+    [JsonIgnore] internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthogonalCoordinates();
 
     /// <summary>
     /// Gets or sets the coordinate system type used by this layer for transforming between
@@ -292,7 +294,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 HexAxialPointedTop => CoordinateSystemTypes.HexAxialPointedTop,
                 ObliqueRightCoordinates => CoordinateSystemTypes.ObliqueRight,
                 ObliqueLeftCoordinates => CoordinateSystemTypes.ObliqueLeft,
-                _ => throw new InvalidOperationException($"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
+                _ => throw new InvalidOperationException(
+                    $"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
             };
         }
         set
@@ -335,8 +338,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public Scene Scene { get; internal set; }
 
-    [JsonIgnore]
-    internal RefreshQueue RefreshQueue { get; set; }
+    [JsonIgnore] internal RefreshQueue RefreshQueue { get; set; }
 
     private int _zOrder = 0;
 
@@ -365,7 +367,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    private float _parallax = 1f;       // 1 = default; <1 is slower, >1 is faster
+    private float _parallax = 1f; // 1 = default; <1 is slower, >1 is faster
 
     /// <summary>
     /// Gets or sets the parallax scrolling factor for this layer.
@@ -476,12 +478,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonIgnore]
-    internal HashSet<SceneLayerTile> TransformedTiles { get; } = new();
+    [JsonIgnore] internal HashSet<SceneLayerTile> TransformedTiles { get; } = new();
 
-    [JsonProperty("SceneLayerTileArray")]
-    [JsonConverter(typeof(SceneLayerTileArrayConverter))]
-    private SceneLayerTile[,] _sceneLayerTileArray;    // array of points; 2 dimensions (X, Y)
+    [JsonProperty("SceneLayerTileArray")] [JsonConverter(typeof(SceneLayerTileArrayConverter))]
+    private SceneLayerTile[,] _sceneLayerTileArray; // array of points; 2 dimensions (X, Y)
 
     /// <summary>
     /// Gets the two-dimensional array of tiles that comprise this layer's grid.
@@ -537,8 +537,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public int GridRowCount => _sceneLayerTileArray.GetUpperBound(1) + 1;
 
-    [JsonProperty("WrapHorizontally")]
-    private bool _wrapHoriz = false;
+    [JsonProperty("WrapHorizontally")] private bool _wrapHoriz = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether this layer repeats along its column axis at the grid boundaries.
@@ -565,8 +564,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonProperty("WrapVertically")]
-    private bool _wrapVerti = false;
+    [JsonProperty("WrapVertically")] private bool _wrapVerti = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether this layer repeats along its row axis at the grid boundaries.
@@ -593,8 +591,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonProperty("ShowGridLines")]
-    private bool showGridLines = false;
+    [JsonProperty("ShowGridLines")] private bool showGridLines = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether grid lines should be rendered over this layer for debugging.
@@ -620,8 +617,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonProperty("ShowCollisionBoxes")]
-    private bool showCollisionBoxes = false;
+    [JsonProperty("ShowCollisionBoxes")] private bool showCollisionBoxes = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugging.
@@ -650,8 +646,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     // World-space origin (in pixels) of this layer's (0,0) tile.
     // Usually (0,0); can be shifted to move the entire layer as a block.
-    [JsonProperty("OriginPx")]
-    private Point _originPx = Point.Empty;
+    [JsonProperty("OriginPx")] private Point _originPx = Point.Empty;
 
     /// <summary>
     /// Gets or sets the world-space pixel origin of this layer's (0,0) tile position.
@@ -676,6 +671,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             if (_originPx == value)
                 return;
+
             _originPx = value;
             OriginPxChanged?.Invoke(this);
         }
@@ -693,8 +689,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public ColliderRegistry ColliderRegistry { get; private set; } = new();
 
-    [JsonIgnore]
-    internal CollisionResolver CollisionResolver { get; private set; } = null!;
+    [JsonIgnore] internal CollisionResolver CollisionResolver { get; private set; } = null!;
 
     /// <summary>
     /// Gets the registry of collision groups used to organize and manage collision detection within the scene.
@@ -810,7 +805,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <param name="tile">The tile.</param>
     /// <param name="direction">The direction.</param>
     /// <returns>The requested scene layer tile, or <see langword="null"/> when unavailable.</returns>
-    public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) => CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
+    public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) =>
+        CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
 
     /// <summary>
     /// Resolves a virtual grid coordinate to canonical coordinates on enabled wrapping axes.
@@ -904,7 +900,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         foreach (var tile in corners)
         {
             var px = CoordinateSystem.GetPixelRangeForTile(tile, includeOverhang: true);
-            var rf = RectangleF.FromLTRB(px.Left, px.Top, px.Right, px.Bottom);
+
+            var rf = RectangleF.FromLTRB(
+                px.Left,
+                px.Top,
+                px.Right,
+                px.Bottom);
 
             if (!hasBounds)
             {
@@ -928,7 +929,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region private methods
 
-    private void InitValues(SceneLayerTile[,] tileArray, int width, int height, float parallax, CoordinateSystemTypes coordinateSystem)
+    private void InitValues(
+        SceneLayerTile[,] tileArray,
+        int width,
+        int height,
+        float parallax,
+        CoordinateSystemTypes coordinateSystem)
     {
         _sceneLayerTileArray = tileArray;
         _parallax = parallax;
@@ -936,7 +942,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _tileHeight = height;
         _visible = true;
 
-        _originPx = Point.Empty;                  // layer world origin
+        _originPx = Point.Empty; // layer world origin
         EffectOpacity = 1f;
         EffectReveal = 1f;
         EffectRevealDirection = EffectDirection.FromLeftToRight;
@@ -1067,6 +1073,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             this,
             worldRect,
             includeOverhang);
+
         var sceneLayerTiles = renderTiles.Tiles;
 
         var list = new List<IDrawable>(sceneLayerTiles.Count);
@@ -1081,6 +1088,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 continue;
 
             int tileZ = tile.ZOrder;
+
             if (gridZOrder.HasValue && gridZOrder.Value != tileZ)
                 uniformGridZOrder = false;
             else
@@ -1139,6 +1147,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             uniformGridZOrder;
 
         long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
         if (hasNonGridDrawables)
         {
             list.Sort(CompareDrawables);
@@ -1162,14 +1171,17 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         var period = GetPeriod();
         var instances = new List<IDrawable>();
+
         void Add(IDrawable drawable, RectangleF bounds)
         {
             if (!drawable.Visible)
                 return;
+
             foreach (var offset in period.Offsets(bounds, worldRect))
             {
                 if (instances.Count >= 1_000_000)
                     throw new InvalidOperationException("Too many visible wrapped instances.");
+
                 instances.Add(new WrappedDrawable(drawable, this, offset));
             }
         }
@@ -1179,15 +1191,18 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         foreach (var tile in _sceneLayerTileArray)
             if (tile is not null)
                 Add(tile, tile.DrawLocationWorld);
+
         foreach (var sprite in SpriteManager.Instance.AllSprites)
             if (ReferenceEquals(sprite.SceneLayer, this))
                 Add(sprite, sprite.VisualBoundsWorld);
+
         foreach (var drawing in DirectDrawingManager.Instance.GetDrawingsForLayer(this))
             if (drawing.Mode == DirectDrawingMode.SceneLayer)
                 Add(drawing, drawing.WorldBounds);
 
         long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         instances.Sort(CompareWrappedDrawables);
+
         sortTicks = collectSortDiagnostics
             ? Math.Max(0, HighResTimer.GetCurrentTick() - sortStartTick)
             : 0;
@@ -1207,8 +1222,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // Empty cells still participate when a diagnostic/post-draw overlay needs
         // their geometry.
         return tile.EnableFog ||
-            ShowGridLines ||
-            (ShowCollisionBoxes && tile.CollisionsEnabled);
+               ShowGridLines ||
+               (ShowCollisionBoxes && tile.CollisionsEnabled);
     }
 
     private static bool IsSorted(
@@ -1229,6 +1244,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         var x = (WrappedDrawable)a;
         var y = (WrappedDrawable)b;
         int z = a.ZOrder.CompareTo(b.ZOrder);
+
         if (z != 0)
             return z;
 
@@ -1242,23 +1258,28 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                     ? ta.DrawLocationWorld.Top + ta.Overhang.Top
                     : ta.DrawLocationWorld.Bottom - ta.Overhang.Bottom - 1) +
                 x.Offset.Y;
+
             float by =
                 (tb.IsPositionFixed
                     ? tb.DrawLocationWorld.Top + tb.Overhang.Top
                     : tb.DrawLocationWorld.Bottom - tb.Overhang.Bottom - 1) +
                 y.Offset.Y;
+
             int depth = ay.CompareTo(by);
+
             if (depth != 0)
                 return depth;
 
             int horizontal =
                 (ta.DrawLocationWorld.Left + x.Offset.X)
                 .CompareTo(tb.DrawLocationWorld.Left + y.Offset.X);
+
             if (horizontal != 0)
                 return horizontal;
         }
 
         int identity = a.Id.CompareTo(b.Id);
+
         return identity != 0
             ? identity
             : (x.Offset.Y, x.Offset.X).CompareTo((y.Offset.Y, y.Offset.X));
@@ -1267,6 +1288,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private static int CompareDrawables(IDrawable a, IDrawable b)
     {
         int z = a.ZOrder.CompareTo(b.ZOrder);
+
         if (z != 0)
             return z;
 
@@ -1449,7 +1471,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private sealed class EmptySceneLayer : SceneLayer
     {
         internal EmptySceneLayer()
-            : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
+            : base(
+                columnCount: 0,
+                rowCount: 0,
+                width: 1,
+                height: 1)
         {
             Visible = false;
             ZOrder = int.MinValue;

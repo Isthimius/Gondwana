@@ -14,6 +14,7 @@ public sealed class RuntimeProfilerTests
         using var source = profiler.RegisterSource("test", "test")!;
         source.Define("work.cpu.ms");
         using var request = profiler.Start();
+
         for (int i = 0; i < 2400; i++)
         {
             source.Record(source.BeginSample(), "work.cpu.ms", i);
@@ -56,6 +57,7 @@ public sealed class RuntimeProfilerTests
         using var request = profiler.Start();
         var captured = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
         var worker = Task.Run(async () =>
         {
             long oldEpoch = source.BeginSample();
@@ -63,6 +65,7 @@ public sealed class RuntimeProfilerTests
             await resume.Task;
             source.Record(oldEpoch, "cpu.ms", 999);
         });
+
         await captured.Task;
         profiler.Reset();
         source.Dispose();
@@ -75,7 +78,9 @@ public sealed class RuntimeProfilerTests
         var snapshot = profiler.GetLatestSnapshot()!;
         Assert.Equal(0, Assert.Single(snapshot.Sources).Metrics["cpu.ms"].Count);
         Assert.Throws<NotSupportedException>(() => ((IList<TelemetrySourceSnapshot>)snapshot.Sources).Clear());
-        Assert.Throws<NotSupportedException>(() => ((IDictionary<string, TelemetrySummary>)snapshot.Sources[0].Metrics).Clear());
+
+        Assert.Throws<NotSupportedException>(() =>
+            ((IDictionary<string, TelemetrySummary>)snapshot.Sources[0].Metrics).Clear());
     }
 
     /// <summary>Verifies lifetime counters rebase without changing observed lifetime value.</summary>
@@ -134,8 +139,11 @@ public sealed class RuntimeProfilerTests
         Assert.Null(profiler.GetLatestSnapshot());
         source.Record(epoch, "update.cpu.ms", 1000);
         clock = .5;
-        Assert.Equal(TelemetryAvailability.NotYetSampled,
+
+        Assert.Equal(
+            TelemetryAvailability.NotYetSampled,
             profiler.GetLatestSnapshot()!.Sources[0].Metrics["update.cpu.ms"].Availability);
+
         Assert.Equal(8, summary.Sum);
         second.Dispose();
         Assert.False(profiler.IsCollecting);
@@ -158,8 +166,10 @@ public sealed class RuntimeProfilerTests
         source.Define("cpu.ms");
         source.Define("hardware.ms", TelemetryAvailability.Unsupported);
         source.Define("gate.ms", TelemetryAvailability.NotApplicable);
+
         for (int i = 0; i < 5; i++)
             Assert.True(source.Define($"extension.{i}"));
+
         Assert.False(source.Define("overflow"));
         using var request = profiler.Start();
         var epoch = source.BeginSample();
@@ -197,28 +207,32 @@ public sealed class RuntimeProfilerTests
         Assert.Throws<ArgumentOutOfRangeException>(() => profiler.Configure(new() { Interval = TimeSpan.Zero }));
         Assert.Throws<ArgumentOutOfRangeException>(() => profiler.Configure(new() { SourceCapacity = 1000 }));
         Assert.Throws<ArgumentOutOfRangeException>(() => profiler.Configure(new() { MetricCapacity = 1000 }));
-        Assert.Throws<ArgumentException>(() => profiler.Configure(new()
-        {
-            HistoryCapacity = 1024,
-            SourceCapacity = 64,
-            MetricCapacity = 512
-        }));
 
-        Assert.Throws<ArgumentException>(() => profiler.Configure(new()
-        {
-            Interval = TimeSpan.FromMilliseconds(10),
-            HistoryCapacity = 32,
-            SourceCapacity = 64,
-            MetricCapacity = 512
-        }));
+        Assert.Throws<ArgumentException>(() => profiler.Configure(
+            new()
+            {
+                HistoryCapacity = 1024,
+                SourceCapacity = 64,
+                MetricCapacity = 512
+            }));
 
-        profiler.Configure(new()
-        {
-            Interval = TimeSpan.FromMilliseconds(125),
-            HistoryCapacity = 32,
-            SourceCapacity = 64,
-            MetricCapacity = 512
-        });
+        Assert.Throws<ArgumentException>(() => profiler.Configure(
+            new()
+            {
+                Interval = TimeSpan.FromMilliseconds(10),
+                HistoryCapacity = 32,
+                SourceCapacity = 64,
+                MetricCapacity = 512
+            }));
+
+        profiler.Configure(
+            new()
+            {
+                Interval = TimeSpan.FromMilliseconds(125),
+                HistoryCapacity = 32,
+                SourceCapacity = 64,
+                MetricCapacity = 512
+            });
 
         using var request = profiler.Start();
         Assert.Throws<InvalidOperationException>(() => profiler.Configure(new()));
@@ -242,6 +256,7 @@ public sealed class RuntimeProfilerTests
         gl.Define("presentation.count");
         using var request = profiler.Start();
         long generation = engine.BeginSample();
+
         await Task.WhenAll(
             Task.Run(() =>
             {
@@ -258,6 +273,7 @@ public sealed class RuntimeProfilerTests
                 for (int i = 0; i < 1000; i++)
                     profiler.GetHistory();
             }));
+
         Volatile.Write(ref clock, 1);
         var snapshot = profiler.GetLatestSnapshot()!;
         Assert.Equal(10000, snapshot.Sources.Single(s => s.Id == engine.Id).Metrics["cycle.cpu.ms"].Count);
@@ -273,11 +289,15 @@ public sealed class RuntimeProfilerTests
         source.Define("cpu.ms");
         using var request = profiler.Start();
         var generation = source.BeginSample();
+
         for (int i = 0; i < 1000; i++)
             source.Record(generation, "cpu.ms", 1);
+
         long before = GC.GetAllocatedBytesForCurrentThread();
+
         for (int i = 0; i < 10000; i++)
             source.Record(generation, "cpu.ms", 1);
+
         Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
     }
 }

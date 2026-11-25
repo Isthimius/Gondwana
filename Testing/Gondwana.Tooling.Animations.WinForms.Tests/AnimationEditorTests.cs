@@ -34,6 +34,7 @@ public sealed partial class AnimationEditorTests
             document.Definition.CycleType = CycleType.PingPong;
             document.Definition.HideTileOnCycleEnd = true;
             document.Definition.NextCycleKey = "actor.idle";
+
             document.Definition.Frames.Add(
                 new AnimationFrameDefinition
                 {
@@ -108,10 +109,13 @@ public sealed partial class AnimationEditorTests
 
                 var sourceReference = Assert.Single(
                     document.Definition.TilesheetSources);
+
                 Assert.Equal("test-sheet", sourceReference.Tilesheet);
+
                 Assert.Equal(
                     AnimationTilesheetSourceKind.LooseDefinitionFile,
                     sourceReference.Kind);
+
                 Assert.Equal("sheet.gts", sourceReference.GtsPath);
 
                 var tree = Field<TreeView>(editor, "_sourceTree");
@@ -119,11 +123,13 @@ public sealed partial class AnimationEditorTests
 
                 var regionNode = Assert.IsType<TreeNode>(
                     Assert.Single(tree.Nodes[0].Nodes.Cast<TreeNode>()));
+
                 regionNode.Expand();
                 Application.DoEvents();
 
                 var rowNode = Assert.IsType<TreeNode>(
                     Assert.Single(regionNode.Nodes.Cast<TreeNode>()));
+
                 rowNode.Expand();
                 Application.DoEvents();
 
@@ -134,6 +140,7 @@ public sealed partial class AnimationEditorTests
                 foreach (TreeNode frameNode in rowNode.Nodes)
                 {
                     Assert.True(frameNode.ImageIndex >= 0);
+
                     Assert.Equal(
                         frameNode.ImageIndex,
                         frameNode.SelectedImageIndex);
@@ -146,6 +153,7 @@ public sealed partial class AnimationEditorTests
                 var preview = Field<AnimationPreviewControl>(
                     editor,
                     "_preview");
+
                 var frames = Field<ListView>(
                     editor,
                     "_frames");
@@ -177,9 +185,11 @@ public sealed partial class AnimationEditorTests
                 Assert.Equal("walk", firstFrame.RegionName);
                 Assert.Equal(1, firstFrame.XTile);
                 Assert.Equal(0, firstFrame.YTile);
+
                 Assert.Equal(
                     0,
                     Assert.Single(frames.SelectedIndices.Cast<int>()));
+
                 Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
                 Assert.True(preview.IsShowingSourceFrame);
 
@@ -204,9 +214,11 @@ public sealed partial class AnimationEditorTests
                 Assert.Equal(0, secondFrame.XTile);
                 Assert.Equal(0, secondFrame.YTile);
                 Assert.True(document.IsDirty);
+
                 Assert.Equal(
                     1,
                     Assert.Single(frames.SelectedIndices.Cast<int>()));
+
                 Assert.Same(rowNode.Nodes[0], tree.SelectedNode);
                 Assert.True(preview.IsShowingSourceFrame);
 
@@ -219,6 +231,7 @@ public sealed partial class AnimationEditorTests
                 Assert.Equal(
                     0,
                     Assert.Single(frames.SelectedIndices.Cast<int>()));
+
                 Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
                 Assert.True(preview.IsShowingSourceFrame);
 
@@ -325,6 +338,7 @@ public sealed partial class AnimationEditorTests
 
                 var document = AnimationDocument.Create(directory);
                 document.Definition.Key = "actor.walk";
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -344,6 +358,7 @@ public sealed partial class AnimationEditorTests
                 Assert.Equal("sheet.gts", savedSource.GtsPath);
 
                 var reopened = AnimationDocument.Open(ganiPath);
+
                 using var reopenedEditor =
                     new AnimationEditorControl(reopened);
 
@@ -358,6 +373,7 @@ public sealed partial class AnimationEditorTests
                     "test-sheet",
                     root.Text,
                     StringComparison.Ordinal);
+
                 Assert.False(reopened.IsDirty);
             }
             finally
@@ -419,6 +435,7 @@ public sealed partial class AnimationEditorTests
                 var validation = Field<TextBox>(
                     editor,
                     "_validation");
+
                 Assert.Contains(
                     "Recovered legacy tilesheet source",
                     validation.Text,
@@ -442,8 +459,10 @@ public sealed partial class AnimationEditorTests
         {
             string originalDirectory =
                 Path.Combine(root, "animations");
+
             string targetDirectory =
                 Path.Combine(root, "moved", "animations");
+
             string tilesheetDirectory =
                 Path.Combine(root, "tiles");
 
@@ -457,6 +476,7 @@ public sealed partial class AnimationEditorTests
                 AnimationDocument.Create(originalDirectory);
 
             document.Definition.Key = "actor.walk";
+
             document.Definition.Frames.Add(
                 new AnimationFrameDefinition
                 {
@@ -481,14 +501,16 @@ public sealed partial class AnimationEditorTests
 
             var saved =
                 AnimationDefinitionSerializer.Load(ganiPath);
+
             var source = Assert.Single(
                 saved.TilesheetSources);
 
             Assert.Equal(expected, source.GtsPath);
+
             Assert.Equal(
                 expected,
                 Assert.Single(
-                    document.Definition.TilesheetSources)
+                        document.Definition.TilesheetSources)
                     .GtsPath);
         }
         finally
@@ -510,6 +532,7 @@ public sealed partial class AnimationEditorTests
             {
                 string gtsPath = CreateGts(Path.Combine(directory, "sources"));
                 var document = AnimationDocument.Create(directory);
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -518,6 +541,7 @@ public sealed partial class AnimationEditorTests
                         XTile = 1,
                         YTile = 0
                     });
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -534,10 +558,13 @@ public sealed partial class AnimationEditorTests
                 Assert.Equal("Frame", frames.Columns[0].Text);
                 Assert.Equal("#", frames.Columns[1].Text);
                 Assert.NotNull(frames.SmallImageList);
+
                 Assert.Equal(
                     sourceTree.ImageList!.ImageSize,
                     frames.SmallImageList.ImageSize);
+
                 Assert.Equal(new Size(32, 32), frames.SmallImageList.ImageSize);
+
                 Assert.All(
                     frames.Items.Cast<ListViewItem>(),
                     item => Assert.Equal(-1, item.ImageIndex));
@@ -548,13 +575,16 @@ public sealed partial class AnimationEditorTests
                 Assert.Equal("1", frames.Items[0].SubItems[1].Text);
                 Assert.Equal("2", frames.Items[1].SubItems[1].Text);
                 Assert.True(frames.Items[0].ImageIndex >= 0);
+
                 Assert.Equal(
                     new Size(32, 32),
                     frames.SmallImageList.Images[frames.Items[0].ImageIndex].Size);
+
                 Assert.Equal(-1, frames.Items[1].ImageIndex);
                 Assert.Single(frames.SmallImageList.Images.Cast<Image>());
 
                 sourceTree.SelectedNode = sourceTree.Nodes[0];
+
                 editor.GetType()
                     .GetMethod("RemoveSelectedSource", PrivateInstance)!
                     .Invoke(editor, null);
@@ -583,6 +613,7 @@ public sealed partial class AnimationEditorTests
             {
                 string gtsPath = CreateGts(directory);
                 var document = AnimationDocument.Create(directory);
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -600,6 +631,7 @@ public sealed partial class AnimationEditorTests
                 var tree = Field<TreeView>(
                     editor,
                     "_sourceTree");
+
                 tree.SelectedNode = tree.Nodes[0];
 
                 editor.GetType()
@@ -611,6 +643,7 @@ public sealed partial class AnimationEditorTests
                 Assert.Empty(document.Definition.TilesheetSources);
                 Assert.Empty(tree.Nodes);
                 Assert.Single(document.Definition.Frames);
+
                 Assert.Equal(
                     "test-sheet",
                     document.Definition.Frames[0].Tilesheet);
@@ -634,6 +667,7 @@ public sealed partial class AnimationEditorTests
             {
                 string gtsPath = CreateGts(directory);
                 var document = AnimationDocument.Create(directory);
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -651,6 +685,7 @@ public sealed partial class AnimationEditorTests
                 var tree = Field<TreeView>(
                     editor,
                     "_sourceTree");
+
                 tree.SelectedNode = tree.Nodes[0];
 
                 editor.GetType()
@@ -661,6 +696,7 @@ public sealed partial class AnimationEditorTests
 
                 string ganiPath =
                     Path.Combine(directory, "legacy.gani");
+
                 document.Save(ganiPath, allowInvalid: true);
 
                 Assert.Empty(document.Definition.TilesheetSources);
@@ -691,6 +727,7 @@ public sealed partial class AnimationEditorTests
                 string first = CreateGts(
                     Path.Combine(directory, "one"),
                     "test-sheet");
+
                 string second = CreateGts(
                     Path.Combine(directory, "two"),
                     "test-sheet");
@@ -700,8 +737,7 @@ public sealed partial class AnimationEditorTests
 
                 editor.AddTilesheetSource(first);
 
-                var exception = Assert.Throws<InvalidOperationException>(
-                    () => editor.AddTilesheetSource(second));
+                var exception = Assert.Throws<InvalidOperationException>(() => editor.AddTilesheetSource(second));
 
                 Assert.Contains(
                     "same name",
@@ -727,6 +763,7 @@ public sealed partial class AnimationEditorTests
             {
                 var document = AnimationDocument.Create(directory);
                 document.Definition.ThrottleTime = 0.125;
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -735,6 +772,7 @@ public sealed partial class AnimationEditorTests
                         XTile = 0,
                         YTile = 0
                     });
+
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
                     {
@@ -774,8 +812,10 @@ public sealed partial class AnimationEditorTests
                 Assert.True(advanced);
                 Assert.True(preview.IsPlaying);
                 Assert.Equal(1, preview.CurrentFrameIndex);
+
                 int selectedIndex = Assert.Single(
                     frames.SelectedIndices.Cast<int>());
+
                 Assert.Equal(1, selectedIndex);
             }
             finally
@@ -791,13 +831,16 @@ public sealed partial class AnimationEditorTests
         Directory.CreateDirectory(directory);
 
         string imagePath = Path.Combine(directory, "sheet.png");
+
         using (var bitmap = new SKBitmap(32, 16))
         {
             bitmap.Erase(SKColors.White);
             using var image = SKImage.FromBitmap(bitmap);
+
             using var data = image.Encode(
                 SKEncodedImageFormat.Png,
                 100);
+
             File.WriteAllBytes(imagePath, data.ToArray());
         }
 
@@ -817,7 +860,11 @@ public sealed partial class AnimationEditorTests
                     new TilesheetRegionDefinition
                     {
                         Name = "walk",
-                        Area = new Rectangle(0, 0, 32, 16),
+                        Area = new Rectangle(
+                            0,
+                            0,
+                            32,
+                            16),
                         TileSize = new Size(16, 16)
                     }
                 ]

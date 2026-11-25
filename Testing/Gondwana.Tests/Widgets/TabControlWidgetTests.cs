@@ -21,7 +21,15 @@ public sealed class TabControlWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
-        using var tabs = new TabControlWidget(host, view, new Rectangle(10, 20, 360, 220));
+
+        using var tabs = new TabControlWidget(
+            host,
+            view,
+            new Rectangle(
+                10,
+                20,
+                360,
+                220));
 
         TabPageWidget general = tabs.AddTab("General", mnemonic: 'G');
         TabPageWidget audio = tabs.AddTab("Audio", mnemonic: 'A');
@@ -29,10 +37,39 @@ public sealed class TabControlWidgetTests
 
         Assert.Equal(1, tabs.DisplayedTabRowCount);
         Assert.Equal(3, tabs.DisplayedTabColumnCount);
-        Assert.Equal(new Rectangle(10, 20, 120, 32), general.HeaderBounds);
-        Assert.Equal(new Rectangle(130, 20, 120, 32), audio.HeaderBounds);
-        Assert.Equal(new Rectangle(250, 20, 120, 32), video.HeaderBounds);
-        Assert.Equal(new Rectangle(10, 52, 360, 188), general.ContentBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                10,
+                20,
+                120,
+                32),
+            general.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                130,
+                20,
+                120,
+                32),
+            audio.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                250,
+                20,
+                120,
+                32),
+            video.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                10,
+                52,
+                360,
+                188),
+            general.ContentBounds);
+
         Assert.Equal(general.ContentBounds, audio.ContentBounds);
         Assert.Equal(general.ContentBounds, video.ContentBounds);
     }
@@ -45,7 +82,15 @@ public sealed class TabControlWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
-        using var tabs = new TabControlWidget(host, view, new Rectangle(0, 0, 300, 220))
+
+        using var tabs = new TabControlWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                300,
+                220))
         {
             TabRowCount = 2
         };
@@ -58,11 +103,46 @@ public sealed class TabControlWidgetTests
 
         Assert.Equal(2, tabs.DisplayedTabRowCount);
         Assert.Equal(3, tabs.DisplayedTabColumnCount);
-        Assert.Equal(new Rectangle(0, 0, 100, 32), first.HeaderBounds);
-        Assert.Equal(new Rectangle(200, 0, 100, 32), third.HeaderBounds);
-        Assert.Equal(new Rectangle(0, 32, 100, 32), fourth.HeaderBounds);
-        Assert.Equal(new Rectangle(100, 32, 100, 32), fifth.HeaderBounds);
-        Assert.Equal(new Rectangle(0, 64, 300, 156), second.ContentBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                0,
+                100,
+                32),
+            first.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                200,
+                0,
+                100,
+                32),
+            third.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                32,
+                100,
+                32),
+            fourth.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                100,
+                32,
+                100,
+                32),
+            fifth.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                64,
+                300,
+                156),
+            second.ContentBounds);
     }
 
     /// <summary>
@@ -73,7 +153,15 @@ public sealed class TabControlWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
-        using var tabs = new TabControlWidget(host, view, new Rectangle(0, 0, 360, 220))
+
+        using var tabs = new TabControlWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                360,
+                220))
         {
             AutoExpandRows = true,
             PreferredTabWidth = 120
@@ -86,8 +174,22 @@ public sealed class TabControlWidgetTests
 
         Assert.Equal(2, tabs.DisplayedTabRowCount);
         Assert.Equal(3, tabs.DisplayedTabColumnCount);
-        Assert.Equal(new Rectangle(0, 32, 120, 32), fourth.HeaderBounds);
-        Assert.Equal(new Rectangle(0, 64, 360, 156), fourth.ContentBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                32,
+                120,
+                32),
+            fourth.HeaderBounds);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                64,
+                360,
+                156),
+            fourth.ContentBounds);
     }
 
     /// <summary>
@@ -98,10 +200,28 @@ public sealed class TabControlWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
-        using var tabs = new TabControlWidget(host, view, new Rectangle(10, 20, 300, 180));
+
+        using var tabs = new TabControlWidget(
+            host,
+            view,
+            new Rectangle(
+                10,
+                20,
+                300,
+                180));
+
         TabPageWidget first = tabs.AddTab("First");
         TabPageWidget second = tabs.AddTab("Second");
-        using var child = new ButtonWidget(host, view, new Rectangle(0, 0, 100, 30), "Child");
+
+        using var child = new ButtonWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                100,
+                30),
+            "Child");
 
         first.AddWidget(child, new Point(12, 18));
         tabs.Show();
@@ -123,11 +243,25 @@ public sealed class TabControlWidgetTests
     public void AltMnemonic_SelectsMatchingPageAfterFocusedWidgetDeclinesInput()
     {
         using var host = new TestRenderSurfaceHost();
-        using var router = new WidgetInputRouter(host, null, null, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            null);
+
         View view = AddView(host);
         router.Start();
 
-        using var tabs = new TabControlWidget(host, view, new Rectangle(0, 0, 300, 180));
+        using var tabs = new TabControlWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                300,
+                180));
+
         tabs.AddTab("General", mnemonic: 'G');
         TabPageWidget audio = tabs.AddTab("Audio", mnemonic: 'A');
         tabs.Show();
@@ -145,7 +279,15 @@ public sealed class TabControlWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
-        using var tabs = new TabControlWidget(host, view, new Rectangle(0, 0, 360, 180))
+
+        using var tabs = new TabControlWidget(
+            host,
+            view,
+            new Rectangle(
+                0,
+                0,
+                360,
+                180))
         {
             IsTabReorderingEnabled = true,
             TabReorderDragThresholdPx = 1f
@@ -172,19 +314,35 @@ public sealed class TabControlWidgetTests
             .Where(widget => widget.CanReceiveFocus)
             .OrderBy(widget => widget.GetDrawLocationScreen(view).Left)
             .ToArray();
+
         WidgetBase firstHeader = headers[0];
         WidgetBase thirdHeader = headers[^1];
         PointF start = GetCenter(firstHeader.GetDrawLocationScreen(view));
         PointF destination = GetCenter(thirdHeader.GetDrawLocationScreen(view));
 
-        DispatchPointer(firstHeader, "DispatchPointerDown", view, start, WidgetPointerButtonEnum.Left, pointerId: 1);
-        DispatchPointer(firstHeader,
-                        "DispatchPointerMove",
-                        view,
-                        destination,
-                        WidgetPointerButtonEnum.Left,
-                        pointerId: 1);
-        DispatchPointer(firstHeader, "DispatchPointerUp", view, destination, WidgetPointerButtonEnum.Left, pointerId: 1);
+        DispatchPointer(
+            firstHeader,
+            "DispatchPointerDown",
+            view,
+            start,
+            WidgetPointerButtonEnum.Left,
+            pointerId: 1);
+
+        DispatchPointer(
+            firstHeader,
+            "DispatchPointerMove",
+            view,
+            destination,
+            WidgetPointerButtonEnum.Left,
+            pointerId: 1);
+
+        DispatchPointer(
+            firstHeader,
+            "DispatchPointerUp",
+            view,
+            destination,
+            WidgetPointerButtonEnum.Left,
+            pointerId: 1);
 
         Assert.Equal(new[] { first, second, third }, tabs.Tabs);
         Assert.Same(second, tabs.SelectedTab);
@@ -192,7 +350,12 @@ public sealed class TabControlWidgetTests
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        var bounds = new Rectangle(0, 0, 640, 480);
+        var bounds = new Rectangle(
+            0,
+            0,
+            640,
+            480);
+
         host.ViewManager.AddView(bounds, zOrder: 0);
 
         return host.ViewManager.Views.Single(view =>
@@ -200,12 +363,13 @@ public sealed class TabControlWidgetTests
             view.Viewport.TargetRectPx == bounds);
     }
 
-    private static void DispatchPointer(WidgetBase widget,
-                                        string method,
-                                        View view,
-                                        PointF position,
-                                        WidgetPointerButtonEnum button,
-                                        int pointerId)
+    private static void DispatchPointer(
+        WidgetBase widget,
+        string method,
+        View view,
+        PointF position,
+        WidgetPointerButtonEnum button,
+        int pointerId)
     {
         var args = new WidgetPointerEventArgs(
             widget,
@@ -227,9 +391,10 @@ public sealed class TabControlWidgetTests
             bounds.Top + bounds.Height / 2f);
     }
 
-    private static void RouteKeyboardInput(WidgetInputRouter router,
-                                           int key,
-                                           KeyboardModifierState modifiers)
+    private static void RouteKeyboardInput(
+        WidgetInputRouter router,
+        int key,
+        KeyboardModifierState modifiers)
     {
         typeof(WidgetInputRouter)
             .GetMethod("RouteKeyboardInput", BindingFlags.Instance | BindingFlags.NonPublic)!

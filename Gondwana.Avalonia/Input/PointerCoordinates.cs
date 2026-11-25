@@ -17,6 +17,7 @@ internal static class PointerCoordinates
 
         if (control is AvaloniaBitmapRenderSurfaceControl bitmap)
             return bitmap.Adapter.AdapterPxToScreenPx(point);
+
         return new Point((int)Math.Floor(point.X), (int)Math.Floor(point.Y));
     }
 }

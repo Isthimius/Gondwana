@@ -35,7 +35,11 @@ public sealed class UndoRedoMenu : IDisposable
             if (target is null || (target != _editor && !_editor.Contains(target)))
                 return false;
 
-            return TryShortcut(_editor, (Keys)(int)message.WParam | Control.ModifierKeys, _history(), _commit);
+            return TryShortcut(
+                _editor,
+                (Keys)(int)message.WParam | Control.ModifierKeys,
+                _history(),
+                _commit);
         }
 
         public void Dispose() => Application.RemoveMessageFilter(this);
@@ -70,6 +74,7 @@ public sealed class UndoRedoMenu : IDisposable
     public void Refresh()
     {
         var current = _history();
+
         if (!ReferenceEquals(current, _observed))
         {
             if (_observed is not null)
@@ -89,7 +94,11 @@ public sealed class UndoRedoMenu : IDisposable
 
     private void Changed(object? sender, EventArgs e) => Refresh();
 
-    public static bool TryShortcut(Control owner, Keys keys, EditHistory? history, Func<bool> commit)
+    public static bool TryShortcut(
+        Control owner,
+        Keys keys,
+        EditHistory? history,
+        Func<bool> commit)
     {
         if (!owner.Enabled)
             return false;
@@ -100,12 +109,14 @@ public sealed class UndoRedoMenu : IDisposable
             return false;
 
         var focus = owner.FindForm() as Control ?? owner;
+
         while (focus.Controls.Cast<Control>().FirstOrDefault(c => c.ContainsFocus) is { } child)
             focus = child;
 
         // Drop-down-only selectors are navigation, not native text editors.
         // PropertyGrid keeps its TextBox focused even when no text is being edited.
         bool inPropertyGrid = false;
+
         for (var parent = focus.Parent; parent is not null; parent = parent.Parent)
         {
             if (parent is PropertyGrid)

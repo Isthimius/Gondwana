@@ -11,7 +11,7 @@ namespace Gondwana.Physics.Movement;
 public sealed partial class MovementController
 {
     // --- Pixel-follow (DirectDrawing → DirectDrawing)
-    private Func<Vector2>? _followPixel;        // returns current target pixel position each frame
+    private Func<Vector2>? _followPixel; // returns current target pixel position each frame
     private Vector2 _followOffsetPx;
     private bool _followHard;
     private float _followSpeedPxPerSec;
@@ -24,8 +24,8 @@ public sealed partial class MovementController
     private float _followSnapTiles;
 
     // Easing follow
-    private Func<float, float>? _followEasing;  // optional easing curve
-    private float _followDurationSec;           // duration for easing-based follow
+    private Func<float, float>? _followEasing; // optional easing curve
+    private float _followDurationSec; // duration for easing-based follow
 
     /// <summary>
     /// Start following a <b>pixel-space target</b> at a constant speed.
@@ -42,10 +42,11 @@ public sealed partial class MovementController
     /// <param name="offsetPx">Optional additional pixel offset applied only when the follower is in pixel space (ignored for grid followers).</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="getPixelPos"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="speed"/> ≤ 0.</exception>
-    public void FollowPixelSoft(Func<Vector2> getPixelPos,
-                                float speed,
-                                float snap = 0.5f,
-                                Vector2 offsetPx = default)
+    public void FollowPixelSoft(
+        Func<Vector2> getPixelPos,
+        float speed,
+        float snap = 0.5f,
+        Vector2 offsetPx = default)
     {
         if (speed <= 0)
             throw new ArgumentOutOfRangeException(nameof(speed));
@@ -65,7 +66,7 @@ public sealed partial class MovementController
         else
         {
             // grid follower chasing a pixel target: interpret speed/snap as tiles-based
-            _followOffsetPx = Vector2.Zero;   // pixel offset not used for grid follower
+            _followOffsetPx = Vector2.Zero; // pixel offset not used for grid follower
             _followSpeedTilesPerSec = speed;
             _followSnapTiles = MathF.Max(0f, snap);
             _followSpeedPxPerSec = 0f;
@@ -93,11 +94,12 @@ public sealed partial class MovementController
     /// <param name="offsetPx">Optional additional pixel offset when the follower is pixel-space (ignored for grid followers).</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="getPixelPos"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="durationSec"/> ≤ 0.</exception>
-    public void FollowPixelSoft(Func<Vector2> getPixelPos,
-                                float durationSec,
-                                Func<float, float>? easing = null,
-                                float snap = 0.5f,
-                                Vector2 offsetPx = default)
+    public void FollowPixelSoft(
+        Func<Vector2> getPixelPos,
+        float durationSec,
+        Func<float, float>? easing = null,
+        float snap = 0.5f,
+        Vector2 offsetPx = default)
     {
         if (durationSec <= 0f)
             throw new ArgumentOutOfRangeException(nameof(durationSec));
@@ -106,7 +108,7 @@ public sealed partial class MovementController
         _followGridTarget = null;
         _followHard = false;
 
-        _followOffsetPx = offsetPx;         // only applied for pixel followers
+        _followOffsetPx = offsetPx; // only applied for pixel followers
         _followEasing = easing ?? EasingFunctions.Linear;
         _followDurationSec = durationSec;
 
@@ -143,14 +145,21 @@ public sealed partial class MovementController
     /// <param name="offsetPx">Optional additional pixel offset for pixel-space followers.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="getPixelPos"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="durationSec"/> ≤ 0.</exception>
-    public void FollowPixelSoft(Func<Vector2> getPixelPos,
-                                float durationSec,
-                                EasingKind easingKind,
-                                float snap = 0.5f,
-                                Vector2 offsetPx = default)
+    public void FollowPixelSoft(
+        Func<Vector2> getPixelPos,
+        float durationSec,
+        EasingKind easingKind,
+        float snap = 0.5f,
+        Vector2 offsetPx = default)
     {
         var easing = EasingFunctions.From(easingKind);
-        FollowPixelSoft(getPixelPos, durationSec, easing, snap, offsetPx);
+
+        FollowPixelSoft(
+            getPixelPos,
+            durationSec,
+            easing,
+            snap,
+            offsetPx);
     }
 
     /// <summary>
@@ -188,11 +197,12 @@ public sealed partial class MovementController
     /// <param name="pixelOffset">Optional pixel offset applied only when the follower is pixel-space.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="tileTarget"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="speedTilesPerSec"/> ≤ 0.</exception>
-    public void FollowTileSoft(IMovableOnSceneLayer tileTarget,
-                               float speedTilesPerSec,
-                               float snapTiles = 0.25f,
-                               Vector2 gridOffset = default,
-                               Vector2 pixelOffset = default)
+    public void FollowTileSoft(
+        IMovableOnSceneLayer tileTarget,
+        float speedTilesPerSec,
+        float snapTiles = 0.25f,
+        Vector2 gridOffset = default,
+        Vector2 pixelOffset = default)
     {
         if (speedTilesPerSec <= 0)
             throw new ArgumentOutOfRangeException(nameof(speedTilesPerSec));
@@ -227,12 +237,13 @@ public sealed partial class MovementController
     /// <param name="pixelOffset">Optional pixel offset applied only when the follower is pixel-space.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="tileTarget"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="durationSec"/> ≤ 0.</exception>
-    public void FollowTileSoft(IMovableOnSceneLayer tileTarget,
-                               float durationSec,
-                               Func<float, float>? easing = null,
-                               float snap = 0.5f,
-                               Vector2 gridOffset = default,
-                               Vector2 pixelOffset = default)
+    public void FollowTileSoft(
+        IMovableOnSceneLayer tileTarget,
+        float durationSec,
+        Func<float, float>? easing = null,
+        float snap = 0.5f,
+        Vector2 gridOffset = default,
+        Vector2 pixelOffset = default)
     {
         if (durationSec <= 0f)
             throw new ArgumentOutOfRangeException(nameof(durationSec));
@@ -271,15 +282,23 @@ public sealed partial class MovementController
     /// <param name="pixelOffset">Optional pixel offset applied only when the follower is pixel-space.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="tileTarget"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="durationSec"/> ≤ 0.</exception>
-    public void FollowTileSoft(IMovableOnSceneLayer tileTarget,
-                               float durationSec,
-                               EasingKind easingKind,
-                               float snap = 0.5f,
-                               Vector2 gridOffset = default,
-                               Vector2 pixelOffset = default)
+    public void FollowTileSoft(
+        IMovableOnSceneLayer tileTarget,
+        float durationSec,
+        EasingKind easingKind,
+        float snap = 0.5f,
+        Vector2 gridOffset = default,
+        Vector2 pixelOffset = default)
     {
         var easing = EasingFunctions.From(easingKind);
-        FollowTileSoft(tileTarget, durationSec, easing, snap, gridOffset, pixelOffset);
+
+        FollowTileSoft(
+            tileTarget,
+            durationSec,
+            easing,
+            snap,
+            gridOffset,
+            pixelOffset);
     }
 
     /// <summary>
@@ -291,9 +310,10 @@ public sealed partial class MovementController
     /// <param name="gridOffset">Optional tile offset applied to the target's grid coordinate.</param>
     /// <param name="pixelOffset">Optional pixel offset applied only when the follower is pixel-space.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="tileTarget"/> is null.</exception>
-    public void FollowTileHard(IMovableOnSceneLayer tileTarget,
-                               Vector2 gridOffset = default,
-                               Vector2 pixelOffset = default)
+    public void FollowTileHard(
+        IMovableOnSceneLayer tileTarget,
+        Vector2 gridOffset = default,
+        Vector2 pixelOffset = default)
     {
         _followGridTarget = tileTarget ?? throw new ArgumentNullException(nameof(tileTarget));
         _followGridOffset = gridOffset;
@@ -392,7 +412,12 @@ public sealed partial class MovementController
 
         if (_followEasing is not null && _followDurationSec > 0f)
         {
-            MoveTo(goalGrid, _followDurationSec, _followEasing, _followSnapTiles);
+            MoveTo(
+                goalGrid,
+                _followDurationSec,
+                _followEasing,
+                _followSnapTiles);
+
             return false;
         }
 
@@ -411,7 +436,11 @@ public sealed partial class MovementController
         // tweened follow
         if (_followEasing is not null && _followDurationSec > 0f)
         {
-            MoveTo(goalPx, _followDurationSec, _followEasing, _followSnapPx);
+            MoveTo(
+                goalPx,
+                _followDurationSec,
+                _followEasing,
+                _followSnapPx);
         }
         else
         {
@@ -432,7 +461,12 @@ public sealed partial class MovementController
 
         if (_followEasing is not null && _followDurationSec > 0f)
         {
-            MoveTo(goalCoordinates, _followDurationSec, _followEasing, _followSnapTiles);
+            MoveTo(
+                goalCoordinates,
+                _followDurationSec,
+                _followEasing,
+                _followSnapTiles);
+
             return false;
         }
 
@@ -443,7 +477,10 @@ public sealed partial class MovementController
 
     private bool Advance_TargetGrid_MoverPixel(Vector2 goalCoordinates, SceneLayer sceneLayer)
     {
-        var targetPx = sceneLayer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(sceneLayer, new PointF(goalCoordinates.X, goalCoordinates.Y));
+        var targetPx = sceneLayer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(
+            sceneLayer,
+            new PointF(goalCoordinates.X, goalCoordinates.Y));
+
         var goalPx = new Vector2(targetPx.X, targetPx.Y) + _followOffsetPx;
 
         if (_followHard)
@@ -454,12 +491,20 @@ public sealed partial class MovementController
 
         if (_followEasing is not null && _followDurationSec > 0f)
         {
-            MoveTo(goalPx, _followDurationSec, _followEasing, _followSnapPx);
+            MoveTo(
+                goalPx,
+                _followDurationSec,
+                _followEasing,
+                _followSnapPx);
+
             return false;
         }
 
         // tiles/sec → px/sec (sample +X to estimate px-per-tile length)
-        var pxRight = sceneLayer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(sceneLayer, new PointF(goalCoordinates.X + 1f, goalCoordinates.Y));
+        var pxRight = sceneLayer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(
+            sceneLayer,
+            new PointF(goalCoordinates.X + 1f, goalCoordinates.Y));
+
         float pxPerTile = MathF.Max(1f, new Vector2(pxRight.X - targetPx.X, pxRight.Y - targetPx.Y).Length());
         float speedPxPerSec = _followSpeedTilesPerSec * pxPerTile;
         float snap = _followSnapTiles * pxPerTile;

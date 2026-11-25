@@ -23,7 +23,11 @@ public sealed class ProfilerWidgetTests
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(12, 12, 400, 300));
+            new Rectangle(
+                12,
+                12,
+                400,
+                300));
 
         Assert.False(widget.IsCollectionActive);
         Assert.False(widget.Visible);
@@ -51,7 +55,11 @@ public sealed class ProfilerWidgetTests
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(0, 0, 400, 300))
+            new Rectangle(
+                0,
+                0,
+                400,
+                300))
         {
             MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected
         };
@@ -99,10 +107,15 @@ public sealed class ProfilerWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(0, 0, 400, 300))
+            new Rectangle(
+                0,
+                0,
+                400,
+                300))
         {
             MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected
         };
@@ -140,7 +153,11 @@ public sealed class ProfilerWidgetTests
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(20, 30, 420, 310));
+            new Rectangle(
+                20,
+                30,
+                420,
+                310));
 
         widget.Size = new Size(460, 330);
         widget.RefreshInterval = TimeSpan.FromMilliseconds(500);
@@ -149,7 +166,14 @@ public sealed class ProfilerWidgetTests
         widget.ShowSourceHeaders = false;
         widget.ShowUnavailableMeasurements = true;
 
-        Assert.Equal(new Rectangle(20, 30, 460, 330), widget.Bounds);
+        Assert.Equal(
+            new Rectangle(
+                20,
+                30,
+                460,
+                330),
+            widget.Bounds);
+
         Assert.Equal(TimeSpan.FromMilliseconds(500), widget.RefreshInterval);
         Assert.False(widget.ShowHeader);
         Assert.False(widget.ShowSnapshotMetadata);
@@ -174,7 +198,11 @@ public sealed class ProfilerWidgetTests
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(0, 0, 400, 180));
+            new Rectangle(
+                0,
+                0,
+                400,
+                180));
 
         widget.Display.SetText(string.Join("\n", Enumerable.Repeat("diagnostic line", 24)));
         float padded = widget.Display.MaximumVerticalScrollOffsetPx;
@@ -198,7 +226,11 @@ public sealed class ProfilerWidgetTests
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(0, 0, 400, 300))
+            new Rectangle(
+                0,
+                0,
+                400,
+                300))
         {
             HeaderText = "Custom diagnostics",
             ContextInfo = ProfilerContextInfo.Scene | ProfilerContextInfo.View,
@@ -206,6 +238,7 @@ public sealed class ProfilerWidgetTests
         };
 
         ProfilerWidgetExtensionContext? observedContext = null;
+
         widget.AdditionalLinesProvider = context =>
         {
             observedContext = context;
@@ -237,7 +270,11 @@ public sealed class ProfilerWidgetTests
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(0, 0, 400, 300));
+            new Rectangle(
+                0,
+                0,
+                400,
+                300));
 
         Assert.Equal(ProfilerContextInfo.None, widget.ContextInfo);
         Assert.Null(widget.AdditionalLinesProvider);
@@ -252,10 +289,15 @@ public sealed class ProfilerWidgetTests
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
+
         using var widget = new ProfilerWidget(
             host,
             view,
-            new Rectangle(0, 0, 400, 300));
+            new Rectangle(
+                0,
+                0,
+                400,
+                300));
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             widget.RefreshInterval = TimeSpan.FromMilliseconds(1));
@@ -266,7 +308,12 @@ public sealed class ProfilerWidgetTests
 
     private static View AddView(TestRenderSurfaceHost host)
     {
-        var bounds = new Rectangle(0, 0, 640, 480);
+        var bounds = new Rectangle(
+            0,
+            0,
+            640,
+            480);
+
         host.ViewManager.AddView(bounds, zOrder: 0);
         return host.ViewManager.Views.Single();
     }

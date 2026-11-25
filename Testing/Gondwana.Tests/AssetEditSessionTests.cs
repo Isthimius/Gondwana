@@ -10,12 +10,23 @@ public sealed class AssetEditSessionTests : IDisposable
     private readonly string _root = Path.Combine(Path.GetTempPath(), "gaf-history-" + Guid.NewGuid().ToString("N"));
     public AssetEditSessionTests() => Directory.CreateDirectory(_root);
     public void Dispose() => Directory.Delete(_root, true);
-    private AssetsFile Archive(string name = "game.gaf", bool encrypt = false) => AssetsFile.LoadOrCreate(Path.Combine(_root, name), encrypt ? "secret" : null, encrypt, register: false);
-    private static void Add(AssetsFile archive, AssetTypes type, string name, byte[] data)
+
+    private AssetsFile Archive(string name = "game.gaf", bool encrypt = false) => AssetsFile.LoadOrCreate(
+        Path.Combine(_root, name),
+        encrypt ? "secret" : null,
+        encrypt,
+        register: false);
+
+    private static void Add(
+        AssetsFile archive,
+        AssetTypes type,
+        string name,
+        byte[] data)
     {
         using var stream = new MemoryStream(data, writable: false);
         archive.Add(type, name, stream);
     }
+
     private static byte[] Bytes(AssetsFile archive, AssetTypes type, string name)
     {
         using var stream = archive.Get(type, name)!;
@@ -23,6 +34,7 @@ public sealed class AssetEditSessionTests : IDisposable
         stream.CopyTo(buffer);
         return buffer.ToArray();
     }
+
     private AssetImportPlan Plan(AssetsFile archive, params (AssetTypes Type, string Name, byte[] Bytes)[] entries)
     {
         var sources = entries.Select((e, i) =>
@@ -31,6 +43,7 @@ public sealed class AssetEditSessionTests : IDisposable
             File.WriteAllBytes(path, e.Bytes);
             return new AssetImportSource(path, e.Type, e.Name);
         }).ToArray();
+
         return AssetImportPlan.Create(archive, sources, false);
     }
 
@@ -38,18 +51,32 @@ public sealed class AssetEditSessionTests : IDisposable
     public void ImportRetainsExactTypedNestedDeltasAndReusedEntries()
     {
         using var archive = Archive();
-        Add(archive, AssetTypes.Misc, "same", [1]);
+
+        Add(
+            archive,
+            AssetTypes.Misc,
+            "same",
+            [1]);
+
         using var edits = new AssetEditSession(archive, true);
-        var plan = Plan(archive, (AssetTypes.Misc, "same", [1]), (AssetTypes.Image, "nested/shared", [2, 3]), (AssetTypes.Audio, "nested/shared", [4, 5]));
+
+        var plan = Plan(
+            archive,
+            (AssetTypes.Misc, "same", [1]),
+            (AssetTypes.Image, "nested/shared", [2, 3]),
+            (AssetTypes.Audio, "nested/shared", [4, 5]));
+
         Assert.Equal(2, edits.Import(plan));
         Assert.Equal("Import 2 asset(s)", edits.History.UndoDescription);
         edits.History.Undo();
         Assert.Single(archive.GetAllEntries());
         Assert.Equal(new byte[] { 1 }, Bytes(archive, AssetTypes.Misc, "same"));
         Assert.False(edits.History.IsDirty);
+
         // Sources are never reopened on redo.
         foreach (var file in Directory.GetFiles(_root, "*.bin"))
             File.Delete(file);
+
         edits.History.Redo();
         Assert.Equal(new byte[] { 2, 3 }, Bytes(archive, AssetTypes.Image, "nested/shared"));
         Assert.Equal(new byte[] { 4, 5 }, Bytes(archive, AssetTypes.Audio, "nested/shared"));
@@ -62,16 +89,42 @@ public sealed class AssetEditSessionTests : IDisposable
         using var archive = Archive();
         var imagePath = Path.Combine(_root, "art.png");
         File.WriteAllBytes(imagePath, [1, 2, 3]); // pack import copies opaque image bytes
-        Add(archive, AssetTypes.Image, "art.png", [1, 2, 3]);
+
+        Add(
+            archive,
+            AssetTypes.Image,
+            "art.png",
+            [1, 2, 3]);
+
         var sheetPath = Path.Combine(_root, "tiles.gts");
-        TilesheetDefinitionSerializer.Save(sheetPath, new TilesheetDefinition
-        {
-            Name = "terrain",
-            Image = new() { FilePath = "art.png" },
-            Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 1, 1), TileSize = new Size(1, 1) }]
-        });
+
+        TilesheetDefinitionSerializer.Save(
+            sheetPath,
+            new TilesheetDefinition
+            {
+                Name = "terrain",
+                Image = new() { FilePath = "art.png" },
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "default", Area = new Rectangle(
+                            0,
+                            0,
+                            1,
+                            1),
+                        TileSize = new Size(1, 1)
+                    }
+                ]
+            });
+
         using var edits = new AssetEditSession(archive, true);
-        var plan = AssetImportPlan.Create(archive, [new(sheetPath, AssetTypes.TilesheetDefinition, "nested/tiles.gts")], true);
+
+        var plan = AssetImportPlan.Create(
+            archive,
+            [new(sheetPath, AssetTypes.TilesheetDefinition, "nested/tiles.gts")],
+            true);
+
         Assert.Equal(1, edits.Import(plan));
         var definition = Bytes(archive, AssetTypes.TilesheetDefinition, "nested/tiles.gts");
         edits.History.Undo();
@@ -83,7 +136,12 @@ public sealed class AssetEditSessionTests : IDisposable
         // A fresh archive imports both definition and dependency in the same step.
         using var fresh = Archive("fresh.gaf");
         using var all = new AssetEditSession(fresh, true);
-        Assert.Equal(2, all.Import(AssetImportPlan.Create(fresh, [new(sheetPath, AssetTypes.TilesheetDefinition, "tiles.gts")], true)));
+
+        Assert.Equal(
+            2,
+            all.Import(
+                AssetImportPlan.Create(fresh, [new(sheetPath, AssetTypes.TilesheetDefinition, "tiles.gts")], true)));
+
         all.History.Undo();
         Assert.Empty(fresh.GetAllEntries());
         Assert.False(all.History.CanUndo);
@@ -97,8 +155,19 @@ public sealed class AssetEditSessionTests : IDisposable
     public void ReplacementIsByteExactAndSuppressesNoOp(bool encrypted)
     {
         using var archive = Archive(encrypt: encrypted);
-        Add(archive, AssetTypes.Audio, "nested/file", [0, 255, 1]);
-        Add(archive, AssetTypes.Misc, "nested/file", [7]);
+
+        Add(
+            archive,
+            AssetTypes.Audio,
+            "nested/file",
+            [0, 255, 1]);
+
+        Add(
+            archive,
+            AssetTypes.Misc,
+            "nested/file",
+            [7]);
+
         archive.Save();
         using var edits = new AssetEditSession(archive, true);
         Assert.False(edits.Replace(AssetTypes.Audio, "nested/file", [0, 255, 1]));
@@ -112,7 +181,13 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Equal(new byte[] { 4, 3, 2, 1 }, Bytes(archive, AssetTypes.Audio, "nested/file"));
         Assert.Equal(new byte[] { 7 }, Bytes(archive, AssetTypes.Misc, "nested/file"));
         archive.Save();
-        using var loaded = AssetsFile.LoadOrCreate(archive.SourcePath!, encrypted ? "secret" : null, encrypted, register: false);
+
+        using var loaded = AssetsFile.LoadOrCreate(
+            archive.SourcePath!,
+            encrypted ? "secret" : null,
+            encrypted,
+            register: false);
+
         Assert.Equal(new byte[] { 4, 3, 2, 1 }, Bytes(loaded, AssetTypes.Audio, "nested/file"));
         Assert.Equal(encrypted, loaded.UseEncryption);
     }
@@ -121,7 +196,13 @@ public sealed class AssetEditSessionTests : IDisposable
     public void CancelFailureAndStalePlanLeaveNoPartialCommand()
     {
         using var archive = Archive();
-        Add(archive, AssetTypes.Misc, "existing", [1]);
+
+        Add(
+            archive,
+            AssetTypes.Misc,
+            "existing",
+            [1]);
+
         using var edits = new AssetEditSession(archive, true);
         edits.Replace(AssetTypes.Misc, "existing", [2]);
         var description = edits.History.UndoDescription;
@@ -130,12 +211,23 @@ public sealed class AssetEditSessionTests : IDisposable
         cancelled.Cancel();
         Assert.Throws<OperationCanceledException>(() => edits.Import(plan, cancellation: cancelled.Token));
         int writes = 0;
-        Assert.Throws<IOException>(() => edits.ImportCore(plan, null, (entry, bytes) =>
-        {
-            Add(archive, entry.AssetType, entry.AssetName, bytes);
-            if (++writes == 2)
-                throw new IOException("after partial write");
-        }, default));
+
+        Assert.Throws<IOException>(() => edits.ImportCore(
+            plan,
+            null,
+            (entry, bytes) =>
+            {
+                Add(
+                    archive,
+                    entry.AssetType,
+                    entry.AssetName,
+                    bytes);
+
+                if (++writes == 2)
+                    throw new IOException("after partial write");
+            },
+            default));
+
         Assert.Single(archive.GetAllEntries());
         Assert.Equal(description, edits.History.UndoDescription);
         Assert.Equal(new byte[] { 2 }, Bytes(archive, AssetTypes.Misc, "existing"));
@@ -152,13 +244,31 @@ public sealed class AssetEditSessionTests : IDisposable
     public void FailedReplacementRestoresOriginalAndCheckpoint()
     {
         using var archive = Archive();
-        Add(archive, AssetTypes.Misc, "nested/entry", [1, 2]);
+
+        Add(
+            archive,
+            AssetTypes.Misc,
+            "nested/entry",
+            [1, 2]);
+
         using var edits = new AssetEditSession(archive, true);
-        Assert.Throws<IOException>(() => edits.ReplaceCore(AssetTypes.Misc, "nested/entry", [3, 4], null, (entry, bytes) =>
-        {
-            Add(archive, entry.AssetType, entry.AssetName, bytes);
-            throw new IOException("after replacement");
-        }));
+
+        Assert.Throws<IOException>(() => edits.ReplaceCore(
+            AssetTypes.Misc,
+            "nested/entry",
+            [3, 4],
+            null,
+            (entry, bytes) =>
+            {
+                Add(
+                    archive,
+                    entry.AssetType,
+                    entry.AssetName,
+                    bytes);
+
+                throw new IOException("after replacement");
+            }));
+
         Assert.Equal(new byte[] { 1, 2 }, Bytes(archive, AssetTypes.Misc, "nested/entry"));
         Assert.False(edits.History.CanUndo);
         Assert.False(edits.History.IsDirty);
@@ -171,11 +281,15 @@ public sealed class AssetEditSessionTests : IDisposable
         using var adopted = Archive("adopted.gaf");
         using var edits = new AssetEditSession(archive, true, byteLimit: 1);
         var plan = Plan(archive, (AssetTypes.Misc, "large", [1, 2]));
-        Assert.Throws<InvalidOperationException>(() => edits.Import(plan, _ =>
-        {
-            edits.AcceptSavedArchive(adopted);
-            return true;
-        }));
+
+        Assert.Throws<InvalidOperationException>(() => edits.Import(
+            plan,
+            _ =>
+            {
+                edits.AcceptSavedArchive(adopted);
+                return true;
+            }));
+
         Assert.Empty(archive.GetAllEntries());
         Assert.Empty(adopted.GetAllEntries());
         Assert.False(edits.History.CanUndo);
@@ -204,7 +318,13 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.False(edits.History.IsDirty);
         edits.Replace(AssetTypes.Misc, "entry", [3]);
         Assert.False(edits.History.CanRedo);
-        Add(first, AssetTypes.Misc, "external", [4]);
+
+        Add(
+            first,
+            AssetTypes.Misc,
+            "external",
+            [4]);
+
         edits.History.MarkUntracked();
         Assert.True(edits.History.IsDirty);
         Assert.False(edits.History.CanUndo);
@@ -230,18 +350,37 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Throws<OperationCanceledException>(() => edits.Import(huge, _ => false));
         Assert.True(edits.History.CanRedo);
         Assert.Single(archive.GetAllEntries());
-        Assert.Equal(1, edits.Import(huge, bytes =>
-        {
-            Assert.Equal(5, bytes);
-            return true;
-        }));
+
+        Assert.Equal(
+            1,
+            edits.Import(
+                huge,
+                bytes =>
+                {
+                    Assert.Equal(5, bytes);
+                    return true;
+                }));
+
         Assert.False(edits.History.CanUndo);
         Assert.False(edits.History.CanRedo);
         Assert.True(edits.History.IsDirty);
         Assert.Equal(0, edits.History.RetainedBytes);
-        Assert.Throws<OperationCanceledException>(() => edits.Replace(AssetTypes.Misc, "large", [7], _ => false));
+
+        Assert.Throws<OperationCanceledException>(() => edits.Replace(
+            AssetTypes.Misc,
+            "large",
+            [7],
+            _ => false));
+
         Assert.Equal(new byte[] { 0, 1, 2, 3, 4 }, Bytes(archive, AssetTypes.Misc, "large"));
-        Assert.True(edits.Replace(AssetTypes.Misc, "large", [7], _ => true));
+
+        Assert.True(
+            edits.Replace(
+                AssetTypes.Misc,
+                "large",
+                [7],
+                _ => true));
+
         Assert.Equal(0, edits.History.RetainedBytes);
     }
 
@@ -253,11 +392,22 @@ public sealed class AssetEditSessionTests : IDisposable
         edits.Import(Plan(archive, (AssetTypes.Misc, "a", [1])));
         edits.History.MarkSaved();
         var huge = Plan(archive, (AssetTypes.Misc, "large", [2, 3, 4]));
-        Assert.Throws<IOException>(() => edits.ImportCore(huge, _ => true, (entry, bytes) =>
-        {
-            Add(archive, entry.AssetType, entry.AssetName, bytes);
-            throw new IOException("partial");
-        }, default));
+
+        Assert.Throws<IOException>(() => edits.ImportCore(
+            huge,
+            _ => true,
+            (entry, bytes) =>
+            {
+                Add(
+                    archive,
+                    entry.AssetType,
+                    entry.AssetName,
+                    bytes);
+
+                throw new IOException("partial");
+            },
+            default));
+
         Assert.Single(archive.GetAllEntries());
         Assert.True(edits.History.CanUndo);
         Assert.False(edits.History.IsDirty);
@@ -269,15 +419,36 @@ public sealed class AssetEditSessionTests : IDisposable
         var image = Path.Combine(_root, "art.png");
         File.WriteAllBytes(image, [1]);
         var sheetPath = Path.Combine(_root, "tiles.gts");
-        TilesheetDefinitionSerializer.Save(sheetPath, new TilesheetDefinition { Name = "tiles", Image = new() { FilePath = "art.png" } });
+
+        TilesheetDefinitionSerializer.Save(
+            sheetPath,
+            new TilesheetDefinition { Name = "tiles", Image = new() { FilePath = "art.png" } });
+
         using var source = Archive();
         source.Save();
         using var edits = new AssetEditSession(source, true);
-        edits.Import(AssetImportPlan.Create(source, [new(sheetPath, AssetTypes.TilesheetDefinition, "nested/tiles.gts")], false));
+
+        edits.Import(
+            AssetImportPlan.Create(
+                source,
+                [new(sheetPath, AssetTypes.TilesheetDefinition, "nested/tiles.gts")],
+                false));
+
         var destination = Path.Combine(_root, "copy", "copy.gaf");
         Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
-        AssetArchiveCopy.Save(source, destination, null, false);
-        using var adopted = AssetsFile.LoadOrCreate(destination, null, false, register: false);
+
+        AssetArchiveCopy.Save(
+            source,
+            destination,
+            null,
+            false);
+
+        using var adopted = AssetsFile.LoadOrCreate(
+            destination,
+            null,
+            false,
+            register: false);
+
         edits.AcceptSavedArchive(adopted);
         edits.History.Undo();
         Assert.Empty(adopted.GetAllEntries());
@@ -289,26 +460,61 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Equal(destination, edits.Archive.SourcePath);
     }
 
-    private static byte[] SheetBytes(string image, bool invalidGeometry = false, string? archive = null) => System.Text.Encoding.UTF8.GetBytes(
-        TilesheetDefinitionSerializer.ToJson(new TilesheetDefinition
-        {
-            Name = "tiles",
-            Image = new() { AssetEntryName = image, AssetsFilePath = archive },
-            Regions = [new() { Name = "default", Area = new Rectangle(0, 0, invalidGeometry ? -1 : 1, 1), TileSize = new Size(1, 1) }]
-        }));
+    private static byte[] SheetBytes(string image, bool invalidGeometry = false, string? archive = null) =>
+        System.Text.Encoding.UTF8.GetBytes(
+            TilesheetDefinitionSerializer.ToJson(
+                new TilesheetDefinition
+                {
+                    Name = "tiles",
+                    Image = new() { AssetEntryName = image, AssetsFilePath = archive },
+                    Regions =
+                    [
+                        new()
+                        {
+                            Name = "default", Area = new Rectangle(
+                                0,
+                                0,
+                                invalidGeometry ? -1 : 1,
+                                1),
+                            TileSize = new Size(1, 1)
+                        }
+                    ]
+                }));
 
     [Fact]
     public void SavedNativeReferencesDoNotDependOnUndoPositionOrLaterImports()
     {
         using var source = Archive();
-        Add(source, AssetTypes.Image, "old.png", [1]);
-        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("old.png"));
+
+        Add(
+            source,
+            AssetTypes.Image,
+            "old.png",
+            [1]);
+
+        Add(
+            source,
+            AssetTypes.TilesheetDefinition,
+            "tiles.gts",
+            SheetBytes("old.png"));
+
         using var edits = new AssetEditSession(source, true);
         edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("later.png"));
         edits.Import(Plan(source, (AssetTypes.Image, "later.png", [2])));
         var copyPath = Path.Combine(_root, "copy.gaf");
-        AssetArchiveCopy.Save(source, copyPath, null, false);
-        using var saved = AssetsFile.LoadOrCreate(copyPath, null, false, register: false);
+
+        AssetArchiveCopy.Save(
+            source,
+            copyPath,
+            null,
+            false);
+
+        using var saved = AssetsFile.LoadOrCreate(
+            copyPath,
+            null,
+            false,
+            register: false);
+
         edits.AcceptSavedArchive(saved);
         var checkpoint = AssetImportPlan.Snapshot(saved);
         edits.History.Undo();
@@ -319,12 +525,25 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Null(saved.Get(AssetTypes.Image, "later.png"));
         edits.History.Redo();
         Assert.False(edits.History.IsDirty);
+
         foreach (var pair in checkpoint)
             Assert.Equal(pair.Value, Bytes(saved, pair.Key.AssetType, pair.Key.AssetName));
+
         // A second adoption composes the saved targets without accumulating archive-wide mappings.
         var lastPath = Path.Combine(_root, "last.gaf");
-        AssetArchiveCopy.Save(saved, lastPath, null, false);
-        using var last = AssetsFile.LoadOrCreate(lastPath, null, false, register: false);
+
+        AssetArchiveCopy.Save(
+            saved,
+            lastPath,
+            null,
+            false);
+
+        using var last = AssetsFile.LoadOrCreate(
+            lastPath,
+            null,
+            false,
+            register: false);
+
         edits.AcceptSavedArchive(last);
         var lastCheckpoint = AssetImportPlan.Snapshot(last);
         edits.History.Undo();
@@ -332,6 +551,7 @@ public sealed class AssetEditSessionTests : IDisposable
         edits.History.Redo();
         edits.History.Redo();
         Assert.False(edits.History.IsDirty);
+
         foreach (var pair in lastCheckpoint)
             Assert.Equal(pair.Value, Bytes(last, pair.Key.AssetType, pair.Key.AssetName));
     }
@@ -342,15 +562,37 @@ public sealed class AssetEditSessionTests : IDisposable
     public void OpaqueNativeReplacementRemainsByteExactAfterAdoption(string kind)
     {
         using var source = Archive();
-        Add(source, AssetTypes.Image, "art.png", [1]);
-        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
+
+        Add(
+            source,
+            AssetTypes.Image,
+            "art.png",
+            [1]);
+
+        Add(
+            source,
+            AssetTypes.TilesheetDefinition,
+            "tiles.gts",
+            SheetBytes("art.png"));
+
         using var edits = new AssetEditSession(source, true);
         var raw = kind == "invalid json" ? new byte[] { 0, 255, 1 } : SheetBytes("art.png", invalidGeometry: true);
         edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", raw);
         edits.History.Undo();
         var copy = Path.Combine(_root, "copy.gaf");
-        AssetArchiveCopy.Save(source, copy, null, false);
-        using var adopted = AssetsFile.LoadOrCreate(copy, null, false, register: false);
+
+        AssetArchiveCopy.Save(
+            source,
+            copy,
+            null,
+            false);
+
+        using var adopted = AssetsFile.LoadOrCreate(
+            copy,
+            null,
+            false,
+            register: false);
+
         edits.AcceptSavedArchive(adopted);
         var valid = Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts");
         edits.History.Redo();
@@ -365,20 +607,47 @@ public sealed class AssetEditSessionTests : IDisposable
     public void CaseOnlyArchivePathsUsePlatformIdentityDuringAdoption()
     {
         using var source = Archive("Game.gaf");
-        Add(source, AssetTypes.Image, "art.png", [1]);
-        Add(source, AssetTypes.Image, "other.png", [2]);
-        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
+
+        Add(
+            source,
+            AssetTypes.Image,
+            "art.png",
+            [1]);
+
+        Add(
+            source,
+            AssetTypes.Image,
+            "other.png",
+            [2]);
+
+        Add(
+            source,
+            AssetTypes.TilesheetDefinition,
+            "tiles.gts",
+            SheetBytes("art.png"));
+
         using var edits = new AssetEditSession(source, true);
         edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("other.png", archive: source.SourcePath));
         // Construct semantic copies in memory: the filesystem's separate case-collision policy is not under test.
         using var adopted = Archive("game.gaf");
+
         var mappings = source.GetAllEntries().Select(e => new ReferenceRelocation(
-            new(e.AssetType, source.SourcePath!, e.AssetName), new(e.AssetType, adopted.SourcePath!, e.AssetName))).ToArray();
+            new(e.AssetType, source.SourcePath!, e.AssetName),
+            new(e.AssetType, adopted.SourcePath!, e.AssetName))).ToArray();
+
         foreach (var pair in AssetImportPlan.Snapshot(source))
         {
             var bytes = PackDefinitionDocument.Read(pair.Key.AssetType, pair.Value, pair.Key.AssetName)?.Relocate(
-                new(pair.Key.AssetType, source.SourcePath!, pair.Key.AssetName), new(pair.Key.AssetType, adopted.SourcePath!, pair.Key.AssetName), mappings, false) ?? pair.Value;
-            Add(adopted, pair.Key.AssetType, pair.Key.AssetName, bytes);
+                new(pair.Key.AssetType, source.SourcePath!, pair.Key.AssetName),
+                new(pair.Key.AssetType, adopted.SourcePath!, pair.Key.AssetName),
+                mappings,
+                false) ?? pair.Value;
+
+            Add(
+                adopted,
+                pair.Key.AssetType,
+                pair.Key.AssetName,
+                bytes);
         }
 
         var saved = Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts");
@@ -388,6 +657,7 @@ public sealed class AssetEditSessionTests : IDisposable
         var definition = TilesheetDefinitionSerializer.Load(adopted, "tiles.gts");
         var resolved = Path.GetFullPath(definition.Image.AssetsFilePath!, _root);
         Assert.True(DefinitionReferenceDiscovery.Paths.Equals(adopted.SourcePath, resolved));
+
         if (!OperatingSystem.IsWindows())
         {
             Assert.NotEqual(source.SourcePath, resolved);
@@ -399,8 +669,19 @@ public sealed class AssetEditSessionTests : IDisposable
     public void RelativeArchiveOriginsAreNormalizedBeforeCapturingPayloads()
     {
         var path = Path.Combine(_root, "relative.gaf");
-        using var archive = AssetsFile.LoadOrCreate(Path.GetRelativePath(Environment.CurrentDirectory, path), null, false, register: false);
-        Add(archive, AssetTypes.Misc, "entry", [1]);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            Path.GetRelativePath(Environment.CurrentDirectory, path),
+            null,
+            false,
+            register: false);
+
+        Add(
+            archive,
+            AssetTypes.Misc,
+            "entry",
+            [1]);
+
         using var edits = new AssetEditSession(archive, true);
         edits.Replace(AssetTypes.Misc, "entry", [2]);
         edits.History.Undo();
@@ -413,16 +694,42 @@ public sealed class AssetEditSessionTests : IDisposable
     public void LargeInventoriesRetainOnlyNativeDependenciesAndNoBinaryMappings()
     {
         using var source = Archive();
+
         for (int i = 0; i < 10000; i++)
-            Add(source, AssetTypes.Misc, $"entry/{i}", [1]);
-        Add(source, AssetTypes.Image, "art.png", [2]);
-        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
+            Add(
+                source,
+                AssetTypes.Misc,
+                $"entry/{i}",
+                [1]);
+
+        Add(
+            source,
+            AssetTypes.Image,
+            "art.png",
+            [2]);
+
+        Add(
+            source,
+            AssetTypes.TilesheetDefinition,
+            "tiles.gts",
+            SheetBytes("art.png"));
+
         using var edits = new AssetEditSession(source, true);
         edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("other.png"));
-        Assert.Equal(2, edits.RetainedReferenceCount); // before/after each retain one dependency, not 10,000 archive mappings
+
+        Assert.Equal(
+            2,
+            edits.RetainedReferenceCount); // before/after each retain one dependency, not 10,000 archive mappings
+
         using var adopted = Archive("copy.gaf");
+
         foreach (var pair in AssetImportPlan.Snapshot(source))
-            Add(adopted, pair.Key.AssetType, pair.Key.AssetName, pair.Value);
+            Add(
+                adopted,
+                pair.Key.AssetType,
+                pair.Key.AssetName,
+                pair.Value);
+
         edits.AcceptSavedArchive(adopted);
         edits.History.Undo();
         edits.History.Redo();
@@ -433,8 +740,14 @@ public sealed class AssetEditSessionTests : IDisposable
         var additions = Enumerable.Range(0, 500).Select(i => (AssetTypes.Misc, $"new/{i}", new byte[] { 3 })).ToArray();
         binaries.Import(Plan(binarySource, additions));
         using var binaryCopy = Archive("binary-copy.gaf");
+
         foreach (var pair in AssetImportPlan.Snapshot(binarySource))
-            Add(binaryCopy, pair.Key.AssetType, pair.Key.AssetName, pair.Value);
+            Add(
+                binaryCopy,
+                pair.Key.AssetType,
+                pair.Key.AssetName,
+                pair.Value);
+
         binaries.AcceptSavedArchive(binaryCopy);
         binaries.History.Undo();
         binaries.History.Redo();

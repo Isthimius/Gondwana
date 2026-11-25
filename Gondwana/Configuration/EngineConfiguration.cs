@@ -26,9 +26,12 @@ public partial class EngineConfiguration
         {
             if (!float.IsFinite(value) || value <= 0)
                 throw new ArgumentOutOfRangeException(nameof(value), "RenderScale must be finite and positive.");
+
             if (_renderScale == value)
                 return;
+
             var surfaces = RenderSurfaceHostRegistry.Snapshot();
+
             // Validate every dimension before publishing intent or queuing any changes.
             foreach (var surface in surfaces)
             {
@@ -40,6 +43,7 @@ public partial class EngineConfiguration
             }
 
             _renderScale = value;
+
             foreach (var surface in surfaces)
                 surface.RequestRenderScale(value);
         }
@@ -55,7 +59,9 @@ public partial class EngineConfiguration
         {
             if (!Enum.IsDefined(value))
                 throw new ArgumentOutOfRangeException(nameof(value));
+
             _renderScalingFilter = value;
+
             foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
                 surface.InvalidatePresentation();
         }
@@ -366,6 +372,7 @@ public partial class EngineConfiguration
         {
             if (value <= 0)
                 throw new ArgumentOutOfRangeException(nameof(value), "Capacity must be > 0.");
+
             _loggingQueueCapacity = value;
         }
     }
@@ -496,7 +503,7 @@ public partial class EngineConfiguration
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return ConfigurationSections.TryGetValue(section, out var values)
-            && values.ContainsKey(key);
+               && values.ContainsKey(key);
     }
 
     /// <summary>
@@ -514,9 +521,9 @@ public partial class EngineConfiguration
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return ConfigurationSections.TryGetValue(section, out var values)
-            && values.TryGetValue(key, out var value)
-                ? value
-                : defaultValue;
+               && values.TryGetValue(key, out var value)
+            ? value
+            : defaultValue;
     }
 
     /// <summary>
@@ -549,7 +556,7 @@ public partial class EngineConfiguration
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return ConfigurationSections.TryGetValue(section, out var values)
-            && values.Remove(key);
+               && values.Remove(key);
     }
 
     /// <summary>
@@ -634,9 +641,9 @@ public partial class EngineConfiguration
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
             return ConfigurationSections.TryGetValue(section, out var values)
-                && values.TryGetValue(key, out var value)
-                    ? value
-                    : null;
+                   && values.TryGetValue(key, out var value)
+                ? value
+                : null;
         }
         set
         {

@@ -16,7 +16,13 @@ public sealed class SceneSerializationTests
     public void SceneGraph_SerializesCleanOwnershipShape_AndRoundTrips()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        var layer = scene.AddLayer(
+            2,
+            2,
+            16,
+            16);
+
         layer.WrapHorizontally = true;
         layer.OriginPx = new(7, 9);
 
@@ -56,7 +62,13 @@ public sealed class SceneSerializationTests
     public void SceneGraph_StillReadsLegacyUnderscoreLayerCollectionName()
     {
         using var scene = new Scene();
-        var layer = scene.AddLayer(1, 1, 16, 16);
+
+        var layer = scene.AddLayer(
+            1,
+            1,
+            16,
+            16);
+
         layer[0, 0]!.Nickname = "legacy tile";
 
         var root = JObject.Parse(

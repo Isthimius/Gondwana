@@ -15,14 +15,11 @@ public struct FrameSequence : IEnumerable<Frame>
     /// <summary>
     /// The type of cycle pattern used when animating through the frame sequence
     /// </summary>
-    [JsonProperty]
-    public CycleType SequenceCycleType;
+    [JsonProperty] public CycleType SequenceCycleType;
 
-    [JsonProperty]
-    private List<Frame> frameList;
+    [JsonProperty] private List<Frame> frameList;
 
-    [JsonProperty]
-    private List<double?>? frameDurations;
+    [JsonProperty] private List<double?>? frameDurations;
 
     /// <summary>Gets the optional display duration for a frame occurrence.</summary>
     /// <param name="index">The index.</param>
@@ -37,20 +34,28 @@ public struct FrameSequence : IEnumerable<Frame>
     {
         if (index < 0 || index >= FrameCount)
             throw new ArgumentOutOfRangeException(nameof(index));
+
         if (seconds is { } duration && (!double.IsFinite(duration) || duration <= 0))
             throw new ArgumentOutOfRangeException(nameof(seconds));
+
         // Copy on write: cloned cycles share images, but editing timing must not change the original.
         frameDurations = frameDurations is null ? new List<double?>() : new(frameDurations);
+
         while (frameDurations.Count < FrameCount)
             frameDurations.Add(null);
+
         frameDurations[index] = seconds;
     }
 
     internal void SetDurations(IEnumerable<double?> durations)
     {
         var values = durations.ToList();
+
         if (values.Count != FrameCount || values.Any(v => v is { } d && (!double.IsFinite(d) || d <= 0)))
-            throw new ArgumentException("Durations must match the sequence and be positive finite values or null.", nameof(durations));
+            throw new ArgumentException(
+                "Durations must match the sequence and be positive finite values or null.",
+                nameof(durations));
+
         frameDurations = values.Any(v => v.HasValue) ? values : null;
     }
 
@@ -170,9 +175,18 @@ public struct FrameSequence : IEnumerable<Frame>
     /// <param name="xTile">The x-coordinate of the tile in the tilesheet</param>
     /// <param name="yTile">The y-coordinate of the tile in the tilesheet</param>
     /// <returns>The newly created and added <see cref="Frame"/></returns>
-    public Frame AddFrame(Tilesheet bmp, string regionName, int xTile, int yTile)
+    public Frame AddFrame(
+        Tilesheet bmp,
+        string regionName,
+        int xTile,
+        int yTile)
     {
-        return AddFrame(new Frame(bmp, regionName, xTile, yTile));
+        return AddFrame(
+            new Frame(
+                bmp,
+                regionName,
+                xTile,
+                yTile));
     }
 
     /// <summary>
@@ -184,7 +198,12 @@ public struct FrameSequence : IEnumerable<Frame>
     /// <returns>The newly created and added <see cref="Frame"/></returns>
     public Frame AddFrame(Tilesheet bmp, int xTile, int yTile)
     {
-        return AddFrame(new Frame(bmp, TilesheetRegion.DefaultRegionName, xTile, yTile));
+        return AddFrame(
+            new Frame(
+                bmp,
+                TilesheetRegion.DefaultRegionName,
+                xTile,
+                yTile));
     }
 
     /// <summary>
@@ -210,6 +229,7 @@ public struct FrameSequence : IEnumerable<Frame>
         if (idx < frameList.Count)
         {
             frameList.RemoveAt(idx);
+
             if (frameDurations is not null && idx < frameDurations.Count)
             {
                 frameDurations = new(frameDurations);
@@ -242,6 +262,7 @@ public struct FrameSequence : IEnumerable<Frame>
         {
             case CycleType.PingPong:
                 currentFrameIdx += curFrameIncrement;
+
                 if ((currentFrameIdx <= 0) || (currentFrameIdx >= frameList.Count - 1))
                     curFrameIncrement *= -1;
 
@@ -269,6 +290,7 @@ public struct FrameSequence : IEnumerable<Frame>
                 }
                 else
                     cycleFinished = false;
+
                 break;
 
             default:

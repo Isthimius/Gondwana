@@ -9,7 +9,7 @@
 @* Update the logical dimensions below to match your game. They control both
    browser fitting and Gondwana's one-time logical resolution. *@
 <div class="render-surface-container" style="@PresentationStyle">
-    <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" />
+    <BlazorGpuRenderSurfaceComponent @ref="_renderSurface"/>
 
     @if (_loading)
     {
@@ -90,6 +90,7 @@
                     Logger.LogWarning(disposeException, "Failed to clean up MyGame after initialization failure");
                 }
             }
+
             _host = null;
             _errorMessage = "Unable to initialize the game. Check the browser console and reload.";
         }
@@ -132,4 +133,5 @@
         _host?.Dispose();
         _host = null;
     }
+
 }

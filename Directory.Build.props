@@ -1,34 +1,34 @@
 <Project>
-	<PropertyGroup>
-		<!-- Allow dotnet restore/build on non-Windows CI runners for Windows-targeted projects -->
-		<EnableWindowsTargeting>true</EnableWindowsTargeting>
-		<Company>Hidden Worlds Games</Company>
-		<Product>Gondwana Game Engine</Product>
-		<Authors>Mike Adkins</Authors>
+    <PropertyGroup>
+        <!-- Allow dotnet restore/build on non-Windows CI runners for Windows-targeted projects -->
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+        <Company>Hidden Worlds Games</Company>
+        <Product>Gondwana Game Engine</Product>
+        <Authors>Mike Adkins</Authors>
 
-		<!-- License -->
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <!-- License -->
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 
-		<!-- Symbols / Source Link -->
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+        <!-- Symbols / Source Link -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 
-		<!-- XML docs -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NoWarn>$(NoWarn);1591</NoWarn>
+        <!-- XML docs -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
 
         <!-- Static analysis: .NET 10 recommended rules. -->
         <AnalysisLevel>10.0-recommended</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 
-		<!-- Disable Android workload auto-import to avoid SDK version mismatch issues -->
-		<DisableAndroidWorkload>true</DisableAndroidWorkload>
-		<DisableImplicitWorkloadImports>true</DisableImplicitWorkloadImports>
-	</PropertyGroup>
+        <!-- Disable Android workload auto-import to avoid SDK version mismatch issues -->
+        <DisableAndroidWorkload>true</DisableAndroidWorkload>
+        <DisableImplicitWorkloadImports>true</DisableImplicitWorkloadImports>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<!-- auto versioning -->
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50" PrivateAssets="all" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- auto versioning -->
+        <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50" PrivateAssets="all" />
+    </ItemGroup>
 </Project>

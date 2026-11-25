@@ -33,10 +33,12 @@ internal sealed class FixedStepAccumulator
     {
         if (updatesPerSecond <= 0)
             throw new ArgumentOutOfRangeException(nameof(updatesPerSecond));
+
         if (maxSteps <= 0)
             throw new ArgumentOutOfRangeException(nameof(maxSteps));
 
         long stepTicks = Math.Max(1, HighResTimer.TicksPerSecond / updatesPerSecond);
+
         long elapsedTicks = driverTick > _lastDriverTick
             ? driverTick - _lastDriverTick
             : 0;

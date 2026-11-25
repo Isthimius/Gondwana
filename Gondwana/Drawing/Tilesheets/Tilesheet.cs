@@ -15,8 +15,7 @@ public sealed class Tilesheet : IDisposable
 {
     private SKImage? _atlasImage;
 
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionProvenance? DefinitionProvenance { get; set; }
 
     /// <summary>
     /// Lazily-created image view of the complete tilesheet used by the command recorder
@@ -76,14 +75,14 @@ public sealed class Tilesheet : IDisposable
         AssetIdentifier = new AssetsFileIdentifier(resFile, AssetTypes.Image, entryName);
 
         using var assetStream = AssetIdentifier.Data
-            ?? throw new InvalidOperationException(
-                $"Tilesheet asset '{entryName}' could not be loaded from AssetsFile '{resFile.FilePath}'. " +
-                "The asset entry does not exist or returned a null data stream.");
+                                ?? throw new InvalidOperationException(
+                                    $"Tilesheet asset '{entryName}' could not be loaded from AssetsFile '{resFile.FilePath}'. " +
+                                    "The asset entry does not exist or returned a null data stream.");
 
         SkBitmap = SKBitmap.Decode(assetStream)
-            ?? throw new ArgumentException(
-                $"Failed to decode tilesheet bitmap from asset '{entryName}' in AssetsFile '{resFile.FilePath}'. " +
-                "The asset data is corrupt or not a supported image format.");
+                   ?? throw new ArgumentException(
+                       $"Failed to decode tilesheet bitmap from asset '{entryName}' in AssetsFile '{resFile.FilePath}'. " +
+                       "The asset data is corrupt or not a supported image format.");
 
         Name = entryName;
 
@@ -103,8 +102,9 @@ public sealed class Tilesheet : IDisposable
         ArgumentNullException.ThrowIfNull(baseSheet);
 
         Name = name;
+
         SkBitmap = SKBitmap.Decode(file)
-            ?? throw new ArgumentException($"Invalid image file: {file}");
+                   ?? throw new ArgumentException($"Invalid image file: {file}");
 
         ImageFilePath = file;
         ValueBag = new(baseSheet.ValueBag);
@@ -126,9 +126,9 @@ public sealed class Tilesheet : IDisposable
                 for (int x = 0; x < region.Columns; x++)
                 {
                     if (region.TryGetFrameCollisionAdjustOverride(
-                        x,
-                        y,
-                        out var frameCollisionAdjust))
+                            x,
+                            y,
+                            out var frameCollisionAdjust))
                     {
                         copiedRegion.SetFrameCollisionAdjust(
                             x,
@@ -137,9 +137,9 @@ public sealed class Tilesheet : IDisposable
                     }
 
                     if (region.TryGetFrameCollisionTypeOverride(
-                        x,
-                        y,
-                        out var frameCollisionType))
+                            x,
+                            y,
+                            out var frameCollisionType))
                     {
                         copiedRegion.SetFrameCollisionType(
                             x,
@@ -155,42 +155,52 @@ public sealed class Tilesheet : IDisposable
     /// Gets the current tilesheet bitmap used for rendering.
     /// </summary>
     public SKBitmap SkBitmap { get; private set; } = null!;
+
     /// <summary>
     /// Gets the source bitmap retained before masking or alpha conversion.
     /// </summary>
     public SKBitmap? SkBitmapOriginal { get; private set; }
+
     /// <summary>
     /// Gets the name.
     /// </summary>
     public string Name { get; internal set; } = string.Empty;
+
     /// <summary>
     /// Gets the named frame regions in the tilesheet.
     /// </summary>
     public List<TilesheetRegion> Regions { get; private set; } = new();
+
     /// <summary>
     /// Gets the default tilesheet region.
     /// </summary>
     public TilesheetRegion DefaultRegion => this[TilesheetRegion.DefaultRegionName];
+
     /// <summary>
     /// Gets or sets the custom typed values associated with this object.
     /// </summary>
     public TypedValueBag ValueBag { get; set; } = new();
+
     /// <summary>
     /// Gets the packed asset from which the image was loaded, if any.
     /// </summary>
     public AssetsFileIdentifier? AssetIdentifier { get; private set; }
+
     /// <summary>
     /// Gets the loose source image path, when available.
     /// </summary>
     public string ImageFilePath { get; private set; } = string.Empty;
+
     /// <summary>
     /// Gets the color used for transparency masking.
     /// </summary>
     public SKColor? MaskColor { get; private set; }
+
     /// <summary>
     /// Gets the per-channel tolerance used for transparency masking.
     /// </summary>
     public byte MaskTolerance { get; private set; } = 5;
+
     /// <summary>
     /// Gets whether alpha premultiplication has been applied.
     /// </summary>
@@ -267,6 +277,7 @@ public sealed class Tilesheet : IDisposable
     public bool RemoveRegion(string name, bool dispose = true)
     {
         var region = GetRegion(name);
+
         if (region == null)
             return false;
 
@@ -286,7 +297,11 @@ public sealed class Tilesheet : IDisposable
     /// <param name="y">The zero-based row in the tile grid.</param>
     /// <returns>A frame reference to the requested region and tile coordinates.</returns>
     public Frame GetFrame(string regionName, int x, int y) =>
-        new(this, regionName, x, y);
+        new(
+            this,
+            regionName,
+            x,
+            y);
 
     /// <summary>
     /// Creates a frame reference at the specified tile coordinates.
@@ -295,7 +310,11 @@ public sealed class Tilesheet : IDisposable
     /// <param name="y">The zero-based row in the tile grid.</param>
     /// <returns>A frame reference to the requested region and tile coordinates.</returns>
     public Frame GetFrame(int x, int y) =>
-        new(this, TilesheetRegion.DefaultRegionName, x, y);
+        new(
+            this,
+            TilesheetRegion.DefaultRegionName,
+            x,
+            y);
 
     /// <summary>
     /// Applies a color-key transparency mask and rebuilds the frame cache.
@@ -325,6 +344,7 @@ public sealed class Tilesheet : IDisposable
                 SKAlphaType.Premul);
 
             var withAlpha = new SKBitmap(info);
+
             using (var canvas = new SKCanvas(withAlpha))
                 canvas.DrawBitmap(SkBitmap, 0, 0);
 
@@ -419,6 +439,7 @@ public sealed class Tilesheet : IDisposable
 
         var fullPath = Path.GetFullPath(imageFilePath);
         var directory = Path.GetDirectoryName(fullPath);
+
         if (!string.IsNullOrWhiteSpace(directory))
             Directory.CreateDirectory(directory);
 
@@ -538,7 +559,11 @@ public sealed class Tilesheet : IDisposable
     {
         AddRegion(
             TilesheetRegion.DefaultRegionName,
-            new Rectangle(0, 0, SkBitmap.Width, SkBitmap.Height),
+            new Rectangle(
+                0,
+                0,
+                SkBitmap.Width,
+                SkBitmap.Height),
             tileSize ?? Size.Empty,
             tilePadding ?? Spacing.None,
             regionMargin ?? Spacing.None,

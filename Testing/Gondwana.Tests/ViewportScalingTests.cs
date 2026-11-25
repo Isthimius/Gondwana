@@ -47,12 +47,48 @@ public sealed class ViewportScalingTests : IDisposable
     /// <param name="bh">The bh value for this test case.</param>
     /// <param name="presentation">The presentation value for this test case.</param>
     [Theory]
-    [InlineData(3840, 2160, 0.5f, 1920, 1080, 2f)]
-    [InlineData(1920, 1080, 1f, 1920, 1080, 1f)]
-    [InlineData(1920, 1080, 2f, 3840, 2160, 0.5f)]
-    [InlineData(3, 5, 0.5f, 2, 3, 1.5f)]
-    [InlineData(1, 1, 0.001f, 1, 1, 1f)]
-    public void EstablishesLogicalResolution(int w, int h, float scale, int bw, int bh, float presentation)
+    [InlineData(
+        3840,
+        2160,
+        0.5f,
+        1920,
+        1080,
+        2f)]
+    [InlineData(
+        1920,
+        1080,
+        1f,
+        1920,
+        1080,
+        1f)]
+    [InlineData(
+        1920,
+        1080,
+        2f,
+        3840,
+        2160,
+        0.5f)]
+    [InlineData(
+        3,
+        5,
+        0.5f,
+        2,
+        3,
+        1.5f)]
+    [InlineData(
+        1,
+        1,
+        0.001f,
+        1,
+        1,
+        1f)]
+    public void EstablishesLogicalResolution(
+        int w,
+        int h,
+        float scale,
+        int bw,
+        int bh,
+        float presentation)
     {
         Engine.Instance.Configuration.RenderScale = scale;
         using var host = new RenderSurfaceHost<BitmapBackbuffer>(new Adapter(w, h));
@@ -61,7 +97,14 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(presentation, host.PresentationScale, 5);
         using var scene = new Scene();
         host.Bind(scene, false);
-        Assert.Equal(new Rectangle(0, 0, bw, bh), Assert.Single(host.ViewManager.Views).Viewport.TargetRectPx);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                0,
+                bw,
+                bh),
+            Assert.Single(host.ViewManager.Views).Viewport.TargetRectPx);
     }
 
     /// <summary>
@@ -95,6 +138,7 @@ public sealed class ViewportScalingTests : IDisposable
         var camera = view.Camera.PositionPx;
         int sizeChanges = 0;
         buffer.SizeChanged += (_, _) => sizeChanges++;
+
         foreach (var size in new[] { (3840, 2160), (1600, 1000), (0, 0), (900, 1600), (1600, 1000) })
         {
             adapter.Resize(size.Item1, size.Item2);
@@ -109,13 +153,28 @@ public sealed class ViewportScalingTests : IDisposable
 
         Assert.Equal(0, sizeChanges);
         Assert.Equal(5f / 6, host.PresentationScale, 5);
-        Assert.Equal(new SKRect(0, 50, 1600, 950), adapter.Presentation.DestinationRect);
+
+        Assert.Equal(
+            new SKRect(
+                0,
+                50,
+                1600,
+                950),
+            adapter.Presentation.DestinationRect);
+
         Engine.Instance.Configuration.RenderScale = 0.5f;
         buffer.BeginFrame();
         Assert.Equal((800, 500), (buffer.Width, buffer.Height));
         Assert.Equal(1, sizeChanges);
         Assert.Equal(2, host.PresentationScale);
-        Assert.Equal(new Rectangle(0, 0, 800, 500), view.Viewport.TargetRectPx);
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                0,
+                800,
+                500),
+            view.Viewport.TargetRectPx);
     }
 
     /// <summary>
@@ -134,7 +193,13 @@ public sealed class ViewportScalingTests : IDisposable
 
         adapter.Resize(1200, 720);
         Assert.Equal((800, 600), (buffer.Width, buffer.Height));
-        AssertRectApproximately(new SKRect(120, 0, 1080, 720),
+
+        AssertRectApproximately(
+            new SKRect(
+                120,
+                0,
+                1080,
+                720),
             adapter.Presentation.DestinationRect);
 
         host.RequestLogicalResolution(1200, 720);
@@ -142,9 +207,23 @@ public sealed class ViewportScalingTests : IDisposable
 
         Assert.Equal((1200, 720), (buffer.Width, buffer.Height));
         Assert.Same(view, Assert.Single(host.ViewManager.Views));
-        Assert.Equal(new Rectangle(0, 0, 1200, 720), view.Viewport.TargetRectPx);
-        AssertRectApproximately(new SKRect(0, 0, 1200, 720),
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                0,
+                1200,
+                720),
+            view.Viewport.TargetRectPx);
+
+        AssertRectApproximately(
+            new SKRect(
+                0,
+                0,
+                1200,
+                720),
             adapter.Presentation.DestinationRect);
+
         Assert.Equal(1f, Engine.Instance.Configuration.RenderScale);
 
         adapter.Resize(720, 1200);
@@ -152,9 +231,23 @@ public sealed class ViewportScalingTests : IDisposable
         buffer.BeginFrame();
 
         Assert.Equal((720, 1200), (buffer.Width, buffer.Height));
-        Assert.Equal(new Rectangle(0, 0, 720, 1200), view.Viewport.TargetRectPx);
-        AssertRectApproximately(new SKRect(0, 0, 720, 1200),
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                0,
+                720,
+                1200),
+            view.Viewport.TargetRectPx);
+
+        AssertRectApproximately(
+            new SKRect(
+                0,
+                0,
+                720,
+                1200),
             adapter.Presentation.DestinationRect);
+
         Assert.Throws<ArgumentOutOfRangeException>(() => host.RequestLogicalResolution(0, 100));
         Assert.Throws<ArgumentOutOfRangeException>(() => host.RequestLogicalResolution(100, 0));
 
@@ -249,19 +342,29 @@ public sealed class ViewportScalingTests : IDisposable
         using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
         using var buffer = host.Backbuffer;
         using var scene = new Scene();
-        var layer = scene.AddLayer(100, 100, width: 32, height: 32);
+
+        var layer = scene.AddLayer(
+            100,
+            100,
+            width: 32,
+            height: 32);
+
         host.Bind(scene, false);
         var view = Assert.Single(host.ViewManager.Views);
         view.Viewport.Zoom = zoom;
         view.Camera.SnapTo(new PointF(32, 16));
         var world = new PointF(96, 80);
         var logical = view.WorldPxToScreenPx(layer, world);
+
         foreach (var size in new[] { (800, 600), (1600, 1000), (400, 300) })
         {
             adapter.Resize(size.Item1, size.Item2);
             var t = adapter.Presentation;
-            var physical = new PointF(t.DestinationRect.Left + logical.X * t.Scale,
-                                      t.DestinationRect.Top + logical.Y * t.Scale);
+
+            var physical = new PointF(
+                t.DestinationRect.Left + logical.X * t.Scale,
+                t.DestinationRect.Top + logical.Y * t.Scale);
+
             Assert.True(t.TryAdapterPxToScreenPx(physical, out var screen));
             var restored = view.ScreenPxToWorldPx(layer, screen);
             Assert.Equal(world.X, restored.X, 3);
@@ -289,7 +392,13 @@ public sealed class ViewportScalingTests : IDisposable
         using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
         using var buffer = host.Backbuffer;
         using var scene = new Scene();
-        var layer = scene.AddLayer(20, 20, width: 16, height: 16);
+
+        var layer = scene.AddLayer(
+            20,
+            20,
+            width: 16,
+            height: 16);
+
         host.Bind(scene, false);
 
         var view = Assert.Single(host.ViewManager.Views);
@@ -310,6 +419,7 @@ public sealed class ViewportScalingTests : IDisposable
             touch.Set(
                 LogicalPixelCenterToAdapter(adapter, logical),
                 TouchPhase.Began);
+
             return Assert.Single(touch.ActiveTouches).Position;
         }
 
@@ -321,6 +431,7 @@ public sealed class ViewportScalingTests : IDisposable
         {
             float worldBoundaryX = column * layer.TileWidth;
             float worldCenterY = 5 * layer.TileHeight + layer.TileHeight / 2f;
+
             PointF mathematicalScreen = view.WorldPxToScreenPx(
                 layer,
                 new PointF(worldBoundaryX, worldCenterY));
@@ -328,6 +439,7 @@ public sealed class ViewportScalingTests : IDisposable
             int snappedX = (int)MathF.Round(
                 mathematicalScreen.X,
                 MidpointRounding.AwayFromZero);
+
             int screenY = (int)MathF.Round(
                 mathematicalScreen.Y,
                 MidpointRounding.AwayFromZero);
@@ -347,6 +459,7 @@ public sealed class ViewportScalingTests : IDisposable
         {
             float worldCenterX = 5 * layer.TileWidth + layer.TileWidth / 2f;
             float worldBoundaryY = row * layer.TileHeight;
+
             PointF mathematicalScreen = view.WorldPxToScreenPx(
                 layer,
                 new PointF(worldCenterX, worldBoundaryY));
@@ -354,6 +467,7 @@ public sealed class ViewportScalingTests : IDisposable
             int screenX = (int)MathF.Round(
                 mathematicalScreen.X,
                 MidpointRounding.AwayFromZero);
+
             int snappedY = (int)MathF.Round(
                 mathematicalScreen.Y,
                 MidpointRounding.AwayFromZero);
@@ -392,7 +506,13 @@ public sealed class ViewportScalingTests : IDisposable
         using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
         using var buffer = host.Backbuffer;
         using var scene = new Scene();
-        var layer = scene.AddLayer(20, 20, width: 16, height: 16);
+
+        var layer = scene.AddLayer(
+            20,
+            20,
+            width: 16,
+            height: 16);
+
         host.Bind(scene, false);
 
         var view = Assert.Single(host.ViewManager.Views);
@@ -401,12 +521,15 @@ public sealed class ViewportScalingTests : IDisposable
 
         const int boundaryColumn = 7;
         float boundaryWorldX = boundaryColumn * layer.TileWidth;
+
         PointF mathematicalScreen = view.WorldPxToScreenPx(
             layer,
             new PointF(boundaryWorldX, 64f));
+
         int snappedX = (int)MathF.Round(
             mathematicalScreen.X,
             MidpointRounding.AwayFromZero);
+
         int screenY = (int)MathF.Round(
             mathematicalScreen.Y,
             MidpointRounding.AwayFromZero);
@@ -451,10 +574,34 @@ public sealed class ViewportScalingTests : IDisposable
     [Fact]
     public void DirtyEdgesRoundOutwardsWithoutHoles()
     {
-        var transform = PresentationTransform.Fit(1920, 1080, 1600, 1000);
-        var first = transform.ScreenRectToAdapterRect(new Rectangle(0, 0, 7, 11));
-        var second = transform.ScreenRectToAdapterRect(new Rectangle(7, 0, 7, 11));
-        Assert.Equal(new Rectangle(0, 50, 6, 10), first);
+        var transform = PresentationTransform.Fit(
+            1920,
+            1080,
+            1600,
+            1000);
+
+        var first = transform.ScreenRectToAdapterRect(
+            new Rectangle(
+                0,
+                0,
+                7,
+                11));
+
+        var second = transform.ScreenRectToAdapterRect(
+            new Rectangle(
+                7,
+                0,
+                7,
+                11));
+
+        Assert.Equal(
+            new Rectangle(
+                0,
+                50,
+                6,
+                10),
+            first);
+
         Assert.True(first.Right >= second.Left);
     }
 
@@ -480,6 +627,7 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(SKColors.Black, dest.GetPixel(4, 0));
         Assert.Equal(SKColors.Red, dest.GetPixel(0, 3));
         Assert.Equal(SKColors.Blue, dest.GetPixel(7, 3));
+
         if (filter == RenderScalingFilter.NearestNeighbor)
             Assert.Equal(SKColors.Red, dest.GetPixel(3, 3));
         else
@@ -505,7 +653,13 @@ public sealed class ViewportScalingTests : IDisposable
         using var widget = new DragWidget(host, view);
         var mouse = new Mouse(adapter);
         MouseEventPoller.Initialize(mouse, new MouseEventConfiguration(true));
-        using var router = new WidgetInputRouter(host, null, MouseEventPoller.Instance, null);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            MouseEventPoller.Instance,
+            null);
+
         router.Register(widget);
         router.Start();
         var events = new List<string>();
@@ -518,13 +672,16 @@ public sealed class ViewportScalingTests : IDisposable
         widget.Dragged += _ => events.Add("drag");
         widget.DragEnded += _ => events.Add("end");
         long tick = 1;
+
         void Poll(int x, int y, bool down)
         {
             var t = adapter.Presentation;
             mouse.Position = new PointF(t.DestinationRect.Left + x * t.Scale, t.DestinationRect.Top + y * t.Scale);
             mouse.PressedButtons.Clear();
+
             if (down)
                 mouse.PressedButtons.Add(MouseButton.Left);
+
             MouseEventPoller.Instance!.PollForEvents(tick++);
         }
 
@@ -537,8 +694,10 @@ public sealed class ViewportScalingTests : IDisposable
         Poll(15, 15, true);
         Poll(-20, -10, true); // capture must keep routing outside the presented image
         Poll(-20, -10, false);
+
         foreach (var expected in new[] { "enter", "leave", "down", "up", "start", "drag", "end" })
             Assert.Contains(expected, events);
+
         Assert.False(widget.IsDragging);
         Assert.Equal(1, events.Count(x => x == "click"));
         events.Clear();
@@ -566,14 +725,37 @@ public sealed class ViewportScalingTests : IDisposable
         using var host = new RenderSurfaceHost<GpuBackbuffer>(adapter);
         using var buffer = host.Backbuffer;
         using var scene = new Scene();
-        var layer = scene.AddLayer(20, 20, width: 32, height: 32);
+
+        var layer = scene.AddLayer(
+            20,
+            20,
+            width: 32,
+            height: 32);
+
         host.Bind(scene, false);
         var view = Assert.Single(host.ViewManager.Views);
         view.Viewport.Zoom = zoom;
+
         using var text = (worldMode
-            ? new TextBlock(host, layer, view, new Rectangle(15, 15, 100, 70))
-            : new TextBlock(host, view, new Rectangle(15, 15, 100, 70)))
+                ? new TextBlock(
+                    host,
+                    layer,
+                    view,
+                    new Rectangle(
+                        15,
+                        15,
+                        100,
+                        70))
+                : new TextBlock(
+                    host,
+                    view,
+                    new Rectangle(
+                        15,
+                        15,
+                        100,
+                        70)))
             .SetText("Scale").SetFont(SKTypeface.Default, 14).SetColors(SKColors.White, SKColors.Transparent);
+
         var beforeBounds = text.GetDrawLocationScreen(view);
         host.ProduceRenderFrameSnapshot(0);
         using var before = host.GlRenderAndSnapshot();
@@ -609,7 +791,13 @@ public sealed class ViewportScalingTests : IDisposable
         using var widget = new DragWidget(host, Assert.Single(host.ViewManager.Views));
         var touch = new Touch(adapter);
         TouchEventPoller.Initialize(touch, new TouchEventConfiguration());
-        using var router = new WidgetInputRouter(host, null, null, TouchEventPoller.Instance);
+
+        using var router = new WidgetInputRouter(
+            host,
+            null,
+            null,
+            TouchEventPoller.Instance);
+
         router.Register(widget);
         router.Start();
         int clicks = 0, ups = 0, starts = 0, ends = 0;
@@ -618,6 +806,7 @@ public sealed class ViewportScalingTests : IDisposable
         widget.DragStarted += _ => starts++;
         widget.DragEnded += _ => ends++;
         long tick = 1;
+
         void Poll(int x, int y, TouchPhase phase)
         {
             var t = adapter.Presentation;
@@ -657,8 +846,16 @@ public sealed class ViewportScalingTests : IDisposable
         using var host = new RenderSurfaceHost<GpuBackbuffer>(adapter);
         using var buffer = host.Backbuffer;
         buffer.Canvas.Clear(SKColors.Red);
+
         using (var blue = new SKPaint { Color = SKColors.Blue })
-            buffer.Canvas.DrawRect(new SKRect(1, 0, 2, 1), blue);
+            buffer.Canvas.DrawRect(
+                new SKRect(
+                    1,
+                    0,
+                    2,
+                    1),
+                blue);
+
         adapter.Resize(8, 8);
         using var pixels = new SKBitmap(8, 8);
         using var canvas = new SKCanvas(pixels);
@@ -666,6 +863,7 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(SKColors.Black, pixels.GetPixel(4, 0));
         Assert.Equal(SKColors.Red, pixels.GetPixel(0, 3));
         Assert.Equal(SKColors.Blue, pixels.GetPixel(7, 3));
+
         if (filter == RenderScalingFilter.NearestNeighbor)
             Assert.Equal(SKColors.Red, pixels.GetPixel(3, 3));
         else
@@ -675,8 +873,10 @@ public sealed class ViewportScalingTests : IDisposable
     private sealed class Touch(Adapter adapter) : ITouchAdapter
     {
         private TouchPoint[] _active = [], _began = [], _ended = [];
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active;
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeBeganTouches()
         {
@@ -684,6 +884,7 @@ public sealed class ViewportScalingTests : IDisposable
             _began = [];
             return result;
         }
+
         /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches()
         {
@@ -691,12 +892,15 @@ public sealed class ViewportScalingTests : IDisposable
             _ended = [];
             return result;
         }
+
         internal void Set(PointF physical, TouchPhase phase)
         {
             var point = new TouchPoint(1, adapter.AdapterPxToScreenPx(physical), phase);
             _active = phase == TouchPhase.Ended ? [] : [point];
+
             if (phase == TouchPhase.Began)
                 _began = [point];
+
             if (phase == TouchPhase.Ended)
                 _ended = [point];
         }
@@ -707,14 +911,17 @@ public sealed class ViewportScalingTests : IDisposable
         Point logical)
     {
         var transform = adapter.Presentation;
+
         return new PointF(
             transform.DestinationRect.Left + (logical.X + 0.5f) * transform.Scale,
             transform.DestinationRect.Top + (logical.Y + 0.5f) * transform.Scale);
     }
 
-    internal sealed class Adapter(int width, int height, bool initial = true) : RenderSurfaceAdapterBase(width, height, initial)
+    internal sealed class Adapter(int width, int height, bool initial = true)
+        : RenderSurfaceAdapterBase(width, height, initial)
     {
         internal void Resize(int width, int height) => SetDestinationSize(width, height);
+
         /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect dest) => image.Dispose();
     }
@@ -722,23 +929,40 @@ public sealed class ViewportScalingTests : IDisposable
     private sealed class Mouse(Adapter adapter) : IMouseAdapter
     {
         internal PointF Position;
+
         /// <inheritdoc/>
         public Point CurrentPosition => adapter.AdapterPxToScreenPx(Position);
+
         /// <inheritdoc/>
         public HashSet<MouseButton> PressedButtons { get; } = [];
+
         /// <inheritdoc/>
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
+
         /// <inheritdoc/>
         public int ScrollDelta => 0;
     }
 
     private sealed class DragWidget : DraggableWidgetBase
     {
-        internal DragWidget(RenderSurfaceHostBase host, View view) : base(host, DirectDrawingMode.View, new PointF(10, 10))
+        internal DragWidget(RenderSurfaceHostBase host, View view) : base(
+            host,
+            DirectDrawingMode.View,
+            new PointF(10, 10))
         {
             CanReceiveFocus = true;
             IsKeyboardInputEnabled = true;
-            Add(new DirectRectangle(Color.White, host, view, new Rectangle(10, 10, 40, 40)));
+
+            Add(
+                new DirectRectangle(
+                    Color.White,
+                    host,
+                    view,
+                    new Rectangle(
+                        10,
+                        10,
+                        40,
+                        40)));
         }
     }
 }

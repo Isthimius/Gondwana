@@ -56,6 +56,7 @@ public sealed class GondwanaWikiServiceTests
             new TestHttpMessageHandler(request =>
             {
                 requestedUri = request.RequestUri;
+
                 return TestHttpMessageHandler.Text(
                     "# Collision Detection\n\nGondwana collision documentation.");
             }));
@@ -72,9 +73,11 @@ public sealed class GondwanaWikiServiceTests
 
         Assert.NotNull(requestedUri);
         Assert.Equal("raw.githubusercontent.com", requestedUri!.Host);
+
         Assert.Equal(
             "/wiki/Isthimius/Gondwana/Collision-Detection.md",
             requestedUri.AbsolutePath);
+
         Assert.Equal("Collision Detection", result.Title);
         Assert.Contains("Gondwana collision documentation", result.Markdown);
     }
@@ -129,6 +132,7 @@ public sealed class GondwanaWikiServiceTests
         Assert.Equal(2, result.ScannedPages);
         Assert.NotEmpty(result.Matches);
         Assert.Equal("Collision-Detection", result.Matches[0].Slug);
+
         Assert.Contains(
             "Collision",
             result.Matches[0].Snippet,

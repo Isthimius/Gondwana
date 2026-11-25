@@ -48,10 +48,15 @@ public static class TileBounds
     {
         if (!include)
             return cell;
+
         return tile is Gondwana.Scenes.SceneLayerTile fixedTile
-            ? ApplyOverhang(TileTransformGeometry.GetVisualBounds(cell, Spacing.None, fixedTile.Transform), tile.Overhang, true)
+            ? ApplyOverhang(
+                TileTransformGeometry.GetVisualBounds(cell, Spacing.None, fixedTile.Transform),
+                tile.Overhang,
+                true)
             : ApplyOverhang(cell, tile.Overhang, true);
     }
+
     /// <summary>
     /// Applies an overhang adjustment to a rectangle, expanding its bounds in all directions.
     /// </summary>

@@ -4,9 +4,12 @@ namespace Gondwana.Tests;
 
 public sealed class WorkspaceSessionTests : IDisposable
 {
-    private readonly string _directory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "GondwanaSessions-" + Guid.NewGuid())).FullName;
+    private readonly string _directory = Directory
+        .CreateDirectory(Path.Combine(Path.GetTempPath(), "GondwanaSessions-" + Guid.NewGuid())).FullName;
+
     private readonly List<string> _messages = [];
     private WorkspaceSessionStore Store(string application = "studio") => new(_messages.Add, application, _directory);
+
     private WorkspaceSessionDocument FileDocument(string name)
     {
         string path = Path.Combine(_directory, name);
@@ -19,14 +22,24 @@ public sealed class WorkspaceSessionTests : IDisposable
     {
         var first = FileDocument("first.gts");
         var second = FileDocument("second.gscn");
-        var session = new WorkspaceSession { WorkingDirectory = _directory, Documents = [second, first], ActiveDocument = first.Path };
+
+        var session = new WorkspaceSession
+            { WorkingDirectory = _directory, Documents = [second, first], ActiveDocument = first.Path };
+
         Assert.True(Store().Write(session));
         File.WriteAllText(first.Path, "changed after shutdown");
         var opened = new List<string>();
         string? directory = null;
         string? active = null;
-        WorkspaceSessionRestore.Restore(Store().Read(), ["gts", "gscn"], path => directory = path,
-            document => opened.Add(File.ReadAllText(document.Path)), path => active = path, _messages.Add);
+
+        WorkspaceSessionRestore.Restore(
+            Store().Read(),
+            ["gts", "gscn"],
+            path => directory = path,
+            document => opened.Add(File.ReadAllText(document.Path)),
+            path => active = path,
+            _messages.Add);
+
         Assert.Equal(_directory, directory);
         Assert.Equal(new[] { "original content", "changed after shutdown" }, opened);
         Assert.Equal(first.Path, active);
@@ -42,26 +55,38 @@ public sealed class WorkspaceSessionTests : IDisposable
         var good = FileDocument("good.gts");
         var failed = FileDocument("failed.gts");
         var unavailable = FileDocument("unsupported.gscn");
+
         var session = new WorkspaceSession
         {
             WorkingDirectory = Path.Combine(_directory, "removed-directory"),
-            Documents = [new(Path.Combine(_directory, "removed.gts"), "gts"), new("\0invalid", "gts"),
-                unavailable, failed, failed, good, good with { Path = Path.Combine(_directory, ".", "good.gts") }],
+            Documents =
+            [
+                new(Path.Combine(_directory, "removed.gts"), "gts"), new("\0invalid", "gts"),
+                unavailable, failed, failed, good, good with { Path = Path.Combine(_directory, ".", "good.gts") }
+            ],
             ActiveDocument = failed.Path
         };
+
         var opened = new List<string>();
         int failures = 0;
-        WorkspaceSessionRestore.Restore(session, ["gts"], _ => Assert.Fail("Missing directory restored"),
+
+        WorkspaceSessionRestore.Restore(
+            session,
+            ["gts"],
+            _ => Assert.Fail("Missing directory restored"),
             document =>
             {
                 if (document == failed)
                 {
                     failures++;
-                    throw new InvalidDataException("Changed file is corrupt"); }
+                    throw new InvalidDataException("Changed file is corrupt");
+                }
 
                 opened.Add(document.Path);
             },
-            _ => Assert.Fail("Failed active document activated"), _messages.Add);
+            _ => Assert.Fail("Failed active document activated"),
+            _messages.Add);
+
         Assert.Equal(new[] { good.Path }, opened);
         Assert.Equal(1, failures);
         Assert.Equal(5, _messages.Count);
@@ -72,9 +97,20 @@ public sealed class WorkspaceSessionTests : IDisposable
     [InlineData(true, true)]
     public void OptOutAndEmptyStartupDoNotTouchWorkspace(bool restore, bool empty)
     {
-        var session = new WorkspaceSession { RestoreOnStartup = restore, WorkingDirectory = _directory, Documents = [FileDocument("file.gts")] };
+        var session = new WorkspaceSession
+            { RestoreOnStartup = restore, WorkingDirectory = _directory, Documents = [FileDocument("file.gts")] };
+
         Assert.True(Store().Write(session));
-        WorkspaceSessionRestore.Restore(Store().Read(), ["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _messages.Add, empty);
+
+        WorkspaceSessionRestore.Restore(
+            Store().Read(),
+            ["gts"],
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _messages.Add,
+            empty);
+
         Assert.Equal(restore, Store().Read().RestoreOnStartup);
         Assert.Empty(_messages);
     }
@@ -100,9 +136,25 @@ public sealed class WorkspaceSessionTests : IDisposable
         var store = Store();
         Assert.True(store.Write(new()));
         File.WriteAllText(store.FilePath, "{\"Documents\":null}");
-        WorkspaceSessionRestore.Restore(store.Read(), ["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _messages.Add);
+
+        WorkspaceSessionRestore.Restore(
+            store.Read(),
+            ["gts"],
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _messages.Add);
+
         File.WriteAllText(store.FilePath, "{\"Documents\":[null]}");
-        WorkspaceSessionRestore.Restore(store.Read(), ["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _messages.Add);
+
+        WorkspaceSessionRestore.Restore(
+            store.Read(),
+            ["gts"],
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _ => Assert.Fail(),
+            _messages.Add);
+
         Assert.Empty(_messages);
     }
 

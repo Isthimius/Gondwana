@@ -27,8 +27,10 @@ public static class EasingFunctions
     public static float EaseInOutQuad(float t)
     {
         t *= 2f;
+
         if (t < 1f)
             return 0.5f * t * t;
+
         t -= 1f;
         return -0.5f * (t * (t - 2f) - 1f);
     }
@@ -53,8 +55,10 @@ public static class EasingFunctions
     public static float EaseInOutCubic(float t)
     {
         t *= 2f;
+
         if (t < 1f)
             return 0.5f * t * t * t;
+
         t -= 2f;
         return 0.5f * (t * t * t + 2f);
     }
@@ -79,8 +83,10 @@ public static class EasingFunctions
     public static float EaseInOutQuart(float t)
     {
         t *= 2f;
+
         if (t < 1f)
             return 0.5f * t * t * t * t;
+
         t -= 2f;
         return -0.5f * (t * t * t * t - 2f);
     }
@@ -105,8 +111,10 @@ public static class EasingFunctions
     public static float EaseInOutQuint(float t)
     {
         t *= 2f;
+
         if (t < 1f)
             return 0.5f * t * t * t * t * t;
+
         t -= 2f;
         return 0.5f * (t * t * t * t * t + 2f);
     }

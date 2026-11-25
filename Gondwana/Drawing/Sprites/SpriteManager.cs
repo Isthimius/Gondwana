@@ -14,8 +14,7 @@ namespace Gondwana.Drawing.Sprites;
 /// </summary>
 public sealed class SpriteManager : IDisposable
 {
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionProvenance? DefinitionProvenance { get; set; }
 
     private static readonly Lazy<SpriteManager> _instance = new(() => new SpriteManager());
 
@@ -71,6 +70,7 @@ public sealed class SpriteManager : IDisposable
             _defaultCollisionProfile = value;
         }
     }
+
     #region public methods
 
     /// <summary>
@@ -152,6 +152,7 @@ public sealed class SpriteManager : IDisposable
     public void Remove(string ID)
     {
         Sprite? sprite = GetSpriteByID(ID);
+
         if (sprite != null)
             Remove(sprite);
     }
@@ -163,8 +164,10 @@ public sealed class SpriteManager : IDisposable
     {
         DefinitionProvenance = null;
         List<Sprite> tempSprites;
+
         lock (_spriteListLock)
             tempSprites = new List<Sprite>(_spriteList);
+
         foreach (Sprite sprite in tempSprites)
             Remove(sprite);
     }
@@ -177,6 +180,7 @@ public sealed class SpriteManager : IDisposable
     public Sprite? GetSpriteByID(string ID)
     {
         List<Sprite> snapshot;
+
         lock (_spriteListLock)
             snapshot = new List<Sprite>(_spriteList);
 
@@ -198,6 +202,7 @@ public sealed class SpriteManager : IDisposable
             for (int i = 0; i < _spriteList.Count; i++)
             {
                 var sprite = _spriteList[i];
+
                 if (sprite.Visible &&
                     ReferenceEquals(sprite.SceneLayer, sceneLayer) &&
                     sprite.VisualBoundsWorld.IntersectsWith(worldRect))
@@ -226,6 +231,7 @@ public sealed class SpriteManager : IDisposable
         List<Sprite> retSprites = new();
 
         List<Sprite> snapshot;
+
         lock (_spriteListLock)
             snapshot = new List<Sprite>(_spriteList);
 
@@ -267,6 +273,7 @@ public sealed class SpriteManager : IDisposable
         var retSprites = new List<Sprite>();
 
         List<Sprite> snapshot;
+
         lock (_spriteListLock)
             snapshot = new List<Sprite>(_spriteList);
 
@@ -307,6 +314,7 @@ public sealed class SpriteManager : IDisposable
         var retSprites = new List<Sprite>();
 
         List<Sprite> snapshot;
+
         lock (_spriteListLock)
             snapshot = new List<Sprite>(_spriteList);
 
@@ -342,6 +350,7 @@ public sealed class SpriteManager : IDisposable
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
         List<Sprite> snapshot;
+
         lock (_spriteListLock)
             snapshot = new List<Sprite>(_spriteList);
 
@@ -385,6 +394,7 @@ public sealed class SpriteManager : IDisposable
     private void SweepDisposedSprites()
     {
         int i = 0;
+
         while (i < _spriteList.Count)
         {
             if (!_spriteList[i]._pendingDispose)
@@ -412,6 +422,7 @@ public sealed class SpriteManager : IDisposable
             // The caller cannot roll back an instance that never returned from CreateSprite/CloneSprite.
             lock (_spriteListLock)
                 _spriteList.Remove(sprite);
+
             sprite.DisposeImmediate();
             throw;
         }

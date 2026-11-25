@@ -21,10 +21,15 @@ public sealed class WinFormsTouchStateTests : IDisposable
         state.End(7, new Point(24, 32));
 
         Assert.Empty(state.ActiveTouches);
-        Assert.Equal(new TouchPoint(7, new Point(24, 32), TouchPhase.Began),
+
+        Assert.Equal(
+            new TouchPoint(7, new Point(24, 32), TouchPhase.Began),
             Assert.Single(state.ConsumeBeginnings()));
-        Assert.Equal(new TouchPoint(7, new Point(24, 32), TouchPhase.Ended),
+
+        Assert.Equal(
+            new TouchPoint(7, new Point(24, 32), TouchPhase.Ended),
             Assert.Single(state.ConsumeEndings()));
+
         Assert.Empty(state.ConsumeBeginnings());
         Assert.Empty(state.ConsumeEndings());
     }
@@ -39,9 +44,13 @@ public sealed class WinFormsTouchStateTests : IDisposable
         state.End(2, new Point(31, 41));
 
         Assert.Equal(2, state.ConsumeBeginnings().Count);
-        Assert.Equal(new TouchPoint(2, new Point(31, 41), TouchPhase.Ended),
+
+        Assert.Equal(
+            new TouchPoint(2, new Point(31, 41), TouchPhase.Ended),
             Assert.Single(state.ConsumeEndings()));
-        Assert.Equal(new TouchPoint(1, new Point(12, 24), TouchPhase.Moved),
+
+        Assert.Equal(
+            new TouchPoint(1, new Point(12, 24), TouchPhase.Moved),
             Assert.Single(state.ActiveTouches));
     }
 
@@ -55,8 +64,11 @@ public sealed class WinFormsTouchStateTests : IDisposable
 
         Assert.Empty(state.ActiveTouches);
         Assert.Equal(2, state.ConsumeBeginnings().Count);
-        Assert.All(state.ConsumeEndings(),
+
+        Assert.All(
+            state.ConsumeEndings(),
             point => Assert.Equal(TouchPhase.Cancelled, point.Phase));
+
         Assert.Empty(state.ConsumeEndings());
     }
 
@@ -153,6 +165,7 @@ public sealed class WinFormsTouchStateTests : IDisposable
 
         state.Begin(1, new Point(10, 10));
         state.End(1, new Point(10, 10));
+
         poller.TouchBegan += (_, e) =>
         {
             if (e.Touch.Id != 1)
@@ -180,7 +193,8 @@ public sealed class WinFormsTouchStateTests : IDisposable
     [InlineData(0x12345678L, false)]
     public void FiltersOnlyTouchPromotedMouseMessages(long extraInfo, bool expected)
     {
-        Assert.Equal(expected,
+        Assert.Equal(
+            expected,
             WinFormsTouchState.IsPromotedTouchMouseMessage(extraInfo));
     }
 

@@ -73,8 +73,8 @@ public abstract class AvaloniaBitmapGameHost : GameHostBase
     protected sealed override void BindScene()
     {
         var scene = Scene
-            ?? throw new InvalidOperationException(
-                $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
+                    ?? throw new InvalidOperationException(
+                        $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
         RenderSurface.Host.Bind(scene, false);
     }

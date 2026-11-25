@@ -19,4 +19,3 @@ public enum CollisionResponseType
     /// </summary>
     Trigger
 }
-

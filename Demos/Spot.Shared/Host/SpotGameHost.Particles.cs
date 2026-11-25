@@ -56,10 +56,15 @@ internal sealed partial class SpotGameRuntime
             return;
 
         DisposeParticleSurface();
+
         _particleSurface = new ParticleSurface(
             SurfaceHost,
             SpotGame.BackgroundGameField,
-            new Rectangle(0, 0, 769, 769),
+            new Rectangle(
+                0,
+                0,
+                769,
+                769),
             "cloudSurface",
             4);
 
@@ -94,7 +99,12 @@ internal sealed partial class SpotGameRuntime
                 p.Rotation = 0;
 
                 byte alpha = (byte)Random.Shared.Next(100, 180);
-                p.Tint = new SKColor(255, 255, 255, alpha);
+
+                p.Tint = new SKColor(
+                    255,
+                    255,
+                    255,
+                    alpha);
             }
         };
     }

@@ -21,8 +21,10 @@ public sealed class WorkspaceSessionController
         _hadSession = File.Exists(_store.FilePath);
         _session = _store.Read();
 
-        StartEmpty = (startEmpty ?? (Environment.GetCommandLineArgs().Contains("--empty-workspace", StringComparer.OrdinalIgnoreCase)
-            || (Control.ModifierKeys & Keys.Shift) != 0)) || _session.StartEmptyOnce;
+        StartEmpty = (startEmpty ?? (Environment.GetCommandLineArgs().Contains(
+                                         "--empty-workspace",
+                                         StringComparer.OrdinalIgnoreCase)
+                                     || (Control.ModifierKeys & Keys.Shift) != 0)) || _session.StartEmptyOnce;
 
         if (_session.StartEmptyOnce)
         {
@@ -43,7 +45,9 @@ public sealed class WorkspaceSessionController
     public void AddMenu(ToolStripMenuItem file)
     {
         file.DropDownItems.Add(new ToolStripSeparator());
-        var restore = new ToolStripMenuItem("Restore workspace on startup") { Checked = _session.RestoreOnStartup, CheckOnClick = true };
+
+        var restore = new ToolStripMenuItem("Restore workspace on startup")
+            { Checked = _session.RestoreOnStartup, CheckOnClick = true };
 
         restore.Click += (_, _) =>
         {
@@ -79,13 +83,14 @@ public sealed class WorkspaceSessionController
         file.DropDownItems.AddRange([restore, empty]);
     }
 
-    public void Restore(IReadOnlyCollection<string> formats,
-                          Action<string> setDirectory,
-                          Action<WorkspaceSessionDocument> open,
-                          Action<string> activate,
-                          Action<string> reportStartup,
-                          Action<string> reportPersistenceError,
-                          Action<WorkspaceSessionDocument>? activatePacked = null)
+    public void Restore(
+        IReadOnlyCollection<string> formats,
+        Action<string> setDirectory,
+        Action<WorkspaceSessionDocument> open,
+        Action<string> activate,
+        Action<string> reportStartup,
+        Action<string> reportPersistenceError,
+        Action<WorkspaceSessionDocument>? activatePacked = null)
     {
         if (_restored)
             return;
@@ -101,11 +106,19 @@ public sealed class WorkspaceSessionController
 
         try
         {
-            WorkspaceSessionRestore.Restore(_session, formats, setDirectory, open, activate, message =>
-            {
-                Trace.TraceWarning(message);
-                reportStartup(message);
-            }, StartEmpty, activatePacked);
+            WorkspaceSessionRestore.Restore(
+                _session,
+                formats,
+                setDirectory,
+                open,
+                activate,
+                message =>
+                {
+                    Trace.TraceWarning(message);
+                    reportStartup(message);
+                },
+                StartEmpty,
+                activatePacked);
         }
         finally
         {
@@ -118,12 +131,23 @@ public sealed class WorkspaceSessionController
     {
         var documents = paths.Select(WorkspaceSessionDocument.FromPath).OfType<WorkspaceSessionDocument>()
             .DistinctBy(document => document.Path, StringComparer.OrdinalIgnoreCase).ToArray();
-        SaveDocuments(directory, documents, documents.FirstOrDefault(document => string.Equals(document.Path, activePath, StringComparison.OrdinalIgnoreCase)));
+
+        SaveDocuments(
+            directory,
+            documents,
+            documents.FirstOrDefault(document => string.Equals(
+                document.Path,
+                activePath,
+                StringComparison.OrdinalIgnoreCase)));
     }
 
-    public void SaveDocuments(string directory, IEnumerable<WorkspaceSessionDocument?> identities, WorkspaceSessionDocument? active)
+    public void SaveDocuments(
+        string directory,
+        IEnumerable<WorkspaceSessionDocument?> identities,
+        WorkspaceSessionDocument? active)
     {
         var documents = identities.OfType<WorkspaceSessionDocument>().ToArray();
+
         _session = _session with
         {
             WorkingDirectory = directory,
@@ -131,12 +155,14 @@ public sealed class WorkspaceSessionController
             ActiveDocument = active?.EntryName is null ? active?.Path : null,
             ActivePackedDocument = active?.EntryName is not null ? active : null
         };
+
         _store.Write(_session);
     }
 
     public static IEnumerable<T> DocumentOrder<T>(DockPanel panel, IEnumerable<T> documents) where T : DockContent
     {
         var owned = documents.ToHashSet();
+
         return panel.Panes.SelectMany(pane => pane.Contents.Cast<IDockContent>()).OfType<T>()
             .Where(owned.Contains).Concat(documents).Distinct().ToArray();
     }
@@ -144,12 +170,23 @@ public sealed class WorkspaceSessionController
     public static void ShowStatus(Form owner, IEnumerable<string> messages)
     {
         string[] items = messages.ToArray();
+
         if (items.Length > 0)
-            ThemedMessageBox.Show(owner, string.Join(Environment.NewLine, items), "Workspace restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ThemedMessageBox.Show(
+                owner,
+                string.Join(Environment.NewLine, items),
+                "Workspace restoration",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
     }
 
     public static void ShowPersistenceError(Form owner, string message) =>
-        ThemedMessageBox.Show(owner, message, "Workspace session preferences", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        ThemedMessageBox.Show(
+            owner,
+            message,
+            "Workspace session preferences",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning);
 
     private void ReportPersistenceError(string message)
     {

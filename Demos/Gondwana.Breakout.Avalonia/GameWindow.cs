@@ -29,7 +29,9 @@ internal sealed class GameWindow : Window
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
         };
+
         Content = _surface;
+
         KeyDown += (_, e) =>
         {
             if (e.Key == Key.Escape)
@@ -53,20 +55,22 @@ internal sealed class GameWindow : Window
         Height += 720d / scaling - _surface.Bounds.Height;
 
         // Allow the corrected layout to reach the GPU adapter before initialization.
-        Dispatcher.UIThread.Post(() =>
-        {
-            try
+        Dispatcher.UIThread.Post(
+            () =>
             {
-                _host = new BreakoutGameHost(_surface);
-                _host.Initialize(logLevel: LogLevel.Warning);
-                _surface.Focus();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"Breakout Avalonia failed: {ex}");
-                Close();
-            }
-        }, DispatcherPriority.Loaded);
+                try
+                {
+                    _host = new BreakoutGameHost(_surface);
+                    _host.Initialize(logLevel: LogLevel.Warning);
+                    _surface.Focus();
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError($"Breakout Avalonia failed: {ex}");
+                    Close();
+                }
+            },
+            DispatcherPriority.Loaded);
     }
 
     protected override void OnClosed(EventArgs e)

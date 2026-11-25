@@ -30,17 +30,17 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         var checks = new List<(string Label, Func<CheckResult> Check, Action? Fix)>
         {
-            ("Git",                CheckGit,               null),
-            (".NET SDK",           CheckDotNetSdk,         null),
-            ("nbgv",               CheckNbgv,              null),
-            ("Gondwana CLI",       CheckGondwanaCli,       FixGondwanaCli),
+            ("Git", CheckGit, null),
+            (".NET SDK", CheckDotNetSdk, null),
+            ("nbgv", CheckNbgv, null),
+            ("Gondwana CLI", CheckGondwanaCli, FixGondwanaCli),
             ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
-            ("wasm-tools",         CheckWasmTools,         FixWasmTools),
-            ("git-cliff",          CheckGitCliff,          FixGitCliff),
-            ("butler",             CheckButler,            FixButler),
-            ("SkiaSharp",          CheckSkiaSharp,         null),
-            ("SDL2",               CheckSdl2,              null),
-            ("LibVLC",             CheckLibVlc,            null),
+            ("wasm-tools", CheckWasmTools, FixWasmTools),
+            ("git-cliff", CheckGitCliff, FixGitCliff),
+            ("butler", CheckButler, FixButler),
+            ("SkiaSharp", CheckSkiaSharp, null),
+            ("SDL2", CheckSdl2, null),
+            ("LibVLC", CheckLibVlc, null),
         };
 
         int maxLabel = checks.Max(c => c.Label.Length);
@@ -62,14 +62,17 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         {
             "Gondwana Templates",
         };
+
         var windowsOnlyAlwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "git-cliff",
             "butler",
         };
+
         bool ShouldAlwaysFix(string label) =>
             alwaysFixLabels.Contains(label) ||
             (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && windowsOnlyAlwaysFixLabels.Contains(label));
+
         bool hasAlwaysFixes = checks.Any(c => c.Fix != null && ShouldAlwaysFix(c.Label));
 
         if (exitCode == 0 && !hasAlwaysFixes)
@@ -121,6 +124,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         foreach (var (label, check, _) in checks)
         {
             CheckResult result;
+
             try
             {
                 result = check();
@@ -168,29 +172,37 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             {
                 case CheckStatus.Ok:
                     AnsiConsole.Markup($"  {paddedLabel}  [green]OK[/]");
+
                     if (!string.IsNullOrWhiteSpace(result.Detail))
                         AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
+
                     AnsiConsole.WriteLine();
                     break;
 
                 case CheckStatus.Warning:
                     AnsiConsole.Markup($"  {paddedLabel}  [yellow]Warning[/]");
+
                     if (!string.IsNullOrWhiteSpace(result.Detail))
                         AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
+
                     AnsiConsole.WriteLine();
                     break;
 
                 case CheckStatus.Fail:
                     AnsiConsole.Markup($"  {paddedLabel}  [red]Missing[/]");
+
                     if (!string.IsNullOrWhiteSpace(result.Detail))
                         AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
+
                     AnsiConsole.WriteLine();
                     break;
 
                 case CheckStatus.Skip:
                     AnsiConsole.Markup($"  {paddedLabel}  [dim]Not checked[/]");
+
                     if (!string.IsNullOrWhiteSpace(result.Detail))
                         AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
+
                     AnsiConsole.WriteLine();
                     break;
             }
@@ -226,10 +238,14 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static void FixButler()
     {
         var pathOutput = ProcessHelper.Run("butler", "--version", out var pathExitCode);
+
         if (pathExitCode == 0 && !string.IsNullOrWhiteSpace(pathOutput))
         {
             var pathVersion = pathOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-            AnsiConsole.MarkupLine($"[green]butler is already available on PATH: {Markup.Escape(pathVersion ?? "found")}[/]");
+
+            AnsiConsole.MarkupLine(
+                $"[green]butler is already available on PATH: {Markup.Escape(pathVersion ?? "found")}[/]");
+
             return;
         }
 
@@ -240,7 +256,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             AddDirectoryToPersistentUserPath(existingInstallDir);
 
             var existingOutput = ProcessHelper.Run(existingButlerPath, "--version", out var existingExitCode);
-            var existingVersion = existingOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+
+            var existingVersion = existingOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
+                ?.Trim();
+
             if (existingExitCode == 0 && !string.IsNullOrWhiteSpace(existingVersion))
                 AnsiConsole.MarkupLine($"[green]butler already installed: {Markup.Escape(existingVersion)}[/]");
             else
@@ -286,16 +305,19 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var installDir = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "itch", "butler")
+                "itch",
+                "butler")
             : Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".itch", "butler");
+                ".itch",
+                "butler");
 
         var urls = new[]
         {
             $"https://broth.itch.ovh/butler/{platform}/LATEST/archive/default",
             $"https://broth.itch.zone/butler/{platform}/LATEST/archive/default",
         };
+
         var zipPath = Path.Combine(Path.GetTempPath(), $"butler-install-{Guid.NewGuid():N}.zip");
 
         try
@@ -305,9 +327,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
 
             Exception? lastDownloadError = null;
+
             foreach (var url in urls)
             {
                 AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
+
                 try
                 {
                     try
@@ -315,17 +339,25 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                         if (File.Exists(zipPath))
                             File.Delete(zipPath);
                     }
-                    catch { }
+                    catch
+                    {
+                    }
 
                     using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
                     using var response = http.SendAsync(
                         request,
                         HttpCompletionOption.ResponseHeadersRead,
                         System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+
                     response.EnsureSuccessStatusCode();
-                    using var responseStream = response.Content.ReadAsStreamAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+
+                    using var responseStream = response.Content
+                        .ReadAsStreamAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+
                     using (var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
-                        responseStream.CopyToAsync(fs, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+                        responseStream.CopyToAsync(fs, System.Threading.CancellationToken.None).GetAwaiter()
+                            .GetResult();
 
                     lastDownloadError = null;
                     break;
@@ -333,12 +365,16 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 catch (Exception ex)
                 {
                     lastDownloadError = ex;
-                    AnsiConsole.MarkupLine($"[yellow]Download failed from {Markup.Escape(url)}: {Markup.Escape(ex.Message)}[/]");
+
+                    AnsiConsole.MarkupLine(
+                        $"[yellow]Download failed from {Markup.Escape(url)}: {Markup.Escape(ex.Message)}[/]");
                 }
             }
 
             if (lastDownloadError is not null)
-                throw new InvalidOperationException($"Could not download butler from any known source. Last error: {lastDownloadError.Message}", lastDownloadError);
+                throw new InvalidOperationException(
+                    $"Could not download butler from any known source. Last error: {lastDownloadError.Message}",
+                    lastDownloadError);
 
             ZipFile.ExtractToDirectory(zipPath, installDir, overwriteFiles: true);
 
@@ -346,7 +382,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                File.SetUnixFileMode(butlerExe,
+                File.SetUnixFileMode(
+                    butlerExe,
                     UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
                     UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
                     UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
@@ -357,7 +394,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
             AnsiConsole.MarkupLine($"[green]butler installed to {Markup.Escape(installDir)}.[/]");
             AnsiConsole.MarkupLine($"[green]Added '{Markup.Escape(installDir)}' to the user PATH.[/]");
-            AnsiConsole.MarkupLine("[dim]Open a new terminal, then run 'butler login' to authenticate with itch.io.[/]");
+
+            AnsiConsole.MarkupLine(
+                "[dim]Open a new terminal, then run 'butler login' to authenticate with itch.io.[/]");
         }
         catch (Exception ex)
         {
@@ -371,35 +410,58 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 if (File.Exists(zipPath))
                     File.Delete(zipPath);
             }
-            catch { }
+            catch
+            {
+            }
         }
     }
 
-    private static void FixViaWinget(string toolName, string packageId, string installUrl, string versionArgs)
+    private static void FixViaWinget(
+        string toolName,
+        string packageId,
+        string installUrl,
+        string versionArgs)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            AnsiConsole.MarkupLine($"[yellow]Automatic install/update for {Markup.Escape(toolName)} is currently supported only on Windows via winget.[/]");
+            AnsiConsole.MarkupLine(
+                $"[yellow]Automatic install/update for {Markup.Escape(toolName)} is currently supported only on Windows via winget.[/]");
+
             AnsiConsole.MarkupLine($"[dim]Install from {Markup.Escape(installUrl)}.[/]");
             return;
         }
 
         var wingetOutput = ProcessHelper.Run("winget", "--version", out var wingetExit);
+
         if (wingetExit != 0 || string.IsNullOrWhiteSpace(wingetOutput))
         {
-            AnsiConsole.MarkupLine($"[red]winget not found; cannot auto-install or auto-update {Markup.Escape(toolName)}.[/]");
+            AnsiConsole.MarkupLine(
+                $"[red]winget not found; cannot auto-install or auto-update {Markup.Escape(toolName)}.[/]");
+
             AnsiConsole.MarkupLine($"[dim]Install from {Markup.Escape(installUrl)}.[/]");
             return;
         }
 
         var toolOutput = ProcessHelper.Run(toolName, versionArgs, out var toolExit);
+
         if (toolExit == 0 && !string.IsNullOrWhiteSpace(toolOutput))
         {
-            ProcessHelper.RunLive("winget", ["upgrade", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+            ProcessHelper.RunLive(
+                "winget",
+                [
+                    "upgrade", "--id", packageId, "--exact", "--silent", "--accept-source-agreements",
+                    "--accept-package-agreements"
+                ]);
+
             return;
         }
 
-        ProcessHelper.RunLive("winget", ["install", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+        ProcessHelper.RunLive(
+            "winget",
+            [
+                "install", "--id", packageId, "--exact", "--silent", "--accept-source-agreements",
+                "--accept-package-agreements"
+            ]);
 
         var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
         var machinePath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine) ?? string.Empty;
@@ -409,8 +471,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var seenPathEntries = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var pathEntry in new[] { processPath, machinePath, userPath }
-            .Where(p => !string.IsNullOrWhiteSpace(p))
-            .SelectMany(p => p.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)))
+                     .Where(p => !string.IsNullOrWhiteSpace(p))
+                     .SelectMany(p => p.Split(
+                         ';',
+                         StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)))
         {
             if (seenPathEntries.Add(pathEntry))
                 mergedPathEntries.Add(pathEntry);
@@ -425,6 +489,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static CheckResult CheckGit()
     {
         var output = ProcessHelper.Run("git", "--version", out int exitCode);
+
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
             return CheckResult.Fail("git not found on PATH. Install Git from https://git-scm.com");
 
@@ -434,6 +499,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static CheckResult CheckNbgv()
     {
         var output = ProcessHelper.Run("dotnet", "tool list", out int exitCode);
+
         if (exitCode != 0)
             return CheckResult.Fail($"dotnet tool list failed (exit {exitCode}).");
 
@@ -442,6 +508,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         var line = output.Split('\n')
             .FirstOrDefault(l => l.Contains("nbgv", StringComparison.OrdinalIgnoreCase));
+
         var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
 
         return CheckResult.Ok(version ?? "found");
@@ -450,6 +517,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static CheckResult CheckGondwanaCli()
     {
         var output = ProcessHelper.Run("dotnet", "tool list -g", out int exitCode);
+
         if (exitCode != 0)
             return CheckResult.Fail($"dotnet tool list -g failed (exit {exitCode}).");
 
@@ -458,6 +526,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         var line = output.Split('\n')
             .FirstOrDefault(l => l.Contains("gondwana.cli", StringComparison.OrdinalIgnoreCase));
+
         var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
 
         return CheckResult.Ok(version ?? "found");
@@ -475,17 +544,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     internal static CheckResult EvaluateDotNetSdkVersion(string? output, int exitCode)
     {
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("dotnet SDK not found or could not be selected. Install .NET 10 and check global.json.");
+            return CheckResult.Fail(
+                "dotnet SDK not found or could not be selected. Install .NET 10 and check global.json.");
 
         var version = output.Trim();
+
         if (version.Contains('-') || !Version.TryParse(version, out var parsed))
-            return CheckResult.Fail($"Cannot identify a stable .NET SDK from '{version}'. Install a stable .NET 10 SDK.");
+            return CheckResult.Fail(
+                $"Cannot identify a stable .NET SDK from '{version}'. Install a stable .NET 10 SDK.");
 
         var supported = parsed.Major > 10 ||
-            (parsed.Major == 10 && parsed.Minor == 0 && parsed.Build >= 100);
+                        (parsed.Major == 10 && parsed.Minor == 0 && parsed.Build >= 100);
+
         return supported
             ? CheckResult.Ok(version)
-            : CheckResult.Fail($"{version} — Gondwana 2.7 requires a stable .NET 10 SDK (10.0.100+) or later. Check global.json.");
+            : CheckResult.Fail(
+                $"{version} — Gondwana 2.7 requires a stable .NET 10 SDK (10.0.100+) or later. Check global.json.");
     }
 
     private static CheckResult CheckGondwanaTemplates()
@@ -493,7 +567,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var output = ProcessHelper.Run("dotnet", "new list gondwana", out int exitCode);
 
         if (exitCode != 0)
-            return CheckResult.Fail($"Failed to query installed templates (exit code {exitCode}). Is the .NET SDK installed and functional?");
+            return CheckResult.Fail(
+                $"Failed to query installed templates (exit code {exitCode}). Is the .NET SDK installed and functional?");
 
         bool hasWinForms = output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase);
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
@@ -503,22 +578,27 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var installedVersion = TemplatePackageHelper.GetInstalledVersion();
 
         if (hasWinForms && hasAvalonia && hasBlazor)
-            return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
-                ? $"{templateNames} found"
-                : $"Gondwana.Templates {installedVersion} ({templateNames})");
+            return CheckResult.Ok(
+                string.IsNullOrWhiteSpace(installedVersion)
+                    ? $"{templateNames} found"
+                    : $"Gondwana.Templates {installedVersion} ({templateNames})");
 
         var found = new List<string>();
+
         if (hasWinForms)
             found.Add("gondwana-winforms");
+
         if (hasAvalonia)
             found.Add("gondwana-avalonia");
+
         if (hasBlazor)
             found.Add("gondwana-blazor");
 
         if (found.Count > 0)
-            return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
-                ? string.Join(", ", found) + " found"
-                : $"Gondwana.Templates {installedVersion} ({string.Join(", ", found)})");
+            return CheckResult.Ok(
+                string.IsNullOrWhiteSpace(installedVersion)
+                    ? string.Join(", ", found) + " found"
+                    : $"Gondwana.Templates {installedVersion} ({string.Join(", ", found)})");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }
@@ -534,16 +614,21 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var message = string.IsNullOrWhiteSpace(version)
             ? "wasm-tools workload not installed."
             : $"wasm-tools workload {version} is incompatible with .NET 10.";
+
         return ProjectHelper.IsCurrentDirectoryBlazorWebAssemblyProject()
-            ? CheckResult.Fail($"{message} Required for this Blazor/WASM project. Run: dotnet workload install wasm-tools")
-            : CheckResult.Warning($"{message} Install the .NET 10 workload before building/publishing Blazor/WASM projects.");
+            ? CheckResult.Fail(
+                $"{message} Required for this Blazor/WASM project. Run: dotnet workload install wasm-tools")
+            : CheckResult.Warning(
+                $"{message} Install the .NET 10 workload before building/publishing Blazor/WASM projects.");
     }
 
     private static CheckResult CheckGitCliff()
     {
         var output = ProcessHelper.Run("git-cliff", "--version", out int exitCode);
+
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("git-cliff not found on PATH. Install from https://git-cliff.org/ (Windows: winget install --id orhun.git-cliff).");
+            return CheckResult.Fail(
+                "git-cliff not found on PATH. Install from https://git-cliff.org/ (Windows: winget install --id orhun.git-cliff).");
 
         var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
         return CheckResult.Ok(versionLine ?? "found");
@@ -577,17 +662,21 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             if (NativeLibraryProbe.CanLoad(candidate))
             {
                 var version = GetLatestNuGetPackageVersion("skiasharp");
-                return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
-                    ? candidate
-                    : $"{version} ({candidate})");
+
+                return CheckResult.Ok(
+                    string.IsNullOrWhiteSpace(version)
+                        ? candidate
+                        : $"{version} ({candidate})");
             }
         }
 
         var cachedVersion = GetLatestNuGetPackageVersion("skiasharp");
+
         if (!string.IsNullOrWhiteSpace(cachedVersion))
             return CheckResult.Ok($"{cachedVersion} (NuGet cache)");
 
-        return CheckResult.Fail("SkiaSharp not found. Restore a project that references SkiaSharp, or run: dotnet add package SkiaSharp");
+        return CheckResult.Fail(
+            "SkiaSharp not found. Restore a project that references SkiaSharp, or run: dotnet add package SkiaSharp");
     }
 
     private static CheckResult CheckSdl2()
@@ -603,13 +692,16 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             if (NativeLibraryProbe.CanLoad(candidate))
             {
                 var version = GetLatestNuGetPackageVersion("ppy.sdl2-cs");
-                return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
-                    ? candidate
-                    : $"{version} ({candidate})");
+
+                return CheckResult.Ok(
+                    string.IsNullOrWhiteSpace(version)
+                        ? candidate
+                        : $"{version} ({candidate})");
             }
         }
 
-        return CheckResult.Fail("SDL2 native library not found. Required by Gondwana.Input.SDL2. Install from https://github.com/libsdl-org/SDL/releases if you need a system-wide runtime.");
+        return CheckResult.Fail(
+            "SDL2 native library not found. Required by Gondwana.Input.SDL2. Install from https://github.com/libsdl-org/SDL/releases if you need a system-wide runtime.");
     }
 
     internal static CheckResult CheckLibVlc()
@@ -621,11 +713,15 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             try
             {
                 var project = new ProjectPackages(projectPath!);
+
                 if (project.Packages.Any(p => p.Name.Equals("Gondwana.Video", StringComparison.OrdinalIgnoreCase)) ||
                     project.References.Contains("Gondwana.Video", StringComparer.OrdinalIgnoreCase) ||
-                    project.Packages.Any(p => p.Name.Equals("Gondwana.Video.Widgets", StringComparison.OrdinalIgnoreCase)) ||
+                    project.Packages.Any(p => p.Name.Equals(
+                        "Gondwana.Video.Widgets",
+                        StringComparison.OrdinalIgnoreCase)) ||
                     project.References.Contains("Gondwana.Video.Widgets", StringComparer.OrdinalIgnoreCase))
-                    return CheckResult.Warning("Gondwana.Video requires an app-local native runtime: Windows: dotnet add package VideoLAN.LibVLC.Windows; macOS: VideoLAN.LibVLC.Mac (match architecture); Linux: libvlc-dev and VLC plugins. Restore/build and run the VideoTest smoke procedure to verify the app's output. A CLI process cannot validate app-local deployment. See Gondwana.Video/README.md.");
+                    return CheckResult.Warning(
+                        "Gondwana.Video requires an app-local native runtime: Windows: dotnet add package VideoLAN.LibVLC.Windows; macOS: VideoLAN.LibVLC.Mac (match architecture); Linux: libvlc-dev and VLC plugins. Restore/build and run the VideoTest smoke procedure to verify the app's output. A CLI process cannot validate app-local deployment. See Gondwana.Video/README.md.");
             }
             catch (Exception ex) when (ex is IOException or System.Xml.XmlException or UnauthorizedAccessException)
             {
@@ -638,17 +734,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             var windowsCandidates = new List<string> { "libvlc.dll" };
 
             foreach (var programFiles in new[]
-            {
-                Environment.GetEnvironmentVariable("ProgramFiles"),
-                Environment.GetEnvironmentVariable("ProgramFiles(x86)"),
-            })
+                     {
+                         Environment.GetEnvironmentVariable("ProgramFiles"),
+                         Environment.GetEnvironmentVariable("ProgramFiles(x86)"),
+                     })
             {
                 if (string.IsNullOrEmpty(programFiles))
                     continue;
 
                 try
                 {
-                    windowsCandidates.Add(Path.Combine(programFiles, "VideoLAN", "VLC", "libvlc.dll"));
+                    windowsCandidates.Add(
+                        Path.Combine(
+                            programFiles,
+                            "VideoLAN",
+                            "VLC",
+                            "libvlc.dll"));
                 }
                 catch (ArgumentException)
                 {
@@ -660,8 +761,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 if (NativeLibraryProbe.CanLoad(candidate))
                 {
                     var location = TryResolveNativeLibraryPath(candidate);
+
                     var version = TryGetNativeLibraryVersion(location)
-                        ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
+                                  ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
+
                     return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
                 }
             }
@@ -677,14 +780,17 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 if (NativeLibraryProbe.CanLoad(candidate))
                 {
                     var location = TryResolveNativeLibraryPath(candidate);
+
                     var version = TryGetNativeLibraryVersion(location)
-                        ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
+                                  ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
+
                     return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
                 }
             }
         }
 
-        return CheckResult.Skip("No system LibVLC found. Video is optional; use the official native package in the desktop application (see Gondwana.Video/README.md).");
+        return CheckResult.Skip(
+            "No system LibVLC found. Video is optional; use the official native package in the desktop application (see Gondwana.Video/README.md).");
     }
 
     private static string? GetLatestNuGetPackageVersion(string packageId)
@@ -692,6 +798,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         try
         {
             var packageDir = Path.Combine(GetNuGetPackagesPath(), packageId);
+
             if (!Directory.Exists(packageDir))
                 return null;
 
@@ -701,12 +808,15 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             foreach (var directory in Directory.EnumerateDirectories(packageDir))
             {
                 var rawVersion = Path.GetFileName(directory);
+
                 if (string.IsNullOrWhiteSpace(rawVersion))
                     continue;
 
                 var normalizedVersion = rawVersion.Split('-', 2)[0];
+
                 if (string.IsNullOrWhiteSpace(normalizedVersion))
                     continue;
+
                 if (!Version.TryParse(normalizedVersion, out var parsedVersion))
                 {
                     latestRawVersion ??= rawVersion;
@@ -732,11 +842,13 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         Environment.GetEnvironmentVariable("NUGET_PACKAGES")
         ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".nuget", "packages");
+            ".nuget",
+            "packages");
 
     private static string FormatNativeLibraryDetail(string fallbackName, string? location, string? version)
     {
         var preferredLocation = string.IsNullOrWhiteSpace(location) ? fallbackName : location;
+
         return string.IsNullOrWhiteSpace(version)
             ? preferredLocation
             : $"{version} ({preferredLocation})";
@@ -748,6 +860,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return candidate;
 
         var fileName = Path.GetFileName(candidate);
+
         if (string.IsNullOrWhiteSpace(fileName))
             return null;
 
@@ -766,12 +879,14 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static IEnumerable<string> EnumeratePathDirectories()
     {
         var path = Environment.GetEnvironmentVariable("PATH");
+
         if (string.IsNullOrWhiteSpace(path))
             yield break;
 
         foreach (var entry in path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
         {
             var trimmed = entry.Trim().Trim('"');
+
             if (string.IsNullOrWhiteSpace(trimmed))
                 continue;
 
@@ -796,6 +911,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             try
             {
                 var fullPath = Path.Combine(directory, fileName);
+
                 if (File.Exists(fullPath))
                 {
                     path = fullPath;
@@ -820,10 +936,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         {
             var versionInfo = FileVersionInfo.GetVersionInfo(path);
             var productVersion = versionInfo.ProductVersion?.Trim();
+
             if (!string.IsNullOrWhiteSpace(productVersion))
                 return productVersion;
 
             var fileVersion = versionInfo.FileVersion?.Trim();
+
             if (!string.IsNullOrWhiteSpace(fileVersion))
                 return fileVersion;
         }
@@ -843,6 +961,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return null;
 
         IntPtr handle = IntPtr.Zero;
+
         try
         {
             if (!NativeLibrary.TryLoad(libraryPathOrName, out handle) || handle == IntPtr.Zero)
@@ -877,6 +996,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         static string NormalizePathEntry(string path)
         {
             var trimmed = path.Trim().Trim('"');
+
             if (trimmed.Length == 0)
                 return string.Empty;
 
@@ -891,6 +1011,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
 
         var normalizedDirectoryPath = NormalizePathEntry(directoryPath);
+
         bool alreadyInPath = userPath
             .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
             .Select(NormalizePathEntry)
@@ -913,8 +1034,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         static string NormalizePathEntry(string path)
         {
             var trimmed = path.Trim().Trim('"');
+
             if (trimmed.Length == 0)
                 return string.Empty;
+
             try
             {
                 return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
@@ -926,9 +1049,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
 
         var normalizedDirectoryPath = NormalizePathEntry(directoryPath);
+
         var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
+
         bool alreadyInPath = processPath
             .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
             .Select(NormalizePathEntry)
@@ -952,14 +1077,17 @@ internal enum CheckStatus
     /// Specifies ok.
     /// </summary>
     Ok,
+
     /// <summary>
     /// Specifies warning.
     /// </summary>
     Warning,
+
     /// <summary>
     /// Specifies fail.
     /// </summary>
     Fail,
+
     /// <summary>
     /// Specifies skip.
     /// </summary>
@@ -972,6 +1100,7 @@ internal sealed class CheckResult
     /// Gets the status.
     /// </summary>
     public CheckStatus Status { get; }
+
     /// <summary>
     /// Gets the detail.
     /// </summary>
@@ -989,18 +1118,21 @@ internal sealed class CheckResult
     /// <param name="detail">The detail.</param>
     /// <returns>A successful diagnostic result with the supplied detail.</returns>
     public static CheckResult Ok(string? detail = null) => new(CheckStatus.Ok, detail);
+
     /// <summary>
     /// Creates a diagnostic result with warning status.
     /// </summary>
     /// <param name="detail">The detail.</param>
     /// <returns>A warning diagnostic result with the supplied detail.</returns>
     public static CheckResult Warning(string? detail = null) => new(CheckStatus.Warning, detail);
+
     /// <summary>
     /// Creates a diagnostic result with fail status.
     /// </summary>
     /// <param name="detail">The detail.</param>
     /// <returns>A failed diagnostic result with the supplied detail.</returns>
     public static CheckResult Fail(string? detail = null) => new(CheckStatus.Fail, detail);
+
     /// <summary>
     /// Creates a diagnostic result with skip status.
     /// </summary>

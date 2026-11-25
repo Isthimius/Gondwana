@@ -61,6 +61,7 @@ public static class AnimationDefinitionValidator
                 case AnimationTilesheetSourceKind.LooseDefinitionFile:
                     if (string.IsNullOrWhiteSpace(source.GtsPath))
                         errors.Add($"{label}: loose GTS source path is empty.");
+
                     break;
 
                 case AnimationTilesheetSourceKind.PackedDefinitionFile:
@@ -69,11 +70,13 @@ public static class AnimationDefinitionValidator
 
                     if (string.IsNullOrWhiteSpace(source.AssetEntryName))
                         errors.Add($"{label}: packed GTS entry name is empty.");
+
                     break;
             }
         }
 
         definition.Frames ??= [];
+
         if (definition.Frames.Count == 0)
             errors.Add("Animation must contain at least one frame.");
 

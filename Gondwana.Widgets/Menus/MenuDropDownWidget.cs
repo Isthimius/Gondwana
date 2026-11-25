@@ -20,7 +20,10 @@ public sealed class MenuDropDownWidget : ContainerWidget
     internal MenuDropDownWidget? ParentMenu { get; private set; }
     internal MenuDropDownWidget? OpenChild { get; private set; }
     internal MenuDropDownWidget ActiveMenu => OpenChild?.ActiveMenu ?? this;
-    internal MenuItemWidget? SelectedItem => _selectedIndex >= 0 && _selectedIndex < _items.Count ? _items[_selectedIndex] : null;
+
+    internal MenuItemWidget? SelectedItem =>
+        _selectedIndex >= 0 && _selectedIndex < _items.Count ? _items[_selectedIndex] : null;
+
     internal bool CanInvoke => !_disposed && _bar.IsAvailable && (ParentItem?.CanInvoke ?? true);
     private readonly List<Entry> _entries = new();
     private readonly List<MenuItemWidget> _items = new();
@@ -30,13 +33,18 @@ public sealed class MenuDropDownWidget : ContainerWidget
     private int _selectedIndex = -1;
     private bool _disposed;
 
-    internal MenuDropDownWidget(RenderSurfaceHostBase host,
-                                View view,
-                                Point location,
-                                MenuBarTheme theme,
-                                string? nickname,
-                                MenuBarWidget bar)
-        : base(host, DirectDrawingMode.View, location, nickname)
+    internal MenuDropDownWidget(
+        RenderSurfaceHostBase host,
+        View view,
+        Point location,
+        MenuBarTheme theme,
+        string? nickname,
+        MenuBarWidget bar)
+        : base(
+            host,
+            DirectDrawingMode.View,
+            location,
+            nickname)
     {
         _bar = bar;
         _theme = theme ?? throw new ArgumentNullException(nameof(theme));
@@ -46,7 +54,11 @@ public sealed class MenuDropDownWidget : ContainerWidget
                 _theme.DropDownBackgroundColor,
                 host,
                 view,
-                new Rectangle(location.X, location.Y, Width, 1),
+                new Rectangle(
+                    location.X,
+                    location.Y,
+                    Width,
+                    1),
                 $"{Nickname}.panel")
             .SetFilled(true)
             .SetBorderColor(_theme.DropDownBorderColor)
@@ -92,11 +104,26 @@ public sealed class MenuDropDownWidget : ContainerWidget
     /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
     /// <param name="icon">The icon.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public MenuDropDownWidget AddItem(string text, Action? action = null,
-        string? shortcutText = null, bool enabled = true, string? key = null,
-        KeyGesture? shortcut = null, char? mnemonic = null, SKImage? icon = null)
+    public MenuDropDownWidget AddItem(
+        string text,
+        Action? action = null,
+        string? shortcutText = null,
+        bool enabled = true,
+        string? key = null,
+        KeyGesture? shortcut = null,
+        char? mnemonic = null,
+        SKImage? icon = null)
     {
-        AddEntry(text, action, shortcutText, enabled, key, shortcut, mnemonic, icon);
+        AddEntry(
+            text,
+            action,
+            shortcutText,
+            enabled,
+            key,
+            shortcut,
+            mnemonic,
+            icon);
+
         return this;
     }
 
@@ -110,12 +137,28 @@ public sealed class MenuDropDownWidget : ContainerWidget
     /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
     /// <param name="icon">The icon.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public MenuDropDownWidget AddCheckItem(string text, Action<bool>? action = null,
-        bool isChecked = false, bool enabled = true, string? key = null,
-        KeyGesture? shortcut = null, char? mnemonic = null, SKImage? icon = null)
+    public MenuDropDownWidget AddCheckItem(
+        string text,
+        Action<bool>? action = null,
+        bool isChecked = false,
+        bool enabled = true,
+        string? key = null,
+        KeyGesture? shortcut = null,
+        char? mnemonic = null,
+        SKImage? icon = null)
     {
-        AddEntry(text, null, null, enabled, key, shortcut, mnemonic, icon,
-            checkable: true, checkedAction: action).SetChecked(isChecked);
+        AddEntry(
+            text,
+            null,
+            null,
+            enabled,
+            key,
+            shortcut,
+            mnemonic,
+            icon,
+            checkable: true,
+            checkedAction: action).SetChecked(isChecked);
+
         return this;
     }
 
@@ -130,13 +173,31 @@ public sealed class MenuDropDownWidget : ContainerWidget
     /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
     /// <param name="icon">The icon.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public MenuDropDownWidget AddRadioItem(string text, Action? action, string group,
-        bool isChecked = false, bool enabled = true, string? key = null,
-        KeyGesture? shortcut = null, char? mnemonic = null, SKImage? icon = null)
+    public MenuDropDownWidget AddRadioItem(
+        string text,
+        Action? action,
+        string group,
+        bool isChecked = false,
+        bool enabled = true,
+        string? key = null,
+        KeyGesture? shortcut = null,
+        char? mnemonic = null,
+        SKImage? icon = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(group);
-        AddEntry(text, action, null, enabled, key, shortcut, mnemonic, icon,
-            checkable: true, radioGroup: group).SetChecked(isChecked);
+
+        AddEntry(
+            text,
+            action,
+            null,
+            enabled,
+            key,
+            shortcut,
+            mnemonic,
+            icon,
+            checkable: true,
+            radioGroup: group).SetChecked(isChecked);
+
         return this;
     }
 
@@ -148,17 +209,45 @@ public sealed class MenuDropDownWidget : ContainerWidget
     /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
     /// <param name="icon">The icon.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public MenuDropDownWidget AddSubMenu(string text, Action<MenuDropDownWidget> configure,
-        bool enabled = true, string? key = null, char? mnemonic = null, SKImage? icon = null)
+    public MenuDropDownWidget AddSubMenu(
+        string text,
+        Action<MenuDropDownWidget> configure,
+        bool enabled = true,
+        string? key = null,
+        char? mnemonic = null,
+        SKImage? icon = null)
     {
         ArgumentNullException.ThrowIfNull(configure);
-        ValidateEntry(text, key, null, mnemonic);
-        var child = new MenuDropDownWidget(RenderSurfaceHost, View!, Point.Empty, _theme,
-            CreateChildNickname("submenu"), _bar);
+
+        ValidateEntry(
+            text,
+            key,
+            null,
+            mnemonic);
+
+        var child = new MenuDropDownWidget(
+            RenderSurfaceHost,
+            View!,
+            Point.Empty,
+            _theme,
+            CreateChildNickname("submenu"),
+            _bar);
+
         try
         {
             configure(child);
-            var item = AddEntry(text, null, null, enabled, key, null, mnemonic, icon, subMenu: child);
+
+            var item = AddEntry(
+                text,
+                null,
+                null,
+                enabled,
+                key,
+                null,
+                mnemonic,
+                icon,
+                subMenu: child);
+
             child.ParentMenu = this;
             child.ParentItem = item;
             Add(child, Vector2.Zero);
@@ -174,33 +263,73 @@ public sealed class MenuDropDownWidget : ContainerWidget
         return this;
     }
 
-    private void ValidateEntry(string text, string? key, KeyGesture? shortcut, char? mnemonic)
+    private void ValidateEntry(
+        string text,
+        string? key,
+        KeyGesture? shortcut,
+        char? mnemonic)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(text);
         _bar.ValidateRegistration(key, shortcut);
+
         if (mnemonic is char character && _items.Any(item =>
-            item.Mnemonic is char existing && char.ToUpperInvariant(existing) == char.ToUpperInvariant(character)))
+                item.Mnemonic is char existing && char.ToUpperInvariant(existing) == char.ToUpperInvariant(character)))
             throw new ArgumentException($"Duplicate menu mnemonic '{character}'.", nameof(mnemonic));
     }
 
-    private MenuItemWidget AddEntry(string text, Action? action, string? shortcutText,
-        bool enabled, string? key, KeyGesture? shortcut, char? mnemonic, SKImage? icon,
-        bool checkable = false, string? radioGroup = null, Action<bool>? checkedAction = null,
+    private MenuItemWidget AddEntry(
+        string text,
+        Action? action,
+        string? shortcutText,
+        bool enabled,
+        string? key,
+        KeyGesture? shortcut,
+        char? mnemonic,
+        SKImage? icon,
+        bool checkable = false,
+        string? radioGroup = null,
+        Action<bool>? checkedAction = null,
         MenuDropDownWidget? subMenu = null)
     {
-        ValidateEntry(text, key, shortcut, mnemonic);
+        ValidateEntry(
+            text,
+            key,
+            shortcut,
+            mnemonic);
+
         var anchor = Point.Round(new PointF(GetPosition().X, GetPosition().Y));
-        var item = new MenuItemWidget(RenderSurfaceHost, View!,
-            new Rectangle(anchor.X, anchor.Y, Width, _theme.ItemHeight), text, shortcutText,
-            action, _theme, CreateChildNickname("item"), this, key, shortcut, mnemonic,
-            icon, checkable, radioGroup, checkedAction, subMenu);
+
+        var item = new MenuItemWidget(
+            RenderSurfaceHost,
+            View!,
+            new Rectangle(
+                anchor.X,
+                anchor.Y,
+                Width,
+                _theme.ItemHeight),
+            text,
+            shortcutText,
+            action,
+            _theme,
+            CreateChildNickname("item"),
+            this,
+            key,
+            shortcut,
+            mnemonic,
+            icon,
+            checkable,
+            radioGroup,
+            checkedAction,
+            subMenu);
+
         item.SetEnabled(enabled);
         item.Hovered += OnItemHovered;
         _items.Add(item);
         _entries.Add(Entry.ForItem(item));
         Add(item, Vector2.Zero);
         _bar.RegisterItem(item);
+
         if (!IsOpen)
         {
             item.ApplyInputState(false);
@@ -224,16 +353,20 @@ public sealed class MenuDropDownWidget : ContainerWidget
     internal void UnregisterItem(MenuItemWidget item)
     {
         _bar.UnregisterItem(item);
+
         if (_disposed)
             return;
+
         OnItemDisabled(item);
         item.SubMenu?.Dispose();
         item.Hovered -= OnItemHovered;
         _items.Remove(item);
         _entries.RemoveAll(entry => ReferenceEquals(entry.Item, item));
         _selectedIndex = -1;
+
         foreach (var remaining in _items)
             remaining.SetSelected(false);
+
         RecalculateLayout();
     }
 
@@ -241,6 +374,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
     {
         if (item.SubMenu is not null && ReferenceEquals(OpenChild, item.SubMenu))
             CloseChild();
+
         if (ReferenceEquals(SelectedItem, item))
             SetSelectedIndex(-1);
     }
@@ -251,15 +385,19 @@ public sealed class MenuDropDownWidget : ContainerWidget
     {
         if (!IsOpen || !item.CanInvoke || item.SubMenu is not { } child)
             return;
+
         SetSelectedIndex(_items.IndexOf(item));
+
         if (!ReferenceEquals(OpenChild, child))
         {
             CloseChild();
             var viewport = View!.Viewport.TargetRectPx;
             var row = item.Background.ScreenBounds;
             int x = Panel.ScreenBounds.Right + _theme.SubMenuGap;
+
             if (x + child.Width > viewport.Right)
                 x = Panel.ScreenBounds.Left - child.Width - _theme.SubMenuGap;
+
             x = Math.Clamp(x, viewport.Left, Math.Max(viewport.Left, viewport.Right - child.Width));
             int y = Math.Clamp(row.Top, viewport.Top, Math.Max(viewport.Top, viewport.Bottom - child.Height));
             SetLocalOffset(child, new Vector2(x - GetPosition().X, y - GetPosition().Y));
@@ -283,6 +421,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
     protected override void ProcessShown()
     {
         base.ProcessShown();
+
         foreach (var item in _items)
             item.SubMenu?.CloseAnimated(MenuDropDownAnimation.None, 0, immediate: true);
     }
@@ -304,11 +443,16 @@ public sealed class MenuDropDownWidget : ContainerWidget
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         Point anchor = Point.Round(new PointF(GetPosition().X, GetPosition().Y));
+
         var separator = new DirectRectangle(
                 _theme.SeparatorColor,
                 RenderSurfaceHost,
                 View!,
-                new Rectangle(anchor.X, anchor.Y, 1, 1),
+                new Rectangle(
+                    anchor.X,
+                    anchor.Y,
+                    1,
+                    1),
                 CreateChildNickname("separator"))
             .SetFilled(true)
             .SetStrokeWidth(0f);
@@ -329,6 +473,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
     public MenuDropDownWidget SetWidth(int width)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
+
         if (width < _theme.MinimumDropDownWidth)
         {
             throw new ArgumentOutOfRangeException(
@@ -342,8 +487,9 @@ public sealed class MenuDropDownWidget : ContainerWidget
         return this;
     }
 
-    internal void OpenAnimated(MenuDropDownAnimation animation,
-                               float durationSec)
+    internal void OpenAnimated(
+        MenuDropDownAnimation animation,
+        float durationSec)
     {
         CancelPendingClose();
 
@@ -365,6 +511,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
 
         SetOpacity(0f);
         SetRevealProgress(animation == MenuDropDownAnimation.FadeAndReveal ? 0f : 1f);
+
         foreach (var visual in EnumerateVisuals())
             visual.FadeIn(durationSec);
 
@@ -373,14 +520,15 @@ public sealed class MenuDropDownWidget : ContainerWidget
             foreach (DirectDrawingBase visual in EnumerateVisuals())
             {
                 visual.SetRevealDirection(DirectDrawingBase.RevealDirection.TopToBottom)
-                      .RevealTo(1f, durationSec, EaseOutCubic);
+                    .RevealTo(1f, durationSec, EaseOutCubic);
             }
         }
     }
 
-    internal void CloseAnimated(MenuDropDownAnimation animation,
-                                float durationSec,
-                                bool immediate = false)
+    internal void CloseAnimated(
+        MenuDropDownAnimation animation,
+        float durationSec,
+        bool immediate = false)
     {
         CloseChild();
         IsOpen = false;
@@ -414,6 +562,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
         // Closing is a clean fade. Any in-progress opening reveal is snapped
         // fully open so it cannot continue unfolding while disappearing.
         SetRevealProgress(1f);
+
         foreach (var visual in EnumerateVisuals())
             visual.FadeOut(durationSec);
     }
@@ -422,6 +571,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
     {
         _zOrder = zOrder;
         Panel.ZOrder = zOrder;
+
         foreach (var item in _items)
             item.SubMenu?.SetDropDownZOrder(zOrder + 10);
 
@@ -485,8 +635,13 @@ public sealed class MenuDropDownWidget : ContainerWidget
         int arrowWidth = _items.Any(item => item.SubMenu is not null) ? _theme.SubMenuArrowWidth : 0;
         int shortcutWidth = _items.Select(item => MeasureText(item.ShortcutText)).DefaultIfEmpty().Max();
         int labelWidth = _items.Select(item => MeasureText(item.Text)).DefaultIfEmpty().Max();
-        Width = Math.Max(_minimumWidth, markerWidth + iconWidth + arrowWidth + shortcutWidth + labelWidth +
-            (shortcutWidth > 0 ? _theme.ShortcutGap : 0) + 2 * (_theme.DropDownHorizontalPadding + _theme.ItemHorizontalPadding));
+
+        Width = Math.Max(
+            _minimumWidth,
+            markerWidth + iconWidth + arrowWidth + shortcutWidth + labelWidth +
+            (shortcutWidth > 0 ? _theme.ShortcutGap : 0) +
+            2 * (_theme.DropDownHorizontalPadding + _theme.ItemHorizontalPadding));
+
         int y = _theme.DropDownVerticalPadding;
 
         foreach (Entry entry in _entries)
@@ -496,15 +651,21 @@ public sealed class MenuDropDownWidget : ContainerWidget
                 var offset = new Vector2(_theme.DropDownHorizontalPadding, y);
                 SetLocalOffset(entry.Item, offset);
 
-                Point position = Point.Round(new PointF(
-                    GetPosition().X + offset.X,
-                    GetPosition().Y + offset.Y));
+                Point position = Point.Round(
+                    new PointF(
+                        GetPosition().X + offset.X,
+                        GetPosition().Y + offset.Y));
 
-                entry.Item.SetBounds(new Rectangle(
-                    position.X,
-                    position.Y,
-                    Width - (_theme.DropDownHorizontalPadding * 2),
-                    _theme.ItemHeight), markerWidth, iconWidth, shortcutWidth, arrowWidth);
+                entry.Item.SetBounds(
+                    new Rectangle(
+                        position.X,
+                        position.Y,
+                        Width - (_theme.DropDownHorizontalPadding * 2),
+                        _theme.ItemHeight),
+                    markerWidth,
+                    iconWidth,
+                    shortcutWidth,
+                    arrowWidth);
 
                 y += _theme.ItemHeight;
                 continue;
@@ -518,9 +679,10 @@ public sealed class MenuDropDownWidget : ContainerWidget
 
                 SetLocalOffset(entry.Separator, offset);
 
-                Point position = Point.Round(new PointF(
-                    GetPosition().X + offset.X,
-                    GetPosition().Y + offset.Y));
+                Point position = Point.Round(
+                    new PointF(
+                        GetPosition().X + offset.X,
+                        GetPosition().Y + offset.Y));
 
                 entry.Separator.ScreenBounds = new Rectangle(
                     position.X,
@@ -535,7 +697,12 @@ public sealed class MenuDropDownWidget : ContainerWidget
         Height = Math.Max(1, y + _theme.DropDownVerticalPadding);
 
         Point panelPosition = Point.Round(new PointF(GetPosition().X, GetPosition().Y));
-        Panel.ScreenBounds = new Rectangle(panelPosition.X, panelPosition.Y, Width, Height);
+
+        Panel.ScreenBounds = new Rectangle(
+            panelPosition.X,
+            panelPosition.Y,
+            Width,
+            Height);
     }
 
     private void SetEntryInputEnabled(bool menuAcceptsInput)
@@ -587,6 +754,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
         if (index >= 0)
         {
             SetSelectedIndex(index);
+
             if (item.SubMenu is not null)
                 OpenSubMenu(item, selectFirst: false);
         }
@@ -618,8 +786,8 @@ public sealed class MenuDropDownWidget : ContainerWidget
         foreach (DirectDrawingBase visual in EnumerateVisuals())
         {
             visual.CancelReveal()
-                  .SetRevealDirection(DirectDrawingBase.RevealDirection.TopToBottom)
-                  .SetReveal(progress);
+                .SetRevealDirection(DirectDrawingBase.RevealDirection.TopToBottom)
+                .SetReveal(progress);
         }
     }
 
@@ -660,8 +828,9 @@ public sealed class MenuDropDownWidget : ContainerWidget
 
     private sealed class Entry
     {
-        private Entry(MenuItemWidget? item,
-                      DirectRectangle? separator)
+        private Entry(
+            MenuItemWidget? item,
+            DirectRectangle? separator)
         {
             Item = item;
             Separator = separator;

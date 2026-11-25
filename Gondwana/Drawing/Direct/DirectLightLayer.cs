@@ -79,7 +79,11 @@ public sealed class DirectLightLayer : IDisposable
         string? nickname = null)
     {
         var light = new DirectRadialLight(
-            color ?? Color.FromArgb(180, 255, 190, 80),
+            color ?? Color.FromArgb(
+                180,
+                255,
+                190,
+                80),
             RenderSurfaceHost,
             SceneLayer,
             centerWorldPx,

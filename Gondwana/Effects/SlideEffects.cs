@@ -117,7 +117,11 @@ public sealed class SlideInEffect : SlideEffect
         EffectDirection direction,
         float durationSeconds,
         EasingKind easing = EasingKind.EaseOutCubic)
-        : base(direction, durationSeconds, easing, isSlideIn: true)
+        : base(
+            direction,
+            durationSeconds,
+            easing,
+            isSlideIn: true)
     {
     }
 }
@@ -133,7 +137,11 @@ public sealed class SlideOutEffect : SlideEffect
         EffectDirection direction,
         float durationSeconds,
         EasingKind easing = EasingKind.EaseInCubic)
-        : base(direction, durationSeconds, easing, isSlideIn: false)
+        : base(
+            direction,
+            durationSeconds,
+            easing,
+            isSlideIn: false)
     {
     }
 }

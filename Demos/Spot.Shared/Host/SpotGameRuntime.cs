@@ -41,7 +41,7 @@ internal sealed partial class SpotGameRuntime
     private Scene? Scene => _scene;
 
     private Scene ActiveScene => _scene
-        ?? throw new InvalidOperationException("Spot scene has not been created.");
+                                 ?? throw new InvalidOperationException("Spot scene has not been created.");
 
     private RenderSurfaceHostBase SurfaceHost => _surfaceHost;
     private int SurfaceWidth => _surfaceHost.Backbuffer.Width;
@@ -59,8 +59,10 @@ internal sealed partial class SpotGameRuntime
     {
         _surfaceHost = surfaceHost ?? throw new ArgumentNullException(nameof(surfaceHost));
         _scoreToggleKey = scoreToggleKey;
+
         _widgetInputRouterAccessor = widgetInputRouterAccessor
-            ?? throw new ArgumentNullException(nameof(widgetInputRouterAccessor));
+                                     ?? throw new ArgumentNullException(nameof(widgetInputRouterAccessor));
+
         _configurePlatformKeyboardInput = configurePlatformKeyboardInput;
         _configureNewGameDialogForPlatform = configureNewGameDialogForPlatform;
         _persistGameState = persistGameState;

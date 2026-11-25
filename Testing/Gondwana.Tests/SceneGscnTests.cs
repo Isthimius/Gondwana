@@ -23,6 +23,7 @@ public sealed class SceneGscnTests
     public void RuntimeScene_RoundTripsPersistentGraphThroughDefinition()
     {
         var sheetName = $"GSCN_{Guid.NewGuid():N}";
+
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
             sheetName,
             new SKBitmap(32, 16));
@@ -31,6 +32,7 @@ public sealed class SceneGscnTests
 
         using var original = new Scene();
         original.CollisionGroups.Define("Enemies");
+
         original.CollisionProfiles.Define(
             "EnemySensor",
             "Enemies",
@@ -56,7 +58,13 @@ public sealed class SceneGscnTests
         tile.Visible = false;
         tile.CurrentFrame = sheet.GetFrame(1, 0);
         tile.EnableFog = true;
-        tile.AdjustCollisionArea = new CollisionAdjust(1, 2, 3, 4);
+
+        tile.AdjustCollisionArea = new CollisionAdjust(
+            1,
+            2,
+            3,
+            4);
+
         tile.CollisionType = TileCollisionType.Trigger;
         tile.SetCollisionProfile("EnemySensor");
         tile.EnableAnimator = true;
@@ -105,7 +113,15 @@ public sealed class SceneGscnTests
         Assert.Equal(1, restoredTile.CurrentFrame.XTile);
         Assert.Equal(0, restoredTile.CurrentFrame.YTile);
         Assert.True(restoredTile.EnableFog);
-        Assert.Equal(new CollisionAdjust(1, 2, 3, 4), restoredTile.AdjustCollisionArea);
+
+        Assert.Equal(
+            new CollisionAdjust(
+                1,
+                2,
+                3,
+                4),
+            restoredTile.AdjustCollisionArea);
+
         Assert.Equal(TileCollisionType.Trigger, restoredTile.CollisionType);
         Assert.Equal("EnemySensor", restoredTile.CollisionProfileName);
         Assert.True(restoredTile.CollisionsEnabled);
@@ -132,10 +148,10 @@ public sealed class SceneGscnTests
 
         using var cycle = new Cycle(
             new FrameSequence(
-                [
-                    sheet.GetFrame(0, 0),
-                    sheet.GetFrame(1, 0)
-                ])
+            [
+                sheet.GetFrame(0, 0),
+                sheet.GetFrame(1, 0)
+            ])
             {
                 SequenceCycleType = CycleType.Repeating
             },
@@ -143,7 +159,13 @@ public sealed class SceneGscnTests
             animationKey);
 
         using var original = new Scene();
-        var tile = original.AddLayer(1, 1, 16, 16)[0, 0]!;
+
+        var tile = original.AddLayer(
+            1,
+            1,
+            16,
+            16)[0, 0]!;
+
         tile.CurrentFrame = sheet.GetFrame(0, 0);
         tile.EnableAnimator = true;
 
@@ -170,9 +192,11 @@ public sealed class SceneGscnTests
         var restoredTile = Assert.Single(restored.SceneLayers)[0, 0]!;
         Assert.True(restoredTile.EnableAnimator);
         Assert.NotNull(restoredTile.TileAnimator.CurrentCycle);
+
         Assert.Equal(
             animationKey,
             restoredTile.TileAnimator.CurrentCycle.CycleKey);
+
         Assert.Equal(
             startAnimation,
             restoredTile.TileAnimator.IsCycling);
@@ -243,10 +267,10 @@ public sealed class SceneGscnTests
             ]
         };
 
-        var exception = Assert.Throws<InvalidDataException>(
-            () => SceneDefinitionSerializer.ToScene(definition));
+        var exception = Assert.Throws<InvalidDataException>(() => SceneDefinitionSerializer.ToScene(definition));
 
         Assert.Contains(key, exception.Message, StringComparison.Ordinal);
+
         Assert.Contains(
             "no matching GANI/cycle is registered",
             exception.Message,
@@ -260,12 +284,19 @@ public sealed class SceneGscnTests
     public void Definition_ByFrameFlagsOverrideOmittedExplicitCollisionDefaults()
     {
         var sheetName = $"GSCN_ByFrame_{Guid.NewGuid():N}";
+
         using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
             sheetName,
             new SKBitmap(16, 16));
 
         sheet.DefaultRegion.TileSize = new Size(16, 16);
-        var frameAdjust = new CollisionAdjust(1, 2, 3, 4);
+
+        var frameAdjust = new CollisionAdjust(
+            1,
+            2,
+            3,
+            4);
+
         sheet.DefaultRegion.CollisionAdjust = frameAdjust;
         sheet.DefaultRegion.CollisionType = TileCollisionType.Trigger;
 
@@ -354,6 +385,7 @@ public sealed class SceneGscnTests
         var directory = Path.Combine(
             Path.GetTempPath(),
             $"GondwanaGscn_{Guid.NewGuid():N}");
+
         Directory.CreateDirectory(directory);
 
         try
@@ -481,7 +513,8 @@ public sealed class SceneGscnTests
             ]
         };
 
-        Assert.Contains(SceneDefinitionValidator.Validate(definition),
+        Assert.Contains(
+            SceneDefinitionValidator.Validate(definition),
             error => error.Contains("duplicate source for animation", StringComparison.Ordinal));
     }
 
@@ -542,6 +575,7 @@ public sealed class SceneGscnTests
             error => error.Contains(
                 "duplicate source for tilesheet 'terrain'",
                 StringComparison.OrdinalIgnoreCase));
+
         Assert.Contains(
             errors,
             error => error.Contains(

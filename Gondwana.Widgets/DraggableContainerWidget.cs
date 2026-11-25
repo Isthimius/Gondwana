@@ -35,11 +35,16 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <param name="mode">The mode.</param>
     /// <param name="anchor">The anchor.</param>
     /// <param name="nickname">An optional name used to identify the object.</param>
-    protected DraggableContainerWidget(RenderSurfaceHostBase renderSurfaceHost,
-                                       DirectDrawingMode mode,
-                                       PointF anchor = default,
-                                       string? nickname = null)
-        : base(renderSurfaceHost, mode, anchor, nickname)
+    protected DraggableContainerWidget(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        string? nickname = null)
+        : base(
+            renderSurfaceHost,
+            mode,
+            anchor,
+            nickname)
     {
         _dragBehavior = new WidgetDragBehavior(this);
     }
@@ -96,11 +101,12 @@ public abstract class DraggableContainerWidget : ContainerWidget
     {
         base.ProcessPointerMove(args);
 
-        _dragBehavior.ProcessPointerMove(args,
-                                         ConvertScreenDeltaToPositionDelta,
-                                         ConstrainDragPosition,
-                                         DispatchDragStarted,
-                                         DispatchDragged);
+        _dragBehavior.ProcessPointerMove(
+            args,
+            ConvertScreenDeltaToPositionDelta,
+            ConstrainDragPosition,
+            DispatchDragStarted,
+            DispatchDragged);
     }
 
     /// <inheritdoc/>
@@ -108,10 +114,11 @@ public abstract class DraggableContainerWidget : ContainerWidget
     {
         base.ProcessPointerUp(args);
 
-        _dragBehavior.ProcessPointerUp(args,
-                                       ConvertScreenDeltaToPositionDelta,
-                                       ConstrainDragPosition,
-                                       DispatchDragEnded);
+        _dragBehavior.ProcessPointerUp(
+            args,
+            ConvertScreenDeltaToPositionDelta,
+            ConstrainDragPosition,
+            DispatchDragEnded);
     }
 
     /// <inheritdoc/>

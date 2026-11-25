@@ -42,6 +42,7 @@ public sealed class AudioDefinitionSource
     public static AudioDefinitionSource LooseDefinitionFile(string gsndFilePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(gsndFilePath);
+
         return new AudioDefinitionSource
         {
             Kind = AudioDefinitionSourceKind.LooseDefinitionFile,
@@ -59,6 +60,7 @@ public sealed class AudioDefinitionSource
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(assetsFilePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
+
         return new AudioDefinitionSource
         {
             Kind = AudioDefinitionSourceKind.PackedDefinitionFile,

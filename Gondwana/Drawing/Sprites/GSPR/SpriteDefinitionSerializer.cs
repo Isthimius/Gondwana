@@ -73,16 +73,19 @@ public static partial class SpriteDefinitionSerializer
         try
         {
             var definition = JsonConvert.DeserializeObject<SpriteDefinition>(json, Settings)
-                ?? throw new InvalidDataException("GSPR definition is null.");
+                             ?? throw new InvalidDataException("GSPR definition is null.");
+
             definition.Sprites ??= [];
             definition.TilesheetSources ??= [];
             definition.SceneSources ??= [];
             definition.AnimationSources ??= [];
+
             if (definition.Sprites.Any(sprite => sprite is null) ||
                 definition.TilesheetSources.Any(source => source is null) ||
                 definition.SceneSources.Any(source => source is null) ||
                 definition.AnimationSources.Any(source => source is null))
                 throw new InvalidDataException("GSPR collections cannot contain null entries.");
+
             return definition;
         }
         catch (JsonException ex)
@@ -110,11 +113,16 @@ public static partial class SpriteDefinitionSerializer
     {
         var clone = FromJson(ToJson(definition));
         var origin = definition.Source.GsprFilePath ?? definition.Source.AssetsFilePath;
+
         if (string.IsNullOrWhiteSpace(origin))
             return clone;
+
         var oldDirectory = Path.GetDirectoryName(Path.GetFullPath(origin))!;
-        string? RebasePath(string? path) => string.IsNullOrWhiteSpace(path) ? path :
-            Path.GetRelativePath(Path.GetFullPath(directory), Path.GetFullPath(path, oldDirectory));
+
+        string? RebasePath(string? path) => string.IsNullOrWhiteSpace(path)
+            ? path
+            : Path.GetRelativePath(Path.GetFullPath(directory), Path.GetFullPath(path, oldDirectory));
+
         foreach (var source in clone.TilesheetSources)
         {
             source.GtsPath = RebasePath(source.GtsPath);
@@ -142,6 +150,7 @@ public static partial class SpriteDefinitionSerializer
     /// <param name="filePath">The path of the definition file.</param>
     /// <param name="sprites">The sprites.</param>
     public static void Save(string filePath, IEnumerable<Sprite> sprites) => Save(filePath, FromSprites(sprites));
+
     /// <summary>
     /// Saves the supplied definition or runtime content to a definition file.
     /// </summary>
@@ -158,6 +167,7 @@ public static partial class SpriteDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(sprites);
         var instances = sprites.ToList();
+
         var definition = new SpriteDefinition
         {
             Sprites = instances.Select(FromSprite).ToList(),
@@ -167,11 +177,13 @@ public static partial class SpriteDefinitionSerializer
         var tilesheets = new HashSet<string>(StringComparer.Ordinal);
         var scenes = new HashSet<string>(StringComparer.Ordinal);
         var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var sprite in instances)
         {
             if (sprite.CurrentFrame.Tilesheet is { } sheet && tilesheets.Add(sheet.Name))
             {
                 var source = DefinitionDependencyProvenance.ForTilesheet(sheet);
+
                 if (source?.FilePath is { } loose)
                     definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose(sheet.Name, loose));
                 else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
@@ -181,6 +193,7 @@ public static partial class SpriteDefinitionSerializer
             if (sprite.SceneLayer.Scene is { } scene && scenes.Add(scene.ID))
             {
                 var source = DefinitionDependencyProvenance.ForScene(scene);
+
                 if (source?.FilePath is { } loose)
                     definition.SceneSources.Add(SpriteSceneSourceDefinition.Loose(scene.ID, loose));
                 else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
@@ -189,12 +202,14 @@ public static partial class SpriteDefinitionSerializer
 
             if (sprite.TileAnimator.CurrentCycle?.CycleKey is { Length: > 0 } key)
             {
-                foreach (var (animationKey, source) in DefinitionDependencyProvenance.ForAnimationChain(key, animations))
+                foreach (var (animationKey, source) in
+                         DefinitionDependencyProvenance.ForAnimationChain(key, animations))
                 {
                     if (source.FilePath is { } loose)
                         definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(animationKey, loose));
                     else if (source.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
-                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Packed(animationKey, archive, entry));
+                        definition.AnimationSources.Add(
+                            SpriteAnimationSourceDefinition.Packed(animationKey, archive, entry));
                 }
             }
         }
@@ -211,6 +226,7 @@ public static partial class SpriteDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(sprite);
         var frame = sprite.CurrentFrame;
+
         return new()
         {
             Id = sprite.Id,
@@ -218,7 +234,13 @@ public static partial class SpriteDefinitionSerializer
             SceneId = sprite.SceneLayer.Scene?.ID ?? string.Empty,
             SceneLayerId = sprite.SceneLayer.ID,
             Position = sprite.SceneLayerCoordinates,
-            Frame = frame.Tilesheet is null ? null : new() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },
+            Frame = frame.Tilesheet is null
+                ? null
+                : new()
+                {
+                    Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile,
+                    YTile = frame.YTile
+                },
             AnimationKey = sprite.TileAnimator.CurrentCycle?.CycleKey,
             StartAnimation = sprite.TileAnimator.IsCycling,
             Visible = sprite.Visible,
@@ -245,19 +267,23 @@ public static partial class SpriteDefinitionSerializer
     /// <param name="filePath">The path of the definition file.</param>
     /// <returns>The resulting collection of sprite entries.</returns>
     public static List<Sprite> LoadSprites(string filePath) => ToSprites(Load(filePath));
+
     /// <summary>
     /// Loads a sprite definition and creates sprites using registered runtime dependencies.
     /// </summary>
     /// <param name="assetsFile">The assets file containing the requested entry.</param>
     /// <param name="entryName">The entry name inside the assets file.</param>
     /// <returns>The resulting collection of sprite entries.</returns>
-    public static List<Sprite> LoadSprites(AssetsFile assetsFile, string entryName) => ToSprites(Load(assetsFile, entryName));
+    public static List<Sprite> LoadSprites(AssetsFile assetsFile, string entryName) =>
+        ToSprites(Load(assetsFile, entryName));
+
     /// <summary>
     /// Creates a runtime sprite from its persisted definition.
     /// </summary>
     /// <param name="definition">The persisted definition to process.</param>
     /// <returns>The resulting sprite.</returns>
-    public static Sprite ToSprite(SpriteInstanceDefinition definition) => ToSprites(new() { Sprites = [definition] })[0];
+    public static Sprite ToSprite(SpriteInstanceDefinition definition) =>
+        ToSprites(new() { Sprites = [definition] })[0];
 
     /// <summary>Resolves only registered runtime dependencies. Rolls back on any failure.</summary>
     /// <param name="definition">The persisted definition to process.</param>
@@ -269,28 +295,48 @@ public static partial class SpriteDefinitionSerializer
     internal static List<Sprite> ToSprites(SpriteDefinition definition, bool allowDuplicateNicknames)
     {
         var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);
+
         if (errors.Count != 0)
             throw new InvalidDataException("Invalid GSPR definition:\n" + string.Join("\n", errors));
+
         var created = new List<Sprite>();
+
         try
         {
             foreach (var entry in definition.Sprites)
             {
                 var scenes = Scene._allScenes.Where(scene => scene.ID == entry.SceneId).Take(2).ToArray();
+
                 if (scenes.Length != 1)
-                    throw new InvalidDataException($"Sprite '{entry.Nickname}': Scene '{entry.SceneId}' is missing or ambiguous.");
+                    throw new InvalidDataException(
+                        $"Sprite '{entry.Nickname}': Scene '{entry.SceneId}' is missing or ambiguous.");
+
                 var scene = scenes[0];
                 var layers = scene.SceneLayers.Where(layer => layer.ID == entry.SceneLayerId).Take(2).ToArray();
+
                 if (layers.Length != 1)
-                    throw new InvalidDataException($"Sprite '{entry.Nickname}': SceneLayer '{entry.SceneLayerId}' is missing or ambiguous.");
+                    throw new InvalidDataException(
+                        $"Sprite '{entry.Nickname}': SceneLayer '{entry.SceneLayerId}' is missing or ambiguous.");
+
                 var layer = layers[0];
                 var frame = entry.Frame is null ? default : ResolveFrame(entry.Frame);
-                if (!string.IsNullOrWhiteSpace(entry.CollisionProfileName) && !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))
-                    throw new InvalidDataException($"Sprite '{entry.Nickname}': collision profile '{entry.CollisionProfileName}' does not exist.");
-                var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);
+
+                if (!string.IsNullOrWhiteSpace(entry.CollisionProfileName) && !scene.CollisionProfiles.GetProfileNames()
+                        .Contains(entry.CollisionProfileName))
+                    throw new InvalidDataException(
+                        $"Sprite '{entry.Nickname}': collision profile '{entry.CollisionProfileName}' does not exist.");
+
+                var sprite = SpriteManager.Instance.CreateSprite(
+                    layer,
+                    frame,
+                    entry.Nickname,
+                    entry.CollisionProfileName);
+
                 created.Add(sprite);
+
                 if (entry.Id != Guid.Empty)
                     sprite.Id = entry.Id;
+
                 sprite.SetPosition(new Vector2(entry.Position.X, entry.Position.Y));
                 sprite.Visible = entry.Visible;
                 sprite.ZOrder = entry.ZOrder;
@@ -299,21 +345,26 @@ public static partial class SpriteDefinitionSerializer
                 sprite.VertAlign = entry.VertAlign;
                 sprite.NudgeX = entry.NudgeX;
                 sprite.NudgeY = entry.NudgeY;
+
                 if (!entry.RenderSize.IsEmpty)
                     sprite.RenderSize = entry.RenderSize;
+
                 sprite.EnableFog = entry.EnableFog;
                 sprite.AdjustCollisionArea = entry.AdjustCollisionArea;
                 sprite.CollisionType = entry.CollisionType;
                 sprite.AdjustCollisionAreaByFrame = entry.AdjustCollisionAreaByFrame;
                 sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;
                 sprite.CollisionsEnabled = entry.CollisionsEnabled;
+
                 if (!string.IsNullOrWhiteSpace(entry.AnimationKey))
                 {
                     // Cycle.GetAnimationCycle returns a per-sprite clone with independent playback state.
                     var cycle = Cycle.GetAnimationCycle(entry.AnimationKey)
-                        ?? throw new InvalidDataException(
-                            $"Sprite '{entry.Nickname}': animation '{entry.AnimationKey}' is not registered.");
+                                ?? throw new InvalidDataException(
+                                    $"Sprite '{entry.Nickname}': animation '{entry.AnimationKey}' is not registered.");
+
                     sprite.TileAnimator.CurrentCycle = cycle;
+
                     if (entry.StartAnimation)
                         sprite.TileAnimator.StartAnimation();
                 }
@@ -323,8 +374,10 @@ public static partial class SpriteDefinitionSerializer
                 !string.IsNullOrWhiteSpace(sprite.Nickname))
                 ? definition.LoadStamp?.Materialized(definition, () => FromSprites(created))
                 : null;
+
             foreach (var sprite in created)
                 sprite.DefinitionProvenance = SpriteManager.Instance.DefinitionProvenance;
+
             return created;
         }
         catch
@@ -342,11 +395,16 @@ public static partial class SpriteDefinitionSerializer
     private static Frame ResolveFrame(SpriteFrameDefinition definition)
     {
         var sheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)
-            ?? throw new InvalidDataException($"GSPR tilesheet '{definition.Tilesheet}' is not registered.");
+                    ?? throw new InvalidDataException($"GSPR tilesheet '{definition.Tilesheet}' is not registered.");
+
         var region = sheet.GetRegion(definition.RegionName)
-            ?? throw new InvalidDataException($"GSPR region '{definition.RegionName}' is missing on '{definition.Tilesheet}'.");
+                     ?? throw new InvalidDataException(
+                         $"GSPR region '{definition.RegionName}' is missing on '{definition.Tilesheet}'.");
+
         if (definition.XTile >= region.Columns || definition.YTile >= region.Rows)
-            throw new InvalidDataException($"GSPR frame ({definition.XTile}, {definition.YTile}) is outside region '{definition.RegionName}'.");
+            throw new InvalidDataException(
+                $"GSPR frame ({definition.XTile}, {definition.YTile}) is outside region '{definition.RegionName}'.");
+
         return sheet.GetFrame(definition.RegionName, definition.XTile, definition.YTile);
     }
 }

@@ -11,14 +11,25 @@ internal sealed partial class SemanticPackPlan
     /// <param name="password">Password for referenced external archives when required.</param>
     /// <param name="cancellation">Cancellation token.</param>
     /// <returns>Prepared bytes for each selected entry; no source or destination is written.</returns>
-    internal static IReadOnlyDictionary<AssetsFileEntry, byte[]> PrepareExtraction(AssetsFile archive, string path,
-        IReadOnlyDictionary<AssetsFileEntry, string> destinations, string? password, CancellationToken cancellation)
+    internal static IReadOnlyDictionary<AssetsFileEntry, byte[]> PrepareExtraction(
+        AssetsFile archive,
+        string path,
+        IReadOnlyDictionary<AssetsFileEntry, string> destinations,
+        string? password,
+        CancellationToken cancellation)
     {
-        var plan = new SemanticPackPlan(Path.GetDirectoryName(path)!, path, password, false, true, cancellation)
+        var plan = new SemanticPackPlan(
+            Path.GetDirectoryName(path)!,
+            path,
+            password,
+            false,
+            true,
+            cancellation)
         {
             // Export must not reinterpret an existing external loose path as a same-named archive entry.
             _resolveLooseFromInventory = false
         };
+
         foreach (var key in archive.GetAllEntries())
         {
             cancellation.ThrowIfCancellationRequested();
@@ -26,7 +37,11 @@ internal sealed partial class SemanticPackPlan
             using var buffer = new MemoryStream();
             stream.CopyTo(buffer);
             var source = new AssetLocation(key.AssetType, path, key.AssetName);
-            var destination = destinations.TryGetValue(key, out var target) ? new AssetLocation(key.AssetType, target) : source;
+
+            var destination = destinations.TryGetValue(key, out var target)
+                ? new AssetLocation(key.AssetType, target)
+                : source;
+
             plan._entries.Add(key, ReadEntry(source, destination, buffer.ToArray()));
         }
 
@@ -39,10 +54,14 @@ internal sealed partial class SemanticPackPlan
         }
 
         var targets = new HashSet<string>(destinations.Values, Paths);
+
         foreach (var dependency in plan._external)
             if (targets.Contains(dependency.Location.Path))
-                throw new InvalidDataException($"Export destination would overwrite an external dependency: {dependency.Location.Path}.");
+                throw new InvalidDataException(
+                    $"Export destination would overwrite an external dependency: {dependency.Location.Path}.");
+
         var result = new Dictionary<AssetsFileEntry, byte[]>();
+
         foreach (var key in destinations.Keys)
         {
             cancellation.ThrowIfCancellationRequested();

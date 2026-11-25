@@ -17,7 +17,11 @@ public sealed class TileCollider : ICollider
     /// <param name="collidesWith">The bitmask of collision groups this collider interacts with.</param>
     /// <param name="responseType">The type of collision response. Defaults to <see cref="CollisionResponseType.Solid"/>.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="tile"/> is <c>null</c>.</exception>
-    public TileCollider(Tile tile, int collisionGroup, int collidesWith, CollisionResponseType responseType = CollisionResponseType.Solid)
+    public TileCollider(
+        Tile tile,
+        int collisionGroup,
+        int collidesWith,
+        CollisionResponseType responseType = CollisionResponseType.Solid)
     {
         _tile = tile ?? throw new ArgumentNullException(nameof(tile));
         CollisionGroup = collisionGroup;

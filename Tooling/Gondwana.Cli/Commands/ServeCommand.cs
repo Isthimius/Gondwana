@@ -58,43 +58,65 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
         {
             if (settings.Project is not null)
                 throw new ArgumentException("Choose --root or --project, not both.");
+
             var root = Path.GetFullPath(settings.Root);
+
             if (!File.Exists(Path.Combine(root, "index.html")))
                 throw new InvalidOperationException("--root must contain a published index.html.");
+
             return root;
         }
 
         if (!ProjectHelper.TryResolveProject(settings.Project, out var project, out var error))
             throw new InvalidOperationException(error);
-        if (!ProjectHelper.TryResolveBrowserFramework(project!, settings.Framework, out var framework, out error))
+
+        if (!ProjectHelper.TryResolveBrowserFramework(
+                project!,
+                settings.Framework,
+                out var framework,
+                out error))
             throw new InvalidOperationException(error);
+
         return ProjectHelper.TryLocateBlazorPublishRoot(project!, settings.Configuration, framework)
-            ?? throw new InvalidOperationException("No published browser wwwroot found. Run 'gondwana publish blazor' first, or specify --root for custom output.");
+               ?? throw new InvalidOperationException(
+                   "No published browser wwwroot found. Run 'gondwana publish blazor' first, or specify --root for custom output.");
     }
 
     /// <inheritdoc/>
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        Settings settings,
+        CancellationToken cancellationToken)
     {
         try
         {
             if (settings.Port is < 1 or > 65535)
                 throw new ArgumentException("Port must be between 1 and 65535.");
+
             var root = ResolveRoot(settings);
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
             ConsoleCancelEventHandler handler = (_, e) =>
             {
                 e.Cancel = true;
                 stop.Cancel();
             };
+
             Console.CancelKeyPress += handler;
+
             try
             {
-                await PublishedServer.Run(root, settings.Port, url =>
-                {
-                    AnsiConsole.WriteLine($"Serving {root} at {url} (Ctrl+C to stop)");
-                    if (!settings.NoOpen)
-                        ProcessHelper.OpenBrowser(url);
-                }, stop.Token);
+                await PublishedServer.Run(
+                    root,
+                    settings.Port,
+                    url =>
+                    {
+                        AnsiConsole.WriteLine($"Serving {root} at {url} (Ctrl+C to stop)");
+
+                        if (!settings.NoOpen)
+                            ProcessHelper.OpenBrowser(url);
+                    },
+                    stop.Token);
             }
             finally
             {
@@ -121,12 +143,14 @@ internal static class PublishedServer
     internal static IReadOnlyDictionary<string, PublishedFile> IndexFiles(string root)
     {
         var files = new Dictionary<string, PublishedFile>(StringComparer.Ordinal);
+
         var options = new EnumerationOptions
         {
             RecurseSubdirectories = true,
             AttributesToSkip = FileAttributes.ReparsePoint,
             IgnoreInaccessible = false
         };
+
         foreach (var file in Directory.EnumerateFiles(root, "*", options))
         {
             var relative = Path.GetRelativePath(root, file).Replace('\\', '/');
@@ -141,10 +165,14 @@ internal static class PublishedServer
         var html = File.ReadAllText(Path.Combine(root, "index.html"));
         var match = Regex.Match(html, "<base\\b[^>]*\\bhref\\s*=\\s*[\"']([^\"']*)[\"']", RegexOptions.IgnoreCase);
         var value = match.Success ? WebUtility.HtmlDecode(match.Groups[1].Value) : "/";
+
         if (value is "" or "." or "./" or "/")
             return "/";
+
         if (!value.StartsWith('/') || value.StartsWith("//") || value.Contains('?') || value.Contains('#'))
-            throw new InvalidOperationException("Published base href must be '/' or a local absolute path. Republish with --base-href / for local serving.");
+            throw new InvalidOperationException(
+                "Published base href must be '/' or a local absolute path. Republish with --base-href / for local serving.");
+
         SafeFilePath.ValidateRelative(Uri.UnescapeDataString(value.Trim('/')));
         return value.TrimEnd('/') + "/";
     }
@@ -157,7 +185,11 @@ internal static class PublishedServer
     /// <param name="ready">The ready.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>A task that represents completion of the operation.</returns>
-    public static async Task Run(string root, int port, Action<string> ready, CancellationToken cancellationToken)
+    public static async Task Run(
+        string root,
+        int port,
+        Action<string> ready,
+        CancellationToken cancellationToken)
     {
         var basePath = BasePath(root);
         var files = IndexFiles(root);
@@ -166,17 +198,29 @@ internal static class PublishedServer
         listener.Start();
         using var registration = cancellationToken.Register(listener.Stop);
         var requests = new List<Task>();
+
         try
         {
             ready($"http://localhost:{port}{basePath}");
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 var context = await listener.GetContextAsync().WaitAsync(cancellationToken);
                 requests.RemoveAll(t => t.IsCompleted);
-                requests.Add(Respond(context, root, basePath, files, cancellationToken));
+
+                requests.Add(
+                    Respond(
+                        context,
+                        root,
+                        basePath,
+                        files,
+                        cancellationToken));
             }
         }
-        catch (Exception ex) when (cancellationToken.IsCancellationRequested && ex is HttpListenerException or ObjectDisposedException or OperationCanceledException) { }
+        catch (Exception ex) when (cancellationToken.IsCancellationRequested &&
+                                   ex is HttpListenerException or ObjectDisposedException or OperationCanceledException)
+        {
+        }
         finally
         {
             listener.Stop();
@@ -184,15 +228,22 @@ internal static class PublishedServer
         }
     }
 
-    private static async Task Respond(HttpListenerContext context, string root, string basePath, IReadOnlyDictionary<string, PublishedFile> files, CancellationToken cancellationToken)
+    private static async Task Respond(
+        HttpListenerContext context,
+        string root,
+        string basePath,
+        IReadOnlyDictionary<string, PublishedFile> files,
+        CancellationToken cancellationToken)
     {
         var response = context.Response;
+
         try
         {
             response.Headers["Cross-Origin-Opener-Policy"] = "same-origin";
             response.Headers["Cross-Origin-Embedder-Policy"] = "require-corp";
             response.Headers["X-Content-Type-Options"] = "nosniff";
             response.Headers["Cache-Control"] = "no-cache";
+
             if (context.Request.RemoteEndPoint is not { } remote || !IPAddress.IsLoopback(remote.Address))
             {
                 response.StatusCode = 403;
@@ -206,6 +257,7 @@ internal static class PublishedServer
             }
 
             var urlPath = context.Request.Url!.AbsolutePath;
+
             if (urlPath == "/" && basePath != "/")
             {
                 response.Redirect(basePath);
@@ -219,9 +271,12 @@ internal static class PublishedServer
             }
 
             var name = Uri.UnescapeDataString(urlPath[basePath.Length..]);
+
             if (name.Length == 0)
                 name = "index.html";
+
             SafeFilePath.ValidateRelative(name);
+
             // Only filesystem-discovered values reach file APIs. Request data is
             // a lookup key, never a component of a filesystem path.
             if (!files.TryGetValue(name, out var file))
@@ -229,9 +284,11 @@ internal static class PublishedServer
                 response.StatusCode = 404;
                 return;
             }
+
             // Recheck link ancestry in case the published tree changed after indexing.
             SafeFilePath.Resolve(root, file.RelativePath);
             var path = file.FullPath;
+
             if (!File.Exists(path))
             {
                 response.StatusCode = 404;
@@ -241,6 +298,7 @@ internal static class PublishedServer
             response.ContentType = ContentType(path);
             using var stream = File.OpenRead(path);
             response.ContentLength64 = stream.Length;
+
             if (context.Request.HttpMethod == "GET")
                 await stream.CopyToAsync(response.OutputStream, cancellationToken);
         }
@@ -256,7 +314,9 @@ internal static class PublishedServer
         {
             response.StatusCode = 500;
         }
-        catch (Exception ex) when (ex is HttpListenerException or OperationCanceledException or ObjectDisposedException) { }
+        catch (Exception ex) when (ex is HttpListenerException or OperationCanceledException or ObjectDisposedException)
+        {
+        }
         finally
         {
             response.Close();

@@ -17,14 +17,21 @@ public sealed class TreeNavigationSizing : IDisposable
     /// <summary>Gets the applied logical size, or null while the original control defaults are in use.</summary>
     public NavigationIconSize? Size { get; private set; }
 
-    public TreeNavigationSizing(TreeView tree, Func<int, ImageList>? createImages, NavigationIconSize? defaultSize,
+    public TreeNavigationSizing(
+        TreeView tree,
+        Func<int, ImageList>? createImages,
+        NavigationIconSize? defaultSize,
         NavigationPreferenceStore? store)
     {
         _tree = tree;
         _store = store ?? new NavigationPreferenceStore();
         _originalImages = tree.ImageList;
         _originalFont = tree.Font;
-        _createImages = createImages ?? (_originalImages is null ? null : pixels => NavigationSizing.CopyImages(_originalImages, pixels));
+
+        _createImages = createImages ?? (_originalImages is null
+            ? null
+            : pixels => NavigationSizing.CopyImages(_originalImages, pixels));
+
         _defaultSize = defaultSize;
 
         NavigationSizing.PreferenceChanged += PreferenceChanged;
@@ -86,9 +93,14 @@ public sealed class TreeNavigationSizing : IDisposable
         var images = _createImages?.Invoke(pixels);
 
         Font font;
+
         try
         {
-            font = new Font("Segoe UI", NavigationSizing.FontPoints(size), FontStyle.Regular, GraphicsUnit.Point);
+            font = new Font(
+                "Segoe UI",
+                NavigationSizing.FontPoints(size),
+                FontStyle.Regular,
+                GraphicsUnit.Point);
         }
         catch
         {
@@ -101,6 +113,7 @@ public sealed class TreeNavigationSizing : IDisposable
         var top = _tree.TopNode;
 
         _tree.BeginUpdate();
+
         try
         {
             _images = images;
@@ -109,8 +122,9 @@ public sealed class TreeNavigationSizing : IDisposable
             _dpi = dpi;
             _tree.ImageList = images;
             _tree.Font = font;
+
             _tree.ItemHeight = Math.Max(pixels, (int)Math.Ceiling(font.SizeInPoints * dpi / 72d))
-                + Math.Max(1, (int)Math.Round(2 * dpi / 96d));
+                               + Math.Max(1, (int)Math.Round(2 * dpi / 96d));
 
             // Never assign SelectedNode: selection handlers may open documents or mark an editor dirty.
             if (top is not null && _tree.TopNode != top)

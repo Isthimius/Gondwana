@@ -3,8 +3,12 @@ namespace Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics;
 /// <summary>Read-only, host-themed presentation. Owns its UI timer; never scans files itself.</summary>
 internal sealed class ProjectDiagnosticsPanel : UserControl
 {
-    private readonly TreeView _definitions = new() { Dock = DockStyle.Fill, ShowNodeToolTips = true, HideSelection = false };
-    private readonly ListBox _problems = new() { Dock = DockStyle.Fill, HorizontalScrollbar = true, IntegralHeight = false };
+    private readonly TreeView _definitions = new()
+        { Dock = DockStyle.Fill, ShowNodeToolTips = true, HideSelection = false };
+
+    private readonly ListBox _problems = new()
+        { Dock = DockStyle.Fill, HorizontalScrollbar = true, IntegralHeight = false };
+
     private readonly Label _status = new() { Dock = DockStyle.Bottom, Height = 42, AutoEllipsis = true };
     private readonly System.Windows.Forms.Timer _timer = new() { Interval = 100 };
 
@@ -34,6 +38,7 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     {
         if (IsDisposed)
             return;
+
         _definitions.Nodes.Clear();
         _problems.Items.Clear();
         _status.Text = status;
@@ -45,17 +50,28 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     {
         if (IsDisposed)
             return;
-        Clear($"{result.Definitions.Count} definitions; {result.Definitions.Count(d => !d.Loaded)} load failures; {result.Problems.Count} problems.");
+
+        Clear(
+            $"{result.Definitions.Count} definitions; {result.Definitions.Count(d => !d.Loaded)} load failures; {result.Problems.Count} problems.");
+
         _definitions.BeginUpdate();
         _problems.BeginUpdate();
+
         try
         {
             foreach (var definition in result.Definitions)
             {
-                var node = _definitions.Nodes.Add($"{definition.RelativePath} [{definition.Format}] — {(definition.Loaded ? "Loaded" : "Load failed")}");
+                var node = _definitions.Nodes.Add(
+                    $"{definition.RelativePath} [{definition.Format}] — {(definition.Loaded ? "Loaded" : "Load failed")}");
+
                 foreach (var reference in definition.References)
-                    node.Nodes.Add(new TreeNode($"{(reference.Problem is null ? "→" : "!")} {reference.Property}: {reference.Value}")
-                    { ToolTipText = reference.Problem ?? reference.ResolvedPath ?? "External URI; not fetched." });
+                    node.Nodes.Add(
+                        new TreeNode(
+                            $"{(reference.Problem is null ? "→" : "!")} {reference.Property}: {reference.Value}")
+                        {
+                            ToolTipText = reference.Problem ??
+                                          reference.ResolvedPath ?? "External URI; not fetched."
+                        });
             }
 
             foreach (var problem in result.Problems)
@@ -74,6 +90,7 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     {
         if (disposing)
             _timer.Dispose();
+
         base.Dispose(disposing);
     }
 }

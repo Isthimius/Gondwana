@@ -20,6 +20,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     private const int MaxAtlasBatchSize = 256;
     private const int MaxSnappedVertexBatchSize = 4096;
     private static readonly int[] PartialBatchSizes = [128, 64, 32, 16, 8, 4, 2, 1];
+
     private static readonly int[] PartialSnappedVertexBatchSizes =
         [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
@@ -61,9 +62,17 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         {
             RectangleF unit = view.WorldRectToScreenRect(
                 layer,
-                new RectangleF(0f, 0f, 1f, 1f));
+                new RectangleF(
+                    0f,
+                    0f,
+                    1f,
+                    1f));
 
-            return new(unit.Left, unit.Top, unit.Width, unit.Height);
+            return new(
+                unit.Left,
+                unit.Top,
+                unit.Width,
+                unit.Height);
         }
 
         internal RectangleF Map(Rectangle world) =>
@@ -80,7 +89,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             float right = Snap(OffsetX + world.Right * ScaleX);
             float bottom = Snap(OffsetY + world.Bottom * ScaleY);
 
-            return RectangleF.FromLTRB(left, top, right, bottom);
+            return RectangleF.FromLTRB(
+                left,
+                top,
+                right,
+                bottom);
         }
 
         private static float Snap(float value) =>
@@ -96,16 +109,22 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
     private readonly SKPictureRecorder _recorder = new();
     private readonly SKRect[] _pendingSprites = new SKRect[MaxAtlasBatchSize];
+
     private readonly SKRotationScaleMatrix[] _pendingTransforms =
         new SKRotationScaleMatrix[MaxAtlasBatchSize];
+
     private readonly SKPoint[] _pendingSnappedPositions =
         new SKPoint[MaxSnappedVertexBatchSize * 4];
+
     private readonly SKPoint[] _pendingSnappedTextureCoordinates =
         new SKPoint[MaxSnappedVertexBatchSize * 4];
+
     private readonly ushort[] _fullSnappedVertexIndices =
         CreateQuadIndices(MaxSnappedVertexBatchSize);
+
     private readonly Dictionary<FrameAtlasKey, FrameAtlasInfo> _frameAtlasCache = [];
     private readonly Dictionary<SKImage, SKShader> _atlasShaderCache = [];
+
     private readonly Dictionary<int, AtlasBatchBuffer> _partialBatchBuffers = new()
     {
         [1] = new(1),
@@ -117,10 +136,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         [64] = new(64),
         [128] = new(128)
     };
+
     private readonly Dictionary<int, SnappedVertexBatchBuffer> _partialSnappedVertexBuffers =
         PartialSnappedVertexBatchSizes.ToDictionary(
             size => size,
             size => new SnappedVertexBatchBuffer(size));
+
     private readonly SKPaint _snappedVertexPaint = new()
     {
         IsAntialias = false,
@@ -140,6 +161,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
     /// <inheritdoc/>
     public override SKCanvas Canvas => _canvas ?? throw new InvalidOperationException("No recording is active.");
+
     /// <inheritdoc/>
     public override bool IsGlThreadRendered => true;
 
@@ -160,7 +182,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         FogPaint = source.FogPaint.Clone();
         GridLinePaint = source.GridLinePaint.Clone();
         CollisionBoxPaint = source.CollisionBoxPaint.Clone();
-        _canvas = _recorder.BeginRecording(new SKRect(0, 0, Width, Height));
+
+        _canvas = _recorder.BeginRecording(
+            new SKRect(
+                0,
+                0,
+                Width,
+                Height));
     }
 
     internal SKPicture Complete()
@@ -300,6 +328,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             }
 
             layer ??= tile.SceneLayer;
+
             if (!ReferenceEquals(layer, tile.SceneLayer))
                 return false;
         }
@@ -365,7 +394,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                     worldSpaceActive = false;
                 }
 
-                DrawFixedGridTile(view, layer, screen, tile);
+                DrawFixedGridTile(
+                    view,
+                    layer,
+                    screen,
+                    tile);
             }
 
             if (worldSpaceActive)
@@ -398,6 +431,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
         {
             Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+
             if (!frame.Overhang.IsEmpty)
             {
                 world = Rectangle.FromLTRB(
@@ -408,6 +442,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             }
 
             RectangleF destination = screen.MapPixelSnapped(world);
+
             if (destination.Width <= 0f || destination.Height <= 0f)
                 return;
 
@@ -415,6 +450,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                 frame.Atlas,
                 frame.Source,
                 destination);
+
             return;
         }
 
@@ -422,6 +458,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
         RectangleF transformedDestination =
             screen.MapPixelSnapped(tile.DrawLocationWorld);
+
         if (transformedDestination.Width > 0f &&
             transformedDestination.Height > 0f)
         {
@@ -437,6 +474,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             return;
 
         Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+
         if (!frame.Overhang.IsEmpty)
         {
             world = Rectangle.FromLTRB(
@@ -454,6 +492,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             return;
 
         FlushTileBatch();
+
         Canvas.DrawImage(
             frame.Atlas,
             frame.Source,
@@ -482,6 +521,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         }
 
         Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+
         if (!frame.Overhang.IsEmpty)
         {
             world = Rectangle.FromLTRB(
@@ -528,10 +568,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
         _pendingSnappedTextureCoordinates[vertexIndex] =
             new(source.Left, source.Top);
+
         _pendingSnappedTextureCoordinates[vertexIndex + 1] =
             new(source.Right, source.Top);
+
         _pendingSnappedTextureCoordinates[vertexIndex + 2] =
             new(source.Right, source.Bottom);
+
         _pendingSnappedTextureCoordinates[vertexIndex + 3] =
             new(source.Left, source.Bottom);
 
@@ -561,12 +604,14 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             while (remaining >= size)
             {
                 var buffers = _partialSnappedVertexBuffers[size];
+
                 Array.Copy(
                     _pendingSnappedPositions,
                     offset * 4,
                     buffers.Positions,
                     0,
                     size * 4);
+
                 Array.Copy(
                     _pendingSnappedTextureCoordinates,
                     offset * 4,
@@ -629,10 +674,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                 new SKSamplingOptions(
                     SKFilterMode.Nearest,
                     SKMipmapMode.None));
+
             _atlasShaderCache.Add(atlas, shader);
         }
 
         _snappedVertexPaint.Shader = shader;
+
         Canvas.DrawVertices(
             vertices,
             SKBlendMode.Modulate,
@@ -708,6 +755,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
         var atlas = frame.AtlasImage;
         Rectangle source = frame.AtlasSourceBounds;
+
         if (atlas is null || source.IsEmpty)
         {
             info = default;
@@ -718,6 +766,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             atlas,
             source.ToSKRect(),
             frame.Overhang);
+
         _frameAtlasCache.Add(key, info);
         return true;
     }
@@ -752,6 +801,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         _pendingAtlas = atlas;
         int index = _pendingCount++;
         _pendingSprites[index] = source;
+
         _pendingTransforms[index] = new SKRotationScaleMatrix(
             scaleX,
             0f,
@@ -783,8 +833,20 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             while (remaining >= size)
             {
                 var buffers = _partialBatchBuffers[size];
-                Array.Copy(_pendingSprites, offset, buffers.Sprites, 0, size);
-                Array.Copy(_pendingTransforms, offset, buffers.Transforms, 0, size);
+
+                Array.Copy(
+                    _pendingSprites,
+                    offset,
+                    buffers.Sprites,
+                    0,
+                    size);
+
+                Array.Copy(
+                    _pendingTransforms,
+                    offset,
+                    buffers.Transforms,
+                    0,
+                    size);
 
                 Canvas.DrawAtlas(
                     _pendingAtlas,
@@ -826,16 +888,20 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
     /// <inheritdoc/>
     protected internal override void BeginFrame() { }
+
     /// <inheritdoc/>
     protected internal override void EndFrame() { }
+
     /// <inheritdoc/>
     protected internal override SKImage Snapshot() =>
-        throw new NotSupportedException("A recording has commands, not pixels. Read pixels on the GL thread after replay.");
+        throw new NotSupportedException(
+            "A recording has commands, not pixels. Read pixels on the GL thread after replay.");
 
     /// <inheritdoc/>
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
+
         if (image is not null)
             Canvas.DrawImage(image, destRectScreen.ToSKRect());
     }

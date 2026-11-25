@@ -13,28 +13,24 @@ namespace Gondwana.Drawing.Animation;
 [JsonObject(IsReference = true)]
 public class Cycle : ICloneable, IDisposable
 {
-    [Newtonsoft.Json.JsonIgnore]
-    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+    [Newtonsoft.Json.JsonIgnore] internal DefinitionProvenance? DefinitionProvenance { get; set; }
 
     #region fields
 
     /// <summary>
     /// The frame sequence used by this animation cycle
     /// </summary>
-    [JsonProperty]
-    public FrameSequence Sequence;
+    [JsonProperty] public FrameSequence Sequence;
 
     /// <summary>
     /// The unique identifier key for this cycle
     /// </summary>
-    [JsonProperty]
-    public readonly string CycleKey;
+    [JsonProperty] public readonly string CycleKey;
 
     /// <summary>
     /// Indicates whether the tile should be hidden when the cycle completes
     /// </summary>
-    [JsonProperty]
-    public readonly bool HideTileOnCycleEnd;
+    [JsonProperty] public readonly bool HideTileOnCycleEnd;
 
     internal long _throttle = 0;
 
@@ -49,7 +45,11 @@ public class Cycle : ICloneable, IDisposable
     /// <param name="throttleTime">The time in seconds between frame transitions</param>
     /// <param name="cycleKey">The unique identifier for this cycle</param>
     /// <param name="hideTileOnCycleEnd">If true, hides the tile when the cycle completes. Default is false.</param>
-    public Cycle(FrameSequence sequence, double throttleTime, string cycleKey, bool hideTileOnCycleEnd = false)
+    public Cycle(
+        FrameSequence sequence,
+        double throttleTime,
+        string cycleKey,
+        bool hideTileOnCycleEnd = false)
     {
         Sequence = sequence;
         ThrottleTime = throttleTime;
@@ -127,10 +127,12 @@ public class Cycle : ICloneable, IDisposable
             if (Enumerable.Range(0, Sequence.FrameCount).Any(i => Sequence.GetDurationSeconds(i).HasValue))
             {
                 double total = 0;
+
                 for (int i = 0; i < Sequence.FrameCount; i++)
                 {
                     double duration = Sequence.GetDurationSeconds(i) ?? ThrottleTime;
                     total += duration;
+
                     if (Sequence.SequenceCycleType == CycleType.PingPong && i > 0 && i < Sequence.FrameCount - 1)
                         total += duration;
                 }
@@ -250,6 +252,7 @@ public class Cycle : ICloneable, IDisposable
     public static void ClearAllAnimationCycles()
     {
         var tempCycles = new List<Cycle>(_cycles.Values);
+
         foreach (Cycle cyc in tempCycles)
             cyc.Dispose();
     }

@@ -53,7 +53,10 @@ public sealed partial class EditorInteractionTests
         var document = TilesheetDocument.Create(Path.Combine(AppContext.BaseDirectory, "assets"));
         using var editor = Show(document);
         var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
-        var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+
+        var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>())
+            .ToArray();
+
         var zoomOut = buttons.Single(item => item.Text == "−");
         var zoomIn = buttons.Single(item => item.Text == "+");
 
@@ -76,11 +79,14 @@ public sealed partial class EditorInteractionTests
         var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
         viewport.Image = bitmap;
         viewport.UpdateExtent();
+
         var zoom = Descendants(editor).OfType<ToolStrip>()
             .SelectMany(strip => strip.Items.OfType<ToolStripComboBox>())
             .Single(combo => combo.Items.Contains("Fit"));
+
         var buttons = Descendants(editor).OfType<ToolStrip>()
             .SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+
         var point = new Point(20, 20);
 
         Assert.Equal("100%", zoom.Text);
@@ -112,6 +118,7 @@ public sealed partial class EditorInteractionTests
     {
         var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
         using var editor = Show(document);
+
         var grids = new[]
         {
             Field<PropertyGrid>(editor.Editor, "_definitionProperties"),
@@ -123,9 +130,12 @@ public sealed partial class EditorInteractionTests
         {
             Assert.True(grid.HelpVisible, "A property grid with hidden help cannot display its descriptions.");
             Assert.NotNull(grid.SelectedObject);
-            Assert.Contains(Items(grid), item =>
-                item.PropertyDescriptor is { } descriptor &&
-                !string.IsNullOrWhiteSpace(descriptor.Description));
+
+            Assert.Contains(
+                Items(grid),
+                item =>
+                    item.PropertyDescriptor is { } descriptor &&
+                    !string.IsNullOrWhiteSpace(descriptor.Description));
         }
     });
 
@@ -137,6 +147,7 @@ public sealed partial class EditorInteractionTests
         using var editor = Show(document);
         var pane = Field<ComboBox>(editor.Editor, "_regions");
         var toolbar = Field<ToolStripComboBox>(editor.Editor, "_toolbarRegions");
+
         var definitionBar = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
 
@@ -147,8 +158,10 @@ public sealed partial class EditorInteractionTests
         Assert.Equal("Region", definitionBar.Items[3].Text);
         Assert.Same(toolbar, definitionBar.Items[4]);
         Assert.Equal("RenameRegion", definitionBar.Items[5].Name);
+
         var regionTools = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.Items.Cast<ToolStripItem>().Any(item => item.Text == "+ Region"));
+
         Assert.Contains(regionTools.Items.OfType<ToolStripControlHost>(), host => ReferenceEquals(host.Control, pane));
         Assert.Same(pane.SelectedItem, toolbar.SelectedItem);
 
@@ -188,8 +201,10 @@ public sealed partial class EditorInteractionTests
     {
         using var editor = Show(TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts")));
         var document = editor.Document;
+
         var bar = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
+
         var renameDefinition = bar.Items.Find("RenameDefinition", false).Single();
         var renameRegion = bar.Items.Find("RenameRegion", false).Single();
         var members = bar.Items.OfType<ToolStripComboBox>().First();
@@ -198,11 +213,21 @@ public sealed partial class EditorInteractionTests
         Assert.Empty(bar.Items.OfType<ToolStripTextBox>());
         string originalName = document.Definition.Name;
 
-        InteractWithRenameDialog("Rename definition", "ignored-cancelled", accept: false, renameDefinition.PerformClick);
+        InteractWithRenameDialog(
+            "Rename definition",
+            "ignored-cancelled",
+            accept: false,
+            renameDefinition.PerformClick);
+
         Assert.Equal(originalName, document.Definition.Name);
         Assert.False(document.IsDirty);
 
-        InteractWithRenameDialog("Rename definition", "renamed-definition", accept: true, renameDefinition.PerformClick);
+        InteractWithRenameDialog(
+            "Rename definition",
+            "renamed-definition",
+            accept: true,
+            renameDefinition.PerformClick);
+
         Assert.Equal("renamed-definition", document.Definition.Name);
         Assert.Equal("renamed-definition", members.SelectedItem);
         Assert.True(document.History.CanUndo);
@@ -213,9 +238,21 @@ public sealed partial class EditorInteractionTests
 
         var region = Assert.IsType<TilesheetRegionDefinition>(regions.SelectedItem);
         string originalRegionName = region.Name;
-        InteractWithRenameDialog("Rename region", "ignored-region", accept: false, renameRegion.PerformClick);
+
+        InteractWithRenameDialog(
+            "Rename region",
+            "ignored-region",
+            accept: false,
+            renameRegion.PerformClick);
+
         Assert.Equal(originalRegionName, region.Name);
-        InteractWithRenameDialog("Rename region", "renamed-region", accept: true, renameRegion.PerformClick);
+
+        InteractWithRenameDialog(
+            "Rename region",
+            "renamed-region",
+            accept: true,
+            renameRegion.PerformClick);
+
         Assert.Equal("renamed-region", region.Name);
         Assert.Same(region, regions.SelectedItem);
         Assert.Equal("renamed-region", regions.Text);
@@ -225,14 +262,20 @@ public sealed partial class EditorInteractionTests
         Assert.Same(region, regions.SelectedItem);
     });
 
-    private static void InteractWithRenameDialog(string title, string requested, bool accept, Action launch)
+    private static void InteractWithRenameDialog(
+        string title,
+        string requested,
+        bool accept,
+        Action launch)
     {
         using var pump = new System.Windows.Forms.Timer { Interval = 10 };
         bool handled = false;
+
         pump.Tick += (_, _) =>
         {
             var dialog = Application.OpenForms.Cast<Form>()
                 .FirstOrDefault(form => form.Modal && form.Text == title);
+
             if (dialog is null)
                 return;
 
@@ -266,6 +309,7 @@ public sealed partial class EditorInteractionTests
         };
 
         pump.Start();
+
         try
         {
             launch();
@@ -284,17 +328,22 @@ public sealed partial class EditorInteractionTests
         var document = TilesheetDocument.Create(Path.GetTempPath());
         using var editor = Show(document);
         var pane = Field<ComboBox>(editor.Editor, "_paneDefinitions");
+
         var selector = Descendants(editor).OfType<ToolStrip>()
             .Single(strip => strip.GetType().Name.StartsWith("DefinitionSelectionBar", StringComparison.Ordinal));
+
         var toolbar = selector.Items.OfType<ToolStripComboBox>().First();
         var details = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         var regionDetails = Field<PropertyGrid>(editor.Editor, "_regionProperties");
 
         Assert.Equal(PropertySort.Categorized, details.PropertySort);
         Assert.Equal(PropertySort.Categorized, regionDetails.PropertySort);
-        Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
+
+        Assert.Equal(
+            new[] { "Name", "Image Size", "PremultiplyAlpha" },
             TypeDescriptor.GetProperties(details.SelectedObject!).Cast<PropertyDescriptor>()
                 .Where(property => property.Category == "Definition").Select(property => property.Name));
+
         Assert.NotNull(TypeDescriptor.GetProperties(details.SelectedObject!)["Mask enabled"]);
         Assert.Same(document.SelectedDefinition, pane.SelectedItem);
         Assert.Equal(document.SelectedDefinition.Name, toolbar.SelectedItem);
@@ -331,36 +380,52 @@ public sealed partial class EditorInteractionTests
 
         GridItem Category(PropertyGrid grid, string label) => Items(grid)
             .Single(item => item.GridItemType == GridItemType.Category && item.Label.TrimStart() == label);
+
         string[] Categories(PropertyGrid grid) => Items(grid)
             .Where(item => item.GridItemType == GridItemType.Category)
             .Select(item => item.Label.TrimStart()).ToArray();
-        string[] Children(GridItem item) => item.GridItems.Cast<GridItem>()
-            .Select(child => child.PropertyDescriptor?.Name).Where(name => name is not null).Select(name => name!).ToArray();
 
-        Assert.Equal(new[] { "Name", "Image Size", "PremultiplyAlpha" },
+        string[] Children(GridItem item) => item.GridItems.Cast<GridItem>()
+            .Select(child => child.PropertyDescriptor?.Name).Where(name => name is not null).Select(name => name!)
+            .ToArray();
+
+        Assert.Equal(
+            new[] { "Name", "Image Size", "PremultiplyAlpha" },
             Children(Category(details, "Definition")));
+
         Assert.Equal(new[] { "Region", "Collision", "Geometry" }, Categories(region));
         Assert.Equal(new[] { "Name" }, Children(Category(region, "Region")));
-        Assert.Equal(new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
+
+        Assert.Equal(
+            new[] { "Mask enabled", "Color", "Alpha", "Tolerance" },
             Children(Category(details, "Mask")));
+
         var maskColor = Category(details, "Mask").GridItems.Cast<GridItem>()
             .Single(item => item.PropertyDescriptor?.Name == "Color");
+
         maskColor.Expanded = true;
         Assert.Equal(new[] { "Red", "Green", "Blue" }, Children(maskColor));
 
-        Assert.Equal(new[] { "CollisionType", "CollisionAdjust" },
+        Assert.Equal(
+            new[] { "CollisionType", "CollisionAdjust" },
             Children(Category(region, "Collision")));
+
         var collision = Category(region, "Collision").GridItems.Cast<GridItem>()
             .Single(item => item.PropertyDescriptor?.Name == "CollisionAdjust");
+
         collision.Expanded = true;
         Assert.Equal(new[] { "Top", "Right", "Bottom", "Left" }, Children(collision));
+
         var geometry = Category(region, "Geometry").GridItems.Cast<GridItem>()
             .Single(item => item.PropertyDescriptor?.Name == "Area");
+
         geometry.Expanded = true;
         Assert.Equal(new[] { "X", "Y", "Width", "Height" }, Children(geometry));
         Assert.Equal(new[] { "Coordinates (read only)", "Collision" }, Categories(frame));
         Assert.Equal(new[] { "XTile", "YTile" }, Children(Category(frame, "Coordinates (read only)")));
-        Assert.Equal(new[] { "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
+
+        Assert.Equal(
+            new[] { "CollisionAdjust mode", "CollisionType", "Top", "Right", "Bottom", "Left" },
             Children(Category(frame, "Collision")));
     });
 
@@ -408,15 +473,27 @@ public sealed partial class EditorInteractionTests
         var region = document.Definition.Regions.Last();
         var bounds = FrameGeometry.Bounds(region, 0, 0);
         var imagePoint = new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f);
-        var pointer = new Point((int)(imagePoint.X * viewport.Zoom) + viewport.AutoScrollPosition.X,
+
+        var pointer = new Point(
+            (int)(imagePoint.X * viewport.Zoom) + viewport.AutoScrollPosition.X,
             (int)(imagePoint.Y * viewport.Zoom) + viewport.AutoScrollPosition.Y);
 
         Click(viewport, imagePoint);
         Assert.Same(region, viewport.SelectedRegion);
         Assert.Equal(Point.Empty, viewport.SelectedFrame);
         Assert.Null(viewport.TakeFrameDrag(pointer));
-        typeof(ImageViewport).GetMethod("OnMouseUp", PrivateInstance)!.Invoke(viewport,
-            [new MouseEventArgs(MouseButtons.Left, 1, pointer.X, pointer.Y, 0)]);
+
+        typeof(ImageViewport).GetMethod("OnMouseUp", PrivateInstance)!.Invoke(
+            viewport,
+            [
+                new MouseEventArgs(
+                    MouseButtons.Left,
+                    1,
+                    pointer.X,
+                    pointer.Y,
+                    0)
+            ]);
+
         var beyondThreshold = pointer + SystemInformation.DragSize;
         Assert.Null(viewport.TakeFrameDrag(beyondThreshold));
 
@@ -443,71 +520,88 @@ public sealed partial class EditorInteractionTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Inspector_CommitsTextNumbersAndCollisionOverrides_AndKeepsSelectedProperty(bool fromImage) => RunSta(() =>
-    {
-        var assets = Path.Combine(AppContext.BaseDirectory, "assets");
-        var document = fromImage ? TilesheetDocument.Create(assets) : TilesheetDocument.Open(Path.Combine(assets, "forest.gts"));
-        using var editor = Show(document);
-        if (fromImage)
+    public void Inspector_CommitsTextNumbersAndCollisionOverrides_AndKeepsSelectedProperty(bool fromImage) =>
+        RunSta(() =>
         {
-            editor.ChooseImage(Path.Combine(assets, "forest.png"));
-            editor.AddRegion();
-        }
+            var assets = Path.Combine(AppContext.BaseDirectory, "assets");
 
-        var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
-        grid = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
-        Edit(grid, "Name", "Edited in the inspector");
-        Assert.Equal("Edited in the inspector", document.Definition.Name);
-        Edit(grid, "PremultiplyAlpha", "True");
-        Assert.True(document.Definition.PremultiplyAlpha);
+            var document = fromImage
+                ? TilesheetDocument.Create(assets)
+                : TilesheetDocument.Open(Path.Combine(assets, "forest.gts"));
 
-        grid = Field<PropertyGrid>(editor.Editor, "_regionProperties");
-        var region = document.Definition.Regions[0];
-        Edit(grid, "CollisionAdjust.Left", "-3");
-        Assert.Equal(-3, region.CollisionAdjust.Left);
-        Assert.Equal("Left", grid.SelectedGridItem?.PropertyDescriptor?.Name);
-        Edit(grid, "CollisionAdjust.Left", "-4", enter: false);
-        Assert.Equal(-4, region.CollisionAdjust.Left);
-        document.History.Undo();
-        Application.DoEvents();
-        Assert.Equal(-3, region.CollisionAdjust.Left);
-        Assert.Equal(-3, Items(grid).Single(item =>
-            item.PropertyDescriptor?.Name == "Left" &&
-            item.Parent?.PropertyDescriptor?.Name == "CollisionAdjust").Value);
-        document.History.Redo();
-        Application.DoEvents();
-        Assert.Equal(-4, region.CollisionAdjust.Left);
-        Edit(grid, "Overhang.Top", "2");
-        Assert.Equal(2, region.Overhang.Top);
+            using var editor = Show(document);
 
-        var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
-        viewport.Fit();
-        var bounds = FrameGeometry.Bounds(region, 0, 0);
-        Click(viewport, new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f));
-        grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
-        Assert.True(Items(grid).Single(i => i.PropertyDescriptor?.Name == "Left").PropertyDescriptor!.IsReadOnly);
-        Edit(grid, "CollisionAdjust mode", "Override");
-        Edit(grid, "Left", "-7");
-        Edit(grid, "CollisionType", "Blocking");
-        var frame = document.FindFrame(region, 0, 0)!;
-        Assert.Equal(-7, frame.CollisionAdjust!.Value.Left);
-        Assert.Equal(TileCollisionType.Blocking, frame.CollisionType);
-        Assert.True(document.IsDirty);
+            if (fromImage)
+            {
+                editor.ChooseImage(Path.Combine(assets, "forest.png"));
+                editor.AddRegion();
+            }
 
-        string output = Path.Combine(Path.GetTempPath(), "GtsInspector_" + Guid.NewGuid().ToString("N") + ".gts");
-        try
-        {
-            document.Save(output, editor.ImageSize);
-            var loaded = TilesheetDefinitionSerializer.Load(output);
-            Assert.Equal("Edited in the inspector", loaded.Name);
-            Assert.Equal(-7, loaded.Regions[0].Frames[0].CollisionAdjust!.Value.Left);
-            Assert.Equal(TileCollisionType.Blocking, loaded.Regions[0].Frames[0].CollisionType);
-        }
-        finally
-        {
-            File.Delete(output);
-        }
-    });
+            var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+            grid = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
+            Edit(grid, "Name", "Edited in the inspector");
+            Assert.Equal("Edited in the inspector", document.Definition.Name);
+            Edit(grid, "PremultiplyAlpha", "True");
+            Assert.True(document.Definition.PremultiplyAlpha);
+
+            grid = Field<PropertyGrid>(editor.Editor, "_regionProperties");
+            var region = document.Definition.Regions[0];
+            Edit(grid, "CollisionAdjust.Left", "-3");
+            Assert.Equal(-3, region.CollisionAdjust.Left);
+            Assert.Equal("Left", grid.SelectedGridItem?.PropertyDescriptor?.Name);
+
+            Edit(
+                grid,
+                "CollisionAdjust.Left",
+                "-4",
+                enter: false);
+
+            Assert.Equal(-4, region.CollisionAdjust.Left);
+            document.History.Undo();
+            Application.DoEvents();
+            Assert.Equal(-3, region.CollisionAdjust.Left);
+
+            Assert.Equal(
+                -3,
+                Items(grid).Single(item =>
+                    item.PropertyDescriptor?.Name == "Left" &&
+                    item.Parent?.PropertyDescriptor?.Name == "CollisionAdjust").Value);
+
+            document.History.Redo();
+            Application.DoEvents();
+            Assert.Equal(-4, region.CollisionAdjust.Left);
+            Edit(grid, "Overhang.Top", "2");
+            Assert.Equal(2, region.Overhang.Top);
+
+            var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
+            viewport.Fit();
+            var bounds = FrameGeometry.Bounds(region, 0, 0);
+            Click(viewport, new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f));
+            grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+            Assert.True(Items(grid).Single(i => i.PropertyDescriptor?.Name == "Left").PropertyDescriptor!.IsReadOnly);
+            Edit(grid, "CollisionAdjust mode", "Override");
+            Edit(grid, "Left", "-7");
+            Edit(grid, "CollisionType", "Blocking");
+            var frame = document.FindFrame(region, 0, 0)!;
+            Assert.Equal(-7, frame.CollisionAdjust!.Value.Left);
+            Assert.Equal(TileCollisionType.Blocking, frame.CollisionType);
+            Assert.True(document.IsDirty);
+
+            string output = Path.Combine(Path.GetTempPath(), "GtsInspector_" + Guid.NewGuid().ToString("N") + ".gts");
+
+            try
+            {
+                document.Save(output, editor.ImageSize);
+                var loaded = TilesheetDefinitionSerializer.Load(output);
+                Assert.Equal("Edited in the inspector", loaded.Name);
+                Assert.Equal(-7, loaded.Regions[0].Frames[0].CollisionAdjust!.Value.Left);
+                Assert.Equal(TileCollisionType.Blocking, loaded.Regions[0].Frames[0].CollisionType);
+            }
+            finally
+            {
+                File.Delete(output);
+            }
+        });
 
     /// <summary>
     /// Verifies packed gaf image can be previewed and saved as reference.
@@ -522,6 +616,7 @@ public sealed partial class EditorInteractionTests
         try
         {
             var gaf = Path.Combine(directory, "images.gaf");
+
             using (var package = Gondwana.Assets.AssetsFile.LoadOrCreate(gaf))
             {
                 package.Add(Gondwana.Assets.AssetTypes.Image, sourceImage, "forest-packed.png");
@@ -562,6 +657,7 @@ public sealed partial class EditorInteractionTests
     public void AssetPackageCatalog_RequiresExactPackedImageName()
     {
         var sourceImage = Path.Combine(AppContext.BaseDirectory, "assets", "forest.png");
+
         var directory = Path.Combine(
             Path.GetTempPath(),
             "GtsGafExact_" + Guid.NewGuid().ToString("N"));
@@ -578,6 +674,7 @@ public sealed partial class EditorInteractionTests
                     Gondwana.Assets.AssetTypes.Image,
                     sourceImage,
                     "forest.jpg");
+
                 package.Save();
             }
 
@@ -591,8 +688,7 @@ public sealed partial class EditorInteractionTests
 
             Assert.False(catalog.ContainsImage(staleReference));
 
-            var exception = Assert.Throws<InvalidDataException>(
-                () => catalog.OpenImage(staleReference));
+            var exception = Assert.Throws<InvalidDataException>(() => catalog.OpenImage(staleReference));
 
             Assert.Contains(
                 "forest.png",
@@ -621,29 +717,41 @@ public sealed partial class EditorInteractionTests
     public void OverlayColors_UpdateOpenDocumentsAndLegendWithoutDirtyingGts() => RunSta(() =>
     {
         string path = Path.Combine(Path.GetTempPath(), "GtsColors_" + Guid.NewGuid().ToString("N") + ".json");
+
         try
         {
             var settings = OverlaySettings.Load(path);
             var source = Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts");
             using var first = Show(TilesheetDocument.Open(source), settings);
             using var second = Show(TilesheetDocument.Open(source), settings);
+
             var menu = Descendants(first).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>())
                 .OfType<ToolStripDropDownButton>().Single(item => item.Text == "Overlays / legend");
+
             Assert.Equal(Enum.GetValues<OverlayKind>().Length, menu.DropDownItems.Count);
+
             foreach (ToolStripControlHost item in menu.DropDownItems)
             {
                 Assert.Single(Descendants(item.Control).OfType<Button>(), button => button.Text == "...");
                 Assert.Single(Descendants(item.Control).OfType<CheckBox>());
                 var layout = Descendants(item.Control).OfType<TableLayoutPanel>().Single();
                 layout.PerformLayout();
+
                 foreach (Control control in layout.Controls)
                     Assert.True(control.Bottom <= layout.Height, "Legend controls must fit inside their row.");
             }
 
             settings.SetColor(OverlayKind.Collision, Color.Lime);
             Application.DoEvents();
-            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
-            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(second.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+
+            Assert.Equal(
+                Color.Lime.ToArgb(),
+                Field<ImageViewport>(first.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+
+            Assert.Equal(
+                Color.Lime.ToArgb(),
+                Field<ImageViewport>(second.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+
             Assert.False(first.Document.IsDirty);
             Assert.False(second.Document.IsDirty);
         }
@@ -662,6 +770,7 @@ public sealed partial class EditorInteractionTests
             Size = new Size(1200, 800),
             CloseApproved = true
         };
+
         editor.Show();
         Application.DoEvents();
         return editor;
@@ -669,16 +778,32 @@ public sealed partial class EditorInteractionTests
 
     private static void Click(ImageViewport viewport, PointF sourcePoint)
     {
-        var position = new Point((int)(sourcePoint.X * viewport.Zoom) + viewport.AutoScrollPosition.X,
+        var position = new Point(
+            (int)(sourcePoint.X * viewport.Zoom) + viewport.AutoScrollPosition.X,
             (int)(sourcePoint.Y * viewport.Zoom) + viewport.AutoScrollPosition.Y);
-        typeof(ImageViewport).GetMethod("OnMouseDown", PrivateInstance)!.Invoke(viewport,
-            [new MouseEventArgs(MouseButtons.Left, 1, position.X, position.Y, 0)]);
+
+        typeof(ImageViewport).GetMethod("OnMouseDown", PrivateInstance)!.Invoke(
+            viewport,
+            [
+                new MouseEventArgs(
+                    MouseButtons.Left,
+                    1,
+                    position.X,
+                    position.Y,
+                    0)
+            ]);
+
         Application.DoEvents();
     }
 
-    private static void Edit(PropertyGrid grid, string property, string text, bool enter = true)
+    private static void Edit(
+        PropertyGrid grid,
+        string property,
+        string text,
+        bool enter = true)
     {
         var item = Items(grid).SingleOrDefault(i => i.PropertyDescriptor?.Name == property);
+
         if (item is null)
         {
             // Composite geometry fields expose leaf editors beneath their parent, not
@@ -696,17 +821,22 @@ public sealed partial class EditorInteractionTests
         grid.Focus();
         Application.DoEvents();
         var textbox = Descendants(grid).OfType<TextBox>().Single(t => t.Visible);
+
         if (textbox.ReadOnly)
         {
             // Booleans and enums use an exclusive drop-down, not a writable textbox.
             var view = Descendants(grid).Single(control => control.GetType().Name == "PropertyGridView");
             Exception? failure = null;
+
             view.BeginInvoke(() =>
             {
                 try
                 {
                     var list = (ListBox)view.GetType().GetProperty("DropDownListBox", PrivateInstance)!.GetValue(view)!;
-                    int index = list.Items.Cast<object>().Select((value, i) => (value, i)).Single(pair => pair.value.ToString() == text).i;
+
+                    int index = list.Items.Cast<object>().Select((value, i) => (value, i))
+                        .Single(pair => pair.value.ToString() == text).i;
+
                     list.SelectedIndex = index;
                     view.GetType().GetMethod("OnListClick", PrivateInstance)!.Invoke(view, [list, EventArgs.Empty]);
                 }
@@ -719,19 +849,24 @@ public sealed partial class EditorInteractionTests
                     view.GetType().GetMethod("CloseDropDown", PrivateInstance)!.Invoke(view, null);
                 }
             });
+
             view.GetType().GetMethod("F4Selection", PrivateInstance)!.Invoke(view, [false]);
+
             if (failure is not null)
                 ExceptionDispatchInfo.Capture(failure).Throw();
+
             Application.DoEvents();
             return;
         }
 
         textbox.Focus();
         textbox.Text = text;
+
         if (enter)
         {
             // Follow the textbox's actual Enter/commit routing, including type conversion.
-            Assert.True((bool)textbox.GetType().GetMethod("ProcessDialogKey", PrivateInstance)!.Invoke(textbox, [Keys.Enter])!);
+            Assert.True(
+                (bool)textbox.GetType().GetMethod("ProcessDialogKey", PrivateInstance)!.Invoke(textbox, [Keys.Enter])!);
         }
         else
         {
@@ -747,15 +882,19 @@ public sealed partial class EditorInteractionTests
     private static IEnumerable<GridItem> Items(PropertyGrid grid)
     {
         var root = grid.SelectedGridItem!;
+
         while (root.Parent is not null)
             root = root.Parent;
+
         return Walk(root);
+
         static IEnumerable<GridItem> Walk(GridItem item)
         {
             yield return item;
+
             foreach (GridItem child in item.GridItems)
-                foreach (var descendant in Walk(child))
-                    yield return descendant;
+            foreach (var descendant in Walk(child))
+                yield return descendant;
         }
     }
 
@@ -764,32 +903,37 @@ public sealed partial class EditorInteractionTests
         foreach (Control control in parent.Controls)
         {
             yield return control;
+
             foreach (var descendant in Descendants(control))
                 yield return descendant;
         }
     }
 
-    private static T Field<T>(object instance, string name) => (T)instance.GetType().GetField(name, PrivateInstance)!.GetValue(instance)!;
+    private static T Field<T>(object instance, string name) =>
+        (T)instance.GetType().GetField(name, PrivateInstance)!.GetValue(instance)!;
 
     private static void RunSta(Action test)
     {
         Exception? error = null;
+
         var thread = new Thread(() =>
-        {
-            try
             {
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
-                test();
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-        })
-        { IsBackground = true };
+                try
+                {
+                    Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException, threadScope: true);
+                    test();
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            })
+            { IsBackground = true };
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "Windows interaction test timed out.");
+
         if (error is not null)
             ExceptionDispatchInfo.Capture(error).Throw();
     }

@@ -14,6 +14,7 @@ public enum SpriteSceneSourceKind
     /// The definition is stored in a loose file.
     /// </summary>
     LooseDefinitionFile,
+
     /// <summary>
     /// The definition is stored in an assets file.
     /// </summary>
@@ -30,18 +31,22 @@ public sealed class SpriteSceneSourceDefinition
     /// Gets or sets the identifier of the referenced scene.
     /// </summary>
     public string SceneId { get; set; } = string.Empty;
+
     /// <summary>
     /// Gets or sets the kind.
     /// </summary>
     public SpriteSceneSourceKind Kind { get; set; } = SpriteSceneSourceKind.LooseDefinitionFile;
+
     /// <summary>
     /// Gets or sets the path to the loose GSCN scene definition.
     /// </summary>
     public string? GscnPath { get; set; }
+
     /// <summary>
     /// Gets or sets the path to the containing assets file.
     /// </summary>
     public string? AssetsFilePath { get; set; }
+
     /// <summary>
     /// Gets or sets the entry name inside the assets file.
     /// </summary>
@@ -57,6 +62,7 @@ public sealed class SpriteSceneSourceDefinition
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sceneId);
         ArgumentException.ThrowIfNullOrWhiteSpace(gscnPath);
+
         return new()
         {
             SceneId = sceneId,
@@ -80,6 +86,7 @@ public sealed class SpriteSceneSourceDefinition
         ArgumentException.ThrowIfNullOrWhiteSpace(sceneId);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetsFilePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(assetEntryName);
+
         return new()
         {
             SceneId = sceneId,

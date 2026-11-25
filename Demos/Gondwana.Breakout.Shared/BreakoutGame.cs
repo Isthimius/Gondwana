@@ -40,10 +40,16 @@ internal sealed class BreakoutGame
         const float gapX = 12f;
         const float gapY = 14f;
         float left = (Width - (columns * width + (columns - 1) * gapX)) / 2f;
+
         for (int row = 0; row < rows; row++)
-            for (int col = 0; col < columns; col++)
-                _bricks.Add(new Brick(left + col * (width + gapX),
-                    166f + row * (height + gapY), width, height, row));
+        for (int col = 0; col < columns; col++)
+            _bricks.Add(
+                new Brick(
+                    left + col * (width + gapX),
+                    166f + row * (height + gapY),
+                    width,
+                    height,
+                    row));
 
         Score = 0;
         Lives = 3;
@@ -55,6 +61,7 @@ internal sealed class BreakoutGame
     {
         if (Phase != GamePhase.Ready)
             return;
+
         _velocity = new Vector2(350f, -570f);
         Phase = GamePhase.Playing;
     }
@@ -72,8 +79,11 @@ internal sealed class BreakoutGame
     internal void Update(float dt, float moveAxis)
     {
         dt = Math.Clamp(dt, 0f, 0.05f);
-        PaddleX = Math.Clamp(PaddleX + Math.Clamp(moveAxis, -1f, 1f) * PaddleSpeed * dt,
-            LeftWall + PaddleWidth / 2f, RightWall - PaddleWidth / 2f);
+
+        PaddleX = Math.Clamp(
+            PaddleX + Math.Clamp(moveAxis, -1f, 1f) * PaddleSpeed * dt,
+            LeftWall + PaddleWidth / 2f,
+            RightWall - PaddleWidth / 2f);
 
         if (Phase == GamePhase.Ready)
         {
@@ -87,6 +97,7 @@ internal sealed class BreakoutGame
         // Short fixed substeps prevent tunneling through narrow bricks on slower machines.
         int steps = Math.Max(1, (int)MathF.Ceiling(dt / 0.008f));
         float step = dt / steps;
+
         for (int i = 0; i < steps && Phase == GamePhase.Playing; i++)
             AdvanceBall(step);
     }
@@ -114,6 +125,7 @@ internal sealed class BreakoutGame
         }
 
         float paddleTop = PaddleY - PaddleHeight / 2f;
+
         if (_velocity.Y > 0f &&
             previous.Y + BallRadius <= paddleTop &&
             next.Y + BallRadius >= paddleTop &&
@@ -124,6 +136,7 @@ internal sealed class BreakoutGame
             float angle = offset * 1.06f;
             float speed = Math.Min(_velocity.Length() * 1.025f, MaximumBallSpeed);
             _velocity = new Vector2(MathF.Sin(angle) * speed, -MathF.Cos(angle) * speed);
+
             if (MathF.Abs(_velocity.X) < 75f)
                 _velocity.X = previous.X <= PaddleX ? -75f : 75f;
         }
@@ -137,6 +150,7 @@ internal sealed class BreakoutGame
 
             brick.Alive = false;
             Score += (6 - brick.Row) * 25;
+
             if (previous.Y + BallRadius <= brick.Y && _velocity.Y > 0f)
             {
                 next.Y = brick.Y - BallRadius;
@@ -150,10 +164,12 @@ internal sealed class BreakoutGame
             else
             {
                 _velocity.X = previous.X <= brick.X + brick.Width / 2f
-                    ? -MathF.Abs(_velocity.X) : MathF.Abs(_velocity.X);
+                    ? -MathF.Abs(_velocity.X)
+                    : MathF.Abs(_velocity.X);
             }
 
             _velocity *= Math.Min(1.012f, MaximumBallSpeed / _velocity.Length());
+
             if (_bricks.TrueForAll(b => !b.Alive))
             {
                 Phase = GamePhase.Victory;
@@ -164,9 +180,11 @@ internal sealed class BreakoutGame
         }
 
         Ball = next;
+
         if (Ball.Y - BallRadius > Height)
         {
             Lives--;
+
             if (Lives == 0)
             {
                 Phase = GamePhase.GameOver;
@@ -184,7 +202,12 @@ internal sealed class BreakoutGame
         Phase = GamePhase.Ready;
     }
 
-    internal sealed class Brick(float x, float y, float width, float height, int row)
+    internal sealed class Brick(
+        float x,
+        float y,
+        float width,
+        float height,
+        int row)
     {
         internal float X { get; } = x;
         internal float Y { get; } = y;

@@ -13,6 +13,7 @@ public class EditHistoryTests
     {
         using var history = new EditHistory(limit: 1);
         var weak = Retain(history);
+
         switch (mode)
         {
             case "dispose":
@@ -50,7 +51,13 @@ public class EditHistoryTests
     {
         using var h = new EditHistory();
         var list = new List<string> { "same" };
-        h.Insert("Duplicate", list, 1, "same");
+
+        h.Insert(
+            "Duplicate",
+            list,
+            1,
+            "same");
+
         Assert.Equal(2, list.Count);
         h.Undo();
         Assert.Single(list);
@@ -70,16 +77,31 @@ public class EditHistoryTests
         Assert.Equal(2, models.Count);
     }
 
-    private sealed class MutableValue { public int Value { get; set; } }
+    private sealed class MutableValue
+    {
+        public int Value { get; set; }
+    }
 
     [Fact]
     public void CheckpointsSurviveUndoRedoAndDivergence()
     {
         using var h = new EditHistory();
         int value = 0;
-        h.Set("A", () => value, v => value = v, 1);
+
+        h.Set(
+            "A",
+            () => value,
+            v => value = v,
+            1);
+
         h.MarkSaved();
-        h.Set("B", () => value, v => value = v, 2);
+
+        h.Set(
+            "B",
+            () => value,
+            v => value = v,
+            2);
+
         h.Undo();
         Assert.Equal(1, value);
         Assert.False(h.IsDirty);
@@ -88,7 +110,13 @@ public class EditHistoryTests
         Assert.True(h.IsDirty);
         h.Redo();
         Assert.False(h.IsDirty);
-        h.Set("C", () => value, v => value = v, 3);
+
+        h.Set(
+            "C",
+            () => value,
+            v => value = v,
+            3);
+
         Assert.False(h.CanRedo);
         Assert.Equal("C", h.UndoDescription);
         h.Undo();
@@ -103,7 +131,13 @@ public class EditHistoryTests
     {
         using var h = new EditHistory(limit: 2);
         int value = 0;
-        void Set(int v) => h.Set("Set", () => value, n => value = n, v);
+
+        void Set(int v) => h.Set(
+            "Set",
+            () => value,
+            n => value = n,
+            v);
+
         Set(1);
         Set(2);
         h.MarkSaved();
@@ -128,12 +162,23 @@ public class EditHistoryTests
         var values = new List<int>();
         int notifications = 0;
         h.Changed += (_, _) => notifications++;
+
         using (var group = h.BeginTransaction("Many edits"))
         {
-            h.Insert("One", values, 0, 1);
+            h.Insert(
+                "One",
+                values,
+                0,
+                1);
+
             using (var child = h.BeginTransaction("Nested"))
             {
-                h.Insert("Two", values, 1, 2);
+                h.Insert(
+                    "Two",
+                    values,
+                    1,
+                    2);
+
                 child.Commit();
             }
 
@@ -150,10 +195,16 @@ public class EditHistoryTests
         Assert.False(h.IsDirty);
         h.Redo();
         Assert.Equal(new[] { 1, 2 }, values);
+
         using (h.BeginTransaction("Cancelled"))
         {
             h.Remove("Remove", values, 1);
-            h.Insert("Three", values, 0, 3);
+
+            h.Insert(
+                "Three",
+                values,
+                0,
+                3);
         }
 
         Assert.Equal(new[] { 1, 2 }, values);
@@ -164,10 +215,23 @@ public class EditHistoryTests
     {
         using var h = new EditHistory();
         int value = 0;
-        Assert.False(h.Set("No change", () => value, v => value = v, 0));
-        h.Execute("Known no-op", () => throw new Exception("Must not execute"), () => { }, hasChanges: false);
+
+        Assert.False(
+            h.Set(
+                "No change",
+                () => value,
+                v => value = v,
+                0));
+
+        h.Execute(
+            "Known no-op",
+            () => throw new Exception("Must not execute"),
+            () => { },
+            hasChanges: false);
+
         using (var t = h.BeginTransaction("Empty"))
             t.Commit();
+
         Assert.False(h.CanUndo);
         Assert.False(h.IsDirty);
     }
@@ -178,12 +242,22 @@ public class EditHistoryTests
         using var h = new EditHistory();
         int value = 0;
         using var t = h.BeginTransaction("Fails");
-        h.Set("First", () => value, v => value = v, 1);
-        Assert.Throws<InvalidOperationException>(() => h.Execute("Fail", () =>
-        {
-            value = 2;
-            throw new InvalidOperationException();
-        }, () => value = 1));
+
+        h.Set(
+            "First",
+            () => value,
+            v => value = v,
+            1);
+
+        Assert.Throws<InvalidOperationException>(() => h.Execute(
+            "Fail",
+            () =>
+            {
+                value = 2;
+                throw new InvalidOperationException();
+            },
+            () => value = 1));
+
         Assert.Equal(0, value);
         Assert.False(h.InTransaction);
         Assert.False(h.IsDirty);
@@ -196,15 +270,22 @@ public class EditHistoryTests
         using var h = new EditHistory();
         var values = new List<int>();
         bool fail = false;
+
         using (var t = h.BeginTransaction("Group"))
         {
             h.Execute("First", () => values.Add(1), () => values.RemoveAt(values.Count - 1));
-            h.Execute("Second", () =>
-            {
-                values.Add(2);
-                if (fail)
-                    throw new InvalidOperationException();
-            }, () => values.RemoveAt(values.Count - 1));
+
+            h.Execute(
+                "Second",
+                () =>
+                {
+                    values.Add(2);
+
+                    if (fail)
+                        throw new InvalidOperationException();
+                },
+                () => values.RemoveAt(values.Count - 1));
+
             h.Execute("Third", () => values.Add(3), () => values.RemoveAt(values.Count - 1));
             t.Commit();
         }
@@ -224,12 +305,27 @@ public class EditHistoryTests
     public void ReplayCannotRecordCommandsAndFailureToRecoverInvalidatesHistory()
     {
         using var h = new EditHistory();
-        Assert.Throws<InvalidOperationException>(() => h.Execute("Recursive", () => h.Execute("Inner", () => { }, () => { }), () => { }));
+
+        Assert.Throws<InvalidOperationException>(() => h.Execute(
+            "Recursive",
+            () => h.Execute("Inner", () => { }, () => { }),
+            () => { }));
+
         Assert.False(h.CanUndo);
         using var other = new EditHistory();
-        Assert.Throws<InvalidOperationException>(() => h.Execute("Cross-document", () => other.Execute("Other", () => { }, () => { }), () => { }));
+
+        Assert.Throws<InvalidOperationException>(() => h.Execute(
+            "Cross-document",
+            () => other.Execute("Other", () => { }, () => { }),
+            () => { }));
+
         Assert.False(other.CanUndo);
-        Assert.ThrowsAny<AggregateException>(() => h.Execute("Broken", () => throw new Exception(), () => throw new Exception()));
+
+        Assert.ThrowsAny<AggregateException>(() => h.Execute(
+            "Broken",
+            () => throw new Exception(),
+            () => throw new Exception()));
+
         Assert.True(h.IsDirty);
         Assert.False(h.CanUndo);
     }
@@ -241,7 +337,13 @@ public class EditHistoryTests
         var h = new EditHistory(initiallySaved: false);
         int value = 0;
         h.BeginTransaction("Pending");
-        h.Set("Set", () => value, v => value = v, 1);
+
+        h.Set(
+            "Set",
+            () => value,
+            v => value = v,
+            1);
+
         h.Dispose();
         h.Dispose();
         Assert.Equal(0, value);
@@ -249,11 +351,13 @@ public class EditHistoryTests
         Assert.False(other.IsDirty);
         Assert.Throws<ObjectDisposedException>(() => h.MarkSaved());
     }
+
     [Fact]
     public void ByteQuotaIncludesGroupsAndPrunesRedoWithoutInventingCleanState()
     {
         using var history = new EditHistory { ByteLimit = 4 };
         int value = 0;
+
         using (var group = history.BeginTransaction("binary group"))
         {
             history.Execute(new WeightedCommand(() => value = 1, () => value = 0, 2));
@@ -291,5 +395,4 @@ public class EditHistoryTests
         public void Execute() => Apply();
         public void Undo() => Restore();
     }
-
 }

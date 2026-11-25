@@ -14,7 +14,13 @@ public sealed partial class CompositionTests
         var path = Path.Combine(directory, "game.gaf");
         var source = Path.Combine(directory, "existing.txt");
         File.WriteAllText(source, "same bytes");
-        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         archive.Add(AssetTypes.Misc, source, "existing.txt");
         archive.Save();
         using var editor = new AssetEditorControl(archive);
@@ -38,34 +44,69 @@ public sealed partial class CompositionTests
     public void AssetImportSharedHostDirtyAndSaveBehavior(bool hosted) => RunSta(directory =>
     {
         var path = Path.Combine(directory, "game.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+
+        using (var initial = AssetsFile.LoadOrCreate(
+                   path,
+                   "secret",
+                   true,
+                   register: false))
             initial.Save();
+
         var diskBefore = File.ReadAllBytes(path);
         using var studio = Host(directory);
         studio.AssetPassword = _ => "secret";
-        using var borrowed = AssetsFile.LoadOrCreate(path, "secret", true, register: false);
+
+        using var borrowed = AssetsFile.LoadOrCreate(
+            path,
+            "secret",
+            true,
+            register: false);
+
         var document = hosted ? studio.OpenDocument(path) : null;
         using var standalone = hosted ? null : new AssetEditorControl(borrowed);
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
         var archive = editor.AssetsFile;
+
         using (var bytes = new MemoryStream([9]))
             archive.Add(AssetTypes.Misc, "unsaved", bytes);
+
         editor.MarkChanged();
         int changes = 0;
         editor.Changed += (_, _) => changes++;
         var source = Path.Combine(directory, "new.txt");
         File.WriteAllText(source, "new resource");
         var imagePath = Path.Combine(directory, "art.png");
+
         using (var image = new Bitmap(1, 1))
             image.Save(imagePath, System.Drawing.Imaging.ImageFormat.Png);
+
         var sheetPath = Path.Combine(directory, "tiles.gts");
-        TilesheetDefinitionSerializer.Save(sheetPath, new TilesheetDefinition
-        {
-            Name = "terrain",
-            Image = new() { FilePath = imagePath },
-            Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 1, 1), TileSize = new Size(1, 1) }]
-        });
-        var plan = AssetImportPlan.Create(archive, [new(source, AssetTypes.Misc, "new.txt"), new(sheetPath, AssetTypes.TilesheetDefinition, "tiles.gts")], true);
+
+        TilesheetDefinitionSerializer.Save(
+            sheetPath,
+            new TilesheetDefinition
+            {
+                Name = "terrain",
+                Image = new() { FilePath = imagePath },
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "default", Area = new Rectangle(
+                            0,
+                            0,
+                            1,
+                            1),
+                        TileSize = new Size(1, 1)
+                    }
+                ]
+            });
+
+        var plan = AssetImportPlan.Create(
+            archive,
+            [new(source, AssetTypes.Misc, "new.txt"), new(sheetPath, AssetTypes.TilesheetDefinition, "tiles.gts")],
+            true);
+
         using var cancelled = new CancellationTokenSource();
         cancelled.Cancel();
         Assert.Throws<OperationCanceledException>(() => editor.ApplyImport(plan, cancelled.Token));
@@ -79,6 +120,7 @@ public sealed partial class CompositionTests
         Assert.Equal(diskBefore, File.ReadAllBytes(path));
         Assert.Equal("new resource", File.ReadAllText(source));
         Assert.Equal(4, archive.GetAllEntries().Count());
+
         if (hosted)
         {
             editor.SaveRequested!(false);
@@ -86,8 +128,15 @@ public sealed partial class CompositionTests
         }
         else
             editor.SaveTo(path);
+
         Assert.False(editor.IsDirty);
-        using var saved = AssetsFile.LoadOrCreate(path, "secret", true, register: false);
+
+        using var saved = AssetsFile.LoadOrCreate(
+            path,
+            "secret",
+            true,
+            register: false);
+
         Assert.Equal(4, saved.GetAllEntries().Count());
         Assert.Equal("art.png", TilesheetDefinitionSerializer.Load(saved, "tiles.gts").Image.AssetEntryName);
         Assert.True(saved.UseEncryption);
@@ -102,15 +151,29 @@ public sealed partial class CompositionTests
     public void AssetExportPreservesOwnershipAndDirtyState(bool hosted) => RunSta(directory =>
     {
         var path = Path.Combine(directory, "game.gaf");
-        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false))
+
+        using (var initial = AssetsFile.LoadOrCreate(
+                   path,
+                   null,
+                   false,
+                   register: false))
             initial.Save();
+
         using var studio = Host(directory);
-        using var borrowed = AssetsFile.LoadOrCreate(path, null, false, register: false);
+
+        using var borrowed = AssetsFile.LoadOrCreate(
+            path,
+            null,
+            false,
+            register: false);
+
         var document = hosted ? studio.OpenDocument(path) : null;
         using var standalone = hosted ? null : new AssetEditorControl(borrowed);
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
+
         using (var bytes = new MemoryStream([9]))
             editor.AssetsFile.Add(AssetTypes.Misc, "unsaved", bytes);
+
         editor.MarkChanged();
         int changes = 0;
         editor.Changed += (_, _) => changes++;
@@ -118,19 +181,31 @@ public sealed partial class CompositionTests
         var leaf = new AssetsFileEntry { AssetType = AssetTypes.Misc, AssetName = "unsaved" };
         using var canceled = new CancellationTokenSource();
         canceled.Cancel();
-        Assert.Throws<OperationCanceledException>(() => editor.ExportAsset(leaf, destination, false, canceled.Token));
+
+        Assert.Throws<OperationCanceledException>(() => editor.ExportAsset(
+            leaf,
+            destination,
+            false,
+            canceled.Token));
+
         Assert.False(File.Exists(destination));
+
         Assert.Throws<InvalidOperationException>(() => editor.ExportAsset(
-            new AssetsFileEntry { AssetType = AssetTypes.TilesheetDefinition, AssetName = "draft.gts" }, destination, false));
+            new AssetsFileEntry { AssetType = AssetTypes.TilesheetDefinition, AssetName = "draft.gts" },
+            destination,
+            false));
+
         editor.ExportAsset(leaf, destination, false);
         Assert.Equal(new byte[] { 9 }, File.ReadAllBytes(destination));
         Assert.True(editor.IsDirty);
         Assert.Equal(0, changes);
         Assert.Single(editor.AssetsFile.GetAllEntries());
+
         if (hosted)
             Assert.True(AwaitUi(studio.SaveDocument(document!)));
         else
             editor.SaveTo(path);
+
         document?.Close();
     });
 
@@ -138,10 +213,20 @@ public sealed partial class CompositionTests
     [Fact]
     public void AssetImportPickerSupportsMixedSelections() => RunSta(directory =>
     {
-        var extensions = new[] { "gts", "gani", "gscn", "gspr", "gsnd", "png", "ogg", "svg", "ttf", "cur", "mp4", "unknown" };
-        var expected = new[] { AssetTypes.TilesheetDefinition, AssetTypes.AnimationDefinition, AssetTypes.SceneDefinition, AssetTypes.SpriteDefinition,
-            AssetTypes.AudioDefinition, AssetTypes.Image, AssetTypes.Audio, AssetTypes.Svg, AssetTypes.Font, AssetTypes.Cursor, AssetTypes.Video, AssetTypes.Misc };
-        using var picker = new AssetTypePickerForm(extensions.Select(extension => Path.Combine(directory, "asset." + extension)));
+        var extensions = new[]
+            { "gts", "gani", "gscn", "gspr", "gsnd", "png", "ogg", "svg", "ttf", "cur", "mp4", "unknown" };
+
+        var expected = new[]
+        {
+            AssetTypes.TilesheetDefinition, AssetTypes.AnimationDefinition, AssetTypes.SceneDefinition,
+            AssetTypes.SpriteDefinition,
+            AssetTypes.AudioDefinition, AssetTypes.Image, AssetTypes.Audio, AssetTypes.Svg, AssetTypes.Font,
+            AssetTypes.Cursor, AssetTypes.Video, AssetTypes.Misc
+        };
+
+        using var picker = new AssetTypePickerForm(
+            extensions.Select(extension => Path.Combine(directory, "asset." + extension)));
+
         Assert.Equal(expected, picker.Sources.Select(source => source.AssetType));
         var grid = picker.Controls.OfType<DataGridView>().Single();
         Assert.All(grid.Rows.Cast<DataGridViewRow>().Take(5), row => Assert.True(row.Cells[1].ReadOnly));

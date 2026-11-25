@@ -9,7 +9,11 @@ namespace Gondwana.Tooling.Studio.Scenes.WinForms.Tests;
 /// </summary>
 public sealed class SceneViewerLauncherTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), "ViewerLaunchTests", Guid.NewGuid().ToString("N"));
+    private readonly string _directory = Path.Combine(
+        Path.GetTempPath(),
+        "ViewerLaunchTests",
+        Guid.NewGuid().ToString("N"));
+
     /// <summary>Passes physical document and logical member as separate argument tokens.</summary>
     [Fact]
     public void LaunchArgumentsIncludeSceneIdentity()
@@ -24,8 +28,17 @@ public sealed class SceneViewerLauncherTests : IDisposable
     public void TemporaryLaunchArgumentsPreserveContentRoot()
     {
         var path = Path.Combine(_directory, "snapshot.gscn");
-        var start = SceneViewerLauncher.CreateStartInfo("viewer.exe", path, "island", _directory, temporaryScene: true);
-        Assert.Equal(new[] { "--scene", path, "--scene-id", "island", "--content-root", _directory, "--temporary-scene" }, start.ArgumentList);
+
+        var start = SceneViewerLauncher.CreateStartInfo(
+            "viewer.exe",
+            path,
+            "island",
+            _directory,
+            temporaryScene: true);
+
+        Assert.Equal(
+            new[] { "--scene", path, "--scene-id", "island", "--content-root", _directory, "--temporary-scene" },
+            start.ArgumentList);
     }
 
     /// <summary>Snapshotting a packed scene keeps multi-member identities and rebase references without changing document state.</summary>
@@ -33,12 +46,27 @@ public sealed class SceneViewerLauncherTests : IDisposable
     public void PackedSceneSnapshotDoesNotAdoptOrSaveOriginal()
     {
         var scenePath = Path.Combine(_directory, "world.gscn");
-        SceneDefinitionSerializer.SaveAll(scenePath, [
-            new SceneDefinition { ID = "other" },
-            new SceneDefinition { ID = "island", TilesheetSources = [SceneTilesheetSourceDefinition.Packed("terrain", "assets.gaf", "sheets/terrain.gts")] }
-        ]);
+
+        SceneDefinitionSerializer.SaveAll(
+            scenePath,
+            [
+                new SceneDefinition { ID = "other" },
+                new SceneDefinition
+                {
+                    ID = "island",
+                    TilesheetSources =
+                        [SceneTilesheetSourceDefinition.Packed("terrain", "assets.gaf", "sheets/terrain.gts")]
+                }
+            ]);
+
         var archivePath = Path.Combine(_directory, "world.gaf");
-        using var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
+
+        using var archive = AssetsFile.LoadOrCreate(
+            archivePath,
+            null,
+            false,
+            register: false);
+
         archive.Add(AssetTypes.SceneDefinition, scenePath, "scenes/world.gscn");
         archive.Save();
         var originalBytes = File.ReadAllBytes(archivePath);
@@ -47,6 +75,7 @@ public sealed class SceneViewerLauncherTests : IDisposable
         document.RenameDefinition("island-edited");
         var snapshot = SceneViewerLauncher.CreateTemporaryScene(document);
         var secondSnapshot = SceneViewerLauncher.CreateTemporaryScene(document);
+
         try
         {
             Assert.NotEqual(snapshot, secondSnapshot);
@@ -56,7 +85,11 @@ public sealed class SceneViewerLauncherTests : IDisposable
             var saved = SceneDefinitionSerializer.LoadAll(snapshot);
             Assert.Equal(new[] { "other", "island-edited" }, saved.Select(scene => scene.ID));
             var reference = Assert.Single(saved[1].TilesheetSources);
-            Assert.Equal(Path.Combine(_directory, "assets.gaf"), Path.GetFullPath(reference.AssetsFilePath!, Path.GetDirectoryName(snapshot)!));
+
+            Assert.Equal(
+                Path.Combine(_directory, "assets.gaf"),
+                Path.GetFullPath(reference.AssetsFilePath!, Path.GetDirectoryName(snapshot)!));
+
             Assert.True(document.IsDirty);
             Assert.Null(document.FilePath);
             Assert.Equal(archivePath, document.PackedLocation!.Path);
@@ -83,8 +116,14 @@ public sealed class SceneViewerLauncherTests : IDisposable
         var document = SceneDocument.Create(_directory);
         document.Save(Path.Combine(_directory, "saved scene.gscn"));
         string? launched = null;
-        Assert.True(SceneViewerLauncher.ViewSavedScene(document, () => throw new InvalidOperationException(),
-            () => throw new InvalidOperationException(), path => launched = path));
+
+        Assert.True(
+            SceneViewerLauncher.ViewSavedScene(
+                document,
+                () => throw new InvalidOperationException(),
+                () => throw new InvalidOperationException(),
+                path => launched = path));
+
         Assert.Equal(document.FilePath, launched);
     }
 
@@ -103,12 +142,19 @@ public sealed class SceneViewerLauncherTests : IDisposable
         document.Save(Path.Combine(_directory, "saved.gscn"));
         document.MarkChanged();
         bool launched = false;
-        bool result = SceneViewerLauncher.ViewSavedScene(document, () => confirm, () =>
-        {
-            if (save)
-                document.Save(document.FilePath!);
-            return save;
-        }, _ => launched = true);
+
+        bool result = SceneViewerLauncher.ViewSavedScene(
+            document,
+            () => confirm,
+            () =>
+            {
+                if (save)
+                    document.Save(document.FilePath!);
+
+                return save;
+            },
+            _ => launched = true);
+
         Assert.Equal(confirm && save, result);
         Assert.Equal(confirm && save, launched);
     }
@@ -120,13 +166,24 @@ public sealed class SceneViewerLauncherTests : IDisposable
     public void NewDocumentRequiresActualSavedPath()
     {
         var document = SceneDocument.Create(_directory);
-        Assert.False(SceneViewerLauncher.ViewSavedScene(document, () => true, () => true,
-            _ => throw new InvalidOperationException()));
-        Assert.True(SceneViewerLauncher.ViewSavedScene(document, () => true, () =>
-        {
-            document.Save(Path.Combine(_directory, "new.gscn"));
-            return true;
-        }, _ => { }));
+
+        Assert.False(
+            SceneViewerLauncher.ViewSavedScene(
+                document,
+                () => true,
+                () => true,
+                _ => throw new InvalidOperationException()));
+
+        Assert.True(
+            SceneViewerLauncher.ViewSavedScene(
+                document,
+                () => true,
+                () =>
+                {
+                    document.Save(Path.Combine(_directory, "new.gscn"));
+                    return true;
+                },
+                _ => { }));
     }
 
     /// <summary>
@@ -151,11 +208,27 @@ public sealed class SceneViewerLauncherTests : IDisposable
     public void ResolvesMatchingRepositoryBuildAndPublishedSubfolder(bool relocated)
     {
         string toolingDirectory = Path.Combine(_directory, "Tooling");
+
         if (relocated)
             toolingDirectory = Path.Combine(toolingDirectory, "Studio");
-        string editor = Path.Combine(toolingDirectory, "Gondwana.Tooling.Studio.Scenes.WinForms", "bin", "Release", "net10.0-windows");
+
+        string editor = Path.Combine(
+            toolingDirectory,
+            "Gondwana.Tooling.Studio.Scenes.WinForms",
+            "bin",
+            "Release",
+            "net10.0-windows");
+
         Directory.CreateDirectory(editor);
-        string viewer = Path.Combine(toolingDirectory, SceneViewerLauncher.Component, "bin", "Release", "net10.0-windows", SceneViewerLauncher.Component + ".exe");
+
+        string viewer = Path.Combine(
+            toolingDirectory,
+            SceneViewerLauncher.Component,
+            "bin",
+            "Release",
+            "net10.0-windows",
+            SceneViewerLauncher.Component + ".exe");
+
         Directory.CreateDirectory(Path.GetDirectoryName(viewer)!);
         File.WriteAllText(viewer, "");
         Assert.Equal(viewer, SceneViewerLauncher.Locate(editor));

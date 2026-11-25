@@ -37,6 +37,7 @@ internal sealed class GameWindow : Form
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+
         try
         {
             _host!.Initialize(logLevel: LogLevel.Warning);
@@ -44,8 +45,13 @@ internal sealed class GameWindow : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Torchlight could not start.\n\n{ex.Message}",
-                "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                this,
+                $"Torchlight could not start.\n\n{ex.Message}",
+                "Startup Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
             Close();
         }
     }

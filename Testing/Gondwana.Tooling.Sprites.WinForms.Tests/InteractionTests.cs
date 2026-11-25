@@ -23,6 +23,7 @@ public sealed partial class InteractionTests
     public void SourceTreesAssignSelectedEntryAndPreviewRespondsToProperties() => Sta(directory =>
     {
         var imagePath = Path.Combine(directory, "actors.png");
+
         using (var bitmap = new Bitmap(32, 16))
         {
             using var graphics = Graphics.FromImage(bitmap);
@@ -31,14 +32,37 @@ public sealed partial class InteractionTests
         }
 
         var gts = Path.Combine(directory, "actors.gts");
-        TilesheetDefinitionSerializer.Save(gts, new TilesheetDefinition
-        {
-            Name = "actors",
-            Image = new() { FilePath = "actors.png" },
-            Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
-        });
+
+        TilesheetDefinitionSerializer.Save(
+            gts,
+            new TilesheetDefinition
+            {
+                Name = "actors",
+                Image = new() { FilePath = "actors.png" },
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "default", Area = new Rectangle(
+                            0,
+                            0,
+                            32,
+                            16),
+                        TileSize = new Size(16, 16)
+                    }
+                ]
+            });
+
         var gscn = Path.Combine(directory, "level.gscn");
-        SceneDefinitionSerializer.Save(gscn, new SceneDefinition() { ID = "level", Layers = [new() { ID = "actors-layer", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }] });
+
+        SceneDefinitionSerializer.Save(
+            gscn,
+            new SceneDefinition()
+            {
+                ID = "level",
+                Layers = [new() { ID = "actors-layer", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }]
+            });
+
         var document = SpriteDocument.Create(directory);
         var entry = document.AddSprite();
         using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(1200, 800) };
@@ -50,8 +74,21 @@ public sealed partial class InteractionTests
         editor.AddSceneSources([gscn]);
         editor.SelectSprite(entry);
         var trees = Descendants(editor).OfType<TreeView>().ToArray();
-        void DoubleClick(TreeView tree, TreeNode node) => typeof(TreeView).GetMethod("OnNodeMouseDoubleClick", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(tree, [new TreeNodeMouseClickEventArgs(node, MouseButtons.Left, 2, 0, 0)]);
+
+        void DoubleClick(TreeView tree, TreeNode node) => typeof(TreeView).GetMethod(
+                "OnNodeMouseDoubleClick",
+                BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(
+                tree,
+                [
+                    new TreeNodeMouseClickEventArgs(
+                        node,
+                        MouseButtons.Left,
+                        2,
+                        0,
+                        0)
+                ]);
+
         var sceneTree = trees.Single(tree => tree.Nodes[0].Text == "level");
         DoubleClick(sceneTree, sceneTree.Nodes[0].Nodes[0]);
         Assert.Equal("level", entry.SceneId);
@@ -96,15 +133,17 @@ public sealed partial class InteractionTests
         editor.SelectSprite(entry);
         using var after = new Bitmap(canvas.Width, canvas.Height);
         canvas.DrawToBitmap(after, canvas.ClientRectangle);
+
         Point? FirstRedPixel(Bitmap bitmap)
         {
             for (int y = 0; y < bitmap.Height; y++)
-                for (int x = 0; x < bitmap.Width; x++)
-                {
-                    var pixel = bitmap.GetPixel(x, y);
-                    if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30)
-                        return new Point(x, y);
-                }
+            for (int x = 0; x < bitmap.Width; x++)
+            {
+                var pixel = bitmap.GetPixel(x, y);
+
+                if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30)
+                    return new Point(x, y);
+            }
 
             return null;
         }
@@ -167,7 +206,11 @@ public sealed partial class InteractionTests
     public void AnimationSourcesResolveCaseInsensitiveKeys() => Sta(directory =>
     {
         var gani = Path.Combine(directory, "idle.gani");
-        AnimationDefinitionSerializer.SaveAll(gani, [new AnimationDefinition { Key = "idle" }, new AnimationDefinition { Key = "(none)" }]);
+
+        AnimationDefinitionSerializer.SaveAll(
+            gani,
+            [new AnimationDefinition { Key = "idle" }, new AnimationDefinition { Key = "(none)" }]);
+
         var document = SpriteDocument.Create(directory);
         var entry = document.AddSprite();
         entry.AnimationKey = "IDLE";
@@ -180,16 +223,30 @@ public sealed partial class InteractionTests
         editor.SelectSprite(entry);
 
         var picker = Descendants(editor).OfType<ComboBox>().Single(combo =>
-            combo.Items.Cast<object>().Any(item => string.Equals(item?.ToString(), "idle", StringComparison.OrdinalIgnoreCase)));
+            combo.Items.Cast<object>().Any(item => string.Equals(
+                item?.ToString(),
+                "idle",
+                StringComparison.OrdinalIgnoreCase)));
+
         Assert.Equal("idle", picker.SelectedItem?.ToString());
-        Assert.Single(picker.Items.Cast<object>(), item =>
-            string.Equals(item?.ToString(), "idle", StringComparison.OrdinalIgnoreCase));
-        Assert.Equal(2, picker.Items.Cast<object>().Count(item =>
-            string.Equals(item?.ToString(), "(none)", StringComparison.OrdinalIgnoreCase)));
+
+        Assert.Single(
+            picker.Items.Cast<object>(),
+            item =>
+                string.Equals(item?.ToString(), "idle", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Equal(
+            2,
+            picker.Items.Cast<object>().Count(item =>
+                string.Equals(item?.ToString(), "(none)", StringComparison.OrdinalIgnoreCase)));
+
         picker.SelectedItem = picker.Items.Cast<object>().Last(item => item?.ToString() == "(none)");
         Assert.Equal("(none)", entry.AnimationKey);
-        Assert.DoesNotContain(editor.UpdateValidation(), line =>
-            line.Contains("GANI animation 'IDLE' has no loaded authoring source.", StringComparison.Ordinal));
+
+        Assert.DoesNotContain(
+            editor.UpdateValidation(),
+            line =>
+                line.Contains("GANI animation 'IDLE' has no loaded authoring source.", StringComparison.Ordinal));
     });
 
     /// <summary>
@@ -217,6 +274,7 @@ public sealed partial class InteractionTests
         Assert.NotEmpty(editor.UpdateValidation());
         var path = Path.Combine(directory, "actors.gspr");
         Assert.Throws<InvalidDataException>(() => document.Save(path));
+
         foreach (var entry in document.Definition.Sprites)
         {
             entry.SceneId = "level";
@@ -224,7 +282,14 @@ public sealed partial class InteractionTests
         }
 
         var sourcePath = Path.Combine(directory, "level.gscn");
-        SceneDefinitionSerializer.Save(sourcePath, new SceneDefinition { ID = "level", Layers = [new() { ID = "actors", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }] });
+
+        SceneDefinitionSerializer.Save(
+            sourcePath,
+            new SceneDefinition
+            {
+                ID = "level", Layers = [new() { ID = "actors", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }]
+            });
+
         editor.AddSceneSources([sourcePath]);
         editor.SelectSprite(first);
         Assert.Empty(editor.UpdateValidation());
@@ -234,7 +299,11 @@ public sealed partial class InteractionTests
         document.Save(moved);
         var reopened = SpriteDocument.Open(moved);
         Assert.Equal(2, reopened.Definition.Sprites.Count);
-        Assert.Equal(sourcePath, reopened.ResolveReferencePath(Assert.Single(reopened.Definition.SceneSources).GscnPath!));
+
+        Assert.Equal(
+            sourcePath,
+            reopened.ResolveReferencePath(Assert.Single(reopened.Definition.SceneSources).GscnPath!));
+
         Assert.True(document.RemoveSprite(second));
         Assert.Single(document.Definition.Sprites);
         Assert.Equal(sprites, SpriteManager.Instance.AllSprites);
@@ -262,11 +331,15 @@ public sealed partial class InteractionTests
         var first = Open();
         var panes = first.Dock.Contents.OfType<DockContent>().ToArray();
         Assert.Equal(6, panes.Length);
-        Assert.All(panes, pane =>
-        {
-            Assert.Same(first.Dock, pane.DockPanel);
-            Assert.Equal(DockAreas.Document, pane.DockAreas);
-        });
+
+        Assert.All(
+            panes,
+            pane =>
+            {
+                Assert.Same(first.Dock, pane.DockPanel);
+                Assert.Equal(DockAreas.Document, pane.DockAreas);
+            });
+
         panes[1].Show(panes[0].Pane, DockAlignment.Right, .62);
         panes.Single(pane => pane.Text == "Validation").Hide();
         first.Host.Dispose();
@@ -296,13 +369,29 @@ public sealed partial class InteractionTests
     {
         using (var bitmap = new Bitmap(32, 16))
             bitmap.Save(Path.Combine(directory, "tiles.png"));
+
         var path = Path.Combine(directory, "tiles.gts");
-        TilesheetDefinitionSerializer.Save(path, new TilesheetDefinition
-        {
-            Name = "tiles",
-            Image = new() { FilePath = "tiles.png" },
-            Regions = [new() { Name = "frames", Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
-        });
+
+        TilesheetDefinitionSerializer.Save(
+            path,
+            new TilesheetDefinition
+            {
+                Name = "tiles",
+                Image = new() { FilePath = "tiles.png" },
+                Regions =
+                [
+                    new()
+                    {
+                        Name = "frames", Area = new Rectangle(
+                            0,
+                            0,
+                            32,
+                            16),
+                        TileSize = new Size(16, 16)
+                    }
+                ]
+            });
+
         using var document = SpriteDocument.Create(directory);
         using var host = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
         using var editor = new SpriteEditorControl(document);
@@ -313,6 +402,7 @@ public sealed partial class InteractionTests
         Application.DoEvents();
         var tree = Descendants(editor).OfType<TreeView>().Single(t => t.Nodes.Count > 0 && t.Nodes[0].Text == "tiles");
         Assert.Equal(2, tree.ImageList!.Images.Count);
+
         for (int replay = 0; replay < 4; replay++)
         {
             document.History.Undo();
@@ -327,31 +417,41 @@ public sealed partial class InteractionTests
             Assert.All(frames, frame => Assert.Equal(frame.ImageIndex, frame.SelectedImageIndex));
         }
     });
+
     private static IEnumerable<Control> Descendants(Control control)
     {
         foreach (Control child in control.Controls)
         {
             yield return child;
+
             foreach (var nested in Descendants(child))
                 yield return nested;
         }
     }
+
     private static void Sta(Action<string> action)
     {
         Exception? error = null;
         var directory = Path.Combine(Path.GetTempPath(), "GsprTests-" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
+
         var thread = new Thread(() =>
         {
             try
             {
-                action(directory); } catch (Exception ex) {
-                error = ex; }
+                action(directory);
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
         });
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         thread.Join();
         Directory.Delete(directory, true);
+
         if (error is not null)
             ExceptionDispatchInfo.Capture(error).Throw();
     }

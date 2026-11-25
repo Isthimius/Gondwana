@@ -35,8 +35,7 @@ namespace Gondwana.Blazor.Rendering;
 [SupportedOSPlatform("browser")]
 public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfaceComponentBase
 {
-    [Inject]
-    private ILogger<BlazorGpuRenderSurfaceComponent> Logger { get; set; } = null!;
+    [Inject] private ILogger<BlazorGpuRenderSurfaceComponent> Logger { get; set; } = null!;
 
     private readonly string _generatedCanvasId = $"gondwana-webgl-{Guid.NewGuid():N}";
     private BlazorSkiaGlView? _glView;
@@ -65,8 +64,9 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     private IReadOnlyDictionary<string, object>? GpuCanvasAttributes => _gpuCanvasAttributes;
 
     internal override ValueTask<CanvasOffset> GetCanvasOffsetAsync()
-        => _module is null ? ValueTask.FromResult(default(CanvasOffset))
-           : _module.InvokeAsync<CanvasOffset>("getCanvasOffset", _canvasId);
+        => _module is null
+            ? ValueTask.FromResult(default(CanvasOffset))
+            : _module.InvokeAsync<CanvasOffset>("getCanvasOffset", _canvasId);
 
     internal override RenderSurfaceAdapterBase? InputSurfaceAdapter => Adapter;
 
@@ -92,6 +92,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         base.OnParametersSet();
 
         var attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
         if (CanvasAttributes is not null)
         {
             foreach (var attribute in CanvasAttributes)
@@ -133,6 +134,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     private void HandlePaintSurface(SKPaintGLSurfaceEventArgs e)
     {
         long telemetryGeneration = Host?.Telemetry?.BeginSample() ?? 0;
+
         if (_disposed)
             return;
 
@@ -148,10 +150,12 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
 
         var backbuffer = (GpuBackbuffer)Host.Backbuffer;
         _grContext = grContext;
+
         if (backbuffer.EnsureInitialized(grContext))
             _backbufferNeedsRender = true;
 
         var engine = Engine.Instance;
+
         if (!engine.IsRunning)
         {
             e.Surface.Canvas.Clear(backbuffer.ClearColor);
@@ -181,8 +185,10 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         // Count successful WebGL paint/presentation callbacks. This intentionally measures the
         // browser GPU presentation cadence, which may differ from the engine's TargetFPS.
         backbuffer.RecordFrame();
+
         if (telemetryGeneration != 0)
             Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
+
         FramePresented?.Invoke(renderScene);
     }
 

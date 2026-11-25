@@ -55,7 +55,7 @@ public sealed partial class MovementController
     {
         if (_state.HasMotion)
         {
-            Step(dt);       // physics (accel/vel/damping/wrap/space-convert)
+            Step(dt); // physics (accel/vel/damping/wrap/space-convert)
             return true;
         }
 
@@ -78,6 +78,7 @@ public sealed partial class MovementController
 
         // kill tiny velocities when no accel
         const float StopEpsilon = 0.01f;
+
         if (_state.Acceleration == Vector2.Zero &&
             _state.Velocity.LengthSquared() < StopEpsilon * StopEpsilon)
             _state.Velocity = Vector2.Zero;
@@ -94,7 +95,8 @@ public sealed partial class MovementController
 
             var wrapped = _coords.FindEquivalentSceneLayerCoordinates(
                 new PointF(newPos.X, newPos.Y),
-                _sceneLayer.GridColumnCount - 1, _sceneLayer.GridRowCount - 1);
+                _sceneLayer.GridColumnCount - 1,
+                _sceneLayer.GridRowCount - 1);
 
             float newX = newPos.X;
             float newY = newPos.Y;

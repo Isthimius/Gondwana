@@ -15,7 +15,8 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
         /// Gets or sets the project.
         /// </summary>
         [CommandOption("-p|--project")]
-        [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
+        [Description(
+            "Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
         /// <summary>
@@ -30,7 +31,8 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
         /// Gets or sets the framework.
         /// </summary>
         [CommandOption("-f|--framework")]
-        [Description("Target framework to run (e.g. 'net10.0'). Required when the project targets multiple frameworks.")]
+        [Description(
+            "Target framework to run (e.g. 'net10.0'). Required when the project targets multiple frameworks.")]
         public string? Framework { get; init; }
     }
 
@@ -40,6 +42,7 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
         var projectPath = settings.Project ?? Directory.GetCurrentDirectory();
 
         string? csprojPath;
+
         if (File.Exists(projectPath) && projectPath.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
         {
             csprojPath = projectPath;
@@ -47,6 +50,7 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
         else if (Directory.Exists(projectPath))
         {
             var found = Directory.GetFiles(projectPath, "*.csproj");
+
             if (found.Length == 0)
             {
                 AnsiConsole.MarkupLine("[red]No .csproj found in the specified directory.[/]");
@@ -56,7 +60,9 @@ internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
 
             if (found.Length > 1)
             {
-                AnsiConsole.MarkupLine("[red]Multiple .csproj files found. Pass -p|--project <path-to.csproj> to specify one.[/]");
+                AnsiConsole.MarkupLine(
+                    "[red]Multiple .csproj files found. Pass -p|--project <path-to.csproj> to specify one.[/]");
+
                 return 1;
             }
 

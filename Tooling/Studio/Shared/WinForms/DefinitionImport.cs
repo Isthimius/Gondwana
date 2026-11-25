@@ -15,14 +15,15 @@ public static class DefinitionImport
     /// <param name="fallback">The default identity for an unnamed legacy singleton.</param>
     /// <returns>The prepared batch, empty when canceled or unselected.</returns>
 #pragma warning disable S107
-    public static List<T> Prepare<T>(string path,
-                                       IReadOnlyList<T> existing,
-                                       Func<string, IReadOnlyList<T>> load,
-                                       Func<IReadOnlyList<T>, IReadOnlyList<int>?>? select,
-                                       Func<T, T> clone,
-                                       Func<T, string> identity,
-                                       Action<T, string> rename,
-                                       string fallback)
+    public static List<T> Prepare<T>(
+        string path,
+        IReadOnlyList<T> existing,
+        Func<string, IReadOnlyList<T>> load,
+        Func<IReadOnlyList<T>, IReadOnlyList<int>?>? select,
+        Func<T, T> clone,
+        Func<T, string> identity,
+        Action<T, string> rename,
+        string fallback)
 #pragma warning restore S107
     {
         var source = load(path);
@@ -32,7 +33,9 @@ public static class DefinitionImport
             return [];
 
         if (indices.Any(index => index < 0 || index >= source.Count) || indices.Distinct().Count() != indices.Count)
-            throw new ArgumentException("Select each source definition at most once using a valid index.", nameof(select));
+            throw new ArgumentException(
+                "Select each source definition at most once using a valid index.",
+                nameof(select));
 
         var names = existing.Select(identity).ToHashSet(StringComparer.Ordinal);
         var reserved = indices.Select(index => identity(source[index])).ToHashSet(StringComparer.Ordinal);
@@ -51,8 +54,7 @@ public static class DefinitionImport
                 do
                 {
                     name = basis + "-" + suffix++;
-                }
-                while (names.Contains(name) || reserved.Contains(name));
+                } while (names.Contains(name) || reserved.Contains(name));
             }
 
             names.Add(name);
@@ -69,5 +71,7 @@ public static class DefinitionImport
     /// <param name="destinationDirectory">The current editor directory.</param>
     /// <returns>A destination-relative path, or an absolute path across volumes.</returns>
     public static string? Rebase(string? path, string sourceDirectory, string destinationDirectory) =>
-        string.IsNullOrWhiteSpace(path) ? path : Path.GetRelativePath(destinationDirectory, Path.GetFullPath(path, sourceDirectory));
+        string.IsNullOrWhiteSpace(path)
+            ? path
+            : Path.GetRelativePath(destinationDirectory, Path.GetFullPath(path, sourceDirectory));
 }

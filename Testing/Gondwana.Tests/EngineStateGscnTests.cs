@@ -102,6 +102,7 @@ public sealed class EngineStateGscnTests : IDisposable
 
         var gscnPath = Path.GetFullPath(Path.Combine(_tempDir, relativePath!));
         Assert.True(File.Exists(gscnPath));
+
         Assert.Equal(
             Path.Combine(_tempDir, "external.scenes"),
             Path.GetDirectoryName(gscnPath));
@@ -125,6 +126,7 @@ public sealed class EngineStateGscnTests : IDisposable
         var sceneId = original.ID;
         var layer = Assert.Single(original.SceneLayers);
         var layerId = layer.ID;
+
         var path = Path.Combine(
             _tempDir,
             separateGscnFiles ? "restore-external.state" : "restore-inline.state");
@@ -185,9 +187,9 @@ public sealed class EngineStateGscnTests : IDisposable
         new EngineState().SaveToFile(
             path,
             parts:
-                EngineStateParts.Tilesheets |
-                EngineStateParts.Cycles |
-                EngineStateParts.Scenes,
+            EngineStateParts.Tilesheets |
+            EngineStateParts.Cycles |
+            EngineStateParts.Scenes,
             separateGaniFiles: separateGaniFiles,
             separateGscnFiles: separateGscnFiles);
 
@@ -210,10 +212,13 @@ public sealed class EngineStateGscnTests : IDisposable
 
         Assert.True(restoredTile.EnableAnimator);
         Assert.NotNull(restoredTile.TileAnimator.CurrentCycle);
+
         Assert.Equal(
             animationKey,
             restoredTile.TileAnimator.CurrentCycle.CycleKey);
+
         Assert.True(restoredTile.TileAnimator.IsCycling);
+
         Assert.Equal(
             sheetName,
             restoredTile.CurrentFrame.Tilesheet.Name);
@@ -230,6 +235,7 @@ public sealed class EngineStateGscnTests : IDisposable
     {
         using var scene = CreateScene();
         var layer = Assert.Single(scene.SceneLayers);
+
         var sprite = SpriteManager.Instance.CreateSprite(
             layer,
             default,
@@ -237,6 +243,7 @@ public sealed class EngineStateGscnTests : IDisposable
 
         var sceneId = scene.ID;
         var layerId = layer.ID;
+
         var path = Path.Combine(
             _tempDir,
             separateGscnFiles ? "sprite-external.state" : "sprite-inline.state");
@@ -280,6 +287,7 @@ public sealed class EngineStateGscnTests : IDisposable
         using var incoming = CreateScene();
         incoming.ID = "shared-scene";
         var incomingLayerId = Assert.Single(incoming.SceneLayers).ID;
+
         var path = Path.Combine(
             _tempDir,
             separateGscnFiles ? "merge-external.state" : "merge-inline.state");
@@ -295,7 +303,13 @@ public sealed class EngineStateGscnTests : IDisposable
         {
             ID = "shared-scene"
         };
-        var existingLayer = existing.AddLayer(1, 1, 8, 8);
+
+        var existingLayer = existing.AddLayer(
+            1,
+            1,
+            8,
+            8);
+
         var existingLayerId = existingLayer.ID;
 
         EngineState.MergeFromFile(
@@ -365,6 +379,7 @@ public sealed class EngineStateGscnTests : IDisposable
         var sheet = TilesheetRegistry.Instance.LoadFromImageFile(
             name,
             imagePath);
+
         sheet.DefaultRegion.TileSize = new Size(16, 16);
         return sheet;
     }
@@ -374,10 +389,10 @@ public sealed class EngineStateGscnTests : IDisposable
         string key)
     {
         var sequence = new FrameSequence(
-            [
-                sheet.GetFrame(0, 0),
-                sheet.GetFrame(1, 0)
-            ])
+        [
+            sheet.GetFrame(0, 0),
+            sheet.GetFrame(1, 0)
+        ])
         {
             SequenceCycleType = CycleType.Repeating
         };
@@ -388,7 +403,15 @@ public sealed class EngineStateGscnTests : IDisposable
     private static Scene CreateScene()
     {
         var scene = new Scene();
-        var layer = scene.AddLayer(3, 2, 24, 20, zOrder: 4, parallax: 0.75f);
+
+        var layer = scene.AddLayer(
+            3,
+            2,
+            24,
+            20,
+            zOrder: 4,
+            parallax: 0.75f);
+
         layer.WrapHorizontally = true;
         layer.ShowGridLines = true;
         layer[2, 1]!.Nickname = "corner";
@@ -398,6 +421,7 @@ public sealed class EngineStateGscnTests : IDisposable
     private static void AssertJsonNullOrMissing(JObject obj, string propertyName)
     {
         var token = obj[propertyName];
+
         Assert.True(
             token is null || token.Type == JTokenType.Null,
             $"Expected '{propertyName}' to be absent or JSON null, but found {token?.Type}.");
@@ -406,7 +430,7 @@ public sealed class EngineStateGscnTests : IDisposable
     private static JObject FirstSceneEntry(JObject root)
     {
         var scenes = root["Scenes"]
-            ?? throw new Xunit.Sdk.XunitException("EngineState JSON did not contain Scenes.");
+                     ?? throw new Xunit.Sdk.XunitException("EngineState JSON did not contain Scenes.");
 
         JArray values = scenes switch
         {

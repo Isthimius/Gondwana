@@ -74,6 +74,7 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
     private void LogRuntimeProfilerSample()
     {
         var snapshot = Engine.Profiler.GetLatestSnapshot();
+
         if (snapshot is null ||
             snapshot.EndedSeconds - _lastProfilerLogSeconds < 1.5d)
         {
@@ -83,8 +84,7 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
         _lastProfilerLogSeconds = snapshot.EndedSeconds;
 
         var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
-        var renderSource = snapshot.Sources.FirstOrDefault(
-            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+        var renderSource = snapshot.Sources.FirstOrDefault(source => source.Id == RenderSurface.Host.Telemetry?.Id);
 
         double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
         double? engineFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
@@ -118,10 +118,10 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
         double elapsedSeconds)
     {
         return elapsedSeconds > 0d &&
-            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
-            metric.Availability == TelemetryAvailability.Available
-                ? metric.Count / elapsedSeconds
-                : null;
+               source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+               metric.Availability == TelemetryAvailability.Available
+            ? metric.Count / elapsedSeconds
+            : null;
     }
 
     private static string FormatRate(double? rate) => rate?.ToString("0.0") ?? "n/a";
@@ -160,8 +160,8 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 
     private static void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard)
     {
-        RegisterRange(keyboard, 65, 90);  // A-Z
-        RegisterRange(keyboard, 48, 57);  // 0-9
+        RegisterRange(keyboard, 65, 90); // A-Z
+        RegisterRange(keyboard, 48, 57); // 0-9
         RegisterRange(keyboard, 96, 105); // numpad 0-9
 
         foreach (int key in new[]

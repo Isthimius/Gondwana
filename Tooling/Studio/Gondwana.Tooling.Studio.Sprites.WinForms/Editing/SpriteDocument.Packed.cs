@@ -19,18 +19,32 @@ public sealed partial class SpriteDocument
     public static SpriteDocument Open(AssetsFile archive, string entryName)
     {
         if (!archive.GetAllEntries().Any(entry => entry.AssetType == AssetTypes.SpriteDefinition &&
-            string.Equals(entry.AssetName, entryName, StringComparison.OrdinalIgnoreCase)))
-            throw new FileNotFoundException($"SpriteDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
-        var path = Path.GetFullPath(archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+                                                  string.Equals(
+                                                      entry.AssetName,
+                                                      entryName,
+                                                      StringComparison.OrdinalIgnoreCase)))
+            throw new FileNotFoundException(
+                $"SpriteDefinition entry '{entryName}' not found in '{archive.SourcePath}'.");
+
+        var path = Path.GetFullPath(
+            archive.SourcePath ?? throw new ArgumentException("Archive requires a physical source path."));
+
         var directory = Path.GetDirectoryName(path)!;
         var definitions = SpriteDefinitionSerializer.LoadAll(archive, entryName).ToList();
+
         if (definitions.Count == 0)
             throw new InvalidDataException("Document contains no definitions.");
-        var document = new SpriteDocument(definitions[0], directory, null, false)
+
+        var document = new SpriteDocument(
+            definitions[0],
+            directory,
+            null,
+            false)
         {
             _definitions = definitions,
             PackedLocation = new(AssetTypes.SpriteDefinition, path, entryName)
         };
+
         document.RememberReferenceOrigins();
         document.History.MarkSaved();
         return document;
@@ -48,6 +62,7 @@ public sealed partial class SpriteDocument
     {
         if (PackedLocation is null)
             throw new InvalidOperationException("This document is not packed.");
+
         RememberReferenceOrigins();
         History.MarkSaved();
     }

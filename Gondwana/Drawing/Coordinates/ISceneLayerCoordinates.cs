@@ -56,7 +56,10 @@ internal interface ISceneLayerCoordinates
     /// <param name="worldPixelRange">The query rectangle in world pixels.</param>
     /// <param name="includeOverhang">Whether to include visual content extending beyond tile bounds.</param>
     /// <returns>The tiles whose rendered pixel areas intersect the query rectangle.</returns>
-    List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang);
+    List<SceneLayerTile> GetSceneLayerTilesInPixelRange(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang);
 
     /// <summary>
     /// Returns a conservative tile candidate stream for full-frame rendering.
@@ -71,7 +74,11 @@ internal interface ISceneLayerCoordinates
         SceneLayer sceneLayer,
         Rectangle worldPixelRange,
         bool includeOverhang) =>
-        RenderTileQuery.GetCandidates(this, sceneLayer, worldPixelRange, includeOverhang);
+        RenderTileQuery.GetCandidates(
+            this,
+            sceneLayer,
+            worldPixelRange,
+            includeOverhang);
 
     /// <summary>
     /// Gets the pixel-space rectangle occupied by a given tile, optionally

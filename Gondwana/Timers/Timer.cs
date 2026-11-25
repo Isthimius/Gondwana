@@ -50,7 +50,11 @@ public sealed class Timer : IDisposable
     private long _lastEventTick { get; set; }
     private bool _disposed;
 
-    private Timer(TimerType type, TimerCycles cycles, long startTick, double length)
+    private Timer(
+        TimerType type,
+        TimerCycles cycles,
+        long startTick,
+        double length)
     {
         if (!double.IsFinite(length) || length <= 0)
             throw new ArgumentOutOfRangeException(
@@ -59,6 +63,7 @@ public sealed class Timer : IDisposable
                 "Timer length must be finite and greater than zero.");
 
         double lengthInTicks = length * HighResTimer.TicksPerSecond;
+
         if (lengthInTicks < 1 || lengthInTicks >= long.MaxValue)
             throw new ArgumentOutOfRangeException(
                 nameof(length),
@@ -99,6 +104,7 @@ public sealed class Timer : IDisposable
     {
         if (_disposed)
             return;
+
         GC.SuppressFinalize(this);
         _timers.TryRemove(TimerID, out _);
         Tick = null;
@@ -135,16 +141,25 @@ public sealed class Timer : IDisposable
     /// <param name="cycles">Gets the current timer cycles, representing whether the timer is set to run once or repeatedly.</param>
     /// <param name="length">The duration of the timer in seconds.</param>
     /// <returns>The newly created <see cref="Timer"/> instance.</returns>
-    public static Timer Add(string timerID, TimerType type, TimerCycles cycles, double length)
+    public static Timer Add(
+        string timerID,
+        TimerType type,
+        TimerCycles cycles,
+        double length)
     {
         long startTick = type == TimerType.PreCycle
             ? EngineSimulationClock.GetCurrentTick()
             : HighResTimer.GetCurrentTick();
 
-        var timer = new Timer(type, cycles, startTick, length)
+        var timer = new Timer(
+            type,
+            cycles,
+            startTick,
+            length)
         {
             TimerID = timerID
         };
+
         _timers[timerID] = timer;
         return timer;
     }
@@ -159,7 +174,12 @@ public sealed class Timer : IDisposable
     public static Timer Add(TimerType type, TimerCycles cycles, double length)
     {
         string timerID = Guid.NewGuid().ToString();
-        return Add(timerID, type, cycles, length);
+
+        return Add(
+            timerID,
+            type,
+            cycles,
+            length);
     }
 
     /// <summary>

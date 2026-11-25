@@ -52,13 +52,17 @@ public sealed class AssetsFile : IDisposable
         using var archive = new ZipFile(File.OpenRead(path));
         archive.Password = password;
         var keys = new HashSet<AssetsFileEntry>();
+
         foreach (ZipEntry entry in archive)
         {
             if (!entry.IsFile)
                 continue;
+
             var key = AssetsFileEntry.FromString(entry.Name);
+
             if (key is null || !Enum.IsDefined(key.AssetType) || string.IsNullOrWhiteSpace(key.AssetName))
                 throw new InvalidDataException($"Invalid bundle entry key: {entry.Name}");
+
             if (!keys.Add(key))
                 throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
         }
@@ -87,7 +91,11 @@ public sealed class AssetsFile : IDisposable
     /// <returns>An <see cref="AssetsFile"/> instance representing the loaded or newly created asset file.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="path"/> is null, empty, or consists only of whitespace.</exception>
     public static AssetsFile LoadOrCreate(string path, string? password = null, bool encrypt = false)
-        => LoadOrCreate(path, password, encrypt, register: true);
+        => LoadOrCreate(
+            path,
+            password,
+            encrypt,
+            register: true);
 
     /// <summary>
     /// Loads or creates an asset file, optionally without adding it to the runtime
@@ -98,7 +106,11 @@ public sealed class AssetsFile : IDisposable
     /// <param name="encrypt">Whether saves use encryption.</param>
     /// <param name="register">Whether to add this instance to <see cref="AllAssetsFiles"/>.</param>
     /// <returns>The loaded or newly created package, owned by the caller.</returns>
-    public static AssetsFile LoadOrCreate(string path, string? password, bool encrypt, bool register)
+    public static AssetsFile LoadOrCreate(
+        string path,
+        string? password,
+        bool encrypt,
+        bool register)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("path cannot be null or empty.", nameof(path));
@@ -116,6 +128,7 @@ public sealed class AssetsFile : IDisposable
                 assetFile.LoadZip();
             else
                 assetFile._isLoaded = true;
+
             return assetFile;
         }
         catch
@@ -138,7 +151,11 @@ public sealed class AssetsFile : IDisposable
     /// <param name="register">Whether to add this instance to <see cref="AllAssetsFiles"/>.</param>
     /// <returns>The loaded package, owned by the caller.</returns>
     public static AssetsFile Load(Stream stream, string? password = null, bool register = true)
-        => Load(stream, password, register, sourcePath: null);
+        => Load(
+            stream,
+            password,
+            register,
+            sourcePath: null);
 
     /// <summary>Loads a buffered archive with an optional reconstructible source path.</summary>
     /// <param name="stream">The readable archive stream.</param>
@@ -146,9 +163,14 @@ public sealed class AssetsFile : IDisposable
     /// <param name="register">Whether to register the archive.</param>
     /// <param name="sourcePath">A path identifying the stream origin. Does not open or write that path.</param>
     /// <returns>The buffered archive.</returns>
-    public static AssetsFile Load(Stream stream, string? password, bool register, string? sourcePath)
+    public static AssetsFile Load(
+        Stream stream,
+        string? password,
+        bool register,
+        string? sourcePath)
     {
         ArgumentNullException.ThrowIfNull(stream);
+
         if (!stream.CanRead)
             throw new ArgumentException("Stream must be readable.", nameof(stream));
 
@@ -191,7 +213,12 @@ public sealed class AssetsFile : IDisposable
     /// <summary>Gets the archive's reconstructible origin, including an optional stream origin.</summary>
     /// <remarks>File-backed archives use FilePath. Anonymous streams have no source path.</remarks>
     [JsonIgnore]
-    public string? SourcePath { get => string.IsNullOrWhiteSpace(FilePath) ? _sourcePath : FilePath; private set => _sourcePath = value; }
+    public string? SourcePath
+    {
+        get => string.IsNullOrWhiteSpace(FilePath) ? _sourcePath : FilePath;
+        private set => _sourcePath = value;
+    }
+
     private string? _sourcePath;
 
     private void EnsureLoaded()
@@ -233,6 +260,7 @@ public sealed class AssetsFile : IDisposable
             // the source stream is needed only for the duration of this call.
             MemoryStream? bufferedStream = stream.CanSeek ? null : new MemoryStream();
             Stream archiveStream = stream;
+
             if (bufferedStream is not null)
             {
                 stream.CopyTo(bufferedStream);
@@ -247,6 +275,7 @@ public sealed class AssetsFile : IDisposable
 
             // Force decryption on the first entry so a bad password fails early.
             var testEntry = _zipFile.Cast<ZipEntry>().FirstOrDefault(e => e.IsFile);
+
             if (testEntry != null)
             {
                 using var testStream = _zipFile.GetInputStream(testEntry);
@@ -263,6 +292,7 @@ public sealed class AssetsFile : IDisposable
                     UseEncryption |= entry.IsCrypted;
 
                 var key = AssetsFileEntry.FromString(entry.Name);
+
                 if (key == null)
                 {
                     Engine.Logger.LogWarning("Invalid entry in assets file: {EntryName}", entry.Name);

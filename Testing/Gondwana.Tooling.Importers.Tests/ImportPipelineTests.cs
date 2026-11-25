@@ -8,8 +8,12 @@ namespace Gondwana.Tooling.Importers.Tests;
 /// </summary>
 public sealed partial class ImportPipelineTests : IDisposable
 {
-    private readonly string directory = Path.Combine(Path.GetTempPath(), "ImportPipeline-" + Guid.NewGuid().ToString("N"));
+    private readonly string directory = Path.Combine(
+        Path.GetTempPath(),
+        "ImportPipeline-" + Guid.NewGuid().ToString("N"));
+
     private readonly ExternalImportRequest request;
+
     /// <summary>
     /// Initializes a new instance of the <c>ImportPipelineTests</c> class.
     /// </summary>
@@ -20,20 +24,30 @@ public sealed partial class ImportPipelineTests : IDisposable
         File.WriteAllText(source, "source");
         request = new(source, Path.Combine(directory, "output"));
     }
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(directory, true);
+
     private sealed class Provider(Action<ImportPlan> build) : ExternalAssetImporter
     {
         /// <inheritdoc/>
         public override string Id => "test";
+
         /// <inheritdoc/>
         public override string DisplayName => "Test";
+
         /// <inheritdoc/>
         public override IReadOnlyList<string> SupportedExtensions => [".txt"];
+
         /// <inheritdoc/>
         protected override void BuildPlan(ImportPlan plan, CancellationToken cancellationToken) => build(plan);
     }
-    private static void Add(ImportPlan p, string file, string? key = null) => p.Add(file, "GTS", key, Encoding.UTF8.GetBytes("new"));
+
+    private static void Add(ImportPlan p, string file, string? key = null) => p.Add(
+        file,
+        "GTS",
+        key,
+        Encoding.UTF8.GetBytes("new"));
 
     /// <summary>
     /// Verifies invalid plans never write.
@@ -49,6 +63,7 @@ public sealed partial class ImportPipelineTests : IDisposable
         var provider = new Provider(p =>
         {
             Add(p, "one.gts", "one");
+
             switch (code)
             {
                 case "output.duplicate":
@@ -64,6 +79,7 @@ public sealed partial class ImportPipelineTests : IDisposable
                     throw new InvalidDataException("Invalid source after planning an output.");
             }
         });
+
         var result = provider.Import(request);
         Assert.False(result.Analysis.CanImport);
         Assert.Empty(result.WrittenFiles);
@@ -78,7 +94,11 @@ public sealed partial class ImportPipelineTests : IDisposable
     public void ExistingLogicalKeysAreProtectedEvenWithOverwrite()
     {
         Directory.CreateDirectory(request.OutputDirectory);
-        File.WriteAllText(Path.Combine(request.OutputDirectory, "other.gts"), TilesheetDefinitionSerializer.ToJson(new TilesheetDefinition { Name = "one" }));
+
+        File.WriteAllText(
+            Path.Combine(request.OutputDirectory, "other.gts"),
+            TilesheetDefinitionSerializer.ToJson(new TilesheetDefinition { Name = "one" }));
+
         var analysis = new Provider(p => Add(p, "one.gts", "one")).Analyze(request with { Overwrite = true });
         Assert.Contains(analysis.Diagnostics, d => d.Code == "key.exists");
         Assert.False(analysis.CanImport);
@@ -90,7 +110,10 @@ public sealed partial class ImportPipelineTests : IDisposable
     [Fact]
     public void SourceDependencyCannotBeOverwritten()
     {
-        var result = new Provider(p => Add(p, "source.txt")).Import(request with { OutputDirectory = directory, Overwrite = true });
+        var result =
+            new Provider(p => Add(p, "source.txt")).Import(
+                request with { OutputDirectory = directory, Overwrite = true });
+
         Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "output.source");
         Assert.Equal("source", File.ReadAllText(request.SourcePath));
     }
@@ -102,11 +125,13 @@ public sealed partial class ImportPipelineTests : IDisposable
     public void CancellationBeforeWritingDoesNotCreateOutput()
     {
         using var cancellation = new CancellationTokenSource();
+
         var provider = new Provider(p =>
         {
             Add(p, "one.gts");
             cancellation.Cancel();
         });
+
         Assert.Throws<OperationCanceledException>(() => provider.Import(request, cancellation.Token));
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
@@ -120,17 +145,28 @@ public sealed partial class ImportPipelineTests : IDisposable
         // Windows sharing denial deterministically fails the second move after the first committed.
         if (!OperatingSystem.IsWindows())
             return;
+
         Directory.CreateDirectory(request.OutputDirectory);
-        string first = Path.Combine(request.OutputDirectory, "one.txt"), second = Path.Combine(request.OutputDirectory, "two.txt");
+
+        string first = Path.Combine(request.OutputDirectory, "one.txt"),
+            second = Path.Combine(request.OutputDirectory, "two.txt");
+
         File.WriteAllText(first, "original one");
         File.WriteAllText(second, "original two");
+
         var provider = new Provider(p =>
         {
             Add(p, "one.txt");
             Add(p, "two.txt");
         });
-        using (var locked = new FileStream(second, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+        using (var locked = new FileStream(
+                   second,
+                   FileMode.Open,
+                   FileAccess.Read,
+                   FileShare.Read))
             Assert.ThrowsAny<IOException>(() => provider.Import(request with { Overwrite = true }));
+
         Assert.Equal("original one", File.ReadAllText(first));
         Assert.Equal("original two", File.ReadAllText(second));
         Assert.Empty(Directory.GetDirectories(request.OutputDirectory));

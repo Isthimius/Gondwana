@@ -188,7 +188,13 @@ public sealed class ProfilerWidget : ContainerWidget
 
         Display
             .SetFont(SKTypeface.Default, 15f, minSize: 9f)
-            .SetColors(SKColors.White, new SKColor(0, 0, 0, 102))
+            .SetColors(
+                SKColors.White,
+                new SKColor(
+                    0,
+                    0,
+                    0,
+                    102))
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
             .SetPadding(12f, 10f)
             .EnableWrapping(false);
@@ -233,6 +239,7 @@ public sealed class ProfilerWidget : ContainerWidget
         get
         {
             Vector2 position = GetPosition();
+
             return new Rectangle(
                 (int)MathF.Round(position.X),
                 (int)MathF.Round(position.Y),
@@ -632,6 +639,7 @@ public sealed class ProfilerWidget : ContainerWidget
             return;
 
         long now = Stopwatch.GetTimestamp();
+
         if (_lastRefreshTimestamp != 0 &&
             Stopwatch.GetElapsedTime(_lastRefreshTimestamp, now) < RefreshInterval)
         {
@@ -658,6 +666,7 @@ public sealed class ProfilerWidget : ContainerWidget
             text.AppendLine(HeaderText);
 
         View? view = View;
+
         if (view is not null)
         {
             var extensionContext = new ProfilerWidgetExtensionContext(
@@ -690,6 +699,7 @@ public sealed class ProfilerWidget : ContainerWidget
         }
 
         bool wroteSource = false;
+
         foreach (TelemetrySourceSnapshot source in snapshot.Sources)
         {
             if (!IsSourceVisible(source.Name))
@@ -739,6 +749,7 @@ public sealed class ProfilerWidget : ContainerWidget
         ProfilerWidgetExtensionContext context)
     {
         IEnumerable<string>? lines = AdditionalLinesProvider?.Invoke(context);
+
         if (lines is null)
             return;
 
@@ -753,11 +764,11 @@ public sealed class ProfilerWidget : ContainerWidget
         if ((ContextInfo & ProfilerContextInfo.Scene) != 0)
         {
             var scene = context.RenderSurfaceHost.Scene;
-            long gridCells = scene.SceneLayers.Sum(
-                static layer => (long)layer.GridColumnCount * layer.GridRowCount);
+            long gridCells = scene.SceneLayers.Sum(static layer => (long)layer.GridColumnCount * layer.GridRowCount);
 
             text.Append("Animating tiles: ")
                 .AppendLine(Tile.TilesAnimating.Count.ToString("N0"));
+
             text.Append("Layers / grid cells: ")
                 .Append(scene.SceneLayers.Count)
                 .Append(" / ")
@@ -765,9 +776,11 @@ public sealed class ProfilerWidget : ContainerWidget
         }
 
         Rectangle viewport = context.View.Viewport.TargetRectPx;
+
         if ((ContextInfo & ProfilerContextInfo.View) != 0)
         {
             PointF camera = context.View.Camera.PositionPx;
+
             text.Append("Camera: ")
                 .Append(camera.X.ToString("0.0"))
                 .Append(", ")
@@ -779,9 +792,11 @@ public sealed class ProfilerWidget : ContainerWidget
 
         bool includeViewport = (ContextInfo & ProfilerContextInfo.View) != 0;
         bool includeBackbuffer = (ContextInfo & ProfilerContextInfo.Backbuffer) != 0;
+
         if (includeViewport && includeBackbuffer)
         {
             var backbuffer = context.RenderSurfaceHost.Backbuffer;
+
             text.Append("Viewport / backbuffer: ")
                 .Append(viewport.Width)
                 .Append('x')
@@ -801,6 +816,7 @@ public sealed class ProfilerWidget : ContainerWidget
         else if (includeBackbuffer)
         {
             var backbuffer = context.RenderSurfaceHost.Backbuffer;
+
             text.Append("Backbuffer: ")
                 .Append(backbuffer.Width)
                 .Append('x')
@@ -837,6 +853,7 @@ public sealed class ProfilerWidget : ContainerWidget
             new Vector2(
                 displayBounds.X - bounds.X,
                 displayBounds.Y - bounds.Y));
+
         Display.Size = displayBounds.Size;
 
         if (_metricSelectorButton is not null || _metricSelectorList is not null)
@@ -869,6 +886,7 @@ public sealed class ProfilerWidget : ContainerWidget
             Math.Min(
                 MetricSelectorWidth,
                 Math.Max(1, bounds.Width - MetricSelectorMargin * 2)));
+
         int height = Math.Max(
             1,
             Math.Min(
@@ -885,9 +903,11 @@ public sealed class ProfilerWidget : ContainerWidget
     private static Rectangle GetMetricSelectorListBounds(Rectangle bounds)
     {
         int width = Math.Max(24, Math.Min(460, Math.Max(24, bounds.Width - MetricSelectorMargin * 2)));
+
         int availableHeight = Math.Max(
             28,
             bounds.Height - MetricSelectorHeight - MetricSelectorMargin);
+
         int height = Math.Max(28, Math.Min(420, availableHeight));
 
         return new Rectangle(
@@ -900,10 +920,12 @@ public sealed class ProfilerWidget : ContainerWidget
     private void EnsureMetricSelector(TelemetrySnapshot snapshot)
     {
         View? view = View;
+
         if (!ShowMetricSelector || view is null)
             return;
 
         string signature = BuildMetricSelectorSignature(snapshot);
+
         if (_metricSelectorButton is null ||
             _metricSelectorList is null ||
             !string.Equals(_metricSelectorSignature, signature, StringComparison.Ordinal))
@@ -938,7 +960,12 @@ public sealed class ProfilerWidget : ContainerWidget
 
             _metricSelectorList
                 .SetListBoxZOrder(_profilerZOrder + 200)
-                .SetSelectionColor(Color.FromArgb(255, 70, 70, 84));
+                .SetSelectionColor(
+                    Color.FromArgb(
+                        255,
+                        70,
+                        70,
+                        84));
 
             _metricSelectorList.SelectionCommitted += OnMetricSelectorSelectionCommitted;
 
@@ -947,6 +974,7 @@ public sealed class ProfilerWidget : ContainerWidget
                 new Vector2(
                     buttonBounds.X - bounds.X,
                     buttonBounds.Y - bounds.Y));
+
             Add(
                 _metricSelectorList,
                 new Vector2(
@@ -1006,20 +1034,30 @@ public sealed class ProfilerWidget : ContainerWidget
             MeasurementTooltipsEnabled,
             "Hover definitions",
             () => MeasurementTooltipsEnabled = !MeasurementTooltipsEnabled);
+
         AddSelectorRow(
             ShowUnavailableMeasurements,
             "Show unavailable",
             () => ShowUnavailableMeasurements = !ShowUnavailableMeasurements);
-        _metricSelectorRows.Add(new MetricSelectorRow("Show all measurements", () =>
-        {
-            MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.All;
-            ClearVisibilityOverrides();
-        }));
-        _metricSelectorRows.Add(new MetricSelectorRow("Hide all measurements", () =>
-        {
-            MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected;
-            ClearVisibilityOverrides();
-        }));
+
+        _metricSelectorRows.Add(
+            new MetricSelectorRow(
+                "Show all measurements",
+                () =>
+                {
+                    MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.All;
+                    ClearVisibilityOverrides();
+                }));
+
+        _metricSelectorRows.Add(
+            new MetricSelectorRow(
+                "Hide all measurements",
+                () =>
+                {
+                    MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected;
+                    ClearVisibilityOverrides();
+                }));
+
         _metricSelectorRows.Add(new MetricSelectorRow("------------------------------", null));
 
         foreach (var sourceGroup in snapshot.Sources
@@ -1027,6 +1065,7 @@ public sealed class ProfilerWidget : ContainerWidget
                      .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase))
         {
             string sourceName = sourceGroup.Key;
+
             string backend = string.Join(
                 "/",
                 sourceGroup
@@ -1035,6 +1074,7 @@ public sealed class ProfilerWidget : ContainerWidget
                     .OrderBy(value => value, StringComparer.Ordinal));
 
             bool sourceVisible = IsSourceVisible(sourceName);
+
             AddSelectorRow(
                 sourceVisible,
                 $"{sourceName} [{backend}]",
@@ -1050,13 +1090,16 @@ public sealed class ProfilerWidget : ContainerWidget
                     .Select(source => source.Metrics[metricKey].Availability)
                     .DefaultIfEmpty(TelemetryAvailability.Unsupported)
                     .Max();
+
                 bool metricVisible = ResolveMeasurementVisibility(
                     sourceName,
                     metricKey,
                     availability);
+
                 string capturedMetricKey = metricKey;
                 string capturedSourceName = sourceName;
                 TelemetryAvailability capturedAvailability = availability;
+
                 string availabilitySuffix = availability == TelemetryAvailability.Available
                     ? string.Empty
                     : $" [{FormatAvailability(availability)}]";
@@ -1080,6 +1123,7 @@ public sealed class ProfilerWidget : ContainerWidget
         int maximumTopIndex = Math.Max(
             0,
             _metricSelectorRows.Count - _metricSelectorList.VisibleItemCount);
+
         _metricSelectorList.TopIndex = Math.Min(topIndex, maximumTopIndex);
     }
 
@@ -1097,6 +1141,7 @@ public sealed class ProfilerWidget : ContainerWidget
             return;
 
         _metricSelectorOpen = !_metricSelectorOpen;
+
         if (_metricSelectorOpen)
         {
             _metricSelectorList.Show();
@@ -1114,6 +1159,7 @@ public sealed class ProfilerWidget : ContainerWidget
             return;
 
         MetricSelectorRow row = _metricSelectorRows[index];
+
         if (row.Action is null)
             return;
 
@@ -1152,14 +1198,17 @@ public sealed class ProfilerWidget : ContainerWidget
         for (int index = 0; index < lines.Length; index++)
         {
             string line = lines[index];
+
             if (!line.StartsWith("  ", StringComparison.Ordinal))
                 continue;
 
             int colon = line.IndexOf(':', 2);
+
             if (colon <= 2)
                 continue;
 
             string metricKey = line[2..colon].Trim();
+
             if (!string.IsNullOrWhiteSpace(metricKey))
                 _renderedMetricLines[index] = metricKey;
         }
@@ -1175,6 +1224,7 @@ public sealed class ProfilerWidget : ContainerWidget
 
         Rectangle displayBounds = Display.Bounds;
         Point pointer = Point.Round(args.ScreenPositionPx);
+
         if (!displayBounds.Contains(pointer))
         {
             _measurementTooltip.HideTooltip();
@@ -1182,6 +1232,7 @@ public sealed class ProfilerWidget : ContainerWidget
         }
 
         float lineHeight = Display.TextBlock.LineHeight;
+
         if (lineHeight <= 0f)
         {
             _measurementTooltip.HideTooltip();
@@ -1201,6 +1252,7 @@ public sealed class ProfilerWidget : ContainerWidget
         }
 
         int lineIndex = (int)MathF.Floor(localY / lineHeight);
+
         if (!_renderedMetricLines.TryGetValue(lineIndex, out string? metricKey))
         {
             _measurementTooltip.HideTooltip();
@@ -1208,6 +1260,7 @@ public sealed class ProfilerWidget : ContainerWidget
         }
 
         string? description = GetMeasurementDescription(metricKey);
+
         if (string.IsNullOrWhiteSpace(description))
         {
             _measurementTooltip.HideTooltip();
@@ -1237,6 +1290,7 @@ public sealed class ProfilerWidget : ContainerWidget
             return overrideDescription;
 
         string normalizedKey = NormalizeLayerMetricKey(metricKey);
+
         string? description = normalizedKey switch
         {
             "cycle.cpu.ms" =>
@@ -1345,6 +1399,7 @@ public sealed class ProfilerWidget : ContainerWidget
             return metricKey;
 
         int firstSeparator = metricKey.IndexOf('.', "layer.".Length);
+
         if (firstSeparator < 0 || firstSeparator + 1 >= metricKey.Length)
             return metricKey;
 
@@ -1390,8 +1445,8 @@ public sealed class ProfilerWidget : ContainerWidget
             return false;
 
         return availability == TelemetryAvailability.Available ||
-            ShowUnavailableMeasurements ||
-            explicitlySelected;
+               ShowUnavailableMeasurements ||
+               explicitlySelected;
     }
 
     private static string FormatSummary(TelemetrySummary summary, double elapsedSeconds)

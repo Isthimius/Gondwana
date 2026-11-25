@@ -27,16 +27,25 @@ public sealed class DefinitionDocumentTests : IDisposable
         Directory.Delete(_root, true);
     }
 
-    private sealed record Format(string Extension, string Identity, AssetTypes Type,
-        Func<string, object[]> Parse, Func<string, object> Singleton,
-        Func<string, string?, object> Loose, Func<Stream, string?, object> Stream,
+    private sealed record Format(
+        string Extension,
+        string Identity,
+        AssetTypes Type,
+        Func<string, object[]> Parse,
+        Func<string, object> Singleton,
+        Func<string, string?, object> Loose,
+        Func<Stream, string?, object> Stream,
         Func<AssetsFile, string, string?, object> Packed,
         Func<AssetsFile, string, object[]> PackedAll,
-        Action<string, object[]> Save, Func<object, DefinitionLoadStamp?> Stamp);
+        Action<string, object[]> Save,
+        Func<object, DefinitionLoadStamp?> Stamp);
 
     private static Format Get(string format) => format switch
     {
-        "gts" => new(format, "Name", AssetTypes.TilesheetDefinition,
+        "gts" => new(
+            format,
+            "Name",
+            AssetTypes.TilesheetDefinition,
             json => TilesheetDefinitionSerializer.FromDocumentJson(json).Definitions.Cast<object>().ToArray(),
             json => TilesheetDefinitionSerializer.FromJson(json),
             (path, key) => TilesheetDefinitionSerializer.Load(path, key),
@@ -45,7 +54,10 @@ public sealed class DefinitionDocumentTests : IDisposable
             (archive, entry) => TilesheetDefinitionSerializer.LoadAll(archive, entry).Cast<object>().ToArray(),
             (path, members) => TilesheetDefinitionSerializer.SaveAll(path, members.Cast<TilesheetDefinition>()),
             member => ((TilesheetDefinition)member).LoadStamp),
-        "gani" => new(format, "Key", AssetTypes.AnimationDefinition,
+        "gani" => new(
+            format,
+            "Key",
+            AssetTypes.AnimationDefinition,
             json => AnimationDefinitionSerializer.FromDocumentJson(json).Definitions.Cast<object>().ToArray(),
             json => AnimationDefinitionSerializer.FromJson(json),
             (path, key) => AnimationDefinitionSerializer.Load(path, key),
@@ -54,7 +66,10 @@ public sealed class DefinitionDocumentTests : IDisposable
             (archive, entry) => AnimationDefinitionSerializer.LoadAll(archive, entry).Cast<object>().ToArray(),
             (path, members) => AnimationDefinitionSerializer.SaveAll(path, members.Cast<AnimationDefinition>()),
             member => ((AnimationDefinition)member).LoadStamp),
-        "gscn" => new(format, "ID", AssetTypes.SceneDefinition,
+        "gscn" => new(
+            format,
+            "ID",
+            AssetTypes.SceneDefinition,
             json => SceneDefinitionSerializer.FromDocumentJson(json).Definitions.Cast<object>().ToArray(),
             json => SceneDefinitionSerializer.FromJson(json),
             (path, key) => SceneDefinitionSerializer.Load(path, key),
@@ -63,7 +78,10 @@ public sealed class DefinitionDocumentTests : IDisposable
             (archive, entry) => SceneDefinitionSerializer.LoadAll(archive, entry).Cast<object>().ToArray(),
             (path, members) => SceneDefinitionSerializer.SaveAll(path, members.Cast<SceneDefinition>()),
             member => ((SceneDefinition)member).LoadStamp),
-        "gsnd" => new(format, "Key", AssetTypes.AudioDefinition,
+        "gsnd" => new(
+            format,
+            "Key",
+            AssetTypes.AudioDefinition,
             json => AudioDefinitionSerializer.FromDocumentJson(json).Definitions.Cast<object>().ToArray(),
             json => AudioDefinitionSerializer.FromJson(json),
             (path, key) => AudioDefinitionSerializer.Load(path, key),
@@ -72,7 +90,10 @@ public sealed class DefinitionDocumentTests : IDisposable
             (archive, entry) => AudioDefinitionSerializer.LoadAll(archive, entry).Cast<object>().ToArray(),
             (path, members) => AudioDefinitionSerializer.SaveAll(path, members.Cast<AudioDefinition>()),
             member => ((AudioDefinition)member).LoadStamp),
-        "gspr" => new(format, "Key", AssetTypes.SpriteDefinition,
+        "gspr" => new(
+            format,
+            "Key",
+            AssetTypes.SpriteDefinition,
             json => SpriteDefinitionSerializer.FromDocumentJson(json).Definitions.Cast<object>().ToArray(),
             json => SpriteDefinitionSerializer.FromJson(json),
             (path, key) => SpriteDefinitionSerializer.Load(path, key),
@@ -85,7 +106,9 @@ public sealed class DefinitionDocumentTests : IDisposable
     };
 
     private static JObject Member(Format format, string key) => new() { [format.Identity] = key };
-    private static string Envelope(params JObject[] members) => new JObject { ["Definitions"] = new JArray(members) }.ToString();
+
+    private static string Envelope(params JObject[] members) =>
+        new JObject { ["Definitions"] = new JArray(members) }.ToString();
 
     /// <summary>Verifies legacy, canonical, selector, singleton, identity, and malformed-document contracts.</summary>
     /// <param name="extension">The native format.</param>
@@ -112,11 +135,17 @@ public sealed class DefinitionDocumentTests : IDisposable
         Assert.Contains("missing", Assert.Throws<InvalidDataException>(() => format.Stream(stream, "missing")).Message);
         Assert.Contains("LoadAll", Assert.Throws<InvalidDataException>(() => format.Singleton(json)).Message);
         Assert.Throws<InvalidDataException>(() => format.Singleton("{\"Definitions\":[]}"));
+
         if (extension == "gani")
             Assert.Throws<InvalidDataException>(() => format.Parse(Envelope(first, Member(format, "FIRST"))));
         else
             Assert.Equal(2, format.Parse(Envelope(first, Member(format, "FIRST"))).Length);
-        foreach (var malformed in new[] { "null", "[]", "{\"Definitions\":null}", "{\"Definitions\":[null]}", "{\"Definitions\":{}}", "{\"Definitions\":[{}]}", "{\"Definitions\":[],\"Key\":\"mixed\"}", Envelope(first, first) })
+
+        foreach (var malformed in new[]
+                 {
+                     "null", "[]", "{\"Definitions\":null}", "{\"Definitions\":[null]}", "{\"Definitions\":{}}",
+                     "{\"Definitions\":[{}]}", "{\"Definitions\":[],\"Key\":\"mixed\"}", Envelope(first, first)
+                 })
             Assert.Throws<InvalidDataException>(() => format.Parse(malformed));
     }
 
@@ -154,6 +183,7 @@ public sealed class DefinitionDocumentTests : IDisposable
         bytes.Dispose();
         Assert.Throws<InvalidDataException>(() => format.Packed(archive, "shared." + extension, null));
         Assert.Throws<InvalidDataException>(() => format.Packed(archive, "shared." + extension, "missing"));
+
         foreach (var member in format.PackedAll(archive, "shared." + extension))
         {
             var stamp = format.Stamp(member)!.Materialized(member, () => member)!;
@@ -189,10 +219,12 @@ public sealed class DefinitionDocumentTests : IDisposable
         var original = Path.Combine(_root, "old");
         var destination = Path.Combine(_root, "new");
         Directory.CreateDirectory(original);
+
         foreach (var extension in new[] { "gts", "gani", "gscn", "gsnd", "gspr" })
         {
             var format = Get(extension);
             var members = new[] { Member(format, "first"), Member(format, "second") };
+
             foreach (var member in members)
             {
                 if (extension == "gts")
@@ -200,7 +232,8 @@ public sealed class DefinitionDocumentTests : IDisposable
                 else if (extension == "gsnd")
                     member["Resources"] = new JArray(new JObject { ["Key"] = "sound", ["FilePath"] = "sound.wav" });
                 else
-                    member["TilesheetSources"] = new JArray(new JObject { ["Tilesheet"] = "terrain", ["GtsPath"] = "tiles.gts" });
+                    member["TilesheetSources"] = new JArray(
+                        new JObject { ["Tilesheet"] = "terrain", ["GtsPath"] = "tiles.gts" });
             }
 
             var path = Path.Combine(original, "all." + extension);
@@ -210,10 +243,13 @@ public sealed class DefinitionDocumentTests : IDisposable
             var target = Path.Combine(destination, "all." + extension);
             format.Save(target, loaded);
             Assert.Equal(before, JsonConvert.SerializeObject(loaded));
+
             foreach (var member in (JArray)JObject.Parse(File.ReadAllText(target))["Definitions"]!)
             {
                 var reference = extension == "gts" ? member["Image"]!["FilePath"] :
-                    extension == "gsnd" ? member["Resources"]![0]!["FilePath"] : member["TilesheetSources"]![0]!["GtsPath"];
+                    extension == "gsnd" ? member["Resources"]![0]!["FilePath"] :
+                    member["TilesheetSources"]![0]!["GtsPath"];
+
                 var leaf = extension == "gts" ? "image.png" : extension == "gsnd" ? "sound.wav" : "tiles.gts";
                 Assert.Equal(Path.Combine(original, leaf), Path.GetFullPath((string)reference!, destination));
             }

@@ -25,6 +25,7 @@ public sealed partial class MainForm
             ".gscn" => AssetTypes.SceneDefinition,
             _ => AssetTypes.Misc
         };
+
         return type == AssetTypes.Misc ? null : new(new AssetLocation(type, path));
     }
 
@@ -36,18 +37,26 @@ public sealed partial class MainForm
 
     internal ResourceDragData? CreateResourceDrag(ResourceAddress address) => address.Location.AssetType switch
     {
-        AssetTypes.TilesheetDefinition => new ResourceDragData<TilesheetFrameDrag>(address, (owner, resolver) =>
-            PickFrame(owner, address, resolver)),
-        AssetTypes.AnimationDefinition when address.Member is not null => new ResourceDragData<AnimationDrag>(new(address)),
-        AssetTypes.AnimationDefinition => new ResourceDragData<AnimationDrag>(address, (owner, resolver) =>
-            PickMember(owner, address, resolver) is { } selected ? new(selected) : null),
-        AssetTypes.SceneDefinition => new ResourceDragData<SceneLayerDrag>(address, (owner, resolver) =>
-            PickLayer(owner, address, resolver)),
+        AssetTypes.TilesheetDefinition => new ResourceDragData<TilesheetFrameDrag>(
+            address,
+            (owner, resolver) =>
+                PickFrame(owner, address, resolver)),
+        AssetTypes.AnimationDefinition when address.Member is not null => new ResourceDragData<AnimationDrag>(
+            new(address)),
+        AssetTypes.AnimationDefinition => new ResourceDragData<AnimationDrag>(
+            address,
+            (owner, resolver) =>
+                PickMember(owner, address, resolver) is { } selected ? new(selected) : null),
+        AssetTypes.SceneDefinition => new ResourceDragData<SceneLayerDrag>(
+            address,
+            (owner, resolver) =>
+                PickLayer(owner, address, resolver)),
         _ => null
     };
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<IWin32Window, string, IReadOnlyList<string>, string?> ChooseDragItem { get; set; } = ChooseItem;
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Func<IWin32Window, long, long, Point?> ChooseDragCoordinates { get; set; } = ChooseCoordinates;
 
@@ -57,6 +66,7 @@ public sealed partial class MainForm
             return address;
 
         var members = resolver.GetMembers(address.Resource);
+
         if (members.Count == 0)
             throw new InvalidDataException("The dragged resource contains no saved definitions.");
 
@@ -64,24 +74,35 @@ public sealed partial class MainForm
         return member is null ? null : address with { Member = member };
     }
 
-    private TilesheetFrameDrag? PickFrame(IWin32Window owner, ResourceAddress address, AuthoringResourceResolver resolver)
+    private TilesheetFrameDrag? PickFrame(
+        IWin32Window owner,
+        ResourceAddress address,
+        AuthoringResourceResolver resolver)
     {
         if (PickMember(owner, address, resolver) is not { } selected)
             return null;
 
         var sheet = resolver.LoadValidatedTilesheet(selected);
         var regions = sheet.Regions.Select(region => region.Name).ToArray();
+
         if (regions.Length == 0)
             throw new InvalidDataException("The tilesheet has no frame regions.");
 
         string? regionName = regions.Length == 1 ? regions[0] : ChooseDragItem(owner, "Choose a frame region", regions);
+
         if (regionName is null)
             return null;
 
         var region = sheet.Regions.Single(item => item.Name == regionName);
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
+
         return ChooseDragCoordinates(owner, columns, rows) is { } frame
-            ? new(selected, region.Name, frame.X, frame.Y) : null;
+            ? new(
+                selected,
+                region.Name,
+                frame.X,
+                frame.Y)
+            : null;
     }
 
     private SceneLayerDrag? PickLayer(IWin32Window owner, ResourceAddress address, AuthoringResourceResolver resolver)
@@ -91,11 +112,13 @@ public sealed partial class MainForm
 
         var scene = resolver.LoadScene(selected.Resource, selected.Member);
         var layers = scene.Layers.Select(layer => layer.ID).ToArray();
+
         if (layers.Length == 0)
             throw new InvalidDataException("The scene has no layers to assign.");
 
         return ChooseDragItem(owner, "Choose a scene layer to assign", layers) is { } layer
-            ? new(selected, layer) : null;
+            ? new(selected, layer)
+            : null;
     }
 
     private static string? ChooseItem(IWin32Window owner, string title, IReadOnlyList<string> choices)
@@ -123,8 +146,13 @@ public sealed partial class MainForm
         var x = new NumericUpDown { Maximum = Math.Min(columns - 1, int.MaxValue) };
         var y = new NumericUpDown { Maximum = Math.Min(rows - 1, int.MaxValue) };
         var coordinates = new FlowLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(8) };
-        coordinates.Controls.AddRange([new Label { Text = "Column (X)", AutoSize = true }, x,
-            new Label { Text = "Row (Y)", AutoSize = true }, y]);
+
+        coordinates.Controls.AddRange(
+        [
+            new Label { Text = "Column (X)", AutoSize = true }, x,
+            new Label { Text = "Row (Y)", AutoSize = true }, y
+        ]);
+
         AddPickerButtons(dialog);
         dialog.Controls.Add(coordinates);
         coordinates.BringToFront();
@@ -144,7 +172,9 @@ public sealed partial class MainForm
 
     private static Button AddPickerButtons(Form dialog)
     {
-        var bar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 40, FlowDirection = FlowDirection.RightToLeft };
+        var bar = new FlowLayoutPanel
+            { Dock = DockStyle.Bottom, Height = 40, FlowDirection = FlowDirection.RightToLeft };
+
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var accept = new Button { Text = "Assign", DialogResult = DialogResult.OK, AutoSize = true };
         bar.Controls.AddRange([cancel, accept]);

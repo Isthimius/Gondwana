@@ -331,45 +331,67 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         if (!UsesRenderFrameSnapshots || _disposed)
             return;
+
         var slot = FrameMailbox.TryBeginBuild();
+
         if (slot is null)
             return;
+
         var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
         bool transferred = false;
         long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
-        long started = GpuRenderFrameDiagnosticsCalculated is null && telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
+
+        long started = GpuRenderFrameDiagnosticsCalculated is null && telemetryGeneration == 0
+            ? 0
+            : HighResTimer.GetCurrentTick();
+
         _recordingDiagnostics = null;
+
         try
         {
             recorder.Start(Backbuffer);
             RenderBackbufferBegin?.Invoke();
             RenderToBackbufferGpuFull(tick, recorder);
             RenderBackbufferEnd?.Invoke();
-            var frame = new RenderFrameSnapshot(recorder.Complete(), ++_snapshotSequence,
-                HighResTimer.GetCurrentTick(), recorder.Width, recorder.Height);
+
+            var frame = new RenderFrameSnapshot(
+                recorder.Complete(),
+                ++_snapshotSequence,
+                HighResTimer.GetCurrentTick(),
+                recorder.Width,
+                recorder.Height);
+
             transferred = true;
             FrameMailbox.Publish(slot, frame);
+
             if (telemetryGeneration != 0)
             {
-                Telemetry!.Record(telemetryGeneration, "build.cpu.ms", HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d);
+                Telemetry!.Record(
+                    telemetryGeneration,
+                    "build.cpu.ms",
+                    HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d);
+
                 Telemetry.Record(telemetryGeneration, "atlas.batches", recorder.AtlasBatchCount);
                 Telemetry.Record(telemetryGeneration, "atlas.tiles", recorder.AtlasBatchedTileCount);
             }
 
             if (_recordingDiagnostics is { } diagnostics)
-                GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics with
-                {
-                    TotalRenderMilliseconds =
+                GpuRenderFrameDiagnosticsCalculated?.Invoke(
+                    diagnostics with
+                    {
+                        TotalRenderMilliseconds =
                         HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d,
-                    AtlasBatchCount = recorder.AtlasBatchCount,
-                    AtlasBatchedTileCount = recorder.AtlasBatchedTileCount
-                });
+                        AtlasBatchCount = recorder.AtlasBatchCount,
+                        AtlasBatchedTileCount = recorder.AtlasBatchedTileCount
+                    });
         }
         catch
         {
             recorder.Cancel();
+
             if (!transferred)
                 FrameMailbox.AbortBuild(slot);
+
             throw;
         }
     }
@@ -420,6 +442,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         long overlayTicks = 0;
         int drawableCount = 0;
         int tileCount = 0;
+
         List<GpuLayerRenderDiagnostics>? layerDiagnostics = legacyDiagnostics
             ? new List<GpuLayerRenderDiagnostics>(Scene.VisibleSceneLayers.Count)
             : null;
@@ -429,12 +452,19 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // DirectDrawings (e.g. a splash screen overlay) are still rendered.
         if (ViewManager.Views.Count == 0)
         {
-            target.ClearRect(new Rectangle(0, 0, target.Width, target.Height));
+            target.ClearRect(
+                new Rectangle(
+                    0,
+                    0,
+                    target.Width,
+                    target.Height));
+
             Scene.FullRefreshNeeded = false;
 
             if (telemetryGeneration != 0 && destination is not RecordingBackbuffer)
             {
                 long diagnosticsEndTick = HighResTimer.GetCurrentTick();
+
                 Telemetry!.Record(
                     telemetryGeneration,
                     "build.cpu.ms",
@@ -447,7 +477,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // A single clear lets translucent, wiped, or translated views reveal the
         // views beneath them. Each view paints its own background as part of its
         // presentation group below.
-        target.ClearRect(new Rectangle(0, 0, target.Width, target.Height));
+        target.ClearRect(
+            new Rectangle(
+                0,
+                0,
+                target.Width,
+                target.Height));
 
         foreach (var view in ViewManager.Views)
         {
@@ -472,6 +507,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         continue;
 
                     var overlap = Rectangle.Intersect(vp, blocker.GetRenderViewportTargetRectPx());
+
                     if (!overlap.IsEmpty)
                         target.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
@@ -480,7 +516,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     view.GetPresentationBoundsPx(),
                     view.EffectOpacity,
                     view.EffectReveal,
-                    view.EffectRevealDirection, target);
+                    view.EffectRevealDirection,
+                    target);
 
                 if (viewPresentation > 0)
                 {
@@ -500,7 +537,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             GetLayerPresentationBounds(view, layer),
                             layer.EffectOpacity,
                             layer.EffectReveal,
-                            layer.EffectRevealDirection, target);
+                            layer.EffectRevealDirection,
+                            target);
 
                         if (layerPresentation == 0)
                             continue;
@@ -513,17 +551,19 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                         long queryStartTick =
                             collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
                         long layerSortTicks = 0;
                         int layerDrawableCount;
                         int layerTileCount;
 
                         var recording = target as RecordingBackbuffer;
                         RecordingBackbuffer.FixedGridRenderPlan fixedGridPlan = default;
+
                         bool streamed = recording is not null &&
-                            recording.TryPrepareFixedGridLayer(
-                                layer,
-                                layerWorldRect,
-                                out fixedGridPlan);
+                                        recording.TryPrepareFixedGridLayer(
+                                            layer,
+                                            layerWorldRect,
+                                            out fixedGridPlan);
 
                         long queryEndTick;
                         long drawStartTick;
@@ -536,17 +576,21 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                             drawStartTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
                             layerTileCount = recording!.DrawFixedGridLayer(
                                 view,
                                 fixedGridPlan,
                                 vp);
+
                             layerDrawableCount = layerTileCount;
+
                             drawEndTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         }
                         else
                         {
                             List<IDrawable> drawables;
+
                             if (collectDiagnostics)
                             {
                                 drawables = layer.GetDrawablesInWorldRectWithDiagnostics(
@@ -563,6 +607,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                             layerDrawableCount = drawables.Count;
                             layerTileCount = 0;
+
                             if (collectDiagnostics)
                             {
                                 for (int d = 0; d < drawables.Count; d++)
@@ -578,7 +623,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                             drawStartTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
                             target.DrawDrawables(view, drawables, vp);
+
                             drawEndTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         }
@@ -586,9 +633,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         if (collectDiagnostics)
                         {
                             long layerQueryAndSortTicks = queryEndTick - queryStartTick;
+
                             long layerQueryTicks = Math.Max(
                                 0L,
                                 layerQueryAndSortTicks - layerSortTicks);
+
                             long layerDrawTicks = drawEndTick - drawStartTick;
                             queryAndSortTicks += layerQueryAndSortTicks;
                             queryTicks += layerQueryTicks;
@@ -600,8 +649,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             if (telemetryGeneration != 0 && i < Diagnostics.RenderTelemetry.Layers.Length)
                             {
                                 var keys = Diagnostics.RenderTelemetry.Layers[i];
-                                Telemetry!.Record(telemetryGeneration, keys[0], HighResTimer.GetDuration(0, layerQueryTicks) * 1000d);
-                                Telemetry.Record(telemetryGeneration, keys[1], HighResTimer.GetDuration(0, layerDrawTicks) * 1000d);
+
+                                Telemetry!.Record(
+                                    telemetryGeneration,
+                                    keys[0],
+                                    HighResTimer.GetDuration(0, layerQueryTicks) * 1000d);
+
+                                Telemetry.Record(
+                                    telemetryGeneration,
+                                    keys[1],
+                                    HighResTimer.GetDuration(0, layerDrawTicks) * 1000d);
+
                                 Telemetry.Record(telemetryGeneration, keys[2], layerDrawableCount);
                                 Telemetry.Record(telemetryGeneration, keys[3], layerTileCount);
                                 Telemetry.Record(telemetryGeneration, keys[4], layer.TransformedTiles.Count);
@@ -610,17 +668,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                                 Telemetry.Record(telemetryGeneration, keys[7], layer.ZOrder);
                             }
 
-                            layerDiagnostics?.Add(new GpuLayerRenderDiagnostics(
-                                i,
-                                layer.ID,
-                                layer.ZOrder,
-                                layerDrawableCount,
-                                layerTileCount,
-                                layer.TransformedTiles.Count,
-                                layer.TileWidth,
-                                layer.TileHeight,
-                                HighResTimer.GetDuration(0, layerQueryAndSortTicks) * 1000d,
-                                HighResTimer.GetDuration(0, layerDrawTicks) * 1000d));
+                            layerDiagnostics?.Add(
+                                new GpuLayerRenderDiagnostics(
+                                    i,
+                                    layer.ID,
+                                    layer.ZOrder,
+                                    layerDrawableCount,
+                                    layerTileCount,
+                                    layer.TransformedTiles.Count,
+                                    layer.TileWidth,
+                                    layer.TileHeight,
+                                    HighResTimer.GetDuration(0, layerQueryAndSortTicks) * 1000d,
+                                    HighResTimer.GetDuration(0, layerDrawTicks) * 1000d));
                         }
 
                         EndPresentation(layerPresentation, target);
@@ -628,8 +687,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                     // 5) Render view-based DirectDrawings on top.
                     long overlayStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
                     for (int i = 0; i < overlays.Count; i++)
                         overlays[i].Draw(target, overlays[i].GetDrawLocationScreen(view));
+
                     long overlayEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
 
                     if (collectDiagnostics)
@@ -655,23 +716,39 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (collectDiagnostics)
         {
             long diagnosticsEndTick = HighResTimer.GetCurrentTick();
+
             if (telemetryGeneration != 0)
             {
                 if (destination is not RecordingBackbuffer)
-                    Telemetry!.Record(telemetryGeneration, "build.cpu.ms", HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d);
+                    Telemetry!.Record(
+                        telemetryGeneration,
+                        "build.cpu.ms",
+                        HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d);
+
                 Telemetry!.Record(telemetryGeneration, "query.cpu.ms", HighResTimer.GetDuration(0, queryTicks) * 1000d);
                 Telemetry.Record(telemetryGeneration, "sort.cpu.ms", HighResTimer.GetDuration(0, sortTicks) * 1000d);
                 Telemetry.Record(telemetryGeneration, "record.cpu.ms", HighResTimer.GetDuration(0, drawTicks) * 1000d);
-                Telemetry.Record(telemetryGeneration, "overlay.cpu.ms", HighResTimer.GetDuration(0, overlayTicks) * 1000d);
+
+                Telemetry.Record(
+                    telemetryGeneration,
+                    "overlay.cpu.ms",
+                    HighResTimer.GetDuration(0, overlayTicks) * 1000d);
+
                 Telemetry.Record(telemetryGeneration, "visible.drawables", drawableCount);
                 Telemetry.Record(telemetryGeneration, "visible.tiles", tileCount);
-                Telemetry.Record(telemetryGeneration, "layers.omitted", Math.Max(0, Scene.VisibleSceneLayers.Count - Diagnostics.RenderTelemetry.Layers.Length));
+
+                Telemetry.Record(
+                    telemetryGeneration,
+                    "layers.omitted",
+                    Math.Max(0, Scene.VisibleSceneLayers.Count - Diagnostics.RenderTelemetry.Layers.Length));
+
                 if (Scene.VisibleSceneLayers.Count > Diagnostics.RenderTelemetry.Layers.Length)
                     Telemetry.MarkTruncated(telemetryGeneration);
             }
 
             if (!legacyDiagnostics)
                 return;
+
             var diagnostics = new GpuRenderFrameDiagnostics(
                 HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d,
                 HighResTimer.GetDuration(0, queryAndSortTicks) * 1000d,
@@ -684,6 +761,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 QueryMilliseconds = HighResTimer.GetDuration(0, queryTicks) * 1000d,
                 SortMilliseconds = HighResTimer.GetDuration(0, sortTicks) * 1000d
             };
+
             if (destination is RecordingBackbuffer)
                 _recordingDiagnostics = diagnostics;
             else
@@ -730,18 +808,31 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         if (ViewManager.Views.Count == 0)
         {
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Backbuffer.ClearRect(
+                new Rectangle(
+                    0,
+                    0,
+                    Backbuffer.Width,
+                    Backbuffer.Height));
+
             Scene.FullRefreshNeeded = false;
             return;
         }
 
         bool fullViewComposition = ViewManager.Views.Any(view => view.HasPresentationEffect)
-            || Scene.VisibleSceneLayers.Any(layer => layer.WrapHorizontally || layer.WrapVertically);
+                                   || Scene.VisibleSceneLayers.Any(layer =>
+                                       layer.WrapHorizontally || layer.WrapVertically);
 
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Backbuffer.ClearRect(
+                new Rectangle(
+                    0,
+                    0,
+                    Backbuffer.Width,
+                    Backbuffer.Height));
+
             Scene.FullRefreshNeeded = false;
         }
         else
@@ -765,7 +856,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         if (fullViewComposition)
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Backbuffer.ClearRect(
+                new Rectangle(
+                    0,
+                    0,
+                    Backbuffer.Width,
+                    Backbuffer.Height));
 
         // 2) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         foreach (var view in ViewManager.Views)
@@ -776,6 +872,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             {
                 // 2.1) Force-refresh all DirectDrawings that overlay this view
                 var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+
                 foreach (var overlay in overlays)
                 {
                     overlay.ForceRefresh();
@@ -799,6 +896,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         continue;
 
                     var overlap = Rectangle.Intersect(vp, blocker.GetRenderViewportTargetRectPx());
+
                     if (!overlap.IsEmpty)
                         Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
@@ -828,6 +926,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     for (int i = 0; i < sceneLayers.Count; i++)
                     {
                         var layer = sceneLayers[i];
+
                         int layerPresentation = BeginPresentation(
                             GetLayerPresentationBounds(view, layer),
                             layer.EffectOpacity,
@@ -909,12 +1008,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         foreach (var sceneLayer in Scene.VisibleSceneLayers)
         {
             var refreshQueue = sceneLayer.RefreshQueue;
+
             if (!refreshQueue.IsDirty)
                 continue;
 
             foreach (var worldRect in refreshQueue.SnapshotWorldRects())
             {
                 var screenRectF = view.WorldRectToScreenRect(sceneLayer, worldRect);
+
                 var rect = Rectangle.Intersect(
                     screenRectF.ToPixelAlignedRect(),
                     viewportRect);
@@ -1005,6 +1106,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (reveal < 0.9999f)
         {
             RectangleF revealRect = EffectGeometry.GetRevealRect(bounds, direction, reveal);
+
             target.Canvas.ClipRect(
                 revealRect.ToSKRect(),
                 SKClipOperation.Intersect,
@@ -1015,7 +1117,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             using var paint = new SKPaint
             {
-                Color = new SKColor(255, 255, 255, (byte)Math.Round(opacity * 255f))
+                Color = new SKColor(
+                    255,
+                    255,
+                    255,
+                    (byte)Math.Round(opacity * 255f))
             };
 
             target.Canvas.SaveLayer(bounds.ToSKRect(), paint);
@@ -1028,6 +1134,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private void EndPresentation(int saveCount, BackbufferBase? destination = null)
     {
         var target = destination ?? Backbuffer;
+
         while (saveCount-- > 0)
             target.Canvas.Restore();
     }
@@ -1115,8 +1222,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)
     {
         Interlocked.Exchange(ref _presentationInvalidated, 1);
+
         if (float.IsFinite(_deferredRenderScale) && args.NewWidth > 0 && args.NewHeight > 0)
             RequestRenderScale(_deferredRenderScale);
+
         if (!_resolutionEstablished && args.NewWidth > 0 && args.NewHeight > 0)
         {
             _resolutionEstablished = true;
@@ -1157,7 +1266,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         if (!_resolutionEstablished || _disposed)
             return;
+
         var adapter = RenderSurfaceAdapter;
+
         // Zero-size requests are deferred until a valid presentation size exists.
         if (adapter.Width <= 0 || adapter.Height <= 0)
         {
@@ -1166,8 +1277,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         _deferredRenderScale = float.NaN;
-        Backbuffer.RequestResize(PresentationTransform.ScaleDimension(adapter.Width, scale),
-                                 PresentationTransform.ScaleDimension(adapter.Height, scale));
+
+        Backbuffer.RequestResize(
+            PresentationTransform.ScaleDimension(adapter.Width, scale),
+            PresentationTransform.ScaleDimension(adapter.Height, scale));
     }
 
     private void OnBackbufferSizeChanged(int width, int height)
@@ -1177,12 +1290,16 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _logicalWidth = width;
         _logicalHeight = height;
         RenderSurfaceAdapter.SetBackbufferSize(width, height);
+
         foreach (var view in ViewManager.Views)
         {
             var old = view.Viewport.TargetRectPx;
+
             view.Viewport.TargetRectPx = Rectangle.FromLTRB(
-                (int)Math.Round(old.Left * scaleX), (int)Math.Round(old.Top * scaleY),
-                (int)Math.Round(old.Right * scaleX), (int)Math.Round(old.Bottom * scaleY));
+                (int)Math.Round(old.Left * scaleX),
+                (int)Math.Round(old.Top * scaleY),
+                (int)Math.Round(old.Right * scaleX),
+                (int)Math.Round(old.Bottom * scaleY));
         }
 
         Scene.FullRefreshNeeded = true;
@@ -1195,7 +1312,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
 
         var img = Backbuffer.Snapshot();
-        var src = new SKRectI(0, 0, img.Width, img.Height);
+
+        var src = new SKRectI(
+            0,
+            0,
+            img.Width,
+            img.Height);
+
         var dst = RenderSurfaceAdapter.Presentation.DestinationRect;
 
         // Post to UI thread
@@ -1208,11 +1331,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
 
         var dirty = Backbuffer.DirtyRectangle;
+
         if (dirty.IsEmpty)
             return;
 
-        var bounds = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+        var bounds = new Rectangle(
+            0,
+            0,
+            Backbuffer.Width,
+            Backbuffer.Height);
+
         var clamped = Rectangle.Intersect(dirty, bounds);
+
         if (clamped.IsEmpty)
             return;
 
@@ -1220,8 +1350,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() =>
-            RenderSurfaceAdapter!.Present(img, clamped.ToSKRectI(),
-                PresentationTransform.Fit(img.Width, img.Height, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height)
+            RenderSurfaceAdapter!.Present(
+                img,
+                clamped.ToSKRectI(),
+                PresentationTransform.Fit(
+                        img.Width,
+                        img.Height,
+                        RenderSurfaceAdapter.Width,
+                        RenderSurfaceAdapter.Height)
                     .ScreenRectToAdapterRect(clamped).ToSKRect()));
     }
 
@@ -1235,7 +1371,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
 
         if (!target.IsGlThreadRendered)
-            target.AddToBackbufferDirtyRectangle(new Rectangle(0, 0, target.Width, target.Height));
+            target.AddToBackbufferDirtyRectangle(
+                new Rectangle(
+                    0,
+                    0,
+                    target.Width,
+                    target.Height));
 
         if (hasSurfaceHandlers)
             RenderBackbufferPostScene?.Invoke(target.Canvas);

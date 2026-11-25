@@ -22,7 +22,13 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         selection.Validate(_packages, AssetTypes.TilesheetDefinition);
         var resource = selection.Resource;
-        var source = TilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
+
+        var source = TilesheetSource.LoadPacked(
+            resource.Path,
+            resource.EntryName!,
+            selection.Member!,
+            _packages);
+
         try
         {
             Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!);
@@ -70,6 +76,7 @@ public sealed partial class AnimationEditorControl : UserControl
 
     /// <summary>Whether all declared authoring sources loaded without reported errors.</summary>
     public bool SourcesLoadedSuccessfully => _sourceDiagnostics.Count == 0;
+
     private readonly ImageList _sourceFrameImages = new()
     {
         ImageSize = new Size(
@@ -130,6 +137,7 @@ public sealed partial class AnimationEditorControl : UserControl
 
     /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public AnimationDocument Document { get; }
+
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
 
@@ -167,9 +175,11 @@ public sealed partial class AnimationEditorControl : UserControl
         _sourceTree.ImageList = _sourceFrameImages;
         _sourceTree.ImageIndex = -1;
         _sourceTree.SelectedImageIndex = -1;
+
         _sourceTree.ItemHeight = Math.Max(
             _sourceTree.ItemHeight,
             FrameThumbnailSize + 4);
+
         _frames.SmallImageList = _animationFrameImages;
 
         BuildLayout();
@@ -179,6 +189,7 @@ public sealed partial class AnimationEditorControl : UserControl
         WireFrameDragDrop();
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
         _sourceTree.AfterSelect += SourceTreeAfterSelect;
+
         _sourceTree.NodeMouseClick += (_, e) =>
         {
             if (e.Button != MouseButtons.Left ||
@@ -192,6 +203,7 @@ public sealed partial class AnimationEditorControl : UserControl
             ClearAnimationFrameSelection();
             ShowSourceFrame(frame);
         };
+
         _sourceTree.NodeMouseDoubleClick += (_, e) =>
         {
             _sourceTree.SelectedNode = e.Node;
@@ -208,6 +220,7 @@ public sealed partial class AnimationEditorControl : UserControl
         {
             _propertyAdapter.SelectedFrameIndex = _frames.SelectedIndices.Count == 1 ? _frames.SelectedIndices[0] : -1;
             _properties.Refresh();
+
             if (!_syncingPreviewSelection)
                 ShowSelectedAnimationFrameSource();
         };
@@ -243,10 +256,18 @@ public sealed partial class AnimationEditorControl : UserControl
         Document.Changed += DocumentChanged;
 
         var definitionBar = new DefinitionSelectionBar<AnimationDefinition>(
-            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
-            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshSelectedDefinition,
-            "gani", (path, select) => Document.ImportDefinitions(path, select));
+            () => Document.Definitions,
+            () => Document.SelectedDefinition,
+            definition => definition.Key,
+            Document.SelectDefinition,
+            () => Document.AddDefinition(),
+            () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition),
+            Document.RenameDefinition,
+            RefreshSelectedDefinition,
+            "gani",
+            (path, select) => Document.ImportDefinitions(path, select));
+
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -262,6 +283,7 @@ public sealed partial class AnimationEditorControl : UserControl
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         using var transaction = Document.History.BeginTransaction("Add tilesheet sources");
+
         try
         {
             bool changed = false;
@@ -276,7 +298,6 @@ public sealed partial class AnimationEditorControl : UserControl
                 if (changed)
                     RefreshAfterSourceChange();
             }
-
         }
         finally
         {
@@ -291,11 +312,11 @@ public sealed partial class AnimationEditorControl : UserControl
     public void AddTilesheetSource(string path)
     {
         using var transaction = Document.History.BeginTransaction("Add tilesheet sources");
+
         try
         {
             if (AddTilesheetSourceCore(path))
                 RefreshAfterSourceChange();
-
         }
         finally
         {
@@ -309,19 +330,22 @@ public sealed partial class AnimationEditorControl : UserControl
         string? expectedTilesheet = null)
     {
         path = Path.GetFullPath(path);
+
         if (expectedTilesheet is null)
         {
             bool changed = false;
+
             foreach (var definition in TilesheetDefinitionSerializer.LoadAll(path))
                 changed |= AddTilesheetSourceCore(path, persistReference, definition.Name);
+
             return changed;
         }
 
         if (_sources.Any(source => source.Definition.Name == expectedTilesheet &&
-                string.Equals(
-                    source.FilePath,
-                    path,
-                    StringComparison.OrdinalIgnoreCase)))
+                                   string.Equals(
+                                       source.FilePath,
+                                       path,
+                                       StringComparison.OrdinalIgnoreCase)))
         {
             return false;
         }
@@ -335,6 +359,7 @@ public sealed partial class AnimationEditorControl : UserControl
                 StringComparison.Ordinal))
         {
             loaded.Dispose();
+
             throw new InvalidDataException(
                 $"GANI expects tilesheet '{expectedTilesheet}', but '{path}' defines '{loaded.Definition.Name}'.");
         }
@@ -348,6 +373,7 @@ public sealed partial class AnimationEditorControl : UserControl
         if (duplicateName is not null)
         {
             loaded.Dispose();
+
             throw new InvalidOperationException(
                 $"Tilesheet name '{duplicateName.Definition.Name}' is already loaded from '{duplicateName.FilePath}'. " +
                 "GANI frame references resolve by logical tilesheet name, so two sources with the same name would be ambiguous.");
@@ -389,8 +415,10 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         _packages.Clear();
         _preview.ClearSourceFrame();
+
         foreach (var source in _sources)
             source.Dispose();
+
         _sources.Clear();
         LoadDefinitionTilesheetSources(recoverLegacySources: false);
         RefreshView();
@@ -402,8 +430,8 @@ public sealed partial class AnimationEditorControl : UserControl
 
         var explicitTilesheets = new HashSet<string>(
             (Definition.TilesheetSources ?? [])
-                .Where(source => !string.IsNullOrWhiteSpace(source.Tilesheet))
-                .Select(source => source.Tilesheet),
+            .Where(source => !string.IsNullOrWhiteSpace(source.Tilesheet))
+            .Select(source => source.Tilesheet),
             StringComparer.Ordinal);
 
         foreach (var sourceReference in (Definition.TilesheetSources ?? []).ToList())
@@ -417,8 +445,12 @@ public sealed partial class AnimationEditorControl : UserControl
                 case AnimationTilesheetSourceKind.PackedDefinitionFile:
                     try
                     {
-                        _sources.Add(TilesheetSource.LoadPacked(Document.ResolveReferencePath(sourceReference.AssetsFilePath!),
-                            sourceReference.AssetEntryName!, sourceReference.Tilesheet, _packages));
+                        _sources.Add(
+                            TilesheetSource.LoadPacked(
+                                Document.ResolveReferencePath(sourceReference.AssetsFilePath!),
+                                sourceReference.AssetEntryName!,
+                                sourceReference.Tilesheet,
+                                _packages));
                     }
                     catch (Exception ex)
                     {
@@ -462,6 +494,7 @@ public sealed partial class AnimationEditorControl : UserControl
             {
                 _sourceDiagnostics.Add(
                     $"WARNING: Tilesheet '{sourceReference.Tilesheet}' references missing GTS file '{sourceReference.GtsPath}'.");
+
                 return;
             }
 
@@ -472,11 +505,11 @@ public sealed partial class AnimationEditorControl : UserControl
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
             _sourceDiagnostics.Add(
                 $"WARNING: Could not load GTS source for tilesheet '{sourceReference.Tilesheet}': {ex.Message}");
@@ -490,13 +523,13 @@ public sealed partial class AnimationEditorControl : UserControl
         try
         {
             foreach (var path in Directory.EnumerateFiles(
-                         Document.BaseDirectory,
-                         "*",
-                         SearchOption.TopDirectoryOnly)
-                     .Where(path =>
-                         Path.GetExtension(path).Equals(
-                             ".gts",
-                             StringComparison.OrdinalIgnoreCase)))
+                             Document.BaseDirectory,
+                             "*",
+                             SearchOption.TopDirectoryOnly)
+                         .Where(path =>
+                             Path.GetExtension(path).Equals(
+                                 ".gts",
+                                 StringComparison.OrdinalIgnoreCase)))
             {
                 try
                 {
@@ -513,10 +546,10 @@ public sealed partial class AnimationEditorControl : UserControl
                 }
                 catch (Exception ex) when (
                     ex is IOException or
-                    InvalidDataException or
-                    ArgumentException or
-                    UnauthorizedAccessException or
-                    NotSupportedException)
+                        InvalidDataException or
+                        ArgumentException or
+                        UnauthorizedAccessException or
+                        NotSupportedException)
                 {
                     // A neighboring unrelated GTS should not prevent opening
                     // a legacy GANI document.
@@ -525,10 +558,11 @@ public sealed partial class AnimationEditorControl : UserControl
         }
         catch (Exception ex) when (
             ex is IOException or
-            UnauthorizedAccessException)
+                UnauthorizedAccessException)
         {
             _sourceDiagnostics.Add(
                 $"WARNING: Could not inspect '{Document.BaseDirectory}' for legacy GTS dependencies: {ex.Message}");
+
             return;
         }
 
@@ -539,12 +573,14 @@ public sealed partial class AnimationEditorControl : UserControl
         {
             _sourceDiagnostics.Add(
                 $"WARNING: Legacy GANI references tilesheet '{tilesheet}', but multiple matching GTS files exist beside the GANI. Add the intended source explicitly.");
+
             return;
         }
 
         try
         {
             string path = matches[0];
+
             if (AddTilesheetSourceCore(
                     path,
                     persistReference: false,
@@ -560,11 +596,11 @@ public sealed partial class AnimationEditorControl : UserControl
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
             _sourceDiagnostics.Add(
                 $"WARNING: Could not recover legacy GTS source for tilesheet '{tilesheet}': {ex.Message}");
@@ -577,8 +613,10 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         var errors = Document.Validate().ToList();
         var lines = errors.Select(error => "ERROR: " + error).ToList();
+
         if (_frameDropError is not null)
             lines.Add("WARNING: Frame drop rejected. " + _frameDropError);
+
         lines.AddRange(_sourceDiagnostics);
 
         for (int i = 0; i < Definition.Frames.Count; i++)
@@ -590,6 +628,7 @@ public sealed partial class AnimationEditorControl : UserControl
             {
                 lines.Add(
                     $"WARNING: Frame {i} references tilesheet '{frame.Tilesheet}', but no matching GTS source is loaded.");
+
                 continue;
             }
 
@@ -661,9 +700,25 @@ public sealed partial class AnimationEditorControl : UserControl
         _workspace = new EditorDockWorkspace("gani");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var sources = _workspace.AddPane("gts-sources", "GTS frame sources", _sourceTree, BuildSourceToolbar());
-        var preview = _workspace.AddPane("preview", "Preview", _preview, BuildPreviewToolbar());
-        var frames = _workspace.AddPane("frames", "Animation frames", _frames, BuildSequenceToolbar());
+
+        var sources = _workspace.AddPane(
+            "gts-sources",
+            "GTS frame sources",
+            _sourceTree,
+            BuildSourceToolbar());
+
+        var preview = _workspace.AddPane(
+            "preview",
+            "Preview",
+            _preview,
+            BuildPreviewToolbar());
+
+        var frames = _workspace.AddPane(
+            "frames",
+            "Animation frames",
+            _frames,
+            BuildSequenceToolbar());
+
         var properties = _workspace.AddPane("properties", "Animation properties", _properties);
         var validation = _workspace.AddPane("validation", "Validation", _validation);
         _workspace.Place(preview, () => preview.Show(dock, DockState.Document));
@@ -684,8 +739,17 @@ public sealed partial class AnimationEditorControl : UserControl
 
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
-        bar.Items.Add("Add from GAF…", null, (_, _) => PackedResourcePicker.PickAndApply(
-            this, _packages, Document.BaseDirectory, AssetTypes.TilesheetDefinition, AddPackedTilesheetSource));
+
+        bar.Items.Add(
+            "Add from GAF…",
+            null,
+            (_, _) => PackedResourcePicker.PickAndApply(
+                this,
+                _packages,
+                Document.BaseDirectory,
+                AssetTypes.TilesheetDefinition,
+                AddPackedTilesheetSource));
+
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
         return bar;
     }
@@ -716,26 +780,35 @@ public sealed partial class AnimationEditorControl : UserControl
         _playButton.Click += (_, _) =>
         {
             _preview.TogglePlay();
+
             _playButton.Text = _preview.IsPlaying
                 ? "Pause"
                 : "Play";
         };
 
         bar.Items.Add(_playButton);
-        bar.Items.Add("Restart", null, (_, _) =>
-        {
-            _preview.Restart();
-            _preview.Play();
-            _playButton.Text = _preview.IsPlaying
-                ? "Pause"
-                : "Play";
-        });
 
-        bar.Items.Add("Step", null, (_, _) =>
-        {
-            _preview.Step();
-            _playButton.Text = "Play";
-        });
+        bar.Items.Add(
+            "Restart",
+            null,
+            (_, _) =>
+            {
+                _preview.Restart();
+                _preview.Play();
+
+                _playButton.Text = _preview.IsPlaying
+                    ? "Pause"
+                    : "Play";
+            });
+
+        bar.Items.Add(
+            "Step",
+            null,
+            (_, _) =>
+            {
+                _preview.Step();
+                _playButton.Text = "Play";
+            });
 
         var zoom = new ToolStripComboBox
         {
@@ -748,6 +821,7 @@ public sealed partial class AnimationEditorControl : UserControl
 
         zoom.Items.AddRange(["Fit", "1x", "2x", "4x"]);
         zoom.SelectedIndex = 0;
+
         zoom.SelectedIndexChanged += (_, _) =>
         {
             _preview.SetZoom(
@@ -788,11 +862,11 @@ public sealed partial class AnimationEditorControl : UserControl
         }
         catch (Exception ex) when (
             ex is IOException or
-            InvalidDataException or
-            ArgumentException or
-            UnauthorizedAccessException or
-            InvalidOperationException or
-            NotSupportedException)
+                InvalidDataException or
+                ArgumentException or
+                UnauthorizedAccessException or
+                InvalidOperationException or
+                NotSupportedException)
         {
             ShowError(ex);
         }
@@ -801,6 +875,7 @@ public sealed partial class AnimationEditorControl : UserControl
     private void RemoveSelectedSource()
     {
         var node = _sourceTree.SelectedNode;
+
         if (node is null)
             return;
 
@@ -875,6 +950,7 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         if (ReferenceEquals(Document.SelectedDefinition, definition))
             return;
+
         Document.SelectDefinition(definition);
         RefreshSelectedDefinition();
     }
@@ -883,6 +959,7 @@ public sealed partial class AnimationEditorControl : UserControl
     {
         foreach (var source in _sources)
             source.Dispose();
+
         _sources.Clear();
         LoadDefinitionTilesheetSources();
         _historyDefinition = Definition;
@@ -906,6 +983,7 @@ public sealed partial class AnimationEditorControl : UserControl
             : -1;
 
         _frames.BeginUpdate();
+
         try
         {
             _frames.Items.Clear();
@@ -914,12 +992,14 @@ public sealed partial class AnimationEditorControl : UserControl
             for (int i = 0; i < Definition.Frames.Count; i++)
             {
                 var frame = Definition.Frames[i];
+
                 var item = new ListViewItem(string.Empty)
                 {
                     Tag = frame
                 };
 
                 var preview = ResolveFramePreview(frame);
+
                 if (preview is { } resolved)
                 {
                     item.ImageIndex = AddFrameThumbnail(
@@ -933,7 +1013,10 @@ public sealed partial class AnimationEditorControl : UserControl
                 item.SubItems.Add(frame.RegionName);
                 item.SubItems.Add(frame.XTile.ToString());
                 item.SubItems.Add(frame.YTile.ToString());
-                item.SubItems.Add(frame.DurationSeconds?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "Default");
+
+                item.SubItems.Add(
+                    frame.DurationSeconds?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "Default");
+
                 _frames.Items.Add(item);
             }
         }
@@ -949,6 +1032,7 @@ public sealed partial class AnimationEditorControl : UserControl
     private void RefreshSourceTree()
     {
         _sourceTree.BeginUpdate();
+
         try
         {
             _sourceTree.Nodes.Clear();
@@ -1012,6 +1096,7 @@ public sealed partial class AnimationEditorControl : UserControl
             return;
 
         var item = _frames.Items[_frames.SelectedIndices[0]];
+
         if (item.Tag is not AnimationFrameDefinition frame)
             return;
 
@@ -1019,12 +1104,15 @@ public sealed partial class AnimationEditorControl : UserControl
         _playButton.Text = "Play";
 
         var sourceNode = FindSourceFrameNode(frame);
+
         if (sourceNode?.Tag is not FrameTag sourceFrame)
         {
             _sourceTree.SelectedNode = null;
+
             _preview.ShowSourceFrame(
                 ResolveFramePreview(frame),
                 $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})");
+
             return;
         }
 
@@ -1032,6 +1120,7 @@ public sealed partial class AnimationEditorControl : UserControl
             !ReferenceEquals(_sourceTree.SelectedNode, sourceNode);
 
         _syncingSourceTreeSelection = true;
+
         try
         {
             _sourceTree.SelectedNode = sourceNode;
@@ -1051,6 +1140,7 @@ public sealed partial class AnimationEditorControl : UserControl
         AnimationFrameDefinition frame)
     {
         var source = FindSource(frame.Tilesheet);
+
         if (source is null)
             return null;
 
@@ -1133,6 +1223,7 @@ public sealed partial class AnimationEditorControl : UserControl
         TreeViewCancelEventArgs e)
     {
         var node = e.Node;
+
         if (node is null ||
             node.Nodes.Count != 1 ||
             node.Nodes[0].Tag is not null)
@@ -1207,6 +1298,7 @@ public sealed partial class AnimationEditorControl : UserControl
             };
 
             int imageIndex = AddSourceFrameThumbnail(frameTag);
+
             if (imageIndex >= 0)
             {
                 frameNode.ImageIndex = imageIndex;
@@ -1261,6 +1353,7 @@ public sealed partial class AnimationEditorControl : UserControl
             int width = Math.Max(
                 1,
                 (int)Math.Round(sourceBounds.Width * scale));
+
             int height = Math.Max(
                 1,
                 (int)Math.Round(sourceBounds.Height * scale));
@@ -1288,6 +1381,7 @@ public sealed partial class AnimationEditorControl : UserControl
         AnimationFrameDefinition frame)
     {
         var source = FindSource(frame.Tilesheet);
+
         if (source?.Image is null)
             return null;
 
@@ -1321,6 +1415,7 @@ public sealed partial class AnimationEditorControl : UserControl
             return;
 
         _refreshPending = true;
+
         BeginInvoke(() =>
         {
             _refreshPending = false;
@@ -1336,6 +1431,7 @@ public sealed partial class AnimationEditorControl : UserControl
                 }
 
                 var sources = Definition.TilesheetSources.Cast<object>().ToArray();
+
                 if (!ReferenceEquals(_historyDefinition, Definition) || !_historySources.SequenceEqual(sources))
                 {
                     _preview.ClearSourceFrame();
@@ -1345,12 +1441,15 @@ public sealed partial class AnimationEditorControl : UserControl
                 }
 
                 var frames = Definition.Frames.ToArray();
+
                 if (!_historyFrames.SequenceEqual(frames))
                     _preview.ClearSourceFrame();
+
                 _historyFrames = frames;
                 _properties.Refresh();
                 RefreshFrameList();
                 _preview.Configure(Definition, ResolveFramePreview);
+
                 if (Definition.Frames.Count == 0)
                 {
                     _preview.Pause();
@@ -1387,9 +1486,15 @@ public sealed partial class AnimationEditorControl : UserControl
 
         if (disposing && _ownsPackages)
             _packages.Dispose();
+
         base.Dispose(disposing);
     }
+
     /// <inheritdoc/>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(
+            this,
+            keyData,
+            Document.History,
+            CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
 }

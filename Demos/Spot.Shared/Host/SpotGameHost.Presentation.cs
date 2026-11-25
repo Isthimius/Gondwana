@@ -25,7 +25,11 @@ internal sealed partial class SpotGameRuntime
                 tilesheet.SkBitmap,
                 SurfaceHost,
                 ActiveScene[0],
-                new Rectangle(0, 0, 769, 769));
+                new Rectangle(
+                    0,
+                    0,
+                    769,
+                    769));
 
             directImage.ZOrder = 100;
             directImage.SetScaleMode(DirectImage.ScaleMode.Fit);
@@ -34,7 +38,11 @@ internal sealed partial class SpotGameRuntime
         var particleSurface = new ParticleSurface(
             SurfaceHost,
             ActiveScene[0],
-            new Rectangle(0, 0, 769, 769));
+            new Rectangle(
+                0,
+                0,
+                769,
+                769));
 
         particleSurface.CullingMarginX = 1300f;
         particleSurface.ZOrder = 50;
@@ -43,6 +51,7 @@ internal sealed partial class SpotGameRuntime
         if (MusicEnabled && _music is not null)
         {
             _music.Volume = 0.2f;
+
             if (!_music.IsPlaying)
                 _music.Play();
         }

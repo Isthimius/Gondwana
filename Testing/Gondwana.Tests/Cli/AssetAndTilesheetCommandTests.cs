@@ -18,15 +18,19 @@ namespace Gondwana.Tests.Cli;
 public sealed class AssetAndTilesheetCommandTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "GondwanaContent_" + Guid.NewGuid().ToString("N"));
+
     /// <summary>
     /// Initializes a new instance of the <c>AssetAndTilesheetCommandTests</c> class.
     /// </summary>
     public AssetAndTilesheetCommandTests() => Directory.CreateDirectory(root);
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(root, recursive: true);
+
     private static int Run(params string[] args)
     {
         var app = new CommandApp();
+
         app.Configure(c =>
         {
             c.AddCommand<AssetsPackCommand>("pack");
@@ -36,6 +40,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
             c.AddCommand<TilesheetValidateCommand>("gts-validate");
             c.AddCommand<TilesheetInfoCommand>("gts-info");
         });
+
         return app.Run(args);
     }
 
@@ -43,6 +48,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
     {
         var file = Path.Combine(root, Guid.NewGuid() + ".assets");
         using var zip = ZipFile.Open(file, ZipArchiveMode.Create);
+
         foreach (var name in entries)
         {
             using var writer = new StreamWriter(zip.CreateEntry(name).Open());
@@ -103,7 +109,15 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         File.WriteAllText(target, "keep");
         Assert.Equal(1, Run("unpack", file, output));
         Assert.Equal("keep", File.ReadAllText(target));
-        Assert.Equal(0, Run("unpack", file, output, "--overwrite"));
+
+        Assert.Equal(
+            0,
+            Run(
+                "unpack",
+                file,
+                output,
+                "--overwrite"));
+
         Assert.Equal("content", File.ReadAllText(target));
     }
 
@@ -130,9 +144,26 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         var bundle = Path.Combine(root, "packed.assets");
         Assert.Equal(0, Run("pack", source, bundle));
         Assert.Equal(0, Run("validate", bundle));
-        Assert.Equal(0, Run("pack", source, bundle, "--password", "test-only", "--encrypt"));
+
+        Assert.Equal(
+            0,
+            Run(
+                "pack",
+                source,
+                bundle,
+                "--password",
+                "test-only",
+                "--encrypt"));
+
         Assert.Equal(1, Run("validate", bundle));
-        Assert.Equal(0, Run("validate", bundle, "--password", "test-only"));
+
+        Assert.Equal(
+            0,
+            Run(
+                "validate",
+                bundle,
+                "--password",
+                "test-only"));
     }
 
     private TilesheetDefinition Definition()
@@ -140,13 +171,26 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         using var bitmap = new SKBitmap(32, 32);
         using var image = SKImage.FromBitmap(bitmap);
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+
         using (var output = File.Create(Path.Combine(root, "image.png")))
             data.SaveTo(output);
+
         return new TilesheetDefinition
         {
             Name = "fixture",
             Image = new() { FilePath = "image.png" },
-            Regions = [new() { Name = "main", Area = new Rectangle(0, 0, 32, 32), TileSize = new Size(16, 16), Frames = [new() { XTile = 1, YTile = 1 }] }]
+            Regions =
+            [
+                new()
+                {
+                    Name = "main", Area = new Rectangle(
+                        0,
+                        0,
+                        32,
+                        32),
+                    TileSize = new Size(16, 16), Frames = [new() { XTile = 1, YTile = 1 }]
+                }
+            ]
         };
     }
 
@@ -177,9 +221,25 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
     {
         var definition = Definition();
         var region = definition.Regions[0];
-        region.Area = new Rectangle(16, 0, 32, 32);
-        region.Overhang = new Spacing(-1, 0, 0, 0);
-        region.CollisionAdjust = new CollisionAdjust(0, 0, 17, 0);
+
+        region.Area = new Rectangle(
+            16,
+            0,
+            32,
+            32);
+
+        region.Overhang = new Spacing(
+            -1,
+            0,
+            0,
+            0);
+
+        region.CollisionAdjust = new CollisionAdjust(
+            0,
+            0,
+            17,
+            0);
+
         region.Frames.Add(new() { XTile = 1, YTile = 1 });
         region.Frames.Add(new() { XTile = 3, YTile = 2 });
         var errors = TilesheetDefinitionValidator.Validate(definition, 32, 32);
@@ -206,9 +266,25 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
     {
         var definition = Definition();
         var region = definition.Regions[0];
-        region.CollisionAdjust = new CollisionAdjust(-2, -2, -2, -2);
-        region.TilePadding = new Spacing(1, 1, 1, 1);
-        region.RegionMargin = new Spacing(1, 1, 1, 1);
+
+        region.CollisionAdjust = new CollisionAdjust(
+            -2,
+            -2,
+            -2,
+            -2);
+
+        region.TilePadding = new Spacing(
+            1,
+            1,
+            1,
+            1);
+
+        region.RegionMargin = new Spacing(
+            1,
+            1,
+            1,
+            1);
+
         region.Frames.Clear();
         Assert.Equal((1L, 1L), TilesheetDefinitionValidator.GridSize(region));
         Assert.Empty(TilesheetDefinitionValidator.Validate(definition, 32, 32));
@@ -223,6 +299,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         var definition = Definition();
         definition.Image = new() { AssetEntryName = "image.png" };
         var file = Path.Combine(root, "packed.assets");
+
         using (var bundle = AssetsFile.LoadOrCreate(file))
         {
             bundle.Add(AssetTypes.Image, Path.Combine(root, "image.png"), "image.png");
@@ -249,7 +326,12 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
     {
         var definition = Definition();
         var path = Path.Combine(root, "untrusted.gts");
-        foreach (var image in new[] { new TilesheetImageDefinition { FilePath = reference }, new TilesheetImageDefinition { AssetsFilePath = reference, AssetEntryName = "image.png" } })
+
+        foreach (var image in new[]
+                 {
+                     new TilesheetImageDefinition { FilePath = reference },
+                     new TilesheetImageDefinition { AssetsFilePath = reference, AssetEntryName = "image.png" }
+                 })
         {
             definition.Image = image;
             TilesheetDefinitionSerializer.Save(path, definition);
@@ -257,6 +339,7 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
             Assert.Null(result.Width);
             Assert.Contains(result.Errors, e => e.Contains("Unsafe asset path"));
             var packed = Path.Combine(root, "untrusted.assets");
+
             using (var bundle = AssetsFile.LoadOrCreate(packed))
             {
                 bundle.Add(AssetTypes.TilesheetDefinition, path, "untrusted.gts");
@@ -274,9 +357,11 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
     public void Inspection_SkipsPayloadIntegrityPass_WhileValidationAndExtractionEnforceIt()
     {
         var path = Path.Combine(root, "bad-crc.assets");
+
         using (var zip = ZipFile.Open(path, ZipArchiveMode.Create))
         using (var writer = new StreamWriter(zip.CreateEntry("Misc_data.txt", CompressionLevel.NoCompression).Open()))
             writer.Write("original payload");
+
         var bytes = File.ReadAllBytes(path);
         var offset = bytes.AsSpan().IndexOf(System.Text.Encoding.UTF8.GetBytes("original payload"));
         Assert.True(offset >= 0);

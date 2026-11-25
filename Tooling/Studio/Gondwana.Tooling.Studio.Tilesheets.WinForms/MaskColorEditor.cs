@@ -36,7 +36,12 @@ internal sealed class MaskColorEditor : UITypeEditor
         using var brush = new SolidBrush(Color.FromArgb(color.Red, color.Green, color.Blue));
 
         e.Graphics.FillRectangle(brush, e.Bounds);
-        e.Graphics.DrawRectangle(Pens.Black, e.Bounds.Left, e.Bounds.Top,
-            Math.Max(0, e.Bounds.Width - 1), Math.Max(0, e.Bounds.Height - 1));
+
+        e.Graphics.DrawRectangle(
+            Pens.Black,
+            e.Bounds.Left,
+            e.Bounds.Top,
+            Math.Max(0, e.Bounds.Width - 1),
+            Math.Max(0, e.Bounds.Height - 1));
     }
 }
