@@ -343,6 +343,8 @@ Read-only mirrors are maintained for availability and discoverability:
 
 Gondwana is available under the [MIT License](LICENSE).
 
+See [Third-Party Notices](THIRD-PARTY-NOTICES.md) for third-party library, artwork, font and audio credits and their respective license information.
+
 **Third-party libraries**  
 Gondwana uses **[Skia](https://skia.org/)** (© Google), licensed under the [BSD 3-Clause License](https://opensource.org/license/bsd-3-clause), through **[SkiaSharp](https://github.com/mono/SkiaSharp)** (© Microsoft and contributors), licensed under the [MIT License](https://opensource.org/license/mit).
 
