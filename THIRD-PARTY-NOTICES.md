@@ -143,8 +143,8 @@ terms. Verify those terms separately.
 - Asset: [TimGM6mb.sf2](Gondwana.Audio.Midi/TimGM6mb.sf2), embedded by Gondwana.Audio.Midi.
 - Upstream project/author identified by the [Debian package record](https://packages.debian.org/source/stable/timgm6mb-soundfont):
   Tim Brechbill.
-- A [published copy of the SoundFont copyright and licensing record](https://github.com/arbruijn/TimGM6mb)
-  identifies Tim Brechbill (2004), David Bolton (2010) and GPL-2 terms.
+- A [published copy of the SoundFont copyright and licensing record](https://github.com/arbruijn/TimGM6mb/blob/7a5b35d47baf5bae91ab55520b6838ff5bd16d6e/COPYING.txt)
+  identifies copyright 2004 Tim Brechbill and GNU General Public License version 2 (GPL-2.0-only).
 
 The repository currently lacks a SoundFont-specific license notice. Verify
 that the embedded binary matches the applicable upstream release, retain its
