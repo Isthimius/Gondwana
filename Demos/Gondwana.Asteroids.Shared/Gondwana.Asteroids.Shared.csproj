@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Gondwana.Demos.Asteroids</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    <EmbeddedResource Include="Fonts/ArchitectsDaughter-Regular.ttf" LogicalName="Gondwana.Demos.Asteroids.Fonts.ArchitectsDaughter-Regular.ttf" />
+    <EmbeddedResource Include="Fonts/OFL.txt" LogicalName="Gondwana.Demos.Asteroids.Fonts.OFL.txt" />
+  </ItemGroup>
+</Project>
