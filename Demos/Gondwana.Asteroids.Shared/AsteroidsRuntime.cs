@@ -128,6 +128,7 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
     {
         float turn = (_pressed.Contains("right") || _pressed.Contains("d") ? 1f : 0f)
             - (_pressed.Contains("left") || _pressed.Contains("a") ? 1f : 0f);
+
         double remaining = deltaSeconds;
 
         while (remaining > 0d)

@@ -22,7 +22,7 @@ public sealed class EngineInitializationTests
             engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.Configuration.TargetFPS = 0;
             engine.Configuration.MaxTimerDrivenSimulationSteps = 3;
-            engine.Configuration.TimerDrivenSimulationRate = 60d;
+            engine.Configuration.TimerDrivenSimulationRate = 60;
             var deltas = new List<double>();
             engine.SimulationUpdating += deltas.Add;
             engine.EngineDispatcher.BindToCurrentThread();

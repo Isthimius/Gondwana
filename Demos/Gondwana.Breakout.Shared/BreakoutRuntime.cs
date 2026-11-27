@@ -253,7 +253,6 @@ internal sealed class BreakoutRuntime
 
     private void Update(double deltaSeconds)
     {
-
         float axis = (_pressed.Contains("right") || _pressed.Contains("d") ? 1f : 0f)
                      - (_pressed.Contains("left") || _pressed.Contains("a") ? 1f : 0f);
 

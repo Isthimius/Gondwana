@@ -228,11 +228,9 @@ The current order is:
 ```text
 Gamepad connection/state refresh when due
     ↓
-Plugin OnPreCycle callbacks
-    ↓
 SimulationUpdating(deltaSeconds) gameplay callback
     ↓
-Plugin pre-cycle hooks
+Plugin OnPreCycle callbacks
     ↓
 BeforeBackgroundTasksExecute game callback
     ↓
