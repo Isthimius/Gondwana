@@ -33,12 +33,19 @@ public sealed class DirectDrawingBoundsTests : IDisposable
     [InlineData(true)]
     public void ViewDrawingsRetainBoundsAndRenderWithinGrowingViewport(bool gpu)
     {
+        if (gpu)
+            VerifyGrowingViewport<GpuBackbuffer>();
+        else
+            VerifyGrowingViewport<BitmapBackbuffer>();
+    }
+
+    private static void VerifyGrowingViewport<TBackbuffer>()
+        where TBackbuffer : BackbufferBase
+    {
         var adapter = new ViewportScalingTests.Adapter(64, 64);
-        using var host = gpu
-            ? (RenderSurfaceHostBase)new RenderSurfaceHost<GpuBackbuffer>(adapter)
-            : new RenderSurfaceHost<BitmapBackbuffer>(adapter);
-        using var buffer = host.Backbuffer;
         using var scene = new Scene();
+        using var host = new RenderSurfaceHost<TBackbuffer>(adapter);
+        using var buffer = host.Backbuffer;
         host.Bind(scene, false);
         buffer.ClearColor = SKColors.Black;
         var view = Assert.Single(host.ViewManager.Views);
