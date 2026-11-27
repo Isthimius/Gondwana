@@ -160,6 +160,10 @@ Audio uses the common `Engine.Managers.AudioResources` API with a platform backe
 - Blazor `Program.cs` imports the audio module and calls `Engine.Instance.UseBrowserAudio()`. Load URI assets with `LoadFromUri`, placing files under `wwwroot/assets`, and start playback from a user gesture handler. Browser autoplay policy and codec support apply.
 - Cross-platform Avalonia (`net10.0`) has no default desktop audio backend. Configure a compatible backend before loading audio. `gondwana add audio` and `gondwana add midi` explain the limitation without retargeting the project. NAudio and the current MIDI implementation require Windows targets.
 
+## Continuous gameplay updates
+
+All three templates include an opt-in example in `OnEngineInitialized` and matching cleanup in `UnhookEvents`. Subscribe to `Engine.SimulationUpdating` for time-based gameplay; its `double deltaSeconds` argument is elapsed simulation time in seconds (fixed-step in timer-driven browser mode). Do not measure your own wall-clock delta for each simulation callback. Input events and the existing background and frame events remain available for their respective purposes.
+
 ## Documentation
 
 -   **[Source Code](https://github.com/isthimius/Gondwana)**
@@ -189,7 +193,3 @@ Audio uses the common `Engine.Managers.AudioResources` API with a platform backe
 ## License
 
 MIT
-
-### Continuous gameplay updates
-
-All three templates include an opt-in example in `OnEngineInitialized` and matching cleanup in `UnhookEvents`. Subscribe to `Engine.SimulationUpdating` for time-based gameplay; its `double deltaSeconds` argument is elapsed simulation time in seconds (fixed-step in timer-driven browser mode). Do not measure your own wall-clock delta for each simulation callback. Input events and the existing background and frame events remain available for their respective purposes.
