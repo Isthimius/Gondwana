@@ -142,26 +142,55 @@ internal sealed class AdventureDrawing : DirectDrawingBase
         }
     }
 
+    // Eight-column, twenty-row silhouette traced from the supplied Atari-style
+    // reference. Empty cells remain transparent, including the hollow body.
+    private static readonly string[] DragonPixels =
+    [
+        ".....##.",
+        "....####",
+        "####..##",
+        "#######.",
+        "....###.",
+        ".....#..",
+        ".....#..",
+        "...####.",
+        "..######",
+        ".#######",
+        "###...##",
+        "##....##",
+        "##....##",
+        "##...###",
+        "########",
+        "..####..",
+        "....#...",
+        "#...####",
+        "##.....#",
+        ".#######"
+    ];
+
     private static void DrawDragon(SKCanvas canvas, SKPaint paint, AdventureGame.Dragon dragon)
     {
-        float x = dragon.Position.X;
-        float y = dragon.Position.Y;
+        const int pixelSize = 4;
+        const int halfWidth = 8 * pixelSize / 2;
+        const int halfHeight = 20 * pixelSize / 2;
         var color = new SKColor(dragon.Color);
+        canvas.Save();
+        canvas.Translate(MathF.Round(dragon.Position.X), MathF.Round(dragon.Position.Y));
 
         if (!dragon.Alive)
+            canvas.RotateDegrees(90);
+
+        for (int row = 0; row < DragonPixels.Length; row++)
         {
-            Fill(canvas, paint, color, x - 24, y - 4, 48, 12);
-            return;
+            for (int column = 0; column < DragonPixels[row].Length; column++)
+            {
+                if (DragonPixels[row][column] == '#')
+                    Fill(canvas, paint, color, column * pixelSize - halfWidth, row * pixelSize - halfHeight,
+                        pixelSize, pixelSize);
+            }
         }
 
-        Fill(canvas, paint, color, x - 19, y - 10, 38, 28);
-        Fill(canvas, paint, color, x + 8, y - 39, 11, 38);
-        Fill(canvas, paint, color, x + 6, y - 42, 27, 14);
-        Fill(canvas, paint, color, x - 33, y - 22, 17, 16);
-        Fill(canvas, paint, color, x - 14, y + 18, 8, 16);
-        Fill(canvas, paint, color, x + 7, y + 18, 8, 16);
-        Fill(canvas, paint, SKColors.Black, x + 19, y - 39, 5, 5);
-        Fill(canvas, paint, SKColors.Black, x + 24, y - 27, 11, 5);
+        canvas.Restore();
     }
 
     private static void Fill(SKCanvas canvas, SKPaint paint, SKColor color, float x, float y, float w, float h)
