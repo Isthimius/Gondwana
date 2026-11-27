@@ -105,6 +105,7 @@ jobs:
       demo_spot: ${{ steps.filter.outputs.demo_spot }}
       demo_platformer: ${{ steps.filter.outputs.demo_platformer }}
       demo_slider: ${{ steps.filter.outputs.demo_slider }}
+      demo_asteroids: ${{ steps.filter.outputs.demo_asteroids }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -276,6 +277,14 @@ jobs:
           needs.changes.outputs.demo_slider == 'true'
         run: dotnet test Testing/Slider.Tests/Slider.Tests.csproj --configuration Release --nologo
 
+      - name: Asteroids demo unit tests
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag' ||
+          needs.changes.outputs.demo_asteroids == 'true'
+        run: dotnet test Testing/Asteroids.Tests/Asteroids.Tests.csproj --configuration Release --nologo
+
       # Demo-specific browser publish/asset checks belong with the demo suites,
       # not the general Blazor NuGet consumer validation. Keep expensive WASM
       # publishes nightly/manual/release-only; path-selected PRs run unit tests.
@@ -292,6 +301,13 @@ jobs:
           github.event_name == 'workflow_dispatch' ||
           github.ref_type == 'tag'
         run: dotnet publish Demos/Slider.Blazor/Slider.Blazor.csproj --configuration Release --nologo -o ${{ runner.temp }}/slider-blazor-publish
+
+      - name: Publish Asteroids.Blazor WebAssembly demo
+        if: >-
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' ||
+          github.ref_type == 'tag'
+        run: dotnet publish Demos/Gondwana.Asteroids.Blazor/Gondwana.Asteroids.Blazor.csproj --configuration Release --nologo -o ${{ runner.temp }}/asteroids-blazor-publish
 
       - name: Publish Spot.Blazor and validate startup icon
         if: >-
