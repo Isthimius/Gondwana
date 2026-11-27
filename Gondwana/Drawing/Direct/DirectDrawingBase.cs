@@ -216,8 +216,9 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         else // View
         {
             _worldBounds = Rectangle.Empty;
+            // Preserve layout bounds even when the viewport is not yet fully sized.
+            // The rendering pipeline clips drawings to the current viewport.
             _screenBounds = screenBounds!.Value;
-            _screenBounds.Intersect(view!.Viewport.TargetRectPx);
         }
 
         DirectDrawingManager.Instance.AddOrReplace(this);
@@ -292,8 +293,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </para>
     /// <para>
     /// When set, the affected screen regions are automatically marked as dirty to ensure
-    /// the drawing is rerendered at the new position. The bounds are clipped to the view's
-    /// viewport rectangle.
+    /// the drawing is rerendered at the new position. The requested bounds are preserved;
+    /// rendering is clipped to the current viewport rectangle.
     /// </para>
     /// </remarks>
     public Rectangle ScreenBounds
