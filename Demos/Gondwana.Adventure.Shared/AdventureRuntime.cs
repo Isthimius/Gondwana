@@ -36,7 +36,7 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
     internal Scene CreateScene()
     {
         var scene = new Scene();
-        scene.AddLayer(32, 18, 40, 40, 0, 1f, CoordinateSystemTypes.Orthogonal);
+        scene.AddLayer(AdventureWorld.Width / 40, (AdventureWorld.Height + 39) / 40, 40, 40, 0, 1f, CoordinateSystemTypes.Orthogonal);
         return scene;
     }
 
@@ -58,12 +58,12 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
         _font = font;
         var view = surface.ViewManager.Views[0];
         _drawing = new AdventureDrawing(surface, view, _game);
-        _hud = new TextBlock(surface, view, new Rectangle(12, 662, 1256, 48), "adventure-hud")
+        _hud = new TextBlock(surface, view, new Rectangle(12, AdventureWorld.Floor + 6, AdventureWorld.Width - 24, 48), "adventure-hud")
             .SetFont(font, 23f, 16f)
             .SetColors(SKColors.White, SKColors.Black)
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
         _hud.ZOrder = 10;
-        _message = new TextBlock(surface, view, new Rectangle(240, 200, 800, 255), "adventure-message")
+        _message = new TextBlock(surface, view, new Rectangle(80, 220, AdventureWorld.Width - 160, 255), "adventure-message")
             .SetFont(font, 32f, 20f)
             .SetColors(SKColors.White, new SKColor(12, 12, 20, 245))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)

@@ -13,6 +13,7 @@ internal static class AdventureWorld
     internal const int GoldCastle = 17;
     internal const int GoldInterior = 18;
     internal const uint BackgroundColor = 0xffb0b0b0;
+    internal static readonly RectangleF SecretWall = new(Width - 6, 0, 6, Floor);
 
     internal enum Direction { North, East, South, West }
     private enum ThinWall { None, Left, Right }
@@ -342,7 +343,6 @@ internal static class AdventureWorld
 
     // The castle shape has a central doorway in its lower facade.
     internal static readonly RectangleF Gate = new(Width / 2f - 48, 498, 96, 42);
-    internal static readonly RectangleF SecretWall = new(Width - 6, 0, 6, Floor);
     internal static Vector2 CastleApproach => new(Width / 2f, 590);
     internal static Vector2 KeepEntry => new(Width / 2f, Floor - 25);
 

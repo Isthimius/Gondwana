@@ -1,6 +1,6 @@
 # Gondwana Adventure
 
-An independent tribute to Warren Robinett's Atari 2600 Adventure. The full kingdom's room adjacency is informed by the [annotated original disassembly](https://6502disassembly.com/2600-adventure/Adventure.bin.html) (room links only). The room geometry, artwork, game code, object placement, AI and synthesized sound effects are original interpretations, not a pixel-perfect ROM recreation. No ROM or original game code/audio/assets are distributed.
+An independent tribute to Warren Robinett's Atari 2600 Adventure. The level-two kingdom's room adjacency and geometric playfield layouts are derived from the [annotated disassembly](https://6502disassembly.com/2600-adventure/Adventure.bin.html), with [NTSC palette reference](https://lospec.com/palette-list/atari-2600-palette-ntsc-version). A 960 × 720 (4:3) playfield sits above a separate HUD. Walls and collision share the same room geometry; castle portals use an explicit keep-entry/exit rule. Actor art, starting placements, simplified AI and synthesized sound are independent interpretations rather than a ROM-exact simulation. No ROM or original executable code/audio is distributed.
 
 All gameplay and rendering live in the shared runtime. GPU WinForms, Avalonia and Blazor hosts reference it directly.
 
@@ -12,7 +12,7 @@ dotnet run --project Demos/Gondwana.Adventure.Blazor
 
 - Arrow keys or WASD: move; cross the edges to navigate.
 - Space: begin the quest, or drop your carried object. Touch objects to pick them up.
-- Carry the matching key to a castle's gate, then walk into the gate. Gates stay open.
+- Carry the matching key to a castle's gate, then walk into the gate. Gates stay open; leave keeps via their bottom opening.
 - Find the chalice in the black dungeon, return it to the gold keep.
 - Sword: defeat dragons at close range. Bridge: drop near a wall to cross. Magnet: draws objects toward you.
 - V on title: toggle the shuffled-tools variant; P: pause; R: restart; M: mute.

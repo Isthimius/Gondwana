@@ -30,37 +30,36 @@ internal sealed class AdventureDrawing : DirectDrawingBase
         canvas.Save();
         canvas.Translate(destRectScreen.Left, destRectScreen.Top);
         canvas.ClipRect(new SKRect(0, 0, AdventureWorld.Width, AdventureWorld.Floor));
-        var floor = new SKColor(197, 195, 181);
+        var floor = new SKColor(AdventureWorld.BackgroundColor);
         Fill(canvas, paint, floor, 0, 0, AdventureWorld.Width, AdventureWorld.Floor);
         var wall = new SKColor(room.Color);
 
-        foreach (RectangleF rect in AdventureWorld.Walls(room))
-            Fill(canvas, paint, wall, rect.X, rect.Y, rect.Width, rect.Height);
-
-        if (AdventureWorld.IsCastle(room.Id))
+        if (room.Dark)
         {
-            for (int x = 400; x < 880; x += 80)
-                Fill(canvas, paint, wall, x, 40, 45, 40);
+            // Invisible maze walls are only revealed near the player, rather
+            // than replacing the entire room with a black screen.
+            canvas.Save();
+            Vector2 p = _game.Player;
+            canvas.ClipRect(new SKRect(p.X - 116, p.Y - 116, p.X + 116, p.Y + 116));
+            foreach (RectangleF rect in AdventureWorld.Walls(room, _game.SecretOpen))
+                Fill(canvas, paint, new SKColor(0xff6c6c6c), rect.X, rect.Y, rect.Width, rect.Height);
 
-            var gate = AdventureWorld.Gate;
-            var color = _game.IsGateOpen(room.Id) ? new SKColor(64, 100, 62) : SKColors.Black;
-            Fill(canvas, paint, color, gate.X, gate.Y, gate.Width, gate.Height);
-
-            if (!_game.IsGateOpen(room.Id))
-            {
-                for (float x = gate.Left + 6; x < gate.Right; x += 14)
-                    Fill(canvas, paint, wall, x, gate.Top, 5, gate.Height);
-            }
+            canvas.Restore();
+        }
+        else
+        {
+            foreach (RectangleF rect in AdventureWorld.Walls(room, _game.SecretOpen))
+                Fill(canvas, paint, wall, rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        if (AdventureWorld.Exterior(room.Id) != 0)
+        if (AdventureWorld.IsCastle(room.Id) && !_game.IsGateOpen(room.Id))
         {
             var gate = AdventureWorld.Gate;
-            Fill(canvas, paint, SKColors.DarkSlateGray, gate.X, gate.Y, gate.Width, gate.Height);
-        }
+            Fill(canvas, paint, SKColors.Black, gate.X, gate.Y, gate.Width, gate.Height);
 
-        if (room.Id == 3 && !_game.SecretOpen)
-            Fill(canvas, paint, wall, AdventureWorld.Width - 6, 80, 6, 496);
+            for (float x = gate.Left + 6; x < gate.Right; x += 14)
+                Fill(canvas, paint, wall, x, gate.Top, 5, gate.Height);
+        }
 
         foreach (AdventureGame.Item item in _game.Items.Where(i => i.Room == room.Id))
             DrawItem(canvas, paint, item);
@@ -78,17 +77,9 @@ internal sealed class AdventureDrawing : DirectDrawingBase
             Fill(canvas, paint, SKColors.Black, b.X + 7, b.Y - 6, 16, 9);
         }
 
-        if (room.Dark)
-        {
-            using var darkness = new SKPath { FillType = SKPathFillType.EvenOdd };
-            darkness.AddRect(new SKRect(0, 0, AdventureWorld.Width, AdventureWorld.Floor));
-            darkness.AddCircle(_game.Player.X, _game.Player.Y, 116);
-            paint.Color = new SKColor(32, 32, 35);
-            canvas.DrawPath(darkness, paint);
-        }
-
         Vector2 player = _game.Player;
-        Fill(canvas, paint, SKColors.Gold, player.X - 10, player.Y - 10, 20, 20);
+        Fill(canvas, paint, new SKColor(0xffd0d050), player.X - AdventureWorld.PlayerRadius, player.Y - AdventureWorld.PlayerRadius,
+            AdventureWorld.PlayerRadius * 2, AdventureWorld.PlayerRadius * 2);
         canvas.Restore();
     }
 

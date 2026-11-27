@@ -11,8 +11,8 @@ internal sealed class GameWindow : Form
     internal GameWindow()
     {
         Text = "Gondwana: Adventure";
-        ClientSize = new Size(1280, 720);
-        MinimumSize = new Size(660, 440);
+        ClientSize = new Size(AdventureGame.Width, AdventureGame.Height);
+        MinimumSize = new Size(480, 410);
         StartPosition = FormStartPosition.CenterScreen;
         KeyPreview = true;
         _surface = new WinFormGpuRenderSurfaceControl { Dock = DockStyle.Fill };

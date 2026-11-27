@@ -16,10 +16,10 @@ internal sealed class GameWindow : Window
     internal GameWindow()
     {
         Title = "Gondwana: Adventure";
-        Width = 1280;
-        Height = 750; // Window chrome consumes some height; correct the client on open.
-        MinWidth = 660;
-        MinHeight = 440;
+        Width = AdventureGame.Width;
+        Height = AdventureGame.Height + 30; // Window chrome consumes some height; correct the client on open.
+        MinWidth = 480;
+        MinHeight = 410;
         CanResize = true;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
@@ -43,15 +43,15 @@ internal sealed class GameWindow : Window
         base.OnOpened(e);
         // GPU adapter dimensions are physical pixels, while Avalonia window bounds
         // are DIPs. Account for display scaling (for example 150% on a 4K screen)
-        // for the initial 1280 x 720 presentation.
+        // for the initial logical presentation.
         double scaling = RenderScaling > 0d ? RenderScaling : 1d;
         // Window minimums are Avalonia DIPs, not physical pixels. Keep the
-        // intended minimum presentation size at high DPI so the 1280x720
+        // intended minimum presentation size at high DPI so the logical
         // initial client area is not clamped at 200% scaling or above.
-        MinWidth = 660d / scaling;
-        MinHeight = 440d / scaling;
-        Width += 1280d / scaling - _surface.Bounds.Width;
-        Height += 720d / scaling - _surface.Bounds.Height;
+        MinWidth = 480d / scaling;
+        MinHeight = 410d / scaling;
+        Width += AdventureGame.Width / scaling - _surface.Bounds.Width;
+        Height += AdventureGame.Height / scaling - _surface.Bounds.Height;
 
         // Allow the corrected layout to reach the GPU adapter before initialization.
         Dispatcher.UIThread.Post(

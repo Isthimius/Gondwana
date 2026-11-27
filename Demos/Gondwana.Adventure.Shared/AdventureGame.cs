@@ -61,7 +61,7 @@ internal sealed class AdventureGame
         State = Phase.Title;
         Held = null;
         RoomId = GoldCastle;
-        Player = new Vector2(640, 430);
+        Player = CastleApproach;
         _openCastles.Clear();
         _secretOpen = false;
         _pickupDelay = 0f;
@@ -69,19 +69,19 @@ internal sealed class AdventureGame
         _batDelay = 9f;
         _batCargo = null;
         BatRoom = 8;
-        BatPosition = new Vector2(640, 340);
+        BatPosition = FindOpenPosition(BatRoom, new Vector2(480, 600));
         Items.Clear();
         Dragons.Clear();
 
         Items.AddRange([
-            new(ItemKind.GoldKey, 17, new(310, 420)),
-            new(ItemKind.WhiteKey, 18, new(440, 340)),
-            new(ItemKind.BlackKey, 23, new(640, 320)),
-            new(ItemKind.Sword, 2, new(640, 340)),
-            new(ItemKind.Bridge, 8, new(640, 350)),
-            new(ItemKind.Magnet, 26, new(640, 310)),
-            new(ItemKind.Chalice, 21, new(640, 330)),
-            new(ItemKind.Dot, 20, new(640, 340))
+            new(ItemKind.GoldKey, 17, new(240, 590)),
+            new(ItemKind.WhiteKey, 18, new(330, 360)),
+            new(ItemKind.BlackKey, 23, new(480, 120)),
+            new(ItemKind.Sword, 2, new(480, 360)),
+            new(ItemKind.Bridge, 8, new(480, 600)),
+            new(ItemKind.Magnet, 26, new(480, 590)),
+            new(ItemKind.Chalice, 19, new(480, 360)),
+            new(ItemKind.Dot, 21, new(480, 600))
         ]);
 
         if (randomized)
@@ -91,10 +91,13 @@ internal sealed class AdventureGame
                 item.Room = _random.Next(1, 12);
         }
 
+        foreach (Item item in Items)
+            item.Position = FindOpenPosition(item.Room, item.Position);
+
         Dragons.AddRange([
-            new(2, new(420, 190), 0xffdfbd35, 105f),
-            new(8, new(640, 160), 0xff60bb45, 125f),
-            new(21, new(640, 160), 0xffd44040, 155f)
+            new(2, FindOpenPosition(2, new(315, 190), 20f), 0xffd0d050, 105f),
+            new(8, FindOpenPosition(8, new(480, 160), 20f), 0xff84b468, 125f),
+            new(21, FindOpenPosition(21, new(480, 160), 20f), 0xffc06848, 155f)
         ]);
     }
 
@@ -123,7 +126,7 @@ internal sealed class AdventureGame
         if (State != Phase.Playing || Held is null)
             return;
 
-        Held.Position = Player;
+        Held.Position = Held.Kind == ItemKind.Bridge ? Player : FindOpenPosition(RoomId, Player);
         Held = null;
         _pickupDelay = 0.8f;
         Emit(Sound.Drop);
@@ -158,18 +161,36 @@ internal sealed class AdventureGame
     private void MovePlayer(Vector2 delta)
     {
         Vector2 next = Player + delta;
+        var room = GetRoom(RoomId);
+        bool bridge = Items.Any(i => i.Room == RoomId && i.Kind == ItemKind.Bridge && i != Held && i != _batCargo &&
+            MathF.Abs(i.Position.X - next.X) <= 55f && MathF.Abs(i.Position.Y - next.Y) <= 22f);
+
+        // The bridge can span interior obstacles, but cannot create an exit
+        // through the perimeter or the secret wall.
+        bool blocked = Walls(room, _secretOpen).Any(w => IsWithin(next, w) &&
+            (!bridge || w.Left <= 0 || w.Right >= Width || w.Top <= 0 || w.Bottom >= Floor));
+
+        if (blocked)
+            return;
+
         Direction? direction = next.X < 0 ? Direction.West : next.X > Width ? Direction.East :
             next.Y < 0 ? Direction.North : next.Y > Floor ? Direction.South : null;
 
         if (direction.HasValue)
         {
-            int target = GetRoom(RoomId).Exit(direction.Value);
+            int target = room.Exit(direction.Value);
 
             if (RoomId == 3 && direction == Direction.East && _secretOpen)
                 target = 30;
 
             if (target != RoomId)
             {
+                if (direction == Direction.South && Exterior(RoomId) == target)
+                {
+                    Enter(target, CastleApproach);
+                    return;
+                }
+
                 Vector2 entry = direction.Value switch
                 {
                     Direction.West => new(Width - 18, next.Y),
@@ -177,48 +198,49 @@ internal sealed class AdventureGame
                     Direction.North => new(next.X, Floor - 18),
                     _ => new(next.X, 18)
                 };
-                Enter(target, entry);
+
+                Enter(target, FindOpenPosition(target, entry));
                 return;
             }
         }
 
         next = Vector2.Clamp(next, Vector2.Zero, new Vector2(Width, Floor));
-        bool bridge = Items.Any(i => i.Room == RoomId && i.Kind == ItemKind.Bridge && i != Held &&
-            Vector2.DistanceSquared(i.Position, next) < 65f * 65f);
 
-        if (bridge || !Walls(GetRoom(RoomId)).Any(w => IsWithin(next, w)))
-            Player = next;
+        // Touching a closed portcullis triggers the key check in HandlePortal,
+        // but a player without the right key cannot pass through it.
+        if (IsCastle(RoomId) && IsWithin(next, Gate) && !_openCastles.Contains(RoomId))
+        {
+            TryUnlockGate();
+
+            if (!_openCastles.Contains(RoomId))
+                return;
+        }
+
+        Player = next;
+    }
+
+    private void TryUnlockGate()
+    {
+        ItemKind key = RoomId switch
+        {
+            15 => ItemKind.WhiteKey,
+            16 => ItemKind.BlackKey,
+            _ => ItemKind.GoldKey
+        };
+
+        if (Held?.Kind == key && _openCastles.Add(RoomId))
+            Emit(Sound.Gate);
     }
 
     private void HandlePortal()
     {
-        if (_portalDelay > 0f || !IsWithin(Player, Gate))
+        if (_portalDelay > 0f || !IsCastle(RoomId) || !IsWithin(Player, Gate))
             return;
 
-        int interior = Interior(RoomId);
+        TryUnlockGate();
 
-        if (interior != 0)
-        {
-            ItemKind key = RoomId switch
-            {
-                15 => ItemKind.WhiteKey,
-                16 => ItemKind.BlackKey,
-                _ => ItemKind.GoldKey
-            };
-
-            if (Held?.Kind == key && _openCastles.Add(RoomId))
-                Emit(Sound.Gate);
-
-            if (_openCastles.Contains(RoomId))
-                Enter(interior, new Vector2(640, 460));
-        }
-        else
-        {
-            int exterior = Exterior(RoomId);
-
-            if (exterior != 0)
-                Enter(exterior, new Vector2(640, 285));
-        }
+        if (_openCastles.Contains(RoomId))
+            Enter(Interior(RoomId), KeepEntry);
     }
 
     private void Enter(int room, Vector2 position)
@@ -247,7 +269,12 @@ internal sealed class AdventureGame
                     .OrderBy(i => Vector2.DistanceSquared(i.Position, Player)).FirstOrDefault();
 
                 if (attracted is not null)
-                    attracted.Position = Vector2.Lerp(attracted.Position, Held.Position, 0.025f);
+                {
+                    Vector2 next = Vector2.Lerp(attracted.Position, Held.Position, 0.025f);
+
+                    if (!IsBlocked(RoomId, next, _secretOpen))
+                        attracted.Position = next;
+                }
             }
 
             return;
@@ -277,7 +304,7 @@ internal sealed class AdventureGame
             {
                 Vector2 next = dragon.Position + offset / distance * dragon.Speed * dt;
 
-                if (!Walls(GetRoom(RoomId)).Any(w => IsWithin(next, w, 20f)))
+                if (!IsBlocked(RoomId, next, _secretOpen, 20f))
                     dragon.Position = next;
             }
 
@@ -298,7 +325,7 @@ internal sealed class AdventureGame
     private void UpdateBat(float dt)
     {
         _batDelay -= dt;
-        Vector2 destination = new(640, 330);
+        Vector2 destination = FindOpenPosition(BatRoom, new(480, 360));
         Item? target = Items.FirstOrDefault(i => i != Held && i != _batCargo && i.Room == BatRoom &&
             i.Kind is ItemKind.Sword or ItemKind.Bridge or ItemKind.Magnet);
 
@@ -321,7 +348,7 @@ internal sealed class AdventureGame
         if (_batCargo is not null)
         {
             _batCargo.Room = BatRoom;
-            _batCargo.Position = BatPosition;
+            _batCargo.Position = FindOpenPosition(BatRoom, BatPosition);
             _batCargo = null;
         }
         else if (target is not null)
@@ -333,7 +360,7 @@ internal sealed class AdventureGame
         }
 
         BatRoom = _random.Next(1, 12);
-        BatPosition = new Vector2(90, 330);
+        BatPosition = FindOpenPosition(BatRoom, new Vector2(90, 360));
 
         if (_batCargo is not null)
             _batCargo.Room = BatRoom;
