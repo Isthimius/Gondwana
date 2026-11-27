@@ -24,8 +24,6 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface) : IEngineP
     private string _lastHud = "";
     private string _lastMessage = "";
 
-    private static Engine Engine => Gondwana.Engine.Instance;
-
     string IEnginePlugin.Name => "Adventure";
     string IEnginePlugin.Version => "1.0";
 
@@ -144,15 +142,25 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface) : IEngineP
         Refresh();
     }
 
-    void IEnginePlugin.OnInitialize(Engine engine) { }
+    void IEnginePlugin.OnInitialize(Engine engine)
+    {
+    }
 
-    void IEnginePlugin.OnPostCycle(Engine engine, double deltaSeconds) { }
+    void IEnginePlugin.OnPostCycle(Engine engine, double deltaSeconds)
+    {
+    }
 
-    void IEnginePlugin.OnPreFrameRender(Engine engine, double deltaSeconds) { }
+    void IEnginePlugin.OnPreFrameRender(Engine engine, double deltaSeconds)
+    {
+    }
 
-    void IEnginePlugin.OnPostFrameRender(Engine engine, double deltaSeconds) { }
+    void IEnginePlugin.OnPostFrameRender(Engine engine, double deltaSeconds)
+    {
+    }
 
-    void IEnginePlugin.OnShutdown(Engine engine) { }
+    void IEnginePlugin.OnShutdown(Engine engine)
+    {
+    }
 
     private bool Down(string first, string second) => _pressed.Contains(first) || _pressed.Contains(second);
 
