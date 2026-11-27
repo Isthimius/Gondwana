@@ -20,6 +20,10 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Gondwana.WinForms.Hosting"; RootName = "Gondwana.WinForms.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
 
     # demo projects - individual changelogs but not root changelog
+    [pscustomobject]@{ Path = "Demos/Gondwana.Adventure.Shared"; RootName = "Demos / Gondwana.Adventure.Shared"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+    [pscustomobject]@{ Path = "Demos/Gondwana.Adventure.WinForms"; RootName = "Demos / Gondwana.Adventure.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+    [pscustomobject]@{ Path = "Demos/Gondwana.Adventure.Avalonia"; RootName = "Demos / Gondwana.Adventure.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+    [pscustomobject]@{ Path = "Demos/Gondwana.Adventure.Blazor"; RootName = "Demos / Gondwana.Adventure.Blazor"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.Asteroids.Shared"; RootName = "Demos / Gondwana.Asteroids.Shared"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.Asteroids.WinForms"; RootName = "Demos / Gondwana.Asteroids.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.Asteroids.Avalonia"; RootName = "Demos / Gondwana.Asteroids.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $false },

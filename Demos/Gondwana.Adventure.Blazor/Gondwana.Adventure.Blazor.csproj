@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0-browser</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Gondwana.Demos.Adventure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
+    <ProjectReference Include="..\Gondwana.Adventure.Shared\Gondwana.Adventure.Shared.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Blazor\Gondwana.Blazor.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Blazor.Hosting\Gondwana.Blazor.Hosting.csproj" />
+    <ProjectReference Include="..\..\Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj" />
+  </ItemGroup>
+</Project>
