@@ -116,10 +116,14 @@ internal sealed class AdventureDrawing : DirectDrawingBase
                 Fill(canvas, paint, SKColors.SaddleBrown, x - 26, y - 3, 10, 6);
                 break;
             case AdventureGame.ItemKind.Bridge:
-                Fill(canvas, paint, color, x - 55, y - 22, 110, 8);
-                Fill(canvas, paint, color, x - 55, y + 14, 110, 8);
-                Fill(canvas, paint, color, x - 55, y - 22, 8, 44);
-                Fill(canvas, paint, color, x + 47, y - 22, 8, 44);
+                const int halfWidth = AdventureWorld.BridgeHalfWidth;
+                const int halfHeight = AdventureWorld.BridgeHalfHeight;
+                Fill(canvas, paint, color, x - halfWidth, y - halfHeight, 8, halfHeight * 2);
+                Fill(canvas, paint, color, x + halfWidth - 8, y - halfHeight, 8, halfHeight * 2);
+                Fill(canvas, paint, color, x - halfWidth, y - halfHeight, 18, 8);
+                Fill(canvas, paint, color, x + halfWidth - 18, y - halfHeight, 18, 8);
+                Fill(canvas, paint, color, x - halfWidth, y + halfHeight - 8, 18, 8);
+                Fill(canvas, paint, color, x + halfWidth - 18, y + halfHeight - 8, 18, 8);
                 break;
             case AdventureGame.ItemKind.Magnet:
                 Fill(canvas, paint, color, x - 14, y - 13, 28, 7);

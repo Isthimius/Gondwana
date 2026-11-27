@@ -81,7 +81,7 @@ internal sealed class AdventureGame
             new(ItemKind.Bridge, 8, new(480, 600)),
             new(ItemKind.Magnet, 26, new(480, 590)),
             new(ItemKind.Chalice, 19, new(480, 360)),
-            new(ItemKind.Dot, 21, new(480, 600))
+            new(ItemKind.Dot, 21, new(408, 600))
         ]);
 
         if (randomized)
@@ -163,12 +163,13 @@ internal sealed class AdventureGame
         Vector2 next = Player + delta;
         var room = GetRoom(RoomId);
         bool bridge = Items.Any(i => i.Room == RoomId && i.Kind == ItemKind.Bridge && i != Held && i != _batCargo &&
-            MathF.Abs(i.Position.X - next.X) <= 55f && MathF.Abs(i.Position.Y - next.Y) <= 22f);
+            IsBridgePassage(i.Position, next));
 
         // The bridge can span interior obstacles, but cannot create an exit
         // through the perimeter or the secret wall.
         bool blocked = Walls(room, _secretOpen).Any(w => IsWithin(next, w) &&
-            (!bridge || w.Left <= 0 || w.Right >= Width || w.Top <= 0 || w.Bottom >= Floor));
+            (!bridge || w.Width <= 6f || next.Y - PlayerRadius < 60f && w.Top == 0 ||
+             next.Y + PlayerRadius > Floor - 60f && w.Bottom == Floor));
 
         if (blocked)
             return;
@@ -284,7 +285,8 @@ internal sealed class AdventureGame
             return;
 
         Item? item = Items.Find(i => i != _batCargo && i.Room == RoomId &&
-            Vector2.DistanceSquared(i.Position, Player) < 26f * 26f);
+            Vector2.DistanceSquared(i.Position, Player) < 26f * 26f &&
+            (i.Kind != ItemKind.Bridge || !IsBlocked(RoomId, Player, _secretOpen)));
 
         if (item is not null)
         {

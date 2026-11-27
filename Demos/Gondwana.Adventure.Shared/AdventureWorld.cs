@@ -10,6 +10,8 @@ internal static class AdventureWorld
     internal const int Floor = 720;
     internal const int Height = Floor + 64;
     internal const int PlayerRadius = 10;
+    internal const int BridgeHalfWidth = 36;
+    internal const int BridgeHalfHeight = 160;
     internal const int GoldCastle = 17;
     internal const int GoldInterior = 18;
     internal const uint BackgroundColor = 0xffb0b0b0;
@@ -318,7 +320,7 @@ internal static class AdventureWorld
         new(27, "Black castle keep", 22, 22, 16, 22, 0xffc06848, BuildWalls(TwoExitKeep)),
         new(28, "Purple chamber", 29, 8, 12, 7, 0xff8c58b8, BuildWalls(EnclosedKeep)),
         new(29, "Southern approach", 12, 3, 16, 1, 0xffc06848, BuildWalls(TopEntry)),
-        new(30, "Secret chamber", 6, 3, 6, 3, 0xff8c58b8, BuildWalls(BelowCastle))
+        new(30, "Secret chamber", 6, 3, 6, 1, 0xff8c58b8, BuildWalls(BelowCastle))
     ];
 
     internal static Room GetRoom(int id) => Rooms[id - 1];
@@ -398,6 +400,14 @@ internal static class AdventureWorld
 
     internal static bool IsBlocked(int room, Vector2 position, bool secretOpen = false, float radius = PlayerRadius)
         => Walls(GetRoom(room), secretOpen).Any(wall => IsWithin(position, wall, radius));
+
+    // A bridge covers a vertical stretch of interior wall. It is never an
+    // alternate exit through the screen edge, including a thin secret wall.
+    internal static bool IsBridgePassage(Vector2 bridgeCenter, Vector2 position)
+        => position.X > PlayerRadius && position.X < Width - PlayerRadius &&
+           position.Y > PlayerRadius && position.Y < Floor - PlayerRadius &&
+           MathF.Abs(position.X - bridgeCenter.X) <= BridgeHalfWidth - PlayerRadius &&
+           MathF.Abs(position.Y - bridgeCenter.Y) <= BridgeHalfHeight - PlayerRadius;
 
     // Choose an open floor position for actors/items rather than embedding them
     // in walls when a room layout or randomized placement changes.

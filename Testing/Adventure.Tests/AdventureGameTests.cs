@@ -120,6 +120,18 @@ public sealed class AdventureGameTests
     }
 
     [Fact]
+    public void BridgeSpansInteriorWallButNotRoomEdge()
+    {
+        var center = new Vector2(408, 408);
+        var farSide = new Vector2(408, 550);
+        Assert.True(AdventureWorld.IsBridgePassage(center, new Vector2(408, 480)));
+        Assert.True(AdventureWorld.IsBridgePassage(center, farSide));
+        Assert.False(AdventureWorld.IsBlocked(21, farSide));
+        Assert.False(AdventureWorld.IsBridgePassage(center, new Vector2(450, 480)));
+        Assert.False(AdventureWorld.IsBridgePassage(new Vector2(480, 80), new Vector2(480, 5)));
+    }
+
+    [Fact]
     public void SynthesizedEffectsContainValidPcmWaveHeaders()
     {
         foreach (var sound in Enum.GetValues<AdventureGame.Sound>())
