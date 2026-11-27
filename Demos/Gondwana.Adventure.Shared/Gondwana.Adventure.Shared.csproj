@@ -11,4 +11,9 @@
     <EmbeddedResource Include="Fonts/ArchitectsDaughter-Regular.ttf" LogicalName="Gondwana.Demos.Adventure.Fonts.ArchitectsDaughter-Regular.ttf" />
     <EmbeddedResource Include="Fonts/OFL.txt" LogicalName="Gondwana.Demos.Adventure.Fonts.OFL.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="gondwana-adventure-map.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
