@@ -118,7 +118,15 @@ internal sealed class MyGameHost : AvaloniaBitmapGameHost
     /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
+        // For continuous gameplay, subscribe before the engine starts.
+        // Engine.SimulationUpdating += UpdateGame;
     }
+
+    // Uncomment together with the subscription and cleanup below.
+    // private void UpdateGame(double deltaSeconds)
+    // {
+    //     // Advance game state using simulation seconds, not rendered frames.
+    // }
 
     // TODO: Run after the engine has started. Start gameplay, timers, or music here.
     /// <inheritdoc/>
@@ -136,6 +144,7 @@ internal sealed class MyGameHost : AvaloniaBitmapGameHost
     /// <inheritdoc/>
     protected override void UnhookEvents()
     {
+        // Engine.SimulationUpdating -= UpdateGame;
     }
 
     // TODO: Run just before the host begins disposing managed resources.

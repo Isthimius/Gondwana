@@ -185,6 +185,8 @@ protected override void UnhookEvents()
 
 Those are the main hooks this guide will fill in.
 
+The template also includes an optional `SimulationUpdating` subscription in `OnEngineInitialized`, a commented `UpdateGame(double deltaSeconds)` handler, and matching cleanup in `UnhookEvents`. This tutorial moves the sprite in discrete grid steps in response to input, so leave that optional subscription commented out. When adding continuous movement, AI, or time-based game rules, uncomment all three pieces and use the engine-provided delta in seconds. It runs once per simulation cycle, not once per rendered frame. See [[Timers and Engine Timing]] for details.
+
 ---
 
 ## Step 5 — Understand the host lifecycle
@@ -743,6 +745,8 @@ protected override void UnhookEvents()
 ```
 
 Those are the main hooks this guide will fill in.
+
+The template also includes an optional `SimulationUpdating` subscription in `OnEngineInitialized`, a commented `UpdateGame(double deltaSeconds)` handler, and matching cleanup in `UnhookEvents`. This tutorial moves the sprite in discrete grid steps in response to input, so leave that optional subscription commented out. When adding continuous movement, AI, or time-based game rules, uncomment all three pieces and use the engine-provided delta in seconds. It runs once per simulation cycle, not once per rendered frame. See [[Timers and Engine Timing]] for details.
 
 ---
 

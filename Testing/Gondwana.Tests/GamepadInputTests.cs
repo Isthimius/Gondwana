@@ -200,13 +200,19 @@ public sealed class GamepadInputTests
                 manager.Adapter.SetPressedButtons("A");
             };
 
+            engine.SimulationUpdating += delta =>
+            {
+                Assert.Equal(1d / 60d, delta);
+                order.Add("simulation");
+            };
             engine.BeforeBackgroundTasksExecute += () => order.Add("game");
+            engine.AfterBackgroundTasksExecute += () => order.Add("after");
             poller.ButtonDown += _ => order.Add("event");
 
             long tick = HighResTimer.GetCurrentTick() + HighResTimer.TicksPerSecond;
             InvokeRunSimulationCycle(engine, simulationTick: tick, renderTick: tick);
 
-            Assert.Equal(["poll", "game", "event"], order);
+            Assert.Equal(["poll", "simulation", "game", "event", "after"], order);
         }
         finally
         {

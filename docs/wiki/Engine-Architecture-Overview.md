@@ -67,7 +67,7 @@ A thorough explanation of the engine lifecycle is available at [[Gondwana Engine
 
 ## 4. Understand the Core Engine Loop
 
-**`Gondwana/Engine.cs`** — The singleton engine. Read the event declarations (~lines 76–210) to understand the hooks (`BeforeBackgroundTasksExecute`, `BeforeFrameRender`, `AfterFrameRender`, etc.), then skim `DoBackgroundTasks` and `DoForegroundTasks` to see what happens every cycle.
+**`Gondwana/Engine.cs`** — The singleton engine. Read the event declarations to understand the hooks (`SimulationUpdating`, `BeforeBackgroundTasksExecute`, `BeforeFrameRender`, `AfterFrameRender`, etc.), then skim `DoBackgroundTasks` and `DoForegroundTasks` to see what happens every cycle.
 
 > **Concurrency note:** `Engine.Start` runs the main loop (`Cycle` / `DoForegroundTasks`) on a background `Task`, not the UI thread.
 

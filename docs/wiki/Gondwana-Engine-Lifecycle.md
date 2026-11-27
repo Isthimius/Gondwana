@@ -54,6 +54,7 @@ In 2.5.0, the hosting design is intentionally stricter:
 | `Engine.Initialize()` | Calling thread (its public initialization events may be posted to `UiDispatcher`) | Calling thread (its public initialization events may be posted to `UiDispatcher`) |
 | Main `Cycle()` loop | Engine background thread | Calling thread that invokes `Tick()` |
 | Input poller events | Engine thread | Same thread as `Tick()` |
+| `SimulationUpdating` | Engine thread | Same thread as `Tick()` |
 | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` | Engine thread | Same thread as `Tick()` |
 | `BeforeFrameRender` / `AfterFrameRender` | Engine thread | Same thread as `Tick()` |
 | `RenderBackbufferPostScene` / `IEnginePlugin.OnPostRenderCanvas` | Engine thread (bitmap and desktop GPU snapshot recording) | Tick thread (bitmap); `SKGLView` paint callback (browser WebGL) |
@@ -231,6 +232,7 @@ The desktop `Cycle()` method runs on the engine thread. Timer-driven `Tick()` in
 Cycle()
   → EngineDispatcher.Drain()
   → Gamepad UpdateConnections/Poll when each cadence is due
+  → SimulationUpdating(deltaSeconds)
   → IEnginePlugin.OnPreCycle
   → DoBackgroundTasks
        → BeforeBackgroundTasksExecute
@@ -275,10 +277,34 @@ The background phase is where Gondwana advances simulation-oriented work:
 
 If you need a hook that runs **every cycle even when no frame is rendered**, use:
 
+- `SimulationUpdating` (preferred for time-based gameplay; receives the simulation delta in seconds)
 - `BeforeBackgroundTasksExecute`
 - `AfterBackgroundTasksExecute`
 - `IEnginePlugin.OnPreCycle`
 - `IEnginePlugin.OnPostCycle`
+
+### Simulation updates for gameplay
+
+Subscribe to `Engine.SimulationUpdating` in `OnEngineInitialized` and remove the same handler in `UnhookEvents` after the engine stops:
+
+```csharp
+protected override void OnEngineInitialized()
+{
+    Engine.SimulationUpdating += UpdateGame;
+}
+
+private void UpdateGame(double deltaSeconds)
+{
+    // Advance gameplay state by deltaSeconds.
+}
+
+protected override void UnhookEvents()
+{
+    Engine.SimulationUpdating -= UpdateGame;
+}
+```
+
+The event is an `Action<double>`. The desktop loop supplies elapsed cycle time; timer-driven mode supplies the fixed duration of each simulation step. A render-only tick raises no simulation event; a catch-up tick raises one per step. It runs after scheduled native gamepad polling but before plugin pre-cycle hooks, pre-cycle timers, and input poller events. Use cached input state or react to input events when the newly polled keyboard/mouse/touch events are required. It is synchronous, not a UI-dispatched notification. The parameterless background events remain unchanged for phase-specific work.
 
 ### Foreground phase details
 
@@ -456,6 +482,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `Engine.PreInitialization` | Immediately before engine initialization work begins | Calling thread or UI dispatcher |
 | `Engine.PostInitialization` | After config/state/input setup completes | Calling thread or UI dispatcher |
 | `Engine.InitializationComplete` | At the end of successful initialization | Calling thread or UI dispatcher |
+| `Engine.SimulationUpdating` | Once per simulation cycle, before plugin pre-cycle hooks; receives delta seconds | Engine thread / Tick thread |
 | `Engine.BeforeBackgroundTasksExecute` | At the start of each background phase | Engine thread |
 | `Engine.AfterBackgroundTasksExecute` | At the end of each background phase | Engine thread |
 | `Engine.BeforeFrameRender` | Right before foreground/render work | Engine thread |
@@ -574,6 +601,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | Run cleanup before host disposal work starts | `OnDisposing` |
 | Run cleanup after host disposal work completes | `OnDisposed` |
 | Observe engine initialization completion | `Engine.InitializationComplete` |
+| Advance gameplay using simulation time | `Engine.SimulationUpdating` |
 | Run logic every cycle, even if a frame is skipped | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` or plugin cycle hooks |
 | Run logic only when a frame is actually rendered | `BeforeFrameRender` / `AfterFrameRender` |
 | Draw post-scene effects onto a specific surface's canvas | `RenderSurfaceHost.RenderBackbufferPostScene` |

@@ -1,5 +1,6 @@
 Gondwana uses a monotonic, high-resolution clock to measure elapsed real time and an engine-managed timer registry to schedule game work. These facilities live in the `Gondwana.Timers` namespace, but they serve different purposes:
 
+- `Engine.SimulationUpdating` supplies elapsed simulation seconds for continuous gameplay.
 - `HighResTimer` reads the underlying clock and converts raw timestamps into elapsed seconds.
 - `Timer` raises one-shot or repeating `Tick` events at defined points in the engine cycle.
 
@@ -8,6 +9,7 @@ Use `HighResTimer` when code needs to *measure* time. Use `Timer` when code need
 ## Table of contents
 
 - [Timing at a glance](#timing-at-a-glance)
+- [Simulation delta for gameplay](#simulation-delta-for-gameplay)
 - [High-resolution time with HighResTimer](#high-resolution-time-with-highrestimer)
   - [Reading and comparing timestamps](#reading-and-comparing-timestamps)
   - [Ticks are not milliseconds](#ticks-are-not-milliseconds)
@@ -32,6 +34,7 @@ Use `HighResTimer` when code needs to *measure* time. Use `Timer` when code need
 
 | Requirement | Recommended API | Why |
 | --- | --- | --- |
+| Advance continuous gameplay | `Engine.SimulationUpdating` | Supplies the engine's simulation delta, independent of render cadence |
 | Measure how long an operation took | `HighResTimer` | Reads a monotonic high-resolution clock |
 | Run gameplay logic after a delay | `Timer` with `TimerCycles.Once` | Schedules the callback through the engine cycle |
 | Run gameplay logic periodically | `Timer` with `TimerCycles.Repeating` | Maintains an interval without cumulative schedule drift |
@@ -40,7 +43,30 @@ Use `HighResTimer` when code needs to *measure* time. Use `Timer` when code need
 | Read total engine runtime | `Engine.TotalSecondsEngineRunning` | Reports elapsed real time since the engine started |
 | Observe update and render rates | `Engine.Profiler` or `ProfilerWidget` | Exposes opt-in sampled engine and presentation telemetry |
 
-Gondwana timing is based on elapsed real time. The timer system does not currently provide a simulated game clock, time scaling, or deterministic fixed-step scheduling. If a game needs slow motion, replayable simulation, or a pauseable world clock, build that layer on top of elapsed time rather than treating raw timer ticks as simulation steps.
+The desktop engine uses elapsed cycle time. In timer-driven mode, the engine accumulates elapsed time into fixed simulation steps, independently of rendering. This does not guarantee deterministic gameplay or provide game-specific time scaling or pause semantics.
+
+## Simulation delta for gameplay
+
+Use the engine's simulation event rather than sampling `HighResTimer` between update callbacks:
+
+```csharp
+protected override void OnEngineInitialized()
+{
+    Engine.SimulationUpdating += UpdateGame;
+}
+
+private void UpdateGame(double deltaSeconds)
+{
+    // For example, distance = speed in pixels/second * deltaSeconds.
+}
+
+protected override void UnhookEvents()
+{
+    Engine.SimulationUpdating -= UpdateGame;
+}
+```
+
+On desktop the argument is elapsed cycle time. In Blazor, a browser tick may run zero or several fixed steps; each receives its own delta, even if all steps execute nearly instantaneously before the next render. The event runs before plugin pre-cycle hooks and background tasks. For measuring actual operation duration, continue using `HighResTimer`.
 
 ## High-resolution time with HighResTimer
 
@@ -103,7 +129,7 @@ Raw timestamps are process-local timing values. Do not persist them as save-game
 
 ### Measuring elapsed work
 
-`HighResTimer` is appropriate for profiling, cooldown calculations, interpolation, and other code that needs actual elapsed time without scheduling a callback.
+`HighResTimer` is appropriate for profiling and other code that needs actual wall-clock elapsed time without scheduling a callback. For simulation-based cooldowns, movement, and interpolation, prefer the delta supplied by `Engine.SimulationUpdating`.
 
 ```csharp
 long pathfindingStarted = HighResTimer.GetCurrentTick();

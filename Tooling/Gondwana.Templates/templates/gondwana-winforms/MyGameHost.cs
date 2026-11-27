@@ -178,7 +178,15 @@ internal sealed class MyGameHost : WinFormsGameHost
     /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
+        // For continuous gameplay, subscribe before the engine starts.
+        // Engine.SimulationUpdating += UpdateGame;
     }
+
+    // Uncomment together with the subscription and cleanup below.
+    // private void UpdateGame(double deltaSeconds)
+    // {
+    //     // Advance game state using simulation seconds, not rendered frames.
+    // }
 
     #endregion InitializeEngine overrides
 
@@ -202,6 +210,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     /// <inheritdoc/>
     protected override void UnhookEvents()
     {
+        // Engine.SimulationUpdating -= UpdateGame;
     }
 
     // TODO: Run just before the host begins disposing managed resources.

@@ -280,7 +280,7 @@ If the profiler's cycle rate deteriorates as gameplay complexity increases, begi
 
 ### Game-loop handlers
 
-Events such as `BeforeBackgroundTasksExecute`, `AfterBackgroundTasksExecute`, `BeforeFrameRender`, and `AfterFrameRender` are convenient extension points, but their handlers run in hot paths.
+Events such as `SimulationUpdating`, `BeforeBackgroundTasksExecute`, `AfterBackgroundTasksExecute`, `BeforeFrameRender`, and `AfterFrameRender` are convenient extension points, but their handlers run in hot paths.
 
 Avoid performing the following directly inside repeated cycle or frame handlers:
 

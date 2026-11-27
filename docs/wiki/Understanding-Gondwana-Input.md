@@ -228,6 +228,8 @@ The current order is:
 ```text
 Gamepad connection/state refresh when due
     ↓
+SimulationUpdating(deltaSeconds) gameplay callback
+    ↓
 Plugin OnPreCycle callbacks
     ↓
 BeforeBackgroundTasksExecute game callback
@@ -748,7 +750,7 @@ Engine.Configuration.GamepadPollFrequencyHz = 60;
 
 A value of `0` disables automatic scheduling for that operation. These frequencies are independent of `TargetFPS`, so an uncapped renderer does not create an uncapped controller poll loop.
 
-Both operations run at the start of the simulation cycle when due, before plugin pre-cycle hooks, `BeforeBackgroundTasksExecute` callbacks, and `GamepadEventPoller` reads adapter state.
+Both operations run at the start of the simulation cycle when due, before `SimulationUpdating`, plugin pre-cycle hooks, `BeforeBackgroundTasksExecute` callbacks, and `GamepadEventPoller` reads adapter state.
 
 Hot-plugged devices still need game-specific registration for whichever buttons the game wants to monitor.
 

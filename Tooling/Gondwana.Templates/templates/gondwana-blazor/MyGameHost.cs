@@ -155,7 +155,15 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
+        // For continuous gameplay, subscribe before the engine starts.
+        // Engine.SimulationUpdating += UpdateGame;
     }
+
+    // Uncomment together with the subscription and cleanup below.
+    // private void UpdateGame(double deltaSeconds)
+    // {
+    //     // Advance game state using simulation seconds, not rendered frames.
+    // }
 
     // TODO: Called when the engine starts. Begin gameplay, start timers, or play music here.
     /// <inheritdoc/>
@@ -173,6 +181,7 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     /// <inheritdoc/>
     protected override void UnhookEvents()
     {
+        // Engine.SimulationUpdating -= UpdateGame;
         if (Engine.Input.KeyboardEventPoller is { } keyboard)
             keyboard.KeyDown -= OnKeyDown;
     }
