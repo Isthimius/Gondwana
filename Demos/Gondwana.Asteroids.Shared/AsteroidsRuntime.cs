@@ -7,7 +7,6 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.Timers;
 using SkiaSharp;
 using SpriteHorizontalAlignment = Gondwana.Drawing.Sprites.HorizontalAlignment;
 using SpriteVerticalAlignment = Gondwana.Drawing.Sprites.VerticalAlignment;
@@ -27,7 +26,6 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
     private TextBlock _message = null!;
     private KeyboardEventPoller? _keyboard;
     private SKTypeface? _typeface;
-    private long _lastTick;
     private string _lastHud = "";
     private string _lastMessage = "";
 
@@ -123,18 +121,22 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 
     internal void Start()
     {
-        _lastTick = HighResTimer.GetCurrentTick();
-        Engine.BeforeBackgroundTasksExecute += Update;
+        Engine.SimulationUpdating += Update;
     }
 
-    private void Update()
+    private void Update(double deltaSeconds)
     {
-        long tick = HighResTimer.GetCurrentTick();
-        float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, tick), 0f, 0.05f);
-        _lastTick = tick;
         float turn = (_pressed.Contains("right") || _pressed.Contains("d") ? 1f : 0f)
             - (_pressed.Contains("left") || _pressed.Contains("a") ? 1f : 0f);
-        _game.Update(dt, turn, _pressed.Contains("up") || _pressed.Contains("w"), _pressed.Contains("space"));
+        double remaining = deltaSeconds;
+
+        while (remaining > 0d)
+        {
+            double step = Math.Min(remaining, 0.05d);
+            _game.Update((float)step, turn, _pressed.Contains("up") || _pressed.Contains("w"), _pressed.Contains("space"));
+            remaining -= step;
+        }
+
         DrawState();
     }
 
@@ -236,7 +238,7 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 
     internal void UnhookEvents()
     {
-        Engine.BeforeBackgroundTasksExecute -= Update;
+        Engine.SimulationUpdating -= Update;
 
         if (_keyboard is not null)
             _keyboard.KeyDown -= HandleKey;

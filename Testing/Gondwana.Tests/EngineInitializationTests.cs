@@ -10,7 +10,7 @@ namespace Gondwana.Tests;
 public sealed class EngineInitializationTests
 {
     /// <summary>
-    /// Verifies timer driven profiler counts simulation steps and single foreground independently.
+    /// Verifies timer-driven simulation events carry fixed deltas and profiler counts steps independently of rendering.
     /// </summary>
     [Fact]
     public void TimerDrivenProfilerCountsSimulationStepsAndSingleForegroundIndependently()
@@ -22,6 +22,9 @@ public sealed class EngineInitializationTests
             engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.Configuration.TargetFPS = 0;
             engine.Configuration.MaxTimerDrivenSimulationSteps = 3;
+            engine.Configuration.TimerDrivenSimulationRate = 60d;
+            var deltas = new List<double>();
+            engine.SimulationUpdating += deltas.Add;
             engine.EngineDispatcher.BindToCurrentThread();
 
             typeof(Engine).GetField("_isTimerDriven", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(
@@ -38,6 +41,9 @@ public sealed class EngineInitializationTests
                 engine.Tick();
 
             var history = engine.Profiler.GetHistory();
+            Assert.Equal(3, deltas.Count);
+            double tickTolerance = 1d / Gondwana.Timers.HighResTimer.TicksPerSecond;
+            Assert.All(deltas, delta => Assert.InRange(delta, 1d / 60d - tickTolerance, 1d / 60d + tickTolerance));
             Assert.Equal(3, history.Sum(s => s.Sources[0].Metrics["cycle.cpu.ms"].Count));
             Assert.Equal(1, history.Sum(s => s.Sources[0].Metrics["foreground.cpu.ms"].Count));
         }

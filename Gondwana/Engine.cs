@@ -138,6 +138,19 @@ public sealed class Engine : IDisposable
     public event Action? InitializationComplete;
 
     /// <summary>
+    /// Occurs once at the start of each simulation cycle, after scheduled gamepad hardware polling
+    /// and before plugin pre-cycle hooks and background tasks.
+    /// </summary>
+    /// <remarks>
+    /// The argument is the simulation delta in seconds: elapsed cycle time in the desktop loop,
+    /// or the fixed-step duration in timer-driven mode. A timer-driven tick may raise this event
+    /// zero or more times, independently of rendering. Handlers run synchronously on the engine
+    /// thread or the thread calling <see cref="Tick"/> in timer-driven mode. Use this event for
+    /// time-based gameplay updates; input poller events occur later in the background phase.
+    /// </remarks>
+    public event Action<double>? SimulationUpdating;
+
+    /// <summary>
     /// Occurs immediately before <see cref="DoBackgroundTasks(long)"/> executes within each engine cycle.
     /// </summary>
     /// <remarks>
@@ -1042,6 +1055,7 @@ public sealed class Engine : IDisposable
 
         long telemetryGeneration = _engineTelemetry.BeginSample();
         long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
+        SimulationUpdating?.Invoke(simulationDelta);
         EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
 
         DoBackgroundTasks(simulationTick);

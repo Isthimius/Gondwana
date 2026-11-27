@@ -189,3 +189,7 @@ Audio uses the common `Engine.Managers.AudioResources` API with a platform backe
 ## License
 
 MIT
+
+### Continuous gameplay updates
+
+All three templates include an opt-in example in `OnEngineInitialized` and matching cleanup in `UnhookEvents`. Subscribe to `Engine.SimulationUpdating` for time-based gameplay; its `double deltaSeconds` argument is elapsed simulation time in seconds (fixed-step in timer-driven browser mode). Do not measure your own wall-clock delta for each simulation callback. Input events and the existing background and frame events remain available for their respective purposes.
