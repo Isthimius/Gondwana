@@ -15,8 +15,8 @@ dotnet run --project Demos/Gondwana.Adventure.Blazor
 - Carry the matching key to a castle's gate, then walk into the gate. Gates stay open; leave keeps via their bottom opening.
 - Find the chalice in the black dungeon, return it to the gold keep.
 - Sword: defeat dragons at close range. Bridge: drop near a wall to cross. Magnet: draws objects toward you.
-- V on title: toggle the shuffled-tools variant; P: pause; R: restart; M: mute.
-- The tiny dot unlocks a secret passage.
+- V on title: toggle Game 2 fixed placements / Game 3 randomized placements; P: pause; R: restart; M: mute.
+- The invisible dot and two other objects (not the bridge) together open the secret barrier. After death, Space revives the dragons and returns the player to the Golden Castle while preserving item locations.
 - Click the browser canvas first to focus input and permit audio.
 
 The audio layer generates PCM WAV tones for pickup, drop, gates, dragon attacks, slaying, bat theft, victory, and startup. WinForms uses its built-in NAudio configuration, Blazor uses Browser Audio, and Avalonia uses NAudio on Windows. Non-Windows Avalonia remains playable without sound pending a portable Gondwana desktop backend.

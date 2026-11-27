@@ -68,43 +68,78 @@ internal sealed class AdventureGame
         _portalDelay = 0f;
         _batDelay = 9f;
         _batCargo = null;
-        BatRoom = 8;
-        BatPosition = FindOpenPosition(BatRoom, new Vector2(480, 600));
+        BatRoom = 2;
+        BatPosition = OriginalPosition(BatRoom, 32, 32);
         Items.Clear();
         Dragons.Clear();
 
+        // Original Game 2 starting rooms; coordinates are scaled from the
+        // documented playfield and snapped to open floor for our collision model.
         Items.AddRange([
-            new(ItemKind.GoldKey, 17, new(240, 590)),
-            new(ItemKind.WhiteKey, 18, new(330, 360)),
-            new(ItemKind.BlackKey, 23, new(480, 120)),
-            new(ItemKind.Sword, 2, new(480, 360)),
-            new(ItemKind.Bridge, 8, new(480, 600)),
-            new(ItemKind.Magnet, 26, new(480, 590)),
-            new(ItemKind.Chalice, 19, new(480, 360)),
-            new(ItemKind.Dot, 21, new(408, 600))
+            new(ItemKind.GoldKey, 9, OriginalPosition(9, 32, 64)),
+            new(ItemKind.WhiteKey, 6, OriginalPosition(6, 32, 64)),
+            new(ItemKind.BlackKey, 25, OriginalPosition(25, 32, 64)),
+            new(ItemKind.Sword, 17, OriginalPosition(17, 32, 32)),
+            new(ItemKind.Bridge, 11, OriginalPosition(11, 64, 64)),
+            new(ItemKind.Magnet, 14, OriginalPosition(14, 128, 32)),
+            new(ItemKind.Chalice, 20, OriginalPosition(20, 48, 32)),
+            new(ItemKind.Dot, 21, OriginalPosition(21, 81, 18))
+        ]);
+
+        Dragons.AddRange([
+            new(25, OriginalPosition(25, 80, 32, 20f), 0xffd0d050, 105f),
+            new(4, OriginalPosition(4, 80, 32, 20f), 0xff84b468, 125f),
+            new(20, OriginalPosition(20, 80, 32, 20f), 0xffc06848, 155f)
         ]);
 
         if (randomized)
         {
-            // Shuffle only the non-essential tools among accessible outdoor rooms.
-            foreach (Item item in Items.Where(i => i.Kind is ItemKind.Sword or ItemKind.Bridge))
-                item.Room = _random.Next(1, 12);
+            // The original third variation randomizes all mobile objects
+            // except the dot. Keep the keys outside their own locked castles.
+            foreach (Item item in Items.Where(i => i.Kind != ItemKind.Dot))
+            {
+                item.Room = item.Kind switch
+                {
+                    ItemKind.Chalice => _random.Next(19, 27),
+                    ItemKind.BlackKey => _random.Next(1, 19),
+                    ItemKind.WhiteKey => _random.Next(1, 23),
+                    _ => _random.Next(1, 30)
+                };
+                item.Position = FindOpenPosition(item.Room, item.Position);
+            }
+
+            foreach (Dragon dragon in Dragons)
+            {
+                dragon.Room = _random.Next(1, 30);
+                dragon.Position = FindOpenPosition(dragon.Room, dragon.Position, 20f);
+            }
+
+            BatRoom = _random.Next(1, 30);
+            BatPosition = FindOpenPosition(BatRoom, BatPosition);
         }
-
-        foreach (Item item in Items)
-            item.Position = FindOpenPosition(item.Room, item.Position);
-
-        Dragons.AddRange([
-            new(2, FindOpenPosition(2, new(315, 190), 20f), 0xffd0d050, 105f),
-            new(8, FindOpenPosition(8, new(480, 160), 20f), 0xff84b468, 125f),
-            new(21, FindOpenPosition(21, new(480, 160), 20f), 0xffc06848, 155f)
-        ]);
     }
 
     internal void Start()
     {
-        if (State is Phase.Dead or Phase.Won)
+        if (State == Phase.Dead)
+        {
+            // Console reset after death revives the dragons and returns the
+            // player to the starting castle without resetting object locations.
+            Held = null;
+            RoomId = GoldCastle;
+            Player = CastleApproach;
+            _pickupDelay = 0.8f;
+            _portalDelay = 0f;
+
+            foreach (Dragon dragon in Dragons)
+                dragon.Alive = true;
+
+            State = Phase.Title;
+        }
+        else if (State == Phase.Won)
+        {
             Reset(Randomized);
+        }
 
         if (State != Phase.Title)
             return;
@@ -148,6 +183,8 @@ internal sealed class AdventureGame
         MovePlayer(new Vector2(0, input.Y * 235f * dt));
         HandlePortal();
         HandleItems();
+        UpdateSecretWall();
+        UpdateMagnet(dt);
         UpdateDragons(dt);
         UpdateBat(dt);
 
@@ -261,23 +298,6 @@ internal sealed class AdventureGame
             Held.Room = RoomId;
             Held.Position = Player + new Vector2(23, 15);
 
-            if (Held.Kind == ItemKind.Dot && RoomId == 3)
-                _secretOpen = true;
-
-            if (Held.Kind == ItemKind.Magnet)
-            {
-                Item? attracted = Items.Where(i => i != Held && i != _batCargo && i.Room == RoomId)
-                    .OrderBy(i => Vector2.DistanceSquared(i.Position, Player)).FirstOrDefault();
-
-                if (attracted is not null)
-                {
-                    Vector2 next = Vector2.Lerp(attracted.Position, Held.Position, 0.025f);
-
-                    if (!IsBlocked(RoomId, next, _secretOpen))
-                        attracted.Position = next;
-                }
-            }
-
             return;
         }
 
@@ -295,10 +315,38 @@ internal sealed class AdventureGame
         }
     }
 
+    private void UpdateSecretWall()
+    {
+        // Deterministic equivalent of the cartridge's sprite-multiplexing trick:
+        // bring the dot and two other objects to the barrier room.
+        _secretOpen = Items.Any(i => i.Kind == ItemKind.Dot && i.Room == 3) &&
+            Items.Count(i => i.Room == 3 && i.Kind is not (ItemKind.Dot or ItemKind.Bridge)) >= 2;
+    }
+
+    private void UpdateMagnet(float dt)
+    {
+        Item magnet = Items.First(i => i.Kind == ItemKind.Magnet);
+        Item? attracted = Items.Where(i => i != magnet && i != Held && i != _batCargo &&
+            i.Room == magnet.Room && i.Kind != ItemKind.Dot)
+            .OrderBy(i => Vector2.DistanceSquared(i.Position, magnet.Position)).FirstOrDefault();
+
+        if (attracted is null)
+            return;
+
+        Vector2 offset = magnet.Position - attracted.Position;
+        float distance = offset.Length();
+
+        if (distance > 24f)
+            attracted.Position += offset / distance * Math.Min(95f * dt, distance - 24f);
+    }
+
     private void UpdateDragons(float dt)
     {
         foreach (Dragon dragon in Dragons.Where(d => d.Alive && d.Room == RoomId))
         {
+            if (dragon.Color == 0xffd0d050 && Items.Any(i => i.Kind == ItemKind.GoldKey && i.Room == RoomId))
+                continue;
+
             Vector2 offset = Player - dragon.Position;
             float distance = offset.Length();
 
@@ -317,6 +365,12 @@ internal sealed class AdventureGame
             }
             else if (distance < 22f)
             {
+                if (Held is not null)
+                {
+                    Held.Position = FindOpenPosition(RoomId, Player);
+                    Held = null;
+                }
+
                 State = Phase.Dead;
                 Emit(Sound.Dragon);
                 return;

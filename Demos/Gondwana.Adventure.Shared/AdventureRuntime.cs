@@ -152,12 +152,12 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
             _lastHud = hud;
         }
 
-        string variant = _game.Randomized ? "SHUFFLED TOOLS" : "CLASSIC QUEST";
+        string variant = _game.Randomized ? "GAME 3 - RANDOMIZED" : "GAME 2 - CLASSIC QUEST";
         string message = _game.State switch
         {
             AdventureGame.Phase.Title => $"ADVENTURE\n{variant}\nRecover the chalice and return it to the gold castle.\nArrow keys / WASD: move    SPACE: start or drop\nV: change variant    P: pause    M: mute",
             AdventureGame.Phase.Paused => "PAUSED\nP TO RESUME",
-            AdventureGame.Phase.Dead => "THE DRAGON GOT YOU!\nSPACE TO TRY AGAIN",
+            AdventureGame.Phase.Dead => "THE DRAGON GOT YOU!\nSPACE TO CONTINUE",
             AdventureGame.Phase.Won => "THE CHALICE IS HOME!\nSPACE FOR A NEW QUEST",
             _ => ""
         };

@@ -60,18 +60,36 @@ public sealed class AdventureGameTests
     }
 
     [Fact]
+    public void OriginalGameTwoStartingRoomsMatchDocumentedQuest()
+    {
+        var game = new AdventureGame(1);
+        var expected = new Dictionary<AdventureGame.ItemKind, int>
+        {
+            [AdventureGame.ItemKind.GoldKey] = 9,
+            [AdventureGame.ItemKind.WhiteKey] = 6,
+            [AdventureGame.ItemKind.BlackKey] = 25,
+            [AdventureGame.ItemKind.Sword] = 17,
+            [AdventureGame.ItemKind.Bridge] = 11,
+            [AdventureGame.ItemKind.Magnet] = 14,
+            [AdventureGame.ItemKind.Chalice] = 20,
+            [AdventureGame.ItemKind.Dot] = 21
+        };
+
+        Assert.All(game.Items, item => Assert.Equal(expected[item.Kind], item.Room));
+        Assert.Equal(new[] { 4, 20, 25 }, game.Dragons.Select(d => d.Room).Order().ToArray());
+        Assert.Equal(2, game.BatRoom);
+    }
+
+    [Fact]
     public void GoldKeyCanOpenCastleAndTravelWithPlayer()
     {
         var game = new AdventureGame(1);
         game.Start();
-
-        for (int i = 0; i < 20; i++)
-            game.Update(0.05f, -Vector2.UnitX);
-
+        var key = game.Items.Single(i => i.Kind == AdventureGame.ItemKind.GoldKey);
+        key.Room = AdventureWorld.GoldCastle;
+        key.Position = game.Player;
+        game.Update(0f, Vector2.Zero);
         Assert.Equal(AdventureGame.ItemKind.GoldKey, game.Held?.Kind);
-
-        for (int i = 0; i < 20; i++)
-            game.Update(0.05f, Vector2.UnitX);
 
         for (int i = 0; i < 12 && game.RoomId == AdventureWorld.GoldCastle; i++)
             game.Update(0.05f, -Vector2.UnitY);
@@ -93,8 +111,8 @@ public sealed class AdventureGameTests
         Assert.True(AdventureWorld.IsBlocked(1, new Vector2(8, 360)));
         Assert.True(AdventureWorld.IsBlocked(3, new Vector2(954, 360)));
         Assert.False(AdventureWorld.IsBlocked(3, new Vector2(954, 360), secretOpen: true));
-        Assert.Equal(3, AdventureWorld.GetRoom(1).East);
-        Assert.Equal(2, AdventureWorld.GetRoom(1).West);
+        Assert.Equal(2, AdventureWorld.GetRoom(1).East);
+        Assert.Equal(3, AdventureWorld.GetRoom(1).West);
         Assert.Equal(10, AdventureWorld.GetRoom(3).South);
     }
 

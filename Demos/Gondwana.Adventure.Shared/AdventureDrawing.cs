@@ -96,7 +96,7 @@ internal sealed class AdventureDrawing : DirectDrawingBase
             AdventureGame.ItemKind.Bridge => new SKColor(135, 62, 170),
             AdventureGame.ItemKind.Magnet => SKColors.Black,
             AdventureGame.ItemKind.Chalice => SKColors.Gold,
-            _ => new SKColor(96, 96, 96)
+            _ => new SKColor(AdventureWorld.BackgroundColor)
         };
 
         switch (item.Kind)

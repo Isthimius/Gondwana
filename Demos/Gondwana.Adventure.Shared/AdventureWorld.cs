@@ -34,7 +34,7 @@ internal static class AdventureWorld
 
     // Geometric interpretation of the documented Atari playfields. Each row
     // describes forty horizontal cells; the end bands are half-height.
-    // The source room links are Up, Left, Down, Right, not clockwise.
+    // The movement routine uses Up, Right, Down, Left, despite the reversed labels in the room-table comments.
     // See the reference links in README.md. No original executable code is used.
     private static readonly string[] BelowCastle =
     [
@@ -291,36 +291,36 @@ internal static class AdventureWorld
 
     internal static readonly Room[] Rooms =
     [
-        new(1, "Olive passage", 8, 3, 15, 2, 0xff9ca864, BuildWalls(BelowCastle, ThinWall.Left)),
-        new(2, "Green passage", 17, 1, 17, 3, 0xff84b468, BuildWalls(BelowCastle)),
-        new(3, "Hidden passage", 6, 2, 10, 1, 0xffb89c58, BuildWalls(HiddenPassage, ThinWall.Right)),
-        new(4, "Blue labyrinth north", 16, 6, 7, 5, 0xff505cc0, BuildWalls(BlueNorth)),
-        new(5, "Blue labyrinth west", 29, 4, 8, 6, 0xff505cc0, BuildWalls(BlueWest)),
-        new(6, "Blue labyrinth south", 7, 5, 3, 4, 0xff505cc0, BuildWalls(BlueSouth)),
+        new(1, "Olive passage", 8, 2, 15, 3, 0xff9ca864, BuildWalls(BelowCastle, ThinWall.Left)),
+        new(2, "Green passage", 17, 3, 17, 1, 0xff84b468, BuildWalls(BelowCastle)),
+        new(3, "Hidden passage", 6, 1, 10, 2, 0xffb89c58, BuildWalls(HiddenPassage, ThinWall.Right)),
+        new(4, "Blue labyrinth north", 16, 5, 7, 6, 0xff505cc0, BuildWalls(BlueNorth)),
+        new(5, "Blue labyrinth west", 29, 6, 8, 4, 0xff505cc0, BuildWalls(BlueWest)),
+        new(6, "Blue labyrinth south", 7, 4, 3, 5, 0xff505cc0, BuildWalls(BlueSouth)),
         new(7, "Blue labyrinth center", 4, 8, 6, 8, 0xff505cc0, BuildWalls(BlueCenter)),
         new(8, "Blue labyrinth entrance", 5, 7, 1, 7, 0xff505cc0, BuildWalls(BlueEntry)),
         new(9, "Dark labyrinth center", 10, 10, 11, 10, 0xffb0b0b0, BuildWalls(DarkCenter, ThinWall.None), true),
         new(10, "Dark labyrinth entrance", 3, 9, 9, 9, 0xffb0b0b0, BuildWalls(DarkEntry, ThinWall.None), true),
-        new(11, "Dark labyrinth side", 9, 13, 28, 12, 0xffb0b0b0, BuildWalls(DarkSide, ThinWall.None), true),
-        new(12, "Blue-green passage", 28, 11, 29, 13, 0xff6888cc, BuildWalls(SideCorridor, ThinWall.Right)),
-        new(13, "Green side passage", 15, 12, 14, 11, 0xff68b494, BuildWalls(SideCorridor, ThinWall.Left)),
-        new(14, "White castle approach", 13, 16, 15, 16, 0xff689cc0, BuildWalls(TopEntry)),
+        new(11, "Dark labyrinth side", 9, 12, 28, 13, 0xffb0b0b0, BuildWalls(DarkSide, ThinWall.None), true),
+        new(12, "Eastern catacomb passage", 28, 13, 29, 11, 0xff6888cc, BuildWalls(SideCorridor, ThinWall.Right)),
+        new(13, "White castle approach", 15, 11, 14, 12, 0xff68b494, BuildWalls(SideCorridor, ThinWall.Left)),
+        new(14, "Magnet chamber", 13, 16, 15, 16, 0xff689cc0, BuildWalls(TopEntry)),
         new(15, "White castle", 14, 15, 13, 15, 0xffdcdcdc, BuildWalls(Castle)),
         new(16, "Black castle", 1, 28, 4, 28, 0xff000000, BuildWalls(Castle)),
-        new(17, "Gold castle", 6, 1, 2, 3, 0xffd0d050, BuildWalls(Castle)),
+        new(17, "Gold castle", 6, 3, 2, 1, 0xffd0d050, BuildWalls(Castle)),
         new(18, "Gold castle keep", 18, 18, 17, 18, 0xffd0d050, BuildWalls(EnclosedKeep)),
-        new(19, "Black dungeon I", 21, 22, 21, 20, 0xffb0b0b0, BuildWalls(BlackOne, ThinWall.None), true),
-        new(20, "Black dungeon II", 22, 19, 22, 21, 0xffb0b0b0, BuildWalls(BlackTwo, ThinWall.None), true),
-        new(21, "Black dungeon III", 19, 20, 19, 22, 0xffb0b0b0, BuildWalls(BlackThree, ThinWall.None), true),
-        new(22, "Black dungeon entrance", 20, 21, 27, 19, 0xffb0b0b0, BuildWalls(BlackEntry, ThinWall.None), true),
+        new(19, "Black dungeon I", 21, 20, 21, 22, 0xffb0b0b0, BuildWalls(BlackOne, ThinWall.None), true),
+        new(20, "Black dungeon II", 22, 21, 22, 19, 0xffb0b0b0, BuildWalls(BlackTwo, ThinWall.None), true),
+        new(21, "Black dungeon III", 19, 22, 19, 20, 0xffb0b0b0, BuildWalls(BlackThree, ThinWall.None), true),
+        new(22, "Black dungeon entrance", 20, 19, 27, 21, 0xffb0b0b0, BuildWalls(BlackEntry, ThinWall.None), true),
         new(23, "Red dungeon I", 25, 24, 25, 24, 0xffc06848, BuildWalls(RedOne)),
         new(24, "Red dungeon north", 26, 23, 26, 23, 0xffc06848, BuildWalls(RedNorth)),
         new(25, "Red dungeon south", 23, 26, 23, 26, 0xffc06848, BuildWalls(RedSouth)),
         new(26, "White castle keep", 24, 25, 15, 25, 0xffc06848, BuildWalls(RedEntry)),
         new(27, "Black castle keep", 22, 22, 16, 22, 0xffc06848, BuildWalls(TwoExitKeep)),
-        new(28, "Purple chamber", 29, 8, 12, 7, 0xff8c58b8, BuildWalls(EnclosedKeep)),
-        new(29, "Southern approach", 12, 3, 16, 1, 0xffc06848, BuildWalls(TopEntry)),
-        new(30, "Secret chamber", 6, 3, 6, 1, 0xff8c58b8, BuildWalls(BelowCastle))
+        new(28, "Purple chamber", 29, 7, 12, 8, 0xff8c58b8, BuildWalls(EnclosedKeep)),
+        new(29, "Southern approach", 12, 1, 16, 3, 0xffc06848, BuildWalls(TopEntry)),
+        new(30, "Secret chamber", 6, 1, 6, 3, 0xff8c58b8, BuildWalls(BelowCastle))
     ];
 
     internal static Room GetRoom(int id) => Rooms[id - 1];
@@ -347,6 +347,11 @@ internal static class AdventureWorld
     internal static readonly RectangleF Gate = new(Width / 2f - 48, 498, 96, 42);
     internal static Vector2 CastleApproach => new(Width / 2f, 590);
     internal static Vector2 KeepEntry => new(Width / 2f, Floor - 25);
+
+    // Convert the original 160-column, 104-line playfield coordinates (Y increases upward)
+    // into our logical coordinates, snapping to clear floor only when necessary.
+    internal static Vector2 OriginalPosition(int room, int x, int y, float radius = PlayerRadius)
+        => FindOpenPosition(room, new Vector2(x * Width / 160f, (104 - y) * Floor / 104f), radius);
 
     private static RectangleF[] BuildWalls(string[] rows, ThinWall thin = ThinWall.None)
     {
