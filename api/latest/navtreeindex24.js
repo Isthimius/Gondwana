@@ -1,5 +1,7 @@
 var NAVTREEINDEX24 =
 {
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a2ac3d2b2d2a4d89e0f83b338e761ed97":[1,0,0,10,3,2,0],
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801":[0,0,0,11,4,2,2],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801":[1,0,0,10,3,2,2],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0":[0,0,0,11,4,2,3],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0":[1,0,0,10,3,2,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX24 =
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af2acfa8b1be12c5402b89e60d67e628f":[0,0,0,3,2,0,1,4],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af37bbf0b270fca4b52a03cec0bf900f6":[0,0,0,3,2,0,1,54],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af5f286e73bda105e538310b3190f75c5":[0,0,0,3,2,0,1,92],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af6c6379402dce27659f7cffee6bc1f00":[0,0,0,3,2,0,1,95],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af7303042267ef3576930c1f4cd79348a":[0,0,0,3,2,0,1,77],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afa78892b0c0fd9b6f2d9dc2400956255":[0,0,0,3,2,0,1,18]
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af6c6379402dce27659f7cffee6bc1f00":[0,0,0,3,2,0,1,95]
 };

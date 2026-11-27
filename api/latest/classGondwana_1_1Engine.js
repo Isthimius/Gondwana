@@ -35,5 +35,6 @@ var classGondwana_1_1Engine =
     [ "Disposing", "classGondwana_1_1Engine.html#ab80856e97f9f913863165bd99d719105", null ],
     [ "InitializationComplete", "classGondwana_1_1Engine.html#a759df33a555fca215571dedb17c85228", null ],
     [ "PostInitialization", "classGondwana_1_1Engine.html#a4880475a941f9c9cf1a72aaee207c443", null ],
-    [ "PreInitialization", "classGondwana_1_1Engine.html#aae919c657e9096bec3306b8669d0da14", null ]
+    [ "PreInitialization", "classGondwana_1_1Engine.html#aae919c657e9096bec3306b8669d0da14", null ],
+    [ "SimulationUpdating", "classGondwana_1_1Engine.html#aaa361b35b726b32fbd50ad97227d00ec", null ]
 ];

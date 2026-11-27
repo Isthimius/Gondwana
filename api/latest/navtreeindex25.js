@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af7303042267ef3576930c1f4cd79348a":[0,0,0,3,2,0,1,77],
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afa78892b0c0fd9b6f2d9dc2400956255":[0,0,0,3,2,0,1,18],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afe5c3684dce76cdd9f7f42430868aa74":[0,0,0,3,2,0,1,64],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Mouse.html":[0,0,0,3,2,1],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Touch.html":[0,0,0,3,2,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "namespaceGondwana_1_1Scenes_1_1GSCN.html#aca4b287b317b561a56f736bd904653f5a89e42ca2f7d2fa6981f4fcc9df275297":[0,0,0,15,0,11,1],
 "namespaceGondwana_1_1Serialization.html":[0,0,0,16],
 "namespaceGondwana_1_1SkiaSharp.html":[0,0,0,17],
-"namespaceGondwana_1_1Timers.html":[0,0,0,18],
-"namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41":[0,0,0,18,2],
-"namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39":[0,0,0,18,2,1]
+"namespaceGondwana_1_1Timers.html":[0,0,0,18]
 };
