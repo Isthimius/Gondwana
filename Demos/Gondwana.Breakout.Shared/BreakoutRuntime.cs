@@ -256,11 +256,14 @@ internal sealed class BreakoutRuntime
         float axis = (_pressed.Contains("right") || _pressed.Contains("d") ? 1f : 0f)
                      - (_pressed.Contains("left") || _pressed.Contains("a") ? 1f : 0f);
 
-        double remaining = deltaSeconds;
+        // Treat excess suspension time as a pause rather than replaying stale input.
+        const double maxStepSeconds = 0.05d;
+        const int maxSteps = 5;
+        double remaining = Math.Min(deltaSeconds, maxStepSeconds * maxSteps);
 
-        while (remaining > 0d)
+        for (int i = 0; i < maxSteps && remaining > 0d; i++)
         {
-            double step = Math.Min(remaining, 0.05d);
+            double step = Math.Min(remaining, maxStepSeconds);
             _game.Update((float)step, axis);
             remaining -= step;
         }
