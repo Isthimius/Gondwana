@@ -17,6 +17,22 @@ public sealed class AsteroidsGameTests
         Assert.True(license.Length > 0);
     }
 
+    [Theory]
+    [InlineData(640f, 360f, 15.5f, 8.5f)]
+    [InlineData(0f, 0f, -0.5f, -0.5f)]
+    [InlineData(1280f, 720f, 31.5f, 17.5f)]
+    [InlineData(-40f, 760f, -1.5f, 18.5f)]
+    public void CenterAlignedSpriteGridPositionPreservesSimulationCenter(
+        float worldX, float worldY, float gridX, float gridY)
+    {
+        var center = new Vector2(worldX, worldY);
+        Vector2 grid = AsteroidsRuntime.ToCenteredSpriteGridPosition(center);
+        Assert.Equal(new Vector2(gridX, gridY), grid);
+
+        Vector2 visualCenter = (grid + new Vector2(0.5f, 0.5f)) * AsteroidsGame.TileSize;
+        Assert.Equal(center, visualCenter);
+    }
+
     [Fact]
     public void WrapHandlesBothAxesAndNegativePositions()
     {

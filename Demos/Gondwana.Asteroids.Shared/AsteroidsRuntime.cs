@@ -66,27 +66,19 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
             ?? throw new InvalidOperationException("Failed to decode the embedded Asteroids font.");
         _typeface = typeface;
         var view = surface.ViewManager.Views[0];
-        var hudBounds = new Rectangle(20, 12, AsteroidsGame.Width - 40, 44);
-        var messageBounds = new Rectangle(240, 250, 800, 220);
-        _hud = new TextBlock(surface, view, hudBounds, "asteroids-hud")
+        _hud = new TextBlock(surface, view, new Rectangle(20, 12, AsteroidsGame.Width - 40, 44), "asteroids-hud")
             .SetFont(typeface, 22f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .EnableWrapping(false);
         _hud.ZOrder = 1000;
-        _message = new TextBlock(surface, view, messageBounds, "asteroids-message")
+        _message = new TextBlock(surface, view, new Rectangle(240, 250, 800, 220), "asteroids-message")
             .SetFont(typeface, 31f, 22f)
             .SetColors(SKColors.White, new SKColor(0, 0, 0, 220))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(5);
         _message.ZOrder = 1001;
 
-        // The browser may still have a 1x1 placeholder viewport during host initialization.
-        // DirectDrawingBase clips constructor bounds to that viewport; explicitly restore the
-        // intended logical rectangles before the first text layout. Presentation resizing
-        // must not change the fixed game-space overlay coordinates.
-        _hud.ScreenBounds = hudBounds;
-        _message.ScreenBounds = messageBounds;
         DrawState();
     }
 
@@ -232,11 +224,15 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
                     _sprites[key] = (entry.Sprite, frame);
                 }
 
-                entry.Sprite.SetPosition(position / AsteroidsGame.TileSize);
+                entry.Sprite.SetPosition(ToCenteredSpriteGridPosition(position));
                 entry.Sprite.Rotation = body.Angle * (180f / MathF.PI);
             }
         }
     }
+
+    // Center/Middle alignment centers the sprite inside its grid cell, not on the cell anchor.
+    internal static Vector2 ToCenteredSpriteGridPosition(Vector2 worldCenter)
+        => worldCenter / AsteroidsGame.TileSize - new Vector2(0.5f, 0.5f);
 
     internal void UnhookEvents()
     {
