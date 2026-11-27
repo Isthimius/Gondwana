@@ -102,6 +102,8 @@ winforms_importers:
 # its dedicated tests change. Engine/global changes are covered nightly.
 # Add a new filter and demo-tests step for future demo suites.
 demo:
+  - 'Demos/Gondwana.Adventure.*/**'
+  - 'Testing/Adventure.Tests/**'
   - 'Demos/Gondwana.Asteroids.*/**'
   - 'Testing/Asteroids.Tests/**'
   - 'Demos/Spot.*/**'
@@ -131,3 +133,7 @@ demo_slider:
 demo_asteroids:
   - 'Demos/Gondwana.Asteroids.*/**'
   - 'Testing/Asteroids.Tests/**'
+
+demo_adventure:
+  - 'Demos/Gondwana.Adventure.*/**'
+  - 'Testing/Adventure.Tests/**'
