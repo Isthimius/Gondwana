@@ -26,6 +26,7 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
     private TextBlock _hud = null!;
     private TextBlock _message = null!;
     private KeyboardEventPoller? _keyboard;
+    private SKTypeface? _typeface;
     private long _lastTick;
     private string _lastHud = "";
     private string _lastMessage = "";
@@ -56,15 +57,23 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 
     internal void CreateDirectDrawings()
     {
+        // Browser Skia does not reliably expose system fonts. Use the same embedded
+        // typeface on every host so all HUD and menu glyphs are available.
+        using var fontStream = typeof(AsteroidsRuntime).Assembly.GetManifestResourceStream(
+            "Gondwana.Demos.Asteroids.Fonts.ArchitectsDaughter-Regular.ttf")
+            ?? throw new InvalidOperationException("Missing embedded Asteroids font.");
+        var typeface = SKTypeface.FromStream(fontStream)
+            ?? throw new InvalidOperationException("Failed to decode the embedded Asteroids font.");
+        _typeface = typeface;
         var view = surface.ViewManager.Views[0];
         _hud = new TextBlock(surface, view, new Rectangle(20, 12, AsteroidsGame.Width - 40, 44), "asteroids-hud")
-            .SetFont(SKTypeface.Default, 22f)
+            .SetFont(typeface, 22f)
             .SetColors(SKColors.White, SKColors.Transparent)
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .EnableWrapping(false);
         _hud.ZOrder = 1000;
         _message = new TextBlock(surface, view, new Rectangle(240, 250, 800, 220), "asteroids-message")
-            .SetFont(SKTypeface.Default, 31f, 22f)
+            .SetFont(typeface, 31f, 22f)
             .SetColors(SKColors.White, new SKColor(0, 0, 0, 220))
             .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
             .SetMaxLines(5);
@@ -229,5 +238,9 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 
         _keyboard = null;
         _pressed.Clear();
+
+        // GameHostBase stops and waits for rendering before calling this hook.
+        _typeface?.Dispose();
+        _typeface = null;
     }
 }

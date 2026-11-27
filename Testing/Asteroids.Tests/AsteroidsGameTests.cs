@@ -6,6 +6,18 @@ namespace Asteroids.Tests;
 public sealed class AsteroidsGameTests
 {
     [Fact]
+    public void HudFontAndLicenseAreEmbeddedInSharedAssembly()
+    {
+        var assembly = typeof(AsteroidsGame).Assembly;
+        using var font = assembly.GetManifestResourceStream("Gondwana.Demos.Asteroids.Fonts.ArchitectsDaughter-Regular.ttf");
+        using var license = assembly.GetManifestResourceStream("Gondwana.Demos.Asteroids.Fonts.OFL.txt");
+        Assert.NotNull(font);
+        Assert.NotNull(license);
+        Assert.True(font.Length > 0);
+        Assert.True(license.Length > 0);
+    }
+
+    [Fact]
     public void WrapHandlesBothAxesAndNegativePositions()
     {
         Assert.Equal(new Vector2(AsteroidsGame.Width - 5, 7), AsteroidsGame.Wrap(new Vector2(-5, AsteroidsGame.Height + 7)));
