@@ -2,16 +2,16 @@ using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
+using Gondwana.Extensibility;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.Timers;
 using SkiaSharp;
 
 namespace Gondwana.Demos.Adventure;
 
 /// <summary>Shared engine lifecycle, game state, rendering and input actions.</summary>
-internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
+internal sealed class AdventureRuntime(RenderSurfaceHostBase surface) : IEnginePlugin
 {
     private readonly AdventureGame _game = new();
     private readonly AdventureAudio _audio = new();
@@ -23,9 +23,11 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
     private TextBlock? _message;
     private string _lastHud = "";
     private string _lastMessage = "";
-    private long _lastTick;
 
     private static Engine Engine => Gondwana.Engine.Instance;
+
+    string IEnginePlugin.Name => "Adventure";
+    string IEnginePlugin.Version => "1.0";
 
     internal void LoadAssets()
     {
@@ -120,22 +122,37 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
         }
     }
 
-    internal void Start()
-    {
-        _lastTick = HighResTimer.GetCurrentTick();
-        Engine.BeforeBackgroundTasksExecute += Update;
-    }
+    internal void Start() => EnginePluginRegistry.Register(this);
 
-    private void Update()
+    void IEnginePlugin.OnPreCycle(Engine engine, double deltaSeconds)
     {
-        long now = HighResTimer.GetCurrentTick();
-        float dt = Math.Clamp(HighResTimer.GetDuration(_lastTick, now), 0f, 0.05f);
-        _lastTick = now;
         float x = (Down("right", "d") ? 1f : 0f) - (Down("left", "a") ? 1f : 0f);
         float y = (Down("down", "s") ? 1f : 0f) - (Down("up", "w") ? 1f : 0f);
-        _game.Update(dt, new Vector2(x, y));
+        var input = new Vector2(x, y);
+
+        // Preserve the engine's simulation time, including browser catch-up cycles.
+        // Subdivide unusually long desktop cycles to keep collision steps bounded.
+        double remaining = deltaSeconds;
+
+        while (remaining > 0d)
+        {
+            double step = Math.Min(remaining, 0.05d);
+            _game.Update((float)step, input);
+            remaining -= step;
+        }
+
         Refresh();
     }
+
+    void IEnginePlugin.OnInitialize(Engine engine) { }
+
+    void IEnginePlugin.OnPostCycle(Engine engine, double deltaSeconds) { }
+
+    void IEnginePlugin.OnPreFrameRender(Engine engine, double deltaSeconds) { }
+
+    void IEnginePlugin.OnPostFrameRender(Engine engine, double deltaSeconds) { }
+
+    void IEnginePlugin.OnShutdown(Engine engine) { }
 
     private bool Down(string first, string second) => _pressed.Contains(first) || _pressed.Contains(second);
 
@@ -172,7 +189,7 @@ internal sealed class AdventureRuntime(RenderSurfaceHostBase surface)
 
     internal void UnhookEvents()
     {
-        Engine.BeforeBackgroundTasksExecute -= Update;
+        EnginePluginRegistry.Unregister(this);
 
         if (_keyboard is not null)
             _keyboard.KeyDown -= HandleKey;

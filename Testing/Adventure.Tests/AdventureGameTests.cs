@@ -150,6 +150,50 @@ public sealed class AdventureGameTests
     }
 
     [Fact]
+    public void MagnetDoesNotMoveObjectsWhenNoTimeElapses()
+    {
+        var (game, target) = CreateMagnetScenario();
+        Vector2 initialPosition = target.Position;
+        game.Update(0f, Vector2.Zero);
+
+        Assert.Equal(initialPosition, target.Position);
+    }
+
+    [Theory]
+    [InlineData(20, 100f)]
+    [InlineData(100, 100f)]
+    [InlineData(20, 30f)]
+    [InlineData(100, 30f)]
+    public void MagnetAttractionDependsOnElapsedTimeRatherThanUpdateCount(int updates, float initialDistance)
+    {
+        var (game, target) = CreateMagnetScenario(initialDistance);
+        Vector2 initialPosition = target.Position;
+        float dt = 1f / updates;
+
+        for (int i = 0; i < updates; i++)
+            game.Update(dt, Vector2.Zero);
+
+        float expectedMovement = Math.Min(95f, initialDistance - 24f);
+        Assert.InRange(target.Position.X, initialPosition.X + expectedMovement - 0.01f,
+            initialPosition.X + expectedMovement + 0.01f);
+        Assert.Equal(initialPosition.Y, target.Position.Y);
+    }
+
+    private static (AdventureGame Game, AdventureGame.Item Target) CreateMagnetScenario(float distance = 100f)
+    {
+        var game = new AdventureGame(1);
+        var magnet = game.Items.Single(item => item.Kind == AdventureGame.ItemKind.Magnet);
+        var target = game.Items.Single(item => item.Kind == AdventureGame.ItemKind.Sword);
+        magnet.Room = 14;
+        magnet.Position = new Vector2(600, 360);
+        target.Room = magnet.Room;
+        target.Position = magnet.Position - new Vector2(distance, 0);
+        game.Start();
+
+        return (game, target);
+    }
+
+    [Fact]
     public void SynthesizedEffectsContainValidPcmWaveHeaders()
     {
         foreach (var sound in Enum.GetValues<AdventureGame.Sound>())
