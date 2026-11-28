@@ -161,6 +161,26 @@ public sealed class ThemeTests
         Assert.Equal(DialogResult.OK, Assert.IsType<Button>(ok.CancelButton).DialogResult);
     });
 
+    [Fact]
+    public void AboutMenuAndDialogExposeSharedArtworkCredits() => Sta(() =>
+    {
+        using var owner = new Form { Text = "Gondwana Studio" };
+        using var help = ToolingAbout.CreateHelpMenu(owner);
+        Assert.Equal("&Help", help.Text);
+        Assert.Equal("About", Assert.Single(help.DropDownItems.Cast<ToolStripItem>()).Name);
+
+        using var dialog = ToolingAbout.CreateDialog(owner.Text);
+        Assert.Equal("About Gondwana Studio", dialog.Text);
+        var body = Assert.Single(dialog.Controls.OfType<Panel>().Where(panel => panel is not FlowLayoutPanel));
+        var message = Assert.Single(body.Controls.OfType<TextBox>());
+        Assert.Contains("MIT License", message.Text, StringComparison.Ordinal);
+        Assert.Contains("Icons8", message.Text, StringComparison.Ordinal);
+        Assert.Contains("KDE Oxygen", message.Text, StringComparison.Ordinal);
+        Assert.Contains("LGPL v3 or later", message.Text, StringComparison.Ordinal);
+        Assert.Contains("THIRD-PARTY-NOTICES.md", message.Text, StringComparison.Ordinal);
+        Assert.Equal(DialogResult.OK, Assert.IsType<Button>(dialog.AcceptButton).DialogResult);
+    });
+
     [Theory]
     [InlineData(ToolingTheme.Dark)]
     [InlineData(ToolingTheme.DarkBlue)]

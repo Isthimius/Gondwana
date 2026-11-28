@@ -197,6 +197,7 @@ internal sealed partial class MainForm : Form
         _session.AddMenu(file);
         menu.Items.AddRange([file, view]);
         menu.Items.Add(_undoRedo.Menu);
+        menu.Items.Add(ToolingAbout.CreateHelpMenu(this));
         MainMenuStrip = menu;
 
         Controls.Add(_dock);

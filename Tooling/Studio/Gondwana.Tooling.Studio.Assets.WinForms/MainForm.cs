@@ -188,6 +188,7 @@ public sealed partial class MainForm : Form
         _undoRedo = new(() => ActiveEditor?.Editor.History, () => ActiveEditor?.Editor.Enabled == true);
         _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
         menu.Items.AddRange([file, _undoRedo.Menu, view]);
+        menu.Items.Add(ToolingAbout.CreateHelpMenu(this));
         MainMenuStrip = menu;
 
         Controls.Add(_dock);

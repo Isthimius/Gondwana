@@ -447,7 +447,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
             }).Name = "ManagePlugins";
 
         plugins.DropDownItems.Add(new ToolStripSeparator());
-        menu.Items.AddRange([file, _view, _undoRedo.Menu, plugins]);
+        menu.Items.AddRange([file, _view, _undoRedo.Menu, plugins, ToolingAbout.CreateHelpMenu(this)]);
 
         return menu;
     }
