@@ -93,17 +93,19 @@ public sealed partial class SpriteEditorControl : UserControl
         _frames.ImageList = _thumbnails;
         Dock = DockStyle.Fill;
         Controls.Add(_workspace);
-        var toolbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 34 };
+        // Keep the sprite drop list usable in narrow dock panes: overflow
+        // commands horizontally instead of consuming the list with wrapped rows.
+        var toolbar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden, CanOverflow = true };
 
         void Button(string title, Action action, ToolbarGlyphs.EditingCommand? command = null)
         {
-            var button = new Button { Text = title, AutoSize = true };
+            var button = new ToolStripButton(title) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText };
 
             if (command is { } selected)
-                ToolbarGlyphs.SetEditingGlyph(button, selected);
+                ToolbarGlyphs.SetEditingGlyph(button, selected, toolbar.ImageScalingSize.Width);
 
             button.Click += (_, _) => action();
-            toolbar.Controls.Add(button);
+            toolbar.Items.Add(button);
         }
 
         Button("Reload sources", ReloadSources);
@@ -154,22 +156,8 @@ public sealed partial class SpriteEditorControl : UserControl
                 AddPackedAnimationSource),
             ToolbarGlyphs.EditingCommand.Add);
 
-        toolbar.AutoSize = true;
-        toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-
-        toolbar.Controls.Add(
-            new Label
-            {
-                Text = "Animation:",
-                AutoSize = true,
-                Margin = new Padding(
-                    8,
-                    8,
-                    4,
-                    0)
-            });
-
-        toolbar.Controls.Add(_animationPicker);
+        toolbar.Items.Add(new ToolStripLabel("Animation:"));
+        toolbar.Items.Add(new ToolStripControlHost(_animationPicker) { AutoSize = false, Width = _animationPicker.Width });
 
         _animationPicker.SelectedIndexChanged += (_, _) =>
         {
