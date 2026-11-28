@@ -51,7 +51,7 @@ folders and corresponding artwork source. See the repository's
 [Third-Party Notices](../../../../../THIRD-PARTY-NOTICES.md).
 
 The project copies this directory and the root notices into build and publish
-output as loose files. Existing Icons8 embedded resources remain unchanged. Assigned file-operation glyphs load loose Oxygen PNGs through the shared
+output as loose files. Existing Icons8 embedded resources remain unchanged. Assigned file-operation and editing glyphs load loose Oxygen PNGs through the shared
 resolver; additional command assignments are made individually. Optional
 `themes/Dark`, `themes/DarkBlue`, and `themes/Light` subdirectories override
 individual icon filenames for the active theme. Resolution selection prefers
