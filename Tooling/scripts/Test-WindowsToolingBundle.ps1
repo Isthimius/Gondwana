@@ -24,7 +24,7 @@ foreach ($app in $apps) {
     foreach ($relative in @("$($app.Exe).exe", "$($app.Exe).dll",
                             "$($app.Exe).deps.json", "$($app.Exe).runtimeconfig.json",
                             'hostfxr.dll', 'hostpolicy.dll', 'coreclr.dll',
-                            'THIRD-PARTY-NOTICES.md',
+                            'LICENSE', 'THIRD-PARTY-NOTICES.md',
                             'assets/icons/oxygen/README.md',
                             'assets/icons/oxygen/AUTHORS',
                             'assets/icons/oxygen/COPYING',
