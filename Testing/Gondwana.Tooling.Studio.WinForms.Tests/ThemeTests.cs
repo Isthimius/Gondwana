@@ -161,6 +161,25 @@ public sealed class ThemeTests
         Assert.Equal(DialogResult.OK, Assert.IsType<Button>(ok.CancelButton).DialogResult);
     });
 
+    [Theory]
+    [InlineData(16, 16)]
+    [InlineData(22, 22)]
+    [InlineData(24, 32)]
+    [InlineData(32, 32)]
+    [InlineData(48, 48)]
+    [InlineData(64, 48)]
+    public void OxygenNewSelectsNativeResolution(int pixels, int native)
+    {
+        var path = ToolingIconResources.FindOxygenIcon("document-new.png", pixels);
+        Assert.NotNull(path);
+        Assert.Equal($"{native}x{native}", Path.GetFileName(Path.GetDirectoryName(path)));
+
+        using var image = ToolingIconResources.TryCreateOxygenBitmap("document-new.png", pixels);
+        Assert.NotNull(image);
+        Assert.Equal(new Size(pixels, pixels), image.Size);
+        Assert.Equal(0, image.GetPixel(0, 0).A);
+    }
+
     [Fact]
     public void AboutMenuAndDialogExposeSharedArtworkCredits() => Sta(() =>
     {

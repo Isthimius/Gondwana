@@ -61,13 +61,12 @@ GNU Lesser General Public License version 3 or later (LGPL-3.0-or-later).
 
 - Project: [KDE Oxygen Icons](https://develop.kde.org/frameworks/oxygen-icons/).
 - Source: [Oxygen repository](https://github.com/KDE/oxygen-icons).
-- Reserved artwork directory and import inventory: [Oxygen assets](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/README.md).
+- Artwork directory and import inventory: [Oxygen assets](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/README.md).
 - Notices: [COPYING](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/COPYING), [AUTHORS](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/AUTHORS).
 - License texts: [LGPL v3](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/LGPL-3.0-or-later.txt) and [GPL v3](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/GPL-3.0-only.txt).
 
-This entry prepares for selected Oxygen artwork; no Oxygen PNGs are currently
-included or used. Imported artwork and modifications retain the applicable
-Oxygen license. Gondwana's original code remains MIT-licensed. Retain the
+Selected Oxygen artwork is included and used in the tooling applications.
+Imported artwork and modifications retain the applicable Oxygen license. Gondwana's original code remains MIT-licensed. Retain the
 corresponding artwork source and record provenance and modifications as icons
 are imported.
 

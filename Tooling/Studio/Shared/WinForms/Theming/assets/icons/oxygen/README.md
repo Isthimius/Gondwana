@@ -1,7 +1,7 @@
 # KDE Oxygen icon artwork
 
-This directory reserves space for selected Oxygen icons for Gondwana Studio
-and its standalone editors. No Oxygen PNGs have been imported yet.
+This directory contains selected Oxygen icons for Gondwana Studio and its
+standalone editors.
 
 Oxygen icons copyright KDE and the Oxygen contributors, licensed under the GNU
 Lesser General Public License version 3 or later (LGPL-3.0-or-later).
@@ -36,10 +36,14 @@ When importing an icon:
 
 The project keeps these assets separate from the legacy embedded icons.
 Build and publish copy this directory as loose content, excluding empty-folder
-markers. Runtime loading and button migration are intentionally deferred; the
-existing icon resolver and artwork are unchanged.
+markers. The New document command loads loose Oxygen artwork through the
+shared icon resolver, preferring exact or next-larger native sizes and using
+the largest smaller native size when needed. The existing vector glyph remains
+a fallback when the Oxygen artwork is absent. Other commands retain their
+existing artwork until individually migrated.
 
 ## Imported artwork inventory
 
 | Command | Upstream path and revision | Local files | Corresponding source / modifications |
 | --- | --- | --- | --- |
+| File operations — New | [actions/document-new.png and scalable sources](https://github.com/KDE/oxygen-icons/tree/6d2838930cea3aa757ea811d7c2b838f206ed64c) | `16x16/`, `22x22/`, `32x32/`, `48x48/` — `document-new.png` | `source/scalable/actions/document-new.svgz` and `source/scalable/actions/small/{16x16,22x22,48x48}/document-new.svgz`; unchanged upstream bytes |

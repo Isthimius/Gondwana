@@ -45,14 +45,15 @@ surfaces remain OS-rendered; the helper does not replace those operating-system 
 
 ## Third-party icon artwork
 
-Selected KDE Oxygen artwork will live in [assets/icons/oxygen](assets/icons/oxygen/README.md),
+Selected KDE Oxygen artwork lives in [assets/icons/oxygen](assets/icons/oxygen/README.md),
 with the upstream contributor notices, LGPL and GPL license texts, resolution
 folders and corresponding artwork source. See the repository's
 [Third-Party Notices](../../../../../THIRD-PARTY-NOTICES.md).
 
 The project copies this directory and the root notices into build and publish
-output as loose files. Existing Icons8 embedded resources and their resolver
-remain unchanged. Oxygen button assignments will be made individually.
+output as loose files. Existing Icons8 embedded resources remain unchanged. The New document glyph
+loads loose Oxygen PNGs through the shared resolver; additional command
+assignments are made individually.
 
 ## DockPanel Suite 3.1.1
 

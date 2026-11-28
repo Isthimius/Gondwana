@@ -95,7 +95,8 @@ retain those files and any included artwork's corresponding source.
 
 See [Third-Party Notices](../../THIRD-PARTY-NOTICES.md) and the
 [Oxygen artwork inventory](Shared/WinForms/Theming/assets/icons/oxygen/README.md).
-No Oxygen PNGs are imported until an individual icon is selected.
+Selected Oxygen artwork is imported individually; see the inventory for
+current assignments.
 
 ## Project structure and reuse
 

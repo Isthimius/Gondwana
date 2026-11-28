@@ -25,7 +25,7 @@ public static class ToolingAbout
             applicationName + Environment.NewLine +
             "Gondwana source code: MIT License" + Environment.NewLine + Environment.NewLine +
             "Icons8 artwork: https://icons8.com/" + Environment.NewLine +
-            "KDE Oxygen icon artwork (when included): © KDE and the Oxygen contributors; LGPL v3 or later." +
+            "KDE Oxygen icon artwork: © KDE and the Oxygen contributors; LGPL v3 or later." +
             Environment.NewLine + Environment.NewLine +
             "See THIRD-PARTY-NOTICES.md and assets/icons/oxygen/ for credits and licenses.",
             "About " + applicationName,

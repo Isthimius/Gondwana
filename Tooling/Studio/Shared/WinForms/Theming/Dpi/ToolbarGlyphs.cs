@@ -7,8 +7,21 @@ public static partial class ToolbarGlyphs
 {
     public enum DefinitionCommand { Add, Import, Duplicate, Remove, Rename }
 
+    /// <summary>Assigns an owned New-document image to a standard WinForms menu item.</summary>
+    public static void SetNewDocumentMenuGlyph(ToolStripMenuItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var image = Studio("new", 16, ToolingAppearance.Palette);
+        item.Image = image;
+        item.Disposed += (_, _) => image.Dispose();
+    }
+
     public static Bitmap Studio(string kind, int pixels, ToolingPalette palette)
     {
+        if (kind == "new" && ToolingIconResources.TryCreateOxygenBitmap("document-new.png", pixels) is { } oxygen)
+            return oxygen;
+
         var bitmap = new Bitmap(pixels, pixels);
 
         using (var g = Graphics.FromImage(bitmap))

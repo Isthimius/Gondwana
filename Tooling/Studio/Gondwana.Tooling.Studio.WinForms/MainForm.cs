@@ -315,6 +315,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetNewDocumentMenuGlyph(create);
 
         foreach (var (format, label) in NewFileFormats)
             Add(

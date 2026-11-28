@@ -71,11 +71,12 @@ public sealed partial class MainForm : Form
 
         var file = new ToolStripMenuItem("&File");
 
-        Add(
+        var create = Add(
             file,
             "&New",
             Keys.Control | Keys.N,
             CreateNewAssetsFile);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetNewDocumentMenuGlyph(create);
 
         Add(
             file,

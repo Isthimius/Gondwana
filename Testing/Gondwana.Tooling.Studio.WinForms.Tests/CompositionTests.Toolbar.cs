@@ -45,6 +45,16 @@ public sealed partial class CompositionTests
         Assert.Equal("New document (choose a Gondwana format)", create.ToolTipText);
         Assert.False(create.AutoSize);
         Assert.Equal(new Size(buttonPixels, buttonPixels), create.Size);
+        using var expected = Gondwana.Tooling.Studio.Shared.WinForms.Theming.ToolingIconResources.TryCreateOxygenBitmap("document-new.png", imagePixels);
+        Assert.NotNull(expected);
+        var actual = Assert.IsType<Bitmap>(create.Image);
+        Assert.Equal(expected.Size, actual.Size);
+
+        for (int y = 0; y < actual.Height; y++)
+        {
+            for (int x = 0; x < actual.Width; x++)
+                Assert.Equal(expected.GetPixel(x, y), actual.GetPixel(x, y));
+        }
 
         Assert.Equal(
             MainForm.NewFileFormats.Select(format => format.Label),
