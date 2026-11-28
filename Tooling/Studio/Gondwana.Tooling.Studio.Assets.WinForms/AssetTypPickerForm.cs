@@ -1,7 +1,6 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.Assets.WinForms;
@@ -70,7 +69,7 @@ internal sealed class AssetTypePickerForm : Form
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var external = new Button { Text = "Keep external references", AutoSize = true };
         var dependencies = new Button { Text = "Import dependencies", AutoSize = true };
-        Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
         external.Click += (_, _) => Complete(false);
         dependencies.Click += (_, _) => Complete(true);
         buttons.Controls.AddRange([cancel, external, dependencies]);

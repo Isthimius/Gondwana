@@ -1,7 +1,6 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.Scenes.WinForms;
@@ -46,8 +45,8 @@ internal sealed class BulkTilePropertiesDialog : Form
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };
         var ok = new Button { Text = "Apply" };
 
-        Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
-        Glyphs.SetEditingGlyph(ok, EditingCommand.Apply);
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
+        ToolbarGlyphs.SetEditingGlyph(ok, ToolbarGlyphs.EditingCommand.Apply);
 
         ok.Click += (_, _) =>
         {

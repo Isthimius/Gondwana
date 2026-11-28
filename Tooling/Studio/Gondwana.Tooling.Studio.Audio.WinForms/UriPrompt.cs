@@ -1,5 +1,4 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Audio.WinForms;
@@ -32,8 +31,8 @@ internal sealed class UriPrompt : Form
         var cancel = new Button
         { Text = "Cancel", DialogResult = DialogResult.Cancel, Dock = DockStyle.Right, Width = 90 };
 
-        Glyphs.SetEditingGlyph(ok, EditingCommand.Add);
-        Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
+        ToolbarGlyphs.SetEditingGlyph(ok, ToolbarGlyphs.EditingCommand.Add);
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
 
         var buttons = new Panel { Dock = DockStyle.Bottom, Height = 40, Padding = new Padding(6) };
         buttons.Controls.Add(cancel);

@@ -1,10 +1,9 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
@@ -141,10 +140,10 @@ public sealed class AssetEditorControl : UserControl
         _renameButton = AddButton(fileTools, "Rename / Move…", (_, _) => RenameSelectedAsset());
         _exportButton = AddButton(fileTools, "Export", (_, _) => ExportSelectedAsset());
         _deleteButton = AddButton(fileTools, "Delete", (_, _) => DeleteSelectedAsset());
-        Glyphs.SetEditingGlyph(_addButton, EditingCommand.Add);
-        Glyphs.SetEditingGlyph(_replaceButton, EditingCommand.Replace);
-        Glyphs.SetEditingGlyph(_renameButton, EditingCommand.Rename);
-        Glyphs.SetEditingGlyph(_deleteButton, EditingCommand.Delete);
+        ToolbarGlyphs.SetEditingGlyph(_addButton, ToolbarGlyphs.EditingCommand.Add);
+        ToolbarGlyphs.SetEditingGlyph(_replaceButton, ToolbarGlyphs.EditingCommand.Replace);
+        ToolbarGlyphs.SetEditingGlyph(_renameButton, ToolbarGlyphs.EditingCommand.Rename);
+        ToolbarGlyphs.SetEditingGlyph(_deleteButton, ToolbarGlyphs.EditingCommand.Delete);
 
         var filterTools = new ToolStrip
         {

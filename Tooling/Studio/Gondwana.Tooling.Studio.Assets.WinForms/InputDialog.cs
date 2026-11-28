@@ -1,5 +1,4 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.Assets.WinForms;
@@ -61,7 +60,7 @@ internal sealed class InputDialog : Form
             DialogResult = DialogResult.Cancel
         };
 
-        Glyphs.SetEditingGlyph(cancelButton, EditingCommand.Cancel);
+        ToolbarGlyphs.SetEditingGlyph(cancelButton, ToolbarGlyphs.EditingCommand.Cancel);
         Controls.Add(promptLabel);
         Controls.Add(_textBox);
         Controls.Add(okButton);

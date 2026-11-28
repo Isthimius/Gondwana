@@ -1,5 +1,5 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
+
 namespace Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 /// <summary>Tooling-owned modal messages use the same appearance and standard WinForms dialog results.</summary>
@@ -126,7 +126,7 @@ public static class ThemedMessageBox
         foreach (var button in choices.Reverse())
         {
             if (button.DialogResult == DialogResult.Cancel)
-                Glyphs.SetEditingGlyph(button, EditingCommand.Cancel);
+                ToolbarGlyphs.SetEditingGlyph(button, ToolbarGlyphs.EditingCommand.Cancel);
 
             bar.Controls.Add(button);
         }

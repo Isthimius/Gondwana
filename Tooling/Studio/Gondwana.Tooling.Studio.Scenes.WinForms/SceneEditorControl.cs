@@ -1,5 +1,3 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using Gondwana.Assets;
@@ -10,6 +8,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
@@ -675,17 +674,17 @@ public sealed partial class SceneEditorControl : UserControl
                     item.Checked = mode == tool;
             };
 
-            EditingCommand? artwork = tool switch
+            ToolbarGlyphs.EditingCommand? artwork = tool switch
             {
-                SceneEditorTool.Select => EditingCommand.Select,
-                SceneEditorTool.Paint => EditingCommand.Paint,
-                SceneEditorTool.Erase => EditingCommand.Erase,
-                SceneEditorTool.Fill => EditingCommand.Fill,
+                SceneEditorTool.Select => ToolbarGlyphs.EditingCommand.Select,
+                SceneEditorTool.Paint => ToolbarGlyphs.EditingCommand.Paint,
+                SceneEditorTool.Erase => ToolbarGlyphs.EditingCommand.Erase,
+                SceneEditorTool.Fill => ToolbarGlyphs.EditingCommand.Fill,
                 _ => null
             };
 
             if (artwork is { } command)
-                Glyphs.SetEditingGlyph(button, command, bar.ImageScalingSize.Width);
+                ToolbarGlyphs.SetEditingGlyph(button, command, bar.ImageScalingSize.Width);
 
             _toolButtons.Add(tool, button);
             bar.Items.Add(button);
@@ -733,7 +732,7 @@ public sealed partial class SceneEditorControl : UserControl
             _preview.Invalidate();
         };
 
-        Glyphs.SetEditingGlyph(grid, EditingCommand.Grid, bar.ImageScalingSize.Width);
+        ToolbarGlyphs.SetEditingGlyph(grid, ToolbarGlyphs.EditingCommand.Grid, bar.ImageScalingSize.Width);
         bar.Items.Add(grid);
         AddSpritePreviewButtons(bar);
         bar.Items.Add(new ToolStripSeparator());
@@ -821,10 +820,10 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
 
-        Glyphs.AddEditingButton(
+        ToolbarGlyphs.AddEditingButton(
             bar,
             "+ Layer",
-            EditingCommand.Add,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) =>
             {
                 var layer = Document.AddLayer();
@@ -835,10 +834,10 @@ public sealed partial class SceneEditorControl : UserControl
                 UpdateValidation();
             });
 
-        Glyphs.AddEditingButton(
+        ToolbarGlyphs.AddEditingButton(
             bar,
             "− Layer",
-            EditingCommand.Remove,
+            ToolbarGlyphs.EditingCommand.Remove,
             (_, _) =>
             {
                 if (_structure.SelectedNode?.Tag is not SceneLayerDefinition layer)
@@ -868,12 +867,12 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
-        Glyphs.AddEditingButton(bar, "Add GTS…", EditingCommand.Add, (_, _) => ChooseTilesheetSources());
+        ToolbarGlyphs.AddEditingButton(bar, "Add GTS…", ToolbarGlyphs.EditingCommand.Add, (_, _) => ChooseTilesheetSources());
 
-        Glyphs.AddEditingButton(
+        ToolbarGlyphs.AddEditingButton(
             bar,
             "Add from GAF…",
-            EditingCommand.Add,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -881,7 +880,7 @@ public sealed partial class SceneEditorControl : UserControl
                 AssetTypes.TilesheetDefinition,
                 AddPackedTilesheetSource));
 
-        Glyphs.AddEditingButton(bar, "Remove", EditingCommand.Remove, (_, _) => RemoveSelectedTilesheetSource());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelectedTilesheetSource());
         bar.Items.Add(new ToolStripSeparator());
 
         bar.Items.Add(
@@ -900,12 +899,12 @@ public sealed partial class SceneEditorControl : UserControl
     private ToolStrip BuildAnimationToolbar()
     {
         var bar = NewToolbar();
-        Glyphs.AddEditingButton(bar, "Add GANI…", EditingCommand.Add, (_, _) => ChooseAnimationSources());
+        ToolbarGlyphs.AddEditingButton(bar, "Add GANI…", ToolbarGlyphs.EditingCommand.Add, (_, _) => ChooseAnimationSources());
 
-        Glyphs.AddEditingButton(
+        ToolbarGlyphs.AddEditingButton(
             bar,
             "Add from GAF…",
-            EditingCommand.Add,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -913,7 +912,7 @@ public sealed partial class SceneEditorControl : UserControl
                 AssetTypes.AnimationDefinition,
                 AddPackedAnimationSource));
 
-        Glyphs.AddEditingButton(bar, "Remove", EditingCommand.Remove, (_, _) => RemoveSelectedAnimationSource());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelectedAnimationSource());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Assign", null, (_, _) => AssignSelectedAnimation());
         bar.Items.Add("Clear", null, (_, _) => ClearAnimation());
@@ -952,12 +951,12 @@ public sealed partial class SceneEditorControl : UserControl
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
         bar.Items.Add(new ToolStripSeparator());
 
-        Glyphs.AddEditingButton(bar, "Apply to selection", EditingCommand.Apply, (_, _) => EditSelectedCells(erase: false))
+        ToolbarGlyphs.AddEditingButton(bar, "Apply to selection", ToolbarGlyphs.EditingCommand.Apply, (_, _) => EditSelectedCells(erase: false))
             .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
 
-        Glyphs.AddEditingButton(bar, "Edit selected properties", EditingCommand.Properties, (_, _) => EditSelectedProperties());
+        ToolbarGlyphs.AddEditingButton(bar, "Edit selected properties", ToolbarGlyphs.EditingCommand.Properties, (_, _) => EditSelectedProperties());
 
-        Glyphs.AddEditingButton(bar, "Erase selection", EditingCommand.Erase, (_, _) => EditSelectedCells(erase: true))
+        ToolbarGlyphs.AddEditingButton(bar, "Erase selection", ToolbarGlyphs.EditingCommand.Erase, (_, _) => EditSelectedCells(erase: true))
             .ToolTipText = "Remove explicit tiles in the selection as one undo operation";
 
         bar.Items.Add(_selectionLabel);

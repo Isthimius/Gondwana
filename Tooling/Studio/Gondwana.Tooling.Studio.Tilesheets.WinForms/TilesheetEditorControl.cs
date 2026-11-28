@@ -1,5 +1,3 @@
-using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
-using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -121,9 +119,9 @@ public sealed class TilesheetEditorControl : UserControl
         Dock = DockStyle.Fill;
 
         var regionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
-        Glyphs.AddEditingButton(regionTools, "+ Region", EditingCommand.Add, (_, _) => AddRegion());
-        Glyphs.AddEditingButton(regionTools, "− Region", EditingCommand.Remove, (_, _) => RemoveRegion());
-        Glyphs.AddEditingButton(regionTools, "Prune invalid frames…", EditingCommand.Prune, (_, _) => PruneFrames());
+        ToolbarGlyphs.AddEditingButton(regionTools, "+ Region", ToolbarGlyphs.EditingCommand.Add, (_, _) => AddRegion());
+        ToolbarGlyphs.AddEditingButton(regionTools, "− Region", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveRegion());
+        ToolbarGlyphs.AddEditingButton(regionTools, "Prune invalid frames…", ToolbarGlyphs.EditingCommand.Prune, (_, _) => PruneFrames());
         regionTools.Items.Add(new ToolStripControlHost(_regions) { AutoSize = false, Width = 185 });
 
         var navigator = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
