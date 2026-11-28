@@ -12,11 +12,11 @@ public static partial class ToolbarGlyphs
         SetFileOperationGlyph(item, "new");
 
     /// <summary>Assigns an owned file-operation image without changing the item's text or action.</summary>
-    public static void SetFileOperationGlyph(ToolStripItem item, string kind)
+    public static void SetFileOperationGlyph(ToolStripItem item, string kind, int pixels = 16)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        var image = Studio(kind, 16, ToolingAppearance.Palette);
+        var image = Studio(kind, pixels, ToolingAppearance.Palette);
         item.Image = image;
         item.Disposed += (_, _) => image.Dispose();
     }

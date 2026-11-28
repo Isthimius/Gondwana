@@ -180,6 +180,45 @@ public sealed class ThemeTests
         Assert.Equal(0, image.GetPixel(0, 0).A);
     }
 
+    [Fact]
+    public void OxygenThemeOverridesAreIndependentAndFallBackToCommonArtwork()
+    {
+        string root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            const string fileName = "document-save.png";
+
+            string AddArtwork(string relative)
+            {
+                string path = Path.Combine(root, relative, fileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                File.WriteAllText(path, "test");
+                return path;
+            }
+
+            string common16 = AddArtwork("16x16");
+            string common32 = AddArtwork("32x32");
+            string dark22 = AddArtwork(Path.Combine("themes", "Dark", "22x22"));
+            string dark48 = AddArtwork(Path.Combine("themes", "Dark", "48x48"));
+            string light32 = AddArtwork(Path.Combine("themes", "Light", "32x32"));
+
+            Assert.Equal(dark22, ToolingIconResources.FindOxygenIcon(fileName, 16, ToolingTheme.Dark, root));
+            Assert.Equal(dark22, ToolingIconResources.FindOxygenIcon(fileName, 22, ToolingTheme.Dark, root));
+            Assert.Equal(dark48, ToolingIconResources.FindOxygenIcon(fileName, 24, ToolingTheme.Dark, root));
+            Assert.Equal(dark48, ToolingIconResources.FindOxygenIcon(fileName, 64, ToolingTheme.Dark, root));
+            Assert.Equal(light32, ToolingIconResources.FindOxygenIcon(fileName, 16, ToolingTheme.Light, root));
+            Assert.Equal(common16, ToolingIconResources.FindOxygenIcon(fileName, 16, ToolingTheme.DarkBlue, root));
+            Assert.Equal(common32, ToolingIconResources.FindOxygenIcon(fileName, 24, ToolingTheme.DarkBlue, root));
+            Assert.Null(ToolingIconResources.FindOxygenIcon("missing.png", 16, ToolingTheme.Dark, root));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Theory]
     [InlineData("open", "document-open.png")]
     [InlineData("save", "document-save.png")]

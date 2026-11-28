@@ -42,6 +42,33 @@ the largest smaller native size when needed. The existing vector glyphs remain
 fallbacks when the Oxygen artwork is absent. Other commands retain their
 existing artwork until individually migrated.
 
+## Theme and resolution overrides
+
+The resolution directories directly under this folder are the common artwork
+for every theme. Optional overrides live under `themes/Dark/`,
+`themes/DarkBlue/` or `themes/Light/`, with the same nine resolution
+directories and the same logical icon filename.
+
+For example, a Light-only variant of Save at 32 pixels belongs in
+`themes/Light/32x32/document-save.png`. Only add overrides that are needed;
+there is no requirement to duplicate the common icon set. A different
+upstream image may be assigned to the same logical filename; record its
+original path, revision, corresponding source and any modifications below.
+
+The shared resolver searches the active theme first: exact requested device
+pixels, then the next larger available native size, then the largest smaller
+size. Only when that theme has no matching icon at any size does it repeat
+the search in the common directories. Thus a single theme-specific 32-pixel
+image overrides the common image at every requested size for that theme.
+No artwork from another theme is used. The original command glyph is the
+final fallback if neither set has the icon. Native files are not resampled
+on disk; the resolver returns a resized, independently owned bitmap.
+
+Theme selection uses the current process-wide appearance (restart to apply
+a changed preference). The size comes from the requesting control, including
+DPI-aware toolbars; this does not change existing navigation or toolbar
+layout settings.
+
 ## Imported artwork inventory
 
 | Command | Upstream path and revision | Local files | Corresponding source / modifications |

@@ -52,7 +52,13 @@ folders and corresponding artwork source. See the repository's
 
 The project copies this directory and the root notices into build and publish
 output as loose files. Existing Icons8 embedded resources remain unchanged. Assigned file-operation glyphs load loose Oxygen PNGs through the shared
-resolver; additional command assignments are made individually.
+resolver; additional command assignments are made individually. Optional
+`themes/Dark`, `themes/DarkBlue`, and `themes/Light` subdirectories override
+individual icon filenames for the active theme. Resolution selection prefers
+exact or next-larger native artwork, then the largest smaller artwork within
+the active theme, falling back to common files if no theme override exists.
+Theme changes retain the existing restart policy. The toolbar's requested
+device-pixel size and the navigation icon-size preference remain distinct.
 
 ## DockPanel Suite 3.1.1
 

@@ -44,24 +44,31 @@ public static class ToolingIconResources
         return Resize(source, pixels);
     }
 
-    internal static string? FindOxygenIcon(string fileName, int pixels)
+    internal static string? FindOxygenIcon(string fileName, int pixels) =>
+        FindOxygenIcon(
+            fileName,
+            pixels,
+            ToolingAppearance.Current,
+            Path.Combine(AppContext.BaseDirectory, "assets", "icons", "oxygen"));
+
+    internal static string? FindOxygenIcon(string fileName, int pixels, ToolingTheme theme, string artworkRoot)
     {
-        // Prefer exact size, then the next larger native artwork, then the largest smaller one.
+        // An override for the active theme takes precedence over common artwork.
+        // Within either set, prefer exact size, next larger, then largest smaller.
         var candidates = OxygenSizes.Where(size => size >= pixels)
             .Concat(OxygenSizes.Where(size => size < pixels).Reverse());
 
-        foreach (int size in candidates)
-        {
-            var path = Path.Combine(
-                AppContext.BaseDirectory,
-                "assets",
-                "icons",
-                "oxygen",
-                $"{size}x{size}",
-                fileName);
+        var themeRoot = Path.Combine(artworkRoot, "themes", theme.ToString());
 
-            if (File.Exists(path))
-                return path;
+        foreach (var root in new[] { themeRoot, artworkRoot })
+        {
+            foreach (int size in candidates)
+            {
+                var path = Path.Combine(root, $"{size}x{size}", fileName);
+
+                if (File.Exists(path))
+                    return path;
+            }
         }
 
         return null;
