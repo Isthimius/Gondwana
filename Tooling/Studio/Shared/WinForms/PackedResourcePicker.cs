@@ -1,3 +1,5 @@
+using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
+using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
@@ -33,6 +35,7 @@ public static class PackedResourcePicker
             var input = new TextBox { Dock = DockStyle.Top, UseSystemPasswordChar = true };
             var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, Dock = DockStyle.Bottom };
             var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Dock = DockStyle.Bottom };
+            Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
             dialog.Controls.AddRange([input, label, cancel, ok]);
             dialog.AcceptButton = ok;
             dialog.CancelButton = cancel;
@@ -118,6 +121,8 @@ public static class PackedResourcePicker
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var ok = new Button { Name = "add", Text = "Add", AutoSize = true, Enabled = false };
         var reload = new Button { Name = "reload", Text = "Reload / retry", AutoSize = true };
+        Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
+        Glyphs.SetEditingGlyph(ok, EditingCommand.Add);
         buttons.Controls.AddRange([cancel, ok, reload]);
         dialog.Controls.AddRange([entries, members, extension, status, buttons]);
         dialog.CancelButton = cancel;

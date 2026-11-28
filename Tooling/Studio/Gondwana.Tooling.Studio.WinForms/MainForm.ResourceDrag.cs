@@ -1,3 +1,5 @@
+using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
+using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -177,6 +179,7 @@ public sealed partial class MainForm
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var accept = new Button { Text = "Assign", DialogResult = DialogResult.OK, AutoSize = true };
+        Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
         bar.Controls.AddRange([cancel, accept]);
         dialog.Controls.Add(bar);
         dialog.CancelButton = cancel;

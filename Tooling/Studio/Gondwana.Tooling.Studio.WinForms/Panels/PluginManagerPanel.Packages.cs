@@ -1,3 +1,5 @@
+using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
+using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using System.Text;
 using Gondwana.Tooling.Studio.Core.Extensibility;
@@ -37,6 +39,7 @@ internal sealed partial class PluginManagerPanel
     private Control CreatePackageActions()
     {
         var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, WrapContents = true };
+        Glyphs.SetEditingGlyph(CancelButton, EditingCommand.Cancel);
         actions.Controls.AddRange([InstallButton, UpdateButton, RemoveButton, CancelButton]);
 
         foreach (var title in new[] { "Pending plugin", "Operation", "State", "Diagnostics" })
@@ -336,6 +339,8 @@ internal sealed partial class PluginManagerPanel
 
         var accept = new Button
         { Text = "Confirm for next startup", AutoSize = true, Enabled = false, DialogResult = DialogResult.OK };
+
+        Glyphs.SetEditingGlyph(cancel, EditingCommand.Cancel);
 
         consent.CheckedChanged += (_, _) => accept.Enabled = consent.Checked;
         buttons.Controls.AddRange([cancel, accept]);
