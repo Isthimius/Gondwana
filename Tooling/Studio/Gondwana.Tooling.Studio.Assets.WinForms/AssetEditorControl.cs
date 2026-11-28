@@ -129,6 +129,8 @@ public sealed class AssetEditorControl : UserControl
 
         _saveButton = AddButton(fileTools, "Save", (_, _) => Save());
         _saveAsButton = AddButton(fileTools, "Save As…", (_, _) => SaveAs());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(_saveButton, "save");
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(_saveAsButton, "save-as");
         fileTools.Items.Add(new ToolStripSeparator());
         _refreshButton = AddButton(fileTools, "Refresh", (_, _) => RefreshEntries());
         fileTools.Items.Add(new ToolStripSeparator());

@@ -47,10 +47,11 @@ public sealed class AssetWorkspaceControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
-        tools.Items.Add(
+        var directoryButton = tools.Items.Add(
             "Directory…",
             null,
             (_, _) => ChooseDirectory());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(directoryButton, "folder");
 
         tools.Items.Add(
             "Refresh",
