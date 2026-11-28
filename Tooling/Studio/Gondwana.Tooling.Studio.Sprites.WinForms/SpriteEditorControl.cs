@@ -1,3 +1,5 @@
+using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
+using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
@@ -94,15 +96,19 @@ public sealed partial class SpriteEditorControl : UserControl
         Controls.Add(_workspace);
         var toolbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 34 };
 
-        void Button(string title, Action action)
+        void Button(string title, Action action, EditingCommand? command = null)
         {
             var button = new Button { Text = title, AutoSize = true };
+
+            if (command is { } selected)
+                Glyphs.SetEditingGlyph(button, selected);
+
             button.Click += (_, _) => action();
             toolbar.Controls.Add(button);
         }
 
         Button("Reload sources", ReloadSources);
-        Button("Add", () => SelectSprite(Document.AddSprite()));
+        Button("Add", () => SelectSprite(Document.AddSprite()), EditingCommand.Add);
 
         Button(
             "Duplicate",
@@ -110,7 +116,8 @@ public sealed partial class SpriteEditorControl : UserControl
             {
                 if (SelectedSprite is { } entry)
                     SelectSprite(Document.DuplicateSprite(entry));
-            });
+            },
+            EditingCommand.Duplicate);
 
         Button(
             "Remove",
@@ -121,7 +128,8 @@ public sealed partial class SpriteEditorControl : UserControl
                     Document.RemoveSprite(entry);
                     RefreshEntries();
                 }
-            });
+            },
+            EditingCommand.Remove);
 
         Button(
             "Add GANI…",
@@ -134,7 +142,8 @@ public sealed partial class SpriteEditorControl : UserControl
                     TryLoad(() => AddAnimationSources(dialog.FileNames));
                     UpdateValidation();
                 }
-            });
+            },
+            EditingCommand.Add);
 
         Button(
             "GANI from GAF…",
@@ -143,7 +152,8 @@ public sealed partial class SpriteEditorControl : UserControl
                 _packages,
                 Document.BaseDirectory,
                 AssetTypes.AnimationDefinition,
-                AddPackedAnimationSource));
+                AddPackedAnimationSource),
+            EditingCommand.Add);
 
         toolbar.AutoSize = true;
         toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -272,6 +282,7 @@ public sealed partial class SpriteEditorControl : UserControl
         Action<PackedResourceSelection> addPacked)
     {
         var button = new Button { Text = title, Dock = DockStyle.Top, Height = 30 };
+        Glyphs.SetEditingGlyph(button, EditingCommand.Add);
 
         button.Click += (_, _) =>
         {
@@ -285,6 +296,7 @@ public sealed partial class SpriteEditorControl : UserControl
         };
 
         var packed = new Button { Text = "Add from GAF…", AutoSize = true };
+        Glyphs.SetEditingGlyph(packed, EditingCommand.Add);
 
         packed.Click += (_, _) => PackedResourcePicker.PickAndApply(
             this,

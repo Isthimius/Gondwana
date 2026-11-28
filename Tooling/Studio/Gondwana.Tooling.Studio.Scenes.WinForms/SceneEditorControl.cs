@@ -1,3 +1,5 @@
+using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
+using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using Gondwana.Assets;
@@ -806,9 +808,10 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
 
-        bar.Items.Add(
+        Glyphs.AddEditingButton(
+            bar,
             "+ Layer",
-            null,
+            EditingCommand.Add,
             (_, _) =>
             {
                 var layer = Document.AddLayer();
@@ -819,9 +822,10 @@ public sealed partial class SceneEditorControl : UserControl
                 UpdateValidation();
             });
 
-        bar.Items.Add(
+        Glyphs.AddEditingButton(
+            bar,
             "− Layer",
-            null,
+            EditingCommand.Remove,
             (_, _) =>
             {
                 if (_structure.SelectedNode?.Tag is not SceneLayerDefinition layer)
@@ -851,11 +855,12 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
-        bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
+        Glyphs.AddEditingButton(bar, "Add GTS…", EditingCommand.Add, (_, _) => ChooseTilesheetSources());
 
-        bar.Items.Add(
+        Glyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -863,7 +868,7 @@ public sealed partial class SceneEditorControl : UserControl
                 AssetTypes.TilesheetDefinition,
                 AddPackedTilesheetSource));
 
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedTilesheetSource());
+        Glyphs.AddEditingButton(bar, "Remove", EditingCommand.Remove, (_, _) => RemoveSelectedTilesheetSource());
         bar.Items.Add(new ToolStripSeparator());
 
         bar.Items.Add(
@@ -882,11 +887,12 @@ public sealed partial class SceneEditorControl : UserControl
     private ToolStrip BuildAnimationToolbar()
     {
         var bar = NewToolbar();
-        bar.Items.Add("Add GANI…", null, (_, _) => ChooseAnimationSources());
+        Glyphs.AddEditingButton(bar, "Add GANI…", EditingCommand.Add, (_, _) => ChooseAnimationSources());
 
-        bar.Items.Add(
+        Glyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -894,7 +900,7 @@ public sealed partial class SceneEditorControl : UserControl
                 AssetTypes.AnimationDefinition,
                 AddPackedAnimationSource));
 
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedAnimationSource());
+        Glyphs.AddEditingButton(bar, "Remove", EditingCommand.Remove, (_, _) => RemoveSelectedAnimationSource());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Assign", null, (_, _) => AssignSelectedAnimation());
         bar.Items.Add("Clear", null, (_, _) => ClearAnimation());
@@ -933,7 +939,7 @@ public sealed partial class SceneEditorControl : UserControl
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
         bar.Items.Add(new ToolStripSeparator());
 
-        bar.Items.Add("Apply to selection", null, (_, _) => EditSelectedCells(erase: false))
+        Glyphs.AddEditingButton(bar, "Apply to selection", EditingCommand.Apply, (_, _) => EditSelectedCells(erase: false))
             .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
 
         bar.Items.Add("Edit selected properties", null, (_, _) => EditSelectedProperties());

@@ -1,3 +1,5 @@
+using Glyphs = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs;
+using EditingCommand = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand;
 using System.Drawing.Drawing2D;
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
@@ -738,11 +740,12 @@ public sealed partial class AnimationEditorControl : UserControl
         };
 
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
-        bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
+        Glyphs.AddEditingButton(bar, "Add GTS…", EditingCommand.Add, (_, _) => ChooseTilesheetSources());
 
-        bar.Items.Add(
+        Glyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -750,7 +753,7 @@ public sealed partial class AnimationEditorControl : UserControl
                 AssetTypes.TilesheetDefinition,
                 AddPackedTilesheetSource));
 
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
+        Glyphs.AddEditingButton(bar, "Remove", EditingCommand.Remove, (_, _) => RemoveSelectedSource());
         return bar;
     }
 
@@ -762,8 +765,8 @@ public sealed partial class AnimationEditorControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
-        bar.Items.Add("Add", null, (_, _) => AddSelectedSourceFrame());
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedFrame());
+        Glyphs.AddEditingButton(bar, "Add", EditingCommand.Add, (_, _) => AddSelectedSourceFrame());
+        Glyphs.AddEditingButton(bar, "Remove", EditingCommand.Remove, (_, _) => RemoveSelectedFrame());
         bar.Items.Add("Up", null, (_, _) => MoveSelectedFrame(-1));
         bar.Items.Add("Down", null, (_, _) => MoveSelectedFrame(1));
         return bar;
