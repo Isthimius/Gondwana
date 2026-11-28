@@ -675,6 +675,18 @@ public sealed partial class SceneEditorControl : UserControl
                     item.Checked = mode == tool;
             };
 
+            EditingCommand? artwork = tool switch
+            {
+                SceneEditorTool.Select => EditingCommand.Select,
+                SceneEditorTool.Paint => EditingCommand.Paint,
+                SceneEditorTool.Erase => EditingCommand.Erase,
+                SceneEditorTool.Fill => EditingCommand.Fill,
+                _ => null
+            };
+
+            if (artwork is { } command)
+                Glyphs.SetEditingGlyph(button, command, bar.ImageScalingSize.Width);
+
             _toolButtons.Add(tool, button);
             bar.Items.Add(button);
         }
@@ -721,6 +733,7 @@ public sealed partial class SceneEditorControl : UserControl
             _preview.Invalidate();
         };
 
+        Glyphs.SetEditingGlyph(grid, EditingCommand.Grid, bar.ImageScalingSize.Width);
         bar.Items.Add(grid);
         AddSpritePreviewButtons(bar);
         bar.Items.Add(new ToolStripSeparator());
@@ -942,9 +955,9 @@ public sealed partial class SceneEditorControl : UserControl
         Glyphs.AddEditingButton(bar, "Apply to selection", EditingCommand.Apply, (_, _) => EditSelectedCells(erase: false))
             .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
 
-        bar.Items.Add("Edit selected properties", null, (_, _) => EditSelectedProperties());
+        Glyphs.AddEditingButton(bar, "Edit selected properties", EditingCommand.Properties, (_, _) => EditSelectedProperties());
 
-        bar.Items.Add("Erase selection", null, (_, _) => EditSelectedCells(erase: true))
+        Glyphs.AddEditingButton(bar, "Erase selection", EditingCommand.Erase, (_, _) => EditSelectedCells(erase: true))
             .ToolTipText = "Remove explicit tiles in the selection as one undo operation";
 
         bar.Items.Add(_selectionLabel);

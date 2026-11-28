@@ -5,7 +5,7 @@ namespace Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 public static partial class ToolbarGlyphs
 {
     /// <summary>Shared semantic artwork assignments for editing commands.</summary>
-    public enum EditingCommand { Add, Remove, Delete, Duplicate, Rename, Replace, Prune, Apply, Cancel }
+    public enum EditingCommand { Add, Remove, Delete, Duplicate, Rename, Replace, Prune, Apply, Cancel, Select, Paint, Erase, Fill, Grid, Properties }
 
     /// <summary>Loads the assigned editing artwork for the active theme and device-pixel size.</summary>
     public static Bitmap? CreateEditingBitmap(EditingCommand command, int pixels)
@@ -21,6 +21,12 @@ public static partial class ToolbarGlyphs
             EditingCommand.Prune => "edit-clear.png",
             EditingCommand.Apply => "dialog-ok-apply.png",
             EditingCommand.Cancel => "dialog-cancel.png",
+            EditingCommand.Select => "edit-select.png",
+            EditingCommand.Paint => "draw-brush.png",
+            EditingCommand.Erase => "draw-eraser.png",
+            EditingCommand.Fill => "fill-color.png",
+            EditingCommand.Grid => "view-grid.png",
+            EditingCommand.Properties => "document-properties.png",
             _ => throw new ArgumentOutOfRangeException(nameof(command))
         };
 

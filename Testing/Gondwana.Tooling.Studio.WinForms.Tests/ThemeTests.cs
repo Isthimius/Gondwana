@@ -266,6 +266,12 @@ public sealed class ThemeTests
     [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Prune, "edit-clear.png")]
     [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Apply, "dialog-ok-apply.png")]
     [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Cancel, "dialog-cancel.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Select, "edit-select.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Paint, "draw-brush.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Erase, "draw-eraser.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Fill, "fill-color.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Grid, "view-grid.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Properties, "document-properties.png")]
     public void EditingGlyphUsesAssignedArtwork(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand command, string fileName)
     {
         using var actual = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.CreateEditingBitmap(command, 32);
