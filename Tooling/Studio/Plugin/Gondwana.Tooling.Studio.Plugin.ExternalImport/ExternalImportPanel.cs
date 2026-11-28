@@ -64,6 +64,9 @@ public sealed class ExternalImportPanel : UserControl
     public ExternalImportPanel(IReadOnlyList<IExternalAssetImporter> providers)
     {
         this.providers = providers;
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetEditingGlyph(
+            cancel,
+            Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Cancel);
         Dock = DockStyle.Fill;
         format.Items.Add("Auto-detect");
 

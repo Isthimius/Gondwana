@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Tilesheets.Sources;
 
@@ -96,6 +97,7 @@ public static class PackedImagePicker
             AutoSize = true
         };
 
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
         buttons.Controls.Add(ok);
         buttons.Controls.Add(cancel);
 

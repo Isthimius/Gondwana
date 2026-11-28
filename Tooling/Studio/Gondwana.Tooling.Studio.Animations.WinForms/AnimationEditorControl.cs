@@ -5,6 +5,7 @@ using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Tilesheets.Sources;
@@ -738,11 +739,12 @@ public sealed partial class AnimationEditorControl : UserControl
         };
 
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
-        bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
+        ToolbarGlyphs.AddEditingButton(bar, "Add GTS…", ToolbarGlyphs.EditingCommand.Add, (_, _) => ChooseTilesheetSources());
 
-        bar.Items.Add(
+        ToolbarGlyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -750,7 +752,7 @@ public sealed partial class AnimationEditorControl : UserControl
                 AssetTypes.TilesheetDefinition,
                 AddPackedTilesheetSource));
 
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelectedSource());
         return bar;
     }
 
@@ -762,8 +764,8 @@ public sealed partial class AnimationEditorControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
-        bar.Items.Add("Add", null, (_, _) => AddSelectedSourceFrame());
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedFrame());
+        ToolbarGlyphs.AddEditingButton(bar, "Add", ToolbarGlyphs.EditingCommand.Add, (_, _) => AddSelectedSourceFrame());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelectedFrame());
         bar.Items.Add("Up", null, (_, _) => MoveSelectedFrame(-1));
         bar.Items.Add("Down", null, (_, _) => MoveSelectedFrame(1));
         return bar;

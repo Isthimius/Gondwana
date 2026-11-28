@@ -8,6 +8,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
@@ -673,6 +674,18 @@ public sealed partial class SceneEditorControl : UserControl
                     item.Checked = mode == tool;
             };
 
+            ToolbarGlyphs.EditingCommand? artwork = tool switch
+            {
+                SceneEditorTool.Select => ToolbarGlyphs.EditingCommand.Select,
+                SceneEditorTool.Paint => ToolbarGlyphs.EditingCommand.Paint,
+                SceneEditorTool.Erase => ToolbarGlyphs.EditingCommand.Erase,
+                SceneEditorTool.Fill => ToolbarGlyphs.EditingCommand.Fill,
+                _ => null
+            };
+
+            if (artwork is { } command)
+                ToolbarGlyphs.SetEditingGlyph(button, command, bar.ImageScalingSize.Width);
+
             _toolButtons.Add(tool, button);
             bar.Items.Add(button);
         }
@@ -719,6 +732,7 @@ public sealed partial class SceneEditorControl : UserControl
             _preview.Invalidate();
         };
 
+        ToolbarGlyphs.SetEditingGlyph(grid, ToolbarGlyphs.EditingCommand.Grid, bar.ImageScalingSize.Width);
         bar.Items.Add(grid);
         AddSpritePreviewButtons(bar);
         bar.Items.Add(new ToolStripSeparator());
@@ -806,9 +820,10 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
 
-        bar.Items.Add(
+        ToolbarGlyphs.AddEditingButton(
+            bar,
             "+ Layer",
-            null,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) =>
             {
                 var layer = Document.AddLayer();
@@ -819,9 +834,10 @@ public sealed partial class SceneEditorControl : UserControl
                 UpdateValidation();
             });
 
-        bar.Items.Add(
+        ToolbarGlyphs.AddEditingButton(
+            bar,
             "− Layer",
-            null,
+            ToolbarGlyphs.EditingCommand.Remove,
             (_, _) =>
             {
                 if (_structure.SelectedNode?.Tag is not SceneLayerDefinition layer)
@@ -851,11 +867,12 @@ public sealed partial class SceneEditorControl : UserControl
     {
         var bar = NewToolbar();
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
-        bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
+        ToolbarGlyphs.AddEditingButton(bar, "Add GTS…", ToolbarGlyphs.EditingCommand.Add, (_, _) => ChooseTilesheetSources());
 
-        bar.Items.Add(
+        ToolbarGlyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -863,7 +880,7 @@ public sealed partial class SceneEditorControl : UserControl
                 AssetTypes.TilesheetDefinition,
                 AddPackedTilesheetSource));
 
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedTilesheetSource());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelectedTilesheetSource());
         bar.Items.Add(new ToolStripSeparator());
 
         bar.Items.Add(
@@ -882,11 +899,12 @@ public sealed partial class SceneEditorControl : UserControl
     private ToolStrip BuildAnimationToolbar()
     {
         var bar = NewToolbar();
-        bar.Items.Add("Add GANI…", null, (_, _) => ChooseAnimationSources());
+        ToolbarGlyphs.AddEditingButton(bar, "Add GANI…", ToolbarGlyphs.EditingCommand.Add, (_, _) => ChooseAnimationSources());
 
-        bar.Items.Add(
+        ToolbarGlyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -894,7 +912,7 @@ public sealed partial class SceneEditorControl : UserControl
                 AssetTypes.AnimationDefinition,
                 AddPackedAnimationSource));
 
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelectedAnimationSource());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelectedAnimationSource());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Assign", null, (_, _) => AssignSelectedAnimation());
         bar.Items.Add("Clear", null, (_, _) => ClearAnimation());
@@ -933,12 +951,12 @@ public sealed partial class SceneEditorControl : UserControl
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
         bar.Items.Add(new ToolStripSeparator());
 
-        bar.Items.Add("Apply to selection", null, (_, _) => EditSelectedCells(erase: false))
+        ToolbarGlyphs.AddEditingButton(bar, "Apply to selection", ToolbarGlyphs.EditingCommand.Apply, (_, _) => EditSelectedCells(erase: false))
             .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
 
-        bar.Items.Add("Edit selected properties", null, (_, _) => EditSelectedProperties());
+        ToolbarGlyphs.AddEditingButton(bar, "Edit selected properties", ToolbarGlyphs.EditingCommand.Properties, (_, _) => EditSelectedProperties());
 
-        bar.Items.Add("Erase selection", null, (_, _) => EditSelectedCells(erase: true))
+        ToolbarGlyphs.AddEditingButton(bar, "Erase selection", ToolbarGlyphs.EditingCommand.Erase, (_, _) => EditSelectedCells(erase: true))
             .ToolTipText = "Remove explicit tiles in the selection as one undo operation";
 
         bar.Items.Add(_selectionLabel);

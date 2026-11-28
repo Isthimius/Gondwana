@@ -155,19 +155,54 @@ public sealed partial class CompositionTests
         {
             var palette = ToolingPalette.For(theme);
 
-            foreach (var command in new[]
-                         { "new", "open", "folder", "save", "save-all", "refresh", "preview", "validate" })
+            int studioPixels = ToolbarSizing.Pixels(24, dpi);
+
+            // Imported full-color artwork is not a monochrome palette glyph.
+            foreach (var command in new[] { "new", "open", "folder", "save", "save-all", "save-as" })
             {
-                using var image = ToolbarGlyphs.Studio(command, ToolbarSizing.Pixels(24, dpi), palette);
+                using var image = ToolbarGlyphs.Studio(command, studioPixels, palette);
+                Assert.Equal(new Size(studioPixels, studioPixels), image.Size);
+                AssertRasterArtwork(image);
+            }
+
+            foreach (var command in new[] { "refresh", "preview", "validate" })
+            {
+                using var image = ToolbarGlyphs.Studio(command, studioPixels, palette);
+                Assert.Equal(new Size(studioPixels, studioPixels), image.Size);
                 AssertGlyph(image, palette.Foreground);
             }
 
             foreach (var command in Enum.GetValues<ToolbarGlyphs.DefinitionCommand>())
             {
-                using var image = ToolbarGlyphs.Definition(command, ToolbarSizing.Pixels(32, dpi), palette);
-                AssertGlyph(image, palette.Foreground);
+                int pixels = ToolbarSizing.Pixels(32, dpi);
+                using var image = ToolbarGlyphs.Definition(command, pixels, palette);
+                Assert.Equal(new Size(pixels, pixels), image.Size);
+
+                if (command == ToolbarGlyphs.DefinitionCommand.Import)
+                    AssertGlyph(image, palette.Foreground);
+                else
+                    AssertRasterArtwork(image);
             }
         }
+    }
+
+    private static void AssertRasterArtwork(Bitmap image)
+    {
+        bool hasVisiblePixels = false;
+        bool hasTransparentPixels = false;
+
+        for (int y = 0; y < image.Height; y++)
+        {
+            for (int x = 0; x < image.Width; x++)
+            {
+                var pixel = image.GetPixel(x, y);
+                hasVisiblePixels |= pixel.A > 200;
+                hasTransparentPixels |= pixel.A < 255;
+            }
+        }
+
+        Assert.True(hasVisiblePixels, "The raster artwork has no visible pixels.");
+        Assert.True(hasTransparentPixels, "The raster artwork has no transparency.");
     }
 
     private static void AssertGlyph(Bitmap image, Color foreground)

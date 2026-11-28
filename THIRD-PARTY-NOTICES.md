@@ -54,6 +54,23 @@ or subscription for these assets. Confirm the applicable terms, including
 redistribution of source artwork and required attribution, before distribution.
 Do not treat these icons as MIT-licensed.
 
+### KDE Oxygen Icons
+
+Oxygen icons copyright KDE and the Oxygen contributors, licensed under the
+GNU Lesser General Public License version 3 or later (LGPL-3.0-or-later).
+
+- Project: [KDE Oxygen Icons](https://develop.kde.org/frameworks/oxygen-icons/).
+- Source: [Oxygen repository](https://github.com/KDE/oxygen-icons).
+- Artwork directory and import inventory: [Oxygen assets](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/README.md).
+- Notices: [COPYING](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/COPYING), [AUTHORS](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/AUTHORS).
+- License texts: [LGPL v3](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/LGPL-3.0-or-later.txt) and [GPL v3](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/GPL-3.0-only.txt).
+- In build and publish output, these files are under `assets/icons/oxygen/` relative to this notice document; the repository-relative links above apply only to the source checkout.
+
+Selected Oxygen artwork is included and used in the tooling applications.
+Imported artwork and modifications retain the applicable Oxygen license. Gondwana's original code remains MIT-licensed. Retain the
+corresponding artwork source and record provenance and modifications as icons
+are imported.
+
 ## Demo assets
 
 ### Spot! — font

@@ -251,6 +251,8 @@ public sealed class DefinitionSelectionBar<T> : Dpi.DpiToolStrip where T : class
         var accept = new Button { Text = "Import", DialogResult = DialogResult.OK, AutoSize = true };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
 
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
+
         all.Click += (_, _) =>
         {
             for (int i = 0; i < list.Items.Count; i++)
@@ -403,6 +405,7 @@ public static class DefinitionRenameDialog
         layout.SetColumnSpan(label, 3);
         layout.Controls.Add(nameBox, 0, 1);
         layout.SetColumnSpan(nameBox, 3);
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
         layout.Controls.Add(accept, 1, 2);
         layout.Controls.Add(cancel, 2, 2);
 

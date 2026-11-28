@@ -77,25 +77,28 @@ internal sealed partial class MainForm : Form
 
         var file = new ToolStripMenuItem("&File");
 
-        Add(
+        var create = Add(
             file,
             "&New",
             Keys.Control | Keys.N,
             () => NewDocument());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetNewDocumentMenuGlyph(create);
 
-        Add(
+        var openDocumentItem = Add(
             file,
             "&Open GTS…",
             Keys.Control | Keys.O,
             OpenFiles);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDocumentItem, "open");
 
-        Add(
+        var openDirectoryItem = Add(
             file,
             "Open working &directory…",
             Keys.Control | Keys.Shift | Keys.O,
             () => _workspaceControl.ChooseDirectory(this));
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDirectoryItem, "folder");
 
-        Add(
+        var saveDocumentItem = Add(
             file,
             "&Save",
             Keys.Control | Keys.S,
@@ -104,8 +107,9 @@ internal sealed partial class MainForm : Form
                 if (ActiveEditor is { } document)
                     SaveDocument(document, false);
             });
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveDocumentItem, "save");
 
-        Add(
+        var saveAsDocumentItem = Add(
             file,
             "Save &As…",
             Keys.Control | Keys.Shift | Keys.S,
@@ -114,6 +118,7 @@ internal sealed partial class MainForm : Form
                 if (ActiveEditor is { } document)
                     SaveDocument(document, true);
             });
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveAsDocumentItem, "save-as");
 
         Add(
             file,
@@ -197,6 +202,7 @@ internal sealed partial class MainForm : Form
         _session.AddMenu(file);
         menu.Items.AddRange([file, view]);
         menu.Items.Add(_undoRedo.Menu);
+        menu.Items.Add(ToolingAbout.CreateHelpMenu(this));
         MainMenuStrip = menu;
 
         Controls.Add(_dock);

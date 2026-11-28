@@ -119,9 +119,9 @@ public sealed class TilesheetEditorControl : UserControl
         Dock = DockStyle.Fill;
 
         var regionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
-        regionTools.Items.Add("+ Region", null, (_, _) => AddRegion());
-        regionTools.Items.Add("− Region", null, (_, _) => RemoveRegion());
-        regionTools.Items.Add("Prune invalid frames…", null, (_, _) => PruneFrames());
+        ToolbarGlyphs.AddEditingButton(regionTools, "+ Region", ToolbarGlyphs.EditingCommand.Add, (_, _) => AddRegion());
+        ToolbarGlyphs.AddEditingButton(regionTools, "− Region", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveRegion());
+        ToolbarGlyphs.AddEditingButton(regionTools, "Prune invalid frames…", ToolbarGlyphs.EditingCommand.Prune, (_, _) => PruneFrames());
         regionTools.Items.Add(new ToolStripControlHost(_regions) { AutoSize = false, Width = 185 });
 
         var navigator = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };

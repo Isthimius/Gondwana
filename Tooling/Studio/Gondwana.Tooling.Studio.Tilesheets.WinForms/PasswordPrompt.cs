@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.Tilesheets.WinForms;
@@ -61,6 +62,7 @@ internal static class PasswordPrompt
             AutoSize = true
         };
 
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
         buttons.Controls.Add(ok);
         buttons.Controls.Add(cancel);
         dialog.Controls.Add(input);

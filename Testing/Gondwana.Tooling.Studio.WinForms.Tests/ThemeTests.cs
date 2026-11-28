@@ -162,6 +162,152 @@ public sealed class ThemeTests
     });
 
     [Theory]
+    [InlineData(16, 16)]
+    [InlineData(22, 22)]
+    [InlineData(24, 32)]
+    [InlineData(32, 32)]
+    [InlineData(48, 48)]
+    [InlineData(64, 48)]
+    public void OxygenNewSelectsNativeResolution(int pixels, int native)
+    {
+        var path = ToolingIconResources.FindOxygenIcon("document-new.png", pixels);
+        Assert.NotNull(path);
+        Assert.Equal($"{native}x{native}", Path.GetFileName(Path.GetDirectoryName(path)));
+
+        using var image = ToolingIconResources.TryCreateOxygenBitmap("document-new.png", pixels);
+        Assert.NotNull(image);
+        Assert.Equal(new Size(pixels, pixels), image.Size);
+        bool hasVisiblePixels = false;
+        bool hasTransparentPixels = false;
+
+        for (int y = 0; y < image.Height; y++)
+        {
+            for (int x = 0; x < image.Width; x++)
+            {
+                byte alpha = image.GetPixel(x, y).A;
+                hasVisiblePixels |= alpha > 200;
+                hasTransparentPixels |= alpha < 255;
+            }
+        }
+
+        Assert.True(hasVisiblePixels);
+        Assert.True(hasTransparentPixels);
+    }
+
+    [Fact]
+    public void OxygenThemeOverridesAreIndependentAndFallBackToCommonArtwork()
+    {
+        string root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            const string fileName = "document-save.png";
+
+            string AddArtwork(string relative)
+            {
+                string path = Path.Combine(root, relative, fileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                File.WriteAllText(path, "test");
+                return path;
+            }
+
+            string common16 = AddArtwork("16x16");
+            string common32 = AddArtwork("32x32");
+            string dark22 = AddArtwork(Path.Combine("themes", "Dark", "22x22"));
+            string dark48 = AddArtwork(Path.Combine("themes", "Dark", "48x48"));
+            string light32 = AddArtwork(Path.Combine("themes", "Light", "32x32"));
+
+            Assert.Equal(dark22, ToolingIconResources.FindOxygenIcon(fileName, 16, ToolingTheme.Dark, root));
+            Assert.Equal(dark22, ToolingIconResources.FindOxygenIcon(fileName, 22, ToolingTheme.Dark, root));
+            Assert.Equal(dark48, ToolingIconResources.FindOxygenIcon(fileName, 24, ToolingTheme.Dark, root));
+            Assert.Equal(dark48, ToolingIconResources.FindOxygenIcon(fileName, 64, ToolingTheme.Dark, root));
+            Assert.Equal(light32, ToolingIconResources.FindOxygenIcon(fileName, 16, ToolingTheme.Light, root));
+            Assert.Equal(common16, ToolingIconResources.FindOxygenIcon(fileName, 16, ToolingTheme.DarkBlue, root));
+            Assert.Equal(common32, ToolingIconResources.FindOxygenIcon(fileName, 24, ToolingTheme.DarkBlue, root));
+            Assert.Null(ToolingIconResources.FindOxygenIcon("missing.png", 16, ToolingTheme.Dark, root));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Theory]
+    [InlineData("open", "document-open.png")]
+    [InlineData("save", "document-save.png")]
+    [InlineData("save-all", "document-save-all.png")]
+    [InlineData("save-as", "document-save-as.png")]
+    [InlineData("folder", "folder-activities.png")]
+    public void FileOperationGlyphUsesNativeArtworkAndPreservesText(string kind, string fileName) => Sta(() =>
+    {
+        using var item = new ToolStripMenuItem("Command");
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(item, kind);
+        Assert.Equal("Command", item.Text);
+        using var expected = ToolingIconResources.TryCreateOxygenBitmap(fileName, 16);
+        Assert.NotNull(expected);
+        var actual = Assert.IsType<Bitmap>(item.Image);
+        Assert.Equal(expected.Size, actual.Size);
+
+        for (int y = 0; y < actual.Height; y++)
+        {
+            for (int x = 0; x < actual.Width; x++)
+                Assert.Equal(expected.GetPixel(x, y), actual.GetPixel(x, y));
+        }
+    });
+
+    [Theory]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Add, "list-add.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Remove, "list-remove.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Delete, "edit-delete.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Duplicate, "edit-copy.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Rename, "document-edit.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Replace, "edit-find-replace.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Prune, "edit-clear.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Apply, "dialog-ok-apply.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Cancel, "dialog-cancel.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Select, "edit-select.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Paint, "draw-brush.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Erase, "draw-eraser.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Fill, "fill-color.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Grid, "view-grid.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Properties, "document-properties.png")]
+    public void EditingGlyphUsesAssignedArtwork(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand command, string fileName)
+    {
+        using var actual = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.CreateEditingBitmap(command, 32);
+        using var expected = ToolingIconResources.TryCreateOxygenBitmap(fileName, 32);
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+        Assert.Equal(expected.Size, actual.Size);
+
+        for (int y = 0; y < actual.Height; y++)
+        {
+            for (int x = 0; x < actual.Width; x++)
+                Assert.Equal(expected.GetPixel(x, y), actual.GetPixel(x, y));
+        }
+    }
+
+    [Fact]
+    public void AboutMenuAndDialogExposeSharedArtworkCredits() => Sta(() =>
+    {
+        using var owner = new Form { Text = "Gondwana Studio" };
+        using var help = ToolingAbout.CreateHelpMenu(owner);
+        Assert.Equal("&Help", help.Text);
+        Assert.Equal("About", Assert.Single(help.DropDownItems.Cast<ToolStripItem>()).Name);
+
+        using var dialog = ToolingAbout.CreateDialog(owner.Text);
+        Assert.Equal("About Gondwana Studio", dialog.Text);
+        var body = Assert.Single(dialog.Controls.OfType<Panel>(), panel => panel is not FlowLayoutPanel);
+        var message = Assert.Single(body.Controls.OfType<TextBox>());
+        Assert.Contains("MIT License", message.Text, StringComparison.Ordinal);
+        Assert.Contains("Icons8", message.Text, StringComparison.Ordinal);
+        Assert.Contains("KDE Oxygen", message.Text, StringComparison.Ordinal);
+        Assert.Contains("LGPL v3 or later", message.Text, StringComparison.Ordinal);
+        Assert.Contains("THIRD-PARTY-NOTICES.md", message.Text, StringComparison.Ordinal);
+        Assert.Equal(DialogResult.OK, Assert.IsType<Button>(dialog.AcceptButton).DialogResult);
+    });
+
+    [Theory]
     [InlineData(ToolingTheme.Dark)]
     [InlineData(ToolingTheme.DarkBlue)]
     [InlineData(ToolingTheme.Light)]

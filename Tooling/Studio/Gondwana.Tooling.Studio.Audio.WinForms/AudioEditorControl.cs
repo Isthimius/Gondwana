@@ -3,6 +3,7 @@ using Gondwana.Audio.GSND;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using Gondwana.Tooling.Tilesheets.Sources;
@@ -196,11 +197,12 @@ public sealed class AudioEditorControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
-        bar.Items.Add("Add file…", null, (_, _) => ChooseLooseFiles());
+        ToolbarGlyphs.AddEditingButton(bar, "Add file…", ToolbarGlyphs.EditingCommand.Add, (_, _) => ChooseLooseFiles());
 
-        bar.Items.Add(
+        ToolbarGlyphs.AddEditingButton(
+            bar,
             "Add from GAF…",
-            null,
+            ToolbarGlyphs.EditingCommand.Add,
             (_, _) => PackedResourcePicker.PickAndApply(
                 this,
                 _packages,
@@ -208,9 +210,9 @@ public sealed class AudioEditorControl : UserControl
                 AssetTypes.Audio,
                 AddPackedAudio));
 
-        bar.Items.Add("Add URI…", null, (_, _) => AddUri());
+        ToolbarGlyphs.AddEditingButton(bar, "Add URI…", ToolbarGlyphs.EditingCommand.Add, (_, _) => AddUri());
         bar.Items.Add(new ToolStripSeparator());
-        bar.Items.Add("Remove", null, (_, _) => RemoveSelected());
+        ToolbarGlyphs.AddEditingButton(bar, "Remove", ToolbarGlyphs.EditingCommand.Remove, (_, _) => RemoveSelected());
         return bar;
     }
 

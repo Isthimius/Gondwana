@@ -156,7 +156,8 @@ public sealed class DirectoryPanel : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
-        tools.Items.Add("Directory…", null, (_, _) => ChooseDirectoryRequested?.Invoke());
+        var directoryButton = tools.Items.Add("Directory…", null, (_, _) => ChooseDirectoryRequested?.Invoke());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(directoryButton, "folder");
         tools.Items.Add("Refresh", null, (_, _) => RefreshDirectory());
 
         Controls.Add(Tree);

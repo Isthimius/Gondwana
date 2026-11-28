@@ -6,6 +6,7 @@ using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Sprites.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Navigation;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
@@ -92,17 +93,23 @@ public sealed partial class SpriteEditorControl : UserControl
         _frames.ImageList = _thumbnails;
         Dock = DockStyle.Fill;
         Controls.Add(_workspace);
-        var toolbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 34 };
+        // Keep the sprite drop list usable in narrow dock panes: overflow
+        // commands horizontally instead of consuming the list with wrapped rows.
+        var toolbar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden, CanOverflow = true };
 
-        void Button(string title, Action action)
+        void Button(string title, Action action, ToolbarGlyphs.EditingCommand? command = null)
         {
-            var button = new Button { Text = title, AutoSize = true };
+            var button = new ToolStripButton(title) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText };
+
+            if (command is { } selected)
+                ToolbarGlyphs.SetEditingGlyph(button, selected, toolbar.ImageScalingSize.Width);
+
             button.Click += (_, _) => action();
-            toolbar.Controls.Add(button);
+            toolbar.Items.Add(button);
         }
 
         Button("Reload sources", ReloadSources);
-        Button("Add", () => SelectSprite(Document.AddSprite()));
+        Button("Add", () => SelectSprite(Document.AddSprite()), ToolbarGlyphs.EditingCommand.Add);
 
         Button(
             "Duplicate",
@@ -110,7 +117,8 @@ public sealed partial class SpriteEditorControl : UserControl
             {
                 if (SelectedSprite is { } entry)
                     SelectSprite(Document.DuplicateSprite(entry));
-            });
+            },
+            ToolbarGlyphs.EditingCommand.Duplicate);
 
         Button(
             "Remove",
@@ -121,7 +129,8 @@ public sealed partial class SpriteEditorControl : UserControl
                     Document.RemoveSprite(entry);
                     RefreshEntries();
                 }
-            });
+            },
+            ToolbarGlyphs.EditingCommand.Remove);
 
         Button(
             "Add GANI…",
@@ -134,7 +143,8 @@ public sealed partial class SpriteEditorControl : UserControl
                     TryLoad(() => AddAnimationSources(dialog.FileNames));
                     UpdateValidation();
                 }
-            });
+            },
+            ToolbarGlyphs.EditingCommand.Add);
 
         Button(
             "GANI from GAF…",
@@ -143,24 +153,11 @@ public sealed partial class SpriteEditorControl : UserControl
                 _packages,
                 Document.BaseDirectory,
                 AssetTypes.AnimationDefinition,
-                AddPackedAnimationSource));
+                AddPackedAnimationSource),
+            ToolbarGlyphs.EditingCommand.Add);
 
-        toolbar.AutoSize = true;
-        toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-
-        toolbar.Controls.Add(
-            new Label
-            {
-                Text = "Animation:",
-                AutoSize = true,
-                Margin = new Padding(
-                    8,
-                    8,
-                    4,
-                    0)
-            });
-
-        toolbar.Controls.Add(_animationPicker);
+        toolbar.Items.Add(new ToolStripLabel("Animation:"));
+        toolbar.Items.Add(new ToolStripControlHost(_animationPicker) { AutoSize = false, Width = _animationPicker.Width });
 
         _animationPicker.SelectedIndexChanged += (_, _) =>
         {
@@ -272,6 +269,7 @@ public sealed partial class SpriteEditorControl : UserControl
         Action<PackedResourceSelection> addPacked)
     {
         var button = new Button { Text = title, Dock = DockStyle.Top, Height = 30 };
+        ToolbarGlyphs.SetEditingGlyph(button, ToolbarGlyphs.EditingCommand.Add);
 
         button.Click += (_, _) =>
         {
@@ -285,6 +283,7 @@ public sealed partial class SpriteEditorControl : UserControl
         };
 
         var packed = new Button { Text = "Add from GAF…", AutoSize = true };
+        ToolbarGlyphs.SetEditingGlyph(packed, ToolbarGlyphs.EditingCommand.Add);
 
         packed.Click += (_, _) => PackedResourcePicker.PickAndApply(
             this,

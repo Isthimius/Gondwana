@@ -7,8 +7,36 @@ public static partial class ToolbarGlyphs
 {
     public enum DefinitionCommand { Add, Import, Duplicate, Remove, Rename }
 
+    /// <summary>Assigns an owned New-document image to a standard WinForms menu item.</summary>
+    public static void SetNewDocumentMenuGlyph(ToolStripMenuItem item) =>
+        SetFileOperationGlyph(item, "new");
+
+    /// <summary>Assigns an owned file-operation image without changing the item's text or action.</summary>
+    public static void SetFileOperationGlyph(ToolStripItem item, string kind, int pixels = 16)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var image = Studio(kind, pixels, ToolingAppearance.Palette);
+        item.Image = image;
+        item.Disposed += (_, _) => image.Dispose();
+    }
+
     public static Bitmap Studio(string kind, int pixels, ToolingPalette palette)
     {
+        string? fileName = kind switch
+        {
+            "new" => "document-new.png",
+            "open" => "document-open.png",
+            "save" => "document-save.png",
+            "save-all" => "document-save-all.png",
+            "save-as" => "document-save-as.png",
+            "folder" => "folder-activities.png",
+            _ => null
+        };
+
+        if (fileName is not null && ToolingIconResources.TryCreateOxygenBitmap(fileName, pixels) is { } oxygen)
+            return oxygen;
+
         var bitmap = new Bitmap(pixels, pixels);
 
         using (var g = Graphics.FromImage(bitmap))
@@ -82,6 +110,7 @@ public static partial class ToolbarGlyphs
 
                     break;
                 case "save":
+                case "save-as":
                 case "save-all":
                     if (kind == "save-all")
                     {
@@ -155,6 +184,18 @@ public static partial class ToolbarGlyphs
 
     public static Bitmap Definition(DefinitionCommand command, int pixels, ToolingPalette palette)
     {
+        EditingCommand? editing = command switch
+        {
+            DefinitionCommand.Add => EditingCommand.Add,
+            DefinitionCommand.Duplicate => EditingCommand.Duplicate,
+            DefinitionCommand.Remove => EditingCommand.Remove,
+            DefinitionCommand.Rename => EditingCommand.Rename,
+            _ => null
+        };
+
+        if (editing is { } selected && CreateEditingBitmap(selected, pixels) is { } oxygen)
+            return oxygen;
+
         var image = new Bitmap(pixels, pixels);
 
         using (var graphics = Graphics.FromImage(image))

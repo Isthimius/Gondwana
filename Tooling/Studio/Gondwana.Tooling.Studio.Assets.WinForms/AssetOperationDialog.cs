@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.Assets.WinForms;
@@ -76,6 +77,11 @@ internal static class AssetOperationDialog
 
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };
         var commit = new Button { Text = action, AutoSize = true, DialogResult = DialogResult.OK };
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
+
+        if (action is "Delete" or "Delete anyway…")
+            ToolbarGlyphs.SetEditingGlyph(commit, ToolbarGlyphs.EditingCommand.Delete);
+
         buttons.Controls.AddRange([cancel, commit]);
         preview.Controls.Add(text);
         preview.Controls.Add(buttons);

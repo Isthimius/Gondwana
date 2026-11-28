@@ -157,6 +157,14 @@ has no creation command. On individual loose files and packed entries,
 **Show Dependencies** and **Show Dependents** use the same Dependency Explorer
 commands as the File menu.
 
+## About and third-party artwork
+
+**Help → About** displays the application license and artwork credits.
+The published application directory includes `THIRD-PARTY-NOTICES.md` and
+the third-party icon notices and licenses. See the
+[repository notices](https://github.com/Isthimius/Gondwana/blob/master/THIRD-PARTY-NOTICES.md)
+for details.
+
 ## Documents and saving
 
 Studio treats each hosted editor as one outer document.

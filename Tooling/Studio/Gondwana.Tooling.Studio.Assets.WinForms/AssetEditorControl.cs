@@ -3,6 +3,7 @@ using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms;
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Editing;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 using WeifenLuo.WinFormsUI.Docking;
@@ -129,6 +130,8 @@ public sealed class AssetEditorControl : UserControl
 
         _saveButton = AddButton(fileTools, "Save", (_, _) => Save());
         _saveAsButton = AddButton(fileTools, "Save As…", (_, _) => SaveAs());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(_saveButton, "save");
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(_saveAsButton, "save-as");
         fileTools.Items.Add(new ToolStripSeparator());
         _refreshButton = AddButton(fileTools, "Refresh", (_, _) => RefreshEntries());
         fileTools.Items.Add(new ToolStripSeparator());
@@ -137,6 +140,10 @@ public sealed class AssetEditorControl : UserControl
         _renameButton = AddButton(fileTools, "Rename / Move…", (_, _) => RenameSelectedAsset());
         _exportButton = AddButton(fileTools, "Export", (_, _) => ExportSelectedAsset());
         _deleteButton = AddButton(fileTools, "Delete", (_, _) => DeleteSelectedAsset());
+        ToolbarGlyphs.SetEditingGlyph(_addButton, ToolbarGlyphs.EditingCommand.Add);
+        ToolbarGlyphs.SetEditingGlyph(_replaceButton, ToolbarGlyphs.EditingCommand.Replace);
+        ToolbarGlyphs.SetEditingGlyph(_renameButton, ToolbarGlyphs.EditingCommand.Rename);
+        ToolbarGlyphs.SetEditingGlyph(_deleteButton, ToolbarGlyphs.EditingCommand.Delete);
 
         var filterTools = new ToolStrip
         {

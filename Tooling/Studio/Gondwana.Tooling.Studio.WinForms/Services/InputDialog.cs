@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Studio.Shared.WinForms.Dpi;
 using Gondwana.Tooling.Studio.Shared.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Services;
@@ -60,6 +61,8 @@ internal static class InputDialog
             Location = new System.Drawing.Point(330, 100),
             Width = 80
         };
+
+        ToolbarGlyphs.SetEditingGlyph(cancel, ToolbarGlyphs.EditingCommand.Cancel);
 
         form.AcceptButton = ok;
         form.CancelButton = cancel;

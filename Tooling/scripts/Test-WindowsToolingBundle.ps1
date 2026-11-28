@@ -23,7 +23,13 @@ foreach ($app in $apps) {
     $appFolder = Join-Path $ToolingRoot $app.Folder
     foreach ($relative in @("$($app.Exe).exe", "$($app.Exe).dll",
                             "$($app.Exe).deps.json", "$($app.Exe).runtimeconfig.json",
-                            'hostfxr.dll', 'hostpolicy.dll', 'coreclr.dll')) {
+                            'hostfxr.dll', 'hostpolicy.dll', 'coreclr.dll',
+                            'LICENSE', 'THIRD-PARTY-NOTICES.md',
+                            'assets/icons/oxygen/README.md',
+                            'assets/icons/oxygen/AUTHORS',
+                            'assets/icons/oxygen/COPYING',
+                            'assets/icons/oxygen/LGPL-3.0-or-later.txt',
+                            'assets/icons/oxygen/GPL-3.0-only.txt')) {
         $path = Join-Path $appFolder $relative
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
             throw "Missing executable or self-contained runtime file: $path"

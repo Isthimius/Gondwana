@@ -65,17 +65,19 @@ internal sealed partial class MainForm : Form
         _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
         var file = new ToolStripMenuItem("&File");
 
-        Add(
+        var create = Add(
             file,
             "&New",
             Keys.Control | Keys.N,
             NewDocument);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetNewDocumentMenuGlyph(create);
 
-        Add(
+        var openDocumentItem = Add(
             file,
             "&Open GANI…",
             Keys.Control | Keys.O,
             OpenFiles);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDocumentItem, "open");
 
         Add(
             file,
@@ -83,13 +85,14 @@ internal sealed partial class MainForm : Form
             Keys.Control | Keys.Shift | Keys.O,
             ChooseGtsSources);
 
-        Add(
+        var openDirectoryItem = Add(
             file,
             "Open working &directory…",
             Keys.None,
             ChooseDirectory);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDirectoryItem, "folder");
 
-        Add(
+        var saveDocumentItem = Add(
             file,
             "&Save",
             Keys.Control | Keys.S,
@@ -98,8 +101,9 @@ internal sealed partial class MainForm : Form
                 if (ActiveEditor is { } document)
                     SaveDocument(document, saveAs: false);
             });
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveDocumentItem, "save");
 
-        Add(
+        var saveAsDocumentItem = Add(
             file,
             "Save &As…",
             Keys.Control | Keys.Shift | Keys.S,
@@ -108,6 +112,7 @@ internal sealed partial class MainForm : Form
                 if (ActiveEditor is { } document)
                     SaveDocument(document, saveAs: true);
             });
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveAsDocumentItem, "save-as");
 
         Add(
             file,
@@ -191,6 +196,7 @@ internal sealed partial class MainForm : Form
 
         _session.AddMenu(file);
         menu.Items.AddRange([file, _undoRedo.Menu, view]);
+        menu.Items.Add(Gondwana.Tooling.Studio.Shared.WinForms.Theming.ToolingAbout.CreateHelpMenu(this));
         MainMenuStrip = menu;
 
         Controls.Add(_dock);
@@ -202,10 +208,11 @@ internal sealed partial class MainForm : Form
             GripStyle = ToolStripGripStyle.Hidden
         };
 
-        workspaceTools.Items.Add(
+        var directoryButton = workspaceTools.Items.Add(
             "Directory…",
             null,
             (_, _) => ChooseDirectory());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(directoryButton, "folder");
 
         workspaceTools.Items.Add(
             "Refresh",

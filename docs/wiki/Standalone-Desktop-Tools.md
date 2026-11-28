@@ -23,6 +23,13 @@ dotnet run --project Tooling/Studio/Gondwana.Tooling.Studio.Tilesheets.WinForms 
 
 Replace the project name with the editor you want to run.
 
+## About and third-party artwork
+
+Each of the six standalone editors exposes **Help → About** with the same
+third-party artwork credits as Studio. Published tooling includes
+`THIRD-PARTY-NOTICES.md` and the Oxygen notice and license files.
+See the [repository notices](https://github.com/Isthimius/Gondwana/blob/master/THIRD-PARTY-NOTICES.md).
+
 ## Shared architecture
 
 The common pattern is:
