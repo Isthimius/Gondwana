@@ -77,11 +77,57 @@ public sealed class AsteroidsGameTests
     {
         var game = new AsteroidsGame(42);
         game.Start();
+        var sounds = new List<AsteroidsGame.Sound>();
+        game.SoundRequested += sounds.Add;
         var rock = game.Bodies.First(b => b.Type == AsteroidsGame.Kind.Rock);
         rock.Position = game.Ship.Position + new Vector2(0, -45);
         rock.Velocity = Vector2.Zero;
         game.Update(0.01f, 0f, false, true);
         Assert.Equal(20, game.Score);
+        Assert.Equal(new[] { AsteroidsGame.Sound.PlayerShot, AsteroidsGame.Sound.LargeExplosion }, sounds);
         Assert.Equal(2, game.Bodies.Count(b => b.Type == AsteroidsGame.Kind.Rock && b.Size == 2));
+    }
+
+    [Fact]
+    public void PlayerFireSoundMatchesActualShotsAndStopsWhilePaused()
+    {
+        var game = new AsteroidsGame(42);
+        var sounds = new List<AsteroidsGame.Sound>();
+        game.SoundRequested += sounds.Add;
+        game.Start();
+        game.Update(0.05f, 0f, false, true);
+        game.Update(0.05f, 0f, false, true);
+        game.TogglePause();
+        game.Update(0.05f, 0f, false, true);
+
+        Assert.Single(sounds, sound => sound == AsteroidsGame.Sound.PlayerShot);
+    }
+
+    [Fact]
+    public void SynthesizedEffectsAreDistinctValidPcmWaves()
+    {
+        var unique = new HashSet<string>();
+
+        foreach (var sound in Enum.GetValues<AsteroidsGame.Sound>())
+        {
+            using var stream = AsteroidsAudio.CreateWave(sound);
+            using var reader = new BinaryReader(stream);
+            Assert.Equal("RIFF", new string(reader.ReadChars(4)));
+            Assert.Equal(stream.Length - 8, (long)reader.ReadInt32());
+            Assert.Equal("WAVE", new string(reader.ReadChars(4)));
+            Assert.Equal("fmt ", new string(reader.ReadChars(4)));
+            Assert.Equal(16, reader.ReadInt32());
+            Assert.Equal((short)1, reader.ReadInt16());
+            Assert.Equal((short)1, reader.ReadInt16());
+            Assert.Equal(22050, reader.ReadInt32());
+            stream.Position = 34;
+            Assert.Equal((short)16, reader.ReadInt16());
+            Assert.Equal("data", new string(reader.ReadChars(4)));
+            int length = reader.ReadInt32();
+            Assert.Equal(stream.Length - 44, (long)length);
+            byte[] samples = reader.ReadBytes(length);
+            Assert.Contains(samples, sample => sample != 0);
+            Assert.True(unique.Add(Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(samples))));
+        }
     }
 }

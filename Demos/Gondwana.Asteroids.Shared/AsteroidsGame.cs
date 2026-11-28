@@ -26,6 +26,8 @@ internal sealed class AsteroidsGame
         Reset();
     }
 
+    internal event Action<Sound>? SoundRequested;
+
     internal static Vector2 Center => new(Width / 2f, Height / 2f);
     internal Body Ship { get; }
     internal IReadOnlyList<Body> Bodies => _bodies;
@@ -94,6 +96,7 @@ internal sealed class AsteroidsGame
             Ship.Position = candidate;
             Ship.Velocity = Vector2.Zero;
             _invulnerability = Math.Max(_invulnerability, 0.5f);
+            SoundRequested?.Invoke(Sound.Hyperspace);
             return;
         }
     }
@@ -143,6 +146,7 @@ internal sealed class AsteroidsGame
                 Vector2 heading = Direction(Ship.Angle);
                 AddBody(Kind.PlayerShot, Ship.Position + heading * 20f, Ship.Velocity + heading * 650f, 3f, 0.85f);
                 _fireDelay = 0.16f;
+                SoundRequested?.Invoke(Sound.PlayerShot);
             }
         }
 
@@ -237,6 +241,7 @@ internal sealed class AsteroidsGame
         float angle = MathF.Atan2(aim.Y, aim.X) + (_random.NextSingle() - 0.5f) * 0.55f;
         AddBody(Kind.EnemyShot, saucer.Position, Direction(angle) * 310f, 4f, 2.2f);
         _saucerFireDelay = 1.4f;
+        SoundRequested?.Invoke(Sound.EnemyShot);
     }
 
     private void ResolveCollisions()
@@ -273,6 +278,7 @@ internal sealed class AsteroidsGame
                 Lives--;
                 Ship.Velocity = Vector2.Zero;
                 Thrusting = false;
+                SoundRequested?.Invoke(Sound.ShipExplosion);
 
                 if (Lives <= 0)
                     State = Phase.GameOver;
@@ -294,8 +300,15 @@ internal sealed class AsteroidsGame
         {
             Lives++;
             _nextExtraLife += 10000;
+            SoundRequested?.Invoke(Sound.ExtraLife);
         }
 
+        SoundRequested?.Invoke(target.Type == Kind.Saucer ? Sound.SaucerExplosion : target.Size switch
+        {
+            3 => Sound.LargeExplosion,
+            2 => Sound.MediumExplosion,
+            _ => Sound.SmallExplosion
+        });
         Explode(target.Position, target.Type == Kind.Saucer ? 16 : 7);
 
         if (target.Type == Kind.Rock && target.Size > 1)
@@ -367,6 +380,22 @@ internal sealed class AsteroidsGame
 
     internal enum Kind { Ship, Rock, PlayerShot, Saucer, EnemyShot, Spark }
     internal enum Phase { Ready, Playing, Paused, GameOver }
+    internal enum Sound
+    {
+        PlayerShot,
+        EnemyShot,
+        LargeExplosion,
+        MediumExplosion,
+        SmallExplosion,
+        SaucerExplosion,
+        ShipExplosion,
+        Hyperspace,
+        ExtraLife,
+        Thrust,
+        Saucer,
+        BeatLow,
+        BeatHigh
+    }
 
     internal sealed class Body(int id, Kind type, Vector2 position, Vector2 velocity, float radius, float lifetime)
     {

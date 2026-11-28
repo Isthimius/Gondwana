@@ -12,6 +12,15 @@ internal sealed class AsteroidsGameHost : AvaloniaGpuGameHost
     internal AsteroidsGameHost(AvaloniaGpuRenderSurfaceControl surface) : base(surface)
         => _game = new AsteroidsRuntime(surface.Host);
 
+    protected override void OnConfigurePlatform()
+    {
+        base.OnConfigurePlatform();
+#if WINDOWS
+        Engine.UseNAudio();
+#endif
+    }
+
+    protected override void LoadAssets() => _game.LoadAssets();
     protected override void LoadTilesheets() => _game.LoadTilesheets();
     protected override Scene CreateInitialScene() => _game.CreateScene();
     protected override void OnSceneBound() => _game.OnSceneBound(Scene!);
@@ -28,6 +37,7 @@ internal sealed class AsteroidsGameHost : AvaloniaGpuGameHost
             ((int)Key.W, "w"),
             ((int)Key.H, "h"),
             ((int)Key.Space, "space"),
+            ((int)Key.M, "m"),
             ((int)Key.P, "p"),
             ((int)Key.R, "r"));
 

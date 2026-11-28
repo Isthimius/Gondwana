@@ -13,6 +13,7 @@ internal sealed class AsteroidsGameHost : BlazorGpuGameHost
     internal AsteroidsGameHost(BlazorGpuRenderSurfaceComponent surface, IJSRuntime jsRuntime)
         : base(surface, jsRuntime) => _game = new AsteroidsRuntime(surface.Host);
 
+    protected override void LoadAssets() => _game.LoadAssets();
     protected override void LoadTilesheets() => _game.LoadTilesheets();
     protected override Scene CreateInitialScene() => _game.CreateScene();
     protected override void OnSceneBound() => _game.OnSceneBound(Scene!);
@@ -29,6 +30,7 @@ internal sealed class AsteroidsGameHost : BlazorGpuGameHost
             ((int)BlazorKey.KeyW, "w"),
             ((int)BlazorKey.KeyH, "h"),
             ((int)BlazorKey.Space, "space"),
+            ((int)BlazorKey.KeyM, "m"),
             ((int)BlazorKey.KeyP, "p"),
             ((int)BlazorKey.KeyR, "r"));
 

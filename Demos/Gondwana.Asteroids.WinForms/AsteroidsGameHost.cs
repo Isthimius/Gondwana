@@ -11,6 +11,7 @@ internal sealed class AsteroidsGameHost : WinFormsGpuGameHost
     internal AsteroidsGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface)
         => _game = new AsteroidsRuntime(surface.Host);
 
+    protected override void LoadAssets() => _game.LoadAssets();
     protected override void LoadTilesheets() => _game.LoadTilesheets();
     protected override Scene CreateInitialScene() => _game.CreateScene();
     protected override void OnSceneBound() => _game.OnSceneBound(Scene!);
@@ -27,6 +28,7 @@ internal sealed class AsteroidsGameHost : WinFormsGpuGameHost
             ((int)Keys.W, "w"),
             ((int)Keys.H, "h"),
             ((int)Keys.Space, "space"),
+            ((int)Keys.M, "m"),
             ((int)Keys.P, "p"),
             ((int)Keys.R, "r"));
 

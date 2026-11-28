@@ -17,6 +17,7 @@ namespace Gondwana.Demos.Asteroids;
 internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 {
     private readonly AsteroidsGame _game = new();
+    private readonly AsteroidsAudio _audio = new();
     private readonly HashSet<string> _pressed = new(StringComparer.Ordinal);
     private readonly Dictionary<(int Id, int X, int Y), (Sprite Sprite, int Frame)> _sprites = [];
     private readonly HashSet<(int Id, int X, int Y)> _used = [];
@@ -30,6 +31,12 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
     private string _lastMessage = "";
 
     private static Gondwana.Engine Engine => Gondwana.Engine.Instance;
+
+    internal void LoadAssets()
+    {
+        _audio.Load();
+        _game.SoundRequested += _audio.Play;
+    }
 
     internal void LoadTilesheets()
     {
@@ -109,9 +116,17 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
                 break;
             case "p":
                 _game.TogglePause();
+
+                if (_game.State == AsteroidsGame.Phase.Paused)
+                    _audio.StopAll();
+
                 break;
             case "r":
                 _game.Reset();
+                _audio.StopAll();
+                break;
+            case "m":
+                _audio.ToggleMute();
                 break;
             case "h":
                 _game.Hyperspace();
@@ -141,6 +156,7 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
             remaining -= step;
         }
 
+        _audio.Update(_game, Math.Min(deltaSeconds, maxStepSeconds * maxSteps));
         DrawState();
     }
 
@@ -170,7 +186,8 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
             _sprites.Remove(key);
         }
 
-        string hud = $"SCORE {_game.Score:000000}     HIGH {_game.HighScore:000000}     LIVES {_game.Lives}     WAVE {_game.Wave}";
+        string sound = !_audio.Available ? "NO AUDIO" : _audio.Muted ? "MUTED" : "SOUND ON";
+        string hud = $"SCORE {_game.Score:000000}     HIGH {_game.HighScore:000000}     LIVES {_game.Lives}     WAVE {_game.Wave}     {sound}";
 
         if (hud != _lastHud)
         {
@@ -180,7 +197,7 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 
         string message = _game.State switch
         {
-            AsteroidsGame.Phase.Ready => "ASTEROIDS\nSPACE TO START\nA/D or LEFT/RIGHT: ROTATE    W or UP: THRUST\nSPACE: FIRE    H: HYPERSPACE    P: PAUSE",
+            AsteroidsGame.Phase.Ready => "ASTEROIDS\nSPACE TO START\nA/D or LEFT/RIGHT: ROTATE    W or UP: THRUST\nSPACE: FIRE    H: HYPERSPACE    P: PAUSE    M: MUTE",
             AsteroidsGame.Phase.Paused => "PAUSED\nP TO RESUME    R TO RESTART",
             AsteroidsGame.Phase.GameOver => "GAME OVER\nSPACE TO PLAY AGAIN",
             _ => ""
@@ -249,6 +266,8 @@ internal sealed class AsteroidsRuntime(RenderSurfaceHostBase surface)
 
         _keyboard = null;
         _pressed.Clear();
+        _game.SoundRequested -= _audio.Play;
+        _audio.Dispose();
 
         // GameHostBase stops and waits for rendering before calling this hook.
         _typeface?.Dispose();
