@@ -8,18 +8,33 @@ public static partial class ToolbarGlyphs
     public enum DefinitionCommand { Add, Import, Duplicate, Remove, Rename }
 
     /// <summary>Assigns an owned New-document image to a standard WinForms menu item.</summary>
-    public static void SetNewDocumentMenuGlyph(ToolStripMenuItem item)
+    public static void SetNewDocumentMenuGlyph(ToolStripMenuItem item) =>
+        SetFileOperationGlyph(item, "new");
+
+    /// <summary>Assigns an owned file-operation image without changing the item's text or action.</summary>
+    public static void SetFileOperationGlyph(ToolStripItem item, string kind)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        var image = Studio("new", 16, ToolingAppearance.Palette);
+        var image = Studio(kind, 16, ToolingAppearance.Palette);
         item.Image = image;
         item.Disposed += (_, _) => image.Dispose();
     }
 
     public static Bitmap Studio(string kind, int pixels, ToolingPalette palette)
     {
-        if (kind == "new" && ToolingIconResources.TryCreateOxygenBitmap("document-new.png", pixels) is { } oxygen)
+        string? fileName = kind switch
+        {
+            "new" => "document-new.png",
+            "open" => "document-open.png",
+            "save" => "document-save.png",
+            "save-all" => "document-save-all.png",
+            "save-as" => "document-save-as.png",
+            "folder" => "folder-activities.png",
+            _ => null
+        };
+
+        if (fileName is not null && ToolingIconResources.TryCreateOxygenBitmap(fileName, pixels) is { } oxygen)
             return oxygen;
 
         var bitmap = new Bitmap(pixels, pixels);
@@ -95,6 +110,7 @@ public static partial class ToolbarGlyphs
 
                     break;
                 case "save":
+                case "save-as":
                 case "save-all":
                     if (kind == "save-all")
                     {

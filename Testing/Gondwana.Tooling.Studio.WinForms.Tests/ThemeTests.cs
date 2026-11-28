@@ -180,6 +180,29 @@ public sealed class ThemeTests
         Assert.Equal(0, image.GetPixel(0, 0).A);
     }
 
+    [Theory]
+    [InlineData("open", "document-open.png")]
+    [InlineData("save", "document-save.png")]
+    [InlineData("save-all", "document-save-all.png")]
+    [InlineData("save-as", "document-save-as.png")]
+    [InlineData("folder", "folder-activities.png")]
+    public void FileOperationGlyphUsesNativeArtworkAndPreservesText(string kind, string fileName) => Sta(() =>
+    {
+        using var item = new ToolStripMenuItem("Command");
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(item, kind);
+        Assert.Equal("Command", item.Text);
+        using var expected = ToolingIconResources.TryCreateOxygenBitmap(fileName, 16);
+        Assert.NotNull(expected);
+        var actual = Assert.IsType<Bitmap>(item.Image);
+        Assert.Equal(expected.Size, actual.Size);
+
+        for (int y = 0; y < actual.Height; y++)
+        {
+            for (int x = 0; x < actual.Width; x++)
+                Assert.Equal(expected.GetPixel(x, y), actual.GetPixel(x, y));
+        }
+    });
+
     [Fact]
     public void AboutMenuAndDialogExposeSharedArtworkCredits() => Sta(() =>
     {

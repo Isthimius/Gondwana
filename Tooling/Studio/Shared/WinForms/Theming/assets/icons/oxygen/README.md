@@ -36,10 +36,10 @@ When importing an icon:
 
 The project keeps these assets separate from the legacy embedded icons.
 Build and publish copy this directory as loose content, excluding empty-folder
-markers. The New document command loads loose Oxygen artwork through the
-shared icon resolver, preferring exact or next-larger native sizes and using
-the largest smaller native size when needed. The existing vector glyph remains
-a fallback when the Oxygen artwork is absent. Other commands retain their
+markers. The assigned file-operation commands load loose Oxygen artwork through
+the shared icon resolver, preferring exact or next-larger native sizes and using
+the largest smaller native size when needed. The existing vector glyphs remain
+fallbacks when the Oxygen artwork is absent. Other commands retain their
 existing artwork until individually migrated.
 
 ## Imported artwork inventory
@@ -47,3 +47,8 @@ existing artwork until individually migrated.
 | Command | Upstream path and revision | Local files | Corresponding source / modifications |
 | --- | --- | --- | --- |
 | File operations — New | [actions/document-new.png and scalable sources](https://github.com/KDE/oxygen-icons/tree/6d2838930cea3aa757ea811d7c2b838f206ed64c) | `16x16/`, `22x22/`, `32x32/`, `48x48/` — `document-new.png` | `source/scalable/actions/document-new.svgz` and `source/scalable/actions/small/{16x16,22x22,48x48}/document-new.svgz`; unchanged upstream bytes |
+| File operations — Open | [actions/document-open.png](https://github.com/KDE/oxygen-icons/blob/6d2838930cea3aa757ea811d7c2b838f206ed64c/32x32/actions/document-open.png) | `16x16/`, `22x22/`, `32x32/`, `48x48/` — `document-open.png` | `source/scalable/actions/small/{16x16,22x22,32x32,48x48}/document-open.svgz`; unchanged upstream bytes |
+| File operations — Save | [actions/document-save.png](https://github.com/KDE/oxygen-icons/blob/6d2838930cea3aa757ea811d7c2b838f206ed64c/32x32/actions/document-save.png) | `16x16/`, `22x22/`, `32x32/`, `48x48/` — `document-save.png` | `source/scalable/actions/document-save.svgz` and `source/scalable/actions/small/{16x16,22x22,48x48}/document-save.svgz`; unchanged upstream bytes |
+| File operations — Save All | [actions/document-save-all.png](https://github.com/KDE/oxygen-icons/blob/6d2838930cea3aa757ea811d7c2b838f206ed64c/32x32/actions/document-save-all.png) | `16x16/`, `22x22/`, `32x32/`, `48x48/` — `document-save-all.png` | `source/scalable/actions/document-save-all.svgz` and `source/scalable/actions/small/{16x16,22x22,48x48}/document-save-all.svgz`; unchanged upstream bytes |
+| File operations — Save As | [actions/document-save-as.png](https://github.com/KDE/oxygen-icons/blob/6d2838930cea3aa757ea811d7c2b838f206ed64c/32x32/actions/document-save-as.png) | `16x16/`, `22x22/`, `32x32/`, `48x48/` — `document-save-as.png` | `source/scalable/actions/document-save-as.svgz` and `source/scalable/actions/small/{16x16,22x22,48x48}/document-save-as.svgz`; unchanged upstream bytes |
+| File operations — Directory | [places/folder-activities.png](https://github.com/KDE/oxygen-icons/blob/6d2838930cea3aa757ea811d7c2b838f206ed64c/32x32/places/folder-activities.png) | `8x8/`, `16x16/`, `22x22/`, `32x32/`, `48x48/`, `128x128/`, `256x256/` — `folder-activities.png` | `source/scalable/places/folder-activities.svgz` and `source/scalable/places/small/{16x16,22x22,32x32,48x48,64x64}/folder-activities.svgz`; unchanged upstream bytes |

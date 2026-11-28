@@ -51,9 +51,8 @@ folders and corresponding artwork source. See the repository's
 [Third-Party Notices](../../../../../THIRD-PARTY-NOTICES.md).
 
 The project copies this directory and the root notices into build and publish
-output as loose files. Existing Icons8 embedded resources remain unchanged. The New document glyph
-loads loose Oxygen PNGs through the shared resolver; additional command
-assignments are made individually.
+output as loose files. Existing Icons8 embedded resources remain unchanged. Assigned file-operation glyphs load loose Oxygen PNGs through the shared
+resolver; additional command assignments are made individually.
 
 ## DockPanel Suite 3.1.1
 

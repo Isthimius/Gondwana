@@ -68,6 +68,26 @@ public sealed partial class CompositionTests
         Assert.Equal("Refresh working directory", Get("Refresh").ToolTipText);
         Assert.Equal("View active scene in Scene Viewer", Get("Preview").ToolTipText);
         Assert.Equal("Validate active document", Get("Validate").ToolTipText);
+
+        foreach (var (name, fileName) in new[]
+        {
+            ("Open", "document-open.png"),
+            ("Save", "document-save.png"),
+            ("SaveAll", "document-save-all.png"),
+            ("WorkingDirectory", "folder-activities.png")
+        })
+        {
+            using var artwork = Gondwana.Tooling.Studio.Shared.WinForms.Theming.ToolingIconResources.TryCreateOxygenBitmap(fileName, imagePixels);
+            Assert.NotNull(artwork);
+            var actualArtwork = Assert.IsType<Bitmap>(Get(name).Image);
+            Assert.Equal(artwork.Size, actualArtwork.Size);
+
+            for (int y = 0; y < artwork.Height; y++)
+            {
+                for (int x = 0; x < artwork.Width; x++)
+                    Assert.Equal(artwork.GetPixel(x, y), actualArtwork.GetPixel(x, y));
+            }
+        }
         Assert.False(Get("Save").Enabled);
         Assert.False(Get("SaveAll").Enabled);
         Assert.False(Get("Preview").Enabled);
