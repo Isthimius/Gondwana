@@ -184,6 +184,18 @@ public static partial class ToolbarGlyphs
 
     public static Bitmap Definition(DefinitionCommand command, int pixels, ToolingPalette palette)
     {
+        EditingCommand? editing = command switch
+        {
+            DefinitionCommand.Add => EditingCommand.Add,
+            DefinitionCommand.Duplicate => EditingCommand.Duplicate,
+            DefinitionCommand.Remove => EditingCommand.Remove,
+            DefinitionCommand.Rename => EditingCommand.Rename,
+            _ => null
+        };
+
+        if (editing is { } selected && CreateEditingBitmap(selected, pixels) is { } oxygen)
+            return oxygen;
+
         var image = new Bitmap(pixels, pixels);
 
         using (var graphics = Graphics.FromImage(image))

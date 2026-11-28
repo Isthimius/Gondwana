@@ -174,8 +174,14 @@ public sealed partial class CompositionTests
 
             foreach (var command in Enum.GetValues<ToolbarGlyphs.DefinitionCommand>())
             {
-                using var image = ToolbarGlyphs.Definition(command, ToolbarSizing.Pixels(32, dpi), palette);
-                AssertGlyph(image, palette.Foreground);
+                int pixels = ToolbarSizing.Pixels(32, dpi);
+                using var image = ToolbarGlyphs.Definition(command, pixels, palette);
+                Assert.Equal(new Size(pixels, pixels), image.Size);
+
+                if (command == ToolbarGlyphs.DefinitionCommand.Import)
+                    AssertGlyph(image, palette.Foreground);
+                else
+                    AssertRasterArtwork(image);
             }
         }
     }

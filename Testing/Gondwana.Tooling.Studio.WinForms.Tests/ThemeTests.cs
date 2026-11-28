@@ -256,6 +256,31 @@ public sealed class ThemeTests
         }
     });
 
+    [Theory]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Add, "list-add.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Remove, "list-remove.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Delete, "edit-delete.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Duplicate, "edit-copy.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Rename, "document-edit.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Replace, "edit-find-replace.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Prune, "edit-clear.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Apply, "dialog-ok-apply.png")]
+    [InlineData(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand.Cancel, "dialog-cancel.png")]
+    public void EditingGlyphUsesAssignedArtwork(Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.EditingCommand command, string fileName)
+    {
+        using var actual = Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.CreateEditingBitmap(command, 32);
+        using var expected = ToolingIconResources.TryCreateOxygenBitmap(fileName, 32);
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+        Assert.Equal(expected.Size, actual.Size);
+
+        for (int y = 0; y < actual.Height; y++)
+        {
+            for (int x = 0; x < actual.Width; x++)
+                Assert.Equal(expected.GetPixel(x, y), actual.GetPixel(x, y));
+        }
+    }
+
     [Fact]
     public void AboutMenuAndDialogExposeSharedArtworkCredits() => Sta(() =>
     {
