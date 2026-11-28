@@ -64,6 +64,7 @@ GNU Lesser General Public License version 3 or later (LGPL-3.0-or-later).
 - Artwork directory and import inventory: [Oxygen assets](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/README.md).
 - Notices: [COPYING](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/COPYING), [AUTHORS](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/AUTHORS).
 - License texts: [LGPL v3](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/LGPL-3.0-or-later.txt) and [GPL v3](Tooling/Studio/Shared/WinForms/Theming/assets/icons/oxygen/GPL-3.0-only.txt).
+- In build and publish output, these files are under `assets/icons/oxygen/` relative to this notice document; the repository-relative links above apply only to the source checkout.
 
 Selected Oxygen artwork is included and used in the tooling applications.
 Imported artwork and modifications retain the applicable Oxygen license. Gondwana's original code remains MIT-licensed. Retain the
