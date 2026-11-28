@@ -85,6 +85,18 @@ The authoritative publishing and bundle-validation scripts are
 [Publish-WindowsTooling.ps1](../scripts/Publish-WindowsTooling.ps1) and
 [Test-WindowsToolingBundle.ps1](../scripts/Test-WindowsToolingBundle.ps1).
 
+## Third-party artwork and notices
+
+Studio and the six standalone editors expose **Help → About** with shared
+third-party artwork credits. Published tooling directories include
+`THIRD-PARTY-NOTICES.md` and the Oxygen notice/license files under
+`assets/icons/oxygen/`. Future installers or executable distributions must
+retain those files and any included artwork's corresponding source.
+
+See [Third-Party Notices](../../THIRD-PARTY-NOTICES.md) and the
+[Oxygen artwork inventory](Shared/WinForms/Theming/assets/icons/oxygen/README.md).
+No Oxygen PNGs are imported until an individual icon is selected.
+
 ## Project structure and reuse
 
 | Component | Responsibility |

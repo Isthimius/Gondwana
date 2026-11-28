@@ -43,6 +43,17 @@ Tooltips and `ThemedMessageBox` use the same palette. Standard Windows file,
 folder and color pickers, native window frames, scrollbars and system accessibility
 surfaces remain OS-rendered; the helper does not replace those operating-system controls.
 
+## Third-party icon artwork
+
+Selected KDE Oxygen artwork will live in [assets/icons/oxygen](assets/icons/oxygen/README.md),
+with the upstream contributor notices, LGPL and GPL license texts, resolution
+folders and corresponding artwork source. See the repository's
+[Third-Party Notices](../../../../../THIRD-PARTY-NOTICES.md).
+
+The project copies this directory and the root notices into build and publish
+output as loose files. Existing Icons8 embedded resources and their resolver
+remain unchanged. Oxygen button assignments will be made individually.
+
 ## DockPanel Suite 3.1.1
 
 The supplied VS2015 Dark and Light themes style outer and nested docking surfaces.

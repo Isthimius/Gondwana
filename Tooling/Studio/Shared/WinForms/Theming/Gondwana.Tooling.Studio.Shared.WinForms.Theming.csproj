@@ -19,10 +19,26 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- Embed everything under assets into the Theming DLL -->
+        <!-- Keep legacy icons embedded; Oxygen artwork and notices remain separate. -->
         <None Remove="assets/**/*" />
 
-        <EmbeddedResource Include="assets/**/*" LogicalName="Gondwana.Tooling.Studio.Shared.WinForms.Theming.assets.%(Filename)%(Extension)" />
+        <EmbeddedResource Include="assets/**/*"
+                          Exclude="assets/icons/oxygen/**/*"
+                          LogicalName="Gondwana.Tooling.Studio.Shared.WinForms.Theming.assets.%(Filename)%(Extension)" />
+
+        <!-- Explicit project items retain the empty resolution folders in Solution Explorer. -->
+        <None Include="assets/icons/oxygen/**/.gitkeep" />
+
+        <Content Include="assets/icons/oxygen/**/*"
+                 Exclude="assets/icons/oxygen/**/.gitkeep"
+                 CopyToOutputDirectory="PreserveNewest"
+                 CopyToPublishDirectory="PreserveNewest"
+                 ExcludeFromSingleFile="true" />
+        <Content Include="../../../../../THIRD-PARTY-NOTICES.md"
+                 Link="THIRD-PARTY-NOTICES.md"
+                 CopyToOutputDirectory="PreserveNewest"
+                 CopyToPublishDirectory="PreserveNewest"
+                 ExcludeFromSingleFile="true" />
     </ItemGroup>
 
     <ItemGroup>
