@@ -177,7 +177,21 @@ public sealed class ThemeTests
         using var image = ToolingIconResources.TryCreateOxygenBitmap("document-new.png", pixels);
         Assert.NotNull(image);
         Assert.Equal(new Size(pixels, pixels), image.Size);
-        Assert.Equal(0, image.GetPixel(0, 0).A);
+        bool hasVisiblePixels = false;
+        bool hasTransparentPixels = false;
+
+        for (int y = 0; y < image.Height; y++)
+        {
+            for (int x = 0; x < image.Width; x++)
+            {
+                byte alpha = image.GetPixel(x, y).A;
+                hasVisiblePixels |= alpha > 200;
+                hasTransparentPixels |= alpha < 255;
+            }
+        }
+
+        Assert.True(hasVisiblePixels);
+        Assert.True(hasTransparentPixels);
     }
 
     [Fact]
@@ -252,7 +266,7 @@ public sealed class ThemeTests
 
         using var dialog = ToolingAbout.CreateDialog(owner.Text);
         Assert.Equal("About Gondwana Studio", dialog.Text);
-        var body = Assert.Single(dialog.Controls.OfType<Panel>().Where(panel => panel is not FlowLayoutPanel));
+        var body = Assert.Single(dialog.Controls.OfType<Panel>(), panel => panel is not FlowLayoutPanel);
         var message = Assert.Single(body.Controls.OfType<TextBox>());
         Assert.Contains("MIT License", message.Text, StringComparison.Ordinal);
         Assert.Contains("Icons8", message.Text, StringComparison.Ordinal);

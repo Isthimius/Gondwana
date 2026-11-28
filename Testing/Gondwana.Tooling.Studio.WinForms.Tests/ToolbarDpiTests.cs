@@ -155,10 +155,20 @@ public sealed partial class CompositionTests
         {
             var palette = ToolingPalette.For(theme);
 
-            foreach (var command in new[]
-                         { "new", "open", "folder", "save", "save-all", "refresh", "preview", "validate" })
+            int studioPixels = ToolbarSizing.Pixels(24, dpi);
+
+            // Imported full-color artwork is not a monochrome palette glyph.
+            foreach (var command in new[] { "new", "open", "folder", "save", "save-all", "save-as" })
             {
-                using var image = ToolbarGlyphs.Studio(command, ToolbarSizing.Pixels(24, dpi), palette);
+                using var image = ToolbarGlyphs.Studio(command, studioPixels, palette);
+                Assert.Equal(new Size(studioPixels, studioPixels), image.Size);
+                AssertRasterArtwork(image);
+            }
+
+            foreach (var command in new[] { "refresh", "preview", "validate" })
+            {
+                using var image = ToolbarGlyphs.Studio(command, studioPixels, palette);
+                Assert.Equal(new Size(studioPixels, studioPixels), image.Size);
                 AssertGlyph(image, palette.Foreground);
             }
 
@@ -168,6 +178,25 @@ public sealed partial class CompositionTests
                 AssertGlyph(image, palette.Foreground);
             }
         }
+    }
+
+    private static void AssertRasterArtwork(Bitmap image)
+    {
+        bool hasVisiblePixels = false;
+        bool hasTransparentPixels = false;
+
+        for (int y = 0; y < image.Height; y++)
+        {
+            for (int x = 0; x < image.Width; x++)
+            {
+                var pixel = image.GetPixel(x, y);
+                hasVisiblePixels |= pixel.A > 200;
+                hasTransparentPixels |= pixel.A < 255;
+            }
+        }
+
+        Assert.True(hasVisiblePixels, "The raster artwork has no visible pixels.");
+        Assert.True(hasTransparentPixels, "The raster artwork has no transparency.");
     }
 
     private static void AssertGlyph(Bitmap image, Color foreground)
