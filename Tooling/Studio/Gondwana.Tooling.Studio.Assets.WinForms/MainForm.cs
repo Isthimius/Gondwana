@@ -78,31 +78,35 @@ public sealed partial class MainForm : Form
             CreateNewAssetsFile);
         Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetNewDocumentMenuGlyph(create);
 
-        Add(
+        var openDocumentItem = Add(
             file,
             "&Open…",
             Keys.Control | Keys.O,
             OpenFiles);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDocumentItem, "open");
 
-        Add(
+        var openDirectoryItem = Add(
             file,
             "Open working &directory…",
             Keys.Control | Keys.Shift | Keys.O,
             () => _workspaceControl.ChooseDirectory(this));
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDirectoryItem, "folder");
 
         file.DropDownItems.Add(new ToolStripSeparator());
 
-        Add(
+        var saveDocumentItem = Add(
             file,
             "&Save",
             Keys.Control | Keys.S,
             () => ActiveEditor?.Save());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveDocumentItem, "save");
 
-        Add(
+        var saveAsDocumentItem = Add(
             file,
             "Save &As…",
             Keys.Control | Keys.Shift | Keys.S,
             () => ActiveEditor?.SaveAs());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveAsDocumentItem, "save-as");
 
         Add(
             file,

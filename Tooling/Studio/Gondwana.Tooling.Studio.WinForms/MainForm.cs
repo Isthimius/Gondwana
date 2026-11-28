@@ -326,17 +326,19 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         file.DropDownItems.Add(create);
 
-        Add(
+        var openDocumentItem = Add(
             file,
             "&Open…",
             Keys.Control | Keys.O,
             OpenFiles);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDocumentItem, "open");
 
-        Add(
+        var openDirectoryItem = Add(
             file,
             "Open working &directory…",
             Keys.None,
             ChooseDirectory);
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(openDirectoryItem, "folder");
 
         Add(
             file,
@@ -352,7 +354,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
 
         file.DropDownItems.Add(new ToolStripSeparator());
 
-        Add(
+        var saveDocumentItem = Add(
             file,
             "&Save",
             Keys.Control | Keys.S,
@@ -361,14 +363,16 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 if (ActiveDocument is { } doc)
                     await SaveDocument(doc);
             });
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveDocumentItem, "save");
 
         _saveAllMenuItem = Add(
             file,
             "Save A&ll",
             Keys.Control | Keys.Alt | Keys.S,
             async () => await SaveAllDocuments());
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(_saveAllMenuItem, "save-all");
 
-        Add(
+        var saveAsDocumentItem = Add(
             file,
             "Save &As…",
             Keys.Control | Keys.Shift | Keys.S,
@@ -377,6 +381,7 @@ public sealed partial class MainForm : Form, Core.Extensibility.IStudioPluginHos
                 if (ActiveDocument is { } doc)
                     await SaveDocument(doc, saveAs: true);
             });
+        Gondwana.Tooling.Studio.Shared.WinForms.Dpi.ToolbarGlyphs.SetFileOperationGlyph(saveAsDocumentItem, "save-as");
 
         file.DropDownItems.Add(new ToolStripSeparator());
 
